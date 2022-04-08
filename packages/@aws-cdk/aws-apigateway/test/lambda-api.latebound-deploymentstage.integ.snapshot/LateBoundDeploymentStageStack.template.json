@@ -1,0 +1,386 @@
+{
+ "Resources": {
+  "myfnServiceRole7822DC24": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "myfn8C66D016": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "foo"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "myfnServiceRole7822DC24",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "myfnServiceRole7822DC24"
+   ]
+  },
+  "lambdarestapiF559E4F2": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "lambdarestapi"
+   }
+  },
+  "lambdarestapiCloudWatchRoleA142878F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "lambdarestapiAccount856938D8": {
+   "Type": "AWS::ApiGateway::Account",
+   "Properties": {
+    "CloudWatchRoleArn": {
+     "Fn::GetAtt": [
+      "lambdarestapiCloudWatchRoleA142878F",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "lambdarestapiF559E4F2"
+   ]
+  },
+  "lambdarestapiproxyB0E963B7": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "lambdarestapiF559E4F2",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "{proxy+}",
+    "RestApiId": {
+     "Ref": "lambdarestapiF559E4F2"
+    }
+   }
+  },
+  "lambdarestapiproxyANYApiPermissionLateBoundDeploymentStageStacklambdarestapiCE6017F6ANYproxy2C5460ED": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "myfn8C66D016",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "lambdarestapiF559E4F2"
+       },
+       "/",
+       {
+        "Ref": "stage0661E4AC"
+       },
+       "/*/*"
+      ]
+     ]
+    }
+   }
+  },
+  "lambdarestapiproxyANYApiPermissionTestLateBoundDeploymentStageStacklambdarestapiCE6017F6ANYproxyCC4F6BB2": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "myfn8C66D016",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "lambdarestapiF559E4F2"
+       },
+       "/test-invoke-stage/*/*"
+      ]
+     ]
+    }
+   }
+  },
+  "lambdarestapiproxyANYC900233F": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "HttpMethod": "ANY",
+    "ResourceId": {
+     "Ref": "lambdarestapiproxyB0E963B7"
+    },
+    "RestApiId": {
+     "Ref": "lambdarestapiF559E4F2"
+    },
+    "AuthorizationType": "NONE",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "myfn8C66D016",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    }
+   }
+  },
+  "lambdarestapiANYApiPermissionLateBoundDeploymentStageStacklambdarestapiCE6017F6ANY35688E13": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "myfn8C66D016",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "lambdarestapiF559E4F2"
+       },
+       "/",
+       {
+        "Ref": "stage0661E4AC"
+       },
+       "/*/"
+      ]
+     ]
+    }
+   }
+  },
+  "lambdarestapiANYApiPermissionTestLateBoundDeploymentStageStacklambdarestapiCE6017F6ANY239CFD70": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "myfn8C66D016",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "lambdarestapiF559E4F2"
+       },
+       "/test-invoke-stage/*/"
+      ]
+     ]
+    }
+   }
+  },
+  "lambdarestapiANYB9BB3FB2": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "HttpMethod": "ANY",
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "lambdarestapiF559E4F2",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "lambdarestapiF559E4F2"
+    },
+    "AuthorizationType": "NONE",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "myfn8C66D016",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    }
+   }
+  },
+  "deployment3338197541aef5f15bf9a60b10e06fdbe72854f4": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "lambdarestapiF559E4F2"
+    }
+   },
+   "DependsOn": [
+    "lambdarestapiproxyANYC900233F",
+    "lambdarestapiANYB9BB3FB2"
+   ]
+  },
+  "stage0661E4AC": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "lambdarestapiF559E4F2"
+    },
+    "DeploymentId": {
+     "Ref": "deployment3338197541aef5f15bf9a60b10e06fdbe72854f4"
+    },
+    "StageName": "prod"
+   },
+   "DependsOn": [
+    "lambdarestapiAccount856938D8"
+   ]
+  }
+ }
+}

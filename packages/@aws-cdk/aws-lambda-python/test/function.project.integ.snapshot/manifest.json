@@ -1,0 +1,109 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      },
+      "metadata": {}
+    },
+    "cdk-integ-lambda-function-project": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-lambda-function-project.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-integ-lambda-function-project": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724",
+              "id": "51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724",
+              "packaging": "zip",
+              "sourceHash": "51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724",
+              "s3BucketParameter": "AssetParameters51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724S3BucketDA99AAC5",
+              "s3KeyParameter": "AssetParameters51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724S3VersionKey561281CF",
+              "artifactHashParameter": "AssetParameters51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724ArtifactHash2CDEA207"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.c5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116",
+              "id": "c5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116",
+              "packaging": "zip",
+              "sourceHash": "c5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116",
+              "s3BucketParameter": "AssetParametersc5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116S3BucketD74EF551",
+              "s3KeyParameter": "AssetParametersc5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116S3VersionKey9612D0E2",
+              "artifactHashParameter": "AssetParametersc5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116ArtifactHash1E0614B3"
+            }
+          }
+        ],
+        "/cdk-integ-lambda-function-project/Shared/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SharedDACC02AA"
+          }
+        ],
+        "/cdk-integ-lambda-function-project/AssetParameters/51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724S3BucketDA99AAC5"
+          }
+        ],
+        "/cdk-integ-lambda-function-project/AssetParameters/51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724S3VersionKey561281CF"
+          }
+        ],
+        "/cdk-integ-lambda-function-project/AssetParameters/51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724ArtifactHash2CDEA207"
+          }
+        ],
+        "/cdk-integ-lambda-function-project/AssetParameters/c5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116S3BucketD74EF551"
+          }
+        ],
+        "/cdk-integ-lambda-function-project/AssetParameters/c5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116S3VersionKey9612D0E2"
+          }
+        ],
+        "/cdk-integ-lambda-function-project/AssetParameters/c5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116ArtifactHash1E0614B3"
+          }
+        ],
+        "/cdk-integ-lambda-function-project/my_handler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerServiceRole77891068"
+          }
+        ],
+        "/cdk-integ-lambda-function-project/my_handler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerD202FA8E"
+          }
+        ],
+        "/cdk-integ-lambda-function-project/FunctionArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FunctionArn"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-lambda-function-project"
+    }
+  }
+}
