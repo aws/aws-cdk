@@ -129,7 +129,7 @@ export class Dashboard extends Resource {
 
     const warnings = allWidgetsDeep(widgets).flatMap(w => w.warnings ?? []);
     for (const w of warnings) {
-      this.node.addWarning(w);
+      Annotations.of(this).addWarning(w);
     }
 
     const w = widgets.length > 1 ? new Row(...widgets) : widgets[0];

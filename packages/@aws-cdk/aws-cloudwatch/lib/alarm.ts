@@ -205,7 +205,7 @@ export class Alarm extends AlarmBase {
     };
 
     for (const w of this.metric.warnings ?? []) {
-      this.node.addWarning(w);
+      Annotations.of(this).addWarning(w);
     }
   }
 
