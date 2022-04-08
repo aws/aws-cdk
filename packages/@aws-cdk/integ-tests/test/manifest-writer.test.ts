@@ -1,7 +1,7 @@
 import * as os from 'os';
 import { IntegManifest, Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs-extra';
-import { IntegManifestWriter } from '../../lib/runner/private/integ-manifest';
+import { IntegManifestWriter } from '../lib/manifest-writer';
 
 describe(IntegManifestWriter, () => {
   const tmpDir = fs.mkdtempSync(os.tmpdir());
