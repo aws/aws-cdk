@@ -203,6 +203,10 @@ export class Alarm extends AlarmBase {
       label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${datapoints} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
       value: props.threshold,
     };
+
+    for (const w of this.metric.warnings ?? []) {
+      this.node.addWarning(w);
+    }
   }
 
   /**

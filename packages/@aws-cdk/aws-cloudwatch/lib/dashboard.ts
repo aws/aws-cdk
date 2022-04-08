@@ -127,7 +127,29 @@ export class Dashboard extends Resource {
       return;
     }
 
+    const warnings = allWidgetsDeep(widgets).flatMap(w => w.warnings ?? []);
+    for (const w of warnings) {
+      this.node.addWarning(w);
+    }
+
     const w = widgets.length > 1 ? new Row(...widgets) : widgets[0];
     this.rows.push(w);
   }
+}
+
+function allWidgetsDeep(ws: IWidget[]) {
+  const ret = new Array<IWidget>();
+  ws.forEach(recurse);
+  return ret;
+
+  function recurse(w: IWidget) {
+    ret.push(w);
+    if (hasSubWidgets(w)) {
+      w.widgets.forEach(recurse);
+    }
+  }
+}
+
+function hasSubWidgets(w: IWidget): w is IWidget & { widgets: IWidget[] } {
+  return 'widgets' in w;
 }
