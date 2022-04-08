@@ -553,7 +553,7 @@ export class MathExpression implements IMetric {
    */
   public readonly searchRegion?: string;
 
-  public readonly warnings = new Array<string>();
+  public readonly warnings: string[] | undefined = [];
 
   constructor(props: MathExpressionProps) {
     this.period = props.period || cdk.Duration.minutes(5);
@@ -577,12 +577,12 @@ export class MathExpression implements IMetric {
     // we can add warnings.
     const missingIdentifiers = allIdentifiersInExpression(this.expression).filter(i => !this.usingMetrics[i]);
     if (missingIdentifiers.length > 0) {
-      this.warnings.push(`Math expression '${this.expression}' references unknown identifiers: ${missingIdentifiers.join(', ')}. Please add them to the 'usingMetrics' map.`);
+      this.warnings?.push(`Math expression '${this.expression}' references unknown identifiers: ${missingIdentifiers.join(', ')}. Please add them to the 'usingMetrics' map.`);
     }
 
     // Also copy warnings from deeper levels so graphs, alarms only have to inspect the top-level objects
     for (const m of Object.values(this.usingMetrics)) {
-      this.warnings.push(...m.warnings ?? []);
+      this.warnings?.push(...m.warnings ?? []);
     }
   }
 

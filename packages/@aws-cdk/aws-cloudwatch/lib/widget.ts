@@ -46,7 +46,7 @@ export abstract class ConcreteWidget implements IWidget {
   protected x?: number;
   protected y?: number;
 
-  public readonly warnings = new Array<string>();
+  public readonly warnings: string[] | undefined = [];
 
   constructor(width: number, height: number) {
     this.width = width;
@@ -68,6 +68,6 @@ export abstract class ConcreteWidget implements IWidget {
    * Copy the warnings from the given metric
    */
   protected copyMetricWarnings(...ms: IMetric[]) {
-    this.warnings.push(...ms.flatMap(m => m.warnings ?? []));
+    this.warnings?.push(...ms.flatMap(m => m.warnings ?? []));
   }
 }
