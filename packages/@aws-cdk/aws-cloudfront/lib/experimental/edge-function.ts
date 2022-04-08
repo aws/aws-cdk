@@ -137,6 +137,9 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public configureAsyncInvoke(options: lambda.EventInvokeConfigOptions): void {
     return this.lambda.configureAsyncInvoke(options);
   }
+  public addFunctionUrl(options: lambda.FunctionUrlOptions): lambda.FunctionUrl {
+    return this.lambda.addFunctionUrl(options);
+  }
 
   /** Create a function in-region */
   private createInRegionFunction(props: lambda.FunctionProps): FunctionConfig {

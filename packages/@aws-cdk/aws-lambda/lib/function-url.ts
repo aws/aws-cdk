@@ -1,6 +1,9 @@
-import { IResource, Resource } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import { Duration, IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { IAlias } from './alias';
 import { IFunction } from './function-base';
+import { IVersion } from './lambda-version';
 import { CfnUrl } from './lambda.generated';
 
 
@@ -48,7 +51,7 @@ export enum HttpMethods {
 /**
  * Specifies a cross-origin access property for a function URL
  */
-export interface CorsProperty {
+export interface FunctionUrlCorsOptions {
   /**
    * Whether to allow cookies or other credentials in requests to your function URL.
    *
@@ -89,11 +92,11 @@ export interface CorsProperty {
    *
    * @default - No caching.
    */
-  readonly maxAge?: number;
+  readonly maxAge?: Duration;
 }
 
 /**
- *
+ * A Lambda function Url
  */
 export interface IFunctionUrl extends IResource {
   /**
@@ -112,7 +115,7 @@ export interface IFunctionUrl extends IResource {
 }
 
 /**
- * Options to add a url to a Lmabda function
+ * Options to add a url to a Lambda function
  */
 export interface FunctionUrlOptions {
   /**
@@ -125,7 +128,7 @@ export interface FunctionUrlOptions {
    *
    * @default - No CORS configuration.
    */
-  readonly cors?: CorsProperty;
+  readonly cors?: FunctionUrlCorsOptions;
 }
 
 /**
@@ -134,15 +137,9 @@ export interface FunctionUrlOptions {
 export interface FunctionUrlProps extends FunctionUrlOptions {
   /**
    * The function to which this url refers.
+   * It can also be an `Alias` but not a `Version`.
    */
   readonly function: IFunction;
-
-  /**
-   * The alias name.
-   *
-   * @default - No alias, added to the unpublished version of the function.
-   */
-  readonly qualifier?: string;
 }
 
 /**
@@ -169,27 +166,52 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
   constructor(scope: Construct, id: string, props: FunctionUrlProps) {
     super(scope, id);
 
+    if (this.instanceOfVersion(props.function)) {
+      throw new Error('FunctionUrl cannot be used with a Version');
+    }
+
+    let qualifier: string | undefined = undefined;
+    if (this.instanceOfAlias(props.function)) {
+      qualifier = props.function.aliasName;
+    }
+
     const resource: CfnUrl = new CfnUrl(this, 'Resource', {
       authType: props.authType,
       targetFunctionArn: props.function.functionArn,
-      qualifier: props.qualifier,
+      qualifier,
       cors: props.cors ? this.renderCors(props.cors) : undefined,
     });
 
     this.url = resource.attrFunctionUrl;
     this.functionArn = resource.attrFunctionArn;
     this.function = props.function;
+
+    if (props.authType === FunctionUrlAuthType.NONE) {
+      this.function.addPermission('invoke-function-url', {
+        principal: new iam.AnyPrincipal(),
+        action: 'lambda:InvokeFunctionUrl',
+        functionUrlAuthType: props.authType,
+      });
+    }
+  }
+
+  private instanceOfVersion(fn: IFunction): fn is IVersion {
+    return 'version' in fn && !this.instanceOfAlias(fn);
+  }
+
+  private instanceOfAlias(fn: IFunction): fn is IAlias {
+    return 'aliasName' in fn;
   }
 
 
-  private renderCors(cors: CorsProperty): CfnUrl.CorsProperty {
+  private renderCors(cors: FunctionUrlCorsOptions): CfnUrl.CorsProperty {
     return {
       allowCredentials: cors.allowCredentials,
       allowHeaders: cors.allowedHeaders,
       allowMethods: cors.allowedMethods,
       allowOrigins: cors.allowedOrigins,
       exposeHeaders: cors.exposedHeaders,
-      maxAge: cors.maxAge,
+      maxAge: cors.maxAge?.toSeconds(),
     };
   }
 }

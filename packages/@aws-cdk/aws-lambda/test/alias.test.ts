@@ -631,7 +631,7 @@ describe('alias', () => {
     expect(annotations.length).toBe(0);
   });
 
-  test('createFunctionUrl creates a function url', () => {
+  test('addFunctionUrl creates a function url', () => {
     // GIVEN
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
@@ -645,29 +645,17 @@ describe('alias', () => {
     });
 
     // WHEN
-    alias.createFunctionUrl({
+    alias.addFunctionUrl({
       authType: lambda.FunctionUrlAuthType.AWS_IAM,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Url', {
       AuthType: 'AWS_IAM',
-      Qualifier: {
-        'Fn::Select': [
-          7,
-          {
-            'Fn::Split': [
-              ':',
-              {
-                Ref: 'Alias325C5727',
-              },
-            ],
-          },
-        ],
-      },
       TargetFunctionArn: {
         Ref: 'Alias325C5727',
       },
+      Qualifier: 'prod',
     });
   });
 });

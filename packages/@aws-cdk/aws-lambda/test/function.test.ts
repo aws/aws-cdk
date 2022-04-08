@@ -2636,7 +2636,7 @@ describe('function', () => {
     }).not.toThrow();
   });
 
-  test('createFunctionUrl creates a function url', () => {
+  test('addFunctionUrl creates a function url', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
@@ -2646,7 +2646,7 @@ describe('function', () => {
     });
 
     // WHEN
-    fn.createFunctionUrl({
+    fn.addFunctionUrl({
       authType: lambda.FunctionUrlAuthType.AWS_IAM,
     });
 
