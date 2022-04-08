@@ -1,0 +1,2672 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "mesh-stack": {
+        "id": "mesh-stack",
+        "path": "mesh-stack",
+        "children": {
+          "vpc": {
+            "id": "vpc",
+            "path": "mesh-stack/vpc",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "mesh-stack/vpc/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
+                  "aws:cdk:cloudformation:props": {
+                    "cidrBlock": "10.0.0.0/16",
+                    "enableDnsHostnames": true,
+                    "enableDnsSupport": true,
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "mesh-stack/vpc"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPC",
+                  "version": "0.0.0"
+                }
+              },
+              "PublicSubnet1": {
+                "id": "PublicSubnet1",
+                "path": "mesh-stack/vpc/PublicSubnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "mesh-stack/vpc/PublicSubnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.0.0/18",
+                        "mapPublicIpOnLaunch": true,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "mesh-stack/vpc/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "mesh-stack/vpc/PublicSubnet1/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "mesh-stack/vpc/PublicSubnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "mesh-stack/vpc/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "mesh-stack/vpc/PublicSubnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "vpcPublicSubnet1RouteTable48A2DF9B"
+                        },
+                        "subnetId": {
+                          "Ref": "vpcPublicSubnet1Subnet2E65531E"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "mesh-stack/vpc/PublicSubnet1/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "vpcPublicSubnet1RouteTable48A2DF9B"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "gatewayId": {
+                          "Ref": "vpcIGWE57CBDCA"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "EIP": {
+                    "id": "EIP",
+                    "path": "mesh-stack/vpc/PublicSubnet1/EIP",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "vpc",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "mesh-stack/vpc/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "NATGateway": {
+                    "id": "NATGateway",
+                    "path": "mesh-stack/vpc/PublicSubnet1/NATGateway",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "subnetId": {
+                          "Ref": "vpcPublicSubnet1Subnet2E65531E"
+                        },
+                        "allocationId": {
+                          "Fn::GetAtt": [
+                            "vpcPublicSubnet1EIPDA49DCBE",
+                            "AllocationId"
+                          ]
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "mesh-stack/vpc/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "PublicSubnet2": {
+                "id": "PublicSubnet2",
+                "path": "mesh-stack/vpc/PublicSubnet2",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "mesh-stack/vpc/PublicSubnet2/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.64.0/18",
+                        "mapPublicIpOnLaunch": true,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "mesh-stack/vpc/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "mesh-stack/vpc/PublicSubnet2/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "mesh-stack/vpc/PublicSubnet2/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "mesh-stack/vpc/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "mesh-stack/vpc/PublicSubnet2/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "vpcPublicSubnet2RouteTableEB40D4CB"
+                        },
+                        "subnetId": {
+                          "Ref": "vpcPublicSubnet2Subnet009B674F"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "mesh-stack/vpc/PublicSubnet2/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "vpcPublicSubnet2RouteTableEB40D4CB"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "gatewayId": {
+                          "Ref": "vpcIGWE57CBDCA"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "PrivateSubnet1": {
+                "id": "PrivateSubnet1",
+                "path": "mesh-stack/vpc/PrivateSubnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "mesh-stack/vpc/PrivateSubnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.128.0/18",
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "mesh-stack/vpc/PrivateSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "mesh-stack/vpc/PrivateSubnet1/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "mesh-stack/vpc/PrivateSubnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "mesh-stack/vpc/PrivateSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "mesh-stack/vpc/PrivateSubnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
+                        },
+                        "subnetId": {
+                          "Ref": "vpcPrivateSubnet1Subnet934893E8"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "mesh-stack/vpc/PrivateSubnet1/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Ref": "vpcPublicSubnet1NATGateway9C16659E"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "PrivateSubnet2": {
+                "id": "PrivateSubnet2",
+                "path": "mesh-stack/vpc/PrivateSubnet2",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "mesh-stack/vpc/PrivateSubnet2/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.192.0/18",
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "mesh-stack/vpc/PrivateSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "mesh-stack/vpc/PrivateSubnet2/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "mesh-stack/vpc/PrivateSubnet2/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "mesh-stack/vpc/PrivateSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "mesh-stack/vpc/PrivateSubnet2/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
+                        },
+                        "subnetId": {
+                          "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "mesh-stack/vpc/PrivateSubnet2/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Ref": "vpcPublicSubnet1NATGateway9C16659E"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "IGW": {
+                "id": "IGW",
+                "path": "mesh-stack/vpc/IGW",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
+                  "aws:cdk:cloudformation:props": {
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "mesh-stack/vpc"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.CfnInternetGateway",
+                  "version": "0.0.0"
+                }
+              },
+              "VPCGW": {
+                "id": "VPCGW",
+                "path": "mesh-stack/vpc/VPCGW",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
+                  "aws:cdk:cloudformation:props": {
+                    "vpcId": {
+                      "Ref": "vpcA2121C38"
+                    },
+                    "internetGatewayId": {
+                      "Ref": "vpcIGWE57CBDCA"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPCGatewayAttachment",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ec2.Vpc",
+              "version": "0.0.0"
+            }
+          },
+          "test-namespace": {
+            "id": "test-namespace",
+            "path": "mesh-stack/test-namespace",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "mesh-stack/test-namespace/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceDiscovery::PrivateDnsNamespace",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "domain.local",
+                    "vpc": {
+                      "Ref": "vpcA2121C38"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicediscovery.CfnPrivateDnsNamespace",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicediscovery.PrivateDnsNamespace",
+              "version": "0.0.0"
+            }
+          },
+          "mesh": {
+            "id": "mesh",
+            "path": "mesh-stack/mesh",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "mesh-stack/mesh/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppMesh::Mesh",
+                  "aws:cdk:cloudformation:props": {
+                    "meshName": "meshstackmesh680D3CEB",
+                    "spec": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appmesh.CfnMesh",
+                  "version": "0.0.0"
+                }
+              },
+              "router": {
+                "id": "router",
+                "path": "mesh-stack/mesh/router",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "mesh-stack/mesh/router/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppMesh::VirtualRouter",
+                      "aws:cdk:cloudformation:props": {
+                        "meshName": {
+                          "Fn::GetAtt": [
+                            "meshACDFE68E",
+                            "MeshName"
+                          ]
+                        },
+                        "spec": {
+                          "listeners": [
+                            {
+                              "portMapping": {
+                                "port": 8080,
+                                "protocol": "http"
+                              }
+                            }
+                          ]
+                        },
+                        "virtualRouterName": "meshstackmeshrouter2FE6E358"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.CfnVirtualRouter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "route-1": {
+                    "id": "route-1",
+                    "path": "mesh-stack/mesh/router/route-1",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "mesh-stack/mesh/router/route-1/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppMesh::Route",
+                          "aws:cdk:cloudformation:props": {
+                            "meshName": {
+                              "Fn::GetAtt": [
+                                "meshACDFE68E",
+                                "MeshName"
+                              ]
+                            },
+                            "spec": {
+                              "httpRoute": {
+                                "action": {
+                                  "weightedTargets": [
+                                    {
+                                      "virtualNode": {
+                                        "Fn::GetAtt": [
+                                          "meshnode726C787D",
+                                          "VirtualNodeName"
+                                        ]
+                                      },
+                                      "weight": 50
+                                    }
+                                  ]
+                                },
+                                "match": {
+                                  "prefix": "/"
+                                },
+                                "timeout": {
+                                  "idle": {
+                                    "unit": "ms",
+                                    "value": 10000
+                                  },
+                                  "perRequest": {
+                                    "unit": "ms",
+                                    "value": 10000
+                                  }
+                                }
+                              }
+                            },
+                            "virtualRouterName": {
+                              "Fn::GetAtt": [
+                                "meshrouter81B8087E",
+                                "VirtualRouterName"
+                              ]
+                            },
+                            "routeName": "route-1"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "route-2": {
+                    "id": "route-2",
+                    "path": "mesh-stack/mesh/router/route-2",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "mesh-stack/mesh/router/route-2/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppMesh::Route",
+                          "aws:cdk:cloudformation:props": {
+                            "meshName": {
+                              "Fn::GetAtt": [
+                                "meshACDFE68E",
+                                "MeshName"
+                              ]
+                            },
+                            "spec": {
+                              "httpRoute": {
+                                "action": {
+                                  "weightedTargets": [
+                                    {
+                                      "virtualNode": {
+                                        "Fn::GetAtt": [
+                                          "meshnode2092BA426",
+                                          "VirtualNodeName"
+                                        ]
+                                      },
+                                      "weight": 30
+                                    }
+                                  ]
+                                },
+                                "match": {
+                                  "prefix": "/path2"
+                                },
+                                "timeout": {
+                                  "idle": {
+                                    "unit": "ms",
+                                    "value": 11000
+                                  },
+                                  "perRequest": {
+                                    "unit": "ms",
+                                    "value": 11000
+                                  }
+                                }
+                              }
+                            },
+                            "virtualRouterName": {
+                              "Fn::GetAtt": [
+                                "meshrouter81B8087E",
+                                "VirtualRouterName"
+                              ]
+                            },
+                            "routeName": "route-2"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "route-3": {
+                    "id": "route-3",
+                    "path": "mesh-stack/mesh/router/route-3",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "mesh-stack/mesh/router/route-3/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppMesh::Route",
+                          "aws:cdk:cloudformation:props": {
+                            "meshName": {
+                              "Fn::GetAtt": [
+                                "meshACDFE68E",
+                                "MeshName"
+                              ]
+                            },
+                            "spec": {
+                              "tcpRoute": {
+                                "action": {
+                                  "weightedTargets": [
+                                    {
+                                      "virtualNode": {
+                                        "Fn::GetAtt": [
+                                          "meshnode3D2A19CF2",
+                                          "VirtualNodeName"
+                                        ]
+                                      },
+                                      "weight": 20
+                                    }
+                                  ]
+                                },
+                                "timeout": {
+                                  "idle": {
+                                    "unit": "ms",
+                                    "value": 12000
+                                  }
+                                }
+                              }
+                            },
+                            "virtualRouterName": {
+                              "Fn::GetAtt": [
+                                "meshrouter81B8087E",
+                                "VirtualRouterName"
+                              ]
+                            },
+                            "routeName": "route-3"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "route-4": {
+                    "id": "route-4",
+                    "path": "mesh-stack/mesh/router/route-4",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "mesh-stack/mesh/router/route-4/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppMesh::Route",
+                          "aws:cdk:cloudformation:props": {
+                            "meshName": {
+                              "Fn::GetAtt": [
+                                "meshACDFE68E",
+                                "MeshName"
+                              ]
+                            },
+                            "spec": {
+                              "grpcRoute": {
+                                "action": {
+                                  "weightedTargets": [
+                                    {
+                                      "virtualNode": {
+                                        "Fn::GetAtt": [
+                                          "meshnode4AE87F692",
+                                          "VirtualNodeName"
+                                        ]
+                                      },
+                                      "weight": 20
+                                    }
+                                  ]
+                                },
+                                "match": {
+                                  "serviceName": "test"
+                                },
+                                "timeout": {
+                                  "idle": {
+                                    "unit": "ms",
+                                    "value": 12000
+                                  }
+                                }
+                              }
+                            },
+                            "virtualRouterName": {
+                              "Fn::GetAtt": [
+                                "meshrouter81B8087E",
+                                "VirtualRouterName"
+                              ]
+                            },
+                            "routeName": "route-4"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "route-matching": {
+                    "id": "route-matching",
+                    "path": "mesh-stack/mesh/router/route-matching",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "mesh-stack/mesh/router/route-matching/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppMesh::Route",
+                          "aws:cdk:cloudformation:props": {
+                            "meshName": {
+                              "Fn::GetAtt": [
+                                "meshACDFE68E",
+                                "MeshName"
+                              ]
+                            },
+                            "spec": {
+                              "http2Route": {
+                                "action": {
+                                  "weightedTargets": [
+                                    {
+                                      "virtualNode": {
+                                        "Fn::GetAtt": [
+                                          "meshnode3D2A19CF2",
+                                          "VirtualNodeName"
+                                        ]
+                                      },
+                                      "weight": 1
+                                    }
+                                  ]
+                                },
+                                "match": {
+                                  "prefix": "/",
+                                  "headers": [
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": false,
+                                      "match": {
+                                        "exact": "application/json"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": false,
+                                      "match": {
+                                        "prefix": "application/json"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": false,
+                                      "match": {
+                                        "suffix": "application/json"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": false,
+                                      "match": {
+                                        "regex": "application/.*"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": false,
+                                      "match": {
+                                        "range": {
+                                          "start": 1,
+                                          "end": 5
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": true,
+                                      "match": {
+                                        "exact": "application/json"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": true,
+                                      "match": {
+                                        "prefix": "application/json"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": true,
+                                      "match": {
+                                        "suffix": "application/json"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": true,
+                                      "match": {
+                                        "regex": "application/.*"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": true,
+                                      "match": {
+                                        "range": {
+                                          "start": 1,
+                                          "end": 5
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "method": "POST",
+                                  "scheme": "https"
+                                }
+                              }
+                            },
+                            "virtualRouterName": {
+                              "Fn::GetAtt": [
+                                "meshrouter81B8087E",
+                                "VirtualRouterName"
+                              ]
+                            },
+                            "routeName": "route-matching"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "route-http2-retry": {
+                    "id": "route-http2-retry",
+                    "path": "mesh-stack/mesh/router/route-http2-retry",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "mesh-stack/mesh/router/route-http2-retry/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppMesh::Route",
+                          "aws:cdk:cloudformation:props": {
+                            "meshName": {
+                              "Fn::GetAtt": [
+                                "meshACDFE68E",
+                                "MeshName"
+                              ]
+                            },
+                            "spec": {
+                              "http2Route": {
+                                "action": {
+                                  "weightedTargets": [
+                                    {
+                                      "virtualNode": {
+                                        "Fn::GetAtt": [
+                                          "meshnode3D2A19CF2",
+                                          "VirtualNodeName"
+                                        ]
+                                      },
+                                      "weight": 1
+                                    }
+                                  ]
+                                },
+                                "match": {
+                                  "prefix": "/"
+                                },
+                                "retryPolicy": {
+                                  "maxRetries": 5,
+                                  "perRetryTimeout": {
+                                    "unit": "ms",
+                                    "value": 1000
+                                  },
+                                  "httpRetryEvents": [
+                                    "client-error"
+                                  ],
+                                  "tcpRetryEvents": [
+                                    "connection-error"
+                                  ]
+                                }
+                              }
+                            },
+                            "virtualRouterName": {
+                              "Fn::GetAtt": [
+                                "meshrouter81B8087E",
+                                "VirtualRouterName"
+                              ]
+                            },
+                            "routeName": "route-http2-retry"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "route-5": {
+                    "id": "route-5",
+                    "path": "mesh-stack/mesh/router/route-5",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "mesh-stack/mesh/router/route-5/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppMesh::Route",
+                          "aws:cdk:cloudformation:props": {
+                            "meshName": {
+                              "Fn::GetAtt": [
+                                "meshACDFE68E",
+                                "MeshName"
+                              ]
+                            },
+                            "spec": {
+                              "http2Route": {
+                                "action": {
+                                  "weightedTargets": [
+                                    {
+                                      "virtualNode": {
+                                        "Fn::GetAtt": [
+                                          "meshnode2092BA426",
+                                          "VirtualNodeName"
+                                        ]
+                                      },
+                                      "weight": 1
+                                    }
+                                  ]
+                                },
+                                "match": {
+                                  "prefix": "/"
+                                }
+                              },
+                              "priority": 10
+                            },
+                            "virtualRouterName": {
+                              "Fn::GetAtt": [
+                                "meshrouter81B8087E",
+                                "VirtualRouterName"
+                              ]
+                            },
+                            "routeName": "route-5"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "route-grpc-retry": {
+                    "id": "route-grpc-retry",
+                    "path": "mesh-stack/mesh/router/route-grpc-retry",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "mesh-stack/mesh/router/route-grpc-retry/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppMesh::Route",
+                          "aws:cdk:cloudformation:props": {
+                            "meshName": {
+                              "Fn::GetAtt": [
+                                "meshACDFE68E",
+                                "MeshName"
+                              ]
+                            },
+                            "spec": {
+                              "grpcRoute": {
+                                "action": {
+                                  "weightedTargets": [
+                                    {
+                                      "virtualNode": {
+                                        "Fn::GetAtt": [
+                                          "meshnode3D2A19CF2",
+                                          "VirtualNodeName"
+                                        ]
+                                      },
+                                      "weight": 1
+                                    }
+                                  ]
+                                },
+                                "match": {
+                                  "serviceName": "servicename"
+                                },
+                                "retryPolicy": {
+                                  "maxRetries": 5,
+                                  "perRetryTimeout": {
+                                    "unit": "ms",
+                                    "value": 1000
+                                  },
+                                  "httpRetryEvents": [
+                                    "client-error"
+                                  ],
+                                  "tcpRetryEvents": [
+                                    "connection-error"
+                                  ],
+                                  "grpcRetryEvents": [
+                                    "deadline-exceeded"
+                                  ]
+                                }
+                              }
+                            },
+                            "virtualRouterName": {
+                              "Fn::GetAtt": [
+                                "meshrouter81B8087E",
+                                "VirtualRouterName"
+                              ]
+                            },
+                            "routeName": "route-grpc-retry"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "route-6": {
+                    "id": "route-6",
+                    "path": "mesh-stack/mesh/router/route-6",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "mesh-stack/mesh/router/route-6/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppMesh::Route",
+                          "aws:cdk:cloudformation:props": {
+                            "meshName": {
+                              "Fn::GetAtt": [
+                                "meshACDFE68E",
+                                "MeshName"
+                              ]
+                            },
+                            "spec": {
+                              "http2Route": {
+                                "action": {
+                                  "weightedTargets": [
+                                    {
+                                      "virtualNode": {
+                                        "Fn::GetAtt": [
+                                          "meshnode2092BA426",
+                                          "VirtualNodeName"
+                                        ]
+                                      },
+                                      "weight": 30
+                                    }
+                                  ]
+                                },
+                                "match": {
+                                  "path": {
+                                    "regex": "regex"
+                                  },
+                                  "queryParameters": [
+                                    {
+                                      "match": {
+                                        "exact": "value"
+                                      },
+                                      "name": "query-field"
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            "virtualRouterName": {
+                              "Fn::GetAtt": [
+                                "meshrouter81B8087E",
+                                "VirtualRouterName"
+                              ]
+                            },
+                            "routeName": "route-6"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "route-7": {
+                    "id": "route-7",
+                    "path": "mesh-stack/mesh/router/route-7",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "mesh-stack/mesh/router/route-7/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppMesh::Route",
+                          "aws:cdk:cloudformation:props": {
+                            "meshName": {
+                              "Fn::GetAtt": [
+                                "meshACDFE68E",
+                                "MeshName"
+                              ]
+                            },
+                            "spec": {
+                              "grpcRoute": {
+                                "action": {
+                                  "weightedTargets": [
+                                    {
+                                      "virtualNode": {
+                                        "Fn::GetAtt": [
+                                          "meshnode4AE87F692",
+                                          "VirtualNodeName"
+                                        ]
+                                      },
+                                      "weight": 20
+                                    }
+                                  ]
+                                },
+                                "match": {
+                                  "serviceName": "test-service",
+                                  "methodName": "test-method",
+                                  "metadata": [
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": false,
+                                      "match": {
+                                        "exact": "application/json"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            "virtualRouterName": {
+                              "Fn::GetAtt": [
+                                "meshrouter81B8087E",
+                                "VirtualRouterName"
+                              ]
+                            },
+                            "routeName": "route-7"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appmesh.VirtualRouter",
+                  "version": "0.0.0"
+                }
+              },
+              "node": {
+                "id": "node",
+                "path": "mesh-stack/mesh/node",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "mesh-stack/mesh/node/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppMesh::VirtualNode",
+                      "aws:cdk:cloudformation:props": {
+                        "meshName": {
+                          "Fn::GetAtt": [
+                            "meshACDFE68E",
+                            "MeshName"
+                          ]
+                        },
+                        "spec": {
+                          "backends": [
+                            {
+                              "virtualService": {
+                                "virtualServiceName": "service1.domain.local"
+                              }
+                            },
+                            {
+                              "virtualService": {
+                                "virtualServiceName": "service2.domain.local"
+                              }
+                            }
+                          ],
+                          "listeners": [
+                            {
+                              "portMapping": {
+                                "port": 8080,
+                                "protocol": "http"
+                              },
+                              "healthCheck": {
+                                "protocol": "http",
+                                "healthyThreshold": 3,
+                                "unhealthyThreshold": 2,
+                                "intervalMillis": 5000,
+                                "timeoutMillis": 2000,
+                                "path": "/check-path",
+                                "port": 8080
+                              }
+                            }
+                          ],
+                          "serviceDiscovery": {
+                            "dns": {
+                              "hostname": "node1.domain.local"
+                            }
+                          }
+                        },
+                        "virtualNodeName": "meshstackmeshnode61AD3D23"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.CfnVirtualNode",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appmesh.VirtualNode",
+                  "version": "0.0.0"
+                }
+              },
+              "node2": {
+                "id": "node2",
+                "path": "mesh-stack/mesh/node2",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "mesh-stack/mesh/node2/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppMesh::VirtualNode",
+                      "aws:cdk:cloudformation:props": {
+                        "meshName": {
+                          "Fn::GetAtt": [
+                            "meshACDFE68E",
+                            "MeshName"
+                          ]
+                        },
+                        "spec": {
+                          "backends": [
+                            {
+                              "virtualService": {
+                                "virtualServiceName": "service3.domain.local"
+                              }
+                            }
+                          ],
+                          "listeners": [
+                            {
+                              "portMapping": {
+                                "port": 8080,
+                                "protocol": "http"
+                              },
+                              "healthCheck": {
+                                "protocol": "http",
+                                "healthyThreshold": 3,
+                                "unhealthyThreshold": 2,
+                                "intervalMillis": 5000,
+                                "timeoutMillis": 2000,
+                                "path": "/check-path2",
+                                "port": 8080
+                              }
+                            }
+                          ],
+                          "backendDefaults": {
+                            "clientPolicy": {
+                              "tls": {
+                                "validation": {
+                                  "trust": {
+                                    "file": {
+                                      "certificateChain": "path/to/cert"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "serviceDiscovery": {
+                            "dns": {
+                              "hostname": "node2.domain.local"
+                            }
+                          }
+                        },
+                        "virtualNodeName": "meshstackmeshnode2F1F28441"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.CfnVirtualNode",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appmesh.VirtualNode",
+                  "version": "0.0.0"
+                }
+              },
+              "node3": {
+                "id": "node3",
+                "path": "mesh-stack/mesh/node3",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "mesh-stack/mesh/node3/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppMesh::VirtualNode",
+                      "aws:cdk:cloudformation:props": {
+                        "meshName": {
+                          "Fn::GetAtt": [
+                            "meshACDFE68E",
+                            "MeshName"
+                          ]
+                        },
+                        "spec": {
+                          "listeners": [
+                            {
+                              "portMapping": {
+                                "port": 8080,
+                                "protocol": "http"
+                              },
+                              "healthCheck": {
+                                "protocol": "http",
+                                "healthyThreshold": 3,
+                                "unhealthyThreshold": 2,
+                                "intervalMillis": 5000,
+                                "timeoutMillis": 2000,
+                                "path": "/check-path3",
+                                "port": 8080
+                              }
+                            }
+                          ],
+                          "backendDefaults": {
+                            "clientPolicy": {
+                              "tls": {
+                                "validation": {
+                                  "trust": {
+                                    "file": {
+                                      "certificateChain": "path-to-certificate"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "serviceDiscovery": {
+                            "dns": {
+                              "hostname": "node3.domain.local"
+                            }
+                          },
+                          "logging": {
+                            "accessLog": {
+                              "file": {
+                                "path": "/dev/stdout"
+                              }
+                            }
+                          }
+                        },
+                        "virtualNodeName": "meshstackmeshnode3C5835BCB"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.CfnVirtualNode",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appmesh.VirtualNode",
+                  "version": "0.0.0"
+                }
+              },
+              "node4": {
+                "id": "node4",
+                "path": "mesh-stack/mesh/node4",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "mesh-stack/mesh/node4/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppMesh::VirtualNode",
+                      "aws:cdk:cloudformation:props": {
+                        "meshName": {
+                          "Fn::GetAtt": [
+                            "meshACDFE68E",
+                            "MeshName"
+                          ]
+                        },
+                        "spec": {
+                          "backends": [
+                            {
+                              "virtualService": {
+                                "virtualServiceName": "service4.domain.local"
+                              }
+                            }
+                          ],
+                          "listeners": [
+                            {
+                              "portMapping": {
+                                "port": 8080,
+                                "protocol": "http"
+                              },
+                              "healthCheck": {
+                                "protocol": "http",
+                                "healthyThreshold": 3,
+                                "unhealthyThreshold": 2,
+                                "intervalMillis": 5000,
+                                "timeoutMillis": 2000,
+                                "path": "/check-path3",
+                                "port": 8080
+                              },
+                              "tls": {
+                                "certificate": {
+                                  "sds": {
+                                    "secretName": "spiffe://domain.local/backend-service"
+                                  }
+                                },
+                                "mode": "STRICT",
+                                "validation": {
+                                  "subjectAlternativeNames": {
+                                    "match": {
+                                      "exact": [
+                                        "client.domain.local"
+                                      ]
+                                    }
+                                  },
+                                  "trust": {
+                                    "sds": {
+                                      "secretName": "spiffe://domain.local"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "backendDefaults": {
+                            "clientPolicy": {
+                              "tls": {
+                                "certificate": {
+                                  "file": {
+                                    "certificateChain": "path/to/certChain",
+                                    "privateKey": "path/to/privateKey"
+                                  }
+                                },
+                                "validation": {
+                                  "subjectAlternativeNames": {
+                                    "match": {
+                                      "exact": [
+                                        "mymesh.local"
+                                      ]
+                                    }
+                                  },
+                                  "trust": {
+                                    "file": {
+                                      "certificateChain": "path-to-certificate"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "serviceDiscovery": {
+                            "dns": {
+                              "hostname": "node4.domain.local",
+                              "responseType": "ENDPOINTS"
+                            }
+                          },
+                          "logging": {
+                            "accessLog": {
+                              "file": {
+                                "path": "/dev/stdout"
+                              }
+                            }
+                          }
+                        },
+                        "virtualNodeName": "meshstackmeshnode404B014E7"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.CfnVirtualNode",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appmesh.VirtualNode",
+                  "version": "0.0.0"
+                }
+              },
+              "gateway1": {
+                "id": "gateway1",
+                "path": "mesh-stack/mesh/gateway1",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "mesh-stack/mesh/gateway1/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppMesh::VirtualGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "meshName": {
+                          "Fn::GetAtt": [
+                            "meshACDFE68E",
+                            "MeshName"
+                          ]
+                        },
+                        "spec": {
+                          "listeners": [
+                            {
+                              "portMapping": {
+                                "port": 8080,
+                                "protocol": "http"
+                              }
+                            }
+                          ],
+                          "logging": {
+                            "accessLog": {
+                              "file": {
+                                "path": "/dev/stdout"
+                              }
+                            }
+                          }
+                        },
+                        "virtualGatewayName": "gateway1"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.CfnVirtualGateway",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "gateway1-route-http": {
+                    "id": "gateway1-route-http",
+                    "path": "mesh-stack/mesh/gateway1/gateway1-route-http",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "mesh-stack/mesh/gateway1/gateway1-route-http/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppMesh::GatewayRoute",
+                          "aws:cdk:cloudformation:props": {
+                            "meshName": {
+                              "Fn::GetAtt": [
+                                "meshACDFE68E",
+                                "MeshName"
+                              ]
+                            },
+                            "spec": {
+                              "httpRoute": {
+                                "match": {
+                                  "prefix": "/"
+                                },
+                                "action": {
+                                  "target": {
+                                    "virtualService": {
+                                      "virtualServiceName": {
+                                        "Fn::GetAtt": [
+                                          "service6D174F83",
+                                          "VirtualServiceName"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "virtualGatewayName": {
+                              "Fn::GetAtt": [
+                                "meshgateway1B02387E8",
+                                "VirtualGatewayName"
+                              ]
+                            },
+                            "gatewayRouteName": "meshstackmeshgateway1gateway1routehttpBA921D42"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appmesh.CfnGatewayRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.GatewayRoute",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "gateway1-route-http-2": {
+                    "id": "gateway1-route-http-2",
+                    "path": "mesh-stack/mesh/gateway1/gateway1-route-http-2",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "mesh-stack/mesh/gateway1/gateway1-route-http-2/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppMesh::GatewayRoute",
+                          "aws:cdk:cloudformation:props": {
+                            "meshName": {
+                              "Fn::GetAtt": [
+                                "meshACDFE68E",
+                                "MeshName"
+                              ]
+                            },
+                            "spec": {
+                              "httpRoute": {
+                                "match": {
+                                  "prefix": "/",
+                                  "hostname": {
+                                    "exact": "example.com"
+                                  },
+                                  "method": "POST",
+                                  "headers": [
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": false,
+                                      "match": {
+                                        "exact": "application/json"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": false,
+                                      "match": {
+                                        "prefix": "application/json"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": false,
+                                      "match": {
+                                        "suffix": "application/json"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": false,
+                                      "match": {
+                                        "regex": "application/.*"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": false,
+                                      "match": {
+                                        "range": {
+                                          "start": 1,
+                                          "end": 5
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": true,
+                                      "match": {
+                                        "exact": "application/json"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": true,
+                                      "match": {
+                                        "prefix": "application/json"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": true,
+                                      "match": {
+                                        "suffix": "application/json"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": true,
+                                      "match": {
+                                        "regex": "application/.*"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": true,
+                                      "match": {
+                                        "range": {
+                                          "start": 1,
+                                          "end": 5
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "queryParameters": [
+                                    {
+                                      "match": {
+                                        "exact": "value"
+                                      },
+                                      "name": "query-field"
+                                    }
+                                  ]
+                                },
+                                "action": {
+                                  "target": {
+                                    "virtualService": {
+                                      "virtualServiceName": {
+                                        "Fn::GetAtt": [
+                                          "service6D174F83",
+                                          "VirtualServiceName"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "rewrite": {
+                                    "hostname": {
+                                      "defaultTargetHostname": "ENABLED"
+                                    },
+                                    "prefix": {
+                                      "defaultPrefix": "DISABLED"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "virtualGatewayName": {
+                              "Fn::GetAtt": [
+                                "meshgateway1B02387E8",
+                                "VirtualGatewayName"
+                              ]
+                            },
+                            "gatewayRouteName": "meshstackmeshgateway1gateway1routehttp27F17263B"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appmesh.CfnGatewayRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.GatewayRoute",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "gateway1-route-http2": {
+                    "id": "gateway1-route-http2",
+                    "path": "mesh-stack/mesh/gateway1/gateway1-route-http2",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "mesh-stack/mesh/gateway1/gateway1-route-http2/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppMesh::GatewayRoute",
+                          "aws:cdk:cloudformation:props": {
+                            "meshName": {
+                              "Fn::GetAtt": [
+                                "meshACDFE68E",
+                                "MeshName"
+                              ]
+                            },
+                            "spec": {
+                              "http2Route": {
+                                "match": {
+                                  "prefix": "/"
+                                },
+                                "action": {
+                                  "target": {
+                                    "virtualService": {
+                                      "virtualServiceName": {
+                                        "Fn::GetAtt": [
+                                          "service6D174F83",
+                                          "VirtualServiceName"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "virtualGatewayName": {
+                              "Fn::GetAtt": [
+                                "meshgateway1B02387E8",
+                                "VirtualGatewayName"
+                              ]
+                            },
+                            "gatewayRouteName": "meshstackmeshgateway1gateway1routehttp255781963"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appmesh.CfnGatewayRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.GatewayRoute",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "gateway1-route-http2-2": {
+                    "id": "gateway1-route-http2-2",
+                    "path": "mesh-stack/mesh/gateway1/gateway1-route-http2-2",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "mesh-stack/mesh/gateway1/gateway1-route-http2-2/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppMesh::GatewayRoute",
+                          "aws:cdk:cloudformation:props": {
+                            "meshName": {
+                              "Fn::GetAtt": [
+                                "meshACDFE68E",
+                                "MeshName"
+                              ]
+                            },
+                            "spec": {
+                              "http2Route": {
+                                "match": {
+                                  "path": {
+                                    "exact": "/exact"
+                                  }
+                                },
+                                "action": {
+                                  "target": {
+                                    "virtualService": {
+                                      "virtualServiceName": {
+                                        "Fn::GetAtt": [
+                                          "service6D174F83",
+                                          "VirtualServiceName"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "rewrite": {
+                                    "path": {
+                                      "exact": "/rewrittenpath"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "virtualGatewayName": {
+                              "Fn::GetAtt": [
+                                "meshgateway1B02387E8",
+                                "VirtualGatewayName"
+                              ]
+                            },
+                            "gatewayRouteName": "meshstackmeshgateway1gateway1routehttp22BD49AE9D"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appmesh.CfnGatewayRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.GatewayRoute",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "gateway1-route-http2-3": {
+                    "id": "gateway1-route-http2-3",
+                    "path": "mesh-stack/mesh/gateway1/gateway1-route-http2-3",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "mesh-stack/mesh/gateway1/gateway1-route-http2-3/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppMesh::GatewayRoute",
+                          "aws:cdk:cloudformation:props": {
+                            "meshName": {
+                              "Fn::GetAtt": [
+                                "meshACDFE68E",
+                                "MeshName"
+                              ]
+                            },
+                            "spec": {
+                              "http2Route": {
+                                "match": {
+                                  "path": {
+                                    "regex": "regex"
+                                  }
+                                },
+                                "action": {
+                                  "target": {
+                                    "virtualService": {
+                                      "virtualServiceName": {
+                                        "Fn::GetAtt": [
+                                          "service6D174F83",
+                                          "VirtualServiceName"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "virtualGatewayName": {
+                              "Fn::GetAtt": [
+                                "meshgateway1B02387E8",
+                                "VirtualGatewayName"
+                              ]
+                            },
+                            "gatewayRouteName": "meshstackmeshgateway1gateway1routehttp23E44F5774"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appmesh.CfnGatewayRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.GatewayRoute",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "gateway1-route-grpc": {
+                    "id": "gateway1-route-grpc",
+                    "path": "mesh-stack/mesh/gateway1/gateway1-route-grpc",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "mesh-stack/mesh/gateway1/gateway1-route-grpc/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppMesh::GatewayRoute",
+                          "aws:cdk:cloudformation:props": {
+                            "meshName": {
+                              "Fn::GetAtt": [
+                                "meshACDFE68E",
+                                "MeshName"
+                              ]
+                            },
+                            "spec": {
+                              "grpcRoute": {
+                                "match": {
+                                  "serviceName": {
+                                    "Fn::GetAtt": [
+                                      "service6D174F83",
+                                      "VirtualServiceName"
+                                    ]
+                                  }
+                                },
+                                "action": {
+                                  "target": {
+                                    "virtualService": {
+                                      "virtualServiceName": {
+                                        "Fn::GetAtt": [
+                                          "service6D174F83",
+                                          "VirtualServiceName"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "virtualGatewayName": {
+                              "Fn::GetAtt": [
+                                "meshgateway1B02387E8",
+                                "VirtualGatewayName"
+                              ]
+                            },
+                            "gatewayRouteName": "meshstackmeshgateway1gateway1routegrpcCD4D891D"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appmesh.CfnGatewayRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.GatewayRoute",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "gateway1-route-grpc-2": {
+                    "id": "gateway1-route-grpc-2",
+                    "path": "mesh-stack/mesh/gateway1/gateway1-route-grpc-2",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "mesh-stack/mesh/gateway1/gateway1-route-grpc-2/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppMesh::GatewayRoute",
+                          "aws:cdk:cloudformation:props": {
+                            "meshName": {
+                              "Fn::GetAtt": [
+                                "meshACDFE68E",
+                                "MeshName"
+                              ]
+                            },
+                            "spec": {
+                              "grpcRoute": {
+                                "match": {
+                                  "hostname": {
+                                    "exact": "example.com"
+                                  },
+                                  "metadata": [
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": false,
+                                      "match": {
+                                        "exact": "application/json"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": true,
+                                      "match": {
+                                        "exact": "text/html"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": false,
+                                      "match": {
+                                        "prefix": "application/"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": true,
+                                      "match": {
+                                        "prefix": "text/"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": false,
+                                      "match": {
+                                        "suffix": "/json"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": true,
+                                      "match": {
+                                        "suffix": "/json+foobar"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": false,
+                                      "match": {
+                                        "regex": "application/.*"
+                                      }
+                                    },
+                                    {
+                                      "name": "Content-Type",
+                                      "invert": true,
+                                      "match": {
+                                        "regex": "text/.*"
+                                      }
+                                    },
+                                    {
+                                      "name": "Max-Forward",
+                                      "invert": false,
+                                      "match": {
+                                        "range": {
+                                          "start": 1,
+                                          "end": 5
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "name": "Max-Forward",
+                                      "invert": true,
+                                      "match": {
+                                        "range": {
+                                          "start": 1,
+                                          "end": 5
+                                        }
+                                      }
+                                    }
+                                  ]
+                                },
+                                "action": {
+                                  "target": {
+                                    "virtualService": {
+                                      "virtualServiceName": {
+                                        "Fn::GetAtt": [
+                                          "service6D174F83",
+                                          "VirtualServiceName"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "rewrite": {
+                                    "hostname": {
+                                      "defaultTargetHostname": "DISABLED"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "virtualGatewayName": {
+                              "Fn::GetAtt": [
+                                "meshgateway1B02387E8",
+                                "VirtualGatewayName"
+                              ]
+                            },
+                            "gatewayRouteName": "meshstackmeshgateway1gateway1routegrpc2AE8379FD"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appmesh.CfnGatewayRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appmesh.GatewayRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appmesh.VirtualGateway",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appmesh.Mesh",
+              "version": "0.0.0"
+            }
+          },
+          "service": {
+            "id": "service",
+            "path": "mesh-stack/service",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "mesh-stack/service/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppMesh::VirtualService",
+                  "aws:cdk:cloudformation:props": {
+                    "meshName": {
+                      "Fn::GetAtt": [
+                        "meshACDFE68E",
+                        "MeshName"
+                      ]
+                    },
+                    "spec": {
+                      "provider": {
+                        "virtualRouter": {
+                          "virtualRouterName": {
+                            "Fn::GetAtt": [
+                              "meshrouter81B8087E",
+                              "VirtualRouterName"
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "virtualServiceName": "service1.domain.local"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appmesh.CfnVirtualService",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appmesh.VirtualService",
+              "version": "0.0.0"
+            }
+          },
+          "service-2": {
+            "id": "service-2",
+            "path": "mesh-stack/service-2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "mesh-stack/service-2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppMesh::VirtualService",
+                  "aws:cdk:cloudformation:props": {
+                    "meshName": {
+                      "Fn::GetAtt": [
+                        "meshACDFE68E",
+                        "MeshName"
+                      ]
+                    },
+                    "spec": {},
+                    "virtualServiceName": "service2.domain.local"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appmesh.CfnVirtualService",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appmesh.VirtualService",
+              "version": "0.0.0"
+            }
+          },
+          "service-3": {
+            "id": "service-3",
+            "path": "mesh-stack/service-3",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "mesh-stack/service-3/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppMesh::VirtualService",
+                  "aws:cdk:cloudformation:props": {
+                    "meshName": {
+                      "Fn::GetAtt": [
+                        "meshACDFE68E",
+                        "MeshName"
+                      ]
+                    },
+                    "spec": {},
+                    "virtualServiceName": "service3.domain.local"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appmesh.CfnVirtualService",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appmesh.VirtualService",
+              "version": "0.0.0"
+            }
+          },
+          "service-4": {
+            "id": "service-4",
+            "path": "mesh-stack/service-4",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "mesh-stack/service-4/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppMesh::VirtualService",
+                  "aws:cdk:cloudformation:props": {
+                    "meshName": {
+                      "Fn::GetAtt": [
+                        "meshACDFE68E",
+                        "MeshName"
+                      ]
+                    },
+                    "spec": {},
+                    "virtualServiceName": "service4.domain.local"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appmesh.CfnVirtualService",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appmesh.VirtualService",
+              "version": "0.0.0"
+            }
+          },
+          "gateway2": {
+            "id": "gateway2",
+            "path": "mesh-stack/gateway2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "mesh-stack/gateway2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppMesh::VirtualGateway",
+                  "aws:cdk:cloudformation:props": {
+                    "meshName": {
+                      "Fn::GetAtt": [
+                        "meshACDFE68E",
+                        "MeshName"
+                      ]
+                    },
+                    "spec": {
+                      "listeners": [
+                        {
+                          "portMapping": {
+                            "port": 443,
+                            "protocol": "http"
+                          },
+                          "healthCheck": {
+                            "protocol": "http",
+                            "healthyThreshold": 2,
+                            "unhealthyThreshold": 2,
+                            "intervalMillis": 10000,
+                            "timeoutMillis": 2000,
+                            "path": "/",
+                            "port": 443
+                          },
+                          "tls": {
+                            "certificate": {
+                              "file": {
+                                "certificateChain": "path/to/certChain",
+                                "privateKey": "path/to/privateKey"
+                              }
+                            },
+                            "mode": "STRICT"
+                          }
+                        }
+                      ]
+                    },
+                    "virtualGatewayName": "meshstackgateway2BEC62D7C"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appmesh.CfnVirtualGateway",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appmesh.VirtualGateway",
+              "version": "0.0.0"
+            }
+          },
+          "gateway3": {
+            "id": "gateway3",
+            "path": "mesh-stack/gateway3",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "mesh-stack/gateway3/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppMesh::VirtualGateway",
+                  "aws:cdk:cloudformation:props": {
+                    "meshName": {
+                      "Fn::GetAtt": [
+                        "meshACDFE68E",
+                        "MeshName"
+                      ]
+                    },
+                    "spec": {
+                      "listeners": [
+                        {
+                          "portMapping": {
+                            "port": 443,
+                            "protocol": "http"
+                          },
+                          "healthCheck": {
+                            "protocol": "http",
+                            "healthyThreshold": 2,
+                            "unhealthyThreshold": 2,
+                            "intervalMillis": 10000,
+                            "timeoutMillis": 2000,
+                            "path": "/",
+                            "port": 443
+                          },
+                          "tls": {
+                            "certificate": {
+                              "sds": {
+                                "secretName": "secret_certificate"
+                              }
+                            },
+                            "mode": "STRICT",
+                            "validation": {
+                              "trust": {
+                                "file": {
+                                  "certificateChain": "path/to/certChain"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "backendDefaults": {
+                        "clientPolicy": {
+                          "tls": {
+                            "certificate": {
+                              "sds": {
+                                "secretName": "secret_validation"
+                              }
+                            },
+                            "validation": {
+                              "trust": {
+                                "file": {
+                                  "certificateChain": "path/to/certChain"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "virtualGatewayName": "meshstackgateway34EC5ED00"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appmesh.CfnVirtualGateway",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appmesh.VirtualGateway",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}
