@@ -7,6 +7,7 @@ import { Architecture } from './architecture';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
+import { FunctionUrlOptions, FunctionUrl } from './function-url';
 import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
@@ -141,6 +142,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    * Configures options for asynchronous invocation.
    */
   configureAsyncInvoke(options: EventInvokeConfigOptions): void;
+
+  /**
+   * Creates a url for this lambda function.
+   */
+  createFunctionUrl(options: FunctionUrlOptions): FunctionUrl;
 }
 
 /**
@@ -445,6 +451,13 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     }
 
     new EventInvokeConfig(this, 'EventInvokeConfig', {
+      function: this,
+      ...options,
+    });
+  }
+
+  public createFunctionUrl(options: FunctionUrlOptions): FunctionUrl {
+    return new FunctionUrl(this, 'FunctionUrl', {
       function: this,
       ...options,
     });

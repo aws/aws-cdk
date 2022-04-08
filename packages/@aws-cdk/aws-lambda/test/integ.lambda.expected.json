@@ -72,6 +72,18 @@
         "MyLambdaServiceRole4539ECB6"
       ]
     },
+    "MyLambdaFunctionUrlC2055677": {
+      "Type": "AWS::Lambda::Url",
+      "Properties": {
+        "AuthType": "AWS_IAM",
+        "TargetFunctionArn": {
+          "Fn::GetAtt": [
+            "MyLambdaCCE802FB",
+            "Arn"
+          ]
+        }
+      }
+    },
     "MyLambdaCurrentVersionE7A382CCaab0ffd2d3271bb29338c3fe7c7f3151": {
       "Type": "AWS::Lambda::Version",
       "Properties": {
@@ -103,6 +115,28 @@
           "Ref": "Alias325C5727"
         },
         "Principal": "cloudformation.amazonaws.com"
+      }
+    },
+    "AliasFunctionUrlDC6EC566": {
+      "Type": "AWS::Lambda::Url",
+      "Properties": {
+        "AuthType": "NONE",
+        "TargetFunctionArn": {
+          "Ref": "Alias325C5727"
+        },
+        "Qualifier": {
+          "Fn::Select": [
+            7,
+            {
+              "Fn::Split": [
+                ":",
+                {
+                  "Ref": "Alias325C5727"
+                }
+              ]
+            }
+          ]
+        }
       }
     }
   }

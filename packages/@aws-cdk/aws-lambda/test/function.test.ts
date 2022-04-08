@@ -12,10 +12,10 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import { Lazy, Size } from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import * as lambda from '../lib';
-import { Lazy, Size } from '@aws-cdk/core';
 
 describe('function', () => {
   test('default function', () => {
@@ -2634,6 +2634,32 @@ describe('function', () => {
         functionName: tokenizedFunctionName,
       });
     }).not.toThrow();
+  });
+
+  test('createFunctionUrl creates a function url', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    fn.createFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.AWS_IAM,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Url', {
+      AuthType: 'AWS_IAM',
+      TargetFunctionArn: {
+        'Fn::GetAtt': [
+          'MyLambdaCCE802FB',
+          'Arn',
+        ],
+      },
+    });
   });
 });
 

@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 import { Architecture } from './architecture';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IFunction, QualifiedFunctionBase } from './function-base';
+import { FunctionUrlOptions, FunctionUrl } from './function-url';
 import { extractQualifierFromArn, IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
 import { ScalableFunctionAttribute } from './private/scalable-function-attribute';
@@ -232,6 +233,14 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       dimension: 'lambda:function:ProvisionedConcurrency',
       serviceNamespace: appscaling.ServiceNamespace.LAMBDA,
       role: this.scalingRole,
+    });
+  }
+
+  public createFunctionUrl(options: FunctionUrlOptions): FunctionUrl {
+    return new FunctionUrl(this, 'FunctionUrl', {
+      function: this,
+      qualifier: this.qualifier,
+      ...options,
     });
   }
 

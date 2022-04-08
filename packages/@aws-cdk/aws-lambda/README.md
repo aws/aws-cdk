@@ -339,6 +339,65 @@ const fn = new lambda.Function(this, 'MyFunction', {
 fn.currentVersion.addAlias('live');
 ```
 
+## Function URL
+
+A function URL is a dedicated HTTP(S) endpoint for your Lambda function. When you create a function URL, Lambda automatically generates a unique URL endpoint for you.
+
+Function URLs are dual stack-enabled, supporting IPv4 and IPv6. After you configure a function URL for your function, you can invoke your function through its HTTP(S) endpoint via a web browser, curl, Postman, or any HTTP client. Lambda function URLs use [resource-based policies](https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html) for security and access control. Function URLs also support cross-origin resource sharing (CORS) configuration options.
+
+You can apply function URLs to any function alias, or to the $LATEST unpublished function version. You can't add a function URL to any other function version.
+
+To create a function URL, use the `lambda.FunctionUrl` construct:
+
+```ts
+const fn = new lambda.Function(this, 'MyLambda', {
+  code: new lambda.InlineCode('hello()'),
+  handler: 'index.hello',
+  runtime: lambda.Runtime.NODEJS_10_X,
+});
+
+new lambda.FunctionUrl(this, 'FunctionUrl', {
+  function: fn,
+  authType: lambda.FunctionUrlAuthType.AWS_IAM,
+});
+```
+
+You can also use the `lambda.createFunctionUrl()` method to create a url for that function or alias.
+
+```ts
+const fn = new lambda.Function(this, 'MyLambda', {
+  code: new lambda.InlineCode('hello()'),
+  handler: 'index.hello',
+  runtime: lambda.Runtime.NODEJS_10_X,
+});
+
+// fn can be a function or an alias
+fn.createFunctionUrl({
+  authType: lambda.FunctionUrlAuthType.AWS_IAM,
+});
+```
+
+You can also specify the CORS configuration for the function URL.
+
+```ts
+const fn = new lambda.Function(this, 'MyLambda', {
+  code: new lambda.InlineCode('hello()'),
+  handler: 'index.hello',
+  runtime: lambda.Runtime.NODEJS_10_X,
+});
+
+fn.createFunctionUrl({
+  authType: lambda.FunctionUrlAuthType.AWS_IAM,
+  cors: {
+    allowCredentials: true,
+    allowedOrigins: ['https://example.com'],
+    allowedMethods: [lambda.HttpMethods.GET],
+    allowedHeaders: ['X-Custom-Header'],
+    maxAge: 300,
+  },
+});
+```
+
 ## Layers
 
 The `lambda.LayerVersion` class can be used to define Lambda layers and manage
