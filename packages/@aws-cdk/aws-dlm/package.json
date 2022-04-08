@@ -45,7 +45,7 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
     "build": "cdk-build",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "pkglint": "pkglint -f",
