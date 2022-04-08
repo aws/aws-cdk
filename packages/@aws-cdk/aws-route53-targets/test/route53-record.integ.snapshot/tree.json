@@ -1,0 +1,123 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "aws-cdk-r53-record-alias-target-integ": {
+        "id": "aws-cdk-r53-record-alias-target-integ",
+        "path": "aws-cdk-r53-record-alias-target-integ",
+        "children": {
+          "HostedZone": {
+            "id": "HostedZone",
+            "path": "aws-cdk-r53-record-alias-target-integ/HostedZone",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-r53-record-alias-target-integ/HostedZone/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HostedZone",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "cdk-integ.com."
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-route53.CfnHostedZone",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-route53.PublicHostedZone",
+              "version": "0.0.0"
+            }
+          },
+          "WWW": {
+            "id": "WWW",
+            "path": "aws-cdk-r53-record-alias-target-integ/WWW",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-r53-record-alias-target-integ/WWW/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "www.cdk-integ.com.",
+                    "type": "A",
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "resourceRecords": [
+                      "1.2.3.4"
+                    ],
+                    "ttl": "1800"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "Alias": {
+            "id": "Alias",
+            "path": "aws-cdk-r53-record-alias-target-integ/Alias",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-r53-record-alias-target-integ/Alias/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "cdk-integ.com.",
+                    "type": "A",
+                    "aliasTarget": {
+                      "dnsName": {
+                        "Ref": "WWW9F8609DA"
+                      },
+                      "hostedZoneId": {
+                        "Ref": "HostedZoneDB99F866"
+                      }
+                    },
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-route53.ARecord",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

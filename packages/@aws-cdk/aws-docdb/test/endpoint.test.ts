@@ -1,8 +1,7 @@
 import { Token } from '@aws-cdk/core';
 import { Endpoint } from '../lib';
 
-// A numeric CDK token (see: https://docs.aws.amazon.com/cdk/latest/guide/tokens.html#tokens_number)
-const CDK_NUMERIC_TOKEN = -1.8881545897087626e+289;
+const CDK_NUMERIC_TOKEN = Token.asNumber({ Ref: 'abc' });
 
 describe('Endpoint', () => {
   test('accepts tokens for the port value', () => {

@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:disable-update-workflow
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as eks from '@aws-cdk/aws-eks';
 import { AwsAuthMapping } from '@aws-cdk/aws-eks';
