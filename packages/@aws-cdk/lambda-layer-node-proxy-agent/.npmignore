@@ -30,3 +30,6 @@ test/
 !*.lit.ts
 
 layer/node_modules
+
+**/*.integ.snapshot
+**/*.integ.snapshot
