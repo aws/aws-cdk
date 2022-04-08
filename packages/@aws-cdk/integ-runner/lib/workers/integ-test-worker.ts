@@ -33,7 +33,7 @@ export interface IntegTestRunOptions extends IntegTestOptions {
 /**
  * Run Integration tests.
  */
-export async function runIntegrationTests(options: IntegTestRunOptions): Promise<void> {
+export async function runIntegrationTests(options: IntegTestRunOptions): Promise<boolean> {
   logger.highlight('\nRunning integration tests for failed tests...\n');
   logger.print('Running in parallel across: %s', options.regions.join(', '));
   const totalTests = options.tests.length;
@@ -45,6 +45,10 @@ export async function runIntegrationTests(options: IntegTestRunOptions): Promise
   }
   logger.highlight('\nTest Results: \n');
   printSummary(totalTests, failedTests.length);
+  if (failedTests.length > 0) {
+    return false;
+  }
+  return true;
 }
 
 /**

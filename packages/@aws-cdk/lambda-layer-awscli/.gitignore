@@ -18,3 +18,8 @@ nyc.config.js
 
 junit.xml
 lib/*.zip
+
+!**/*.integ.snapshot/**/asset.*/*.js
+!**/*.integ.snapshot/**/asset.*/*.d.ts
+
+!**/*.integ.snapshot/**/asset.*/**

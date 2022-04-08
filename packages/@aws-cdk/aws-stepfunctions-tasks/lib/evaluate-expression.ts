@@ -114,7 +114,9 @@ function createEvalFn(runtime: lambda.Runtime, scope: Construct) {
           uuid,
           handler: 'index.handler',
           lambdaPurpose,
-          code: lambda.Code.fromAsset(path.join(__dirname, 'eval-nodejs-handler')),
+          code: lambda.Code.fromAsset(path.join(__dirname, 'eval-nodejs-handler'), {
+            exclude: ['*.ts'],
+          }),
         });
       }
       break;

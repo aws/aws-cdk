@@ -13,3 +13,7 @@ coverage
 
 junit.xml
 !jest.config.js
+!**/*.integ.snapshot/**/asset.*/*.js
+!**/*.integ.snapshot/**/asset.*/*.d.ts
+
+!**/*.integ.snapshot/**/asset.*/**

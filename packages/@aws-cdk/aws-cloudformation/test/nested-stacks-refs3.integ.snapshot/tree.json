@@ -1,0 +1,357 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "nested-stacks-refs3-siblings": {
+        "id": "nested-stacks-refs3-siblings",
+        "path": "nested-stacks-refs3-siblings",
+        "children": {
+          "Nested1": {
+            "id": "Nested1",
+            "path": "nested-stacks-refs3-siblings/Nested1",
+            "children": {
+              "MyTopic": {
+                "id": "MyTopic",
+                "path": "nested-stacks-refs3-siblings/Nested1/MyTopic",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "nested-stacks-refs3-siblings/Nested1/MyTopic/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.Topic",
+                  "version": "0.0.0"
+                }
+              },
+              "nestedstacksrefs3siblingsNested1MyTopic12458558TopicName": {
+                "id": "nestedstacksrefs3siblingsNested1MyTopic12458558TopicName",
+                "path": "nested-stacks-refs3-siblings/Nested1/nestedstacksrefs3siblingsNested1MyTopic12458558TopicName",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.NestedStack",
+              "version": "0.0.0"
+            }
+          },
+          "Nested1.NestedStack": {
+            "id": "Nested1.NestedStack",
+            "path": "nested-stacks-refs3-siblings/Nested1.NestedStack",
+            "children": {
+              "Nested1.NestedStackResource": {
+                "id": "Nested1.NestedStackResource",
+                "path": "nested-stacks-refs3-siblings/Nested1.NestedStack/Nested1.NestedStackResource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
+                  "aws:cdk:cloudformation:props": {
+                    "templateUrl": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "https://s3.",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ".",
+                          {
+                            "Ref": "AWS::URLSuffix"
+                          },
+                          "/",
+                          {
+                            "Ref": "AssetParameters008e281fb3039601b8fbef60e255afe78cb00a09611d1aa7342f56328aef7d9aS3Bucket3AC5D089"
+                          },
+                          "/",
+                          {
+                            "Fn::Select": [
+                              0,
+                              {
+                                "Fn::Split": [
+                                  "||",
+                                  {
+                                    "Ref": "AssetParameters008e281fb3039601b8fbef60e255afe78cb00a09611d1aa7342f56328aef7d9aS3VersionKeyB0263A92"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "Fn::Select": [
+                              1,
+                              {
+                                "Fn::Split": [
+                                  "||",
+                                  {
+                                    "Ref": "AssetParameters008e281fb3039601b8fbef60e255afe78cb00a09611d1aa7342f56328aef7d9aS3VersionKeyB0263A92"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnStack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Construct",
+              "version": "0.0.0"
+            }
+          },
+          "Nested2": {
+            "id": "Nested2",
+            "path": "nested-stacks-refs3-siblings/Nested2",
+            "children": {
+              "ConsumerTopic": {
+                "id": "ConsumerTopic",
+                "path": "nested-stacks-refs3-siblings/Nested2/ConsumerTopic",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "nested-stacks-refs3-siblings/Nested2/ConsumerTopic/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                      "aws:cdk:cloudformation:props": {
+                        "displayName": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "Consuming ",
+                              {
+                                "Fn::Select": [
+                                  2,
+                                  {
+                                    "Fn::Split": [
+                                      "-",
+                                      {
+                                        "Ref": "referencetonestedstacksrefs3siblingsNested1NestedStackNested1NestedStackResourceE58B6825Outputsnestedstacksrefs3siblingsNested1MyTopic12458558TopicName"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.Topic",
+                  "version": "0.0.0"
+                }
+              },
+              "reference-to-nestedstacksrefs3siblingsNested1NestedStackNested1NestedStackResourceE58B6825Outputs.nestedstacksrefs3siblingsNested1MyTopic12458558TopicName": {
+                "id": "reference-to-nestedstacksrefs3siblingsNested1NestedStackNested1NestedStackResourceE58B6825Outputs.nestedstacksrefs3siblingsNested1MyTopic12458558TopicName",
+                "path": "nested-stacks-refs3-siblings/Nested2/reference-to-nestedstacksrefs3siblingsNested1NestedStackNested1NestedStackResourceE58B6825Outputs.nestedstacksrefs3siblingsNested1MyTopic12458558TopicName",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.NestedStack",
+              "version": "0.0.0"
+            }
+          },
+          "Nested2.NestedStack": {
+            "id": "Nested2.NestedStack",
+            "path": "nested-stacks-refs3-siblings/Nested2.NestedStack",
+            "children": {
+              "Nested2.NestedStackResource": {
+                "id": "Nested2.NestedStackResource",
+                "path": "nested-stacks-refs3-siblings/Nested2.NestedStack/Nested2.NestedStackResource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
+                  "aws:cdk:cloudformation:props": {
+                    "templateUrl": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "https://s3.",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ".",
+                          {
+                            "Ref": "AWS::URLSuffix"
+                          },
+                          "/",
+                          {
+                            "Ref": "AssetParameters2e7ce09a9e0721d268d734287b72d071ed542a05451e3b53dfcb5ae4e76cc583S3Bucket72E4418F"
+                          },
+                          "/",
+                          {
+                            "Fn::Select": [
+                              0,
+                              {
+                                "Fn::Split": [
+                                  "||",
+                                  {
+                                    "Ref": "AssetParameters2e7ce09a9e0721d268d734287b72d071ed542a05451e3b53dfcb5ae4e76cc583S3VersionKeyC46A55B6"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "Fn::Select": [
+                              1,
+                              {
+                                "Fn::Split": [
+                                  "||",
+                                  {
+                                    "Ref": "AssetParameters2e7ce09a9e0721d268d734287b72d071ed542a05451e3b53dfcb5ae4e76cc583S3VersionKeyC46A55B6"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      ]
+                    },
+                    "parameters": {
+                      "referencetonestedstacksrefs3siblingsNested1NestedStackNested1NestedStackResourceE58B6825Outputsnestedstacksrefs3siblingsNested1MyTopic12458558TopicName": {
+                        "Fn::GetAtt": [
+                          "Nested1NestedStackNested1NestedStackResourceCD0AD36B",
+                          "Outputs.nestedstacksrefs3siblingsNested1MyTopic12458558TopicName"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnStack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Construct",
+              "version": "0.0.0"
+            }
+          },
+          "AssetParameters": {
+            "id": "AssetParameters",
+            "path": "nested-stacks-refs3-siblings/AssetParameters",
+            "children": {
+              "008e281fb3039601b8fbef60e255afe78cb00a09611d1aa7342f56328aef7d9a": {
+                "id": "008e281fb3039601b8fbef60e255afe78cb00a09611d1aa7342f56328aef7d9a",
+                "path": "nested-stacks-refs3-siblings/AssetParameters/008e281fb3039601b8fbef60e255afe78cb00a09611d1aa7342f56328aef7d9a",
+                "children": {
+                  "S3Bucket": {
+                    "id": "S3Bucket",
+                    "path": "nested-stacks-refs3-siblings/AssetParameters/008e281fb3039601b8fbef60e255afe78cb00a09611d1aa7342f56328aef7d9a/S3Bucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "S3VersionKey": {
+                    "id": "S3VersionKey",
+                    "path": "nested-stacks-refs3-siblings/AssetParameters/008e281fb3039601b8fbef60e255afe78cb00a09611d1aa7342f56328aef7d9a/S3VersionKey",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ArtifactHash": {
+                    "id": "ArtifactHash",
+                    "path": "nested-stacks-refs3-siblings/AssetParameters/008e281fb3039601b8fbef60e255afe78cb00a09611d1aa7342f56328aef7d9a/ArtifactHash",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Construct",
+                  "version": "0.0.0"
+                }
+              },
+              "2e7ce09a9e0721d268d734287b72d071ed542a05451e3b53dfcb5ae4e76cc583": {
+                "id": "2e7ce09a9e0721d268d734287b72d071ed542a05451e3b53dfcb5ae4e76cc583",
+                "path": "nested-stacks-refs3-siblings/AssetParameters/2e7ce09a9e0721d268d734287b72d071ed542a05451e3b53dfcb5ae4e76cc583",
+                "children": {
+                  "S3Bucket": {
+                    "id": "S3Bucket",
+                    "path": "nested-stacks-refs3-siblings/AssetParameters/2e7ce09a9e0721d268d734287b72d071ed542a05451e3b53dfcb5ae4e76cc583/S3Bucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "S3VersionKey": {
+                    "id": "S3VersionKey",
+                    "path": "nested-stacks-refs3-siblings/AssetParameters/2e7ce09a9e0721d268d734287b72d071ed542a05451e3b53dfcb5ae4e76cc583/S3VersionKey",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ArtifactHash": {
+                    "id": "ArtifactHash",
+                    "path": "nested-stacks-refs3-siblings/AssetParameters/2e7ce09a9e0721d268d734287b72d071ed542a05451e3b53dfcb5ae4e76cc583/ArtifactHash",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Construct",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Construct",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

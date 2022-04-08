@@ -1,0 +1,171 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "aws-cdk-iam-user": {
+        "id": "aws-cdk-iam-user",
+        "path": "aws-cdk-iam-user",
+        "children": {
+          "MyUser": {
+            "id": "MyUser",
+            "path": "aws-cdk-iam-user/MyUser",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-iam-user/MyUser/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {
+                    "loginProfile": {
+                      "password": "Test1234567890!",
+                      "passwordResetRequired": true
+                    },
+                    "userName": "benisrae"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedUserByArn": {
+            "id": "ImportedUserByArn",
+            "path": "aws-cdk-iam-user/ImportedUserByArn",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedUserByArnPath": {
+            "id": "ImportedUserByArnPath",
+            "path": "aws-cdk-iam-user/ImportedUserByArnPath",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedUserByArnPathMultiple": {
+            "id": "ImportedUserByArnPathMultiple",
+            "path": "aws-cdk-iam-user/ImportedUserByArnPathMultiple",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedUserByAttributes": {
+            "id": "ImportedUserByAttributes",
+            "path": "aws-cdk-iam-user/ImportedUserByAttributes",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedUserByAttributesPath": {
+            "id": "ImportedUserByAttributesPath",
+            "path": "aws-cdk-iam-user/ImportedUserByAttributesPath",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedUserByAttributesPathMultiple": {
+            "id": "ImportedUserByAttributesPathMultiple",
+            "path": "aws-cdk-iam-user/ImportedUserByAttributesPathMultiple",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedUserByName": {
+            "id": "ImportedUserByName",
+            "path": "aws-cdk-iam-user/ImportedUserByName",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "NameForUserImportedByArn": {
+            "id": "NameForUserImportedByArn",
+            "path": "aws-cdk-iam-user/NameForUserImportedByArn",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "NameForUserImportedByArnPath": {
+            "id": "NameForUserImportedByArnPath",
+            "path": "aws-cdk-iam-user/NameForUserImportedByArnPath",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "NameForUserImportedByArnPathMultiple": {
+            "id": "NameForUserImportedByArnPathMultiple",
+            "path": "aws-cdk-iam-user/NameForUserImportedByArnPathMultiple",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "NameForUserImportedByAttributes": {
+            "id": "NameForUserImportedByAttributes",
+            "path": "aws-cdk-iam-user/NameForUserImportedByAttributes",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "NameForUserImportedByAttributesPath": {
+            "id": "NameForUserImportedByAttributesPath",
+            "path": "aws-cdk-iam-user/NameForUserImportedByAttributesPath",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "NameForUserImportedByAttributesPathMultiple": {
+            "id": "NameForUserImportedByAttributesPathMultiple",
+            "path": "aws-cdk-iam-user/NameForUserImportedByAttributesPathMultiple",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "NameForUserImportedByName": {
+            "id": "NameForUserImportedByName",
+            "path": "aws-cdk-iam-user/NameForUserImportedByName",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

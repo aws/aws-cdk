@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { AssemblyManifest, Manifest, ArtifactType, AwsCloudFormationStackProperties } from '@aws-cdk/cloud-assembly-schema';
+import { AssemblyManifest, Manifest, ArtifactType, AwsCloudFormationStackProperties, ArtifactManifest, MetadataEntry } from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs-extra';
 
 /**
@@ -14,7 +14,7 @@ export class AssemblyManifestReader {
   public static fromFile(fileName: string): AssemblyManifestReader {
     try {
       const obj = Manifest.loadAssemblyManifest(fileName);
-      return new AssemblyManifestReader(path.dirname(fileName), obj);
+      return new AssemblyManifestReader(path.dirname(fileName), obj, fileName);
 
     } catch (e) {
       throw new Error(`Cannot read integ manifest '${fileName}': ${e.message}`);
@@ -44,7 +44,7 @@ export class AssemblyManifestReader {
    */
   public readonly directory: string;
 
-  constructor(directory: string, private readonly manifest: AssemblyManifest) {
+  constructor(directory: string, private readonly manifest: AssemblyManifest, private readonly manifestFileName: string) {
     this.directory = directory;
   }
 
@@ -62,5 +62,43 @@ export class AssemblyManifestReader {
       stacks[artifactId] = template;
     }
     return stacks;
+  }
+
+  /**
+   * Clean the manifest of any unneccesary data. Currently that includes
+   * the metadata trace information since this includes trace information like
+   * file system locations and file lines that will change depending on what machine the test is run on
+   */
+  public cleanManifest(): void {
+    const newManifest = {
+      ...this.manifest,
+      artifacts: this.renderArtifacts(),
+    };
+    Manifest.saveAssemblyManifest(newManifest, this.manifestFileName);
+  }
+
+  private renderArtifactMetadata(metadata: { [id: string]: MetadataEntry[] } | undefined): { [id: string]: MetadataEntry[] } {
+    const newMetadata: { [id: string]: MetadataEntry[] } = {};
+    for (const [metadataId, metadataEntry] of Object.entries(metadata ?? {})) {
+      newMetadata[metadataId] = metadataEntry.map((meta: MetadataEntry) => {
+        // return metadata without the trace data
+        return {
+          type: meta.type,
+          data: meta.data,
+        };
+      });
+    }
+    return newMetadata;
+  }
+
+  private renderArtifacts(): { [id: string]: ArtifactManifest } | undefined {
+    const newArtifacts: { [id: string]: ArtifactManifest } = {};
+    for (const [artifactId, artifact] of Object.entries(this.manifest.artifacts ?? {})) {
+      newArtifacts[artifactId] = {
+        ...artifact,
+        metadata: this.renderArtifactMetadata(artifact.metadata),
+      };
+    }
+    return newArtifacts;
   }
 }
