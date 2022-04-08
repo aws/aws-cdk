@@ -1,0 +1,68 @@
+{
+ "Resources": {
+  "MyResource6073B41F": {
+   "Type": "AWS::SNS::Topic"
+  },
+  "NestedChildNestedStackNestedChildNestedStackResourceF60C4886": {
+   "Type": "AWS::CloudFormation::Stack",
+   "Properties": {
+    "TemplateURL": {
+     "Fn::Join": [
+      "",
+      [
+       "https://s3.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/",
+       {
+        "Ref": "referencetonestedstacksmultiAssetParameterse3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809dS3Bucket41B3528FRef"
+       },
+       "/",
+       {
+        "Fn::Select": [
+         0,
+         {
+          "Fn::Split": [
+           "||",
+           {
+            "Ref": "referencetonestedstacksmultiAssetParameterse3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809dS3VersionKey2F819BA6Ref"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "Fn::Select": [
+         1,
+         {
+          "Fn::Split": [
+           "||",
+           {
+            "Ref": "referencetonestedstacksmultiAssetParameterse3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809dS3VersionKey2F819BA6Ref"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "referencetonestedstacksmultiAssetParameterse3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809dS3Bucket41B3528FRef": {
+   "Type": "String"
+  },
+  "referencetonestedstacksmultiAssetParameterse3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809dS3VersionKey2F819BA6Ref": {
+   "Type": "String"
+  }
+ }
+}

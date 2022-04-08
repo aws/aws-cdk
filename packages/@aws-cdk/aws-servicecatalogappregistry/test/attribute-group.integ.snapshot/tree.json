@@ -1,0 +1,68 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "integ-servicecatalogappregistry-attribute-group": {
+        "id": "integ-servicecatalogappregistry-attribute-group",
+        "path": "integ-servicecatalogappregistry-attribute-group",
+        "children": {
+          "TestAttributeGroup": {
+            "id": "TestAttributeGroup",
+            "path": "integ-servicecatalogappregistry-attribute-group/TestAttributeGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::AttributeGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "attributes": {
+                      "stage": "alpha",
+                      "teamMembers": [
+                        "markI",
+                        "markII",
+                        "markIII"
+                      ],
+                      "plannedRoadMap": {
+                        "alpha": "time1",
+                        "beta": "time2"
+                      }
+                    },
+                    "name": "myAttributeGroupTest",
+                    "description": "my attribute group description"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnAttributeGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicecatalogappregistry.AttributeGroup",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}
