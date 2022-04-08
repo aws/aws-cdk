@@ -39,6 +39,8 @@ async function main() {
   const parallelRegions = arrayFromYargs(argv['parallel-regions']);
   const testRegions: string[] = parallelRegions ?? ['us-east-1', 'us-east-2', 'us-west-2'];
   const runUpdateOnFailed = argv['update-on-failed'] ?? false;
+
+  let failedSnapshots: IntegTestConfig[] = [];
   try {
 
     if (argv.list) {
@@ -57,7 +59,7 @@ async function main() {
     // the failed snapshot tests. If `--force` is used then we will skip snapshot
     // tests and run integration tests for all tests
     if (!argv.force) {
-      const failedSnapshots = await runSnapshotTests(pool, testsFromArgs);
+      failedSnapshots = await runSnapshotTests(pool, testsFromArgs);
       testsToRun.push(...failedSnapshots);
     } else {
       testsToRun.push(...testsFromArgs);
@@ -66,7 +68,7 @@ async function main() {
 
     // run integration tests if `--update-on-failed` OR `--force` is used
     if (runUpdateOnFailed || argv.force) {
-      await runIntegrationTests({
+      const success = await runIntegrationTests({
         pool,
         tests: testsToRun,
         regions: testRegions,
@@ -74,6 +76,9 @@ async function main() {
         dryRun: argv['dry-run'],
         verbose: argv.verbose,
       });
+      if (!success) {
+        throw new Error('Some integration tests failed!');
+      }
 
       if (argv.clean === false) {
         logger.warning('Not cleaning up stacks since "--no-clean" was used');
@@ -81,6 +86,14 @@ async function main() {
     }
   } finally {
     void pool.terminate();
+  }
+
+  if (failedSnapshots.length > 0) {
+    let message = '';
+    if (!runUpdateOnFailed) {
+      message = 'To re-run failed tests run: yarn integ-runner --update-on-failed';
+    }
+    throw new Error(`Some snapshot tests failed!\n${message}`);
   }
 }
 
