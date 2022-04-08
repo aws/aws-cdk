@@ -1,8 +1,10 @@
+import { ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
-import { CfnResource, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
+import { IFunction } from '@aws-cdk/aws-lambda';
+import { ArnFormat, CfnResource, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
+import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
 import { Schema } from './schema';
 import { IIntermediateType } from './schema-base';
@@ -29,6 +31,10 @@ export enum AuthorizationType {
    * OpenID Connect authorization type
    */
   OIDC = 'OPENID_CONNECT',
+  /**
+   * Lambda authorization type
+   */
+  LAMBDA = 'AWS_LAMBDA',
 }
 
 /**
@@ -58,6 +64,11 @@ export interface AuthorizationMode {
    * @default - none
    */
   readonly openIdConnectConfig?: OpenIdConnectConfig;
+  /**
+   * If authorizationType is `AuthorizationType.LAMBDA`, this option is required.
+   * @default - none
+   */
+  readonly lambdaAuthorizerConfig?: LambdaAuthorizerConfig;
 }
 
 /**
@@ -140,7 +151,7 @@ export interface OpenIdConnectConfig {
   /**
    * The client identifier of the Relying party at the OpenID identity provider.
    * A regular expression can be specified so AppSync can validate against multiple client identifiers at a time.
-   * @example - 'ABCD|CDEF' where ABCD and CDEF are two different clientId
+   * @example - 'ABCD|CDEF' // where ABCD and CDEF are two different clientId
    * @default - * (All)
    */
   readonly clientId?: string;
@@ -148,6 +159,38 @@ export interface OpenIdConnectConfig {
    * The issuer for the OIDC configuration. The issuer returned by discovery must exactly match the value of `iss` in the OIDC token.
    */
   readonly oidcProvider: string;
+}
+
+/**
+ * Configuration for Lambda authorization in AppSync. Note that you can only have a single AWS Lambda function configured to authorize your API.
+ */
+export interface LambdaAuthorizerConfig {
+  /**
+   * The authorizer lambda function.
+   * Note: This Lambda function must have the following resource-based policy assigned to it.
+   * When configuring Lambda authorizers in the console, this is done for you.
+   * To do so with the AWS CLI, run the following:
+   *
+   * `aws lambda add-permission --function-name "arn:aws:lambda:us-east-2:111122223333:function:my-function" --statement-id "appsync" --principal appsync.amazonaws.com --action lambda:InvokeFunction`
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-lambdaauthorizerconfig.html
+   */
+  readonly handler: IFunction;
+
+  /**
+   * How long the results are cached.
+   * Disable caching by setting this to 0.
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly resultsCacheTtl?: Duration;
+
+  /**
+   * A regular expression for validation of tokens before the Lambda function is called.
+   *
+   * @default - no regex filter will be applied.
+   */
+  readonly validationRegex?: string;
 }
 
 /**
@@ -213,6 +256,21 @@ export interface LogConfig {
 }
 
 /**
+ * Domain name configuration for AppSync
+ */
+export interface DomainOptions {
+  /**
+   * The certificate to use with the domain name.
+   */
+  readonly certificate: ICertificate;
+
+  /**
+   * The actual domain name. For example, `api.example.com`.
+   */
+  readonly domainName: string;
+}
+
+/**
  * Properties for an AppSync GraphQL API
  */
 export interface GraphqlApiProps {
@@ -250,6 +308,16 @@ export interface GraphqlApiProps {
    * @default - false
    */
   readonly xrayEnabled?: boolean;
+
+  /**
+   * The domain name configuration for the GraphQL API
+   *
+   * The Route 53 hosted zone and CName DNS record must be configured in addition to this setting to
+   * enable custom domain URL
+   *
+   * @default - no domain name
+   */
+  readonly domainName?: DomainOptions;
 }
 
 /**
@@ -305,7 +373,7 @@ export class IamResource {
     return this.arns.map((arn) => Stack.of(api).formatArn({
       service: 'appsync',
       resource: `apis/${api.apiId}`,
-      sep: '/',
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       resourceName: `${arn}`,
     }));
   }
@@ -349,7 +417,7 @@ export class GraphqlApi extends GraphqlApiBase {
     class Import extends GraphqlApiBase {
       public readonly apiId = attrs.graphqlApiId;
       public readonly arn = arn;
-      constructor (s: Construct, i: string) {
+      constructor(s: Construct, i: string) {
         super(s, i);
       }
     }
@@ -408,7 +476,7 @@ export class GraphqlApi extends GraphqlApiBase {
     const additionalModes = props.authorizationConfig?.additionalAuthorizationModes ?? [];
     const modes = [defaultMode, ...additionalModes];
 
-    this.modes = modes.map((mode) => mode.authorizationType );
+    this.modes = modes.map((mode) => mode.authorizationType);
 
     this.validateAuthorizationProps(modes);
 
@@ -418,6 +486,7 @@ export class GraphqlApi extends GraphqlApiBase {
       logConfig: this.setupLogConfig(props.logConfig),
       openIdConnectConfig: this.setupOpenIdConnectConfig(defaultMode.openIdConnectConfig),
       userPoolConfig: this.setupUserPoolConfig(defaultMode.userPoolConfig),
+      lambdaAuthorizerConfig: this.setupLambdaAuthorizerConfig(defaultMode.lambdaAuthorizerConfig),
       additionalAuthenticationProviders: this.setupAdditionalAuthorizationModes(additionalModes),
       xrayEnabled: props.xrayEnabled,
     });
@@ -428,6 +497,19 @@ export class GraphqlApi extends GraphqlApiBase {
     this.name = this.api.name;
     this.schema = props.schema ?? new Schema();
     this.schemaResource = this.schema.bind(this);
+
+    if (props.domainName) {
+      new CfnDomainName(this, 'DomainName', {
+        domainName: props.domainName.domainName,
+        certificateArn: props.domainName.certificate.certificateArn,
+        description: `domain for ${this.name} at ${this.graphqlUrl}`,
+      });
+
+      new CfnDomainNameApiAssociation(this, 'DomainAssociation', {
+        domainName: props.domainName.domainName,
+        apiId: this.apiId,
+      });
+    }
 
     if (modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY)) {
       const config = modes.find((mode: AuthorizationMode) => {
@@ -490,12 +572,18 @@ export class GraphqlApi extends GraphqlApiBase {
   }
 
   private validateAuthorizationProps(modes: AuthorizationMode[]) {
+    if (modes.filter((mode) => mode.authorizationType === AuthorizationType.LAMBDA).length > 1) {
+      throw new Error('You can only have a single AWS Lambda function configured to authorize your API.');
+    }
     modes.map((mode) => {
       if (mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig) {
-        throw new Error('Missing default OIDC Configuration');
+        throw new Error('Missing OIDC Configuration');
       }
       if (mode.authorizationType === AuthorizationType.USER_POOL && !mode.userPoolConfig) {
-        throw new Error('Missing default OIDC Configuration');
+        throw new Error('Missing User Pool Configuration');
+      }
+      if (mode.authorizationType === AuthorizationType.LAMBDA && !mode.lambdaAuthorizerConfig) {
+        throw new Error('Missing Lambda Configuration');
       }
     });
     if (modes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length > 1) {
@@ -551,6 +639,15 @@ export class GraphqlApi extends GraphqlApiBase {
     };
   }
 
+  private setupLambdaAuthorizerConfig(config?: LambdaAuthorizerConfig) {
+    if (!config) return undefined;
+    return {
+      authorizerResultTtlInSeconds: config.resultsCacheTtl?.toSeconds(),
+      authorizerUri: config.handler.functionArn,
+      identityValidationExpression: config.validationRegex,
+    };
+  }
+
   private setupAdditionalAuthorizationModes(modes?: AuthorizationMode[]) {
     if (!modes || modes.length === 0) return undefined;
     return modes.reduce<CfnGraphQLApi.AdditionalAuthenticationProviderProperty[]>((acc, mode) => [
@@ -558,6 +655,7 @@ export class GraphqlApi extends GraphqlApiBase {
         authenticationType: mode.authorizationType,
         userPoolConfig: this.setupUserPoolConfig(mode.userPoolConfig),
         openIdConnectConfig: this.setupOpenIdConnectConfig(mode.openIdConnectConfig),
+        lambdaAuthorizerConfig: this.setupLambdaAuthorizerConfig(mode.lambdaAuthorizerConfig),
       },
     ], []);
   }

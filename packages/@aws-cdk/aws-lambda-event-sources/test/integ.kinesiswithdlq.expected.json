@@ -38,9 +38,9 @@
           "Statement": [
             {
               "Action": [
-                "sqs:SendMessage",
                 "sqs:GetQueueAttributes",
-                "sqs:GetQueueUrl"
+                "sqs:GetQueueUrl",
+                "sqs:SendMessage"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -52,22 +52,14 @@
             },
             {
               "Action": [
+                "kinesis:DescribeStream",
                 "kinesis:DescribeStreamSummary",
                 "kinesis:GetRecords",
                 "kinesis:GetShardIterator",
                 "kinesis:ListShards",
+                "kinesis:ListStreams",
                 "kinesis:SubscribeToShard"
               ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "S509448A1",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "kinesis:DescribeStream",
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
@@ -100,7 +92,7 @@
           ]
         },
         "Handler": "index.handler",
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "FServiceRoleDefaultPolicy17A19BFA",
@@ -137,8 +129,8 @@
     "S509448A1": {
       "Type": "AWS::Kinesis::Stream",
       "Properties": {
-        "ShardCount": 1,
         "RetentionPeriodHours": 24,
+        "ShardCount": 1,
         "StreamEncryption": {
           "Fn::If": [
             "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
@@ -150,6 +142,9 @@
               "KeyId": "alias/aws/kinesis"
             }
           ]
+        },
+        "StreamModeDetails": {
+          "StreamMode": "PROVISIONED"
         }
       }
     },

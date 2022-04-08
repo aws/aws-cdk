@@ -7,7 +7,7 @@ import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
   TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
 } from '../shared/base-target-group';
-import { ApplicationProtocol, ApplicationProtocolVersion, Protocol, TargetType } from '../shared/enums';
+import { ApplicationProtocol, ApplicationProtocolVersion, Protocol, TargetType, TargetGroupLoadBalancingAlgorithmType } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { determineProtocolAndPort } from '../shared/util';
 import { IApplicationListener } from './application-listener';
@@ -79,6 +79,13 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
   readonly stickinessCookieName?: string;
 
   /**
+   * The load balancing algorithm to select targets for routing requests.
+   *
+   * @default TargetGroupLoadBalancingAlgorithmType.ROUND_ROBIN
+   */
+  readonly loadBalancingAlgorithmType?: TargetGroupLoadBalancingAlgorithmType;
+
+  /**
    * The targets to add to this target group.
    *
    * Can be `Instance`, `IPAddress`, or any self-registering load balancing
@@ -127,6 +134,17 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     this.protocol = protocol;
     this.port = port;
 
+    // this.targetType is lazy
+    this.node.addValidation({
+      validate: () => {
+        if (this.targetType === TargetType.LAMBDA && (this.port || this.protocol)) {
+          return ['port/protocol should not be specified for Lambda targets'];
+        } else {
+          return [];
+        }
+      },
+    });
+
     this.connectableMembers = [];
     this.listeners = [];
 
@@ -137,8 +155,15 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
         }
         this.setAttribute('slow_start.duration_seconds', props.slowStart.toSeconds().toString());
       }
+
       if (props.stickinessCookieDuration) {
         this.enableCookieStickiness(props.stickinessCookieDuration, props.stickinessCookieName);
+      } else {
+        this.setAttribute('stickiness.enabled', 'false');
+      }
+
+      if (props.loadBalancingAlgorithmType) {
+        this.setAttribute('load_balancing.algorithm.type', props.loadBalancingAlgorithmType);
       }
       this.addTarget(...(props.targets || []));
     }
@@ -151,6 +176,10 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     for (const target of targets) {
       const result = target.attachToApplicationTargetGroup(this);
       this.addLoadBalancerTarget(result);
+    }
+
+    if (this.targetType === TargetType.LAMBDA) {
+      this.setAttribute('stickiness.enabled', undefined);
     }
   }
 
@@ -240,7 +269,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     return new cloudwatch.Metric({
       namespace: 'AWS/ApplicationELB',
       metricName,
-      dimensions: {
+      dimensionsMap: {
         TargetGroup: this.targetGroupFullName,
         LoadBalancer: this.firstLoadBalancerFullName,
       },
@@ -366,11 +395,21 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       ret.push('At least one of \'port\' or \'protocol\' is required for a non-Lambda TargetGroup');
     }
 
-    if (this.healthCheck && this.healthCheck.protocol && !ALB_HEALTH_CHECK_PROTOCOLS.includes(this.healthCheck.protocol)) {
-      ret.push([
-        `Health check protocol '${this.healthCheck.protocol}' is not supported. `,
-        `Must be one of [${ALB_HEALTH_CHECK_PROTOCOLS.join(', ')}]`,
-      ].join(''));
+    if (this.healthCheck && this.healthCheck.protocol) {
+
+      if (ALB_HEALTH_CHECK_PROTOCOLS.includes(this.healthCheck.protocol)) {
+        if (this.healthCheck.interval && this.healthCheck.timeout &&
+          this.healthCheck.interval.toMilliseconds() <= this.healthCheck.timeout.toMilliseconds()) {
+          ret.push(`Healthcheck interval ${this.healthCheck.interval.toHumanString()} must be greater than the timeout ${this.healthCheck.timeout.toHumanString()}`);
+        }
+      }
+
+      if (!ALB_HEALTH_CHECK_PROTOCOLS.includes(this.healthCheck.protocol)) {
+        ret.push([
+          `Health check protocol '${this.healthCheck.protocol}' is not supported. `,
+          `Must be one of [${ALB_HEALTH_CHECK_PROTOCOLS.join(', ')}]`,
+        ].join(''));
+      }
     }
 
     return ret;

@@ -1,26 +1,28 @@
 import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import { Code, Runtime } from '@aws-cdk/aws-lambda';
+import { Architecture, Code, Runtime } from '@aws-cdk/aws-lambda';
 import { AssetHashType, DockerImage } from '@aws-cdk/core';
 import { Bundling } from '../lib/bundling';
 import * as util from '../lib/util';
 
-jest.mock('@aws-cdk/aws-lambda');
-const fromAssetMock = jest.spyOn(DockerImage, 'fromBuild');
 let getGoBuildVersionMock = jest.spyOn(util, 'getGoBuildVersion');
 
 beforeEach(() => {
   jest.clearAllMocks();
   jest.resetAllMocks();
   Bundling.clearRunsLocallyCache();
-  getGoBuildVersionMock.mockReturnValue(true);
-  fromAssetMock.mockReturnValue({
+
+  jest.spyOn(Code, 'fromAsset');
+
+  jest.spyOn(DockerImage, 'fromBuild').mockReturnValue({
     image: 'built-image',
     cp: () => 'built-image',
     run: () => {},
     toJSON: () => 'build-image',
   });
+
+  getGoBuildVersionMock.mockReturnValue(true);
 });
 
 const moduleDir = '/project/go.mod';
@@ -30,6 +32,7 @@ test('bundling', () => {
   Bundling.bundle({
     entry,
     runtime: Runtime.GO_1_X,
+    architecture: Architecture.X86_64,
     moduleDir,
     forcedDockerBundling: true,
     environment: {
@@ -55,12 +58,20 @@ test('bundling', () => {
       ],
     }),
   });
+
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/aws-lambda-go\/lib$/), expect.objectContaining({
+    buildArgs: expect.objectContaining({
+      IMAGE: expect.stringMatching(/build-go/),
+    }),
+    platform: 'linux/amd64',
+  }));
 });
 
 test('bundling with file as entry', () => {
   Bundling.bundle({
     entry: '/project/main.go',
     runtime: Runtime.GO_1_X,
+    architecture: Architecture.X86_64,
     moduleDir,
   });
 
@@ -81,6 +92,7 @@ test('bundling with file in subdirectory as entry', () => {
   Bundling.bundle({
     entry: '/project/cmd/api/main.go',
     runtime: Runtime.GO_1_X,
+    architecture: Architecture.X86_64,
     moduleDir,
   });
 
@@ -101,6 +113,7 @@ test('bundling with file other than main.go in subdirectory as entry', () => {
   Bundling.bundle({
     entry: '/project/cmd/api/api.go',
     runtime: Runtime.GO_1_X,
+    architecture: Architecture.X86_64,
     moduleDir,
   });
 
@@ -122,6 +135,7 @@ test('go with Windows paths', () => {
   Bundling.bundle({
     entry: 'C:\\my-project\\cmd\\api',
     runtime: Runtime.GO_1_X,
+    architecture: Architecture.X86_64,
     moduleDir: 'C:\\my-project\\go.mod',
     forcedDockerBundling: true,
   });
@@ -141,13 +155,14 @@ test('with Docker build args', () => {
   Bundling.bundle({
     entry,
     runtime: Runtime.GO_1_X,
+    architecture: Architecture.X86_64,
     moduleDir,
     forcedDockerBundling: true,
     buildArgs: {
       HELLO: 'WORLD',
     },
   });
-  expect(fromAssetMock).toHaveBeenCalledWith(expect.stringMatching(/lib$/), expect.objectContaining({
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/aws-lambda-go\/lib$/), expect.objectContaining({
     buildArgs: expect.objectContaining({
       HELLO: 'WORLD',
     }),
@@ -171,6 +186,7 @@ test('Local bundling', () => {
       KEY: 'value',
     },
     runtime: Runtime.PROVIDED_AL2,
+    architecture: Architecture.X86_64,
   });
 
   expect(bundler.local).toBeDefined();
@@ -188,7 +204,7 @@ test('Local bundling', () => {
   );
 
   // Docker image is not built
-  expect(fromAssetMock).not.toHaveBeenCalled();
+  expect(DockerImage.fromBuild).not.toHaveBeenCalled();
 });
 
 test('Incorrect go version', () => {
@@ -198,6 +214,7 @@ test('Incorrect go version', () => {
     entry,
     moduleDir,
     runtime: Runtime.PROVIDED_AL2,
+    architecture: Architecture.X86_64,
   });
 
   const tryBundle = bundler.local?.tryBundle('/outdir', { image: Runtime.GO_1_X.bundlingDockerImage });
@@ -211,6 +228,7 @@ test('Custom bundling docker image', () => {
     entry,
     moduleDir,
     runtime: Runtime.GO_1_X,
+    architecture: Architecture.X86_64,
     forcedDockerBundling: true,
     dockerImage: DockerImage.fromRegistry('my-custom-image'),
   });
@@ -227,6 +245,7 @@ test('Go build flags can be passed', () => {
   Bundling.bundle({
     entry,
     runtime: Runtime.GO_1_X,
+    architecture: Architecture.X86_64,
     moduleDir,
     environment: {
       KEY: 'value',
@@ -258,6 +277,7 @@ test('AssetHashType can be specified', () => {
   Bundling.bundle({
     entry,
     runtime: Runtime.GO_1_X,
+    architecture: Architecture.X86_64,
     moduleDir,
     environment: {
       KEY: 'value',
@@ -291,6 +311,7 @@ test('with command hooks', () => {
     entry,
     moduleDir,
     runtime: Runtime.PROVIDED_AL2,
+    architecture: Architecture.X86_64,
     commandHooks: {
       beforeBundling(inputDir: string, outputDir: string): string[] {
         return [

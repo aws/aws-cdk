@@ -13,7 +13,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'GetRecords.Bytes',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -21,7 +21,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'GetRecords.Success',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -29,7 +29,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'GetRecords.Records',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -37,7 +37,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'GetRecords.Latency',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -45,7 +45,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecord.Bytes',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -53,7 +53,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecord.Latency',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -61,16 +61,22 @@ export class KinesisMetrics {
     return CannedMetrics.getRecordsIteratorAgeMillisecondsMaximum(dimensions);
   }
   public static putRecordSuccessAverage(dimensions: { StreamName: string }) {
-    return CannedMetrics.putRecordSuccessAverage(dimensions);
+    return {
+      ...CannedMetrics.putRecordSuccessSum(dimensions),
+      statistic: 'Average',
+    };
   }
   public static putRecordsBytesAverage(dimensions: { StreamName: string }) {
-    return CannedMetrics.putRecordsBytesAverage(dimensions);
+    return {
+      ...CannedMetrics.putRecordsBytesSum(dimensions),
+      statistic: 'Average',
+    };
   }
   public static putRecordsLatencyAverage(dimensions: { StreamName: string }) {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecords.Latency',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -78,7 +84,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecords.Success',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -86,7 +92,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecords.TotalRecords',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -94,7 +100,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecords.SuccessfulRecords',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -102,7 +108,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecords.FailedRecords',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -110,20 +116,33 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecords.ThrottledRecords',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
   public static incomingBytesAverage(dimensions: { StreamName: string }) {
-    return CannedMetrics.incomingBytesAverage(dimensions);
+    return {
+      ...CannedMetrics.incomingBytesSum(dimensions),
+      statistic: 'Average',
+    };
   }
   public static incomingRecordsAverage(dimensions: { StreamName: string }) {
-    return CannedMetrics.incomingRecordsAverage(dimensions);
+    return {
+      ...CannedMetrics.incomingRecordsSum(dimensions),
+      statistic: 'Average',
+    };
+
   }
   public static readProvisionedThroughputExceededAverage(dimensions: { StreamName: string }) {
-    return CannedMetrics.readProvisionedThroughputExceededAverage(dimensions);
+    return {
+      ...CannedMetrics.readProvisionedThroughputExceededSum(dimensions),
+      statistic: 'Average',
+    };
   }
   public static writeProvisionedThroughputExceededAverage(dimensions: { StreamName: string }) {
-    return CannedMetrics.writeProvisionedThroughputExceededAverage(dimensions);
+    return {
+      ...CannedMetrics.writeProvisionedThroughputExceededSum(dimensions),
+      statistic: 'Average',
+    };
   }
 }

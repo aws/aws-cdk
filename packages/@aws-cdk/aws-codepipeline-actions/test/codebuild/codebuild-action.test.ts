@@ -1,19 +1,18 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
 import { App, SecretValue, Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-nodeunitShim({
-  'CodeBuild action': {
-    'that is cross-account and has outputs': {
-      'causes an error'(test: Test) {
+describe('CodeBuild Action', () => {
+  describe('CodeBuild action', () => {
+    describe('that is cross-account and has outputs', () => {
+      test('causes an error', () => {
         const app = new App();
 
         const projectStack = new Stack(app, 'ProjectStack', {
@@ -61,15 +60,15 @@ nodeunitShim({
           outputs: [new codepipeline.Artifact()],
         });
 
-        test.throws(() => {
+        expect(() => {
           buildStage.addAction(buildAction2);
-        }, /https:\/\/github\.com\/aws\/aws-cdk\/issues\/4169/);
+        }).toThrow(/https:\/\/github\.com\/aws\/aws-cdk\/issues\/4169/);
 
-        test.done();
-      },
-    },
 
-    'can be backed by an imported project'(test: Test) {
+      });
+    });
+
+    test('can be backed by an imported project', () => {
       const stack = new Stack();
 
       const codeBuildProject = codebuild.PipelineProject.fromProjectName(stack, 'CodeBuild',
@@ -102,7 +101,7 @@ nodeunitShim({
         ],
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -119,12 +118,12 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'exposes variables for other actions to consume'(test: Test) {
+    });
+
+    test('exposes variables for other actions to consume', () => {
       const stack = new Stack();
 
       const sourceOutput = new codepipeline.Artifact();
@@ -177,7 +176,7 @@ nodeunitShim({
         ],
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -198,12 +197,12 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'sets the BatchEnabled configuration'(test: Test) {
+    });
+
+    test('sets the BatchEnabled configuration', () => {
       const stack = new Stack();
 
       const codeBuildProject = new codebuild.PipelineProject(stack, 'CodeBuild');
@@ -236,7 +235,7 @@ nodeunitShim({
         ],
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -253,13 +252,70 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'environment variables': {
-      'should fail by default when added to a Pipeline while using a secret value in a plaintext variable'(test: Test) {
+    });
+
+    test('sets the CombineArtifacts configuration', () => {
+      const stack = new Stack();
+
+      const codeBuildProject = new codebuild.PipelineProject(stack, 'CodeBuild');
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.S3SourceAction({
+                actionName: 'S3_Source',
+                bucket: new s3.Bucket(stack, 'Bucket'),
+                bucketKey: 'key',
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'CodeBuild',
+                input: sourceOutput,
+                project: codeBuildProject,
+                executeBatchBuild: true,
+                combineBatchBuildArtifacts: true,
+              }),
+            ],
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        'Stages': [
+          {
+            'Name': 'Source',
+          },
+          {
+            'Name': 'Build',
+            'Actions': [
+              {
+                'Name': 'CodeBuild',
+                'Configuration': {
+                  'BatchEnabled': 'true',
+                  'CombineArtifacts': 'true',
+                },
+              },
+            ],
+          },
+        ],
+      });
+
+
+    });
+
+    describe('environment variables', () => {
+      test('should fail by default when added to a Pipeline while using a secret value in a plaintext variable', () => {
         const stack = new Stack();
 
         const sourceOutput = new codepipeline.Artifact();
@@ -293,14 +349,14 @@ nodeunitShim({
           },
         });
 
-        test.throws(() => {
+        expect(() => {
           buildStage.addAction(buildAction);
-        }, /Plaintext environment variable 'X' contains a secret value!/);
+        }).toThrow(/Plaintext environment variable 'X' contains a secret value!/);
 
-        test.done();
-      },
 
-      "should allow opting out of the 'secret value in a plaintext variable' validation"(test: Test) {
+      });
+
+      test("should allow opting out of the 'secret value in a plaintext variable' validation", () => {
         const stack = new Stack();
 
         const sourceOutput = new codepipeline.Artifact();
@@ -333,8 +389,8 @@ nodeunitShim({
           ],
         });
 
-        test.done();
-      },
-    },
-  },
+
+      });
+    });
+  });
 });

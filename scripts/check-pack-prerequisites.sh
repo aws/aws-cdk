@@ -57,8 +57,8 @@ if [ $(echo $app_v | grep -c -E "1\.8\.[0-9].*") -eq 1 ]
 then
     echo "Ok"
 else
-    # 11 or 14 or 15
-    if [ $(echo $app_v | grep -c -E "1[145]\.[0-9]\.[0-9].*") -eq 1 ]
+    # 11 or 14 or 15 or 16
+    if [ $(echo $app_v | grep -c -E "1[1-6]\.[0-9]\.[0-9].*") -eq 1 ]
     then
         echo "Ok"
     else
@@ -83,7 +83,7 @@ fi
 app="dotnet"
 app_min="3.1.0"
 check_which $app $app_min
-app_v=$(${app} --version)
+app_v=$(${app} --list-sdks)
 echo -e "Checking $app version... \c"
 if [ $(echo $app_v | grep -c -E "3\.1\.[0-9].*|[4-9]\..*") -eq 1 ]
 then
@@ -98,7 +98,7 @@ app_min="3.6.5"
 check_which $app $app_min
 app_v=$(${app} --version)
 echo -e "Checking $app version... \c"
-if [ $(echo $app_v | grep -c -E "3\.[6789]\.[0-9].*") -eq 1 ]
+if [ $(echo $app_v | grep -c -E "3\.([6-9]|1[0-9])\.[0-9]+") -eq 1 ]
 then
     echo "Ok"
 else

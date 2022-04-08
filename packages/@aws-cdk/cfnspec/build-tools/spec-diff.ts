@@ -106,6 +106,11 @@ async function main() {
             });
           }
           break;
+        case 'Documentation':
+          describeChanges(resourceType, key, update.Documentation).forEach(change => {
+            attributeChanges.push(change);
+          });
+          break;
         default:
           throw new Error(`Unexpected update to ${resourceType}: ${key}`);
       }
@@ -192,7 +197,7 @@ async function main() {
 
   function isSuffix(key: string, suffix: string) {
     const index = key.indexOf(suffix);
-    return index === -1 ? undefined : key.substr(0, index);
+    return index === -1 ? undefined : key.slice(0, index);
   }
 
   function suffixKeys(suffix: string, xs: Record<string, any>): Record<string, any> {

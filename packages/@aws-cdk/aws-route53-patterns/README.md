@@ -41,13 +41,13 @@ must be in US East (N. Virginia).
 The following example creates an HTTPS redirect from `foo.example.com` to `bar.example.com`
 As an existing certificate is not provided, one will be created in `us-east-1` by the CDK.
 
-  ```ts
-  new HttpsRedirect(stack, 'Redirect', {
-    recordNames: ['foo.example.com'],
-    targetDomain: 'bar.example.com',
-    zone: HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
-      hostedZoneId: 'ID',
-      zoneName: 'example.com',
-    })
-  });
-  ```
+```ts
+new patterns.HttpsRedirect(this, 'Redirect', {
+  recordNames: ['foo.example.com'],
+  targetDomain: 'bar.example.com',
+  zone: route53.HostedZone.fromHostedZoneAttributes(this, 'HostedZone', {
+    hostedZoneId: 'ID',
+    zoneName: 'example.com',
+  }),
+});
+```

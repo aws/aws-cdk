@@ -1,4 +1,4 @@
-import { Tokenization } from '@aws-cdk/core';
+import { Tokenization, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 import {
@@ -9,6 +9,7 @@ import {
   NetworkMode,
   TaskDefinition,
 } from '../base/task-definition';
+import { RuntimePlatform } from '../runtime-platform';
 
 /**
  * The properties for a task definition.
@@ -50,6 +51,24 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    * @default 512
    */
   readonly memoryLimitMiB?: number;
+
+  /**
+   * The amount (in GiB) of ephemeral storage to be allocated to the task. The maximum supported value is 200 GiB.
+   *
+   * NOTE: This parameter is only supported for tasks hosted on AWS Fargate using platform version 1.4.0 or later.
+   *
+   * @default 20
+   */
+  readonly ephemeralStorageGiB?: number;
+
+  /**
+   * The operating system that your task definitions are running on.
+   *
+   * A runtimePlatform is supported only for tasks using the Fargate launch type.
+   *
+   * @default - Undefined.
+   */
+  readonly runtimePlatform?: RuntimePlatform;
 }
 
 /**
@@ -105,6 +124,11 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
   // the import being generated in the .d.ts file.
 
   /**
+   * The amount (in GiB) of ephemeral storage to be allocated to the task.
+   */
+  public readonly ephemeralStorageGiB?: number;
+
+  /**
    * Constructs a new instance of the FargateTaskDefinition class.
    */
   constructor(scope: Construct, id: string, props: FargateTaskDefinitionProps = {}) {
@@ -115,5 +139,12 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
       compatibility: Compatibility.FARGATE,
       networkMode: NetworkMode.AWS_VPC,
     });
+
+    // eslint-disable-next-line max-len
+    if (props.ephemeralStorageGiB && !Token.isUnresolved(props.ephemeralStorageGiB) && (props.ephemeralStorageGiB < 21 || props.ephemeralStorageGiB > 200)) {
+      throw new Error('Ephemeral storage size must be between 21GiB and 200GiB');
+    }
+
+    this.ephemeralStorageGiB = props.ephemeralStorageGiB;
   }
 }

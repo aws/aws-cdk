@@ -1,10 +1,11 @@
 import * as cdk from '@aws-cdk/core';
 import { Group } from './group';
 import {
-  AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal,
+  AccountPrincipal, AccountRootPrincipal, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal,
   FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts,
 } from './principals';
-import { mergePrincipal } from './util';
+import { normalizeStatement } from './private/postprocess-policy-document';
+import { LITERAL_STRING_KEY, mergePrincipal } from './util';
 
 const ensureArrayOrUndefined = (field: any) => {
   if (field === undefined) {
@@ -68,6 +69,9 @@ export class PolicyStatement {
   private readonly notResource = new Array<any>();
   private readonly condition: { [key: string]: any } = { };
   private principalConditionsJson?: string;
+
+  // Hold on to those principals
+  private readonly _principals = new Array<IPrincipal>();
 
   constructor(props: PolicyStatementProps = {}) {
     // Validate actions
@@ -144,6 +148,7 @@ export class PolicyStatement {
    * @param principals IAM principals that will be added
    */
   public addPrincipals(...principals: IPrincipal[]) {
+    this._principals.push(...principals);
     if (Object.keys(principals).length > 0 && Object.keys(this.notPrincipal).length > 0) {
       throw new Error('Cannot add \'Principals\' to policy statement if \'NotPrincipals\' have been added');
     }
@@ -153,6 +158,15 @@ export class PolicyStatement {
       mergePrincipal(this.principal, fragment.principalJson);
       this.addPrincipalConditions(fragment.conditions);
     }
+  }
+
+  /**
+   * Expose principals to allow their ARNs to be replaced by account ID strings
+   * in policy statements for resources policies that don't allow full account ARNs,
+   * such as AWS::Logs::ResourcePolicy.
+   */
+  public get principals(): IPrincipal[] {
+    return [...this._principals];
   }
 
   /**
@@ -239,7 +253,7 @@ export class PolicyStatement {
    * Adds all identities in all accounts ("*") to this policy statement
    */
   public addAnyPrincipal() {
-    this.addPrincipals(new Anyone());
+    this.addPrincipals(new AnyPrincipal());
   }
 
   //
@@ -319,69 +333,41 @@ export class PolicyStatement {
   }
 
   /**
+   * Create a new `PolicyStatement` with the same exact properties
+   * as this one, except for the overrides
+   */
+  public copy(overrides: PolicyStatementProps = {}) {
+    return new PolicyStatement({
+      sid: overrides.sid ?? this.sid,
+      effect: overrides.effect ?? this.effect,
+      actions: overrides.actions ?? this.action,
+      notActions: overrides.notActions ?? this.notAction,
+
+      principals: overrides.principals,
+      notPrincipals: overrides.notPrincipals,
+
+      resources: overrides.resources ?? this.resource,
+      notResources: overrides.notResources ?? this.notResource,
+    });
+  }
+
+  /**
    * JSON-ify the policy statement
    *
    * Used when JSON.stringify() is called
    */
   public toStatementJson(): any {
-    return noUndef({
-      Action: _norm(this.action),
-      NotAction: _norm(this.notAction),
-      Condition: _norm(this.condition),
-      Effect: _norm(this.effect),
-      Principal: _normPrincipal(this.principal),
-      NotPrincipal: _normPrincipal(this.notPrincipal),
-      Resource: _norm(this.resource),
-      NotResource: _norm(this.notResource),
-      Sid: _norm(this.sid),
+    return normalizeStatement({
+      Action: this.action,
+      NotAction: this.notAction,
+      Condition: this.condition,
+      Effect: this.effect,
+      Principal: this.principal,
+      NotPrincipal: this.notPrincipal,
+      Resource: this.resource,
+      NotResource: this.notResource,
+      Sid: this.sid,
     });
-
-    function _norm(values: any) {
-
-      if (typeof(values) === 'undefined') {
-        return undefined;
-      }
-
-      if (cdk.Token.isUnresolved(values)) {
-        return values;
-      }
-
-      if (Array.isArray(values)) {
-        if (!values || values.length === 0) {
-          return undefined;
-        }
-
-        if (values.length === 1) {
-          return values[0];
-        }
-
-        return values;
-      }
-
-      if (typeof(values) === 'object') {
-        if (Object.keys(values).length === 0) {
-          return undefined;
-        }
-      }
-
-      return values;
-    }
-
-    function _normPrincipal(principal: { [key: string]: any[] }) {
-      const keys = Object.keys(principal);
-      if (keys.length === 0) { return undefined; }
-      const result: any = {};
-      for (const key of keys) {
-        const normVal = _norm(principal[key]);
-        if (normVal) {
-          result[key] = normVal;
-        }
-      }
-      if (Object.keys(result).length === 1 && result.AWS === '*') {
-        return '*';
-      }
-      return result;
-    }
   }
 
   /**
@@ -587,25 +573,19 @@ export interface PolicyStatementProps {
   readonly effect?: Effect;
 }
 
-function noUndef(x: any): any {
-  const ret: any = {};
-  for (const [key, value] of Object.entries(x)) {
-    if (value !== undefined) {
-      ret[key] = value;
-    }
-  }
-  return ret;
-}
-
 class JsonPrincipal extends PrincipalBase {
   public readonly policyFragment: PrincipalPolicyFragment;
 
   constructor(json: any = { }) {
     super();
 
-    // special case: if principal is a string, turn it into an "AWS" principal
+    // special case: if principal is a string, turn it into a "LiteralString" principal,
+    // so we render the exact same string back out.
     if (typeof(json) === 'string') {
-      json = { AWS: json };
+      json = { [LITERAL_STRING_KEY]: [json] };
+    }
+    if (typeof(json) !== 'object') {
+      throw new Error(`JSON IAM principal should be an object, got ${JSON.stringify(json)}`);
     }
 
     this.policyFragment = {

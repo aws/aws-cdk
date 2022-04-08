@@ -1,7 +1,9 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
+import { ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { Architecture } from './architecture';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { extractQualifierFromArn, IVersion } from './lambda-version';
@@ -73,7 +75,7 @@ export interface AliasProps extends AliasOptions {
   /**
    * Function version this alias refers to
    *
-   * Use lambda.addVersion() to obtain a new lambda version to refer to.
+   * Use lambda.currentVersion to reference a version with your latest changes.
    */
   readonly version: IVersion;
 }
@@ -96,6 +98,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       public readonly functionName = `${attrs.aliasVersion.lambda.functionName}:${attrs.aliasName}`;
       public readonly grantPrincipal = attrs.aliasVersion.grantPrincipal;
       public readonly role = attrs.aliasVersion.role;
+      public readonly architecture = attrs.aliasVersion.lambda.architecture;
 
       protected readonly canCreatePermissions = this._isStackAccount();
       protected readonly qualifier = attrs.aliasName;
@@ -118,6 +121,8 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
   public readonly functionName: string;
 
   public readonly lambda: IFunction;
+
+  public readonly architecture: Architecture;
 
   public readonly version: IVersion;
 
@@ -144,6 +149,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     this.lambda = props.version.lambda;
     this.aliasName = this.physicalName;
     this.version = props.version;
+    this.architecture = this.lambda.architecture;
 
     const alias = new CfnAlias(this, 'Resource', {
       name: this.aliasName,
@@ -167,7 +173,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       service: 'lambda',
       resource: 'function',
       resourceName: `${this.lambda.functionName}:${this.physicalName}`,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
     this.qualifier = extractQualifierFromArn(alias.ref);
@@ -184,7 +190,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     // ARN parsing splits on `:`, so we can only get the function's name from the ARN as resourceName...
     // And we're parsing it out (instead of using the underlying function directly) in order to have use of it incur
     // an implicit dependency on the resource.
-    this.functionName = `${this.stack.parseArn(this.functionArn, ':').resourceName!}:${this.aliasName}`;
+    this.functionName = `${this.stack.splitArn(this.functionArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!}:${this.aliasName}`;
   }
 
   public get grantPrincipal() {
@@ -198,7 +204,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
   public metric(metricName: string, props: cloudwatch.MetricOptions = {}): cloudwatch.Metric {
     // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differs from the base behavior.
     return super.metric(metricName, {
-      dimensions: {
+      dimensionsMap: {
         FunctionName: this.lambda.functionName,
         // construct the name from the underlying lambda so that alarms on an alias
         // don't cause a circular dependency with CodeDeploy

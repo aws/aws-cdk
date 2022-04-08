@@ -14,7 +14,7 @@ const lambdaCode = lambda.Code.fromCfnParameters();
 new lambda.Function(lambdaStack, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
 });
 // other resources that your Lambda needs, added to the lambdaStack...
 
@@ -124,9 +124,7 @@ pipeline.addStage({
       templatePath: cdkBuildOutput.atPath('LambdaStack.template.yaml'),
       stackName: 'LambdaStackDeployedName',
       adminPermissions: true,
-      parameterOverrides: {
-        ...lambdaCode.assign(lambdaBuildOutput.s3Location),
-      },
+      parameterOverrides: lambdaCode.assign(lambdaBuildOutput.s3Location),
       extraInputs: [
         lambdaBuildOutput,
       ],

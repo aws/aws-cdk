@@ -1,8 +1,8 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
-import { HttpApi, HttpStage } from '../../lib';
-
+import { DomainName, HttpApi, HttpStage } from '../../lib';
 
 describe('HttpStage', () => {
   test('default', () => {
@@ -15,7 +15,7 @@ describe('HttpStage', () => {
       httpApi: api,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Stage', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
       ApiId: stack.resolve(api.apiId),
       StageName: '$default',
     });
@@ -115,5 +115,52 @@ describe('HttpStage', () => {
     }
     const metricNames = metrics.map(m => m.metricName);
     expect(metricNames).toEqual(['4xx', '5xx', 'DataProcessed', 'Latency', 'IntegrationLatency', 'Count']);
+  });
+});
+
+describe('HttpStage with domain mapping', () => {
+  const domainName = 'example.com';
+  const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
+
+  test('domainUrl returns the correct path', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api', {
+      createDefaultStage: false,
+    });
+
+    const dn = new DomainName(stack, 'DN', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+    });
+
+    const stage = new HttpStage(stack, 'DefaultStage', {
+      httpApi: api,
+      domainMapping: {
+        domainName: dn,
+      },
+    });
+
+    expect(stack.resolve(stage.domainUrl)).toEqual({
+      'Fn::Join': ['', [
+        'https://', { Ref: 'DNFDC76583' }, '/',
+      ]],
+    });
+  });
+
+  test('domainUrl throws error if domainMapping is not configured', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api', {
+      createDefaultStage: false,
+    });
+
+    const stage = new HttpStage(stack, 'DefaultStage', {
+      httpApi: api,
+    });
+
+    const t = () => {
+      stage.domainUrl;
+    };
+
+    expect(t).toThrow(/domainUrl is not available when no API mapping is associated with the Stage/);
   });
 });

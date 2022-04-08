@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "TestStack/VPC"
+            "Value": "FlowLogsTestStack/VPC"
           }
         ]
       }
@@ -18,11 +18,11 @@
     "VPCPublicSubnet1SubnetB4246D30": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.0.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
+        "CidrBlock": "10.0.0.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -35,7 +35,7 @@
           },
           {
             "Key": "Name",
-            "Value": "TestStack/VPC/PublicSubnet1"
+            "Value": "FlowLogsTestStack/VPC/PublicSubnet1"
           }
         ]
       }
@@ -49,7 +49,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "TestStack/VPC/PublicSubnet1"
+            "Value": "FlowLogsTestStack/VPC/PublicSubnet1"
           }
         ]
       }
@@ -87,7 +87,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "TestStack/VPC/PublicSubnet1"
+            "Value": "FlowLogsTestStack/VPC/PublicSubnet1"
           }
         ]
       }
@@ -95,19 +95,19 @@
     "VPCPublicSubnet1NATGatewayE0556630": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet1SubnetB4246D30"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "VPCPublicSubnet1EIP6AD938E8",
             "AllocationId"
           ]
         },
-        "SubnetId": {
-          "Ref": "VPCPublicSubnet1SubnetB4246D30"
-        },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "TestStack/VPC/PublicSubnet1"
+            "Value": "FlowLogsTestStack/VPC/PublicSubnet1"
           }
         ]
       }
@@ -115,11 +115,11 @@
     "VPCPublicSubnet2Subnet74179F39": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.32.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
+        "CidrBlock": "10.0.32.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -132,7 +132,7 @@
           },
           {
             "Key": "Name",
-            "Value": "TestStack/VPC/PublicSubnet2"
+            "Value": "FlowLogsTestStack/VPC/PublicSubnet2"
           }
         ]
       }
@@ -146,7 +146,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "TestStack/VPC/PublicSubnet2"
+            "Value": "FlowLogsTestStack/VPC/PublicSubnet2"
           }
         ]
       }
@@ -184,7 +184,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "TestStack/VPC/PublicSubnet2"
+            "Value": "FlowLogsTestStack/VPC/PublicSubnet2"
           }
         ]
       }
@@ -192,19 +192,19 @@
     "VPCPublicSubnet2NATGateway3C070193": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet2Subnet74179F39"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "VPCPublicSubnet2EIP4947BC00",
             "AllocationId"
           ]
         },
-        "SubnetId": {
-          "Ref": "VPCPublicSubnet2Subnet74179F39"
-        },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "TestStack/VPC/PublicSubnet2"
+            "Value": "FlowLogsTestStack/VPC/PublicSubnet2"
           }
         ]
       }
@@ -212,11 +212,11 @@
     "VPCPublicSubnet3Subnet631C5E25": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.64.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1c",
+        "CidrBlock": "10.0.64.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -229,7 +229,7 @@
           },
           {
             "Key": "Name",
-            "Value": "TestStack/VPC/PublicSubnet3"
+            "Value": "FlowLogsTestStack/VPC/PublicSubnet3"
           }
         ]
       }
@@ -243,7 +243,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "TestStack/VPC/PublicSubnet3"
+            "Value": "FlowLogsTestStack/VPC/PublicSubnet3"
           }
         ]
       }
@@ -281,7 +281,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "TestStack/VPC/PublicSubnet3"
+            "Value": "FlowLogsTestStack/VPC/PublicSubnet3"
           }
         ]
       }
@@ -289,19 +289,19 @@
     "VPCPublicSubnet3NATGatewayD3048F5C": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet3Subnet631C5E25"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "VPCPublicSubnet3EIPAD4BC883",
             "AllocationId"
           ]
         },
-        "SubnetId": {
-          "Ref": "VPCPublicSubnet3Subnet631C5E25"
-        },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "TestStack/VPC/PublicSubnet3"
+            "Value": "FlowLogsTestStack/VPC/PublicSubnet3"
           }
         ]
       }
@@ -309,11 +309,11 @@
     "VPCPrivateSubnet1Subnet8BCA10E0": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.96.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
+        "CidrBlock": "10.0.96.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -326,7 +326,7 @@
           },
           {
             "Key": "Name",
-            "Value": "TestStack/VPC/PrivateSubnet1"
+            "Value": "FlowLogsTestStack/VPC/PrivateSubnet1"
           }
         ]
       }
@@ -340,7 +340,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "TestStack/VPC/PrivateSubnet1"
+            "Value": "FlowLogsTestStack/VPC/PrivateSubnet1"
           }
         ]
       }
@@ -371,11 +371,11 @@
     "VPCPrivateSubnet2SubnetCFCDAA7A": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.128.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
+        "CidrBlock": "10.0.128.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -388,7 +388,7 @@
           },
           {
             "Key": "Name",
-            "Value": "TestStack/VPC/PrivateSubnet2"
+            "Value": "FlowLogsTestStack/VPC/PrivateSubnet2"
           }
         ]
       }
@@ -402,7 +402,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "TestStack/VPC/PrivateSubnet2"
+            "Value": "FlowLogsTestStack/VPC/PrivateSubnet2"
           }
         ]
       }
@@ -433,11 +433,11 @@
     "VPCPrivateSubnet3Subnet3EDCD457": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.160.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1c",
+        "CidrBlock": "10.0.160.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -450,7 +450,7 @@
           },
           {
             "Key": "Name",
-            "Value": "TestStack/VPC/PrivateSubnet3"
+            "Value": "FlowLogsTestStack/VPC/PrivateSubnet3"
           }
         ]
       }
@@ -464,7 +464,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "TestStack/VPC/PrivateSubnet3"
+            "Value": "FlowLogsTestStack/VPC/PrivateSubnet3"
           }
         ]
       }
@@ -498,7 +498,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "TestStack/VPC"
+            "Value": "FlowLogsTestStack/VPC"
           }
         ]
       }
@@ -520,7 +520,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "TestStack/VPC"
+            "Value": "FlowLogsTestStack/VPC"
           }
         ]
       },
@@ -545,7 +545,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "TestStack/VPC"
+            "Value": "FlowLogsTestStack/VPC"
           }
         ]
       }
@@ -576,7 +576,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "TestStack/VPC"
+            "Value": "FlowLogsTestStack/VPC"
           }
         ]
       }
@@ -606,8 +606,8 @@
             {
               "Action": [
                 "logs:CreateLogStream",
-                "logs:PutLogEvents",
-                "logs:DescribeLogStreams"
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -668,8 +668,290 @@
     },
     "Bucket83908E77": {
       "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "aws-cdk:auto-delete-objects",
+            "Value": "true"
+          }
+        ]
+      },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
+    },
+    "BucketPolicyE9A3008A": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "Bucket83908E77"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "Bucket83908E77",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "Bucket83908E77",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:PutObject",
+              "Condition": {
+                "StringEquals": {
+                  "s3:x-amz-acl": "bucket-owner-full-control",
+                  "aws:SourceAccount": {
+                    "Ref": "AWS::AccountId"
+                  }
+                },
+                "ArnLike": {
+                  "aws:SourceArn": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":logs:",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ":",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":*"
+                      ]
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "delivery.logs.amazonaws.com"
+              },
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "Bucket83908E77",
+                        "Arn"
+                      ]
+                    },
+                    "/AWSLogs/",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "s3:GetBucketAcl",
+                "s3:ListBucket"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "aws:SourceAccount": {
+                    "Ref": "AWS::AccountId"
+                  }
+                },
+                "ArnLike": {
+                  "aws:SourceArn": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":logs:",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ":",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":*"
+                      ]
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "delivery.logs.amazonaws.com"
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Bucket83908E77",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "BucketAutoDeleteObjectsCustomResourceBAFD23C2": {
+      "Type": "Custom::S3AutoDeleteObjects",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+            "Arn"
+          ]
+        },
+        "BucketName": {
+          "Ref": "Bucket83908E77"
+        }
+      },
+      "DependsOn": [
+        "BucketPolicyE9A3008A"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          }
+        ]
+      }
+    },
+    "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Timeout": 900,
+        "MemorySize": 128,
+        "Handler": "__entrypoint__.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x",
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Lambda function for auto-deleting objects in ",
+              {
+                "Ref": "Bucket83908E77"
+              },
+              " S3 bucket."
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+      ]
+    }
+  },
+  "Parameters": {
+    "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
+    },
+    "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
+    },
+    "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824ArtifactHash76F8FCF2": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
     }
   }
 }

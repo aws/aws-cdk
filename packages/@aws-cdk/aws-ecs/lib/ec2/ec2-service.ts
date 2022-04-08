@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Lazy, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
 import { fromServiceAtrributes } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
@@ -39,7 +39,7 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
+   * The security groups to associate with the service. If you do not specify a security group, a new security group is created.
    *
    * This property is only used for tasks that use the awsvpc network mode.
    *
@@ -49,7 +49,7 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
-   * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
+   * The security groups to associate with the service. If you do not specify a security group, a new security group is created.
    *
    * This property is only used for tasks that use the awsvpc network mode.
    *
@@ -82,15 +82,6 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * @default false
    */
   readonly daemon?: boolean;
-
-  /**
-   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
-   * Tags can only be propagated to the tasks within the service during service creation.
-   *
-   * @deprecated Use `propagateTags` instead.
-   * @default PropagatedTagSource.NONE
-   */
-  readonly propagateTaskTagsFrom?: PropagatedTagSource;
 }
 
 /**
@@ -137,7 +128,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
   public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IEc2Service {
     class Import extends Resource implements IEc2Service {
       public readonly serviceArn = ec2ServiceArn;
-      public readonly serviceName = Stack.of(scope).parseArn(ec2ServiceArn).resourceName as string;
+      public readonly serviceName = Stack.of(scope).splitArn(ec2ServiceArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
     }
     return new Import(scope, id);
   }
@@ -173,15 +164,9 @@ export class Ec2Service extends BaseService implements IEc2Service {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
 
-    if (props.propagateTags && props.propagateTaskTagsFrom) {
-      throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
-    }
-
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
       throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
     }
-
-    const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
 
     super(scope, id, {
       ...props,
@@ -189,7 +174,6 @@ export class Ec2Service extends BaseService implements IEc2Service {
       maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
       minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
       launchType: LaunchType.EC2,
-      propagateTags: propagateTagsFromSource,
       enableECSManagedTags: props.enableECSManagedTags,
     },
     {

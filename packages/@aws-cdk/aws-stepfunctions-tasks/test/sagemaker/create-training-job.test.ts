@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -142,6 +141,7 @@ test('create complex training job', () => {
         },
       ],
     },
+    enableNetworkIsolation: true,
     hyperparameters: {
       lr: '0.1',
     },
@@ -192,6 +192,9 @@ test('create complex training job', () => {
     vpcConfig: {
       vpc,
     },
+    environment: {
+      SOMEVAR: 'myvalue',
+    },
   });
   trainTask.addSecurityGroup(securityGroup);
 
@@ -221,6 +224,7 @@ test('create complex training job', () => {
           { Name: 'mymetric', Regex: 'regex_pattern' },
         ],
       },
+      EnableNetworkIsolation: true,
       HyperParameters: {
         lr: '0.1',
       },
@@ -284,6 +288,9 @@ test('create complex training job', () => {
           { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
         ],
       },
+      Environment: {
+        SOMEVAR: 'myvalue',
+      },
     },
   });
 });
@@ -320,7 +327,7 @@ test('pass param to training job', () => {
     },
     resourceConfig: {
       instanceCount: 1,
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+      instanceType: new ec2.InstanceType(sfn.JsonPath.stringAt('$.TrainingJob.InstanceType')),
       volumeSize: cdk.Size.gibibytes(50),
     },
     stoppingCondition: {
@@ -368,9 +375,9 @@ test('pass param to training job', () => {
         },
       },
       'ResourceConfig': {
-        InstanceCount: 1,
-        InstanceType: 'ml.p3.2xlarge',
-        VolumeSizeInGB: 50,
+        'InstanceCount': 1,
+        'InstanceType.$': '$.TrainingJob.InstanceType',
+        'VolumeSizeInGB': 50,
       },
       'StoppingCondition': {
         MaxRuntimeInSeconds: 3600,

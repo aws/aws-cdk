@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { IsCompleteResponse, OnEventResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as aws from 'aws-sdk';
@@ -23,7 +24,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     super(eks, event);
 
     this.newProps = parseProps(this.event.ResourceProperties);
-    this.oldProps = event.RequestType === 'Update' ? parseProps(event.OldResourceProperties) : { };
+    this.oldProps = event.RequestType === 'Update' ? parseProps(event.OldResourceProperties) : {};
   }
 
   // ------
@@ -264,24 +265,29 @@ export class ClusterResourceHandler extends ResourceHandler {
 
   private generateClusterName() {
     const suffix = this.requestId.replace(/-/g, ''); // 32 chars
-    const prefix = this.logicalResourceId.substr(0, MAX_CLUSTER_NAME_LEN - suffix.length - 1);
+    const offset = MAX_CLUSTER_NAME_LEN - suffix.length - 1;
+    const prefix = this.logicalResourceId.slice(0, offset > 0 ? offset : 0);
     return `${prefix}-${suffix}`;
   }
 }
 
 function parseProps(props: any): aws.EKS.CreateClusterRequest {
 
-  const parsed = props?.Config ?? { };
+  const parsed = props?.Config ?? {};
 
   // this is weird but these boolean properties are passed by CFN as a string, and we need them to be booleanic for the SDK.
   // Otherwise it fails with 'Unexpected Parameter: params.resourcesVpcConfig.endpointPrivateAccess is expected to be a boolean'
 
-  if (typeof(parsed.resourcesVpcConfig?.endpointPrivateAccess) === 'string') {
+  if (typeof (parsed.resourcesVpcConfig?.endpointPrivateAccess) === 'string') {
     parsed.resourcesVpcConfig.endpointPrivateAccess = parsed.resourcesVpcConfig.endpointPrivateAccess === 'true';
   }
 
-  if (typeof(parsed.resourcesVpcConfig?.endpointPublicAccess) === 'string') {
+  if (typeof (parsed.resourcesVpcConfig?.endpointPublicAccess) === 'string') {
     parsed.resourcesVpcConfig.endpointPublicAccess = parsed.resourcesVpcConfig.endpointPublicAccess === 'true';
+  }
+
+  if (typeof (parsed.logging?.clusterLogging[0].enabled) === 'string') {
+    parsed.logging.clusterLogging[0].enabled = parsed.logging.clusterLogging[0].enabled === 'true';
   }
 
   return parsed;
@@ -303,13 +309,13 @@ function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps
   console.log('old props: ', JSON.stringify(oldProps));
   console.log('new props: ', JSON.stringify(newProps));
 
-  const newVpcProps = newProps.resourcesVpcConfig || { };
-  const oldVpcProps = oldProps.resourcesVpcConfig || { };
+  const newVpcProps = newProps.resourcesVpcConfig || {};
+  const oldVpcProps = oldProps.resourcesVpcConfig || {};
 
   const oldPublicAccessCidrs = new Set(oldVpcProps.publicAccessCidrs ?? []);
   const newPublicAccessCidrs = new Set(newVpcProps.publicAccessCidrs ?? []);
-  const newEnc = newProps.encryptionConfig || { };
-  const oldEnc = oldProps.encryptionConfig || { };
+  const newEnc = newProps.encryptionConfig || {};
+  const oldEnc = oldProps.encryptionConfig || {};
 
   return {
     replaceName: newProps.name !== oldProps.name,

@@ -95,14 +95,14 @@
     "VPCPublicSubnet1NATGatewayE0556630": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet1SubnetB4246D30"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "VPCPublicSubnet1EIP6AD938E8",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "VPCPublicSubnet1SubnetB4246D30"
         },
         "Tags": [
           {
@@ -192,14 +192,14 @@
     "VPCPublicSubnet2NATGateway3C070193": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet2Subnet74179F39"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "VPCPublicSubnet2EIP4947BC00",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "VPCPublicSubnet2Subnet74179F39"
         },
         "Tags": [
           {
@@ -403,11 +403,11 @@
           "Statement": [
             {
               "Action": [
-                "sqs:ReceiveMessage",
                 "sqs:ChangeMessageVisibility",
-                "sqs:GetQueueUrl",
                 "sqs:DeleteMessage",
-                "sqs:GetQueueAttributes"
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+                "sqs:ReceiveMessage"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -460,7 +460,7 @@
                   {
                     "Ref": "AWS::URLSuffix"
                   },
-                  "/aws-cdk/assets:3a8ba3ad06ed212b075efa3157fb407649c5996812bc64eeb5209e220aab4be5"
+                  "/aws-cdk/assets:95cefedd43575452a70cdeeeceb0f1c5728fd58c9ff8e81e760c3dac33c46417"
                 ]
               ]
             },
@@ -530,8 +530,8 @@
             {
               "Action": [
                 "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -590,7 +590,7 @@
         "Cluster": {
           "Ref": "EcsDefaultClusterMnL3mNNYNVPC9C1EC7A3"
         },
-       "DeploymentConfiguration": {
+        "DeploymentConfiguration": {
           "DeploymentCircuitBreaker": {
             "Enable": true,
             "Rollback": true

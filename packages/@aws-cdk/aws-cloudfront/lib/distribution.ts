@@ -1,7 +1,8 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { IResource, Lazy, Resource, Stack, Token, Duration, Names } from '@aws-cdk/core';
+import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags } from '@aws-cdk/core';
+import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
@@ -11,6 +12,7 @@ import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
+import { IResponseHeadersPolicy } from './response-headers-policy';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -215,9 +217,28 @@ export interface DistributionProps {
     * CloudFront serves your objects only to browsers or devices that support at
     * least the SSL version that you specify.
     *
-    * @default SecurityPolicyProtocol.TLS_V1_2_2019
+    * @default - SecurityPolicyProtocol.TLS_V1_2_2021 if the '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021' feature flag is set; otherwise, SecurityPolicyProtocol.TLS_V1_2_2019.
     */
   readonly minimumProtocolVersion?: SecurityPolicyProtocol;
+
+  /**
+    * The SSL method CloudFront will use for your distribution.
+    *
+    * Server Name Indication (SNI) - is an extension to the TLS computer networking protocol by which a client indicates
+    * which hostname it is attempting to connect to at the start of the handshaking process. This allows a server to present
+    * multiple certificates on the same IP address and TCP port number and hence allows multiple secure (HTTPS) websites
+    * (or any other service over TLS) to be served by the same IP address without requiring all those sites to use the same certificate.
+    *
+    * CloudFront can use SNI to host multiple distributions on the same IP - which a large majority of clients will support.
+    *
+    * If your clients cannot support SNI however - CloudFront can use dedicated IPs for your distribution - but there is a prorated monthly charge for
+    * using this feature. By default, we use SNI - but you can optionally enable dedicated IPs (VIP).
+    *
+    * See the CloudFront SSL for more details about pricing : https://aws.amazon.com/cloudfront/custom-ssl-domains/
+    *
+    * @default SSLMethod.SNI
+    */
+  readonly sslSupportMethod?: SSLMethod;
 }
 
 /**
@@ -259,7 +280,7 @@ export class Distribution extends Resource implements IDistribution {
     super(scope, id);
 
     if (props.certificate) {
-      const certificateRegion = Stack.of(this).parseArn(props.certificate.certificateArn).region;
+      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
         throw new Error(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
       }
@@ -283,7 +304,7 @@ export class Distribution extends Resource implements IDistribution {
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
       props.comment && props.comment.length > 128
-        ? `${props.comment.substr(0, 128 - 3)}...`
+        ? `${props.comment.slice(0, 128 - 3)}...`
         : props.comment;
 
     const distribution = new CfnDistribution(this, 'Resource', {
@@ -302,7 +323,8 @@ export class Distribution extends Resource implements IDistribution {
         logging: this.renderLogging(props),
         priceClass: props.priceClass ?? undefined,
         restrictions: this.renderRestrictions(props.geoRestriction),
-        viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate, props.minimumProtocolVersion) : undefined,
+        viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
+          props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
         webAclId: props.webAclId,
       },
     });
@@ -428,7 +450,9 @@ export class Distribution extends Resource implements IDistribution {
       throw new Error('Explicitly disabled logging but provided a logging bucket.');
     }
 
-    const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket');
+    const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket', {
+      encryption: s3.BucketEncryption.S3_MANAGED,
+    });
     return {
       bucket: bucket.bucketRegionalDomainName,
       includeCookies: props.logIncludesCookies,
@@ -446,11 +470,17 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private renderViewerCertificate(certificate: acm.ICertificate,
-    minimumProtocolVersion: SecurityPolicyProtocol = SecurityPolicyProtocol.TLS_V1_2_2019): CfnDistribution.ViewerCertificateProperty {
+    minimumProtocolVersionProp?: SecurityPolicyProtocol, sslSupportMethodProp?: SSLMethod): CfnDistribution.ViewerCertificateProperty {
+
+    const defaultVersion = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021)
+      ? SecurityPolicyProtocol.TLS_V1_2_2021 : SecurityPolicyProtocol.TLS_V1_2_2019;
+    const minimumProtocolVersion = minimumProtocolVersionProp ?? defaultVersion;
+    const sslSupportMethod = sslSupportMethodProp ?? SSLMethod.SNI;
+
     return {
       acmCertificateArn: certificate.certificateArn,
-      sslSupportMethod: SSLMethod.SNI,
       minimumProtocolVersion: minimumProtocolVersion,
+      sslSupportMethod: sslSupportMethod,
     };
   }
 }
@@ -531,7 +561,8 @@ export enum SecurityPolicyProtocol {
   TLS_V1_2016 = 'TLSv1_2016',
   TLS_V1_1_2016 = 'TLSv1.1_2016',
   TLS_V1_2_2018 = 'TLSv1.2_2018',
-  TLS_V1_2_2019 = 'TLSv1.2_2019'
+  TLS_V1_2_2019 = 'TLSv1.2_2019',
+  TLS_V1_2_2021 = 'TLSv1.2_2021'
 }
 
 /**
@@ -692,6 +723,13 @@ export interface AddBehaviorOptions {
    * @default - none
    */
   readonly originRequestPolicy?: IOriginRequestPolicy;
+
+  /**
+   * The response headers policy for this behavior. The response headers policy determines which headers are included in responses
+   *
+   * @default - none
+   */
+  readonly responseHeadersPolicy?: IResponseHeadersPolicy;
 
   /**
    * Set this to true to indicate you want to distribute media files in the Microsoft Smooth Streaming format using this behavior.

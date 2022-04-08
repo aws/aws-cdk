@@ -6,7 +6,7 @@ import {
 } from '@aws-cdk/aws-ecs';
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
-  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps,
+  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy,
 } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '@aws-cdk/aws-route53';
@@ -189,6 +189,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * port 443 for HTTPS). A domain name and zone must be also be specified if using HTTPS.
    */
   readonly listenerPort?: number;
+
+  /**
+   * The security policy that defines which ciphers and protocols are supported by the ALB Listener.
+   *
+   * @default - The recommended elastic load balancing security policy
+   */
+  readonly sslPolicy?: SslPolicy;
 
   /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
@@ -406,7 +413,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    if (props.desiredCount !== undefined && props.desiredCount < 1) {
+    if (props.desiredCount !== undefined && !cdk.Token.isUnresolved(props.desiredCount) && props.desiredCount < 1) {
       throw new Error('You must specify a desiredCount greater than 0');
     }
 
@@ -441,6 +448,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
       protocol,
       port: props.listenerPort,
       open: props.openListener ?? true,
+      sslPolicy: props.sslPolicy,
     });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 

@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import { Result } from '../lib';
 
 describe('Pass State', () => {

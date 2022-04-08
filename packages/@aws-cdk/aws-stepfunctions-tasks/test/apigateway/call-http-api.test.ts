@@ -146,4 +146,59 @@ describe('CallApiGatewayHttpApiEndpoint', () => {
       });
     }).toThrow(/Unsupported service integration pattern./);
   });
+
+  test('render Stage field', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi');
+
+    // WHEN
+    const task = new CallApiGatewayHttpApiEndpoint(stack, 'Call', {
+      apiId: httpApi.apiId,
+      apiStack: cdk.Stack.of(httpApi),
+      method: HttpMethod.GET,
+      stageName: 'stage',
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      End: true,
+      Parameters: {
+        ApiEndpoint: {
+          'Fn::Join': [
+            '',
+            [
+              {
+                Ref: 'HttpApiF5A9A8A7',
+              },
+              '.execute-api.',
+              {
+                Ref: 'AWS::Region',
+              },
+              '.',
+              {
+                Ref: 'AWS::URLSuffix',
+              },
+            ],
+          ],
+        },
+        AuthType: 'NO_AUTH',
+        Method: 'GET',
+        Stage: 'stage',
+      },
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::apigateway:invoke',
+          ],
+        ],
+      },
+    });
+  });
 });

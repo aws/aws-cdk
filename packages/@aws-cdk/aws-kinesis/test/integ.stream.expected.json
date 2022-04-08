@@ -39,13 +39,15 @@
           "Statement": [
             {
               "Action": [
+                "kinesis:DescribeStream",
                 "kinesis:DescribeStreamSummary",
                 "kinesis:GetRecords",
                 "kinesis:GetShardIterator",
                 "kinesis:ListShards",
-                "kinesis:SubscribeToShard",
+                "kinesis:ListStreams",
                 "kinesis:PutRecord",
-                "kinesis:PutRecords"
+                "kinesis:PutRecords",
+                "kinesis:SubscribeToShard"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -69,8 +71,8 @@
     "myStream547FAD7F": {
       "Type": "AWS::Kinesis::Stream",
       "Properties": {
-        "ShardCount": 1,
         "RetentionPeriodHours": 24,
+        "ShardCount": 1,
         "StreamEncryption": {
           "Fn::If": [
             "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
@@ -82,6 +84,9 @@
               "KeyId": "alias/aws/kinesis"
             }
           ]
+        },
+        "StreamModeDetails": {
+          "StreamMode": "PROVISIONED"
         }
       }
     }

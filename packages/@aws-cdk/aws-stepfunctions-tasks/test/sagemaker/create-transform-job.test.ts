@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -245,6 +244,64 @@ test('pass param to transform job', () => {
       'TransformResources': {
         InstanceCount: 1,
         InstanceType: 'ml.p3.2xlarge',
+      },
+    },
+  });
+});
+test('create transform job with instance type supplied as JsonPath', () => {
+  // WHEN
+  const task = new SageMakerCreateTransformJob(stack, 'TransformTask', {
+    transformJobName: 'MyTransformJob',
+    modelName: 'MyModelName',
+    transformInput: {
+      transformDataSource: {
+        s3DataSource: {
+          s3Uri: 's3://inputbucket/prefix',
+        },
+      },
+    },
+    transformOutput: {
+      s3OutputPath: 's3://outputbucket/prefix',
+    },
+    transformResources: {
+      instanceCount: 1,
+      instanceType: new ec2.InstanceType(sfn.JsonPath.stringAt('$.InstanceType')),
+    },
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::sagemaker:createTransformJob',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      TransformJobName: 'MyTransformJob',
+      ModelName: 'MyModelName',
+      TransformInput: {
+        DataSource: {
+          S3DataSource: {
+            S3Uri: 's3://inputbucket/prefix',
+            S3DataType: 'S3Prefix',
+          },
+        },
+      },
+      TransformOutput: {
+        S3OutputPath: 's3://outputbucket/prefix',
+      },
+      TransformResources: {
+        'InstanceCount': 1,
+        'InstanceType.$': '$.InstanceType',
       },
     },
   });

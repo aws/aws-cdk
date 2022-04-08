@@ -1,4 +1,4 @@
-import { FeatureFlags, Lazy, Names, Resource, Token } from '@aws-cdk/core';
+import { FeatureFlags, IResource, Lazy, Names, Resource, Token } from '@aws-cdk/core';
 import { APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { IApiKey } from './api-key';
@@ -6,7 +6,7 @@ import { CfnUsagePlan, CfnUsagePlanKey } from './apigateway.generated';
 import { Method } from './method';
 import { IRestApi } from './restapi';
 import { Stage } from './stage';
-import { validateInteger } from './util';
+import { validateDouble, validateInteger } from './util';
 
 /**
  * Container for defining throttling parameters to API stages or methods.
@@ -156,7 +156,82 @@ export interface AddApiKeyOptions {
   readonly overrideLogicalId?: string;
 }
 
-export class UsagePlan extends Resource {
+/**
+ * A UsagePlan, either managed by this CDK app, or imported.
+ */
+export interface IUsagePlan extends IResource {
+  /**
+   * Id of the usage plan
+   * @attribute
+   */
+  readonly usagePlanId: string;
+
+  /**
+   * Adds an ApiKey.
+   *
+   * @param apiKey the api key to associate with this usage plan
+   * @param options options that control the behaviour of this method
+   */
+  addApiKey(apiKey: IApiKey, options?: AddApiKeyOptions): void;
+
+}
+
+abstract class UsagePlanBase extends Resource implements IUsagePlan {
+  /**
+   * Id of the usage plan
+   * @attribute
+   */
+  public abstract readonly usagePlanId: string;
+
+  /**
+   * Adds an ApiKey.
+   *
+   * @param apiKey the api key to associate with this usage plan
+   * @param options options that control the behaviour of this method
+   */
+  public addApiKey(apiKey: IApiKey, options?: AddApiKeyOptions): void {
+    let id: string;
+    const prefix = 'UsagePlanKeyResource';
+
+    if (FeatureFlags.of(this).isEnabled(APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID)) {
+      id = `${prefix}:${Names.nodeUniqueId(apiKey.node)}`;
+    } else {
+      // Postfixing apikey id only from the 2nd child, to keep physicalIds of UsagePlanKey for existing CDK apps unmodified.
+      id = this.node.tryFindChild(prefix) ? `${prefix}:${Names.nodeUniqueId(apiKey.node)}` : prefix;
+    }
+
+    const resource = new CfnUsagePlanKey(this, id, {
+      keyId: apiKey.keyId,
+      keyType: UsagePlanKeyType.API_KEY,
+      usagePlanId: this.usagePlanId,
+    });
+    if (options?.overrideLogicalId) {
+      resource.overrideLogicalId(options?.overrideLogicalId);
+    }
+  }
+
+}
+
+export class UsagePlan extends UsagePlanBase {
+
+  /**
+   * Import an externally defined usage plan using its ARN.
+   *
+   * @param scope  the construct that will "own" the imported usage plan.
+   * @param id     the id of the imported usage plan in the construct tree.
+   * @param usagePlanId the id of an existing usage plan.
+   */
+  public static fromUsagePlanId(scope: Construct, id: string, usagePlanId: string): IUsagePlan {
+    class Import extends UsagePlanBase {
+      public readonly usagePlanId = usagePlanId;
+
+      constructor() {
+        super(scope, id);
+      }
+    }
+    return new Import();
+  }
+
   /**
    * @attribute
    */
@@ -183,33 +258,6 @@ export class UsagePlan extends Resource {
     // Add ApiKey when
     if (props.apiKey) {
       this.addApiKey(props.apiKey);
-    }
-  }
-
-  /**
-   * Adds an ApiKey.
-   *
-   * @param apiKey the api key to associate with this usage plan
-   * @param options options that control the behaviour of this method
-   */
-  public addApiKey(apiKey: IApiKey, options?: AddApiKeyOptions): void {
-    let id: string;
-    const prefix = 'UsagePlanKeyResource';
-
-    if (FeatureFlags.of(this).isEnabled(APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID)) {
-      id = `${prefix}:${Names.nodeUniqueId(apiKey.node)}`;
-    } else {
-      // Postfixing apikey id only from the 2nd child, to keep physicalIds of UsagePlanKey for existing CDK apps unmodified.
-      id = this.node.tryFindChild(prefix) ? `${prefix}:${Names.nodeUniqueId(apiKey.node)}` : prefix;
-    }
-
-    const resource = new CfnUsagePlanKey(this, id, {
-      keyId: apiKey.keyId,
-      keyType: UsagePlanKeyType.API_KEY,
-      usagePlanId: this.usagePlanId,
-    });
-    if (options?.overrideLogicalId) {
-      resource.overrideLogicalId(options?.overrideLogicalId);
     }
   }
 
@@ -268,7 +316,7 @@ export class UsagePlan extends Resource {
       const burstLimit = props.burstLimit;
       validateInteger(burstLimit, 'Throttle burst limit');
       const rateLimit = props.rateLimit;
-      validateInteger(rateLimit, 'Throttle rate limit');
+      validateDouble(rateLimit, 'Throttle rate limit');
 
       ret = {
         burstLimit: burstLimit,

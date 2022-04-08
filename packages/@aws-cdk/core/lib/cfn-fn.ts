@@ -1,4 +1,4 @@
-import { ICfnConditionExpression } from './cfn-condition';
+import { ICfnConditionExpression, ICfnRuleConditionExpression } from './cfn-condition';
 import { minimalCloudFormationJoin } from './private/cloudformation-lang';
 import { Intrinsic } from './private/intrinsic';
 import { Reference } from './reference';
@@ -127,7 +127,7 @@ export class Fn {
    * @returns a token represented as a string
    */
   public static select(index: number, array: string[]): string {
-    if (!Token.isUnresolved(array)) {
+    if (!Token.isUnresolved(index) && !Token.isUnresolved(array) && !array.some(Token.isUnresolved)) {
       return array[index];
     }
 
@@ -267,12 +267,12 @@ export class Fn {
    * @param conditions conditions to AND
    * @returns an FnCondition token
    */
-  public static conditionAnd(...conditions: ICfnConditionExpression[]): ICfnConditionExpression {
+  public static conditionAnd(...conditions: ICfnConditionExpression[]): ICfnRuleConditionExpression {
     if (conditions.length === 0) {
       throw new Error('Fn.conditionAnd() needs at least one argument');
     }
     if (conditions.length === 1) {
-      return conditions[0];
+      return conditions[0] as ICfnRuleConditionExpression;
     }
     return Fn.conditionAnd(..._inGroupsOf(conditions, 10).map(group => new FnAnd(...group)));
   }
@@ -284,7 +284,7 @@ export class Fn {
    * @param rhs A value of any type that you want to compare.
    * @returns an FnCondition token
    */
-  public static conditionEquals(lhs: any, rhs: any): ICfnConditionExpression {
+  public static conditionEquals(lhs: any, rhs: any): ICfnRuleConditionExpression {
     return new FnEquals(lhs, rhs);
   }
 
@@ -303,7 +303,7 @@ export class Fn {
    * evaluates to false.
    * @returns an FnCondition token
    */
-  public static conditionIf(conditionId: string, valueIfTrue: any, valueIfFalse: any): ICfnConditionExpression {
+  public static conditionIf(conditionId: string, valueIfTrue: any, valueIfFalse: any): ICfnRuleConditionExpression {
     return new FnIf(conditionId, valueIfTrue, valueIfFalse);
   }
 
@@ -314,7 +314,7 @@ export class Fn {
    * or false.
    * @returns an FnCondition token
    */
-  public static conditionNot(condition: ICfnConditionExpression): ICfnConditionExpression {
+  public static conditionNot(condition: ICfnConditionExpression): ICfnRuleConditionExpression {
     return new FnNot(condition);
   }
 
@@ -326,12 +326,12 @@ export class Fn {
    * @param conditions conditions that evaluates to true or false.
    * @returns an FnCondition token
    */
-  public static conditionOr(...conditions: ICfnConditionExpression[]): ICfnConditionExpression {
+  public static conditionOr(...conditions: ICfnConditionExpression[]): ICfnRuleConditionExpression {
     if (conditions.length === 0) {
       throw new Error('Fn.conditionOr() needs at least one argument');
     }
     if (conditions.length === 1) {
-      return conditions[0];
+      return conditions[0] as ICfnRuleConditionExpression;
     }
     return Fn.conditionOr(..._inGroupsOf(conditions, 10).map(group => new FnOr(...group)));
   }
@@ -343,7 +343,7 @@ export class Fn {
    * @param value A string, such as "A", that you want to compare against a list of strings.
    * @returns an FnCondition token
    */
-  public static conditionContains(listOfStrings: string[], value: string): ICfnConditionExpression {
+  public static conditionContains(listOfStrings: string[], value: string): ICfnRuleConditionExpression {
     return new FnContains(listOfStrings, value);
   }
 
@@ -354,7 +354,7 @@ export class Fn {
    * of strings.
    * @returns an FnCondition token
    */
-  public static conditionEachMemberEquals(listOfStrings: string[], value: string): ICfnConditionExpression {
+  public static conditionEachMemberEquals(listOfStrings: string[], value: string): ICfnRuleConditionExpression {
     return new FnEachMemberEquals(listOfStrings, value);
   }
 
@@ -369,7 +369,7 @@ export class Fn {
    * strings_to_check parameter.
    * @returns an FnCondition token
    */
-  public static conditionEachMemberIn(stringsToCheck: string[], stringsToMatch: string[]): ICfnConditionExpression {
+  public static conditionEachMemberIn(stringsToCheck: string[], stringsToMatch: string[]): ICfnRuleConditionExpression {
     return new FnEachMemberIn(stringsToCheck, stringsToMatch);
   }
 
@@ -604,7 +604,8 @@ class FnCidr extends FnBase {
   }
 }
 
-class FnConditionBase extends Intrinsic implements ICfnConditionExpression {
+class FnConditionBase extends Intrinsic implements ICfnRuleConditionExpression {
+  readonly disambiguator = true;
   constructor(type: string, value: any) {
     super({ [type]: value });
   }

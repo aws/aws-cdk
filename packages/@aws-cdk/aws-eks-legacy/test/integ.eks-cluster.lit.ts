@@ -1,11 +1,15 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as eks from '../lib';
-import { TestStack } from './util';
 
-class EksClusterStack extends TestStack {
+const env = {
+  region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
+  account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
+};
+
+class EksClusterStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
-    super(scope, id);
+    super(scope, id, { env });
 
     /// !show
     const vpc = new ec2.Vpc(this, 'VPC');

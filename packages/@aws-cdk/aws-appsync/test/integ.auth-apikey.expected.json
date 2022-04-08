@@ -28,7 +28,7 @@
             "ApiId"
           ]
         },
-        "Expires": 1626566400
+        "Expires": 1658053715
       },
       "DependsOn": [
         "ApiSchema510EECD7"
@@ -59,16 +59,17 @@
             {
               "Action": [
                 "dynamodb:BatchGetItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+                "dynamodb:GetItem",
                 "dynamodb:GetRecords",
                 "dynamodb:GetShardIterator",
-                "dynamodb:Query",
-                "dynamodb:GetItem",
-                "dynamodb:Scan",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:BatchWriteItem",
                 "dynamodb:PutItem",
-                "dynamodb:UpdateItem",
-                "dynamodb:DeleteItem"
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:UpdateItem"
               ],
               "Effect": "Allow",
               "Resource": [

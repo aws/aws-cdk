@@ -1,11 +1,12 @@
-import { promises as fs } from 'fs';
+import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { retry, sleep } from '../helpers/aws';
-import { cloneDirectory, shell, withDefaultFixture } from '../helpers/cdk';
+import { cloneDirectory, MAJOR_VERSION, shell, withDefaultFixture } from '../helpers/cdk';
+import { randomInteger, withSamIntegrationFixture } from '../helpers/sam';
 import { integTest } from '../helpers/test-helpers';
 
-jest.setTimeout(600 * 1000);
+jest.setTimeout(600_000);
 
 integTest('VPC Lookup', withDefaultFixture(async (fixture) => {
   fixture.log('Making sure we are clean before starting.');
@@ -19,7 +20,20 @@ integTest('VPC Lookup', withDefaultFixture(async (fixture) => {
   await fixture.cdkDeploy('import-vpc', { modEnv: { ENABLE_VPC_TESTING: 'IMPORT' } });
 }));
 
-integTest('Two ways of shoing the version', withDefaultFixture(async (fixture) => {
+// testing a construct with a builtin Nodejs Lambda Function.
+// In this case we are testing the s3.Bucket construct with the
+// autoDeleteObjects prop set to true, which creates a Lambda backed
+// CustomResource. Since the compiled Lambda code (e.g. __entrypoint__.js)
+// is bundled as part of the CDK package, we want to make sure we don't
+// introduce changes to the compiled code that could prevent the Lambda from
+// executing. If we do, this test will timeout and fail.
+integTest('Construct with builtin Lambda function', withDefaultFixture(async (fixture) => {
+  await fixture.cdkDeploy('builtin-lambda-function');
+  fixture.log('Setup complete!');
+  await fixture.cdkDestroy('builtin-lambda-function');
+}));
+
+integTest('Two ways of showing the version', withDefaultFixture(async (fixture) => {
   const version1 = await fixture.cdk(['version'], { verbose: false });
   const version2 = await fixture.cdk(['--version'], { verbose: false });
 
@@ -39,23 +53,35 @@ integTest('Termination protection', withDefaultFixture(async (fixture) => {
 }));
 
 integTest('cdk synth', withDefaultFixture(async (fixture) => {
-  await expect(fixture.cdk(['synth', fixture.fullStackName('test-1')], { verbose: false })).resolves.toEqual(
-    `Resources:
-  topic69831491:
-    Type: AWS::SNS::Topic
-    Metadata:
-      aws:cdk:path: ${fixture.stackNamePrefix}-test-1/topic/Resource`);
+  await fixture.cdk(['synth', fixture.fullStackName('test-1')]);
+  expect(fixture.template('test-1')).toEqual(expect.objectContaining({
+    Resources: {
+      topic69831491: {
+        Type: 'AWS::SNS::Topic',
+        Metadata: {
+          'aws:cdk:path': `${fixture.stackNamePrefix}-test-1/topic/Resource`,
+        },
+      },
+    },
+  }));
 
-  await expect(fixture.cdk(['synth', fixture.fullStackName('test-2')], { verbose: false })).resolves.toEqual(
-    `Resources:
-  topic152D84A37:
-    Type: AWS::SNS::Topic
-    Metadata:
-      aws:cdk:path: ${fixture.stackNamePrefix}-test-2/topic1/Resource
-  topic2A4FB547F:
-    Type: AWS::SNS::Topic
-    Metadata:
-      aws:cdk:path: ${fixture.stackNamePrefix}-test-2/topic2/Resource`);
+  await fixture.cdk(['synth', fixture.fullStackName('test-2')], { verbose: false });
+  expect(fixture.template('test-2')).toEqual(expect.objectContaining({
+    Resources: {
+      topic152D84A37: {
+        Type: 'AWS::SNS::Topic',
+        Metadata: {
+          'aws:cdk:path': `${fixture.stackNamePrefix}-test-2/topic1/Resource`,
+        },
+      },
+      topic2A4FB547F: {
+        Type: 'AWS::SNS::Topic',
+        Metadata: {
+          'aws:cdk:path': `${fixture.stackNamePrefix}-test-2/topic2/Resource`,
+        },
+      },
+    },
+  }));
 }));
 
 integTest('ssm parameter provider error', withDefaultFixture(async (fixture) => {
@@ -210,12 +236,12 @@ integTest('deploy with parameters', withDefaultFixture(async (fixture) => {
     StackName: stackArn,
   });
 
-  expect(response.Stacks?.[0].Parameters).toEqual([
+  expect(response.Stacks?.[0].Parameters).toContainEqual(
     {
       ParameterKey: 'TopicNameParam',
       ParameterValue: `${fixture.stackNamePrefix}bazinga`,
     },
-  ]);
+  );
 }));
 
 integTest('update to stack in ROLLBACK_COMPLETE state will delete stack and create a new one', withDefaultFixture(async (fixture) => {
@@ -247,14 +273,14 @@ integTest('update to stack in ROLLBACK_COMPLETE state will delete stack and crea
   });
 
   // THEN
-  expect (stackArn).not.toEqual(newStackArn); // new stack was created
+  expect(stackArn).not.toEqual(newStackArn); // new stack was created
   expect(newStackResponse.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
-  expect(newStackResponse.Stacks?.[0].Parameters).toEqual([
+  expect(newStackResponse.Stacks?.[0].Parameters).toContainEqual(
     {
       ParameterKey: 'TopicNameParam',
       ParameterValue: `${fixture.stackNamePrefix}allgood`,
     },
-  ]);
+  );
 }));
 
 integTest('stack in UPDATE_ROLLBACK_COMPLETE state can be updated', withDefaultFixture(async (fixture) => {
@@ -300,12 +326,12 @@ integTest('stack in UPDATE_ROLLBACK_COMPLETE state can be updated', withDefaultF
 
   // THEN
   expect(response.Stacks?.[0].StackStatus).toEqual('UPDATE_COMPLETE');
-  expect(response.Stacks?.[0].Parameters).toEqual([
+  expect(response.Stacks?.[0].Parameters).toContainEqual(
     {
       ParameterKey: 'TopicNameParam',
       ParameterValue: `${fixture.stackNamePrefix}allgood`,
     },
-  ]);
+  );
 }));
 
 integTest('deploy with wildcard and parameters', withDefaultFixture(async (fixture) => {
@@ -335,16 +361,18 @@ integTest('deploy with parameters multi', withDefaultFixture(async (fixture) => 
     StackName: stackArn,
   });
 
-  expect(response.Stacks?.[0].Parameters).toEqual([
+  expect(response.Stacks?.[0].Parameters).toContainEqual(
     {
       ParameterKey: 'DisplayNameParam',
       ParameterValue: paramVal1,
     },
+  );
+  expect(response.Stacks?.[0].Parameters).toContainEqual(
     {
       ParameterKey: 'OtherDisplayNameParam',
       ParameterValue: paramVal2,
     },
-  ]);
+  );
 }));
 
 integTest('deploy with notification ARN', withDefaultFixture(async (fixture) => {
@@ -369,82 +397,86 @@ integTest('deploy with notification ARN', withDefaultFixture(async (fixture) => 
   }
 }));
 
-integTest('deploy with role', withDefaultFixture(async (fixture) => {
-  const roleName = `${fixture.stackNamePrefix}-test-role`;
+if (MAJOR_VERSION === '1') {
+  // NOTE: this doesn't currently work with modern-style synthesis, as the bootstrap
+  // role by default will not have permission to iam:PassRole the created role.
+  integTest('deploy with role', withDefaultFixture(async (fixture) => {
+    const roleName = `${fixture.stackNamePrefix}-test-role`;
 
-  await deleteRole();
+    await deleteRole();
 
-  const createResponse = await fixture.aws.iam('createRole', {
-    RoleName: roleName,
-    AssumeRolePolicyDocument: JSON.stringify({
-      Version: '2012-10-17',
-      Statement: [{
-        Action: 'sts:AssumeRole',
-        Principal: { Service: 'cloudformation.amazonaws.com' },
-        Effect: 'Allow',
-      }, {
-        Action: 'sts:AssumeRole',
-        Principal: { AWS: (await fixture.aws.sts('getCallerIdentity', {})).Arn },
-        Effect: 'Allow',
-      }],
-    }),
-  });
-  const roleArn = createResponse.Role.Arn;
-  try {
-    await fixture.aws.iam('putRolePolicy', {
+    const createResponse = await fixture.aws.iam('createRole', {
       RoleName: roleName,
-      PolicyName: 'DefaultPolicy',
-      PolicyDocument: JSON.stringify({
+      AssumeRolePolicyDocument: JSON.stringify({
         Version: '2012-10-17',
         Statement: [{
-          Action: '*',
-          Resource: '*',
+          Action: 'sts:AssumeRole',
+          Principal: { Service: 'cloudformation.amazonaws.com' },
+          Effect: 'Allow',
+        }, {
+          Action: 'sts:AssumeRole',
+          Principal: { AWS: (await fixture.aws.sts('getCallerIdentity', {})).Arn },
           Effect: 'Allow',
         }],
       }),
     });
-
-    await retry(fixture.output, 'Trying to assume fresh role', retry.forSeconds(300), async () => {
-      await fixture.aws.sts('assumeRole', {
-        RoleArn: roleArn,
-        RoleSessionName: 'testing',
-      });
-    });
-
-    // In principle, the role has replicated from 'us-east-1' to wherever we're testing.
-    // Give it a little more sleep to make sure CloudFormation is not hitting a box
-    // that doesn't have it yet.
-    await sleep(5000);
-
-    await fixture.cdkDeploy('test-2', {
-      options: ['--role-arn', roleArn],
-    });
-
-    // Immediately delete the stack again before we delete the role.
-    //
-    // Since roles are sticky, if we delete the role before the stack, subsequent DeleteStack
-    // operations will fail when CloudFormation tries to assume the role that's already gone.
-    await fixture.cdkDestroy('test-2');
-
-  } finally {
-    await deleteRole();
-  }
-
-  async function deleteRole() {
+    const roleArn = createResponse.Role.Arn;
     try {
-      for (const policyName of (await fixture.aws.iam('listRolePolicies', { RoleName: roleName })).PolicyNames) {
-        await fixture.aws.iam('deleteRolePolicy', {
-          RoleName: roleName,
-          PolicyName: policyName,
+      await fixture.aws.iam('putRolePolicy', {
+        RoleName: roleName,
+        PolicyName: 'DefaultPolicy',
+        PolicyDocument: JSON.stringify({
+          Version: '2012-10-17',
+          Statement: [{
+            Action: '*',
+            Resource: '*',
+            Effect: 'Allow',
+          }],
+        }),
+      });
+
+      await retry(fixture.output, 'Trying to assume fresh role', retry.forSeconds(300), async () => {
+        await fixture.aws.sts('assumeRole', {
+          RoleArn: roleArn,
+          RoleSessionName: 'testing',
         });
-      }
-      await fixture.aws.iam('deleteRole', { RoleName: roleName });
-    } catch (e) {
-      if (e.message.indexOf('cannot be found') > -1) { return; }
-      throw e;
+      });
+
+      // In principle, the role has replicated from 'us-east-1' to wherever we're testing.
+      // Give it a little more sleep to make sure CloudFormation is not hitting a box
+      // that doesn't have it yet.
+      await sleep(5000);
+
+      await fixture.cdkDeploy('test-2', {
+        options: ['--role-arn', roleArn],
+      });
+
+      // Immediately delete the stack again before we delete the role.
+      //
+      // Since roles are sticky, if we delete the role before the stack, subsequent DeleteStack
+      // operations will fail when CloudFormation tries to assume the role that's already gone.
+      await fixture.cdkDestroy('test-2');
+
+    } finally {
+      await deleteRole();
     }
-  }
-}));
+
+    async function deleteRole() {
+      try {
+        for (const policyName of (await fixture.aws.iam('listRolePolicies', { RoleName: roleName })).PolicyNames) {
+          await fixture.aws.iam('deleteRolePolicy', {
+            RoleName: roleName,
+            PolicyName: policyName,
+          });
+        }
+        await fixture.aws.iam('deleteRole', { RoleName: roleName });
+      } catch (e) {
+        if (e.message.indexOf('cannot be found') > -1) { return; }
+        throw e;
+      }
+    }
+  }));
+}
 
 integTest('cdk diff', withDefaultFixture(async (fixture) => {
   const diff1 = await fixture.cdk(['diff', fixture.fullStackName('test-1')]);
@@ -482,6 +514,11 @@ integTest('cdk diff --fail with multiple stack exits with if any of the stacks c
 
   // WHEN / THEN
   await expect(fixture.cdk(['diff', '--fail', fixture.fullStackName('test-1'), fixture.fullStackName('test-2')])).rejects.toThrow('exited with error');
+}));
+
+integTest('cdk diff --security-only --fail exits when security changes are present', withDefaultFixture(async (fixture) => {
+  const stackName = 'iam-test';
+  await expect(fixture.cdk(['diff', '--security-only', '--fail', fixture.fullStackName(stackName)])).rejects.toThrow('exited with error');
 }));
 
 integTest('deploy stack with docker asset', withDefaultFixture(async (fixture) => {
@@ -534,6 +571,25 @@ integTest('cdk ls', withDefaultFixture(async (fixture) => {
   for (const stack of expectedStacks) {
     expect(listing).toContain(fixture.fullStackName(stack));
   }
+}));
+
+integTest('synthing a stage with errors leads to failure', withDefaultFixture(async (fixture) => {
+  const output = await fixture.cdk(['synth'], {
+    allowErrExit: true,
+    modEnv: {
+      INTEG_STACK_SET: 'stage-with-errors',
+    },
+  });
+
+  expect(output).toContain('This is an error');
+}));
+
+integTest('synthing a stage with errors can be suppressed', withDefaultFixture(async (fixture) => {
+  await fixture.cdk(['synth', '--no-validation'], {
+    modEnv: {
+      INTEG_STACK_SET: 'stage-with-errors',
+    },
+  });
 }));
 
 integTest('deploy stack without resource', withDefaultFixture(async (fixture) => {
@@ -697,9 +753,275 @@ integTest('templates on disk contain metadata resource, also in nested assemblie
   expect(JSON.parse(templateContents).Resources.CDKMetadata).toBeTruthy();
 
   // Load template from nested assembly
-  const nestedTemplateContents = await fixture.shell(['cat', 'cdk.out/assembly-*-stage/*-stage-StackInStage.template.json']);
+  const nestedTemplateContents = await fixture.shell(['cat', 'cdk.out/assembly-*-stage/*StackInStage*.template.json']);
 
   expect(JSON.parse(nestedTemplateContents).Resources.CDKMetadata).toBeTruthy();
+}));
+
+integTest('CDK synth add the metadata properties expected by sam', withSamIntegrationFixture(async (fixture) => {
+  // Synth first
+  await fixture.cdkSynth();
+
+  const template = fixture.template('TestStack');
+
+  const expectedResources = [
+    {
+      // Python Layer Version
+      id: 'PythonLayerVersion39495CEF',
+      cdkId: 'PythonLayerVersion',
+      isBundled: true,
+      property: 'Content',
+    },
+    {
+      // Layer Version
+      id: 'LayerVersion3878DA3A',
+      cdkId: 'LayerVersion',
+      isBundled: false,
+      property: 'Content',
+    },
+    {
+      // Bundled layer version
+      id: 'BundledLayerVersionPythonRuntime6BADBD6E',
+      cdkId: 'BundledLayerVersionPythonRuntime',
+      isBundled: true,
+      property: 'Content',
+    },
+    {
+      // Python Function
+      id: 'PythonFunction0BCF77FD',
+      cdkId: 'PythonFunction',
+      isBundled: true,
+      property: 'Code',
+    },
+    {
+      // Log Retention Function
+      id: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+      cdkId: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a',
+      isBundled: false,
+      property: 'Code',
+    },
+    {
+      // Function
+      id: 'FunctionPythonRuntime28CBDA05',
+      cdkId: 'FunctionPythonRuntime',
+      isBundled: false,
+      property: 'Code',
+    },
+    {
+      // Bundled Function
+      id: 'BundledFunctionPythonRuntime4D9A0918',
+      cdkId: 'BundledFunctionPythonRuntime',
+      isBundled: true,
+      property: 'Code',
+    },
+    {
+      // NodeJs Function
+      id: 'NodejsFunction09C1F20F',
+      cdkId: 'NodejsFunction',
+      isBundled: true,
+      property: 'Code',
+    },
+    {
+      // Go Function
+      id: 'GoFunctionCA95FBAA',
+      cdkId: 'GoFunction',
+      isBundled: true,
+      property: 'Code',
+    },
+    {
+      // Docker Image Function
+      id: 'DockerImageFunction28B773E6',
+      cdkId: 'DockerImageFunction',
+      dockerFilePath: 'Dockerfile',
+      property: 'Code.ImageUri',
+    },
+    {
+      // Spec Rest Api
+      id: 'SpecRestAPI7D4B3A34',
+      cdkId: 'SpecRestAPI',
+      property: 'BodyS3Location',
+    },
+  ];
+
+  for (const resource of expectedResources) {
+    fixture.output.write(`validate assets metadata for resource ${resource}`);
+    expect(resource.id in template.Resources).toBeTruthy();
+    expect(template.Resources[resource.id]).toEqual(expect.objectContaining({
+      Metadata: {
+        'aws:cdk:path': `${fixture.fullStackName('TestStack')}/${resource.cdkId}/Resource`,
+        'aws:asset:path': expect.stringMatching(/asset\.[0-9a-zA-Z]{64}/),
+        'aws:asset:is-bundled': resource.isBundled,
+        'aws:asset:dockerfile-path': resource.dockerFilePath,
+        'aws:asset:property': resource.property,
+      },
+    }));
+  }
+
+  // Nested Stack
+  fixture.output.write('validate assets metadata for nested stack resource');
+  expect('NestedStackNestedStackNestedStackNestedStackResourceB70834FD' in template.Resources).toBeTruthy();
+  expect(template.Resources.NestedStackNestedStackNestedStackNestedStackResourceB70834FD).toEqual(expect.objectContaining({
+    Metadata: {
+      'aws:cdk:path': `${fixture.fullStackName('TestStack')}/NestedStack.NestedStack/NestedStack.NestedStackResource`,
+      'aws:asset:path': expect.stringMatching(`${fixture.stackNamePrefix.replace(/-/, '')}TestStackNestedStack[0-9A-Z]{8}\.nested\.template\.json`),
+      'aws:asset:property': 'TemplateURL',
+    },
+  }));
+}));
+
+integTest('CDK synth bundled functions as expected', withSamIntegrationFixture(async (fixture) => {
+  // Synth first
+  await fixture.cdkSynth();
+
+  const template = fixture.template('TestStack');
+
+  const expectedBundledAssets = [
+    {
+      // Python Layer Version
+      id: 'PythonLayerVersion39495CEF',
+      files: [
+        'python/layer_version_dependency.py',
+        'python/geonamescache/__init__.py',
+        'python/geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // Layer Version
+      id: 'LayerVersion3878DA3A',
+      files: [
+        'layer_version_dependency.py',
+        'requirements.txt',
+      ],
+    },
+    {
+      // Bundled layer version
+      id: 'BundledLayerVersionPythonRuntime6BADBD6E',
+      files: [
+        'python/layer_version_dependency.py',
+        'python/geonamescache/__init__.py',
+        'python/geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // Python Function
+      id: 'PythonFunction0BCF77FD',
+      files: [
+        'app.py',
+        'geonamescache/__init__.py',
+        'geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // Function
+      id: 'FunctionPythonRuntime28CBDA05',
+      files: [
+        'app.py',
+        'requirements.txt',
+      ],
+    },
+    {
+      // Bundled Function
+      id: 'BundledFunctionPythonRuntime4D9A0918',
+      files: [
+        'app.py',
+        'geonamescache/__init__.py',
+        'geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // NodeJs Function
+      id: 'NodejsFunction09C1F20F',
+      files: [
+        'index.js',
+      ],
+    },
+    {
+      // Go Function
+      id: 'GoFunctionCA95FBAA',
+      files: [
+        'bootstrap',
+      ],
+    },
+    {
+      // Docker Image Function
+      id: 'DockerImageFunction28B773E6',
+      files: [
+        'app.js',
+        'Dockerfile',
+        'package.json',
+      ],
+    },
+  ];
+
+  for (const resource of expectedBundledAssets) {
+    const assetPath = template.Resources[resource.id].Metadata['aws:asset:path'];
+    for (const file of resource.files) {
+      fixture.output.write(`validate Path ${file} for resource ${resource}`);
+      expect(existsSync(path.join(fixture.integTestDir, 'cdk.out', assetPath, file))).toBeTruthy();
+    }
+  }
+}));
+
+integTest('sam can locally test the synthesized cdk application', withSamIntegrationFixture(async (fixture) => {
+  // Synth first
+  await fixture.cdkSynth();
+
+  const result = await fixture.samLocalStartApi(
+    'TestStack', false, randomInteger(30000, 40000), '/restapis/spec/pythonFunction');
+  expect(result.actionSucceeded).toBeTruthy();
+  expect(result.actionOutput).toEqual(expect.objectContaining({
+    message: 'Hello World',
+  }));
+}));
+
+integTest('skips notice refresh', withDefaultFixture(async (fixture) => {
+  const output = await fixture.cdkSynth({
+    options: ['--no-notices'],
+    modEnv: {
+      INTEG_STACK_SET: 'stage-using-context',
+    },
+    allowErrExit: true,
+  });
+
+  // Neither succeeds nor fails, but skips the refresh
+  await expect(output).not.toContain('Notices refreshed');
+  await expect(output).not.toContain('Notices refresh failed');
+}));
+
+/**
+ * Create a queue with a fresh name, redeploy orphaning the queue, then import it again
+ */
+integTest('test resource import', withDefaultFixture(async (fixture) => {
+  const outputsFile = path.join(fixture.integTestDir, 'outputs', 'outputs.json');
+  await fs.mkdir(path.dirname(outputsFile), { recursive: true });
+
+  // Initial deploy
+  await fixture.cdkDeploy('importable-stack', {
+    modEnv: { ORPHAN_TOPIC: '1' },
+    options: ['--outputs-file', outputsFile],
+  });
+
+  const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
+  const queueName = outputs.QueueName;
+  const queueLogicalId = outputs.QueueLogicalId;
+  fixture.log(`Setup complete, created queue ${queueName}`);
+  try {
+    // Deploy again, orphaning the queue
+    await fixture.cdkDeploy('importable-stack', {
+      modEnv: { OMIT_TOPIC: '1' },
+    });
+
+    // Write a resource mapping file based on the ID from step one, then run an import
+    const mappingFile = path.join(fixture.integTestDir, 'outputs', 'mapping.json');
+    await fs.writeFile(mappingFile, JSON.stringify({ [queueLogicalId]: { QueueName: queueName } }), { encoding: 'utf-8' });
+
+    await fixture.cdk(['import',
+      '--resource-mapping', mappingFile,
+      fixture.fullStackName('importable-stack')]);
+  } finally {
+    // Cleanup
+    await fixture.cdkDestroy('importable-stack');
+  }
 }));
 
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {

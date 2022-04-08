@@ -95,14 +95,14 @@
     "vpcPublicSubnet1NATGateway9C16659E": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "vpcPublicSubnet1Subnet2E65531E"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "vpcPublicSubnet1EIPDA49DCBE",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "vpcPublicSubnet1Subnet2E65531E"
         },
         "Tags": [
           {
@@ -192,14 +192,14 @@
     "vpcPublicSubnet2NATGateway9B8AE11A": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "vpcPublicSubnet2Subnet009B674F"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "vpcPublicSubnet2EIP9B3743B1",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "vpcPublicSubnet2Subnet009B674F"
         },
         "Tags": [
           {
@@ -289,14 +289,14 @@
     "vpcPublicSubnet3NATGateway82F6CA9E": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "vpcPublicSubnet3Subnet11B92D7C"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "vpcPublicSubnet3EIP2C3B9D91",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "vpcPublicSubnet3Subnet11B92D7C"
         },
         "Tags": [
           {
@@ -514,6 +514,57 @@
         }
       }
     },
+    "ComputeEnvResourceSecurityGroupB84CF86B": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-stepfunctions-integ/ComputeEnv/Resource-Security-Group",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "vpcA2121C38"
+        }
+      },
+      "DependsOn": [
+        "vpcIGWE57CBDCA",
+        "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+        "vpcPrivateSubnet1RouteTableB41A48CC",
+        "vpcPrivateSubnet1RouteTableAssociation67945127",
+        "vpcPrivateSubnet1Subnet934893E8",
+        "vpcPrivateSubnet2DefaultRouteB0E07F99",
+        "vpcPrivateSubnet2RouteTable7280F23E",
+        "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+        "vpcPrivateSubnet2Subnet7031C2BA",
+        "vpcPrivateSubnet3DefaultRoute30C45F47",
+        "vpcPrivateSubnet3RouteTable24DA79A0",
+        "vpcPrivateSubnet3RouteTableAssociationC58B3C2C",
+        "vpcPrivateSubnet3Subnet985AC459",
+        "vpcPublicSubnet1DefaultRoute10708846",
+        "vpcPublicSubnet1EIPDA49DCBE",
+        "vpcPublicSubnet1NATGateway9C16659E",
+        "vpcPublicSubnet1RouteTable48A2DF9B",
+        "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+        "vpcPublicSubnet1Subnet2E65531E",
+        "vpcPublicSubnet2DefaultRouteA1EC0F60",
+        "vpcPublicSubnet2EIP9B3743B1",
+        "vpcPublicSubnet2NATGateway9B8AE11A",
+        "vpcPublicSubnet2RouteTableEB40D4CB",
+        "vpcPublicSubnet2RouteTableAssociation21F81B59",
+        "vpcPublicSubnet2Subnet009B674F",
+        "vpcPublicSubnet3DefaultRoute3F356A11",
+        "vpcPublicSubnet3EIP2C3B9D91",
+        "vpcPublicSubnet3NATGateway82F6CA9E",
+        "vpcPublicSubnet3RouteTableA3C00665",
+        "vpcPublicSubnet3RouteTableAssociationD102D1C4",
+        "vpcPublicSubnet3Subnet11B92D7C",
+        "vpcA2121C38",
+        "vpcVPCGW7984C166"
+      ]
+    },
     "ComputeEnvEcsInstanceRoleCFB290F9": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -635,57 +686,6 @@
         "vpcVPCGW7984C166"
       ]
     },
-    "ComputeEnvResourceSecurityGroupB84CF86B": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "aws-stepfunctions-integ/ComputeEnv/Resource-Security-Group",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
-        "VpcId": {
-          "Ref": "vpcA2121C38"
-        }
-      },
-      "DependsOn": [
-        "vpcIGWE57CBDCA",
-        "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
-        "vpcPrivateSubnet1RouteTableB41A48CC",
-        "vpcPrivateSubnet1RouteTableAssociation67945127",
-        "vpcPrivateSubnet1Subnet934893E8",
-        "vpcPrivateSubnet2DefaultRouteB0E07F99",
-        "vpcPrivateSubnet2RouteTable7280F23E",
-        "vpcPrivateSubnet2RouteTableAssociation007E94D3",
-        "vpcPrivateSubnet2Subnet7031C2BA",
-        "vpcPrivateSubnet3DefaultRoute30C45F47",
-        "vpcPrivateSubnet3RouteTable24DA79A0",
-        "vpcPrivateSubnet3RouteTableAssociationC58B3C2C",
-        "vpcPrivateSubnet3Subnet985AC459",
-        "vpcPublicSubnet1DefaultRoute10708846",
-        "vpcPublicSubnet1EIPDA49DCBE",
-        "vpcPublicSubnet1NATGateway9C16659E",
-        "vpcPublicSubnet1RouteTable48A2DF9B",
-        "vpcPublicSubnet1RouteTableAssociation5D3F4579",
-        "vpcPublicSubnet1Subnet2E65531E",
-        "vpcPublicSubnet2DefaultRouteA1EC0F60",
-        "vpcPublicSubnet2EIP9B3743B1",
-        "vpcPublicSubnet2NATGateway9B8AE11A",
-        "vpcPublicSubnet2RouteTableEB40D4CB",
-        "vpcPublicSubnet2RouteTableAssociation21F81B59",
-        "vpcPublicSubnet2Subnet009B674F",
-        "vpcPublicSubnet3DefaultRoute3F356A11",
-        "vpcPublicSubnet3EIP2C3B9D91",
-        "vpcPublicSubnet3NATGateway82F6CA9E",
-        "vpcPublicSubnet3RouteTableA3C00665",
-        "vpcPublicSubnet3RouteTableAssociationD102D1C4",
-        "vpcPublicSubnet3Subnet11B92D7C",
-        "vpcA2121C38",
-        "vpcVPCGW7984C166"
-      ]
-    },
     "ComputeEnvResourceServiceInstanceRoleCF89E9E1": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -755,12 +755,6 @@
     "ComputeEnv2C40ACC2": {
       "Type": "AWS::Batch::ComputeEnvironment",
       "Properties": {
-        "ServiceRole": {
-          "Fn::GetAtt": [
-            "ComputeEnvResourceServiceInstanceRoleCF89E9E1",
-            "Arn"
-          ]
-        },
         "Type": "MANAGED",
         "ComputeResources": {
           "AllocationStrategy": "BEST_FIT",
@@ -795,6 +789,12 @@
             }
           ],
           "Type": "EC2"
+        },
+        "ServiceRole": {
+          "Fn::GetAtt": [
+            "ComputeEnvResourceServiceInstanceRoleCF89E9E1",
+            "Arn"
+          ]
         },
         "State": "ENABLED"
       },
@@ -869,15 +869,26 @@
                 {
                   "Ref": "AWS::URLSuffix"
                 },
-                "/aws-cdk/assets:10112d0d2c68a9d76297acc4623b1af0d5e9fd11b2226eee455e09c6fcf1b776"
+                "/aws-cdk/assets:8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b"
               ]
             ]
           },
-          "Memory": 4,
           "Privileged": false,
           "ReadonlyRootFilesystem": false,
-          "Vcpus": 1
+          "ResourceRequirements": [
+            {
+              "Type": "VCPU",
+              "Value": "1"
+            },
+            {
+              "Type": "MEMORY",
+              "Value": "4"
+            }
+          ]
         },
+        "PlatformCapabilities": [
+          "EC2"
+        ],
         "RetryStrategy": {
           "Attempts": 1
         },
@@ -948,9 +959,9 @@
             },
             {
               "Action": [
-                "events:PutTargets",
+                "events:DescribeRule",
                 "events:PutRule",
-                "events:DescribeRule"
+                "events:PutTargets"
               ],
               "Effect": "Allow",
               "Resource": {

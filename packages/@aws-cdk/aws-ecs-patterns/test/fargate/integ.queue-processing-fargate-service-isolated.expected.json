@@ -712,11 +712,11 @@
           "Statement": [
             {
               "Action": [
-                "sqs:ReceiveMessage",
                 "sqs:ChangeMessageVisibility",
-                "sqs:GetQueueUrl",
                 "sqs:DeleteMessage",
-                "sqs:GetQueueAttributes"
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+                "sqs:ReceiveMessage"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -769,7 +769,7 @@
                   {
                     "Ref": "AWS::URLSuffix"
                   },
-                  "/aws-cdk/assets:3a8ba3ad06ed212b075efa3157fb407649c5996812bc64eeb5209e220aab4be5"
+                  "/aws-cdk/assets:95cefedd43575452a70cdeeeceb0f1c5728fd58c9ff8e81e760c3dac33c46417"
                 ]
               ]
             },
@@ -839,8 +839,8 @@
             {
               "Action": [
                 "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer"
               ],
               "Effect": "Allow",
               "Resource": {

@@ -72,14 +72,14 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "MyAuthorizerFunctionServiceRole8A34C19E",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "MyAuthorizerFunctionServiceRole8A34C19E"
@@ -105,6 +105,7 @@
     "MyAuthorizer6575980E": {
       "Type": "AWS::ApiGateway::Authorizer",
       "Properties": {
+        "Name": "TokenAuthorizerIAMRoleIntegMyAuthorizer1DFDE3B5",
         "RestApiId": {
           "Ref": "MyRestApi2D1F47A9"
         },
@@ -121,11 +122,37 @@
             [
               "arn:",
               {
-                "Ref": "AWS::Partition"
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      ":",
+                      {
+                        "Fn::GetAtt": [
+                          "MyAuthorizerFunction70F1223E",
+                          "Arn"
+                        ]
+                      }
+                    ]
+                  }
+                ]
               },
               ":apigateway:",
               {
-                "Ref": "AWS::Region"
+                "Fn::Select": [
+                  3,
+                  {
+                    "Fn::Split": [
+                      ":",
+                      {
+                        "Fn::GetAtt": [
+                          "MyAuthorizerFunction70F1223E",
+                          "Arn"
+                        ]
+                      }
+                    ]
+                  }
+                ]
               },
               ":lambda:path/2015-03-31/functions/",
               {
@@ -138,8 +165,7 @@
             ]
           ]
         },
-        "IdentitySource": "method.request.header.Authorization",
-        "Name": "TokenAuthorizerIAMRoleIntegMyAuthorizer1DFDE3B5"
+        "IdentitySource": "method.request.header.Authorization"
       }
     },
     "MyAuthorizerauthorizerInvokePolicy0F88B8E1": {
@@ -150,12 +176,28 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyAuthorizerFunction70F1223E",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyAuthorizerFunction70F1223E",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "MyAuthorizerFunction70F1223E",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -241,7 +283,10 @@
           "Ref": "MyRestApiDeploymentB555B582dcff966d69deeda8d47e3bf409ce29cb"
         },
         "StageName": "prod"
-      }
+      },
+      "DependsOn": [
+        "MyRestApiAccount2FB6DB7A"
+      ]
     },
     "MyRestApiANY05143F93": {
       "Type": "AWS::ApiGateway::Method",

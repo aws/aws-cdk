@@ -1,8 +1,14 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
+import { AccountPrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Stack, App } from '@aws-cdk/core';
 import {
-  HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteAuthorizerBindOptions,
-  HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, IHttpRouteIntegration, PayloadFormatVersion,
+  HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute,
+  HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, HttpRouteIntegration,
+  MappingValue,
+  ParameterMapping,
+  PayloadFormatVersion,
+  HttpIntegrationSubtype,
+  IntegrationCredentials,
 } from '../../lib';
 
 describe('HttpRoute', () => {
@@ -16,7 +22,7 @@ describe('HttpRoute', () => {
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
       ApiId: stack.resolve(httpApi.apiId),
       RouteKey: 'GET /books',
       Target: {
@@ -25,7 +31,7 @@ describe('HttpRoute', () => {
           [
             'integrations/',
             {
-              Ref: 'HttpRouteHttpIntegrationcff2618c192d3bd8581dd2a4093464f6FB1097D0',
+              Ref: 'HttpRouteDummyIntegration10F77519',
             },
           ],
         ],
@@ -33,7 +39,7 @@ describe('HttpRoute', () => {
       AuthorizationType: 'NONE',
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       ApiId: stack.resolve(httpApi.apiId),
     });
   });
@@ -48,7 +54,7 @@ describe('HttpRoute', () => {
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       ApiId: stack.resolve(httpApi.apiId),
       IntegrationType: 'HTTP_PROXY',
       PayloadFormatVersion: '2.0',
@@ -75,45 +81,45 @@ describe('HttpRoute', () => {
     });
 
     // THEN
-    expect(stack).toCountResources('AWS::ApiGatewayV2::Integration', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Integration', 1);
   });
 
-  test('integration can be used across HttpApis', () => {
+  test('integration cannot be used across HttpApis', () => {
     // GIVEN
     const integration = new DummyIntegration();
 
     // WHEN
-    const stack1 = new Stack();
-    const httpApi1 = new HttpApi(stack1, 'HttpApi1');
+    const stack = new Stack();
+    const httpApi1 = new HttpApi(stack, 'HttpApi1');
+    const httpApi2 = new HttpApi(stack, 'HttpApi2');
 
-    new HttpRoute(stack1, 'HttpRoute1', {
+    new HttpRoute(stack, 'HttpRoute1', {
       httpApi: httpApi1,
       integration,
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
     });
-    new HttpRoute(stack1, 'HttpRoute2', {
-      httpApi: httpApi1,
-      integration,
-      routeKey: HttpRouteKey.with('/books', HttpMethod.POST),
-    });
 
-    const stack2 = new Stack();
-    const httpApi2 = new HttpApi(stack2, 'HttpApi2');
-
-    new HttpRoute(stack2, 'HttpRoute1', {
+    expect(() => new HttpRoute(stack, 'HttpRoute2', {
       httpApi: httpApi2,
       integration,
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+    })).toThrow(/cannot be associated with multiple APIs/);
+  });
+
+  test('associating integrations in different APIs creates separate AWS::ApiGatewayV2::Integration', () => {
+    const stack = new Stack();
+
+    const api = new HttpApi(stack, 'HttpApi');
+    api.addRoutes({
+      path: '/books',
+      integration: new DummyIntegration(),
     });
-    new HttpRoute(stack2, 'HttpRoute2', {
-      httpApi: httpApi2,
-      integration,
-      routeKey: HttpRouteKey.with('/books', HttpMethod.POST),
+    api.addRoutes({
+      path: '/magazines',
+      integration: new DummyIntegration(),
     });
 
-    // THEN
-    expect(stack1).toCountResources('AWS::ApiGatewayV2::Integration', 1);
-    expect(stack2).toCountResources('AWS::ApiGatewayV2::Integration', 1);
+    Template.fromStack(stack).hasResource('AWS::ApiGatewayV2::Integration', 2);
   });
 
   test('route defined in a separate stack does not create cycles', () => {
@@ -133,8 +139,8 @@ describe('HttpRoute', () => {
     });
 
     // THEN
-    expect(stack1).toCountResources('AWS::ApiGatewayV2::Integration', 0);
-    expect(stack2).toCountResources('AWS::ApiGatewayV2::Integration', 1);
+    Template.fromStack(stack1).resourceCountIs('AWS::ApiGatewayV2::Integration', 0);
+    Template.fromStack(stack2).resourceCountIs('AWS::ApiGatewayV2::Integration', 1);
   });
 
   test('throws when path not start with /', () => {
@@ -164,7 +170,7 @@ describe('HttpRoute', () => {
     const stack = new Stack();
     const httpApi = new HttpApi(stack, 'HttpApi');
 
-    class PrivateIntegration implements IHttpRouteIntegration {
+    class PrivateIntegration extends HttpRouteIntegration {
       public bind(): HttpRouteIntegrationConfig {
         return {
           method: HttpMethod.ANY,
@@ -173,6 +179,10 @@ describe('HttpRoute', () => {
           connectionId: 'some-connection-id',
           connectionType: HttpConnectionType.VPC_LINK,
           uri: 'some-target-arn',
+          secureServerName: 'some-server-name',
+          parameterMapping: new ParameterMapping()
+            .appendHeader('header2', MappingValue.requestHeader('header1'))
+            .removeHeader('header1'),
         };
       }
     }
@@ -180,20 +190,115 @@ describe('HttpRoute', () => {
     // WHEN
     new HttpRoute(stack, 'HttpRoute', {
       httpApi,
-      integration: new PrivateIntegration(),
+      integration: new PrivateIntegration('PrivateIntegration'),
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationType: 'HTTP_PROXY',
       ConnectionId: 'some-connection-id',
       ConnectionType: 'VPC_LINK',
       IntegrationMethod: 'ANY',
       IntegrationUri: 'some-target-arn',
       PayloadFormatVersion: '1.0',
+      TlsConfig: {
+        ServerNameToVerify: 'some-server-name',
+      },
     });
-    expect(stack).not.toHaveResource('AWS::ApiGatewayV2::VpcLink');
+
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::VpcLink', 0);
+  });
+
+  test('configures private integration correctly when parameter mappings are passed', () => {
+    // GIVEN
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    class PrivateIntegration extends HttpRouteIntegration {
+      public bind(): HttpRouteIntegrationConfig {
+        return {
+          method: HttpMethod.ANY,
+          payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
+          type: HttpIntegrationType.HTTP_PROXY,
+          uri: 'some-target-arn',
+          parameterMapping: new ParameterMapping()
+            .appendHeader('header2', MappingValue.requestHeader('header1'))
+            .removeHeader('header1'),
+        };
+      }
+    }
+
+    // WHEN
+    new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new PrivateIntegration('PrivateIntegration'),
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
+      IntegrationType: 'HTTP_PROXY',
+      IntegrationMethod: 'ANY',
+      IntegrationUri: 'some-target-arn',
+      PayloadFormatVersion: '1.0',
+      RequestParameters: {
+        'append:header.header2': '$request.header.header1',
+        'remove:header.header1': '',
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::VpcLink', 0);
+  });
+
+  test('configures AWS service integration correctly', () => {
+    // GIVEN
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+    });
+
+    class SqsSendMessageIntegration extends HttpRouteIntegration {
+      public bind(): HttpRouteIntegrationConfig {
+        return {
+          method: HttpMethod.ANY,
+          payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
+          type: HttpIntegrationType.AWS_PROXY,
+          subtype: HttpIntegrationSubtype.SQS_SEND_MESSAGE,
+          credentials: IntegrationCredentials.fromRole(role),
+          parameterMapping: ParameterMapping.fromObject({
+            QueueUrl: MappingValue.requestHeader('queueUrl'),
+            MessageBody: MappingValue.requestBody('message'),
+          }),
+        };
+      }
+    }
+
+    // WHEN
+    new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new SqsSendMessageIntegration('SqsSendMessageIntegration'),
+      routeKey: HttpRouteKey.with('/sqs', HttpMethod.POST),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
+      IntegrationType: 'AWS_PROXY',
+      IntegrationSubtype: 'SQS-SendMessage',
+      IntegrationMethod: 'ANY',
+      PayloadFormatVersion: '1.0',
+      CredentialsArn: {
+        'Fn::GetAtt': [
+          'Role1ABCC5F0',
+          'Arn',
+        ],
+      },
+      RequestParameters: {
+        QueueUrl: '$request.header.queueUrl',
+        MessageBody: '$request.body.message',
+      },
+    });
   });
 
   test('can create route with an authorizer attached', () => {
@@ -209,16 +314,16 @@ describe('HttpRoute', () => {
       authorizer,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       ApiId: stack.resolve(httpApi.apiId),
       IntegrationType: 'HTTP_PROXY',
       PayloadFormatVersion: '2.0',
       IntegrationUri: 'some-uri',
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer');
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Authorizer', 1);
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
       AuthorizerId: stack.resolve(authorizer.bind({ scope: stack, route: route }).authorizerId),
       AuthorizationType: 'JWT',
     });
@@ -238,7 +343,7 @@ describe('HttpRoute', () => {
       authorizationScopes: ['read:books'],
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
       AuthorizationScopes: ['read:books'],
     });
   });
@@ -254,11 +359,269 @@ describe('HttpRoute', () => {
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
       authorizer,
-    })).toThrowError('authorizationType should either be JWT, CUSTOM, or NONE');
+    })).toThrowError('authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE');
+  });
+
+  test('granting invoke', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new AccountPrincipal('111111111111'),
+    });
+
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+      authorizer: new SomeAuthorizerType('AWS_IAM'),
+    });
+
+    // WHEN
+    route.grantInvoke(role);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      AuthorizationType: 'AWS_IAM',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'execute-api:Invoke',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:aws:execute-api:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':',
+                  { Ref: 'HttpApiF5A9A8A7' },
+                  '/*/GET/books',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('granting invoke with httpMethod GET and PUT', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new AccountPrincipal('111111111111'),
+    });
+
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books'),
+      authorizer: new SomeAuthorizerType('AWS_IAM'),
+    });
+
+    // WHEN
+    route.grantInvoke(role, {
+      httpMethods: [HttpMethod.GET, HttpMethod.PUT],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      AuthorizationType: 'AWS_IAM',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'execute-api:Invoke',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:execute-api:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':',
+                    { Ref: 'HttpApiF5A9A8A7' },
+                    '/*/GET/books',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:execute-api:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':',
+                    { Ref: 'HttpApiF5A9A8A7' },
+                    '/*/PUT/books',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('granting invoke with path variables', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new AccountPrincipal('111111111111'),
+    });
+
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books/{book}/something'),
+      authorizer: new SomeAuthorizerType('AWS_IAM'),
+    });
+
+    // WHEN
+    route.grantInvoke(role);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      AuthorizationType: 'AWS_IAM',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'execute-api:Invoke',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:aws:execute-api:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':',
+                  { Ref: 'HttpApiF5A9A8A7' },
+                  '/*/*/books/*',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('throws when granting invoke with httpMethods not supported by the route', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new AccountPrincipal('111111111111'),
+    });
+
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books/{book}/something', HttpMethod.GET),
+      authorizer: new SomeAuthorizerType('AWS_IAM'),
+    });
+
+    expect(() =>
+      route.grantInvoke(role, {
+        httpMethods: [HttpMethod.DELETE],
+      }),
+    ).toThrowError(/This route does not support granting invoke for all requested http methods/i);
+  });
+
+  test('throws when granting invoke with the wrong authorizer type', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new AccountPrincipal('111111111111'),
+    });
+
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books/{book}/something', HttpMethod.GET),
+      authorizer: new SomeAuthorizerType('JWT'),
+    });
+
+    expect(() =>
+      route.grantInvoke(role, {
+        httpMethods: [HttpMethod.DELETE],
+      }),
+    ).toThrowError(/To use grantInvoke, you must use IAM authorization/i);
+  });
+
+  test('accessing an ANY route arn', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    // WHEN
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books/{book}/something'),
+    });
+
+    // THEN
+    expect(stack.resolve(route.routeArn)).toEqual({
+      'Fn::Join': ['', [
+        'arn:aws:execute-api:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':',
+        { Ref: 'HttpApiF5A9A8A7' },
+        '/*/*/books/*',
+      ]],
+    });
+  });
+
+  test('accessing a GET route arn', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    // WHEN
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books/{book}/something', HttpMethod.GET),
+    });
+
+    // THEN
+    expect(stack.resolve(route.routeArn)).toEqual({
+      'Fn::Join': ['', [
+        'arn:aws:execute-api:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':',
+        { Ref: 'HttpApiF5A9A8A7' },
+        '/*/GET/books/*',
+      ]],
+    });
   });
 });
 
-class DummyIntegration implements IHttpRouteIntegration {
+class DummyIntegration extends HttpRouteIntegration {
+  constructor(name?: string) {
+    super(name ?? 'DummyIntegration');
+  }
+
   public bind(): HttpRouteIntegrationConfig {
     return {
       type: HttpIntegrationType.HTTP_PROXY,
@@ -309,6 +672,16 @@ class InvalidTypeAuthorizer implements IHttpRouteAuthorizer {
     return {
       authorizerId: this.authorizer.authorizerId,
       authorizationType: 'Random',
+    };
+  }
+}
+
+class SomeAuthorizerType implements IHttpRouteAuthorizer {
+  constructor(private readonly authorizationType: string) {}
+
+  bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
+    return {
+      authorizationType: this.authorizationType,
     };
   }
 }

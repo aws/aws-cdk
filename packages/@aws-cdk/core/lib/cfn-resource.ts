@@ -101,6 +101,14 @@ export class CfnResource extends CfnRefElement {
 
   /**
    * Sets the deletion policy of the resource based on the removal policy specified.
+   *
+   * The Removal Policy controls what happens to this resource when it stops
+   * being managed by CloudFormation, either because you've removed it from the
+   * CDK application or because you've made a change that requires the resource
+   * to be replaced.
+   *
+   * The resource can be deleted (`RemovalPolicy.DESTROY`), or left in your AWS
+   * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
    */
   public applyRemovalPolicy(policy: RemovalPolicy | undefined, options: RemovalPolicyOptions = {}) {
     policy = policy || options.default || RemovalPolicy.RETAIN;
@@ -176,6 +184,12 @@ export class CfnResource extends CfnRefElement {
    *   ...
    * }
    * ```
+   *
+   * The `value` argument to `addOverride` will not be processed or translated
+   * in any way. Pass raw JSON values in here with the correct capitalization
+   * for CloudFormation. If you pass CDK classes or structs, they will be
+   * rendered with lowercased key names, and CloudFormation will reject the
+   * template.
    *
    * @param path - The path of the property, you can use dot notation to
    *        override values in complex types. Any intermdediate keys
@@ -347,7 +361,7 @@ export class CfnResource extends CfnRefElement {
       const trace = this.creationStack;
       if (trace) {
         const creationStack = ['--- resource created at ---', ...trace].join('\n  at ');
-        const problemTrace = e.stack.substr(e.stack.indexOf(e.message) + e.message.length);
+        const problemTrace = e.stack.slice(e.stack.indexOf(e.message) + e.message.length);
         e.stack = `${e.message}\n  ${creationStack}\n  --- problem discovered at ---${problemTrace}`;
       }
 

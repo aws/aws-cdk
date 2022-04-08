@@ -1,120 +1,108 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
-import { Size, SizeRoundingBehavior, Stack, Token } from '../lib';
+import { Size, SizeRoundingBehavior, Stack, Token, Lazy } from '../lib';
 
-nodeunitShim({
-  'negative amount'(test: Test) {
-    test.throws(() => Size.kibibytes(-1), /negative/);
+describe('size', () => {
+  test('negative amount', () => {
+    expect(() => Size.kibibytes(-1)).toThrow(/negative/);
+  });
 
-    test.done();
-  },
-
-  'unresolved amount'(test: Test) {
+  test('unresolved amount', () => {
     const stack = new Stack();
     const lazySize = Size.kibibytes(Token.asNumber({ resolve: () => 1337 }));
-    test.equals(stack.resolve(lazySize.toKibibytes()), 1337);
-    test.throws(
-      () => stack.resolve(lazySize.toMebibytes()),
-      /Unable to perform time unit conversion on un-resolved token/,
+    expect(stack.resolve(lazySize.toKibibytes())).toEqual(1337);
+    expect(
+      () => stack.resolve(lazySize.toMebibytes())).toThrow(
+      /Size must be specified as 'Size.mebibytes\(\)' here/,
     );
+  });
 
-    test.done();
-  },
-
-  'Size in kibibytes'(test: Test) {
+  test('Size in kibibytes', () => {
     const size = Size.kibibytes(4_294_967_296);
 
-    test.equal(size.toKibibytes(), 4_294_967_296);
-    test.equal(size.toMebibytes(), 4_194_304);
-    test.equal(size.toGibibytes(), 4_096);
-    test.equal(size.toTebibytes(), 4);
-    test.throws(() => size.toPebibytes(), /'4294967296 kibibytes' cannot be converted into a whole number/);
-    floatEqual(test, size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }), 4_294_967_296 / (1024 * 1024 * 1024 * 1024));
+    expect(size.toKibibytes()).toEqual(4_294_967_296);
+    expect(size.toMebibytes()).toEqual(4_194_304);
+    expect(size.toGibibytes()).toEqual(4_096);
+    expect(size.toTebibytes()).toEqual(4);
+    expect(() => size.toPebibytes()).toThrow(/'4294967296 kibibytes' cannot be converted into a whole number/);
+    floatEqual(size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }), 4_294_967_296 / (1024 * 1024 * 1024 * 1024));
 
-    test.equal(Size.kibibytes(4 * 1024 * 1024).toGibibytes(), 4);
+    expect(Size.kibibytes(4 * 1024 * 1024).toGibibytes()).toEqual(4);
+  });
 
-    test.done();
-  },
-
-  'Size in mebibytes'(test: Test) {
+  test('Size in mebibytes', () => {
     const size = Size.mebibytes(4_194_304);
 
-    test.equal(size.toKibibytes(), 4_294_967_296);
-    test.equal(size.toMebibytes(), 4_194_304);
-    test.equal(size.toGibibytes(), 4_096);
-    test.equal(size.toTebibytes(), 4);
-    test.throws(() => size.toPebibytes(), /'4194304 mebibytes' cannot be converted into a whole number/);
-    floatEqual(test, size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }), 4_194_304 / (1024 * 1024 * 1024));
+    expect(size.toKibibytes()).toEqual(4_294_967_296);
+    expect(size.toMebibytes()).toEqual(4_194_304);
+    expect(size.toGibibytes()).toEqual(4_096);
+    expect(size.toTebibytes()).toEqual(4);
+    expect(() => size.toPebibytes()).toThrow(/'4194304 mebibytes' cannot be converted into a whole number/);
+    floatEqual(size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }), 4_194_304 / (1024 * 1024 * 1024));
 
-    test.equal(Size.mebibytes(4 * 1024).toGibibytes(), 4);
+    expect(Size.mebibytes(4 * 1024).toGibibytes()).toEqual(4);
+  });
 
-    test.done();
-  },
-
-  'Size in gibibyte'(test: Test) {
+  test('Size in gibibyte', () => {
     const size = Size.gibibytes(5);
 
-    test.equal(size.toKibibytes(), 5_242_880);
-    test.equal(size.toMebibytes(), 5_120);
-    test.equal(size.toGibibytes(), 5);
-    test.throws(() => size.toTebibytes(), /'5 gibibytes' cannot be converted into a whole number/);
-    floatEqual(test, size.toTebibytes({ rounding: SizeRoundingBehavior.NONE }), 5 / 1024);
-    test.throws(() => size.toPebibytes(), /'5 gibibytes' cannot be converted into a whole number/);
-    floatEqual(test, size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }), 5 / (1024 * 1024));
+    expect(size.toKibibytes()).toEqual(5_242_880);
+    expect(size.toMebibytes()).toEqual(5_120);
+    expect(size.toGibibytes()).toEqual(5);
+    expect(() => size.toTebibytes()).toThrow(/'5 gibibytes' cannot be converted into a whole number/);
+    floatEqual(size.toTebibytes({ rounding: SizeRoundingBehavior.NONE }), 5 / 1024);
+    expect(() => size.toPebibytes()).toThrow(/'5 gibibytes' cannot be converted into a whole number/);
+    floatEqual(size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }), 5 / (1024 * 1024));
 
-    test.equal(Size.gibibytes(4096).toTebibytes(), 4);
+    expect(Size.gibibytes(4096).toTebibytes()).toEqual(4);
+  });
 
-    test.done();
-  },
-
-  'Size in tebibyte'(test: Test) {
+  test('Size in tebibyte', () => {
     const size = Size.tebibytes(5);
 
-    test.equal(size.toKibibytes(), 5_368_709_120);
-    test.equal(size.toMebibytes(), 5_242_880);
-    test.equal(size.toGibibytes(), 5_120);
-    test.equal(size.toTebibytes(), 5);
-    test.throws(() => size.toPebibytes(), /'5 tebibytes' cannot be converted into a whole number/);
-    floatEqual(test, size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }), 5 / 1024);
+    expect(size.toKibibytes()).toEqual(5_368_709_120);
+    expect(size.toMebibytes()).toEqual(5_242_880);
+    expect(size.toGibibytes()).toEqual(5_120);
+    expect(size.toTebibytes()).toEqual(5);
+    expect(() => size.toPebibytes()).toThrow(/'5 tebibytes' cannot be converted into a whole number/);
+    floatEqual(size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }), 5 / 1024);
 
-    test.equal(Size.tebibytes(4096).toPebibytes(), 4);
+    expect(Size.tebibytes(4096).toPebibytes()).toEqual(4);
+  });
 
-    test.done();
-  },
-
-  'Size in pebibytes'(test: Test) {
+  test('Size in pebibytes', () => {
     const size = Size.pebibytes(5);
 
-    test.equal(size.toKibibytes(), 5_497_558_138_880);
-    test.equal(size.toMebibytes(), 5_368_709_120);
-    test.equal(size.toGibibytes(), 5_242_880);
-    test.equal(size.toTebibytes(), 5_120);
-    test.equal(size.toPebibytes(), 5);
+    expect(size.toKibibytes()).toEqual(5_497_558_138_880);
+    expect(size.toMebibytes()).toEqual(5_368_709_120);
+    expect(size.toGibibytes()).toEqual(5_242_880);
+    expect(size.toTebibytes()).toEqual(5_120);
+    expect(size.toPebibytes()).toEqual(5);
+  });
 
-    test.done();
-  },
-
-  'rounding behavior'(test: Test) {
+  test('rounding behavior', () => {
     const size = Size.mebibytes(5_200);
 
-    test.throws(() => size.toGibibytes(), /cannot be converted into a whole number/);
-    test.throws(() => size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }), /cannot be converted into a whole number/);
+    expect(() => size.toGibibytes()).toThrow(/cannot be converted into a whole number/);
+    expect(() => size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL })).toThrow(/cannot be converted into a whole number/);
 
-    test.equals(size.toGibibytes({ rounding: SizeRoundingBehavior.FLOOR }), 5);
-    test.equals(size.toTebibytes({ rounding: SizeRoundingBehavior.FLOOR }), 0);
-    floatEqual(test, size.toKibibytes({ rounding: SizeRoundingBehavior.FLOOR }), 5_324_800);
+    expect(size.toGibibytes({ rounding: SizeRoundingBehavior.FLOOR })).toEqual(5);
+    expect(size.toTebibytes({ rounding: SizeRoundingBehavior.FLOOR })).toEqual(0);
+    floatEqual(size.toKibibytes({ rounding: SizeRoundingBehavior.FLOOR }), 5_324_800);
 
-    test.equals(size.toGibibytes({ rounding: SizeRoundingBehavior.NONE }), 5.078125);
-    test.equals(size.toTebibytes({ rounding: SizeRoundingBehavior.NONE }), 5200 / (1024 * 1024));
-    test.equals(size.toKibibytes({ rounding: SizeRoundingBehavior.NONE }), 5_324_800);
+    expect(size.toGibibytes({ rounding: SizeRoundingBehavior.NONE })).toEqual(5.078125);
+    expect(size.toTebibytes({ rounding: SizeRoundingBehavior.NONE })).toEqual(5200 / (1024 * 1024));
+    expect(size.toKibibytes({ rounding: SizeRoundingBehavior.NONE })).toEqual(5_324_800);
+  });
 
-    test.done();
-  },
+  test('size is unresolved', () => {
+    const lazySize = Size.pebibytes(Lazy.number({ produce: () => 10 }));
+    expect(lazySize.isUnresolved()).toEqual(true);
+    expect(Size.mebibytes(10).isUnresolved()).toEqual(false);
+  });
 });
 
-function floatEqual(test: Test, actual: number, expected: number) {
-  test.ok(
+function floatEqual(actual: number, expected: number) {
+  expect(
     // Floats are subject to rounding errors up to Number.ESPILON
     actual >= expected - Number.EPSILON && actual <= expected + Number.EPSILON,
-    `${actual} == ${expected}`,
-  );
+  ).toEqual(true);
 }

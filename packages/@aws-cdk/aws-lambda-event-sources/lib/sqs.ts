@@ -9,6 +9,7 @@ export interface SqsEventSourceProps {
    * event with all the retrieved records.
    *
    * Valid Range: Minimum value of 1. Maximum value of 10.
+   * If `maxBatchingWindow` is configured, this value can go up to 10,000.
    *
    * @default 10
    */
@@ -22,6 +23,15 @@ export interface SqsEventSourceProps {
    * @default - no batching window. The lambda function will be invoked immediately with the records that are available.
    */
   readonly maxBatchingWindow?: Duration;
+
+  /**
+   * Allow functions to return partially successful responses for a batch of records.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#services-sqs-batchfailurereporting
+   *
+   * @default false
+   */
+  readonly reportBatchItemFailures?: boolean;
 
   /**
    * If the SQS event source mapping should be enabled.
@@ -60,6 +70,7 @@ export class SqsEventSource implements lambda.IEventSource {
     const eventSourceMapping = target.addEventSourceMapping(`SqsEventSource:${Names.nodeUniqueId(this.queue.node)}`, {
       batchSize: this.props.batchSize,
       maxBatchingWindow: this.props.maxBatchingWindow,
+      reportBatchItemFailures: this.props.reportBatchItemFailures,
       enabled: this.props.enabled,
       eventSourceArn: this.queue.queueArn,
     });

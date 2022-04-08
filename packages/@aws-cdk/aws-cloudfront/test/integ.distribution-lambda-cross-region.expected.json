@@ -12,7 +12,7 @@
           },
           "Region": "us-east-1",
           "ParameterName": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda",
-          "RefreshToken": "LambdaCurrentVersionDF706F6A25bf7d67df4eb614ea2e1ea69c8759b6"
+          "RefreshToken": "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d"
         },
         "UpdateReplacePolicy": "Delete",
         "DeletionPolicy": "Delete"
@@ -76,7 +76,7 @@
         "Properties": {
           "Code": {
             "S3Bucket": {
-              "Ref": "AssetParameters45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241S3BucketF1BC72A7"
+              "Ref": "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3BucketA88C096E"
             },
             "S3Key": {
               "Fn::Join": [
@@ -89,7 +89,7 @@
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "AssetParameters45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241S3VersionKey7AD83AC7"
+                            "Ref": "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3VersionKeyF63BD825"
                           }
                         ]
                       }
@@ -102,7 +102,7 @@
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "AssetParameters45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241S3VersionKey7AD83AC7"
+                            "Ref": "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3VersionKeyF63BD825"
                           }
                         ]
                       }
@@ -138,7 +138,7 @@
           },
           "Region": "us-east-1",
           "ParameterName": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda2",
-          "RefreshToken": "Lambda2CurrentVersion72012B74ae3cccfdad93f3cb5c0d547683bcfea9"
+          "RefreshToken": "Lambda2CurrentVersion72012B74da2ca4572056a1112d9804f75b5b7491"
         },
         "UpdateReplacePolicy": "Delete",
         "DeletionPolicy": "Delete"
@@ -190,17 +190,17 @@
       }
     },
     "Parameters": {
-      "AssetParameters45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241S3BucketF1BC72A7": {
+      "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3BucketA88C096E": {
         "Type": "String",
-        "Description": "S3 bucket for asset \"45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241\""
+        "Description": "S3 bucket for asset \"e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a\""
       },
-      "AssetParameters45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241S3VersionKey7AD83AC7": {
+      "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3VersionKeyF63BD825": {
         "Type": "String",
-        "Description": "S3 key for asset version \"45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241\""
+        "Description": "S3 key for asset version \"e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a\""
       },
-      "AssetParameters45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241ArtifactHash1B3D1B80": {
+      "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aArtifactHashE4754D11": {
         "Type": "String",
-        "Description": "Artifact hash for asset \"45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241\""
+        "Description": "Artifact hash for asset \"e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a\""
       }
     }
   },
@@ -215,14 +215,10 @@
                 "Action": "sts:AssumeRole",
                 "Effect": "Allow",
                 "Principal": {
-                  "Service": "lambda.amazonaws.com"
-                }
-              },
-              {
-                "Action": "sts:AssumeRole",
-                "Effect": "Allow",
-                "Principal": {
-                  "Service": "edgelambda.amazonaws.com"
+                  "Service": [
+                    "edgelambda.amazonaws.com",
+                    "lambda.amazonaws.com"
+                  ]
                 }
               }
             ],
@@ -257,13 +253,13 @@
             ]
           },
           "Handler": "index.handler",
-          "Runtime": "nodejs10.x"
+          "Runtime": "nodejs14.x"
         },
         "DependsOn": [
           "LambdaServiceRoleA8ED4D3B"
         ]
       },
-      "LambdaCurrentVersionDF706F6A25bf7d67df4eb614ea2e1ea69c8759b6": {
+      "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d": {
         "Type": "AWS::Lambda::Version",
         "Properties": {
           "FunctionName": {
@@ -276,7 +272,7 @@
         "Properties": {
           "Type": "String",
           "Value": {
-            "Ref": "LambdaCurrentVersionDF706F6A25bf7d67df4eb614ea2e1ea69c8759b6"
+            "Ref": "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d"
           },
           "Name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda"
         }
@@ -289,7 +285,7 @@
           },
           "FunctionVersion": {
             "Fn::GetAtt": [
-              "LambdaCurrentVersionDF706F6A25bf7d67df4eb614ea2e1ea69c8759b6",
+              "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d",
               "Version"
             ]
           },
@@ -309,14 +305,10 @@
                 "Action": "sts:AssumeRole",
                 "Effect": "Allow",
                 "Principal": {
-                  "Service": "lambda.amazonaws.com"
-                }
-              },
-              {
-                "Action": "sts:AssumeRole",
-                "Effect": "Allow",
-                "Principal": {
-                  "Service": "edgelambda.amazonaws.com"
+                  "Service": [
+                    "edgelambda.amazonaws.com",
+                    "lambda.amazonaws.com"
+                  ]
                 }
               }
             ],
@@ -351,13 +343,13 @@
             ]
           },
           "Handler": "index.handler",
-          "Runtime": "nodejs10.x"
+          "Runtime": "nodejs14.x"
         },
         "DependsOn": [
           "Lambda2ServiceRole31A072E1"
         ]
       },
-      "Lambda2CurrentVersion72012B74ae3cccfdad93f3cb5c0d547683bcfea9": {
+      "Lambda2CurrentVersion72012B74da2ca4572056a1112d9804f75b5b7491": {
         "Type": "AWS::Lambda::Version",
         "Properties": {
           "FunctionName": {
@@ -370,7 +362,7 @@
         "Properties": {
           "Type": "String",
           "Value": {
-            "Ref": "Lambda2CurrentVersion72012B74ae3cccfdad93f3cb5c0d547683bcfea9"
+            "Ref": "Lambda2CurrentVersion72012B74da2ca4572056a1112d9804f75b5b7491"
           },
           "Name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda2"
         }
@@ -383,7 +375,7 @@
           },
           "FunctionVersion": {
             "Fn::GetAtt": [
-              "Lambda2CurrentVersion72012B74ae3cccfdad93f3cb5c0d547683bcfea9",
+              "Lambda2CurrentVersion72012B74da2ca4572056a1112d9804f75b5b7491",
               "Version"
             ]
           },

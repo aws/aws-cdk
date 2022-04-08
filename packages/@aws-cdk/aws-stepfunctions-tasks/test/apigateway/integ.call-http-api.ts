@@ -18,15 +18,13 @@ const stack = new cdk.Stack(app, 'CallHttpApiInteg');
 const httpApi = new apigatewayv2.HttpApi(stack, 'MyHttpApi');
 
 const handler = new lambda.Function(stack, 'HelloHandler', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: "hello, world!" }; };'),
 });
 httpApi.addRoutes({
   path: '/',
-  integration: new integrations.LambdaProxyIntegration({
-    handler,
-  }),
+  integration: new integrations.HttpLambdaIntegration('DefaultIntegration', handler),
 });
 
 const callEndpointJob = new CallApiGatewayHttpApiEndpoint(stack, 'Call APIGW', {

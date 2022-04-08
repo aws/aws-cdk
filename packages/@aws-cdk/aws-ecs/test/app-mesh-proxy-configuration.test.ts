@@ -1,10 +1,9 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../lib';
 
-nodeunitShim({
-  'correctly sets all appMeshProxyConfiguration'(test: Test) {
+describe('app mesh proxy configuration', () => {
+  test('correctly sets all appMeshProxyConfiguration', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -34,7 +33,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ProxyConfiguration: {
         ContainerName: 'envoy',
         ProxyConfigurationProperties: [
@@ -69,11 +68,11 @@ nodeunitShim({
         ],
         Type: 'APPMESH',
       },
-    }));
-    test.done();
-  },
+    });
 
-  'correctly sets appMeshProxyConfiguration with default properties set'(test: Test) {
+  });
+
+  test('correctly sets appMeshProxyConfiguration with default properties set', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -100,7 +99,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ProxyConfiguration: {
         ContainerName: 'envoy',
         ProxyConfigurationProperties: [
@@ -123,11 +122,11 @@ nodeunitShim({
         ],
         Type: 'APPMESH',
       },
-    }));
-    test.done();
-  },
+    });
 
-  'correctly sets appMeshProxyConfiguration with empty egressIgnoredPorts and egressIgnoredIPs'(test: Test) {
+  });
+
+  test('correctly sets appMeshProxyConfiguration with empty egressIgnoredPorts and egressIgnoredIPs', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -156,7 +155,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ProxyConfiguration: {
         ContainerName: 'envoy',
         ProxyConfigurationProperties: [
@@ -179,16 +178,16 @@ nodeunitShim({
         ],
         Type: 'APPMESH',
       },
-    }));
-    test.done();
-  },
+    });
 
-  'throws when neither of IgnoredUID and IgnoredGID is set'(test: Test) {
+  });
+
+  test('throws when neither of IgnoredUID and IgnoredGID is set', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         networkMode: ecs.NetworkMode.AWS_VPC,
         proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
@@ -200,8 +199,8 @@ nodeunitShim({
           },
         }),
       });
-    }, /At least one of ignoredUID or ignoredGID should be specified./);
+    }).toThrow(/At least one of ignoredUID or ignoredGID should be specified./);
 
-    test.done();
-  },
+
+  });
 });

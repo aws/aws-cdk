@@ -74,8 +74,13 @@ export function formatAnalytics(infos: ConstructInfo[]) {
   infos.forEach(info => insertFqnInTrie(`${info.version}!${info.fqn}`, trie));
 
   const plaintextEncodedConstructs = prefixEncodeTrie(trie);
-  const compressedConstructs = zlib.gzipSync(Buffer.from(plaintextEncodedConstructs)).toString('base64');
+  const compressedConstructsBuffer = zlib.gzipSync(Buffer.from(plaintextEncodedConstructs));
 
+  // set OS flag to "unknown" in order to ensure we get consistent results across operating systems
+  // see https://github.com/aws/aws-cdk/issues/15322
+  setGzipOperatingSystemToUnknown(compressedConstructsBuffer);
+
+  const compressedConstructs = compressedConstructsBuffer.toString('base64');
   return `v2:deflate64:${compressedConstructs}`;
 }
 
@@ -124,4 +129,48 @@ function prefixEncodeTrie(trie: Trie) {
     }
   });
   return prefixEncoded;
+}
+
+/**
+ * Sets the OS flag to "unknown" in order to ensure we get consistent results across operating systems.
+ *
+ * @see https://datatracker.ietf.org/doc/html/rfc1952#page-5
+ *
+ *   +---+---+---+---+---+---+---+---+---+---+
+ *   |ID1|ID2|CM |FLG|     MTIME     |XFL|OS |
+ *   +---+---+---+---+---+---+---+---+---+---+
+ *   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+ *   +---+---+---+---+---+---+---+---+---+---+
+ *
+ * OS (Operating System)
+ * =====================
+ * This identifies the type of file system on which compression
+ * took place.  This may be useful in determining end-of-line
+ * convention for text files.  The currently defined values are
+ * as follows:
+ *      0 - FAT filesystem (MS-DOS, OS/2, NT/Win32)
+ *      1 - Amiga
+ *      2 - VMS (or OpenVMS)
+ *      3 - Unix
+ *      4 - VM/CMS
+ *      5 - Atari TOS
+ *      6 - HPFS filesystem (OS/2, NT)
+ *      7 - Macintosh
+ *      8 - Z-System
+ *      9 - CP/M
+ *     10 - TOPS-20
+ *     11 - NTFS filesystem (NT)
+ *     12 - QDOS
+ *     13 - Acorn RISCOS
+ *    255 - unknown
+ *
+ * @param gzipBuffer A gzip buffer
+ */
+function setGzipOperatingSystemToUnknown(gzipBuffer: Buffer) {
+  // check that this is indeed a gzip buffer (https://datatracker.ietf.org/doc/html/rfc1952#page-6)
+  if (gzipBuffer[0] !== 0x1f || gzipBuffer[1] !== 0x8b) {
+    throw new Error('Expecting a gzip buffer (must start with 0x1f8b)');
+  }
+
+  gzipBuffer[9] = 255;
 }

@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudArtifact } from '../cloud-artifact';
-import { CloudAssembly } from '../cloud-assembly';
+import type { CloudAssembly } from '../cloud-assembly';
 import { Environment, EnvironmentUtils } from '../environment';
 
 export class CloudFormationStackArtifact extends CloudArtifact {
@@ -37,9 +37,10 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   public readonly stackName: string;
 
   /**
-   * A string that represents this stack. Should only be used in user interfaces.
-   * If the stackName and artifactId are the same, it will just return that. Otherwise,
-   * it will return something like "<artifactId> (<stackName>)"
+   * A string that represents this stack. Should only be used in user
+   * interfaces. If the stackName has not been set explicitly, or has been set
+   * to artifactId, it will return the hierarchicalId of the stack. Otherwise,
+   * it will return something like "<hierarchicalId> (<stackName>)"
    */
   public readonly displayName: string;
 
@@ -62,11 +63,25 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   public readonly assumeRoleArn?: string;
 
   /**
+   * External ID to use when assuming role for cloudformation deployments
+   *
+   * @default - No external ID
+   */
+  readonly assumeRoleExternalId?: string;
+
+  /**
    * The role that is passed to CloudFormation to execute the change set
    *
    * @default - No role is passed (currently assumed role/credentials are used)
    */
   public readonly cloudFormationExecutionRoleArn?: string;
+
+  /**
+   * The role to use to look up values from the target AWS account
+   *
+   * @default - No role is assumed (current credentials are used)
+   */
+  public readonly lookupRole?: cxschema.BootstrapRole;
 
   /**
    * If the stack template has already been included in the asset manifest, its asset URL
@@ -121,19 +136,21 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     // from the stack metadata
     this.tags = properties.tags ?? this.tagsFromMetadata();
     this.assumeRoleArn = properties.assumeRoleArn;
+    this.assumeRoleExternalId = properties.assumeRoleExternalId;
     this.cloudFormationExecutionRoleArn = properties.cloudFormationExecutionRoleArn;
     this.stackTemplateAssetObjectUrl = properties.stackTemplateAssetObjectUrl;
     this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion;
     this.bootstrapStackVersionSsmParameter = properties.bootstrapStackVersionSsmParameter;
     this.terminationProtection = properties.terminationProtection;
     this.validateOnSynth = properties.validateOnSynth;
+    this.lookupRole = properties.lookupRole;
 
     this.stackName = properties.stackName || artifactId;
     this.assets = this.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET).map(e => e.data as cxschema.AssetMetadataEntry);
 
     this.displayName = this.stackName === artifactId
-      ? this.stackName
-      : `${artifactId} (${this.stackName})`;
+      ? this.hierarchicalId
+      : `${this.hierarchicalId} (${this.stackName})`;
 
     this.name = this.stackName; // backwards compat
     this.originalName = this.stackName;

@@ -131,6 +131,16 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
   readonly securityConfiguration?: string;
 
   /**
+   * Specifies the step concurrency level to allow multiple steps to run in parallel
+   *
+   * Requires EMR release label 5.28.0 or above.
+   * Must be in range [1, 256].
+   *
+   * @default 1 - no step concurrency allowed
+   */
+  readonly stepConcurrencyLevel?: number;
+
+  /**
    * A list of tags to associate with a cluster and propagate to Amazon EC2 instances.
    *
    * @default - None
@@ -191,6 +201,22 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     }
 
     this.taskPolicies = this.createPolicyStatements(this._serviceRole, this._clusterRole, this._autoScalingRole);
+
+    if (this.props.releaseLabel !== undefined && !cdk.Token.isUnresolved(this.props.releaseLabel)) {
+      this.validateReleaseLabel(this.props.releaseLabel);
+    }
+
+    if (this.props.stepConcurrencyLevel !== undefined && !cdk.Token.isUnresolved(this.props.stepConcurrencyLevel)) {
+      if (this.props.stepConcurrencyLevel < 1 || this.props.stepConcurrencyLevel > 256) {
+        throw new Error(`Step concurrency level must be in range [1, 256], but got ${this.props.stepConcurrencyLevel}.`);
+      }
+      if (this.props.releaseLabel && this.props.stepConcurrencyLevel !== 1) {
+        const [major, minor] = this.props.releaseLabel.slice(4).split('.');
+        if (Number(major) < 5 || (Number(major) === 5 && Number(minor) < 28)) {
+          throw new Error(`Step concurrency is only supported in EMR release version 5.28.0 and above but got ${this.props.releaseLabel}.`);
+        }
+      }
+    }
   }
 
   /**
@@ -252,6 +278,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
         ReleaseLabel: cdk.stringToCloudFormation(this.props.releaseLabel),
         ScaleDownBehavior: cdk.stringToCloudFormation(this.props.scaleDownBehavior?.valueOf()),
         SecurityConfiguration: cdk.stringToCloudFormation(this.props.securityConfiguration),
+        StepConcurrencyLevel: cdk.numberToCloudFormation(this.props.stepConcurrencyLevel),
         ...(this.props.tags ? this.renderTags(this.props.tags) : undefined),
         VisibleToAllUsers: cdk.booleanToCloudFormation(this.visibleToAllUsers),
       }),
@@ -355,6 +382,25 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     );
 
     return role;
+  }
+
+  /**
+   * Validates the release label string is in proper format.
+   * Release labels are in the form `emr-x.x.x`. For example, `emr-5.33.0`.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-release-components.html
+   */
+  private validateReleaseLabel(releaseLabel: string): string {
+    const prefix = releaseLabel.slice(0, 4);
+    const versions = releaseLabel.slice(4).split('.');
+    if (prefix !== 'emr-' || versions.length !== 3 || versions.some((e) => isNotANumber(e))) {
+      throw new Error(`The release label must be in the format 'emr-x.x.x' but got ${releaseLabel}`);
+    }
+    return releaseLabel;
+
+    function isNotANumber(value: string): boolean {
+      return value === '' || isNaN(Number(value));
+    }
   }
 }
 
@@ -544,7 +590,7 @@ export namespace EmrCreateCluster {
    *
    */
   export enum SpotTimeoutAction {
-    /**\
+    /**
      * SWITCH_TO_ON_DEMAND
      */
     SWITCH_TO_ON_DEMAND = 'SWITCH_TO_ON_DEMAND',
@@ -555,6 +601,21 @@ export namespace EmrCreateCluster {
   }
 
   /**
+   * Spot Allocation Strategies
+   *
+   * Specifies the strategy to use in launching Spot Instance fleets. For example, "capacity-optimized" launches instances from Spot Instance pools with optimal capacity for the number of instances that are launching.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_SpotProvisioningSpecification.html
+   *
+   */
+  export enum SpotAllocationStrategy {
+    /**
+     * Capacity-optimized, which launches instances from Spot Instance pools with optimal capacity for the number of instances that are launching.
+     */
+    CAPACITY_OPTIMIZED = 'capacity-optimized',
+  }
+
+  /**
    * The launch specification for Spot instances in the instance fleet, which determines the defined duration and provisioning timeout behavior.
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_SpotProvisioningSpecification.html
@@ -562,9 +623,15 @@ export namespace EmrCreateCluster {
    */
   export interface SpotProvisioningSpecificationProperty {
     /**
+     * Specifies the strategy to use in launching Spot Instance fleets.
+     *
+     * @default - No allocation strategy, i.e. spot instance type will be chosen based on current price only
+     */
+    readonly allocationStrategy?: SpotAllocationStrategy;
+    /**
      * The defined duration for Spot instances (also known as Spot blocks) in minutes.
      *
-     * @default No blockDurationMinutes
+     * @default - No blockDurationMinutes
      */
     readonly blockDurationMinutes?: number;
 

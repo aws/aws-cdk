@@ -137,7 +137,7 @@ export interface IExampleResource extends
    * The details of which metric methods you should have of course depends on the
    * resource that is being modeled.
    */
-  metricCount(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -212,12 +212,12 @@ abstract class ExampleResourceBase extends core.Resource implements IExampleReso
   }
 
   /** Implement the {@link IExampleResource.metricCount} method. */
-  public metricCount(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       // of course, you would put your resource-specific values here
       namespace: 'AWS/ExampleResource',
-      dimensions: { ExampleResource: this.exampleResourceName },
-      metricName,
+      metricName: 'Count',
+      dimensionsMap: { ExampleResource: this.exampleResourceName },
       ...props,
     }).attachTo(this);
   }
