@@ -501,7 +501,7 @@ export class SecurityGroup extends SecurityGroupBase {
       // is only one rule which allows all traffic and that subsumes any other
       // rule.
       if (!remoteRule) { // Warn only if addEgressRule() was explicitely called
-        Annotations.of(this).addWarning('Ignoring Egress rule since \'allowAllOutbound\' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup');
+        Annotations.of(this).addWarning('Ignoring Egress rule since \'allowAllOutbound\' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup');
       }
       return;
     } else {

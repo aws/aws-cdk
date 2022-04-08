@@ -127,7 +127,7 @@ function checkIfImportedLocationIsAnAlphaPackage(location: string, currentFilena
 }
 
 function getCdkRootDir(filename: string): string | undefined {
-  const filenameSplit = filename.split('/');
+  const filenameSplit = filename.split(path.sep);
   // for test files
   let rootDirIndex = filenameSplit.findIndex(e => e.match('tools'));
 
