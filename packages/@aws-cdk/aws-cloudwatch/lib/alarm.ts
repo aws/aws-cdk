@@ -1,4 +1,4 @@
-import { ArnFormat, Lazy, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, Lazy, Stack, Token, Annotations } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IAlarmAction } from './alarm-action';
 import { AlarmBase, IAlarm } from './alarm-base';
