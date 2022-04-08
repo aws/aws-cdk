@@ -1,0 +1,862 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "integ-restapi-import-RootStack": {
+        "id": "integ-restapi-import-RootStack",
+        "path": "integ-restapi-import-RootStack",
+        "children": {
+          "RestApi": {
+            "id": "RestApi",
+            "path": "integ-restapi-import-RootStack/RestApi",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-restapi-import-RootStack/RestApi/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "RestApi"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnRestApi",
+                  "version": "0.0.0"
+                }
+              },
+              "CloudWatchRole": {
+                "id": "CloudWatchRole",
+                "path": "integ-restapi-import-RootStack/RestApi/CloudWatchRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-restapi-import-RootStack/RestApi/CloudWatchRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "apigateway.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Account": {
+                "id": "Account",
+                "path": "integ-restapi-import-RootStack/RestApi/Account",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Account",
+                  "aws:cdk:cloudformation:props": {
+                    "cloudWatchRoleArn": {
+                      "Fn::GetAtt": [
+                        "RestApiCloudWatchRoleE3ED6605",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnAccount",
+                  "version": "0.0.0"
+                }
+              },
+              "Default": {
+                "id": "Default",
+                "path": "integ-restapi-import-RootStack/RestApi/Default",
+                "children": {
+                  "ANY": {
+                    "id": "ANY",
+                    "path": "integ-restapi-import-RootStack/RestApi/Default/ANY",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-restapi-import-RootStack/RestApi/Default/ANY/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                          "aws:cdk:cloudformation:props": {
+                            "httpMethod": "ANY",
+                            "resourceId": {
+                              "Fn::GetAtt": [
+                                "RestApi0C43BF4B",
+                                "RootResourceId"
+                              ]
+                            },
+                            "restApiId": {
+                              "Ref": "RestApi0C43BF4B"
+                            },
+                            "authorizationType": "NONE",
+                            "integration": {
+                              "type": "MOCK"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.Method",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.ResourceBase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigateway.RestApi",
+              "version": "0.0.0"
+            }
+          },
+          "integ-restapi-import-PetsStack": {
+            "id": "integ-restapi-import-PetsStack",
+            "path": "integ-restapi-import-RootStack/integ-restapi-import-PetsStack",
+            "children": {
+              "RestApi": {
+                "id": "RestApi",
+                "path": "integ-restapi-import-RootStack/integ-restapi-import-PetsStack/RestApi",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "integ-restapi-import-RootStack/integ-restapi-import-PetsStack/RestApi/Default",
+                    "children": {
+                      "pets": {
+                        "id": "pets",
+                        "path": "integ-restapi-import-RootStack/integ-restapi-import-PetsStack/RestApi/Default/pets",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integ-restapi-import-RootStack/integ-restapi-import-PetsStack/RestApi/Default/pets/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                              "aws:cdk:cloudformation:props": {
+                                "parentId": {
+                                  "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRootResourceId"
+                                },
+                                "pathPart": "pets",
+                                "restApiId": {
+                                  "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "GET": {
+                            "id": "GET",
+                            "path": "integ-restapi-import-RootStack/integ-restapi-import-PetsStack/RestApi/Default/pets/GET",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "integ-restapi-import-RootStack/integ-restapi-import-PetsStack/RestApi/Default/pets/GET/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                                  "aws:cdk:cloudformation:props": {
+                                    "httpMethod": "GET",
+                                    "resourceId": {
+                                      "Ref": "RestApipetsC5A41236"
+                                    },
+                                    "restApiId": {
+                                      "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
+                                    },
+                                    "authorizationType": "NONE",
+                                    "integration": {
+                                      "type": "MOCK",
+                                      "requestTemplates": {
+                                        "application/json": "{ \"statusCode\": 200 }"
+                                      },
+                                      "passthroughBehavior": "NEVER",
+                                      "integrationResponses": [
+                                        {
+                                          "statusCode": "200"
+                                        }
+                                      ]
+                                    },
+                                    "methodResponses": [
+                                      {
+                                        "statusCode": "200"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.Method",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.Resource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.ResourceBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.RestApiBase",
+                  "version": "0.0.0"
+                }
+              },
+              "reference-to-integrestapiimportRootStackRestApi2647DA4CRootResourceId": {
+                "id": "reference-to-integrestapiimportRootStackRestApi2647DA4CRootResourceId",
+                "path": "integ-restapi-import-RootStack/integ-restapi-import-PetsStack/reference-to-integrestapiimportRootStackRestApi2647DA4CRootResourceId",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
+                }
+              },
+              "reference-to-integrestapiimportRootStackRestApi2647DA4CRef": {
+                "id": "reference-to-integrestapiimportRootStackRestApi2647DA4CRef",
+                "path": "integ-restapi-import-RootStack/integ-restapi-import-PetsStack/reference-to-integrestapiimportRootStackRestApi2647DA4CRef",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.NestedStack",
+              "version": "0.0.0"
+            }
+          },
+          "integ-restapi-import-PetsStack.NestedStack": {
+            "id": "integ-restapi-import-PetsStack.NestedStack",
+            "path": "integ-restapi-import-RootStack/integ-restapi-import-PetsStack.NestedStack",
+            "children": {
+              "integ-restapi-import-PetsStack.NestedStackResource": {
+                "id": "integ-restapi-import-PetsStack.NestedStackResource",
+                "path": "integ-restapi-import-RootStack/integ-restapi-import-PetsStack.NestedStack/integ-restapi-import-PetsStack.NestedStackResource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
+                  "aws:cdk:cloudformation:props": {
+                    "templateUrl": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "https://s3.",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ".",
+                          {
+                            "Ref": "AWS::URLSuffix"
+                          },
+                          "/",
+                          {
+                            "Ref": "AssetParametersc6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1efS3BucketFE7B8A1B"
+                          },
+                          "/",
+                          {
+                            "Fn::Select": [
+                              0,
+                              {
+                                "Fn::Split": [
+                                  "||",
+                                  {
+                                    "Ref": "AssetParametersc6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1efS3VersionKeyB80604FE"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "Fn::Select": [
+                              1,
+                              {
+                                "Fn::Split": [
+                                  "||",
+                                  {
+                                    "Ref": "AssetParametersc6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1efS3VersionKeyB80604FE"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      ]
+                    },
+                    "parameters": {
+                      "referencetointegrestapiimportRootStackRestApi2647DA4CRootResourceId": {
+                        "Fn::GetAtt": [
+                          "RestApi0C43BF4B",
+                          "RootResourceId"
+                        ]
+                      },
+                      "referencetointegrestapiimportRootStackRestApi2647DA4CRef": {
+                        "Ref": "RestApi0C43BF4B"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnStack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Construct",
+              "version": "0.0.0"
+            }
+          },
+          "integ-restapi-import-BooksStack": {
+            "id": "integ-restapi-import-BooksStack",
+            "path": "integ-restapi-import-RootStack/integ-restapi-import-BooksStack",
+            "children": {
+              "RestApi": {
+                "id": "RestApi",
+                "path": "integ-restapi-import-RootStack/integ-restapi-import-BooksStack/RestApi",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "integ-restapi-import-RootStack/integ-restapi-import-BooksStack/RestApi/Default",
+                    "children": {
+                      "books": {
+                        "id": "books",
+                        "path": "integ-restapi-import-RootStack/integ-restapi-import-BooksStack/RestApi/Default/books",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integ-restapi-import-RootStack/integ-restapi-import-BooksStack/RestApi/Default/books/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                              "aws:cdk:cloudformation:props": {
+                                "parentId": {
+                                  "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRootResourceId"
+                                },
+                                "pathPart": "books",
+                                "restApiId": {
+                                  "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "GET": {
+                            "id": "GET",
+                            "path": "integ-restapi-import-RootStack/integ-restapi-import-BooksStack/RestApi/Default/books/GET",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "integ-restapi-import-RootStack/integ-restapi-import-BooksStack/RestApi/Default/books/GET/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                                  "aws:cdk:cloudformation:props": {
+                                    "httpMethod": "GET",
+                                    "resourceId": {
+                                      "Ref": "RestApibooksA2500ABD"
+                                    },
+                                    "restApiId": {
+                                      "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
+                                    },
+                                    "authorizationType": "NONE",
+                                    "integration": {
+                                      "type": "MOCK",
+                                      "requestTemplates": {
+                                        "application/json": "{ \"statusCode\": 200 }"
+                                      },
+                                      "passthroughBehavior": "NEVER",
+                                      "integrationResponses": [
+                                        {
+                                          "statusCode": "200"
+                                        }
+                                      ]
+                                    },
+                                    "methodResponses": [
+                                      {
+                                        "statusCode": "200"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.Method",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.Resource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.ResourceBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.RestApiBase",
+                  "version": "0.0.0"
+                }
+              },
+              "reference-to-integrestapiimportRootStackRestApi2647DA4CRootResourceId": {
+                "id": "reference-to-integrestapiimportRootStackRestApi2647DA4CRootResourceId",
+                "path": "integ-restapi-import-RootStack/integ-restapi-import-BooksStack/reference-to-integrestapiimportRootStackRestApi2647DA4CRootResourceId",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
+                }
+              },
+              "reference-to-integrestapiimportRootStackRestApi2647DA4CRef": {
+                "id": "reference-to-integrestapiimportRootStackRestApi2647DA4CRef",
+                "path": "integ-restapi-import-RootStack/integ-restapi-import-BooksStack/reference-to-integrestapiimportRootStackRestApi2647DA4CRef",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.NestedStack",
+              "version": "0.0.0"
+            }
+          },
+          "integ-restapi-import-BooksStack.NestedStack": {
+            "id": "integ-restapi-import-BooksStack.NestedStack",
+            "path": "integ-restapi-import-RootStack/integ-restapi-import-BooksStack.NestedStack",
+            "children": {
+              "integ-restapi-import-BooksStack.NestedStackResource": {
+                "id": "integ-restapi-import-BooksStack.NestedStackResource",
+                "path": "integ-restapi-import-RootStack/integ-restapi-import-BooksStack.NestedStack/integ-restapi-import-BooksStack.NestedStackResource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
+                  "aws:cdk:cloudformation:props": {
+                    "templateUrl": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "https://s3.",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ".",
+                          {
+                            "Ref": "AWS::URLSuffix"
+                          },
+                          "/",
+                          {
+                            "Ref": "AssetParameters480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141S3Bucket74F8A623"
+                          },
+                          "/",
+                          {
+                            "Fn::Select": [
+                              0,
+                              {
+                                "Fn::Split": [
+                                  "||",
+                                  {
+                                    "Ref": "AssetParameters480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141S3VersionKeyC855AC3B"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "Fn::Select": [
+                              1,
+                              {
+                                "Fn::Split": [
+                                  "||",
+                                  {
+                                    "Ref": "AssetParameters480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141S3VersionKeyC855AC3B"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      ]
+                    },
+                    "parameters": {
+                      "referencetointegrestapiimportRootStackRestApi2647DA4CRootResourceId": {
+                        "Fn::GetAtt": [
+                          "RestApi0C43BF4B",
+                          "RootResourceId"
+                        ]
+                      },
+                      "referencetointegrestapiimportRootStackRestApi2647DA4CRef": {
+                        "Ref": "RestApi0C43BF4B"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnStack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Construct",
+              "version": "0.0.0"
+            }
+          },
+          "integ-restapi-import-DeployStack": {
+            "id": "integ-restapi-import-DeployStack",
+            "path": "integ-restapi-import-RootStack/integ-restapi-import-DeployStack",
+            "children": {
+              "RestApi": {
+                "id": "RestApi",
+                "path": "integ-restapi-import-RootStack/integ-restapi-import-DeployStack/RestApi",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.RestApiBase",
+                  "version": "0.0.0"
+                }
+              },
+              "Deployment": {
+                "id": "Deployment",
+                "path": "integ-restapi-import-RootStack/integ-restapi-import-DeployStack/Deployment",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-restapi-import-RootStack/integ-restapi-import-DeployStack/Deployment/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
+                      "aws:cdk:cloudformation:props": {
+                        "restApiId": {
+                          "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnDeployment",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.Deployment",
+                  "version": "0.0.0"
+                }
+              },
+              "Stage": {
+                "id": "Stage",
+                "path": "integ-restapi-import-RootStack/integ-restapi-import-DeployStack/Stage",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-restapi-import-RootStack/integ-restapi-import-DeployStack/Stage/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "restApiId": {
+                          "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
+                        },
+                        "deploymentId": {
+                          "Ref": "Deployment37BBD5E4"
+                        },
+                        "stageName": "prod"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.Stage",
+                  "version": "0.0.0"
+                }
+              },
+              "reference-to-integrestapiimportRootStackRestApi2647DA4CRef": {
+                "id": "reference-to-integrestapiimportRootStackRestApi2647DA4CRef",
+                "path": "integ-restapi-import-RootStack/integ-restapi-import-DeployStack/reference-to-integrestapiimportRootStackRestApi2647DA4CRef",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.NestedStack",
+              "version": "0.0.0"
+            }
+          },
+          "integ-restapi-import-DeployStack.NestedStack": {
+            "id": "integ-restapi-import-DeployStack.NestedStack",
+            "path": "integ-restapi-import-RootStack/integ-restapi-import-DeployStack.NestedStack",
+            "children": {
+              "integ-restapi-import-DeployStack.NestedStackResource": {
+                "id": "integ-restapi-import-DeployStack.NestedStackResource",
+                "path": "integ-restapi-import-RootStack/integ-restapi-import-DeployStack.NestedStack/integ-restapi-import-DeployStack.NestedStackResource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
+                  "aws:cdk:cloudformation:props": {
+                    "templateUrl": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "https://s3.",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ".",
+                          {
+                            "Ref": "AWS::URLSuffix"
+                          },
+                          "/",
+                          {
+                            "Ref": "AssetParameters04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86abS3BucketADE4C6AE"
+                          },
+                          "/",
+                          {
+                            "Fn::Select": [
+                              0,
+                              {
+                                "Fn::Split": [
+                                  "||",
+                                  {
+                                    "Ref": "AssetParameters04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86abS3VersionKeyF36B0062"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "Fn::Select": [
+                              1,
+                              {
+                                "Fn::Split": [
+                                  "||",
+                                  {
+                                    "Ref": "AssetParameters04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86abS3VersionKeyF36B0062"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      ]
+                    },
+                    "parameters": {
+                      "referencetointegrestapiimportRootStackRestApi2647DA4CRef": {
+                        "Ref": "RestApi0C43BF4B"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnStack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Construct",
+              "version": "0.0.0"
+            }
+          },
+          "PetsURL": {
+            "id": "PetsURL",
+            "path": "integ-restapi-import-RootStack/PetsURL",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BooksURL": {
+            "id": "BooksURL",
+            "path": "integ-restapi-import-RootStack/BooksURL",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "AssetParameters": {
+            "id": "AssetParameters",
+            "path": "integ-restapi-import-RootStack/AssetParameters",
+            "children": {
+              "c6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1ef": {
+                "id": "c6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1ef",
+                "path": "integ-restapi-import-RootStack/AssetParameters/c6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1ef",
+                "children": {
+                  "S3Bucket": {
+                    "id": "S3Bucket",
+                    "path": "integ-restapi-import-RootStack/AssetParameters/c6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1ef/S3Bucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "S3VersionKey": {
+                    "id": "S3VersionKey",
+                    "path": "integ-restapi-import-RootStack/AssetParameters/c6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1ef/S3VersionKey",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ArtifactHash": {
+                    "id": "ArtifactHash",
+                    "path": "integ-restapi-import-RootStack/AssetParameters/c6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1ef/ArtifactHash",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Construct",
+                  "version": "0.0.0"
+                }
+              },
+              "480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141": {
+                "id": "480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141",
+                "path": "integ-restapi-import-RootStack/AssetParameters/480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141",
+                "children": {
+                  "S3Bucket": {
+                    "id": "S3Bucket",
+                    "path": "integ-restapi-import-RootStack/AssetParameters/480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141/S3Bucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "S3VersionKey": {
+                    "id": "S3VersionKey",
+                    "path": "integ-restapi-import-RootStack/AssetParameters/480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141/S3VersionKey",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ArtifactHash": {
+                    "id": "ArtifactHash",
+                    "path": "integ-restapi-import-RootStack/AssetParameters/480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141/ArtifactHash",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Construct",
+                  "version": "0.0.0"
+                }
+              },
+              "04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86ab": {
+                "id": "04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86ab",
+                "path": "integ-restapi-import-RootStack/AssetParameters/04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86ab",
+                "children": {
+                  "S3Bucket": {
+                    "id": "S3Bucket",
+                    "path": "integ-restapi-import-RootStack/AssetParameters/04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86ab/S3Bucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "S3VersionKey": {
+                    "id": "S3VersionKey",
+                    "path": "integ-restapi-import-RootStack/AssetParameters/04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86ab/S3VersionKey",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ArtifactHash": {
+                    "id": "ArtifactHash",
+                    "path": "integ-restapi-import-RootStack/AssetParameters/04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86ab/ArtifactHash",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Construct",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Construct",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}
