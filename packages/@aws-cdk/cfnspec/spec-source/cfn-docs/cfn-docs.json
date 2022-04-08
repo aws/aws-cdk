@@ -10046,8 +10046,11 @@
         "Broker": "A comma-separated list of one or more broker locations in your Kafka cluster that host your Kafka instance. Specify each broker location in the form `*broker-hostname-or-ip* : *port*` . For example, `\"ec2-12-345-678-901.compute-1.amazonaws.com:2345\"` . For more information and examples of specifying a list of broker locations, see [Using Apache Kafka as a target for AWS Database Migration Service](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Kafka.html) in the *AWS Database Migration Service User Guide* .",
         "IncludeControlDetails": "Shows detailed control information for table definition, column definition, and table and column changes in the Kafka message output. The default is `false` .",
         "IncludeNullAndEmpty": "Include NULL and empty columns for records migrated to the endpoint. The default is `false` .",
+        "IncludePartitionValue": "Shows the partition value within the Kafka message output unless the partition type is `schema-table-type` . The default is `false` .",
         "IncludeTableAlterOperations": "Includes any data definition language (DDL) operations that change the table in the control data, such as `rename-table` , `drop-table` , `add-column` , `drop-column` , and `rename-column` . The default is `false` .",
         "IncludeTransactionDetails": "Provides detailed transaction information from the source database. This information includes a commit timestamp, a log position, and values for `transaction_id` , previous `transaction_id` , and `transaction_record_id` (the record offset within a transaction). The default is `false` .",
+        "MessageFormat": "The output format for the records created on the endpoint. The message format is `JSON` (default) or `JSON_UNFORMATTED` (a single line with no tab).",
+        "MessageMaxBytes": "The maximum size in bytes for records created on the endpoint The default is 1,000,000.",
         "NoHexPrefix": "Set this optional parameter to `true` to avoid adding a '0x' prefix to raw data in hexadecimal format. For example, by default, AWS DMS adds a '0x' prefix to the LOB column type in hexadecimal format moving from an Oracle source to a Kafka target. Use the `NoHexPrefix` endpoint setting to enable migration of RAW data type columns without adding the '0x' prefix.",
         "PartitionIncludeSchemaTable": "Prefixes schema and table names to partition values, when the partition type is `primary-key-type` . Doing this increases data distribution among Kafka partitions. For example, suppose that a SysBench schema has thousands of tables and each table has only limited range for a primary key. In this case, the same primary key is sent from thousands of tables to the same partition, which causes throttling. The default is `false` .",
         "SaslPassword": "The secure password that you created when you first set up your Amazon MSK cluster to validate a client identity and make an encrypted connection between server and client using SASL-SSL authentication.",
@@ -10066,6 +10069,7 @@
       "properties": {
         "IncludeControlDetails": "Shows detailed control information for table definition, column definition, and table and column changes in the Kinesis message output. The default is `false` .",
         "IncludeNullAndEmpty": "Include NULL and empty columns for records migrated to the endpoint. The default is `false` .",
+        "IncludePartitionValue": "Shows the partition value within the Kinesis message output, unless the partition type is `schema-table-type` . The default is `false` .",
         "IncludeTableAlterOperations": "Includes any data definition language (DDL) operations that change the table in the control data, such as `rename-table` , `drop-table` , `add-column` , `drop-column` , and `rename-column` . The default is `false` .",
         "IncludeTransactionDetails": "Provides detailed transaction information from the source database. This information includes a commit timestamp, a log position, and values for `transaction_id` , previous `transaction_id` , and `transaction_record_id` (the record offset within a transaction). The default is `false` .",
         "MessageFormat": "The output format for the records created on the endpoint. The message format is `JSON` (default) or `JSON_UNFORMATTED` (a single line with no tab).",
@@ -10106,8 +10110,15 @@
       "attributes": {},
       "description": "Provides information that defines a MySQL endpoint. This information includes the output format of records applied to the endpoint and details of transaction and control table data information. For information about other available settings, see [Extra connection attributes when using MySQL as a source for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.MySQL.html#CHAP_Source.MySQL.ConnectionAttrib) and [Extra connection attributes when using a MySQL-compatible database as a target for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.MySQL.html#CHAP_Target.MySQL.ConnectionAttrib) in the *AWS Database Migration Service User Guide* .",
       "properties": {
+        "AfterConnectScript": "Specifies a script to run immediately after AWS DMS connects to the endpoint. The migration task continues running regardless if the SQL statement succeeds or fails.\n\nFor this parameter, provide the code of the script itself, not the name of a file containing the script.",
+        "CleanSourceMetadataOnMismatch": "Adjusts the behavior of DMS when migrating from an SQL Server source database that is hosted as part of an Always On availability group cluster. If you need DMS to poll all the nodes in the Always On cluster for transaction backups, set this attribute to `false` .",
+        "EventsPollInterval": "Specifies how often to check the binary log for new changes/events when the database is idle. The default is five seconds.\n\nExample: `eventsPollInterval=5;`\n\nIn the example, AWS DMS checks for changes in the binary logs every five seconds.",
+        "MaxFileSize": "Specifies the maximum size (in KB) of any .csv file used to transfer data to a MySQL-compatible database.\n\nExample: `maxFileSize=512`",
+        "ParallelLoadThreads": "Improves performance when loading data into the MySQL-compatible target database. Specifies how many threads to use to load the data into the MySQL-compatible target database. Setting a large number of threads can have an adverse effect on database performance, because a separate connection is required for each thread. The default is one.\n\nExample: `parallelLoadThreads=1`",
         "SecretsManagerAccessRoleArn": "The full Amazon Resource Name (ARN) of the IAM role that specifies AWS DMS as the trusted entity and grants the required permissions to access the value in `SecretsManagerSecret` . The role must allow the `iam:PassRole` action. `SecretsManagerSecret` has the value of the AWS Secrets Manager secret that allows access to the MySQL endpoint.\n\n> You can specify one of two sets of values for these permissions. You can specify the values for this setting and `SecretsManagerSecretId` . Or you can specify clear-text values for `UserName` , `Password` , `ServerName` , and `Port` . You can't specify both.\n> \n> For more information on creating this `SecretsManagerSecret` , the corresponding `SecretsManagerAccessRoleArn` , and the `SecretsManagerSecretId` that is required to access it, see [Using secrets to access AWS Database Migration Service resources](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.html#security-iam-secretsmanager) in the *AWS Database Migration Service User Guide* .",
-        "SecretsManagerSecretId": "The full ARN, partial ARN, or display name of the `SecretsManagerSecret` that contains the MySQL endpoint connection details."
+        "SecretsManagerSecretId": "The full ARN, partial ARN, or display name of the `SecretsManagerSecret` that contains the MySQL endpoint connection details.",
+        "ServerTimezone": "Specifies the time zone for the source MySQL database.\n\nExample: `serverTimezone=US/Pacific;`\n\nNote: Do not enclose time zones in single quotes.",
+        "TargetDbType": "Specifies where to migrate source tables on the target, either to a single database or multiple databases. If you specify `SPECIFIC_DATABASE` , specify the database name using the `DatabaseName` parameter of the `Endpoint` object.\n\nExample: `targetDbType=MULTIPLE_DATABASES`"
       }
     },
     "AWS::DMS::Endpoint.NeptuneSettings": {
@@ -10444,6 +10455,42 @@
         "SecurityGroupArns": "The ARNs of the security groups that are used to configure the FSx for Lustre file system.\n\n*Pattern* : `^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):ec2:[a-z\\-0-9]*:[0-9]{12}:security-group/.*$`\n\n*Length constraints* : Maximum length of 128.",
         "Subdirectory": "A subdirectory in the location's path. This subdirectory in the FSx for Lustre file system is used to read data from the FSx for Lustre source location or write data to the FSx for Lustre destination.",
         "Tags": "The key-value pair that represents a tag that you want to add to the resource. The value can be an empty string. This value helps you manage, filter, and search for your resources. We recommend that you create a name tag for your location."
+      }
+    },
+    "AWS::DataSync::LocationFSxOpenZFS": {
+      "attributes": {
+        "LocationArn": "The ARN of the specified FSx for OpenZFS file system location.",
+        "LocationUri": "The URI of the specified FSx for OpenZFS file system location.",
+        "Ref": "`Ref` returns the location resource ARN. For example:\n\n`arn:aws:datasync:us-east-2:111222333444:location/loc-07db7abfc326c50s3`"
+      },
+      "description": "The `AWS::DataSync::LocationFSxOpenZFS` resource specifies an endpoint for an Amazon FSx for OpenZFS file system.",
+      "properties": {
+        "FsxFilesystemArn": "The Amazon Resource Name (ARN) of the FSx for OpenZFS file system.",
+        "Protocol": "The type of protocol that AWS DataSync uses to access your file system.",
+        "SecurityGroupArns": "The ARNs of the security groups that are used to configure the FSx for OpenZFS file system.\n\n*Pattern* : `^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):ec2:[a-z\\-0-9]*:[0-9]{12}:security-group/.*$`\n\n*Length constraints* : Maximum length of 128.",
+        "Subdirectory": "A subdirectory in the location's path that must begin with `/fsx` . DataSync uses this subdirectory to read or write data (depending on whether the file system is a source or destination location).",
+        "Tags": "The key-value pair that represents a tag that you want to add to the resource. The value can be an empty string. This value helps you manage, filter, and search for your resources. We recommend that you create a name tag for your location."
+      }
+    },
+    "AWS::DataSync::LocationFSxOpenZFS.MountOptions": {
+      "attributes": {},
+      "description": "Represents the mount options that are available for DataSync to access a Network File System (NFS) location.",
+      "properties": {
+        "Version": "The specific NFS version that you want DataSync to use to mount your NFS share. If the server refuses to use the version specified, the sync will fail. If you don't specify a version, DataSync defaults to `AUTOMATIC` . That is, DataSync automatically selects a version based on negotiation with the NFS server.\n\nYou can specify the following NFS versions:\n\n- *[NFSv3](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc1813)* : Stateless protocol version that allows for asynchronous writes on the server.\n- *[NFSv4.0](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc3530)* : Stateful, firewall-friendly protocol version that supports delegations and pseudo file systems.\n- *[NFSv4.1](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc5661)* : Stateful protocol version that supports sessions, directory delegations, and parallel data processing. Version 4.1 also includes all features available in version 4.0."
+      }
+    },
+    "AWS::DataSync::LocationFSxOpenZFS.NFS": {
+      "attributes": {},
+      "description": "Represents the Network File System (NFS) protocol that AWS DataSync uses to access your Amazon FSx for OpenZFS file system.",
+      "properties": {
+        "MountOptions": "Represents the mount options that are available for DataSync to access an NFS location."
+      }
+    },
+    "AWS::DataSync::LocationFSxOpenZFS.Protocol": {
+      "attributes": {},
+      "description": "Represents the protocol that AWS DataSync uses to access your Amazon FSx for OpenZFS file system.",
+      "properties": {
+        "NFS": "Represents the Network File System (NFS) protocol that DataSync uses to access your FSx for OpenZFS file system."
       }
     },
     "AWS::DataSync::LocationFSxWindows": {
@@ -12394,8 +12441,12 @@
         "DeviceIndex": "The device index for the network interface attachment.",
         "Groups": "The IDs of one or more security groups.",
         "InterfaceType": "The type of network interface. To create an Elastic Fabric Adapter (EFA), specify `efa` . For more information, see [Elastic Fabric Adapter](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html) in the *Amazon Elastic Compute Cloud User Guide* .\n\nIf you are not creating an EFA, specify `interface` or omit this parameter.\n\nValid values: `interface` | `efa`",
+        "Ipv4PrefixCount": "The number of IPv4 prefixes to be automatically assigned to the network interface. You cannot use this option if you use the `Ipv4Prefix` option.",
+        "Ipv4Prefixes": "One or more IPv4 prefixes to be assigned to the network interface. You cannot use this option if you use the `Ipv4PrefixCount` option.",
         "Ipv6AddressCount": "The number of IPv6 addresses to assign to a network interface. Amazon EC2 automatically selects the IPv6 addresses from the subnet range. You can't use this option if specifying specific IPv6 addresses.",
         "Ipv6Addresses": "One or more specific IPv6 addresses from the IPv6 CIDR block range of your subnet. You can't use this option if you're specifying a number of IPv6 addresses.",
+        "Ipv6PrefixCount": "The number of IPv6 prefixes to be automatically assigned to the network interface. You cannot use this option if you use the `Ipv6Prefix` option.",
+        "Ipv6Prefixes": "One or more IPv6 prefixes to be assigned to the network interface. You cannot use this option if you use the `Ipv6PrefixCount` option.",
         "NetworkCardIndex": "The index of the network card. Some instance types support multiple network cards. The primary network interface must be assigned to network card index 0. The default is network card index 0.",
         "NetworkInterfaceId": "The ID of the network interface.",
         "PrivateIpAddress": "The primary private IPv4 address of the network interface.",
@@ -16860,64 +16911,64 @@
     },
     "AWS::Events::Endpoint": {
       "attributes": {
-        "Arn": "",
-        "EndpointId": "",
-        "EndpointUrl": "",
-        "Ref": "",
-        "State": "",
-        "StateReason": ""
+        "Arn": "The ARN of the endpoint.",
+        "EndpointId": "The ID of the endpoint.",
+        "EndpointUrl": "The URL of the endpoint.",
+        "Ref": "`Ref` returns Endpoint ID, such as `mystack-Endpoint-ABCDEFGHIJK` .",
+        "State": "The current state of the endpoint.",
+        "StateReason": "The reason the endpoint is in its current state."
       },
-      "description": "",
+      "description": "A global endpoint used to improve your application's availability by making it regional-fault tolerant. For more information about global endpoints, see [Making applications Regional-fault tolerant with global endpoints and event replication](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-global-endpoints.html) in the Amazon EventBridge User Guide.",
       "properties": {
-        "Description": "",
-        "EventBuses": "",
-        "Name": "",
-        "ReplicationConfig": "",
-        "RoleArn": "",
-        "RoutingConfig": ""
+        "Description": "A description for the endpoint.",
+        "EventBuses": "The event buses being used by the endpoint.",
+        "Name": "The name of the endpoint.",
+        "ReplicationConfig": "Whether event replication was enabled or disabled for this endpoint.",
+        "RoleArn": "The ARN of the role used by event replication for the endpoint.",
+        "RoutingConfig": "The routing configuration of the endpoint."
       }
     },
     "AWS::Events::Endpoint.EndpointEventBus": {
       "attributes": {},
-      "description": "",
+      "description": "The event buses the endpoint is associated with.",
       "properties": {
-        "EventBusArn": ""
+        "EventBusArn": "The ARN of the event bus the endpoint is associated with."
       }
     },
     "AWS::Events::Endpoint.FailoverConfig": {
       "attributes": {},
-      "description": "",
+      "description": "The failover configuration for an endpoint. This includes what triggers failover and what happens when it's triggered.",
       "properties": {
-        "Primary": "",
-        "Secondary": ""
+        "Primary": "The main Region of the endpoint.",
+        "Secondary": "The Region that events are routed to when failover is triggered or event replication is enabled."
       }
     },
     "AWS::Events::Endpoint.Primary": {
       "attributes": {},
-      "description": "",
+      "description": "The primary Region of the endpoint.",
       "properties": {
-        "HealthCheck": ""
+        "HealthCheck": "The ARN of the health check used by the endpoint to determine whether failover is triggered."
       }
     },
     "AWS::Events::Endpoint.ReplicationConfig": {
       "attributes": {},
-      "description": "",
+      "description": "Endpoints can replicate all events to the secondary Region.",
       "properties": {
-        "State": ""
+        "State": "The state of event replication."
       }
     },
     "AWS::Events::Endpoint.RoutingConfig": {
       "attributes": {},
-      "description": "",
+      "description": "The routing configuration of the endpoint.",
       "properties": {
-        "FailoverConfig": ""
+        "FailoverConfig": "The failover configuration for an endpoint. This includes what triggers failover and what happens when it's triggered."
       }
     },
     "AWS::Events::Endpoint.Secondary": {
       "attributes": {},
-      "description": "",
+      "description": "The secondary Region that processes events when failover is triggered or replication is enabled.",
       "properties": {
-        "Route": ""
+        "Route": "Defines the secondary Region."
       }
     },
     "AWS::Events::EventBus": {
@@ -25544,7 +25595,7 @@
         "Queues": "(Amazon MQ) The name of the Amazon MQ broker destination queue to consume.",
         "SelfManagedEventSource": "The self-managed Apache Kafka cluster for your event source.",
         "SourceAccessConfigurations": "An array of the authentication protocol, VPC components, or virtual host to secure and define your event source.",
-        "StartingPosition": "The position in a stream from which to start reading. Required for Amazon Kinesis, Amazon DynamoDB, and Amazon MSK Streams sources.\n\n- *LATEST* - Read only new records.\n- *TRIM_HORIZON* - Process all available records.",
+        "StartingPosition": "The position in a stream from which to start reading. Required for Amazon Kinesis and Amazon DynamoDB.\n\n- *LATEST* - Read only new records.\n- *TRIM_HORIZON* - Process all available records.\n- *AT_TIMESTAMP* - Specify a time from which to start reading records.",
         "StartingPositionTimestamp": "With `StartingPosition` set to `AT_TIMESTAMP` , the time from which to start reading, in Unix time seconds.",
         "Topics": "The name of the Kafka topic.",
         "TumblingWindowInSeconds": "(Streams only) The duration in seconds of a processing window. The range is between 1 second up to 900 seconds."
@@ -25732,7 +25783,7 @@
     },
     "AWS::Lambda::Permission": {
       "attributes": {},
-      "description": "The `AWS::Lambda::Permission` resource grants an AWS service or another account permission to use a function. You can apply the policy at the function level, or specify a qualifier to restrict access to a single version or alias. If you use a qualifier, the invoker must use the full Amazon Resource Name (ARN) of that version or alias to invoke the function.\n\nTo grant permission to another account, specify the account ID as the `Principal` . To grant permission to an organization defined in AWS Organizations , specify the organization ID as the `PrincipalOrgID` . For AWS services, the principal is a domain-style identifier defined by the service, like `s3.amazonaws.com` or `sns.amazonaws.com` . For AWS services, you can also specify the ARN of the associated resource as the `SourceArn` . If you grant permission to a service principal without specifying the source, other accounts could potentially configure resources in their account to invoke your Lambda function.\n\nThis resource adds a statement to a resource-based permission policy for the function. For more information about function policies, see [Lambda Function Policies](https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html) .",
+      "description": "The `AWS::Lambda::Permission` resource grants an AWS service or another account permission to use a function. You can apply the policy at the function level, or specify a qualifier to restrict access to a single version or alias. If you use a qualifier, the invoker must use the full Amazon Resource Name (ARN) of that version or alias to invoke the function.\n\nTo grant permission to another account, specify the account ID as the `Principal` . To grant permission to an organization defined in AWS Organizations , specify the organization ID as the `PrincipalOrgID` . For AWS services, the principal is a domain-style identifier defined by the service, like `s3.amazonaws.com` or `sns.amazonaws.com` . For AWS services, you can also specify the ARN of the associated resource as the `SourceArn` . If you grant permission to a service principal without specifying the source, other accounts could potentially configure resources in their account to invoke your Lambda function.\n\nIf your function has a function URL, you can specify the `FunctionUrlAuthType` parameter. This adds a condition to your permission that only applies when your function URL's `AuthType` matches the specified `FunctionUrlAuthType` . For more information about the `AuthType` parameter, see [Security and auth model for Lambda function URLs](https://docs.aws.amazon.com/lambda/latest/dg/urls-auth.html) .\n\nThis resource adds a statement to a resource-based permission policy for the function. For more information about function policies, see [Lambda Function Policies](https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html) .",
       "properties": {
         "Action": "The action that the principal can use on the function. For example, `lambda:InvokeFunction` or `lambda:GetFunction` .",
         "EventSourceToken": "For Alexa Smart Home functions, a token that must be supplied by the invoker.",
@@ -25741,6 +25792,34 @@
         "PrincipalOrgID": "The identifier for your organization in AWS Organizations . Use this to grant permissions to all the AWS accounts under this organization.",
         "SourceAccount": "For Amazon S3, the ID of the account that owns the resource. Use this together with `SourceArn` to ensure that the resource is owned by the specified account. It is possible for an Amazon S3 bucket to be deleted by its owner and recreated by another account.",
         "SourceArn": "For AWS services, the ARN of the AWS resource that invokes the function. For example, an Amazon S3 bucket or Amazon SNS topic.\n\nNote that Lambda configures the comparison using the `StringLike` operator."
+      }
+    },
+    "AWS::Lambda::Url": {
+      "attributes": {
+        "CreationTime": "",
+        "FunctionUrl": "The HTTP URL endpoint for your function.",
+        "FunctionUrlArn": "",
+        "LastModifiedTime": "",
+        "Ref": "`Ref` returns the resource name."
+      },
+      "description": "The `AWS::Lambda::Url` resource creates a function URL with the specified configuration parameters. A [function URL](https://docs.aws.amazon.com/lambda/latest/dg/invocation-urls.html) is a dedicated HTTP(S) endpoint that you can use to invoke your function.",
+      "properties": {
+        "AuthorizationType": "The type of authorization on your function URL. Set to `AWS_IAM` if you want to use IAM to authenticate requests. Set to `NONE` if you want to bypass IAM and handle authentication in your function code.",
+        "Cors": "The [Cross-Origin Resource Sharing (CORS)](https://docs.aws.amazon.com/https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) settings for your function URL.",
+        "Qualifier": "The alias name.",
+        "TargetFunctionArn": "The name of the Lambda function.\n\n**Name formats** - *Function name* - `my-function` .\n- *Function ARN* - `arn:aws:lambda:us-west-2:123456789012:function:my-function` .\n- *Partial ARN* - `123456789012:function:my-function` .\n\nThe length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length."
+      }
+    },
+    "AWS::Lambda::Url.Cors": {
+      "attributes": {},
+      "description": "The [Cross-Origin Resource Sharing (CORS)](https://docs.aws.amazon.com/https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) settings for your function URL. Use CORS to grant access to your function URL from any origin. You can also use CORS to control access for specific HTTP headers and methods in requests to your function URL.",
+      "properties": {
+        "AllowCredentials": "Whether you want to allow cookies or other credentials in requests to your function URL. The default is `false` .",
+        "AllowHeaders": "The HTTP headers that origins can include in requests to your function URL. For example: `Date` , `Keep-Alive` , `X-Custom-Header` .",
+        "AllowMethods": "The HTTP methods that are allowed when calling your function URL. For example: `GET` , `POST` , `DELETE` , or the wildcard character ( `*` ).",
+        "AllowOrigins": "The origins that can access your function URL. You can list any number of specific origins, separated by a comma. For example: `https://www.example.com` , `http://localhost:60905` .\n\nAlternatively, you can grant access to all origins with the wildcard character ( `*` ).",
+        "ExposeHeaders": "The HTTP headers in your function response that you want to expose to origins that call your function URL. For example: `Date` , `Keep-Alive` , `X-Custom-Header` .",
+        "MaxAge": "The maximum amount of time, in seconds, that browsers can cache results of a preflight request. By default, this is set to `0` , which means the browser will not cache results."
       }
     },
     "AWS::Lambda::Version": {
@@ -33506,7 +33585,7 @@
         "AllowMajorVersionUpgrade": "A value that indicates whether major version upgrades are allowed. Changing this parameter doesn't result in an outage and the change is asynchronously applied as soon as possible.\n\nConstraints: Major version upgrades must be allowed when specifying a value for the `EngineVersion` parameter that is a different major version than the DB instance's current version.",
         "AssociatedRoles": "The AWS Identity and Access Management (IAM) roles associated with the DB instance.",
         "AutoMinorVersionUpgrade": "A value that indicates whether minor engine upgrades are applied automatically to the DB instance during the maintenance window. By default, minor engine upgrades are applied automatically.",
-        "AvailabilityZone": "The Availability Zone that the database instance will be created in.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's region.\n\nExample: `us-east-1d`\n\nConstraint: The AvailabilityZone parameter cannot be specified if the MultiAZ parameter is set to `true` . The specified Availability Zone must be in the same region as the current endpoint.",
+        "AvailabilityZone": "The Availability Zone (AZ) where the database will be created. For information on AWS Regions and Availability Zones, see [Regions and Availability Zones](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) .\n\n*Amazon Aurora*\n\nNot applicable. Availability Zones are managed by the DB cluster.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's AWS Region .\n\nExample: `us-east-1d`\n\nConstraint: The `AvailabilityZone` parameter can't be specified if the DB instance is a Multi-AZ deployment. The specified Availability Zone must be in the same AWS Region as the current endpoint.\n\n> If you're creating a DB instance in an RDS on VMware environment, specify the identifier of the custom Availability Zone to create the DB instance in.\n> \n> For more information about RDS on VMware, see the [RDS on VMware User Guide.](https://docs.aws.amazon.com/AmazonRDS/latest/RDSonVMwareUserGuide/rds-on-vmware.html)",
         "BackupRetentionPeriod": "The number of days for which automated backups are retained. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.\n\n*Amazon Aurora*\n\nNot applicable. The retention period for automated backups is managed by the DB cluster.\n\nDefault: 1\n\nConstraints:\n\n- Must be a value from 0 to 35\n- Can't be set to 0 if the DB instance is a source to read replicas",
         "CACertificateIdentifier": "The identifier of the CA certificate for this DB instance.\n\n> Specifying or updating this property triggers a reboot. \n\nFor more information about CA certificate identifiers for RDS DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon RDS User Guide* .\n\nFor more information about CA certificate identifiers for Aurora DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon Aurora User Guide* .",
         "CharacterSetName": "For supported engines, indicates that the DB instance should be associated with the specified character set.\n\n*Amazon Aurora*\n\nNot applicable. The character set is managed by the DB cluster. For more information, see [AWS::RDS::DBCluster](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html) .",
@@ -33578,7 +33657,7 @@
       },
       "description": "The `AWS::RDS::DBParameterGroup` resource creates a custom parameter group for an RDS database family.\n\nThis type can be declared in a template and referenced in the `DBParameterGroupName` property of an `[AWS::RDS::DBInstance](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html)` resource.\n\nFor information about configuring parameters for Amazon RDS DB instances, see [Working with DB parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor information about configuring parameters for Amazon Aurora DB instances, see [Working with DB parameter groups and DB cluster parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> Applying a parameter group to a DB instance may require the DB instance to reboot, resulting in a database outage for the duration of the reboot.",
       "properties": {
-        "Description": "Provides the customer-specified description for this DB Parameter Group.",
+        "Description": "Provides the customer-specified description for this DB parameter group.",
         "Family": "The DB parameter group family name. A DB parameter group can be associated with one and only one DB parameter group family, and can be applied only to a DB instance running a DB engine and engine version compatible with that DB parameter group family.\n\n> The DB parameter group family can't be changed when updating a DB parameter group. \n\nTo list all of the available parameter group families, use the following command:\n\n`aws rds describe-db-engine-versions --query \"DBEngineVersions[].DBParameterGroupFamily\"`\n\nThe output contains duplicates.\n\nFor more information, see `[CreateDBParameterGroup](https://docs.aws.amazon.com//AmazonRDS/latest/APIReference/API_CreateDBParameterGroup.html)` .",
         "Parameters": "An array of parameter names and values for the parameter update. At least one parameter name and value must be supplied. Subsequent arguments are optional.\n\nFor more information about DB parameters and DB parameter groups for Amazon RDS DB engines, see [Working with DB Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor more information about DB cluster and DB instance parameters and parameter groups for Amazon Aurora DB engines, see [Working with DB Parameter Groups and DB Cluster Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> AWS CloudFormation doesn't support specifying an apply method for each individual parameter. The default apply method for each parameter is used.",
         "Tags": "Tags to assign to the DB parameter group."
@@ -33682,7 +33761,7 @@
       "properties": {
         "DBSecurityGroupIngress": "Ingress rules to be applied to the DB security group.",
         "EC2VpcId": "The identifier of an Amazon VPC. This property indicates the VPC that this DB security group belongs to.\n\n> The `EC2VpcId` property is for backward compatibility with older regions, and is no longer recommended for providing security information to an RDS DB instance.",
-        "GroupDescription": "Provides the description of the DB Security Group.",
+        "GroupDescription": "Provides the description of the DB security group.",
         "Tags": "Tags to assign to the DB security group."
       }
     },
@@ -33691,9 +33770,9 @@
       "description": "The `Ingress` property type specifies an individual ingress rule within an `AWS::RDS::DBSecurityGroup` resource.",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSecurityGroupIngress": {
@@ -33703,10 +33782,10 @@
       "description": "The `AWS::RDS::DBSecurityGroupIngress` resource enables ingress to a DB security group using one of two forms of authorization. First, you can add EC2 or VPC security groups to the DB security group if the application using the database is running on EC2 or VPC instances. Second, IP ranges are available if the application accessing your database is running on the Internet.\n\nThis type supports updates. For more information about updating stacks, see [AWS CloudFormation Stacks Updates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks.html) .\n\nFor details about the settings for DB security group ingress, see [AuthorizeDBSecurityGroupIngress](https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_AuthorizeDBSecurityGroupIngress.html) .",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "DBSecurityGroupName": "The name of the DB Security Group to add authorization to.",
-        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "DBSecurityGroupName": "The name of the DB security group to add authorization to.",
+        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSubnetGroup": {
@@ -33715,9 +33794,9 @@
       },
       "description": "The `AWS::RDS::DBSubnetGroup` resource creates a database subnet group. Subnet groups must contain at least two subnets in two different Availability Zones in the same region.\n\nFor more information, see [Working with DB subnet groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html#USER_VPC.Subnets) in the *Amazon RDS User Guide* .",
       "properties": {
-        "DBSubnetGroupDescription": "The description for the DB Subnet Group.",
+        "DBSubnetGroupDescription": "The description for the DB subnet group.",
         "DBSubnetGroupName": "The name for the DB subnet group. This value is stored as a lowercase string.\n\nConstraints: Must contain no more than 255 lowercase alphanumeric characters or hyphens. Must not be \"Default\".\n\nExample: `mysubnetgroup`",
-        "SubnetIds": "The EC2 Subnet IDs for the DB Subnet Group.",
+        "SubnetIds": "The EC2 Subnet IDs for the DB subnet group.",
         "Tags": "Tags to assign to the DB subnet group."
       }
     },
@@ -33727,8 +33806,8 @@
       },
       "description": "The `AWS::RDS::EventSubscription` resource allows you to receive notifications for Amazon Relational Database Service events through the Amazon Simple Notification Service (Amazon SNS). For more information, see [Using Amazon RDS Event Notification](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) in the *Amazon RDS User Guide* .",
       "properties": {
-        "Enabled": "A Boolean value; set to *true* to activate the subscription, set to *false* to create the subscription but not active it.",
-        "EventCategories": "A list of event categories for a SourceType that you want to subscribe to. You can see a list of the categories for a given SourceType in the [Events](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) topic in the Amazon RDS User Guide or by using the *DescribeEventCategories* action.",
+        "Enabled": "A value that indicates whether to activate the subscription. If the event notification subscription isn't activated, the subscription is created but not active.",
+        "EventCategories": "A list of event categories for a particular source type ( `SourceType` ) that you want to subscribe to. You can see a list of the categories for a given source type in the \"Amazon RDS event categories and event messages\" section of the [*Amazon RDS User Guide*](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.Messages.html) or the [*Amazon Aurora User Guide*](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_Events.Messages.html) . You can also see this list by using the `DescribeEventCategories` operation.",
         "SnsTopicArn": "The Amazon Resource Name (ARN) of the SNS topic created for event notification. The ARN is created by Amazon SNS when you create a topic and subscribe to it.",
         "SourceIds": "The list of identifiers of the event sources for which events are returned. If not specified, then all sources are included in the response. An identifier must begin with a letter and must contain only ASCII letters, digits, and hyphens. It can't end with a hyphen or contain two consecutive hyphens.\n\nConstraints:\n\n- If a `SourceIds` value is supplied, `SourceType` must also be provided.\n- If the source type is a DB instance, a `DBInstanceIdentifier` value must be supplied.\n- If the source type is a DB cluster, a `DBClusterIdentifier` value must be supplied.\n- If the source type is a DB parameter group, a `DBParameterGroupName` value must be supplied.\n- If the source type is a DB security group, a `DBSecurityGroupName` value must be supplied.\n- If the source type is a DB snapshot, a `DBSnapshotIdentifier` value must be supplied.\n- If the source type is a DB cluster snapshot, a `DBClusterSnapshotIdentifier` value must be supplied.",
         "SourceType": "The type of source that is generating the events. For example, if you want to be notified of events generated by a DB instance, set this parameter to `db-instance` . If this value isn't specified, all events are returned.\n\nValid values: `db-instance` | `db-cluster` | `db-parameter-group` | `db-security-group` | `db-snapshot` | `db-cluster-snapshot`"
@@ -36159,9 +36238,7 @@
       }
     },
     "AWS::SQS::QueuePolicy": {
-      "attributes": {
-        "Id": ""
-      },
+      "attributes": {},
       "description": "The `AWS::SQS::QueuePolicy` type applies a policy to Amazon SQS queues. For an example snippet, see [Declaring an Amazon SQS policy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-iam.html#scenario-sqs-policy) in the *AWS CloudFormation User Guide* .",
       "properties": {
         "PolicyDocument": "A policy document that contains the permissions for the specified Amazon SQS queues. For more information about Amazon SQS policies, see [Using custom policies with the Amazon SQS access policy language](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-creating-custom-policies.html) in the *Amazon SQS Developer Guide* .",
