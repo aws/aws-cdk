@@ -59,6 +59,13 @@ export interface StageOptions {
    * @default - no custom domain and api mapping configuration
    */
   readonly domainMapping?: DomainMappingOptions;
+
+  /**
+   * Throttle settings for the routes of this stage
+   *
+   * @default - no throttling configuration
+   */
+  readonly throttle?: ThrottleSettings;
 }
 
 /**
@@ -69,4 +76,21 @@ export interface StageAttributes {
    * The name of the stage
    */
   readonly stageName: string;
+}
+
+/**
+ * Container for defining throttling parameters to API stages
+ */
+export interface ThrottleSettings {
+  /**
+   * The API request steady-state rate limit (average requests per second over an extended period of time)
+   * @default none
+   */
+  readonly rateLimit?: number;
+
+  /**
+   * The maximum API request rate limit over a time ranging from one to a few seconds.
+   * @default none
+   */
+  readonly burstLimit?: number;
 }
