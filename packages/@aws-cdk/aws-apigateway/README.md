@@ -122,9 +122,6 @@ const api = new apigateway.LambdaRestApi(this, 'myapi', {
 })
 ```
 
-Note that `proxy: false` may not be specified in the `integrationOptions`
-and must be specified directly in `props`.
-
 ## AWS StepFunctions backed APIs
 
 You can use Amazon API Gateway with AWS Step Functions as the backend integration, specifically Synchronous Express Workflows.

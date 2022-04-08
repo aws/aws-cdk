@@ -17,7 +17,7 @@ export interface LambdaRestApiProps extends RestApiProps {
   /**
    * Specific Lambda integration options.
    *
-   * @default - see defaults defined in {@link LambdaIntegrationOptions}.
+   * @default see defaults defined in {@link LambdaIntegrationOptions}.
    */
   readonly integrationOptions?: LambdaIntegrationOptions;
 
@@ -52,10 +52,6 @@ export class LambdaRestApi extends RestApi {
   constructor(scope: Construct, id: string, props: LambdaRestApiProps) {
     if (props.options?.defaultIntegration || props.defaultIntegration) {
       throw new Error('Cannot specify "defaultIntegration" since Lambda integration is automatically defined');
-    }
-    // Forbid setting `integrationOptions.proxy = false` unless `proxy = false`
-    if (props.integrationOptions?.proxy !== undefined && props.integrationOptions?.proxy !== (props?.proxy ?? true)) {
-      throw new Error('Cannot specify "props.integrationOptions.proxy". Instead use "props.proxy".');
     }
 
     super(scope, id, {
