@@ -1035,9 +1035,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     this.maxInstanceLifetime = props.maxInstanceLifetime;
-    if (this.maxInstanceLifetime &&
-      (this.maxInstanceLifetime.toSeconds() < 604800 || this.maxInstanceLifetime.toSeconds() > 31536000)) {
-      throw new Error('maxInstanceLifetime must be between 7 and 365 days (inclusive)');
+    // See https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-max-instance-lifetime.html for details on max instance lifetime.
+    if (this.maxInstanceLifetime && !this.maxInstanceLifetime.isUnresolved() &&
+      (this.maxInstanceLifetime.toSeconds() !== 0) &&
+      (this.maxInstanceLifetime.toSeconds() < 86400 || this.maxInstanceLifetime.toSeconds() > 31536000)) {
+      throw new Error('maxInstanceLifetime must be between 1 and 365 days (inclusive)');
     }
 
     if (props.notificationsTopic && props.notifications) {
