@@ -37,12 +37,33 @@
                   ],
                   "Effect": "Allow",
                   "Resource": [
-                    "arn:aws:s3:::databrew-public-datasets-test-region",
-                    "arn:aws:s3:::databrew-public-datasets-test-region/*",
                     {
                       "Fn::GetAtt": [
                         "JobOutputBucketACE3BC7B",
                         "Arn"
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:aws:s3:::databrew-public-datasets-",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "/*"
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:aws:s3:::databrew-public-datasets-",
+                          {
+                            "Ref": "AWS::Region"
+                          }
+                        ]
                       ]
                     },
                     {
@@ -98,7 +119,17 @@
       "Properties": {
         "Input": {
           "S3InputDefinition": {
-            "Bucket": "databrew-public-datasets-test-region",
+            "Bucket": {
+              "Fn::Join": [
+                "",
+                [
+                  "databrew-public-datasets-",
+                  {
+                    "Ref": "AWS::Region"
+                  }
+                ]
+              ]
+            },
             "Key": "votes.csv"
           }
         },
