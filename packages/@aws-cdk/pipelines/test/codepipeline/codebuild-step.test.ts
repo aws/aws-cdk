@@ -125,8 +125,8 @@ test('timeout from defaults can be overridden', () => {
 test('envFromOutputs works even with very long stage and stack names', () => {
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 
-  const myApp = new AppWithOutput(app, 'Alpha'.repeat(20), {
-    stackId: 'Stack'.repeat(20),
+  const myApp = new AppWithOutput(app, 'Alpha'.repeat(10), {
+    stackId: 'Stack'.repeat(10),
   });
 
   pipeline.addStage(myApp, {
@@ -141,4 +141,70 @@ test('envFromOutputs works even with very long stage and stack names', () => {
   });
 
   // THEN - did not throw an error about identifier lengths
+});
+
+test('exportedVariables', () => {
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+
+  // GIVEN
+  const producer = new cdkp.CodeBuildStep('Produce', {
+    commands: ['export MY_VAR=hello'],
+  });
+
+  const consumer = new cdkp.CodeBuildStep('Consume', {
+    env: {
+      THE_VAR: producer.exportedVariable('MY_VAR'),
+    },
+    commands: [
+      'echo "The variable was: $THE_VAR"',
+    ],
+  });
+
+  // WHEN
+  pipeline.addWave('MyWave', {
+    post: [consumer, producer],
+  });
+
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: [
+      { Name: 'Source' },
+      { Name: 'Build' },
+      { Name: 'UpdatePipeline' },
+      {
+        Name: 'MyWave',
+        Actions: [
+          Match.objectLike({
+            Name: 'Produce',
+            Namespace: 'MyWave@Produce',
+            RunOrder: 1,
+          }),
+          Match.objectLike({
+            Name: 'Consume',
+            RunOrder: 2,
+            Configuration: Match.objectLike({
+              EnvironmentVariables: Match.serializedJson(Match.arrayWith([
+                {
+                  name: 'THE_VAR',
+                  type: 'PLAINTEXT',
+                  value: '#{MyWave@Produce.MY_VAR}',
+                },
+              ])),
+            }),
+          }),
+        ],
+      },
+    ],
+  });
+
+  template.hasResourceProperties('AWS::CodeBuild::Project', {
+    Source: {
+      BuildSpec: Match.serializedJson(Match.objectLike({
+        env: {
+          'exported-variables': ['MY_VAR'],
+        },
+      })),
+    },
+  });
 });

@@ -17,6 +17,22 @@
         "AutoDeploy": true
       }
     },
+    "MyHttpApiANYDefaultIntegration5FAD8850": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "MyHttpApi8AEAAC21"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "HelloHandler2E4FBA4D",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0"
+      }
+    },
     "MyHttpApiANYDefaultIntegrationPermissionAB8301EF": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
@@ -52,22 +68,6 @@
             ]
           ]
         }
-      }
-    },
-    "MyHttpApiANYDefaultIntegration5FAD8850": {
-      "Type": "AWS::ApiGatewayV2::Integration",
-      "Properties": {
-        "ApiId": {
-          "Ref": "MyHttpApi8AEAAC21"
-        },
-        "IntegrationType": "AWS_PROXY",
-        "IntegrationUri": {
-          "Fn::GetAtt": [
-            "HelloHandler2E4FBA4D",
-            "Arn"
-          ]
-        },
-        "PayloadFormatVersion": "2.0"
       }
     },
     "MyHttpApiANYC3543576": {
@@ -135,7 +135,7 @@
           ]
         },
         "Handler": "index.handler",
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "HelloHandlerServiceRole11EF7C63"

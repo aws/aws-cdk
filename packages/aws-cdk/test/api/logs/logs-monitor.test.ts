@@ -12,18 +12,55 @@ beforeEach(() => {
   sdk = new MockSdk();
 });
 
-afterAll(() => {
+afterEach(() => {
   stderrMock.mockRestore();
   monitor.deactivate();
 });
 
-test('continue to the next page if it exists', async () => {
+test('process events', async () => {
   // GIVEN
   const eventDate = new Date(T0 + 102 * 1000);
   sdk.stubCloudWatchLogs({
     filterLogEvents() {
       return {
         events: [event(102, 'message', eventDate)],
+      };
+    },
+  });
+  monitor.addLogGroups(
+    {
+      name: 'name',
+      account: '11111111111',
+      region: 'us-east-1',
+    },
+    sdk,
+    ['loggroup'],
+  );
+  // WHEN
+  monitor.activate();
+  // need time for the log processing to occur
+  await sleep(1000);
+
+  // THEN
+  const expectedLocaleTimeString = eventDate.toLocaleTimeString();
+  expect(stderrMock).toHaveBeenCalledTimes(1);
+  expect(stderrMock.mock.calls[0][0]).toContain(
+    `[${blue('loggroup')}] ${yellow(expectedLocaleTimeString)} message`,
+  );
+});
+
+test('process truncated events', async () => {
+  // GIVEN
+  const eventDate = new Date(T0 + 102 * 1000);
+  const events: AWS.CloudWatchLogs.FilteredLogEvents = [];
+  for (let i = 0; i < 100; i++) {
+    events.push(event(102+i, 'message' + i, eventDate));
+  }
+
+  sdk.stubCloudWatchLogs({
+    filterLogEvents() {
+      return {
+        events,
         nextToken: 'some-token',
       };
     },
@@ -44,11 +81,11 @@ test('continue to the next page if it exists', async () => {
 
   // THEN
   const expectedLocaleTimeString = eventDate.toLocaleTimeString();
-  expect(stderrMock).toHaveBeenCalledTimes(2);
+  expect(stderrMock).toHaveBeenCalledTimes(101);
   expect(stderrMock.mock.calls[0][0]).toContain(
     `[${blue('loggroup')}] ${yellow(expectedLocaleTimeString)} message`,
   );
-  expect(stderrMock.mock.calls[1][0]).toContain(
+  expect(stderrMock.mock.calls[100][0]).toContain(
     `[${blue('loggroup')}] ${yellow(expectedLocaleTimeString)} >>> \`watch\` shows only the first 100 log messages - the rest have been truncated...`,
   );
 });

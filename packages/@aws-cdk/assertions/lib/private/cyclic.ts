@@ -70,11 +70,16 @@ function findExpressionDependencies(obj: any): Set<string> {
       } else if (keys.length === 1 && keys[0] === 'Fn::Sub') {
         const argument = x[keys[0]];
         const pattern = Array.isArray(argument) ? argument[0] : argument;
-        for (const logId of logicalIdsInSubString(pattern)) {
-          ret.add(logId);
+
+        // pattern should always be a string, but we've encountered some cases in which
+        // it isn't. Better safeguard.
+        if (typeof pattern === 'string') {
+          for (const logId of logicalIdsInSubString(pattern)) {
+            ret.add(logId);
+          }
         }
         const contextDict = Array.isArray(argument) ? argument[1] : undefined;
-        if (contextDict) {
+        if (contextDict && typeof contextDict === 'object') {
           Object.values(contextDict).forEach(recurse);
         }
       } else {
@@ -134,7 +139,7 @@ function analyzeSubPattern(pattern: string): SubFragment[] {
   }
 
   if (start < pattern.length - 1) {
-    ret.push({ type: 'literal', content: pattern.substr(start) });
+    ret.push({ type: 'literal', content: pattern.slice(start) });
   }
 
   return ret;
