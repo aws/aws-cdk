@@ -1,7 +1,6 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -1754,7 +1753,7 @@ describe('cluster', () => {
     Template.fromStack(stack).resourceCountIs('AWS::RDS::DBClusterParameterGroup', 0);
   });
 
-  test('MySQL cluster in version 8.0 uses aws_default_s3_role as a Parameter for S3 import, instead of aurora_load_from_s3_role', () => {
+  test('MySQL cluster in version 8.0 uses aws_default_s3_role as a Parameter for S3 import/export, instead of aurora_load/select_from_s3_role', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1763,15 +1762,22 @@ describe('cluster', () => {
     new DatabaseCluster(stack, 'Database', {
       instanceProps: { vpc },
       engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_01_0 }),
-      s3ImportRole: iam.Role.fromRoleArn(stack, 'S3ImportRole', 'arn:aws:iam::123456789012:role/my-role'),
+      s3ImportBuckets: [new s3.Bucket(stack, 'ImportBucket')],
+      s3ExportBuckets: [new s3.Bucket(stack, 'ExportBucket')],
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
+    const assert = Template.fromStack(stack);
+    assert.hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
       Family: 'aurora-mysql8.0',
       Parameters: {
-        aws_default_s3_role: 'arn:aws:iam::123456789012:role/my-role',
+        aws_default_s3_role: {
+          'Fn::GetAtt': ['DatabaseS3ImportRole377BC9C0', 'Arn'],
+        },
+        aurora_load_from_s3_role: Match.absent(),
+        aurora_select_into_s3_role: Match.absent(),
       },
     });
+    assert.resourceCountIs('AWS::IAM::Role', 1);
   });
 
   test('throws when s3ExportRole and s3ExportBuckets properties are both specified', () => {
