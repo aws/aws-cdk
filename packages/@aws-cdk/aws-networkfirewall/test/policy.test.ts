@@ -167,7 +167,7 @@ test('verifies unique group priority on stateless rule groups', () => {
       statelessRuleGroups: statelessRuleGroupList,
     });
   // THEN
-  }).toThrow('Priority must be unique, got stateless group duplicate priority: \'10\'');
+  }).toThrow('Priority must be unique, recieved duplicate priority on stateless group');
 });
 
 test('verifies unique group priority on stateful groups', () => {
@@ -198,7 +198,7 @@ test('verifies unique group priority on stateful groups', () => {
       statefulRuleGroups: statefulRuleGroupList,
     });
   // THEN
-  }).toThrow('Priority must be unique, got stateful group duplicate priority: \'10\'');
+  }).toThrow('Priority must be unique, recieved duplicate priority on stateful group');
 });
 
 test('Can add new groups to policy', () => {

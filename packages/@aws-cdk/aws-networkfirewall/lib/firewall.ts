@@ -37,12 +37,8 @@ export interface IFirewall extends core.IResource{
  * Defines a Network Firewall
  */
 abstract class FirewallBase extends core.Resource implements IFirewall {
-
   public abstract readonly firewallArn: string;
   public abstract readonly firewallId: string;
-  //public abstract readonly endpointIds: string[];
-
-  //public abstract readonly policy: FirewallPolicy;
 }
 
 /**
@@ -109,6 +105,19 @@ export class Firewall extends FirewallBase {
   }
 
   /**
+   * Reference an existing Network Firewall,
+   * defined outside of the CDK code, by arn.
+   */
+  public static fromFirewallArn(scope: Construct, id: string, firewallArn: string): IFirewall {
+    class Import extends FirewallBase {
+      public readonly firewallId = core.Fn.select(1, core.Fn.split('/', firewallArn));
+      public readonly firewallArn = firewallArn;
+    }
+    return new Import(scope, id);
+  }
+
+
+  /**
    * The Arn of the Firewall.
    *
    * @attribute
@@ -152,7 +161,7 @@ export class Firewall extends FirewallBase {
 				`got: '${props.firewallName}'`);
     }
 
-    // TODO: Auto define Policy?
+    // TODO: Auto define new policy?
     //const firewallPolicy:IfirewallPolicy = props.policy ||
     //		new policy(scope, id, {
     //				statelessDefaultActions: [StatelessStandardAction.FORWARD]

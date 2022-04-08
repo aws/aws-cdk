@@ -172,128 +172,127 @@ export class FirewallPolicy extends FirewallPolicyBase {
   public readonly firewallPolicyArn: string;
   public readonly firewallPolicyId: string;
 
+  /**
+   * The Default actions for packets that don't match a stateless rule
+   */
+  public readonly statelessDefaultActions: string[];
+
+  /**
+   * The Default actions for fragment packets that don't match a stateless rule
+   */
+  public readonly statelessFragmentDefaultActions: string[];
+
+  /**
+   * The Default actions for packets that don't match a stateful rule
+   */
+  public readonly statefulDefaultActions: string[];
+
+
+  /**
+   * The stateless rule groups in this policy
+   */
+  public readonly statelessRuleGroups: StatelessRuleGroupList[];
+
+  /**
+   * The stateful rule groups in this policy
+   */
+  public readonly statefulRuleGroups: StatefulRuleGroupList[];
+
   constructor(scope:Construct, id:string, props: FirewallPolicyProps) {
     super(scope, id, {
       physicalName: props.firewallPolicyName,
     });
 
+    this.statelessDefaultActions = props.statelessDefaultActions || [];
+    this.statelessFragmentDefaultActions = props.statelessFragmentDefaultActions || [];
+    this.statefulDefaultActions = props.statefulDefaultActions || [];
+
+    this.statelessRuleGroups = props.statelessRuleGroups || [];
+    this.statefulRuleGroups = props.statefulRuleGroups || [];
     // Adding Validations
 
     /**
      * Validate policyId
      */
     if (props.firewallPolicyName !== undefined &&
-				!/^[_a-zA-Z]+$/.test(props.firewallPolicyName)) {
+	  !/^[_a-zA-Z]+$/.test(props.firewallPolicyName)) {
       throw new Error('policyId must be non-empty and contain only letters and underscores, ' +
-				`got: '${props.firewallPolicyName}'`);
+		  `got: '${props.firewallPolicyName}'`);
     }
-
 
     /**
      * Validating Stateless Default Actions
      */
-    // Ensure only one standard action is provided.
-    let standard_action_provided:boolean=false;
-    let action:string;
     if (props.statelessDefaultActions !== undefined) {
-      for (action of props.statelessDefaultActions) {
-        if (Object.values<string>(StatelessStandardAction).includes(action)) {
-          if (standard_action_provided) {
-            throw new Error('Only one standard action can be provided for the StatelessDefaultAction, all other actions must be custom');
-          }
-          standard_action_provided=true;
-        }
+      // Ensure only one standard action is provided.
+      if (this.validateOnlyOne(StatelessStandardAction, props.statelessDefaultActions)) {
+        this.statelessDefaultActions = props.statelessDefaultActions;
+      } else {
+        throw new Error('Only one standard action can be provided for the StatelessDefaultAction, all other actions must be custom');
       }
     }
 
     /**
      * Validating Stateless Fragement Default Actions
      */
-    // Ensure only one standard action is provided.
-    standard_action_provided=false;
     if (props.statelessFragmentDefaultActions !== undefined) {
-      for (action of props.statelessFragmentDefaultActions) {
-        if (Object.values<string>(StatelessStandardAction).includes(action)) {
-          if (standard_action_provided) {
-            throw new Error('Only one standard action can be provided for the StatelessFragementDefaultAction, all other actions must be custom');
-          }
-          standard_action_provided=true;
-        }
+      // Ensure only one standard action is provided.
+      if (this.validateOnlyOne(StatelessStandardAction, props.statelessFragmentDefaultActions)) {
+        this.statelessFragmentDefaultActions = props.statelessFragmentDefaultActions;
+      } else {
+        throw new Error('Only one standard action can be provided for the StatelessFragementDefaultAction, all other actions must be custom');
       }
     }
 
     /**
      * Validating Stateful Strict Default Actions
      */
-    standard_action_provided=false;
     if (props.statefulDefaultActions !== undefined) {
       // Ensure only one standard action is provided.
-      for (action of props.statefulDefaultActions) {
-        if (Object.values<string>(StatefulStrictAction).includes(action)) {
-          if (standard_action_provided) {
-            throw new Error('Only one strict action can be provided for the StatefulDefaultAction, all other actions must be custom');
-          }
-          standard_action_provided=true;
-        }
+      if (this.validateOnlyOne(StatefulStrictAction, props.statefulDefaultActions)) {
+        this.statefulDefaultActions = props.statefulDefaultActions;
+      } else {
+        throw new Error('Only one strict action can be provided for the StatefulDefaultAction, all other actions must be custom');
       }
     }
 
+    /**
+     * validate unique stateless group priorities
+     */
+    let statelessRuleGroupReferences:CfnFirewallPolicy.StatelessRuleGroupReferenceProperty[] = [];
+    if (props.statelessRuleGroups !== undefined) {
+      if (!this.validateUniquePriority(props.statelessRuleGroups)) {
+        throw new Error('Priority must be unique, recieved duplicate priority on stateless group');
+      }
+      statelessRuleGroupReferences = this.buildRuleGroupReferences(props.statelessRuleGroups);
+    }
 
-    //TODO: Auto define stateless default actions?
+    /**
+     * validate unique stateful group priorities
+     */
+    let statefulRuleGroupReferences:CfnFirewallPolicy.StatefulRuleGroupReferenceProperty[] = [];
+    if (props.statefulRuleGroups !== undefined) {
+      if (!this.validateUniquePriority(props.statefulRuleGroups)) {
+        throw new Error('Priority must be unique, recieved duplicate priority on stateful group');
+      }
+      statefulRuleGroupReferences = this.buildRuleGroupReferences(props.statefulRuleGroups);
+    }
+
+    // Auto define stateless default actions?
     //const statelessDefaultActions = props.statelessDefaultActions || [StatelessStandardAction.DROP];
 
-    //TODO: Auto define stateless fragement default actions?
+    // Auto define stateless fragement default actions?
     //const statelessFragmentDefaultActions = props.statelessFragmentDefaultActions || [StatelessStandardAction.DROP];
 
-    //TODO: Auto define stateful default actions?
+    // Auto define stateful default actions?
     // Only valid when using the strict order rule
     //const statefulDefaultActions = props.statefulDefaultActions || [statefulStrictAction.ALERT_ESTABLISHED]
 
-    //TODO: Auto define stateless rule group?
+    // Auto define stateless rule group?
     //const statelessRuleGroup = props.statelessRuleGroups || [new StatelessRuleGroup(priority=10,...)];
-    //TODO: Auto define stateful rule group?
+    // Auto define stateful rule group?
     //const statefulRuleGroup = props.statefulRuleGroups || [new StatefulRuleGroup5Tuple(priority=10,...)];
 
-    // for props.statefulRuleGroup, get the refs
-    const statefulRuleGroupReferences:CfnFirewallPolicy.StatefulRuleGroupReferenceProperty[] = [];
-    var statefulRuleGroup:StatefulRuleGroupList;
-    // track used priorities to ensure there are no duplicates
-    let statefulRuleGroupPriorities:number[] = [];
-    if (props.statefulRuleGroups !== undefined) {
-      for (statefulRuleGroup of props.statefulRuleGroups) {
-        // To ensure the priorities don't overlap, we'll check them into a list.
-        if (statefulRuleGroupPriorities.includes(statefulRuleGroup.priority)) {
-          throw new Error('Priority must be unique, '+
-					`got stateful group duplicate priority: '${statefulRuleGroup.priority}'`);
-        }
-        statefulRuleGroupPriorities.push(statefulRuleGroup.priority);
-        statefulRuleGroupReferences.push({
-          priority: statefulRuleGroup.priority,
-          resourceArn: statefulRuleGroup.ruleGroup.ruleGroupArn,
-        });
-      }
-    }
-
-
-    // for props.statelessRuleGroup, get the refs
-    const statelessRuleGroupReferences:CfnFirewallPolicy.StatelessRuleGroupReferenceProperty[] = [];
-    var statelessRuleGroup:StatelessRuleGroupList;
-    // track used priorities to ensure there are no duplicates
-    let statelessRuleGroupPriorities:number[] = [];
-    if (props.statelessRuleGroups !== undefined) {
-      for (statelessRuleGroup of props.statelessRuleGroups) {
-        // To ensure the priorities don't overlap, we'll check them into a list.
-        if (statelessRuleGroupPriorities.includes(statelessRuleGroup.priority)) {
-          throw new Error('Priority must be unique, '+
-					`got stateless group duplicate priority: '${statelessRuleGroup.priority}'`);
-        }
-        statelessRuleGroupPriorities.push(statelessRuleGroup.priority);
-        statelessRuleGroupReferences.push({
-          priority: statelessRuleGroup.priority,
-          resourceArn: statelessRuleGroup.ruleGroup.ruleGroupArn,
-        });
-      }
-    }
 
     const resourcePolicyProperty:CfnFirewallPolicy.FirewallPolicyProperty = {
       statelessDefaultActions: props.statelessDefaultActions,
@@ -322,5 +321,54 @@ export class FirewallPolicy extends FirewallPolicyBase {
       resource: 'FirewallPolicy',
       resourceName: this.firewallPolicyId,
     });
+  }
+
+
+  /**
+   * Converts a Stateful(less)RuleGroupList to a Stateful(less)RuleGroupReferenceProperty
+   */
+  private buildRuleGroupReferences(ruleGroups:(StatefulRuleGroupList|StatelessRuleGroupList)[]) {
+    let ruleGroupReferences:CfnFirewallPolicy.StatelessRuleGroupReferenceProperty[]|CfnFirewallPolicy.StatefulRuleGroupReferenceProperty = [];
+    let ruleGroup:StatefulRuleGroupList|StatelessRuleGroupList;
+    for (ruleGroup of ruleGroups) {
+      ruleGroupReferences.push({
+        priority: ruleGroup.priority,
+        resourceArn: ruleGroup.ruleGroup.ruleGroupArn,
+      });
+    }
+    return ruleGroupReferences;
+  }
+
+  /**
+   * To validate a set of rule groups to ensure they have unqiue priorities
+   */
+  private validateUniquePriority(ruleGroups:any):boolean {
+    let priorities:number[] = [];
+    let tempRuleGroup:StatefulRuleGroupList;
+    for (tempRuleGroup of ruleGroups) {
+      if (priorities.includes(tempRuleGroup.priority)) {
+        return false;
+      }
+      priorities.push(tempRuleGroup.priority);
+    }
+    return true;
+  }
+
+  /**
+   * Validates that only one occurance of the enumeration is found in the values.
+   * This is for verifying only one standard default action is used in a list.
+   */
+  private validateOnlyOne(enumeration:any, values:string[]):boolean {
+    let oneFound:boolean = false;
+    let value:string;
+    for (value of values) {
+      if (Object.values<string>(enumeration).includes(value)) {
+        if (oneFound) {
+          return false;
+        }
+        oneFound = true;
+      }
+    }
+    return true;
   }
 }
