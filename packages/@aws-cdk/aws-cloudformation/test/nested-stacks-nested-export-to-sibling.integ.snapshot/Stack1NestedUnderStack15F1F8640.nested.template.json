@@ -1,0 +1,17 @@
+{
+ "Resources": {
+  "TopicInNestedUnderStack115E329C4": {
+   "Type": "AWS::SNS::Topic"
+  }
+ },
+ "Outputs": {
+  "Stack1NestedUnderStack1TopicInNestedUnderStack136BDF841TopicName": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TopicInNestedUnderStack115E329C4",
+     "TopicName"
+    ]
+   }
+  }
+ }
+}

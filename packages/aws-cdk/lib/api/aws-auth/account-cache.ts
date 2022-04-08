@@ -61,7 +61,7 @@ export class AccountAccessKeyCache {
     return map[accessKeyId];
   }
 
-  /** Put a mapping betweenn access key and account ID */
+  /** Put a mapping between access key and account ID */
   public async put(accessKeyId: string, account: Account) {
     let map = await this.loadMap();
 
