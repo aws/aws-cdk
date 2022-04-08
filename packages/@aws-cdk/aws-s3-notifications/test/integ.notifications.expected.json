@@ -159,7 +159,7 @@
                         },
                         ":s3:::",
                         {
-                          "Ref": "Bucket25524B414"
+                          "Ref": "Bucket3CFB7F7D7"
                         }
                       ]
                     ]
@@ -312,7 +312,12 @@
         "Topic3DEAE47A7"
       ]
     },
-    "Bucket3NotificationsAFEFF359": {
+    "Bucket3CFB7F7D7": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "Bucket3ImportedNotificationsB1625F39": {
       "Type": "Custom::S3BucketNotifications",
       "Properties": {
         "ServiceToken": {
@@ -322,7 +327,7 @@
           ]
         },
         "BucketName": {
-          "Ref": "Bucket25524B414"
+          "Ref": "Bucket3CFB7F7D7"
         },
         "NotificationConfiguration": {
           "TopicConfigurations": [

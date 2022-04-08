@@ -1,5 +1,5 @@
 import * as core from '@aws-cdk/core';
-import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
+import * as cfn_parse from '@aws-cdk/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
