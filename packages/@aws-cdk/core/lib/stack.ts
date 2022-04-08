@@ -1037,6 +1037,15 @@ export class Stack extends CoreConstruct implements ITaggable {
 
     this._logicalIds.assertAllRenamesApplied();
 
+    // If there are no `Resources`, add a single WaitConditionHandle to keep the stack deployable.
+    if (Object.keys(ret.Resources ?? {}).length === 0) {
+      ret.Resources = {
+        MakeEmptyStackDeployable: {
+          Type: 'AWS::CloudFormation::WaitConditionHandle',
+        },
+      };
+    }
+
     return ret;
   }
 

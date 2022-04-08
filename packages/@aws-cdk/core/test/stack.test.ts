@@ -15,9 +15,15 @@ import { PostResolveToken } from '../lib/util';
 import { toCloudFormation } from './util';
 
 describe('stack', () => {
-  test('a stack can be serialized into a CloudFormation template, initially it\'s empty', () => {
+  test('a stack can be serialized into a CloudFormation template, initially it has a WCH to stay deployable', () => {
     const stack = new Stack();
-    expect(toCloudFormation(stack)).toEqual({ });
+    expect(toCloudFormation(stack)).toEqual({
+      Resources: {
+        MakeEmptyStackDeployable: {
+          Type: 'AWS::CloudFormation::WaitConditionHandle',
+        },
+      },
+    });
   });
 
   test('stack name cannot exceed 128 characters', () => {
