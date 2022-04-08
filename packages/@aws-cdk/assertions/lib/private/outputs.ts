@@ -20,7 +20,7 @@ export function hasOutput(template: Template, logicalId: string, props: any): st
   }
 
   if (result.closestResult === undefined) {
-    return `No outputs named ${logicalId} found in the template.`;
+    return `No outputs named ${logicalId} found in the template (found: ${Object.keys(section).join(', ')})`;
   }
 
   return [

@@ -87,9 +87,14 @@ describe('test runner', () => {
     });
 
     expect(spawnSyncMock).toHaveBeenCalledWith(
-      expect.stringMatching(/cdk/),
-      ['synth', '--app', 'node integ.integ-test1.js', '--no-version-reporting', '--no-path-metadata', '--no-asset-metadata', '--output', 'cdk-integ.out.integ-test1', '--all'],
-      expect.anything(),
+      expect.stringMatching(/node/),
+      ['integ.integ-test1.js'],
+      expect.objectContaining({
+        env: expect.objectContaining({
+          CDK_INTEG_ACCOUNT: '12345678',
+          CDK_INTEG_REGION: 'test-region',
+        }),
+      }),
     );
   });
 });

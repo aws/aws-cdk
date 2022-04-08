@@ -53,7 +53,8 @@ export async function runSnapshotTests(pool: workerpool.WorkerPool, tests: Integ
   }
 
   logger.highlight('\nSnapshot Results: \n');
-  printSummary(tests.length, testsToRun.length); return testsToRun;
+  printSummary(tests.length, testsToRun.length);
+  return testsToRun;
 }
 
 /**

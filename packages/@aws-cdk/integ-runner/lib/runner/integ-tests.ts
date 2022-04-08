@@ -32,7 +32,7 @@ export class IntegrationTests {
         return (tests.includes(t.fileName) || tests.includes(parts.base));
       });
 
-      const selectedNames = allTests.map(t => path.parse(t.fileName).base);
+      const selectedNames = allTests.map(t => t.fileName);
       for (const unmatched of tests.filter(t => !selectedNames.includes(t))) {
         process.stderr.write(`No such integ test: ${unmatched}\n`);
         foundAll = false;

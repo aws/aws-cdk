@@ -538,7 +538,7 @@
       },
       "description": "The AWS::Amplify::App resource creates Apps in the Amplify Console. An App is a collection of branches.",
       "properties": {
-        "AccessToken": "Personal Access token for 3rd party source control system for an Amplify app, used to create webhook and read-only deploy key. Token is not stored.\n\n*Length Constraints:* Minimum length of 1. Maximum length of 255.",
+        "AccessToken": "The personal access token for a GitHub repository for an Amplify app. The personal access token is used to authorize access to a GitHub repository using the Amplify GitHub App. The token is not stored.\n\nUse `AccessToken` for GitHub repositories only. To authorize access to a repository provider such as Bitbucket or CodeCommit, use `OauthToken` .\n\nYou must specify either `AccessToken` or `OauthToken` when you create a new app.\n\nExisting Amplify apps deployed from a GitHub repository using OAuth continue to work with CI/CD. However, we strongly recommend that you migrate these apps to use the GitHub App. For more information, see [Migrating an existing OAuth app to the Amplify GitHub App](https://docs.aws.amazon.com/amplify/latest/UserGuide/setting-up-GitHub-access.html#migrating-to-github-app-auth) in the *Amplify User Guide* .\n\n*Length Constraints:* Minimum length of 1. Maximum length of 255.",
         "AutoBranchCreationConfig": "Sets the configuration for your automatic branch creation.",
         "BasicAuthConfig": "The credentials for basic authorization for an Amplify app. You must base64-encode the authorization credentials and provide them in the format `user:password` .",
         "BuildSpec": "The build specification (build spec) for an Amplify app.\n\n*Length Constraints:* Minimum length of 1. Maximum length of 25000.\n\n*Pattern:* (?s).+",
@@ -549,7 +549,7 @@
         "EnvironmentVariables": "The environment variables map for an Amplify app.",
         "IAMServiceRole": "The AWS Identity and Access Management (IAM) service role for the Amazon Resource Name (ARN) of the Amplify app.\n\n*Length Constraints:* Minimum length of 0. Maximum length of 1000.\n\n*Pattern:* (?s).*",
         "Name": "The name for an Amplify app.\n\n*Length Constraints:* Minimum length of 1. Maximum length of 255.\n\n*Pattern:* (?s).+",
-        "OauthToken": "The OAuth token for a third-party source control system for an Amplify app. The OAuth token is used to create a webhook and a read-only deploy key. The OAuth token is not stored.\n\n*Length Constraints:* Maximum length of 1000.\n\n*Pattern:* (?s).*",
+        "OauthToken": "The OAuth token for a third-party source control system for an Amplify app. The OAuth token is used to create a webhook and a read-only deploy key using SSH cloning. The OAuth token is not stored.\n\nUse `OauthToken` for repository providers other than GitHub, such as Bitbucket or CodeCommit. To authorize access to GitHub as your repository provider, use `AccessToken` .\n\nYou must specify either `OauthToken` or `AccessToken` when you create a new app.\n\nExisting Amplify apps deployed from a GitHub repository using OAuth continue to work with CI/CD. However, we strongly recommend that you migrate these apps to use the GitHub App. For more information, see [Migrating an existing OAuth app to the Amplify GitHub App](https://docs.aws.amazon.com/amplify/latest/UserGuide/setting-up-GitHub-access.html#migrating-to-github-app-auth) in the *Amplify User Guide* .\n\n*Length Constraints:* Maximum length of 1000.\n\n*Pattern:* (?s).*",
         "Repository": "The repository for an Amplify app.\n\n*Pattern:* (?s).*",
         "Tags": "The tag for an Amplify app."
       }
@@ -564,9 +564,9 @@
         "EnableAutoBranchCreation": "Enables automated branch creation for the Amplify app.",
         "EnableAutoBuild": "Enables auto building for the auto created branch.",
         "EnablePerformanceMode": "Enables performance mode for the branch.\n\nPerformance mode optimizes for faster hosting performance by keeping content cached at the edge for a longer interval. When performance mode is enabled, hosting configuration or code changes can take up to 10 minutes to roll out.",
-        "EnablePullRequestPreview": "Sets whether pull request previews are enabled for each branch that Amplify Console automatically creates for your app. Amplify Console creates previews by deploying your app to a unique URL whenever a pull request is opened for the branch. Development and QA teams can use this preview to test the pull request before it's merged into a production or integration branch.\n\nTo provide backend support for your preview, the Amplify Console automatically provisions a temporary backend environment that it deletes when the pull request is closed. If you want to specify a dedicated backend environment for your previews, use the `PullRequestEnvironmentName` property.\n\nFor more information, see [Web Previews](https://docs.aws.amazon.com/amplify/latest/userguide/pr-previews.html) in the *AWS Amplify Console User Guide* .",
+        "EnablePullRequestPreview": "Sets whether pull request previews are enabled for each branch that Amplify Console automatically creates for your app. Amplify Console creates previews by deploying your app to a unique URL whenever a pull request is opened for the branch. Development and QA teams can use this preview to test the pull request before it's merged into a production or integration branch.\n\nTo provide backend support for your preview, the Amplify Console automatically provisions a temporary backend environment that it deletes when the pull request is closed. If you want to specify a dedicated backend environment for your previews, use the `PullRequestEnvironmentName` property.\n\nFor more information, see [Web Previews](https://docs.aws.amazon.com/amplify/latest/userguide/pr-previews.html) in the *AWS Amplify Hosting User Guide* .",
         "EnvironmentVariables": "Environment variables for the auto created branch.",
-        "PullRequestEnvironmentName": "If pull request previews are enabled, you can use this property to specify a dedicated backend environment for your previews. For example, you could specify an environment named `prod` , `test` , or `dev` that you initialized with the Amplify CLI.\n\nTo enable pull request previews, set the `EnablePullRequestPreview` property to `true` .\n\nIf you don't specify an environment, the Amplify Console provides backend support for each preview by automatically provisioning a temporary backend environment. Amplify Console deletes this environment when the pull request is closed.\n\nFor more information about creating backend environments, see [Feature Branch Deployments and Team Workflows](https://docs.aws.amazon.com/amplify/latest/userguide/multi-environments.html) in the *AWS Amplify Console User Guide* .\n\n*Length Constraints:* Maximum length of 20.\n\n*Pattern:* (?s).*",
+        "PullRequestEnvironmentName": "If pull request previews are enabled, you can use this property to specify a dedicated backend environment for your previews. For example, you could specify an environment named `prod` , `test` , or `dev` that you initialized with the Amplify CLI.\n\nTo enable pull request previews, set the `EnablePullRequestPreview` property to `true` .\n\nIf you don't specify an environment, the Amplify Console provides backend support for each preview by automatically provisioning a temporary backend environment. Amplify Console deletes this environment when the pull request is closed.\n\nFor more information about creating backend environments, see [Feature Branch Deployments and Team Workflows](https://docs.aws.amazon.com/amplify/latest/userguide/multi-environments.html) in the *AWS Amplify Hosting User Guide* .\n\n*Length Constraints:* Maximum length of 20.\n\n*Pattern:* (?s).*",
         "Stage": "Stage for the auto created branch."
       }
     },
@@ -599,8 +599,8 @@
     },
     "AWS::Amplify::Branch": {
       "attributes": {
-        "Arn": "ARN for a branch, part of an Amplify app.",
-        "BranchName": "Name for a branch, part of an Amplify app."
+        "Arn": "ARN for a branch, part of an Amplify App.",
+        "BranchName": "Name for a branch, part of an Amplify App."
       },
       "description": "The AWS::Amplify::Branch resource creates a new branch within an app.",
       "properties": {
@@ -611,9 +611,9 @@
         "Description": "The description for the branch that is part of an Amplify app.\n\n*Length Constraints:* Maximum length of 1000.\n\n*Pattern:* (?s).*",
         "EnableAutoBuild": "Enables auto building for the branch.",
         "EnablePerformanceMode": "Enables performance mode for the branch.\n\nPerformance mode optimizes for faster hosting performance by keeping content cached at the edge for a longer interval. When performance mode is enabled, hosting configuration or code changes can take up to 10 minutes to roll out.",
-        "EnablePullRequestPreview": "Sets whether the Amplify Console creates a preview for each pull request that is made for this branch. If this property is enabled, the Amplify Console deploys your app to a unique preview URL after each pull request is opened. Development and QA teams can use this preview to test the pull request before it's merged into a production or integration branch.\n\nTo provide backend support for your preview, the Amplify Console automatically provisions a temporary backend environment that it deletes when the pull request is closed. If you want to specify a dedicated backend environment for your previews, use the `PullRequestEnvironmentName` property.\n\nFor more information, see [Web Previews](https://docs.aws.amazon.com/amplify/latest/userguide/pr-previews.html) in the *AWS Amplify Console User Guide* .",
+        "EnablePullRequestPreview": "Sets whether the Amplify Console creates a preview for each pull request that is made for this branch. If this property is enabled, the Amplify Console deploys your app to a unique preview URL after each pull request is opened. Development and QA teams can use this preview to test the pull request before it's merged into a production or integration branch.\n\nTo provide backend support for your preview, the Amplify Console automatically provisions a temporary backend environment that it deletes when the pull request is closed. If you want to specify a dedicated backend environment for your previews, use the `PullRequestEnvironmentName` property.\n\nFor more information, see [Web Previews](https://docs.aws.amazon.com/amplify/latest/userguide/pr-previews.html) in the *AWS Amplify Hosting User Guide* .",
         "EnvironmentVariables": "The environment variables for the branch.",
-        "PullRequestEnvironmentName": "If pull request previews are enabled for this branch, you can use this property to specify a dedicated backend environment for your previews. For example, you could specify an environment named `prod` , `test` , or `dev` that you initialized with the Amplify CLI and mapped to this branch.\n\nTo enable pull request previews, set the `EnablePullRequestPreview` property to `true` .\n\nIf you don't specify an environment, the Amplify Console provides backend support for each preview by automatically provisioning a temporary backend environment. Amplify Console deletes this environment when the pull request is closed.\n\nFor more information about creating backend environments, see [Feature Branch Deployments and Team Workflows](https://docs.aws.amazon.com/amplify/latest/userguide/multi-environments.html) in the *AWS Amplify Console User Guide* .\n\n*Length Constraints:* Maximum length of 20.\n\n*Pattern:* (?s).*",
+        "PullRequestEnvironmentName": "If pull request previews are enabled for this branch, you can use this property to specify a dedicated backend environment for your previews. For example, you could specify an environment named `prod` , `test` , or `dev` that you initialized with the Amplify CLI and mapped to this branch.\n\nTo enable pull request previews, set the `EnablePullRequestPreview` property to `true` .\n\nIf you don't specify an environment, the Amplify Console provides backend support for each preview by automatically provisioning a temporary backend environment. Amplify Console deletes this environment when the pull request is closed.\n\nFor more information about creating backend environments, see [Feature Branch Deployments and Team Workflows](https://docs.aws.amazon.com/amplify/latest/userguide/multi-environments.html) in the *AWS Amplify Hosting User Guide* .\n\n*Length Constraints:* Maximum length of 20.\n\n*Pattern:* (?s).*",
         "Stage": "Describes the current stage for the branch.\n\n*Valid Values:* PRODUCTION | BETA | DEVELOPMENT | EXPERIMENTAL | PULL_REQUEST",
         "Tags": "The tag for the branch."
       }
@@ -5007,7 +5007,7 @@
         "State": "The state of the workgroup: ENABLED or DISABLED.",
         "Tags": "The tags (key-value pairs) to associate with this resource.",
         "WorkGroupConfiguration": "The configuration of the workgroup, which includes the location in Amazon S3 where query results are stored, the encryption option, if any, used for query results, whether Amazon CloudWatch Metrics are enabled for the workgroup, and the limit for the amount of bytes scanned (cutoff) per query, if it is specified. The `EnforceWorkGroupConfiguration` option determines whether workgroup settings override client-side query settings.",
-        "WorkGroupConfigurationUpdates": "The configuration information that will be updated for this workgroup, which includes the location in Amazon S3 where query results are stored, the encryption option, if any, used for query results, whether the Amazon CloudWatch Metrics are enabled for the workgroup, whether the workgroup settings override the client-side settings, and the data usage limit for the amount of bytes scanned per query, if it is specified."
+        "WorkGroupConfigurationUpdates": "> The `WorkGroupConfigurationUpdates` property has been deprecated. Use [WorkGroupConfiguration](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-workgroupconfiguration.html) instead. For more information, see [WorkGroupConfigurationUpdates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-workgroupconfigurationupdates.html) . \n\nThe configuration information that will be updated for this workgroup, which includes the location in Amazon S3 where query results are stored, the encryption option, if any, used for query results, whether the Amazon CloudWatch Metrics are enabled for the workgroup, whether the workgroup settings override the client-side settings, and the data usage limit for the amount of bytes scanned per query, if it is specified."
       }
     },
     "AWS::Athena::WorkGroup.EncryptionConfiguration": {
@@ -5058,7 +5058,7 @@
     },
     "AWS::Athena::WorkGroup.WorkGroupConfigurationUpdates": {
       "attributes": {},
-      "description": "The configuration information that will be updated for this workgroup, which includes the location in Amazon S3 where query results are stored, the encryption option, if any, used for query results, whether the Amazon CloudWatch Metrics are enabled for the workgroup, whether the workgroup settings override the client-side settings, and the data usage limit for the amount of bytes scanned per query, if it is specified.",
+      "description": "> The `WorkGroupConfigurationUpdates` property has been deprecated. Although `WorkGroupConfigurationUpdates` continues to function, it may not be supported for future updates. Because [WorkGroupConfiguration](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-workgroupconfiguration.html) can be used for both stack create and update operations, we recommend that you use only `WorkGroupConfiguration` going forward. \n\nThe configuration information that will be updated for this workgroup, which includes the location in Amazon S3 where query results are stored, the encryption option, if any, used for query results, whether the Amazon CloudWatch Metrics are enabled for the workgroup, whether the workgroup settings override the client-side settings, and the data usage limit for the amount of bytes scanned per query, if it is specified.",
       "properties": {
         "BytesScannedCutoffPerQuery": "The upper limit (cutoff) for the amount of bytes a single query in a workgroup is allowed to scan. No default is defined.\n\n> This property currently supports integer types. Support for long values is planned.",
         "EnforceWorkGroupConfiguration": "If set to \"true\", the settings for the workgroup override client-side settings. If set to \"false\" client-side settings are used. For more information, see [Workgroup Settings Override Client-Side Settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html) .",
@@ -5893,7 +5893,7 @@
       "properties": {
         "ControlInputParameters": "A list of `ParameterName` and `ParameterValue` pairs.",
         "ControlName": "The name of a control. This name is between 1 and 256 characters.",
-        "ControlScope": "The scope of a control. The control scope defines what the control will evaluate. Three examples of control scopes are: a specific backup plan, all backup plans with a specific tag, or all backup plans. For more information, see `ControlScope` ."
+        "ControlScope": "The scope of a control. The control scope defines what the control will evaluate. Three examples of control scopes are: a specific backup plan, all backup plans with a specific tag, or all backup plans. For more information, see [`ControlScope` .](https://docs.aws.amazon.com/aws-backup/latest/devguide/API_ControlScope.html)"
       }
     },
     "AWS::Backup::ReportPlan": {
@@ -9061,11 +9061,11 @@
     },
     "AWS::Config::ConfigRule.Source": {
       "attributes": {},
-      "description": "Provides the AWS Config rule owner ( AWS or customer), the rule identifier, and the events that trigger the evaluation of your AWS resources.",
+      "description": "Provides the CustomPolicyDetails, the rule owner ( AWS or customer), the rule identifier, and the events that cause the evaluation of your AWS resources.",
       "properties": {
-        "Owner": "Indicates whether AWS or the customer owns and manages the AWS Config rule.",
-        "SourceDetails": "Provides the source and type of the event that causes AWS Config to evaluate your AWS resources.",
-        "SourceIdentifier": "For AWS Config managed rules, a predefined identifier from a list. For example, `IAM_PASSWORD_POLICY` is a managed rule. To reference a managed rule, see [Using AWS Config managed rules](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_use-managed-rules.html) .\n\nFor custom rules, the identifier is the Amazon Resource Name (ARN) of the rule's AWS Lambda function, such as `arn:aws:lambda:us-east-2:123456789012:function:custom_rule_name` ."
+        "Owner": "Indicates whether AWS or the customer owns and manages the AWS Config rule.\n\nAWS Config Managed Rules are predefined rules owned by AWS . For more information, see [AWS Config Managed Rules](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_use-managed-rules.html) in the AWS Config developer guide.\n\nAWS Config Custom Rules are rules that you can develop either with Guard ( `CUSTOM_POLICY` ) or AWS Lambda ( `CUSTOM_LAMBDA` ). For more information, see [AWS Config Custom Rules](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_develop-rules.html) in the AWS Config developer guide.",
+        "SourceDetails": "Provides the source and the message types that cause AWS Config to evaluate your AWS resources against a rule. It also provides the frequency with which you want AWS Config to run evaluations for the rule if the trigger type is periodic.\n\nIf the owner is set to `CUSTOM_POLICY` , the only acceptable values for the AWS Config rule trigger message type are `ConfigurationItemChangeNotification` and `OversizedConfigurationItemChangeNotification` .",
+        "SourceIdentifier": "For AWS Config Managed rules, a predefined identifier from a list. For example, `IAM_PASSWORD_POLICY` is a managed rule. To reference a managed rule, see [List of AWS Config Managed Rules](https://docs.aws.amazon.com/config/latest/developerguide/managed-rules-by-aws-config.html) .\n\nFor AWS Config Custom Lambda rules, the identifier is the Amazon Resource Name (ARN) of the rule's AWS Lambda function, such as `arn:aws:lambda:us-east-2:123456789012:function:custom_rule_name` .\n\nFor AWS Config Custom Policy rules, this field will be ignored."
       }
     },
     "AWS::Config::ConfigRule.SourceDetail": {
@@ -9177,8 +9177,8 @@
       },
       "description": "An organization config rule that has information about config rules that AWS Config creates in member accounts. Only a master account and a delegated administrator can create or update an organization config rule.\n\n`OrganizationConfigRule` resource enables organization service access through `EnableAWSServiceAccess` action and creates a service linked role in the master account of your organization. The service linked role is created only when the role does not exist in the master account. AWS Config verifies the existence of role with `GetRole` action.\n\nWhen creating custom organization config rules using a centralized Lambda function, you will need to allow Lambda permissions to sub-accounts and you will need to create an IAM role will to pass to the Lambda function. For more information, see [How to Centrally Manage AWS Config Rules across Multiple AWS Accounts](https://docs.aws.amazon.com/devops/how-to-centrally-manage-aws-config-rules-across-multiple-aws-accounts/) .",
       "properties": {
-        "ExcludedAccounts": "A comma-separated list of accounts excluded from organization config rule.",
-        "OrganizationConfigRuleName": "The name that you assign to organization config rule.",
+        "ExcludedAccounts": "A comma-separated list of accounts excluded from organization AWS Config rule.",
+        "OrganizationConfigRuleName": "The name that you assign to organization AWS Config rule.",
         "OrganizationCustomCodeRuleMetadata": "",
         "OrganizationCustomRuleMetadata": "An `OrganizationCustomRuleMetadata` object.",
         "OrganizationManagedRuleMetadata": "An `OrganizationManagedRuleMetadata` object."
@@ -9205,8 +9205,8 @@
       "attributes": {},
       "description": "An object that specifies organization custom rule metadata such as resource type, resource ID of AWS resource, Lambda function ARN, and organization trigger types that trigger AWS Config to evaluate your AWS resources against a rule. It also provides the frequency with which you want AWS Config to run evaluations for the rule if the trigger type is periodic.",
       "properties": {
-        "Description": "The description that you provide for organization config rule.",
-        "InputParameters": "A string, in JSON format, that is passed to organization config rule Lambda function.",
+        "Description": "The description that you provide for your organization AWS Config rule.",
+        "InputParameters": "A string, in JSON format, that is passed to your organization AWS Config rule Lambda function.",
         "LambdaFunctionArn": "The lambda function ARN.",
         "MaximumExecutionFrequency": "The maximum frequency with which AWS Config runs evaluations for a rule. Your custom rule is triggered when AWS Config delivers the configuration snapshot. For more information, see `ConfigSnapshotDeliveryProperties` .\n\n> By default, rules with a periodic trigger are evaluated every 24 hours. To change the frequency, specify a valid value for the `MaximumExecutionFrequency` parameter.",
         "OrganizationConfigRuleTriggerTypes": "The type of notification that triggers AWS Config to run an evaluation for a rule. You can specify the following notification types:\n\n- `ConfigurationItemChangeNotification` - Triggers an evaluation when AWS Config delivers a configuration item as a result of a resource change.\n- `OversizedConfigurationItemChangeNotification` - Triggers an evaluation when AWS Config delivers an oversized configuration item. AWS Config may generate this notification type when a resource changes and the notification exceeds the maximum size allowed by Amazon SNS.\n- `ScheduledNotification` - Triggers a periodic evaluation at the frequency specified for `MaximumExecutionFrequency` .",
@@ -9220,8 +9220,8 @@
       "attributes": {},
       "description": "An object that specifies organization managed rule metadata such as resource type and ID of AWS resource along with the rule identifier. It also provides the frequency with which you want AWS Config to run evaluations for the rule if the trigger type is periodic.",
       "properties": {
-        "Description": "The description that you provide for organization config rule.",
-        "InputParameters": "A string, in JSON format, that is passed to organization config rule Lambda function.",
+        "Description": "The description that you provide for your organization AWS Config rule.",
+        "InputParameters": "A string, in JSON format, that is passed to your organization AWS Config rule Lambda function.",
         "MaximumExecutionFrequency": "The maximum frequency with which AWS Config runs evaluations for a rule. You are using an AWS Config managed rule that is triggered at a periodic frequency.\n\n> By default, rules with a periodic trigger are evaluated every 24 hours. To change the frequency, specify a valid value for the `MaximumExecutionFrequency` parameter.",
         "ResourceIdScope": "The ID of the AWS resource that was evaluated.",
         "ResourceTypesScope": "The type of the AWS resource that was evaluated.",
@@ -9489,7 +9489,7 @@
         "LastUpdatedAt": "The timestamp of when the domain was most recently edited.",
         "Ref": "`Ref` returns the DomainName of the domain."
       },
-      "description": "The AWS::CustomerProfiles::Domain resource specifies an Amazon Connect Customer Profiles Domain.",
+      "description": "Specifies an Amazon Connect Customer Profiles Domain.",
       "properties": {
         "DeadLetterQueueUrl": "The URL of the SQS dead letter queue, which is used for reporting errors associated with ingesting data from third party applications. You must set up a policy on the DeadLetterQueue for the SendMessage operation to enable Amazon Connect Customer Profiles to send messages to the DeadLetterQueue.",
         "DefaultEncryptionKey": "The default encryption key, which is an AWS managed key, is used when no specific type of encryption key is specified. It is used to encrypt all data before it is placed in permanent or semi-permanent storage.",
@@ -9504,12 +9504,12 @@
         "LastUpdatedAt": "The timestamp of when the integration was most recently edited.",
         "Ref": "`Ref` returns the DomainName and the Uri of the integration."
       },
-      "description": "The AWS::CustomerProfiles::Integration resource specifies an Amazon Connect Customer Profiles Integration.",
+      "description": "Specifies an Amazon Connect Customer Profiles Integration.",
       "properties": {
         "DomainName": "The unique name of the domain.",
         "FlowDefinition": "The configuration that controls how Customer Profiles retrieves data from the source.",
         "ObjectTypeName": "The name of the profile object type mapping to use.",
-        "ObjectTypeNames": "",
+        "ObjectTypeNames": "The object type mapping.",
         "Tags": "The tags used to organize, track, or control access for this resource.",
         "Uri": "The URI of the S3 bucket or any other type of data source."
       }
@@ -9553,10 +9553,10 @@
     },
     "AWS::CustomerProfiles::Integration.ObjectTypeMapping": {
       "attributes": {},
-      "description": "",
+      "description": "A map in which each key is an event type from an external application such as Segment or Shopify, and each value is an `ObjectTypeName` (template) used to ingest the event.",
       "properties": {
-        "Key": "",
-        "Value": ""
+        "Key": "The key.",
+        "Value": "The value."
       }
     },
     "AWS::CustomerProfiles::Integration.S3SourceProperties": {
@@ -9611,7 +9611,7 @@
       "attributes": {},
       "description": "The configuration that controls how Customer Profiles retrieves data from the source.",
       "properties": {
-        "ConnectorProfileName": "The name of the Amazon AppFlow connector profile. This name must be unique for each connector profile in the AWS account.",
+        "ConnectorProfileName": "The name of the Amazon AppFlow connector profile. This name must be unique for each connector profile in the AWS account .",
         "ConnectorType": "The type of connector, such as Salesforce, Marketo, and so on.",
         "IncrementalPullConfig": "Defines the configuration for a scheduled incremental data pull. If a valid configuration is provided, the fields specified in the configuration are used when querying for the incremental data pull.",
         "SourceConnectorProperties": "Specifies the information that is required to query a particular source connector."
@@ -9664,7 +9664,7 @@
         "LastUpdatedAt": "The timestamp of when the object type was most recently edited.",
         "Ref": "`Ref` returns the DomainName and the ObjectTypeName of the object type."
       },
-      "description": "The AWS::CustomerProfiles::ObjectType resource specifies an Amazon Connect Customer Profiles Object Type Mapping.",
+      "description": "Specifies an Amazon Connect Customer Profiles Object Type Mapping.",
       "properties": {
         "AllowProfileCreation": "Indicates whether a profile should be created when data is received if one doesn\u2019t exist for an object of this type. The default is `FALSE` . If the AllowProfileCreation flag is set to `FALSE` , then the service tries to fetch a standard profile and associate this object with the profile. If it is set to `TRUE` , and if no match is found, then the service creates a new standard profile.",
         "Description": "The description of the profile object type mapping.",
@@ -10046,8 +10046,11 @@
         "Broker": "A comma-separated list of one or more broker locations in your Kafka cluster that host your Kafka instance. Specify each broker location in the form `*broker-hostname-or-ip* : *port*` . For example, `\"ec2-12-345-678-901.compute-1.amazonaws.com:2345\"` . For more information and examples of specifying a list of broker locations, see [Using Apache Kafka as a target for AWS Database Migration Service](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Kafka.html) in the *AWS Database Migration Service User Guide* .",
         "IncludeControlDetails": "Shows detailed control information for table definition, column definition, and table and column changes in the Kafka message output. The default is `false` .",
         "IncludeNullAndEmpty": "Include NULL and empty columns for records migrated to the endpoint. The default is `false` .",
+        "IncludePartitionValue": "Shows the partition value within the Kafka message output unless the partition type is `schema-table-type` . The default is `false` .",
         "IncludeTableAlterOperations": "Includes any data definition language (DDL) operations that change the table in the control data, such as `rename-table` , `drop-table` , `add-column` , `drop-column` , and `rename-column` . The default is `false` .",
         "IncludeTransactionDetails": "Provides detailed transaction information from the source database. This information includes a commit timestamp, a log position, and values for `transaction_id` , previous `transaction_id` , and `transaction_record_id` (the record offset within a transaction). The default is `false` .",
+        "MessageFormat": "The output format for the records created on the endpoint. The message format is `JSON` (default) or `JSON_UNFORMATTED` (a single line with no tab).",
+        "MessageMaxBytes": "The maximum size in bytes for records created on the endpoint The default is 1,000,000.",
         "NoHexPrefix": "Set this optional parameter to `true` to avoid adding a '0x' prefix to raw data in hexadecimal format. For example, by default, AWS DMS adds a '0x' prefix to the LOB column type in hexadecimal format moving from an Oracle source to a Kafka target. Use the `NoHexPrefix` endpoint setting to enable migration of RAW data type columns without adding the '0x' prefix.",
         "PartitionIncludeSchemaTable": "Prefixes schema and table names to partition values, when the partition type is `primary-key-type` . Doing this increases data distribution among Kafka partitions. For example, suppose that a SysBench schema has thousands of tables and each table has only limited range for a primary key. In this case, the same primary key is sent from thousands of tables to the same partition, which causes throttling. The default is `false` .",
         "SaslPassword": "The secure password that you created when you first set up your Amazon MSK cluster to validate a client identity and make an encrypted connection between server and client using SASL-SSL authentication.",
@@ -10066,6 +10069,7 @@
       "properties": {
         "IncludeControlDetails": "Shows detailed control information for table definition, column definition, and table and column changes in the Kinesis message output. The default is `false` .",
         "IncludeNullAndEmpty": "Include NULL and empty columns for records migrated to the endpoint. The default is `false` .",
+        "IncludePartitionValue": "Shows the partition value within the Kinesis message output, unless the partition type is `schema-table-type` . The default is `false` .",
         "IncludeTableAlterOperations": "Includes any data definition language (DDL) operations that change the table in the control data, such as `rename-table` , `drop-table` , `add-column` , `drop-column` , and `rename-column` . The default is `false` .",
         "IncludeTransactionDetails": "Provides detailed transaction information from the source database. This information includes a commit timestamp, a log position, and values for `transaction_id` , previous `transaction_id` , and `transaction_record_id` (the record offset within a transaction). The default is `false` .",
         "MessageFormat": "The output format for the records created on the endpoint. The message format is `JSON` (default) or `JSON_UNFORMATTED` (a single line with no tab).",
@@ -10106,8 +10110,15 @@
       "attributes": {},
       "description": "Provides information that defines a MySQL endpoint. This information includes the output format of records applied to the endpoint and details of transaction and control table data information. For information about other available settings, see [Extra connection attributes when using MySQL as a source for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.MySQL.html#CHAP_Source.MySQL.ConnectionAttrib) and [Extra connection attributes when using a MySQL-compatible database as a target for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.MySQL.html#CHAP_Target.MySQL.ConnectionAttrib) in the *AWS Database Migration Service User Guide* .",
       "properties": {
+        "AfterConnectScript": "Specifies a script to run immediately after AWS DMS connects to the endpoint. The migration task continues running regardless if the SQL statement succeeds or fails.\n\nFor this parameter, provide the code of the script itself, not the name of a file containing the script.",
+        "CleanSourceMetadataOnMismatch": "Adjusts the behavior of DMS when migrating from an SQL Server source database that is hosted as part of an Always On availability group cluster. If you need DMS to poll all the nodes in the Always On cluster for transaction backups, set this attribute to `false` .",
+        "EventsPollInterval": "Specifies how often to check the binary log for new changes/events when the database is idle. The default is five seconds.\n\nExample: `eventsPollInterval=5;`\n\nIn the example, AWS DMS checks for changes in the binary logs every five seconds.",
+        "MaxFileSize": "Specifies the maximum size (in KB) of any .csv file used to transfer data to a MySQL-compatible database.\n\nExample: `maxFileSize=512`",
+        "ParallelLoadThreads": "Improves performance when loading data into the MySQL-compatible target database. Specifies how many threads to use to load the data into the MySQL-compatible target database. Setting a large number of threads can have an adverse effect on database performance, because a separate connection is required for each thread. The default is one.\n\nExample: `parallelLoadThreads=1`",
         "SecretsManagerAccessRoleArn": "The full Amazon Resource Name (ARN) of the IAM role that specifies AWS DMS as the trusted entity and grants the required permissions to access the value in `SecretsManagerSecret` . The role must allow the `iam:PassRole` action. `SecretsManagerSecret` has the value of the AWS Secrets Manager secret that allows access to the MySQL endpoint.\n\n> You can specify one of two sets of values for these permissions. You can specify the values for this setting and `SecretsManagerSecretId` . Or you can specify clear-text values for `UserName` , `Password` , `ServerName` , and `Port` . You can't specify both.\n> \n> For more information on creating this `SecretsManagerSecret` , the corresponding `SecretsManagerAccessRoleArn` , and the `SecretsManagerSecretId` that is required to access it, see [Using secrets to access AWS Database Migration Service resources](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.html#security-iam-secretsmanager) in the *AWS Database Migration Service User Guide* .",
-        "SecretsManagerSecretId": "The full ARN, partial ARN, or display name of the `SecretsManagerSecret` that contains the MySQL endpoint connection details."
+        "SecretsManagerSecretId": "The full ARN, partial ARN, or display name of the `SecretsManagerSecret` that contains the MySQL endpoint connection details.",
+        "ServerTimezone": "Specifies the time zone for the source MySQL database.\n\nExample: `serverTimezone=US/Pacific;`\n\nNote: Do not enclose time zones in single quotes.",
+        "TargetDbType": "Specifies where to migrate source tables on the target, either to a single database or multiple databases. If you specify `SPECIFIC_DATABASE` , specify the database name using the `DatabaseName` parameter of the `Endpoint` object.\n\nExample: `targetDbType=MULTIPLE_DATABASES`"
       }
     },
     "AWS::DMS::Endpoint.NeptuneSettings": {
@@ -10446,6 +10457,42 @@
         "Tags": "The key-value pair that represents a tag that you want to add to the resource. The value can be an empty string. This value helps you manage, filter, and search for your resources. We recommend that you create a name tag for your location."
       }
     },
+    "AWS::DataSync::LocationFSxOpenZFS": {
+      "attributes": {
+        "LocationArn": "The ARN of the specified FSx for OpenZFS file system location.",
+        "LocationUri": "The URI of the specified FSx for OpenZFS file system location.",
+        "Ref": "`Ref` returns the location resource ARN. For example:\n\n`arn:aws:datasync:us-east-2:111222333444:location/loc-07db7abfc326c50s3`"
+      },
+      "description": "The `AWS::DataSync::LocationFSxOpenZFS` resource specifies an endpoint for an Amazon FSx for OpenZFS file system.",
+      "properties": {
+        "FsxFilesystemArn": "The Amazon Resource Name (ARN) of the FSx for OpenZFS file system.",
+        "Protocol": "The type of protocol that AWS DataSync uses to access your file system.",
+        "SecurityGroupArns": "The ARNs of the security groups that are used to configure the FSx for OpenZFS file system.\n\n*Pattern* : `^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):ec2:[a-z\\-0-9]*:[0-9]{12}:security-group/.*$`\n\n*Length constraints* : Maximum length of 128.",
+        "Subdirectory": "A subdirectory in the location's path that must begin with `/fsx` . DataSync uses this subdirectory to read or write data (depending on whether the file system is a source or destination location).",
+        "Tags": "The key-value pair that represents a tag that you want to add to the resource. The value can be an empty string. This value helps you manage, filter, and search for your resources. We recommend that you create a name tag for your location."
+      }
+    },
+    "AWS::DataSync::LocationFSxOpenZFS.MountOptions": {
+      "attributes": {},
+      "description": "Represents the mount options that are available for DataSync to access a Network File System (NFS) location.",
+      "properties": {
+        "Version": "The specific NFS version that you want DataSync to use to mount your NFS share. If the server refuses to use the version specified, the sync will fail. If you don't specify a version, DataSync defaults to `AUTOMATIC` . That is, DataSync automatically selects a version based on negotiation with the NFS server.\n\nYou can specify the following NFS versions:\n\n- *[NFSv3](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc1813)* : Stateless protocol version that allows for asynchronous writes on the server.\n- *[NFSv4.0](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc3530)* : Stateful, firewall-friendly protocol version that supports delegations and pseudo file systems.\n- *[NFSv4.1](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc5661)* : Stateful protocol version that supports sessions, directory delegations, and parallel data processing. Version 4.1 also includes all features available in version 4.0."
+      }
+    },
+    "AWS::DataSync::LocationFSxOpenZFS.NFS": {
+      "attributes": {},
+      "description": "Represents the Network File System (NFS) protocol that AWS DataSync uses to access your Amazon FSx for OpenZFS file system.",
+      "properties": {
+        "MountOptions": "Represents the mount options that are available for DataSync to access an NFS location."
+      }
+    },
+    "AWS::DataSync::LocationFSxOpenZFS.Protocol": {
+      "attributes": {},
+      "description": "Represents the protocol that AWS DataSync uses to access your Amazon FSx for OpenZFS file system.",
+      "properties": {
+        "NFS": "Represents the Network File System (NFS) protocol that DataSync uses to access your FSx for OpenZFS file system."
+      }
+    },
     "AWS::DataSync::LocationFSxWindows": {
       "attributes": {
         "LocationArn": "The ARN of the specified FSx for Windows Server file system location.",
@@ -10512,7 +10559,7 @@
       "properties": {
         "MountOptions": "The NFS mount options that DataSync can use to mount your NFS share.",
         "OnPremConfig": "Contains a list of Amazon Resource Names (ARNs) of agents that are used to connect to an NFS server.\n\nIf you are copying data to or from your AWS Snowcone device, see [NFS Server on AWS Snowcone](https://docs.aws.amazon.com/datasync/latest/userguide/create-nfs-location.html#nfs-on-snowcone) for more information.",
-        "ServerHostname": "The name of the NFS server. This value is the IP address or Domain Name Service (DNS) name of the NFS server. An agent that is installed on-premises uses this host name to mount the NFS server in a network.\n\nIf you are copying data to or from your AWS Snowcone device, see [NFS Server on AWS Snowcone](https://docs.aws.amazon.com/datasync/latest/userguide/create-nfs-location.html#nfs-on-snowcone) for more information.\n\n> This name must either be DNS-compliant or must be an IP version 4 (IPv4) address.",
+        "ServerHostname": "The name of the NFS server. This value is the IP address or Domain Name Service (DNS) name of the NFS server. An agent that is installed on-premises uses this hostname to mount the NFS server in a network.\n\nIf you are copying data to or from your AWS Snowcone device, see [NFS Server on AWS Snowcone](https://docs.aws.amazon.com/datasync/latest/userguide/create-nfs-location.html#nfs-on-snowcone) for more information.\n\n> This name must either be DNS-compliant or must be an IP version 4 (IPv4) address.",
         "Subdirectory": "The subdirectory in the NFS file system that is used to read data from the NFS source location or write data to the NFS destination. The NFS path should be a path that's exported by the NFS server, or a subdirectory of that path. The path should be such that it can be mounted by other NFS clients in your network.\n\nTo see all the paths exported by your NFS server, run \" `showmount -e nfs-server-name` \" from an NFS client that has access to your server. You can specify any directory that appears in the results, and any subdirectory of that directory. Ensure that the NFS export is accessible without Kerberos authentication.\n\nTo transfer all the data in the folder you specified, DataSync needs to have permissions to read all the data. To ensure this, either configure the NFS export with `no_root_squash,` or ensure that the permissions for all of the files that you want DataSync allow read access for all users. Doing either enables the agent to read the files. For the agent to access directories, you must additionally enable all execute access.\n\nIf you are copying data to or from your AWS Snowcone device, see [NFS Server on AWS Snowcone](https://docs.aws.amazon.com/datasync/latest/userguide/create-nfs-location.html#nfs-on-snowcone) for more information.\n\nFor information about NFS export configuration, see [18.7. The /etc/exports Configuration File](https://docs.aws.amazon.com/http://web.mit.edu/rhel-doc/5/RHEL-5-manual/Deployment_Guide-en-US/s1-nfs-server-config-exports.html) in the Red Hat Enterprise Linux documentation.",
         "Tags": "The key-value pair that represents the tag that you want to add to the location. The value can be an empty string. We recommend using tags to name your resources."
       }
@@ -10543,7 +10590,7 @@
         "AgentArns": "The Amazon Resource Name (ARN) of the agents associated with the self-managed object storage server location.",
         "BucketName": "The bucket on the self-managed object storage server that is used to read data from.",
         "SecretKey": "Optional. The secret key is used if credentials are required to access the self-managed object storage server. If your object storage requires a user name and password to authenticate, use `AccessKey` and `SecretKey` to provide the user name and password, respectively.",
-        "ServerHostname": "The name of the self-managed object storage server. This value is the IP address or Domain Name Service (DNS) name of the object storage server. An agent uses this host name to mount the object storage server in a network.",
+        "ServerHostname": "The name of the self-managed object storage server. This value is the IP address or Domain Name Service (DNS) name of the object storage server. An agent uses this hostname to mount the object storage server in a network.",
         "ServerPort": "The port that your self-managed object storage server accepts inbound network traffic on. The server port is set by default to TCP 80 (HTTP) or TCP 443 (HTTPS). You can specify a custom port if your self-managed object storage server requires one.",
         "ServerProtocol": "The protocol that the object storage server uses to communicate. Valid values are HTTP or HTTPS.",
         "Subdirectory": "The subdirectory in the self-managed object storage server that is used to read data from.",
@@ -12272,7 +12319,7 @@
     },
     "AWS::EC2::LaunchTemplate.Ipv4PrefixSpecification": {
       "attributes": {},
-      "description": "Describes an IPv4 prefix.",
+      "description": "Specifies an IPv4 prefix for a network interface.\n\n`Ipv4PrefixSpecification` is a property of [AWS::EC2::LaunchTemplate NetworkInterface](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-networkinterface.html) .",
       "properties": {
         "Ipv4Prefix": "The IPv4 prefix. For information, see [Assigning prefixes to Amazon EC2 network interfaces](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-prefix-eni.html) in the *Amazon Elastic Compute Cloud User Guide* ."
       }
@@ -12286,7 +12333,7 @@
     },
     "AWS::EC2::LaunchTemplate.Ipv6PrefixSpecification": {
       "attributes": {},
-      "description": "Describes the IPv6 prefix.",
+      "description": "Specifies an IPv6 prefix for a network interface.\n\n`Ipv6PrefixSpecification` is a property of [AWS::EC2::LaunchTemplate NetworkInterface](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-networkinterface.html) .",
       "properties": {
         "Ipv6Prefix": "The IPv6 prefix."
       }
@@ -12394,8 +12441,12 @@
         "DeviceIndex": "The device index for the network interface attachment.",
         "Groups": "The IDs of one or more security groups.",
         "InterfaceType": "The type of network interface. To create an Elastic Fabric Adapter (EFA), specify `efa` . For more information, see [Elastic Fabric Adapter](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html) in the *Amazon Elastic Compute Cloud User Guide* .\n\nIf you are not creating an EFA, specify `interface` or omit this parameter.\n\nValid values: `interface` | `efa`",
+        "Ipv4PrefixCount": "The number of IPv4 prefixes to be automatically assigned to the network interface. You cannot use this option if you use the `Ipv4Prefix` option.",
+        "Ipv4Prefixes": "One or more IPv4 prefixes to be assigned to the network interface. You cannot use this option if you use the `Ipv4PrefixCount` option.",
         "Ipv6AddressCount": "The number of IPv6 addresses to assign to a network interface. Amazon EC2 automatically selects the IPv6 addresses from the subnet range. You can't use this option if specifying specific IPv6 addresses.",
         "Ipv6Addresses": "One or more specific IPv6 addresses from the IPv6 CIDR block range of your subnet. You can't use this option if you're specifying a number of IPv6 addresses.",
+        "Ipv6PrefixCount": "The number of IPv6 prefixes to be automatically assigned to the network interface. You cannot use this option if you use the `Ipv6Prefix` option.",
+        "Ipv6Prefixes": "One or more IPv6 prefixes to be assigned to the network interface. You cannot use this option if you use the `Ipv6PrefixCount` option.",
         "NetworkCardIndex": "The index of the network card. Some instance types support multiple network cards. The primary network interface must be assigned to network card index 0. The default is network card index 0.",
         "NetworkInterfaceId": "The ID of the network interface.",
         "PrivateIpAddress": "The primary private IPv4 address of the network interface.",
@@ -13000,8 +13051,8 @@
       "attributes": {},
       "description": "Adds an inbound rule to a security group.\n\nAn inbound rule permits instances to receive traffic from the specified IPv4 or IPv6 CIDR address range, or from the instances associated with the specified security group.\n\nYou must specify only one of the following properties: `CidrIp` , `CidrIpv6` , `SourcePrefixListId` , `SourceSecurityGroupId` , or `SourceSecurityGroupName` .\n\nYou specify a protocol for each rule (for example, TCP). For TCP and UDP, you must also specify a port or port range. For ICMP/ICMPv6, you must also specify the ICMP/ICMPv6 type and code. You can use -1 to mean all types or all codes.\n\nYou must specify a source security group ( `SourcePrefixListId` , `SourceSecurityGroupId` , or `SourceSecurityGroupName` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ). If you do not specify one of these parameters, the stack will launch successfully but the rule will not be added to the security group.\n\nRule changes are propagated to instances within the security group as quickly as possible. However, a small delay might occur.\n\nThe EC2 Security Group Rule is an embedded property of the `AWS::EC2::SecurityGroup` type.",
       "properties": {
-        "CidrIp": "The IPv4 address range, in CIDR format.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
-        "CidrIpv6": "The IPv6 address range, in CIDR format.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
+        "CidrIp": "The IPv4 address range, in CIDR format.\n\nYou must specify a source security group ( `SourcePrefixListId` or `SourceSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
+        "CidrIpv6": "The IPv6 address range, in CIDR format.\n\nYou must specify a source security group ( `SourcePrefixListId` or `SourceSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
         "Description": "Updates the description of an ingress (inbound) security group rule. You can replace an existing description, or add a description to a rule that did not have one previously.\n\nConstraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*",
         "FromPort": "The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number. A value of `-1` indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6 types, you must specify all codes.",
         "IpProtocol": "The IP protocol name ( `tcp` , `udp` , `icmp` , `icmpv6` ) or number (see [Protocol Numbers](https://docs.aws.amazon.com/http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml) ).\n\n[VPC only] Use `-1` to specify all protocols. When authorizing security group rules, specifying `-1` or a protocol number other than `tcp` , `udp` , `icmp` , or `icmpv6` allows traffic on all ports, regardless of any port range you specify. For `tcp` , `udp` , and `icmp` , you must specify a port range. For `icmpv6` , the port range is optional; if you omit the port range, traffic for all types and codes is allowed.",
@@ -13033,8 +13084,8 @@
       "attributes": {},
       "description": "Adds an inbound rule to a security group.\n\nAn inbound rule permits instances to receive traffic from the specified IPv4 or IPv6 CIDR address range, or from the instances associated with the specified security group.\n\nYou must specify only one of the following properties: `CidrIp` , `CidrIpv6` , `SourcePrefixListId` , `SourceSecurityGroupId` , or `SourceSecurityGroupName` .\n\nYou specify a protocol for each rule (for example, TCP). For TCP and UDP, you must also specify a port or port range. For ICMP/ICMPv6, you must also specify the ICMP/ICMPv6 type and code. You can use -1 to mean all types or all codes.\n\nYou must specify a source security group ( `SourcePrefixListId` , `SourceSecurityGroupId` , or `SourceSecurityGroupName` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ). If you do not specify one of these parameters, the stack will launch successfully but the rule will not be added to the security group.\n\nRule changes are propagated to instances within the security group as quickly as possible. However, a small delay might occur.",
       "properties": {
-        "CidrIp": "The IPv4 address range, in CIDR format.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
-        "CidrIpv6": "The IPv6 address range, in CIDR format.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
+        "CidrIp": "The IPv4 address range, in CIDR format.\n\nYou must specify a source security group ( `SourcePrefixListId` or `SourceSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
+        "CidrIpv6": "The IPv6 address range, in CIDR format.\n\nYou must specify a source security group ( `SourcePrefixListId` or `SourceSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
         "Description": "Updates the description of an ingress (inbound) security group rule. You can replace an existing description, or add a description to a rule that did not have one previously.\n\nConstraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*",
         "FromPort": "The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number. A value of `-1` indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6 types, you must specify all codes.\n\nUse this for ICMP and any protocol that uses ports.",
         "GroupId": "The ID of the security group. You must specify either the security group ID or the security group name in the request. For security groups in a nondefault VPC, you must specify the security group ID.\n\nYou must specify the `GroupName` property or the `GroupId` property. For security groups that are in a VPC, you must use the `GroupId` property.",
@@ -16860,64 +16911,64 @@
     },
     "AWS::Events::Endpoint": {
       "attributes": {
-        "Arn": "",
-        "EndpointId": "",
-        "EndpointUrl": "",
-        "Ref": "",
-        "State": "",
-        "StateReason": ""
+        "Arn": "The ARN of the endpoint.",
+        "EndpointId": "The ID of the endpoint.",
+        "EndpointUrl": "The URL of the endpoint.",
+        "Ref": "`Ref` returns Endpoint ID, such as `mystack-Endpoint-ABCDEFGHIJK` .",
+        "State": "The current state of the endpoint.",
+        "StateReason": "The reason the endpoint is in its current state."
       },
-      "description": "",
+      "description": "A global endpoint used to improve your application's availability by making it regional-fault tolerant. For more information about global endpoints, see [Making applications Regional-fault tolerant with global endpoints and event replication](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-global-endpoints.html) in the Amazon EventBridge User Guide.",
       "properties": {
-        "Description": "",
-        "EventBuses": "",
-        "Name": "",
-        "ReplicationConfig": "",
-        "RoleArn": "",
-        "RoutingConfig": ""
+        "Description": "A description for the endpoint.",
+        "EventBuses": "The event buses being used by the endpoint.",
+        "Name": "The name of the endpoint.",
+        "ReplicationConfig": "Whether event replication was enabled or disabled for this endpoint.",
+        "RoleArn": "The ARN of the role used by event replication for the endpoint.",
+        "RoutingConfig": "The routing configuration of the endpoint."
       }
     },
     "AWS::Events::Endpoint.EndpointEventBus": {
       "attributes": {},
-      "description": "",
+      "description": "The event buses the endpoint is associated with.",
       "properties": {
-        "EventBusArn": ""
+        "EventBusArn": "The ARN of the event bus the endpoint is associated with."
       }
     },
     "AWS::Events::Endpoint.FailoverConfig": {
       "attributes": {},
-      "description": "",
+      "description": "The failover configuration for an endpoint. This includes what triggers failover and what happens when it's triggered.",
       "properties": {
-        "Primary": "",
-        "Secondary": ""
+        "Primary": "The main Region of the endpoint.",
+        "Secondary": "The Region that events are routed to when failover is triggered or event replication is enabled."
       }
     },
     "AWS::Events::Endpoint.Primary": {
       "attributes": {},
-      "description": "",
+      "description": "The primary Region of the endpoint.",
       "properties": {
-        "HealthCheck": ""
+        "HealthCheck": "The ARN of the health check used by the endpoint to determine whether failover is triggered."
       }
     },
     "AWS::Events::Endpoint.ReplicationConfig": {
       "attributes": {},
-      "description": "",
+      "description": "Endpoints can replicate all events to the secondary Region.",
       "properties": {
-        "State": ""
+        "State": "The state of event replication."
       }
     },
     "AWS::Events::Endpoint.RoutingConfig": {
       "attributes": {},
-      "description": "",
+      "description": "The routing configuration of the endpoint.",
       "properties": {
-        "FailoverConfig": ""
+        "FailoverConfig": "The failover configuration for an endpoint. This includes what triggers failover and what happens when it's triggered."
       }
     },
     "AWS::Events::Endpoint.Secondary": {
       "attributes": {},
-      "description": "",
+      "description": "The secondary Region that processes events when failover is triggered or replication is enabled.",
       "properties": {
-        "Route": ""
+        "Route": "Defines the secondary Region."
       }
     },
     "AWS::Events::EventBus": {
@@ -25544,7 +25595,7 @@
         "Queues": "(Amazon MQ) The name of the Amazon MQ broker destination queue to consume.",
         "SelfManagedEventSource": "The self-managed Apache Kafka cluster for your event source.",
         "SourceAccessConfigurations": "An array of the authentication protocol, VPC components, or virtual host to secure and define your event source.",
-        "StartingPosition": "The position in a stream from which to start reading. Required for Amazon Kinesis, Amazon DynamoDB, and Amazon MSK Streams sources.\n\n- *LATEST* - Read only new records.\n- *TRIM_HORIZON* - Process all available records.",
+        "StartingPosition": "The position in a stream from which to start reading. Required for Amazon Kinesis and Amazon DynamoDB.\n\n- *LATEST* - Read only new records.\n- *TRIM_HORIZON* - Process all available records.\n- *AT_TIMESTAMP* - Specify a time from which to start reading records.",
         "StartingPositionTimestamp": "With `StartingPosition` set to `AT_TIMESTAMP` , the time from which to start reading, in Unix time seconds.",
         "Topics": "The name of the Kafka topic.",
         "TumblingWindowInSeconds": "(Streams only) The duration in seconds of a processing window. The range is between 1 second up to 900 seconds."
@@ -25732,7 +25783,7 @@
     },
     "AWS::Lambda::Permission": {
       "attributes": {},
-      "description": "The `AWS::Lambda::Permission` resource grants an AWS service or another account permission to use a function. You can apply the policy at the function level, or specify a qualifier to restrict access to a single version or alias. If you use a qualifier, the invoker must use the full Amazon Resource Name (ARN) of that version or alias to invoke the function.\n\nTo grant permission to another account, specify the account ID as the `Principal` . To grant permission to an organization defined in AWS Organizations , specify the organization ID as the `PrincipalOrgID` . For AWS services, the principal is a domain-style identifier defined by the service, like `s3.amazonaws.com` or `sns.amazonaws.com` . For AWS services, you can also specify the ARN of the associated resource as the `SourceArn` . If you grant permission to a service principal without specifying the source, other accounts could potentially configure resources in their account to invoke your Lambda function.\n\nThis resource adds a statement to a resource-based permission policy for the function. For more information about function policies, see [Lambda Function Policies](https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html) .",
+      "description": "The `AWS::Lambda::Permission` resource grants an AWS service or another account permission to use a function. You can apply the policy at the function level, or specify a qualifier to restrict access to a single version or alias. If you use a qualifier, the invoker must use the full Amazon Resource Name (ARN) of that version or alias to invoke the function.\n\nTo grant permission to another account, specify the account ID as the `Principal` . To grant permission to an organization defined in AWS Organizations , specify the organization ID as the `PrincipalOrgID` . For AWS services, the principal is a domain-style identifier defined by the service, like `s3.amazonaws.com` or `sns.amazonaws.com` . For AWS services, you can also specify the ARN of the associated resource as the `SourceArn` . If you grant permission to a service principal without specifying the source, other accounts could potentially configure resources in their account to invoke your Lambda function.\n\nIf your function has a function URL, you can specify the `FunctionUrlAuthType` parameter. This adds a condition to your permission that only applies when your function URL's `AuthType` matches the specified `FunctionUrlAuthType` . For more information about the `AuthType` parameter, see [Security and auth model for Lambda function URLs](https://docs.aws.amazon.com/lambda/latest/dg/urls-auth.html) .\n\nThis resource adds a statement to a resource-based permission policy for the function. For more information about function policies, see [Lambda Function Policies](https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html) .",
       "properties": {
         "Action": "The action that the principal can use on the function. For example, `lambda:InvokeFunction` or `lambda:GetFunction` .",
         "EventSourceToken": "For Alexa Smart Home functions, a token that must be supplied by the invoker.",
@@ -25741,6 +25792,34 @@
         "PrincipalOrgID": "The identifier for your organization in AWS Organizations . Use this to grant permissions to all the AWS accounts under this organization.",
         "SourceAccount": "For Amazon S3, the ID of the account that owns the resource. Use this together with `SourceArn` to ensure that the resource is owned by the specified account. It is possible for an Amazon S3 bucket to be deleted by its owner and recreated by another account.",
         "SourceArn": "For AWS services, the ARN of the AWS resource that invokes the function. For example, an Amazon S3 bucket or Amazon SNS topic.\n\nNote that Lambda configures the comparison using the `StringLike` operator."
+      }
+    },
+    "AWS::Lambda::Url": {
+      "attributes": {
+        "CreationTime": "",
+        "FunctionUrl": "The HTTP URL endpoint for your function.",
+        "FunctionUrlArn": "",
+        "LastModifiedTime": "",
+        "Ref": "`Ref` returns the resource name."
+      },
+      "description": "The `AWS::Lambda::Url` resource creates a function URL with the specified configuration parameters. A [function URL](https://docs.aws.amazon.com/lambda/latest/dg/invocation-urls.html) is a dedicated HTTP(S) endpoint that you can use to invoke your function.",
+      "properties": {
+        "AuthorizationType": "The type of authorization on your function URL. Set to `AWS_IAM` if you want to use IAM to authenticate requests. Set to `NONE` if you want to bypass IAM and handle authentication in your function code.",
+        "Cors": "The [Cross-Origin Resource Sharing (CORS)](https://docs.aws.amazon.com/https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) settings for your function URL.",
+        "Qualifier": "The alias name.",
+        "TargetFunctionArn": "The name of the Lambda function.\n\n**Name formats** - *Function name* - `my-function` .\n- *Function ARN* - `arn:aws:lambda:us-west-2:123456789012:function:my-function` .\n- *Partial ARN* - `123456789012:function:my-function` .\n\nThe length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length."
+      }
+    },
+    "AWS::Lambda::Url.Cors": {
+      "attributes": {},
+      "description": "The [Cross-Origin Resource Sharing (CORS)](https://docs.aws.amazon.com/https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) settings for your function URL. Use CORS to grant access to your function URL from any origin. You can also use CORS to control access for specific HTTP headers and methods in requests to your function URL.",
+      "properties": {
+        "AllowCredentials": "Whether you want to allow cookies or other credentials in requests to your function URL. The default is `false` .",
+        "AllowHeaders": "The HTTP headers that origins can include in requests to your function URL. For example: `Date` , `Keep-Alive` , `X-Custom-Header` .",
+        "AllowMethods": "The HTTP methods that are allowed when calling your function URL. For example: `GET` , `POST` , `DELETE` , or the wildcard character ( `*` ).",
+        "AllowOrigins": "The origins that can access your function URL. You can list any number of specific origins, separated by a comma. For example: `https://www.example.com` , `http://localhost:60905` .\n\nAlternatively, you can grant access to all origins with the wildcard character ( `*` ).",
+        "ExposeHeaders": "The HTTP headers in your function response that you want to expose to origins that call your function URL. For example: `Date` , `Keep-Alive` , `X-Custom-Header` .",
+        "MaxAge": "The maximum amount of time, in seconds, that browsers can cache results of a preflight request. By default, this is set to `0` , which means the browser will not cache results."
       }
     },
     "AWS::Lambda::Version": {
@@ -36159,9 +36238,7 @@
       }
     },
     "AWS::SQS::QueuePolicy": {
-      "attributes": {
-        "Id": ""
-      },
+      "attributes": {},
       "description": "The `AWS::SQS::QueuePolicy` type applies a policy to Amazon SQS queues. For an example snippet, see [Declaring an Amazon SQS policy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-iam.html#scenario-sqs-policy) in the *AWS CloudFormation User Guide* .",
       "properties": {
         "PolicyDocument": "A policy document that contains the permissions for the specified Amazon SQS queues. For more information about Amazon SQS policies, see [Using custom policies with the Amazon SQS access policy language](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-creating-custom-policies.html) in the *Amazon SQS Developer Guide* .",

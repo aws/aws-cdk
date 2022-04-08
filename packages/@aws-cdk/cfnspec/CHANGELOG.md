@@ -1,3 +1,114 @@
+# CloudFormation Resource Specification v66.0.0
+
+## New Resource Types
+
+* AWS::DataSync::LocationFSxOpenZFS
+* AWS::Events::Endpoint
+* AWS::Lambda::Url
+* AWS::MediaTailor::PlaybackConfiguration
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Batch::ComputeEnvironment ReplaceComputeEnvironment (__added__)
+* AWS::Batch::ComputeEnvironment UpdatePolicy (__added__)
+* AWS::EC2::TrafficMirrorTarget GatewayLoadBalancerEndpointId (__added__)
+* AWS::Lambda::Permission FunctionUrlAuthType (__added__)
+
+## Property Type Changes
+
+* AWS::Batch::ComputeEnvironment.UpdatePolicy (__added__)
+* AWS::EC2::LaunchTemplate.MaintenanceOptions (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources UpdateToLatestImageVersion (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources AllocationStrategy.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources BidPercentage.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2Configuration.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2KeyPair.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources ImageId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceRole.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceTypes.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources LaunchTemplate.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources PlacementGroup.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Type.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.Ec2ConfigurationObject ImageIdOverride.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.Ec2ConfigurationObject ImageType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification LaunchTemplateId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification LaunchTemplateName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification Version.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DMS::Endpoint.DocDbSettings DocsToInvestigate (__added__)
+* AWS::DMS::Endpoint.DocDbSettings ExtractDocId (__added__)
+* AWS::DMS::Endpoint.DocDbSettings NestingLevel (__added__)
+* AWS::DMS::Endpoint.IbmDb2Settings CurrentLsn (__added__)
+* AWS::DMS::Endpoint.IbmDb2Settings MaxKBytesPerRead (__added__)
+* AWS::DMS::Endpoint.IbmDb2Settings SetDataCaptureChanges (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings BcpPacketSize (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings ControlTablesFileGroup (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings QuerySingleAlwaysOnNode (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings ReadBackupOnly (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings SafeguardPolicy (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings UseBcpFullLoad (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings UseThirdPartyBackupDevice (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings AcceptAnyDate (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings AfterConnectScript (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings BucketFolder (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings BucketName (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings CaseSensitiveNames (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings CompUpdate (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings ConnectionTimeout (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings DateFormat (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings EmptyAsNull (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings EncryptionMode (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings ExplicitIds (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings FileTransferUploadStreams (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings LoadTimeout (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings MaxFileSize (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings RemoveQuotes (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings ReplaceChars (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings ReplaceInvalidChars (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings ServerSideEncryptionKmsKeyId (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings ServiceAccessRoleArn (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings TimeFormat (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings TrimBlanks (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings TruncateColumns (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings WriteBufferSize (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData MaintenanceOptions (__added__)
+
+
 # CloudFormation Resource Specification v65.0.0
 
 ## New Resource Types

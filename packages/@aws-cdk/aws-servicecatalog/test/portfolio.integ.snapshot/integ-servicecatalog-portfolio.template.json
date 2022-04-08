@@ -1,0 +1,399 @@
+{
+ "Resources": {
+  "TestRole6C9272DF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "TestGroupAF88660E": {
+   "Type": "AWS::IAM::Group"
+  },
+  "TestPortfolio4AC794EB": {
+   "Type": "AWS::ServiceCatalog::Portfolio",
+   "Properties": {
+    "DisplayName": "TestPortfolio",
+    "ProviderName": "TestProvider",
+    "AcceptLanguage": "en",
+    "Description": "This is our Service Catalog Portfolio"
+   }
+  },
+  "TestPortfolioPortolioPrincipalAssociation20e1afa20ac27E1A060D": {
+   "Type": "AWS::ServiceCatalog::PortfolioPrincipalAssociation",
+   "Properties": {
+    "PortfolioId": {
+     "Ref": "TestPortfolio4AC794EB"
+    },
+    "PrincipalARN": {
+     "Fn::GetAtt": [
+      "TestRole6C9272DF",
+      "Arn"
+     ]
+    },
+    "PrincipalType": "IAM"
+   }
+  },
+  "TestPortfolioPortolioPrincipalAssociation44a1ca1c23384D6E460B": {
+   "Type": "AWS::ServiceCatalog::PortfolioPrincipalAssociation",
+   "Properties": {
+    "PortfolioId": {
+     "Ref": "TestPortfolio4AC794EB"
+    },
+    "PrincipalARN": {
+     "Fn::GetAtt": [
+      "TestGroupAF88660E",
+      "Arn"
+     ]
+    },
+    "PrincipalType": "IAM"
+   }
+  },
+  "TestPortfolioTagOptionAssociation517ba9dbaf19EA8252F0": {
+   "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+   "Properties": {
+    "ResourceId": {
+     "Ref": "TestPortfolio4AC794EB"
+    },
+    "TagOptionId": {
+     "Ref": "TagOptions5f31c54ba705F110F743"
+    }
+   }
+  },
+  "TestPortfolioTagOptionAssociationb38e9aae7f1bD3708991": {
+   "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+   "Properties": {
+    "ResourceId": {
+     "Ref": "TestPortfolio4AC794EB"
+    },
+    "TagOptionId": {
+     "Ref": "TagOptions8d263919cebb6764AC10"
+    }
+   }
+  },
+  "TestPortfolioTagOptionAssociationeeabbf0db0e3ADBF0A6D": {
+   "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+   "Properties": {
+    "ResourceId": {
+     "Ref": "TestPortfolio4AC794EB"
+    },
+    "TagOptionId": {
+     "Ref": "TagOptionsa260cbbd99c416C40F73"
+    }
+   }
+  },
+  "TestPortfolioPortfolioSharebf5b82f042508F035880": {
+   "Type": "AWS::ServiceCatalog::PortfolioShare",
+   "Properties": {
+    "AccountId": "123456789012",
+    "PortfolioId": {
+     "Ref": "TestPortfolio4AC794EB"
+    }
+   }
+  },
+  "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7": {
+   "Type": "AWS::ServiceCatalog::PortfolioProductAssociation",
+   "Properties": {
+    "PortfolioId": {
+     "Ref": "TestPortfolio4AC794EB"
+    },
+    "ProductId": {
+     "Ref": "TestProduct7606930B"
+    }
+   }
+  },
+  "TestPortfolioResourceUpdateConstrainta0185761d231AB0EAAE0": {
+   "Type": "AWS::ServiceCatalog::ResourceUpdateConstraint",
+   "Properties": {
+    "PortfolioId": {
+     "Ref": "TestPortfolio4AC794EB"
+    },
+    "ProductId": {
+     "Ref": "TestProduct7606930B"
+    },
+    "TagUpdateOnProvisionedProduct": "ALLOWED"
+   },
+   "DependsOn": [
+    "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
+   ]
+  },
+  "TestPortfolioLaunchNotificationConstraintf2572fdcecadB6DD8541": {
+   "Type": "AWS::ServiceCatalog::LaunchNotificationConstraint",
+   "Properties": {
+    "NotificationArns": [
+     {
+      "Ref": "Topic198E71B3E"
+     }
+    ],
+    "PortfolioId": {
+     "Ref": "TestPortfolio4AC794EB"
+    },
+    "ProductId": {
+     "Ref": "TestProduct7606930B"
+    }
+   },
+   "DependsOn": [
+    "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
+   ]
+  },
+  "TestPortfolioLaunchNotificationConstrainta9675fc4d6aa995BF1B9": {
+   "Type": "AWS::ServiceCatalog::LaunchNotificationConstraint",
+   "Properties": {
+    "NotificationArns": [
+     {
+      "Ref": "specialTopic7664DE4C"
+     }
+    ],
+    "PortfolioId": {
+     "Ref": "TestPortfolio4AC794EB"
+    },
+    "ProductId": {
+     "Ref": "TestProduct7606930B"
+    },
+    "AcceptLanguage": "en",
+    "Description": "special topic description"
+   },
+   "DependsOn": [
+    "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
+   ]
+  },
+  "TestPortfolioLaunchRoleConstrainta0185761d2312183162C": {
+   "Type": "AWS::ServiceCatalog::LaunchRoleConstraint",
+   "Properties": {
+    "PortfolioId": {
+     "Ref": "TestPortfolio4AC794EB"
+    },
+    "ProductId": {
+     "Ref": "TestProduct7606930B"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "LaunchRole2CFB2E44",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
+   ]
+  },
+  "TestPortfolioLaunchTemplateConstraintfac7b49c426e599F9FFF": {
+   "Type": "AWS::ServiceCatalog::LaunchTemplateConstraint",
+   "Properties": {
+    "PortfolioId": {
+     "Ref": "TestPortfolio4AC794EB"
+    },
+    "ProductId": {
+     "Ref": "TestProduct7606930B"
+    },
+    "Rules": "{\"SubnetsinVPC\":{\"Assertions\":[{\"Assert\":{\"Fn::EachMemberIn\":[{\"Fn::ValueOfAll\":[\"AWs::EC2::Subnet::Id\",\"VpcId\"]},{\"Fn::RefAll\":\"AWS::EC2::VPC::Id\"}]},\"AssertDescription\":\"test description\"}]}}"
+   },
+   "DependsOn": [
+    "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
+   ]
+  },
+  "TagOptions5f31c54ba705F110F743": {
+   "Type": "AWS::ServiceCatalog::TagOption",
+   "Properties": {
+    "Key": "key1",
+    "Value": "value1",
+    "Active": true
+   }
+  },
+  "TagOptions8d263919cebb6764AC10": {
+   "Type": "AWS::ServiceCatalog::TagOption",
+   "Properties": {
+    "Key": "key1",
+    "Value": "value2",
+    "Active": true
+   }
+  },
+  "TagOptionsa260cbbd99c416C40F73": {
+   "Type": "AWS::ServiceCatalog::TagOption",
+   "Properties": {
+    "Key": "key2",
+    "Value": "value1",
+    "Active": true
+   }
+  },
+  "TestProduct7606930B": {
+   "Type": "AWS::ServiceCatalog::CloudFormationProduct",
+   "Properties": {
+    "Name": "testProduct",
+    "Owner": "testOwner",
+    "ProvisioningArtifactParameters": [
+     {
+      "DisableTemplateValidation": true,
+      "Info": {
+       "LoadTemplateFromURL": "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
+      }
+     }
+    ]
+   }
+  },
+  "TestProductTagOptionAssociation667d45e6d8a1F30303D6": {
+   "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+   "Properties": {
+    "ResourceId": {
+     "Ref": "TestProduct7606930B"
+    },
+    "TagOptionId": {
+     "Ref": "TagOptions5f31c54ba705F110F743"
+    }
+   }
+  },
+  "TestProductTagOptionAssociationec68fcd0154fF6DAD979": {
+   "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+   "Properties": {
+    "ResourceId": {
+     "Ref": "TestProduct7606930B"
+    },
+    "TagOptionId": {
+     "Ref": "TagOptions8d263919cebb6764AC10"
+    }
+   }
+  },
+  "TestProductTagOptionAssociation259ba31b62cc63D068F9": {
+   "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+   "Properties": {
+    "ResourceId": {
+     "Ref": "TestProduct7606930B"
+    },
+    "TagOptionId": {
+     "Ref": "TagOptionsa260cbbd99c416C40F73"
+    }
+   }
+  },
+  "Topic198E71B3E": {
+   "Type": "AWS::SNS::Topic"
+  },
+  "specialTopic7664DE4C": {
+   "Type": "AWS::SNS::Topic"
+  },
+  "LaunchRole2CFB2E44": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "servicecatalog.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "SecondTestPortfolio96C8F4BA": {
+   "Type": "AWS::ServiceCatalog::Portfolio",
+   "Properties": {
+    "DisplayName": "SecondTestPortfolio",
+    "ProviderName": "TestProvider"
+   }
+  },
+  "SecondTestPortfolioPortfolioProductAssociationcda67a671c209FE862F2": {
+   "Type": "AWS::ServiceCatalog::PortfolioProductAssociation",
+   "Properties": {
+    "PortfolioId": {
+     "Ref": "SecondTestPortfolio96C8F4BA"
+    },
+    "ProductId": {
+     "Ref": "TestProduct7606930B"
+    }
+   }
+  },
+  "SecondTestPortfolioStackSetConstraintcda67a671c20A02367A6": {
+   "Type": "AWS::ServiceCatalog::StackSetConstraint",
+   "Properties": {
+    "AccountList": [
+     "000000000000",
+     "111111111111",
+     "222222222222"
+    ],
+    "AdminRole": {
+     "Fn::GetAtt": [
+      "AdminRole38563C57",
+      "Arn"
+     ]
+    },
+    "Description": "",
+    "ExecutionRole": "StackSetExecutionRole",
+    "PortfolioId": {
+     "Ref": "SecondTestPortfolio96C8F4BA"
+    },
+    "ProductId": {
+     "Ref": "TestProduct7606930B"
+    },
+    "RegionList": [
+     "us-east-1",
+     "us-west-2",
+     "eu-west-1"
+    ],
+    "StackInstanceControl": "ALLOWED"
+   },
+   "DependsOn": [
+    "SecondTestPortfolioPortfolioProductAssociationcda67a671c209FE862F2"
+   ]
+  },
+  "AdminRole38563C57": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  }
+ }
+}

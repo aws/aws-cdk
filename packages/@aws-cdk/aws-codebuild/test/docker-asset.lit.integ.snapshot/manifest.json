@@ -1,0 +1,54 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      },
+      "metadata": {}
+    },
+    "test-codebuild-docker-asset": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "test-codebuild-docker-asset.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/test-codebuild-docker-asset": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "repositoryName": "aws-cdk/assets",
+              "imageTag": "b79a9515455fd043f9f3b7d7136690d584616aaf59ad882a5ccae24e6f91d81d",
+              "id": "b79a9515455fd043f9f3b7d7136690d584616aaf59ad882a5ccae24e6f91d81d",
+              "packaging": "container-image",
+              "path": "asset.b79a9515455fd043f9f3b7d7136690d584616aaf59ad882a5ccae24e6f91d81d",
+              "sourceHash": "b79a9515455fd043f9f3b7d7136690d584616aaf59ad882a5ccae24e6f91d81d"
+            }
+          }
+        ],
+        "/test-codebuild-docker-asset/MyProject/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectRole9BBE5233"
+          }
+        ],
+        "/test-codebuild-docker-asset/MyProject/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectRoleDefaultPolicyB19B7C29"
+          }
+        ],
+        "/test-codebuild-docker-asset/MyProject/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProject39F7B0AE"
+          }
+        ]
+      },
+      "displayName": "test-codebuild-docker-asset"
+    }
+  }
+}

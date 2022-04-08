@@ -162,6 +162,11 @@
     "lines": 55,
     "branches": 35
   },
+  "ubergen": {
+    "exports": {
+      "./lib/helpers-internal": "./lib/helpers-internal/index.js"
+    }
+  },
   "keywords": [
     "aws",
     "cdk",
