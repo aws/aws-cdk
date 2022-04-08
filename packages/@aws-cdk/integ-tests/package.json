@@ -34,8 +34,9 @@
     "jest": "^27.5.1"
   },
   "dependencies": {
-    "fs-extra": "^9.1.0",
-    "@aws-cdk/cloud-assembly-schema": "0.0.0"
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "fs-extra": "^9.1.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -61,5 +62,8 @@
   "maturity": "experimental",
   "publishConfig": {
     "tag": "latest"
+  },
+  "peerDependencies": {
+    "@aws-cdk/core": "0.0.0"
   }
 }
