@@ -16,9 +16,7 @@ fn.addToRolePolicy(new iam.PolicyStatement({
   resources: ['*'],
   actions: ['*'],
 }));
-fn.addFunctionUrl({
-  authType: lambda.FunctionUrlAuthType.AWS_IAM,
-});
+fn.addFunctionUrl();
 fn.addPermission('function-url-permission', {
   principal: new iam.AnyPrincipal(),
   action: 'lambda:InvokeFunctionUrl',

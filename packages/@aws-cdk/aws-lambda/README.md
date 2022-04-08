@@ -372,14 +372,12 @@ const fn = new lambda.Function(this, 'MyLambda', {
 });
 
 // fn can be a function or an alias
-fn.addFunctionUrl({
-  authType: lambda.FunctionUrlAuthType.AWS_IAM,
-});
+fn.addFunctionUrl();
 ```
 
-A resource policy permissions is added to the function by default when `FunctionUrl` is created with auth type as `None`.
+A resource policy permissions is added to the function by default when `FunctionUrl` is created with auth type as `NONE`.
 
-You would need to add permissions to the resource policy of the function when creating a `FunctionUrl` with `AWS_IAM` as the auth type:
+You would need to add permissions to the resource policy of the function when creating a `FunctionUrl` with `AWS_IAM` as the auth type (or the principal making the request must have lambda:InvokeFunctionUrl permissions in their identity-based policy):
 
 ```ts
 const fn = new lambda.Function(this, 'MyLambda', {
@@ -388,9 +386,7 @@ const fn = new lambda.Function(this, 'MyLambda', {
   runtime: lambda.Runtime.NODEJS_10_X,
 });
 
-fn.addFunctionUrl({
-  authType: lambda.FunctionUrlAuthType.AWS_IAM,
-});
+fn.addFunctionUrl();
 
 fn.addPermission('function-url-invoke-permission', {
   principal: new iam.AccountPrincipal('account-id'),
@@ -409,7 +405,7 @@ const fn = new lambda.Function(this, 'MyLambda', {
 });
 
 fn.addFunctionUrl({
-  authType: lambda.FunctionUrlAuthType.AWS_IAM,
+  authType: lambda.FunctionUrlAuthType.NONE,
   cors: {
     allowCredentials: true,
     allowedOrigins: ['https://example.com'],

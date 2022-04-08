@@ -146,7 +146,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   /**
    * Adds a url to this lambda function.
    */
-  addFunctionUrl(options: FunctionUrlOptions): FunctionUrl;
+  addFunctionUrl(options?: FunctionUrlOptions): FunctionUrl;
 }
 
 /**
@@ -457,7 +457,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     });
   }
 
-  public addFunctionUrl(options: FunctionUrlOptions): FunctionUrl {
+  public addFunctionUrl(options?: FunctionUrlOptions): FunctionUrl {
     return new FunctionUrl(this, 'FunctionUrl', {
       function: this,
       ...options,

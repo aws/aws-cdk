@@ -15,7 +15,6 @@ describe('FunctionUrl', () => {
     // WHEN
     new lambda.FunctionUrl(stack, 'FunctionUrl', {
       function: fn,
-      authType: lambda.FunctionUrlAuthType.AWS_IAM,
     });
 
     // THEN
@@ -104,7 +103,6 @@ describe('FunctionUrl', () => {
     // WHEN
     new lambda.FunctionUrl(stack, 'FunctionUrl', {
       function: alias,
-      authType: lambda.FunctionUrlAuthType.AWS_IAM,
     });
 
     // THEN
@@ -135,7 +133,6 @@ describe('FunctionUrl', () => {
     expect(() => {
       new lambda.FunctionUrl(stack, 'FunctionUrl', {
         function: version,
-        authType: lambda.FunctionUrlAuthType.AWS_IAM,
       });
     }).toThrow(/FunctionUrl cannot be used with a Version/);
   });

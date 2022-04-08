@@ -198,9 +198,7 @@ describe('lambda version', () => {
 
     // WHEN
     expect(() => {
-      version.addFunctionUrl({
-        authType: lambda.FunctionUrlAuthType.AWS_IAM,
-      });
+      version.addFunctionUrl();
     }).toThrow(/FunctionUrl cannot be used with a Version/);
   });
 });

@@ -120,8 +120,10 @@ export interface IFunctionUrl extends IResource {
 export interface FunctionUrlOptions {
   /**
    * The type of authentication that your function URL uses.
+   *
+   * @default FunctionUrlAuthType.AWS_IAM
    */
-  readonly authType: FunctionUrlAuthType;
+  readonly authType?: FunctionUrlAuthType;
 
   /**
    * The cross-origin resource sharing (CORS) settings for your function URL.
@@ -158,11 +160,6 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
    */
   public readonly functionArn: string;
 
-  /**
-   * The function to which this url refers.
-   */
-  public readonly function: IFunction;
-
   constructor(scope: Construct, id: string, props: FunctionUrlProps) {
     super(scope, id);
 
@@ -176,7 +173,7 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
     }
 
     const resource: CfnUrl = new CfnUrl(this, 'Resource', {
-      authType: props.authType,
+      authType: props.authType ?? FunctionUrlAuthType.AWS_IAM,
       targetFunctionArn: props.function.functionArn,
       qualifier,
       cors: props.cors ? this.renderCors(props.cors) : undefined,
@@ -184,10 +181,9 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
 
     this.url = resource.attrFunctionUrl;
     this.functionArn = resource.attrFunctionArn;
-    this.function = props.function;
 
     if (props.authType === FunctionUrlAuthType.NONE) {
-      this.function.addPermission('invoke-function-url', {
+      props.function.addPermission('invoke-function-url', {
         principal: new iam.AnyPrincipal(),
         action: 'lambda:InvokeFunctionUrl',
         functionUrlAuthType: props.authType,

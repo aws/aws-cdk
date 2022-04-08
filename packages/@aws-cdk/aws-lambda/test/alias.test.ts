@@ -645,9 +645,7 @@ describe('alias', () => {
     });
 
     // WHEN
-    alias.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.AWS_IAM,
-    });
+    alias.addFunctionUrl();
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Url', {
