@@ -24,6 +24,8 @@ const project = new typescript.TypeScriptProject({
 
 project.gitignore.exclude('.vscode/');
 
+project.compileTask.prependExec(`tsc --version`)
+
 // Ensure `npm run build` behaves the same as in other packages. Failure to do
 // so results in re-generating the `package.json` with `version: 0.0.0` which
 // undoes the work of `align-versions.sh` and breaks jsii integration tests.
