@@ -754,7 +754,6 @@ constructs.Node#uniqueId
 @aws-cdk/aws-cloudfront.AliasConfiguration#names
 @aws-cdk/aws-cloudfront.AliasConfiguration#securityPolicy
 @aws-cdk/aws-cloudfront.AliasConfiguration#sslMethod
-@aws-cdk/aws-cloudfront.Behavior#trustedSigners
 @aws-cdk/aws-cloudfront.CloudFrontWebDistribution#domainName
 @aws-cdk/aws-cloudfront.CloudFrontWebDistributionProps#aliasConfiguration
 @aws-cdk/aws-cloudfront.GeoRestriction#blacklist
