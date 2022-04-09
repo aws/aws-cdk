@@ -166,7 +166,13 @@
           },
           "IdentityPoolId": {
             "Ref": "DefaultValueAppMonitorIdentityPoolD3418A23"
-          }
+          },
+          "SessionSampleRate": 1,
+          "Telemetries": [
+            "errors",
+            "http",
+            "performance"
+          ]
         }
       }
     },

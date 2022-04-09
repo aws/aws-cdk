@@ -201,7 +201,7 @@ export interface AppMonitorProps {
    * Setting this to 1 means that 100% of user sessions are sampled,
    * and setting it to 0.1 means that 10% of user sessions are sampled.
    *
-   * @default 0.1
+   * @default 1
    */
   readonly sessionSampleRate?: number;
   /**
@@ -245,8 +245,8 @@ export class AppMonitor extends AppMonitorBase {
         excludedPages: props.excludedPages,
         favoritePages: props.favoritePages,
         includedPages: props.includedPages,
-        sessionSampleRate: props.sessionSampleRate,
-        telemetries: props.telemetries,
+        sessionSampleRate: props.sessionSampleRate ?? 1,
+        telemetries: props.telemetries ?? [Telemetry.ERRORS, Telemetry.HTTP, Telemetry.PERFORMANCE],
         identityPoolId: identityPool?.identityPoolId,
         guestRoleArn: identityPool ? role?.roleArn : undefined,
       },
