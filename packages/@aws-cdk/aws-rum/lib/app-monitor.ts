@@ -201,7 +201,7 @@ export interface AppMonitorProps {
    * Setting this to 1 means that 100% of user sessions are sampled,
    * and setting it to 0.1 means that 10% of user sessions are sampled.
    *
-   * @default 1
+   * @default 0.1
    */
   readonly sessionSampleRate?: number;
   /**
