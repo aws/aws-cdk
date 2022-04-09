@@ -1,0 +1,174 @@
+{
+  "Resources": {
+    "MyAppMonitorIdentityPoolEF658265": {
+      "Type": "AWS::Cognito::IdentityPool",
+      "Properties": {
+        "AllowUnauthenticatedIdentities": true,
+        "CognitoIdentityProviders": []
+      }
+    },
+    "MyAppMonitorIdentityPoolAuthenticatedRole29B2CFAC": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": {
+                    "Ref": "MyAppMonitorIdentityPoolEF658265"
+                  }
+                },
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "authenticated"
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Default Authenticated Role for Identity Pool ",
+              {
+                "Fn::GetAtt": [
+                  "MyAppMonitorIdentityPoolEF658265",
+                  "Name"
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "MyAppMonitorIdentityPoolUnauthenticatedRole1FA96655": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": {
+                    "Ref": "MyAppMonitorIdentityPoolEF658265"
+                  }
+                },
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "unauthenticated"
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Default Unauthenticated Role for Identity Pool ",
+              {
+                "Fn::GetAtt": [
+                  "MyAppMonitorIdentityPoolEF658265",
+                  "Name"
+                ]
+              }
+            ]
+          ]
+        },
+        "ManagedPolicyArns": [
+          {
+            "Ref": "MyAppMonitorRUMPutBatchMetrics511CEC0F"
+          }
+        ]
+      }
+    },
+    "MyAppMonitorIdentityPoolDefaultRoleAttachmentF5827A83": {
+      "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+      "Properties": {
+        "IdentityPoolId": {
+          "Ref": "MyAppMonitorIdentityPoolEF658265"
+        },
+        "Roles": {
+          "authenticated": {
+            "Fn::GetAtt": [
+              "MyAppMonitorIdentityPoolAuthenticatedRole29B2CFAC",
+              "Arn"
+            ]
+          },
+          "unauthenticated": {
+            "Fn::GetAtt": [
+              "MyAppMonitorIdentityPoolUnauthenticatedRole1FA96655",
+              "Arn"
+            ]
+          }
+        }
+      }
+    },
+    "MyAppMonitorRUMPutBatchMetrics511CEC0F": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "rum:PutRumEvents",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":rum:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":appmonitor/integappmonitorMyAppMonitor48D6CBEC"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Description": "",
+        "Path": "/"
+      }
+    },
+    "MyAppMonitor37592055": {
+      "Type": "AWS::RUM::AppMonitor",
+      "Properties": {
+        "Domain": "my-website.com",
+        "Name": "integappmonitorMyAppMonitor48D6CBEC",
+        "AppMonitorConfiguration": {
+          "GuestRoleArn": {
+            "Fn::GetAtt": [
+              "MyAppMonitorIdentityPoolUnauthenticatedRole1FA96655",
+              "Arn"
+            ]
+          },
+          "IdentityPoolId": {
+            "Ref": "MyAppMonitorIdentityPoolEF658265"
+          }
+        }
+      }
+    }
+  }
+}
