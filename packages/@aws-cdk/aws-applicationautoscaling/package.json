@@ -84,7 +84,7 @@
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.4.1",
-    "fast-check": "^2.23.2",
+    "fast-check": "^2.24.0",
     "jest": "^27.5.1"
   },
   "dependencies": {
