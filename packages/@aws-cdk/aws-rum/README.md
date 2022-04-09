@@ -21,8 +21,6 @@
 
 <!--END STABILITY BANNER-->
 
-# Amazon CloudWatch RUM Construct Library
-
 ## Table of Contents
 
 - [Introduction](#introduction)
