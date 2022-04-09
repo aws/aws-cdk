@@ -8,7 +8,7 @@ describe('App monitor', () => {
   test('Default app monitor', () => {
     const stack = new cdk.Stack();
     new rum.AppMonitor(stack, 'MyAppMonitor', {
-      domain: 'amazon.com',
+      domain: 'my-website.com',
     });
     Template.fromStack(stack).templateMatches({
       'Resources': {
@@ -24,7 +24,7 @@ describe('App monitor', () => {
               },
             },
             'Name': 'MyAppMonitor',
-            'Domain': 'amazon.com',
+            'Domain': 'my-website.com',
           },
         },
       },
@@ -34,7 +34,7 @@ describe('App monitor', () => {
   test('App monitor with persistence will be set CwLogEnabled to true', () => {
     const stack = new cdk.Stack();
     new rum.AppMonitor(stack, 'MyAppMonitor', {
-      domain: 'amazon.com',
+      domain: 'my-website.com',
       persistence: true,
     });
 
@@ -53,7 +53,7 @@ describe('App monitor', () => {
             },
             'CwLogEnabled': true,
             'Name': 'MyAppMonitor',
-            'Domain': 'amazon.com',
+            'Domain': 'my-website.com',
           },
         },
       },
@@ -63,7 +63,7 @@ describe('App monitor', () => {
   test('App monitor with allow cookies', () => {
     const stack = new cdk.Stack();
     new rum.AppMonitor(stack, 'MyAppMonitor', {
-      domain: 'amazon.com',
+      domain: 'my-website.com',
       allowCookies: true,
     });
 
@@ -82,7 +82,7 @@ describe('App monitor', () => {
               },
             },
             'Name': 'MyAppMonitor',
-            'Domain': 'amazon.com',
+            'Domain': 'my-website.com',
           },
         },
       },
@@ -92,7 +92,7 @@ describe('App monitor', () => {
   test('App monitor with enable X-Ray', () => {
     const stack = new cdk.Stack();
     new rum.AppMonitor(stack, 'MyAppMonitor', {
-      domain: 'amazon.com',
+      domain: 'my-website.com',
       enableXRay: true,
     });
 
@@ -111,7 +111,7 @@ describe('App monitor', () => {
               },
             },
             'Name': 'MyAppMonitor',
-            'Domain': 'amazon.com',
+            'Domain': 'my-website.com',
           },
         },
       },
@@ -121,8 +121,8 @@ describe('App monitor', () => {
   test('App monitor with exclude pages', () => {
     const stack = new cdk.Stack();
     new rum.AppMonitor(stack, 'MyAppMonitor', {
-      domain: 'amazon.com',
-      excludedPages: ['https://amazon.com/foo', 'https://amazon.com/bar'],
+      domain: 'my-website.com',
+      excludedPages: ['https://my-website.com/foo', 'https://my-website.com/bar'],
     });
 
     Template.fromStack(stack).templateMatches({
@@ -131,7 +131,7 @@ describe('App monitor', () => {
           'Type': 'AWS::RUM::AppMonitor',
           'Properties': {
             'AppMonitorConfiguration': {
-              'ExcludedPages': ['https://amazon.com/foo', 'https://amazon.com/bar'],
+              'ExcludedPages': ['https://my-website.com/foo', 'https://my-website.com/bar'],
               'GuestRoleArn': {
                 'Fn::GetAtt': ['MyAppMonitorIdentityPoolUnauthenticatedRole1FA96655', 'Arn'],
               },
@@ -140,7 +140,7 @@ describe('App monitor', () => {
               },
             },
             'Name': 'MyAppMonitor',
-            'Domain': 'amazon.com',
+            'Domain': 'my-website.com',
           },
         },
       },
@@ -150,8 +150,8 @@ describe('App monitor', () => {
   test('App monitor with include pages', () => {
     const stack = new cdk.Stack();
     new rum.AppMonitor(stack, 'MyAppMonitor', {
-      domain: 'amazon.com',
-      includedPages: ['https://amazon.com/foo', 'https://amazon.com/bar'],
+      domain: 'my-website.com',
+      includedPages: ['https://my-website.com/foo', 'https://my-website.com/bar'],
     });
 
     Template.fromStack(stack).templateMatches({
@@ -160,7 +160,7 @@ describe('App monitor', () => {
           'Type': 'AWS::RUM::AppMonitor',
           'Properties': {
             'AppMonitorConfiguration': {
-              'IncludedPages': ['https://amazon.com/foo', 'https://amazon.com/bar'],
+              'IncludedPages': ['https://my-website.com/foo', 'https://my-website.com/bar'],
               'GuestRoleArn': {
                 'Fn::GetAtt': ['MyAppMonitorIdentityPoolUnauthenticatedRole1FA96655', 'Arn'],
               },
@@ -169,7 +169,7 @@ describe('App monitor', () => {
               },
             },
             'Name': 'MyAppMonitor',
-            'Domain': 'amazon.com',
+            'Domain': 'my-website.com',
           },
         },
       },
@@ -179,8 +179,8 @@ describe('App monitor', () => {
   test('App monitor with favorite pages', () => {
     const stack = new cdk.Stack();
     new rum.AppMonitor(stack, 'MyAppMonitor', {
-      domain: 'amazon.com',
-      favoritePages: ['https://amazon.com/foo', 'https://amazon.com/bar'],
+      domain: 'my-website.com',
+      favoritePages: ['https://my-website.com/foo', 'https://my-website.com/bar'],
     });
 
     Template.fromStack(stack).templateMatches({
@@ -189,7 +189,7 @@ describe('App monitor', () => {
           'Type': 'AWS::RUM::AppMonitor',
           'Properties': {
             'AppMonitorConfiguration': {
-              'FavoritePages': ['https://amazon.com/foo', 'https://amazon.com/bar'],
+              'FavoritePages': ['https://my-website.com/foo', 'https://my-website.com/bar'],
               'GuestRoleArn': {
                 'Fn::GetAtt': ['MyAppMonitorIdentityPoolUnauthenticatedRole1FA96655', 'Arn'],
               },
@@ -198,7 +198,7 @@ describe('App monitor', () => {
               },
             },
             'Name': 'MyAppMonitor',
-            'Domain': 'amazon.com',
+            'Domain': 'my-website.com',
           },
         },
       },
@@ -208,7 +208,7 @@ describe('App monitor', () => {
   test('App monitor with session sample rate', () => {
     const stack = new cdk.Stack();
     new rum.AppMonitor(stack, 'MyAppMonitor', {
-      domain: 'amazon.com',
+      domain: 'my-website.com',
       sessionSampleRate: 1,
     });
 
@@ -227,7 +227,7 @@ describe('App monitor', () => {
               'SessionSampleRate': 1,
             },
             'Name': 'MyAppMonitor',
-            'Domain': 'amazon.com',
+            'Domain': 'my-website.com',
           },
         },
       },
@@ -237,7 +237,7 @@ describe('App monitor', () => {
   test('App monitor with telemetries', () => {
     const stack = new cdk.Stack();
     new rum.AppMonitor(stack, 'MyAppMonitor', {
-      domain: 'amazon.com',
+      domain: 'my-website.com',
       telemetries: [
         rum.Telemetry.ERRORS,
         rum.Telemetry.PERFORMANCE,
@@ -260,7 +260,7 @@ describe('App monitor', () => {
               'Telemetries': ['errors', 'performance', 'http'],
             },
             'Name': 'MyAppMonitor',
-            'Domain': 'amazon.com',
+            'Domain': 'my-website.com',
           },
         },
       },
@@ -271,7 +271,7 @@ describe('App monitor', () => {
     const stack = new cdk.Stack();
     const identityPool = new identitypool.IdentityPool(stack, 'IdentityPool');
     new rum.AppMonitor(stack, 'MyAppMonitor', {
-      domain: 'amazon.com',
+      domain: 'my-website.com',
       identityPool,
       role: identityPool.unauthenticatedRole,
     });
@@ -290,7 +290,7 @@ describe('App monitor', () => {
               },
             },
             'Name': 'MyAppMonitor',
-            'Domain': 'amazon.com',
+            'Domain': 'my-website.com',
           },
         },
       },
@@ -300,7 +300,7 @@ describe('App monitor', () => {
   test('Get app monitor id', () => {
     const stack = new cdk.Stack();
     const appMonitor = new rum.AppMonitor(stack, 'MyAppMonitor', {
-      domain: 'amazon.com',
+      domain: 'my-website.com',
     });
     expect(stack.resolve(appMonitor.appMonitorId)).toEqual({ 'Fn::GetAtt': ['MyAppMonitorCustomGetAppMonitor15BA2BBF', 'AppMonitor.Id'] });
   });
@@ -308,7 +308,7 @@ describe('App monitor', () => {
   test('Get app monitor ARN', () => {
     const stack = new cdk.Stack();
     const appMonitor = new rum.AppMonitor(stack, 'MyAppMonitor', {
-      domain: 'amazon.com',
+      domain: 'my-website.com',
     });
     expect(stack.resolve(appMonitor.appMonitorArn)).toEqual({
       'Fn::Join': [
@@ -319,19 +319,6 @@ describe('App monitor', () => {
           ':', { 'Ref': 'AWS::AccountId' },
           ':appmonitor/MyAppMonitor',
         ],
-      ],
-    });
-  });
-  test('Generate code snippet', () => {
-    const stack = new cdk.Stack();
-    const appMonitor = new rum.AppMonitor(stack, 'MyAppMonitor', {
-      domain: 'amazon.com',
-    });
-
-    expect(stack.resolve(appMonitor.codeSnippet.value)).toEqual({
-      'Fn::GetAtt': [
-        'MyAppMonitorDefaultCodeSnippetCodeSnippetGeneratorA21F21D6',
-        'CodeSnippet',
       ],
     });
   });

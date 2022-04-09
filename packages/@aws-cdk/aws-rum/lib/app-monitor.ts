@@ -10,13 +10,9 @@ import {
   AwsSdkCall,
   PhysicalResourceId,
 } from '@aws-cdk/custom-resources';
-import { CodeSnippet, CodeSnippetOptions } from './code-snippet';
+import { Construct } from 'constructs';
 import * as rum from './rum.generated';
 
-// Use @aws-cdk/core to use CodeSnippet
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * All app monitor telemetories
@@ -59,19 +55,6 @@ export interface IAppMonitor extends IResource {
    * @attribute
    */
   readonly appMonitorName: string;
-  /**
-   * Returns the default code snippet of this app monitor.
-   *
-   * @attribute
-   */
-  readonly codeSnippet: CodeSnippet;
-  /**
-   * Add the JavaScript code snippet for use this app monitor.
-   *
-   * @param id Code snippet id.
-   * @param options A value that can only be set by the client.
-   */
-  addCodeSnippet(id: string, options?: CodeSnippetOptions): CodeSnippet;
 }
 
 /**
@@ -79,7 +62,6 @@ export interface IAppMonitor extends IResource {
  */
 export abstract class AppMonitorBase extends Resource implements IAppMonitor {
   private _appMonitor?: AwsCustomResource;
-  private defaultCodeSnippet?: CodeSnippet;
   /**
    * @internal
    */
@@ -105,20 +87,6 @@ export abstract class AppMonitorBase extends Resource implements IAppMonitor {
 
   public get appMonitorId(): string {
     return this.appMonitor.getResponseField('AppMonitor.Id');
-  }
-
-  public get codeSnippet(): CodeSnippet {
-    if (!this.defaultCodeSnippet) {
-      this.defaultCodeSnippet = this.addCodeSnippet('DefaultCodeSnippet');
-    }
-    return this.defaultCodeSnippet;
-  }
-
-  public addCodeSnippet(id: string, options?: CodeSnippetOptions): CodeSnippet {
-    return new CodeSnippet(this, id, {
-      appMonitor: this,
-      ...options,
-    });
   }
 
   protected get appMonitor(): AwsCustomResource {
@@ -255,9 +223,9 @@ export class AppMonitor extends AppMonitorBase {
 
     // If not passed authorizer, when create a new identity pool.
     // This like a to create RUM in management console.
-    const [identityPool, role] = !props.identityPool && !props.role
-      ? this.createIdentityPool()
-      : [props.identityPool, props.role];
+    const [identityPool, role] = props.identityPool || props.role
+      ? [props.identityPool, props.role]
+      : this.createIdentityPool();
     role?.addManagedPolicy(new iam.ManagedPolicy(this, 'RUMPutBatchMetrics', {
       statements: [
         new iam.PolicyStatement({
@@ -280,7 +248,7 @@ export class AppMonitor extends AppMonitorBase {
         sessionSampleRate: props.sessionSampleRate,
         telemetries: props.telemetries,
         identityPoolId: identityPool?.identityPoolId,
-        guestRoleArn: role?.roleArn,
+        guestRoleArn: identityPool ? role?.roleArn : undefined,
       },
     });
   }
