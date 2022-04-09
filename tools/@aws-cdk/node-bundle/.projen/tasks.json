@@ -71,9 +71,6 @@
       "description": "Only compile",
       "steps": [
         {
-          "exec": "tsc --version"
-        },
-        {
           "exec": "tsc --build"
         }
       ]

@@ -24,7 +24,10 @@ const project = new typescript.TypeScriptProject({
 
 project.gitignore.exclude('.vscode/');
 
-project.compileTask.prependExec(`tsc --version`)
+// required for esbuild > v0.14.32
+// see https://github.com/evanw/esbuild/pull/2155
+// see https://stackoverflow.com/questions/56906718/error-ts2304-cannot-find-name-webassembly
+project.tsconfig.compilerOptions.lib.push('dom');
 
 // Ensure `npm run build` behaves the same as in other packages. Failure to do
 // so results in re-generating the `package.json` with `version: 0.0.0` which
