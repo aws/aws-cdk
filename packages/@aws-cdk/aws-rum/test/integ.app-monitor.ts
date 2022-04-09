@@ -19,10 +19,10 @@ new rum.AppMonitor(stack, 'CustomValueAppMonitor', {
   persistence: true,
   allowCookies: true,
   enableXRay: true,
-  excludedPages: ['/exclude'],
-  favoritePages: ['/favorite'],
+  excludedPages: ['https://my-website2.com/exclude'],
+  favoritePages: ['https://my-website2.com/favorite'],
   includedPages: [],
-  sessionSampleRate: 10,
+  sessionSampleRate: 0.1,
   telemetries: [],
 });
 
