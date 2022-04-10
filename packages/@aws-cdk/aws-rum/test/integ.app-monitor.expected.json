@@ -89,7 +89,7 @@
         },
         "ManagedPolicyArns": [
           {
-            "Ref": "DefaultValueAppMonitorRUMPutBatchMetricsC7BA460E"
+            "Ref": "DefaultValueAppMonitorPutRumEvents871C5F80"
           }
         ]
       }
@@ -116,7 +116,7 @@
         }
       }
     },
-    "DefaultValueAppMonitorRUMPutBatchMetricsC7BA460E": {
+    "DefaultValueAppMonitorPutRumEvents871C5F80": {
       "Type": "AWS::IAM::ManagedPolicy",
       "Properties": {
         "PolicyDocument": {
@@ -265,7 +265,7 @@
         },
         "ManagedPolicyArns": [
           {
-            "Ref": "CustomValueAppMonitorRUMPutBatchMetrics50A8B0EA"
+            "Ref": "CustomValueAppMonitorPutRumEvents6B33C436"
           }
         ]
       }
@@ -292,7 +292,7 @@
         }
       }
     },
-    "CustomValueAppMonitorRUMPutBatchMetrics50A8B0EA": {
+    "CustomValueAppMonitorPutRumEvents6B33C436": {
       "Type": "AWS::IAM::ManagedPolicy",
       "Properties": {
         "PolicyDocument": {

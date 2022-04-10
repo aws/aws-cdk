@@ -226,7 +226,7 @@ export class AppMonitor extends AppMonitorBase {
     const [identityPool, role] = props.identityPool || props.role
       ? [props.identityPool, props.role]
       : this.createIdentityPool();
-    role?.addManagedPolicy(new iam.ManagedPolicy(this, 'RUMPutBatchMetrics', {
+    role?.addManagedPolicy(new iam.ManagedPolicy(this, 'PutRumEvents', {
       statements: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
