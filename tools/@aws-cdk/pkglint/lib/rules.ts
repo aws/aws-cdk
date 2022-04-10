@@ -1759,6 +1759,7 @@ export class NoExperimentalDependents extends ValidationRule {
     ['@aws-cdk/aws-kinesisfirehose-destinations', ['@aws-cdk/aws-kinesisfirehose']],
     ['@aws-cdk/aws-iot-actions', ['@aws-cdk/aws-iot', '@aws-cdk/aws-kinesisfirehose']],
     ['@aws-cdk/aws-iotevents-actions', ['@aws-cdk/aws-iotevents']],
+    ['@aws-cdk/aws-rum', ['@aws-cdk/aws-cognito-identitypool']],
   ]);
 
   private readonly excludedModules = ['@aws-cdk/cloudformation-include'];
