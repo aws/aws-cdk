@@ -1,0 +1,21 @@
+on:
+  schedule:
+    # Cron format: min hr day month dow
+    - cron: "0 0 * * *"
+jobs:
+  rix0rrr/close-stale-prs:
+    permissions:
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: rix0rrr/close-stale-prs@main
+        with:
+          # Required
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-days: 21
+          response-days: 10
+
+          # Optional
+          important-checks-regex: AutoBuildProject89A8053A
+          skip-labels: contributin/core
+          close-label: closed-for-staleness
