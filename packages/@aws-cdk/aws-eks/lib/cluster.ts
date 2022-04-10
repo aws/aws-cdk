@@ -796,6 +796,7 @@ export class KubernetesVersion {
 
   /**
    * Kubernetes version 1.18
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_18 = KubernetesVersion.of('1.18');
 
@@ -813,6 +814,11 @@ export class KubernetesVersion {
    * Kubernetes version 1.21
    */
   public static readonly V1_21 = KubernetesVersion.of('1.21');
+
+  /**
+   * Kubernetes version 1.22
+   */
+  public static readonly V1_22 = KubernetesVersion.of('1.22');
 
   /**
    * Custom cluster version
@@ -946,7 +952,7 @@ abstract class ClusterBase extends Resource implements ICluster {
     if (!this._spotInterruptHandler) {
       this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
         chart: 'aws-node-termination-handler',
-        version: '0.13.2',
+        version: '0.18.0',
         repository: 'https://aws.github.io/eks-charts',
         namespace: 'kube-system',
         values: {

@@ -1,4 +1,6 @@
-import * as wrapAnsi from 'wrap-ansi';
+// namespace object imports won't work in the bundle for function exports
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const wrapAnsi = require('wrap-ansi');
 
 /**
  * A class representing rewritable display lines
@@ -14,8 +16,13 @@ export class RewritableBlock {
     return this.stream.columns;
   }
 
+  public get height() {
+    // Might get changed if the user resizes the terminal
+    return this.stream.rows;
+  }
+
   public displayLines(lines: string[]) {
-    lines = terminalWrap(this.width, expandNewlines(lines));
+    lines = terminalWrap(this.width, expandNewlines(lines)).slice(0, getMaxBlockHeight(this.height, this.lastHeight, lines));
 
     this.stream.write(cursorUp(this.lastHeight));
     for (const line of lines) {
@@ -28,6 +35,10 @@ export class RewritableBlock {
 
     // The block can only ever get bigger
     this.lastHeight = Math.max(this.lastHeight, lines.length);
+  }
+
+  public removeEmptyLines(lines: string[]) {
+    this.stream.write(cursorUp(this.lastHeight - lines.length));
   }
 }
 
@@ -71,4 +82,9 @@ function expandNewlines(lines: string[]): string[] {
     ret.push(...line.split('\n'));
   }
   return ret;
+}
+
+function getMaxBlockHeight(windowHeight: number | undefined, lastHeight: number, lines: string[]): number {
+  if (windowHeight === undefined) { return Math.max(lines.length, lastHeight); }
+  return lines.length < windowHeight ? lines.length : windowHeight - 1;
 }

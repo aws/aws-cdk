@@ -128,7 +128,10 @@ export class Rule extends Resource implements IRule {
     }
 
     this.description = props.description;
-    this.scheduleExpression = props.schedule && props.schedule.expressionString;
+    this.scheduleExpression = props.schedule?.expressionString;
+
+    // add a warning on synth when minute is not defined in a cron schedule
+    props.schedule?._bind(this);
 
     const resource = new CfnRule(this, 'Resource', {
       name: this.physicalName,
@@ -253,13 +256,13 @@ export class Rule extends Resource implements IRule {
       arn: targetProps.arn,
       roleArn,
       ecsParameters: targetProps.ecsParameters,
+      httpParameters: targetProps.httpParameters,
       kinesisParameters: targetProps.kinesisParameters,
       runCommandParameters: targetProps.runCommandParameters,
       batchParameters: targetProps.batchParameters,
       deadLetterConfig: targetProps.deadLetterConfig,
       retryPolicy: targetProps.retryPolicy,
       sqsParameters: targetProps.sqsParameters,
-      httpParameters: targetProps.httpParameters,
       input: inputProps && inputProps.input,
       inputPath: inputProps && inputProps.inputPath,
       inputTransformer: inputProps?.inputTemplate !== undefined ? {
@@ -394,7 +397,7 @@ export class Rule extends Resource implements IRule {
         });
         new CfnEventBusPolicy(eventBusPolicyStack, 'GivePermToOtherAccount', {
           action: 'events:PutEvents',
-          statementId: `Allow-account-${sourceAccount}`,
+          statementId: `Allow-account-${sourceAccount}-${this.node.addr}`,
           principal: sourceAccount,
         });
       }

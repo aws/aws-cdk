@@ -121,6 +121,7 @@ new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.S3Origin(myBucket) },
   domainNames: ['www.example.com'],
   minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2016,
+  sslSupportMethod: cloudfront.SSLMethod.SNI,
 });
 ```
 
@@ -859,7 +860,7 @@ new cloudfront.CloudFrontWebDistribution(this, 'MyDistribution', {
       behaviors : [ {isDefaultBehavior: true}],
     },
   ],
-  geoRestriction: cloudfront.GeoRestriction.whitelist('US', 'UK'),
+  geoRestriction: cloudfront.GeoRestriction.allowlist('US', 'GB'),
 });
 ```
 

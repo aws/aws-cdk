@@ -132,14 +132,14 @@
             "Statement": [
               {
                 "Action": [
-                  "iam:CreateServiceLinkedRole",
                   "application-autoscaling:DeleteScalingPolicy",
                   "application-autoscaling:DeregisterScalableTarget",
                   "dynamodb:CreateGlobalTable",
-                  "dynamodb:DescribeLimits",
                   "dynamodb:DeleteTable",
                   "dynamodb:DescribeGlobalTable",
-                  "dynamodb:UpdateGlobalTable"
+                  "dynamodb:DescribeLimits",
+                  "dynamodb:UpdateGlobalTable",
+                  "iam:CreateServiceLinkedRole"
                 ],
                 "Effect": "Allow",
                 "Resource": "*"

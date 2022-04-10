@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnHook } from './cfn-hook';
-import { FromCloudFormationOptions } from './cfn-parse';
 import { CfnResource } from './cfn-resource';
+import { FromCloudFormationOptions } from './helpers-internal';
 import { undefinedIfAllValuesAreEmpty } from './util';
 
 /**

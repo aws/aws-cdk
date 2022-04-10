@@ -76,7 +76,7 @@
         "Properties": {
           "Code": {
             "S3Bucket": {
-              "Ref": "AssetParameters45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241S3BucketF1BC72A7"
+              "Ref": "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3BucketA88C096E"
             },
             "S3Key": {
               "Fn::Join": [
@@ -89,7 +89,7 @@
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "AssetParameters45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241S3VersionKey7AD83AC7"
+                            "Ref": "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3VersionKeyF63BD825"
                           }
                         ]
                       }
@@ -102,7 +102,7 @@
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "AssetParameters45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241S3VersionKey7AD83AC7"
+                            "Ref": "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3VersionKeyF63BD825"
                           }
                         ]
                       }
@@ -190,17 +190,17 @@
       }
     },
     "Parameters": {
-      "AssetParameters45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241S3BucketF1BC72A7": {
+      "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3BucketA88C096E": {
         "Type": "String",
-        "Description": "S3 bucket for asset \"45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241\""
+        "Description": "S3 bucket for asset \"e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a\""
       },
-      "AssetParameters45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241S3VersionKey7AD83AC7": {
+      "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3VersionKeyF63BD825": {
         "Type": "String",
-        "Description": "S3 key for asset version \"45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241\""
+        "Description": "S3 key for asset version \"e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a\""
       },
-      "AssetParameters45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241ArtifactHash1B3D1B80": {
+      "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aArtifactHashE4754D11": {
         "Type": "String",
-        "Description": "Artifact hash for asset \"45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241\""
+        "Description": "Artifact hash for asset \"e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a\""
       }
     }
   },
@@ -215,14 +215,10 @@
                 "Action": "sts:AssumeRole",
                 "Effect": "Allow",
                 "Principal": {
-                  "Service": "lambda.amazonaws.com"
-                }
-              },
-              {
-                "Action": "sts:AssumeRole",
-                "Effect": "Allow",
-                "Principal": {
-                  "Service": "edgelambda.amazonaws.com"
+                  "Service": [
+                    "edgelambda.amazonaws.com",
+                    "lambda.amazonaws.com"
+                  ]
                 }
               }
             ],
@@ -309,14 +305,10 @@
                 "Action": "sts:AssumeRole",
                 "Effect": "Allow",
                 "Principal": {
-                  "Service": "lambda.amazonaws.com"
-                }
-              },
-              {
-                "Action": "sts:AssumeRole",
-                "Effect": "Allow",
-                "Principal": {
-                  "Service": "edgelambda.amazonaws.com"
+                  "Service": [
+                    "edgelambda.amazonaws.com",
+                    "lambda.amazonaws.com"
+                  ]
                 }
               }
             ],

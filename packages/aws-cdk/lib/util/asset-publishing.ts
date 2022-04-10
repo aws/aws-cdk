@@ -6,21 +6,38 @@ import { ISDK } from '../api/aws-auth/sdk';
 import { SdkProvider } from '../api/aws-auth/sdk-provider';
 import { debug, error, print } from '../logging';
 
+export interface PublishAssetsOptions {
+  /**
+   * Print progress at 'debug' level
+   */
+  readonly quiet?: boolean;
+}
+
 /**
  * Use cdk-assets to publish all assets in the given manifest.
  */
-export async function publishAssets(manifest: cdk_assets.AssetManifest, sdk: SdkProvider, targetEnv: cxapi.Environment) {
+export async function publishAssets(
+  manifest: cdk_assets.AssetManifest,
+  sdk: SdkProvider,
+  targetEnv: cxapi.Environment,
+  options: PublishAssetsOptions = {},
+) {
   // This shouldn't really happen (it's a programming error), but we don't have
   // the types here to guide us. Do an runtime validation to be super super sure.
-  if (targetEnv.account === undefined || targetEnv.account === cxapi.UNKNOWN_ACCOUNT
-    || targetEnv.region === undefined || targetEnv.account === cxapi.UNKNOWN_REGION) {
-    throw new Error(`Asset publishing requires resolved account and region, got ${JSON.stringify(targetEnv)}`);
+  if (
+    targetEnv.account === undefined ||
+    targetEnv.account === cxapi.UNKNOWN_ACCOUNT ||
+    targetEnv.region === undefined ||
+    targetEnv.account === cxapi.UNKNOWN_REGION
+  ) {
+    throw new Error(`Asset publishing requires resolved account and region, got ${JSON.stringify( targetEnv)}`);
   }
 
   const publisher = new cdk_assets.AssetPublishing(manifest, {
     aws: new PublishingAws(sdk, targetEnv),
-    progressListener: new PublishingProgressListener(),
+    progressListener: new PublishingProgressListener(options.quiet ?? false),
     throwOnError: false,
+    publishInParallel: true,
   });
   await publisher.publish();
   if (publisher.hasFailures) {
@@ -118,7 +135,11 @@ const EVENT_TO_LOGGER: Record<cdk_assets.EventType, (x: string) => void> = {
 };
 
 class PublishingProgressListener implements cdk_assets.IPublishProgressListener {
+  constructor(private readonly quiet: boolean) {
+  }
+
   public onPublishEvent(type: cdk_assets.EventType, event: cdk_assets.IPublishProgress): void {
-    EVENT_TO_LOGGER[type](`[${event.percentComplete}%] ${type}: ${event.message}`);
+    const handler = this.quiet && type !== 'fail' ? debug : EVENT_TO_LOGGER[type];
+    handler(`[${event.percentComplete}%] ${type}: ${event.message}`);
   }
 }

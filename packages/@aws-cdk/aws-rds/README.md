@@ -326,6 +326,8 @@ You can also authenticate to a database instance using AWS Identity and Access M
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html> for more information
 and a list of supported versions and limitations.
 
+**Note**: `grantConnect()` does not currently work - see [this GitHub issue](https://github.com/aws/aws-cdk/issues/11851).
+
 The following example shows enabling IAM authentication for a database instance and granting connection access to an IAM role.
 
 ```ts
@@ -639,7 +641,7 @@ declare const vpc: ec2.Vpc;
 
 const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
-  vpc,
+  vpc, // this parameter is optional for serverless Clusters
   enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
 });
 
@@ -659,3 +661,11 @@ cluster.grantDataApiAccess(fn);
 **Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.
 
 To learn more about using the Data API, see the [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/data-api.html).
+
+### Default VPC
+
+The `vpc` parameter is optional. 
+
+If not provided, the cluster will be created in the default VPC of the account and region.
+As this VPC is not deployed with AWS CDK, you can't configure the `vpcSubnets`, `subnetGroup` or `securityGroups` of the Aurora Serverless Cluster. 
+If you want to provide one of `vpcSubnets`, `subnetGroup` or `securityGroups` parameter, please provide a `vpc`.
