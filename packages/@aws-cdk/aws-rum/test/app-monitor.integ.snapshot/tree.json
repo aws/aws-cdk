@@ -143,16 +143,69 @@
                                   }
                                 ]
                               ]
-                            },
-                            "managedPolicyArns": [
-                              {
-                                "Ref": "DefaultValueAppMonitorPutRumEvents871C5F80"
-                              }
-                            ]
+                            }
                           }
                         },
                         "constructInfo": {
                           "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "integ-app-monitor/DefaultValueAppMonitor/IdentityPool/UnauthenticatedRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integ-app-monitor/DefaultValueAppMonitor/IdentityPool/UnauthenticatedRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "rum:PutRumEvents",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":rum:",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            },
+                                            ":",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            ":appmonitor/integappmonitorDefaultValueAppMonitor7E8C5F05"
+                                          ]
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "DefaultValueAppMonitorIdentityPoolUnauthenticatedRoleDefaultPolicyD3650374",
+                                "roles": [
+                                  {
+                                    "Ref": "DefaultValueAppMonitorIdentityPoolUnauthenticatedRoleF744D694"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.Policy",
                           "version": "0.0.0"
                         }
                       }
@@ -205,60 +258,6 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-cognito-identitypool.IdentityPool",
-                  "version": "0.0.0"
-                }
-              },
-              "PutRumEvents": {
-                "id": "PutRumEvents",
-                "path": "integ-app-monitor/DefaultValueAppMonitor/PutRumEvents",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-app-monitor/DefaultValueAppMonitor/PutRumEvents/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::ManagedPolicy",
-                      "aws:cdk:cloudformation:props": {
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "rum:PutRumEvents",
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":rum:",
-                                    {
-                                      "Ref": "AWS::Region"
-                                    },
-                                    ":",
-                                    {
-                                      "Ref": "AWS::AccountId"
-                                    },
-                                    ":appmonitor/integappmonitorDefaultValueAppMonitor7E8C5F05"
-                                  ]
-                                ]
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "description": "",
-                        "path": "/"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnManagedPolicy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.ManagedPolicy",
                   "version": "0.0.0"
                 }
               },
@@ -423,16 +422,69 @@
                               }
                             ]
                           ]
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Ref": "CustomValueAppMonitorPutRumEvents6B33C436"
-                          }
-                        ]
+                        }
                       }
                     },
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "integ-app-monitor/MyIdentityPool/UnauthenticatedRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-app-monitor/MyIdentityPool/UnauthenticatedRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "rum:PutRumEvents",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":rum:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":appmonitor/my-app-monitor"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyIdentityPoolUnauthenticatedRoleDefaultPolicy67D891CC",
+                            "roles": [
+                              {
+                                "Ref": "MyIdentityPoolUnauthenticatedRole8827D18F"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
                       "version": "0.0.0"
                     }
                   }
@@ -492,60 +544,6 @@
             "id": "CustomValueAppMonitor",
             "path": "integ-app-monitor/CustomValueAppMonitor",
             "children": {
-              "PutRumEvents": {
-                "id": "PutRumEvents",
-                "path": "integ-app-monitor/CustomValueAppMonitor/PutRumEvents",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-app-monitor/CustomValueAppMonitor/PutRumEvents/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::ManagedPolicy",
-                      "aws:cdk:cloudformation:props": {
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "rum:PutRumEvents",
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":rum:",
-                                    {
-                                      "Ref": "AWS::Region"
-                                    },
-                                    ":",
-                                    {
-                                      "Ref": "AWS::AccountId"
-                                    },
-                                    ":appmonitor/my-app-monitor"
-                                  ]
-                                ]
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "description": "",
-                        "path": "/"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnManagedPolicy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.ManagedPolicy",
-                  "version": "0.0.0"
-                }
-              },
               "AppMonitor": {
                 "id": "AppMonitor",
                 "path": "integ-app-monitor/CustomValueAppMonitor/AppMonitor",

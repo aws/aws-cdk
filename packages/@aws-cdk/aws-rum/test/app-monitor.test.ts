@@ -1,4 +1,4 @@
-import { expect as expectCDK, haveResource, countResources, haveOutput, haveResourceLike } from '@aws-cdk/assert-internal';
+import { expect as expectCDK, haveResource, countResources, haveOutput } from '@aws-cdk/assert-internal';
 import * as identitypool from '@aws-cdk/aws-cognito-identitypool';
 import * as iam from '@aws-cdk/aws-iam';
 import { CfnOutput, Stack } from '@aws-cdk/core';
@@ -31,7 +31,7 @@ describe('App monitor', () => {
     // The only one identity pool that is automatically generated
     inspector.to(countResources('AWS::Cognito::IdentityPool', 1));
     inspector.to(haveResource('AWS::Cognito::IdentityPool'));
-    inspector.to(haveResource('AWS::IAM::ManagedPolicy', {
+    inspector.to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -61,19 +61,14 @@ describe('App monitor', () => {
         ],
         Version: '2012-10-17',
       },
-      Description: '',
-      Path: '/',
-    }));
-    // The only two roles that is automatically generated for auth and unauth
-    inspector.to(countResources('AWS::IAM::Role', 2));
-    // Added the rum:PutRumEvents policy to automatically generated role
-    inspector.to(haveResourceLike('AWS::IAM::Role', {
-      ManagedPolicyArns: [
+      Roles: [
         {
-          Ref: 'MyAppMonitorPutRumEvents137F5C81',
+          Ref: 'MyAppMonitorIdentityPoolUnauthenticatedRole1FA96655',
         },
       ],
     }));
+    // The only two roles that is automatically generated for auth and unauth
+    inspector.to(countResources('AWS::IAM::Role', 2));
   });
 
   test('App monitor with physical name', () => {
@@ -319,8 +314,8 @@ describe('App monitor', () => {
     inspector.to(countResources('AWS::Cognito::IdentityPool', 1));
     inspector.to(haveResource('AWS::Cognito::IdentityPool'));
 
-    // ManagedPolicy generated
-    inspector.to(haveResource('AWS::IAM::ManagedPolicy', {
+    // Policy generated
+    inspector.to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -350,19 +345,13 @@ describe('App monitor', () => {
         ],
         Version: '2012-10-17',
       },
-      Description: '',
-      Path: '/',
-    }));
-    // The only one role that is manually created
-    inspector.to(countResources('AWS::IAM::Role', 2));
-    // Added the rum:PutRumEvents policy to automatically generated role
-    inspector.to(haveResourceLike('AWS::IAM::Role', {
-      ManagedPolicyArns: [
+      Roles: [
         {
-          Ref: 'MyAppMonitorPutRumEvents137F5C81',
+          Ref: 'ExistIdentityPoolUnauthenticatedRoleADC46387',
         },
       ],
     }));
+    inspector.to(countResources('AWS::IAM::Role', 2));
   });
 
   test('App monitor with imported identity pool', () => {
@@ -419,8 +408,8 @@ describe('App monitor', () => {
       Domain: 'my-website.com',
     }));
 
-    // ManagedPolicy generated
-    inspector.to(haveResource('AWS::IAM::ManagedPolicy', {
+    // Policy generated
+    inspector.to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -450,8 +439,7 @@ describe('App monitor', () => {
         ],
         Version: '2012-10-17',
       },
-      Description: '',
-      Path: '/',
+      Roles: ['UnauthenticatedRole'],
     }));
   });
 
@@ -478,7 +466,7 @@ describe('App monitor', () => {
 
     // Cognito IdentityPool not created
     inspector.to(countResources('AWS::Cognito::IdentityPool', 0));
-    inspector.to(haveResource('AWS::IAM::ManagedPolicy', {
+    inspector.to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -508,29 +496,14 @@ describe('App monitor', () => {
         ],
         Version: '2012-10-17',
       },
-      Description: '',
-      Path: '/',
-    }));
-    // The only one that is manually created
-    inspector.to(countResources('AWS::IAM::Role', 1));
-    // Added the rum:PutRumEvents policy
-    inspector.to(haveResource('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Statement: [
-          {
-            Effect: 'Allow',
-            Principal: { AWS: '*' },
-            Action: 'sts:AssumeRole',
-          },
-        ],
-        Version: '2012-10-17',
-      },
-      ManagedPolicyArns: [
+      Roles: [
         {
-          Ref: 'MyAppMonitorPutRumEvents137F5C81',
+          Ref: 'MyRoleF48FFE04',
         },
       ],
     }));
+    // The only one that is manually created
+    inspector.to(countResources('AWS::IAM::Role', 1));
   });
 
   test('Get app monitor ID', () => {

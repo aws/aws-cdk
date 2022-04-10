@@ -34,16 +34,16 @@
             "data": "DefaultValueAppMonitorIdentityPoolUnauthenticatedRoleF744D694"
           }
         ],
+        "/integ-app-monitor/DefaultValueAppMonitor/IdentityPool/UnauthenticatedRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultValueAppMonitorIdentityPoolUnauthenticatedRoleDefaultPolicyD3650374"
+          }
+        ],
         "/integ-app-monitor/DefaultValueAppMonitor/IdentityPool/DefaultRoleAttachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DefaultValueAppMonitorIdentityPoolDefaultRoleAttachmentC8E11D44"
-          }
-        ],
-        "/integ-app-monitor/DefaultValueAppMonitor/PutRumEvents/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultValueAppMonitorPutRumEvents871C5F80"
           }
         ],
         "/integ-app-monitor/DefaultValueAppMonitor/AppMonitor": [
@@ -70,16 +70,16 @@
             "data": "MyIdentityPoolUnauthenticatedRole8827D18F"
           }
         ],
+        "/integ-app-monitor/MyIdentityPool/UnauthenticatedRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyIdentityPoolUnauthenticatedRoleDefaultPolicy67D891CC"
+          }
+        ],
         "/integ-app-monitor/MyIdentityPool/DefaultRoleAttachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyIdentityPoolDefaultRoleAttachmentD367CC64"
-          }
-        ],
-        "/integ-app-monitor/CustomValueAppMonitor/PutRumEvents/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomValueAppMonitorPutRumEvents6B33C436"
           }
         ],
         "/integ-app-monitor/CustomValueAppMonitor/AppMonitor": [

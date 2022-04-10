@@ -86,38 +86,11 @@
        }
       ]
      ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Ref": "DefaultValueAppMonitorPutRumEvents871C5F80"
-     }
-    ]
-   }
-  },
-  "DefaultValueAppMonitorIdentityPoolDefaultRoleAttachmentC8E11D44": {
-   "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
-   "Properties": {
-    "IdentityPoolId": {
-     "Ref": "DefaultValueAppMonitorIdentityPoolD3418A23"
-    },
-    "Roles": {
-     "authenticated": {
-      "Fn::GetAtt": [
-       "DefaultValueAppMonitorIdentityPoolAuthenticatedRoleB49490BC",
-       "Arn"
-      ]
-     },
-     "unauthenticated": {
-      "Fn::GetAtt": [
-       "DefaultValueAppMonitorIdentityPoolUnauthenticatedRoleF744D694",
-       "Arn"
-      ]
-     }
     }
    }
   },
-  "DefaultValueAppMonitorPutRumEvents871C5F80": {
-   "Type": "AWS::IAM::ManagedPolicy",
+  "DefaultValueAppMonitorIdentityPoolUnauthenticatedRoleDefaultPolicyD3650374": {
+   "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
      "Statement": [
@@ -148,8 +121,34 @@
      ],
      "Version": "2012-10-17"
     },
-    "Description": "",
-    "Path": "/"
+    "PolicyName": "DefaultValueAppMonitorIdentityPoolUnauthenticatedRoleDefaultPolicyD3650374",
+    "Roles": [
+     {
+      "Ref": "DefaultValueAppMonitorIdentityPoolUnauthenticatedRoleF744D694"
+     }
+    ]
+   }
+  },
+  "DefaultValueAppMonitorIdentityPoolDefaultRoleAttachmentC8E11D44": {
+   "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+   "Properties": {
+    "IdentityPoolId": {
+     "Ref": "DefaultValueAppMonitorIdentityPoolD3418A23"
+    },
+    "Roles": {
+     "authenticated": {
+      "Fn::GetAtt": [
+       "DefaultValueAppMonitorIdentityPoolAuthenticatedRoleB49490BC",
+       "Arn"
+      ]
+     },
+     "unauthenticated": {
+      "Fn::GetAtt": [
+       "DefaultValueAppMonitorIdentityPoolUnauthenticatedRoleF744D694",
+       "Arn"
+      ]
+     }
+    }
    }
   },
   "DefaultValueAppMonitor212AADC5": {
@@ -262,38 +261,11 @@
        }
       ]
      ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Ref": "CustomValueAppMonitorPutRumEvents6B33C436"
-     }
-    ]
-   }
-  },
-  "MyIdentityPoolDefaultRoleAttachmentD367CC64": {
-   "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
-   "Properties": {
-    "IdentityPoolId": {
-     "Ref": "MyIdentityPool9DBCF48C"
-    },
-    "Roles": {
-     "authenticated": {
-      "Fn::GetAtt": [
-       "MyIdentityPoolAuthenticatedRoleAE259B88",
-       "Arn"
-      ]
-     },
-     "unauthenticated": {
-      "Fn::GetAtt": [
-       "MyIdentityPoolUnauthenticatedRole8827D18F",
-       "Arn"
-      ]
-     }
     }
    }
   },
-  "CustomValueAppMonitorPutRumEvents6B33C436": {
-   "Type": "AWS::IAM::ManagedPolicy",
+  "MyIdentityPoolUnauthenticatedRoleDefaultPolicy67D891CC": {
+   "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
      "Statement": [
@@ -324,8 +296,34 @@
      ],
      "Version": "2012-10-17"
     },
-    "Description": "",
-    "Path": "/"
+    "PolicyName": "MyIdentityPoolUnauthenticatedRoleDefaultPolicy67D891CC",
+    "Roles": [
+     {
+      "Ref": "MyIdentityPoolUnauthenticatedRole8827D18F"
+     }
+    ]
+   }
+  },
+  "MyIdentityPoolDefaultRoleAttachmentD367CC64": {
+   "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+   "Properties": {
+    "IdentityPoolId": {
+     "Ref": "MyIdentityPool9DBCF48C"
+    },
+    "Roles": {
+     "authenticated": {
+      "Fn::GetAtt": [
+       "MyIdentityPoolAuthenticatedRoleAE259B88",
+       "Arn"
+      ]
+     },
+     "unauthenticated": {
+      "Fn::GetAtt": [
+       "MyIdentityPoolUnauthenticatedRole8827D18F",
+       "Arn"
+      ]
+     }
+    }
    }
   },
   "CustomValueAppMonitor730913A4": {

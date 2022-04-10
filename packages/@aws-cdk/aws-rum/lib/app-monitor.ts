@@ -224,14 +224,10 @@ export class AppMonitor extends AppMonitorBase {
     // If not passed authorizer, when create a new identity pool.
     // This like a to create RUM in management console.
     const { identityPool, role } = this.resolveAuthorizer(props.identityPool, props.role);
-    role.addManagedPolicy(new iam.ManagedPolicy(this, 'PutRumEvents', {
-      statements: [
-        new iam.PolicyStatement({
-          effect: iam.Effect.ALLOW,
-          actions: ['rum:PutRumEvents'],
-          resources: [this.appMonitorArn],
-        }),
-      ],
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['rum:PutRumEvents'],
+      resources: [this.appMonitorArn],
     }));
     this._resource = new rum.CfnAppMonitor(this, 'AppMonitor', {
       name: this.physicalName,
