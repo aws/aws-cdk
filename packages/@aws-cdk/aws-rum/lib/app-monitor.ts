@@ -223,10 +223,8 @@ export class AppMonitor extends AppMonitorBase {
 
     // If not passed authorizer, when create a new identity pool.
     // This like a to create RUM in management console.
-    const [identityPool, role] = props.identityPool || props.role
-      ? [props.identityPool, props.role]
-      : this.createIdentityPool();
-    role?.addManagedPolicy(new iam.ManagedPolicy(this, 'PutRumEvents', {
+    const { identityPool, role } = this.resolveAuthorizer(props.identityPool, props.role);
+    role.addManagedPolicy(new iam.ManagedPolicy(this, 'PutRumEvents', {
       statements: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
@@ -247,16 +245,33 @@ export class AppMonitor extends AppMonitorBase {
         includedPages: props.includedPages,
         sessionSampleRate: props.sessionSampleRate ?? 1,
         telemetries: props.telemetries ?? [Telemetry.ERRORS, Telemetry.HTTP, Telemetry.PERFORMANCE],
-        identityPoolId: identityPool?.identityPoolId,
-        guestRoleArn: identityPool ? role?.roleArn : undefined,
+        identityPoolId: identityPool && role ? identityPool.identityPoolId : undefined,
+        guestRoleArn: identityPool && role ? role.roleArn : undefined,
       },
     });
   }
 
-  private createIdentityPool(): [identitypool.IIdentityPool, iam.IRole] {
+  private resolveAuthorizer(identityPool?: identitypool.IIdentityPool, role?: iam.IRole): {
+    identityPool?: identitypool.IIdentityPool
+    role: iam.IRole,
+  } {
+    if (identityPool instanceof identitypool.IdentityPool) {
+      return { identityPool, role: identityPool.unauthenticatedRole };
+    } else if (identityPool && !role) {
+      throw new Error('if you are passing an imported \'identityPool\', you must also set the \'role\'');
+    } else if (!role) {
+      return this.createIdentityPool();
+    }
+    return { identityPool, role };
+  }
+
+  private createIdentityPool(): {
+    identityPool: identitypool.IIdentityPool
+    role: iam.IRole,
+  } {
     const identityPool = new identitypool.IdentityPool(this, 'IdentityPool', {
       allowUnauthenticatedIdentities: true,
     });
-    return [identityPool, identityPool.unauthenticatedRole];
+    return { identityPool, role: identityPool.unauthenticatedRole };
   }
 }

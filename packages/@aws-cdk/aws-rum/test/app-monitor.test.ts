@@ -1,5 +1,4 @@
-/* eslint-disable quote-props */
-import { expect, haveResource, countResources, haveOutput, haveResourceLike } from '@aws-cdk/assert-internal';
+import { expect as expectCDK, haveResource, countResources, haveOutput, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as identitypool from '@aws-cdk/aws-cognito-identitypool';
 import * as iam from '@aws-cdk/aws-iam';
 import { CfnOutput, Stack } from '@aws-cdk/core';
@@ -12,47 +11,47 @@ describe('App monitor', () => {
       domain: 'my-website.com',
     });
 
-    const inspector = expect(stack);
+    const inspector = expectCDK(stack);
 
     inspector.to(haveResource('AWS::RUM::AppMonitor', {
-      'AppMonitorConfiguration': {
-        'GuestRoleArn': {
+      AppMonitorConfiguration: {
+        GuestRoleArn: {
           'Fn::GetAtt': ['MyAppMonitorIdentityPoolUnauthenticatedRole1FA96655', 'Arn'],
         },
-        'IdentityPoolId': {
-          'Ref': 'MyAppMonitorIdentityPoolEF658265',
+        IdentityPoolId: {
+          Ref: 'MyAppMonitorIdentityPoolEF658265',
         },
-        'Telemetries': ['errors', 'http', 'performance'],
-        'SessionSampleRate': 1,
+        Telemetries: ['errors', 'http', 'performance'],
+        SessionSampleRate: 1,
       },
-      'Name': 'MyAppMonitor',
-      'Domain': 'my-website.com',
+      Name: 'MyAppMonitor',
+      Domain: 'my-website.com',
     }));
 
     // The only one identity pool that is automatically generated
     inspector.to(countResources('AWS::Cognito::IdentityPool', 1));
     inspector.to(haveResource('AWS::Cognito::IdentityPool'));
     inspector.to(haveResource('AWS::IAM::ManagedPolicy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Action': 'rum:PutRumEvents',
-            'Effect': 'Allow',
-            'Resource': {
+            Action: 'rum:PutRumEvents',
+            Effect: 'Allow',
+            Resource: {
               'Fn::Join': [
                 '',
                 [
                   'arn:',
                   {
-                    'Ref': 'AWS::Partition',
+                    Ref: 'AWS::Partition',
                   },
                   ':rum:',
                   {
-                    'Ref': 'AWS::Region',
+                    Ref: 'AWS::Region',
                   },
                   ':',
                   {
-                    'Ref': 'AWS::AccountId',
+                    Ref: 'AWS::AccountId',
                   },
                   ':appmonitor/MyAppMonitor',
                 ],
@@ -60,20 +59,43 @@ describe('App monitor', () => {
             },
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
-      'Description': '',
-      'Path': '/',
+      Description: '',
+      Path: '/',
     }));
     // The only two roles that is automatically generated for auth and unauth
     inspector.to(countResources('AWS::IAM::Role', 2));
     // Added the rum:PutRumEvents policy to automatically generated role
     inspector.to(haveResourceLike('AWS::IAM::Role', {
-      'ManagedPolicyArns': [
+      ManagedPolicyArns: [
         {
-          'Ref': 'MyAppMonitorPutRumEvents137F5C81',
+          Ref: 'MyAppMonitorPutRumEvents137F5C81',
         },
       ],
+    }));
+  });
+
+  test('App monitor with physical name', () => {
+    const stack = new Stack();
+    new rum.AppMonitor(stack, 'MyAppMonitor', {
+      domain: 'my-website.com',
+      appMonitorName: 'my-app-monitor',
+    });
+
+    expectCDK(stack).to(haveResource('AWS::RUM::AppMonitor', {
+      AppMonitorConfiguration: {
+        GuestRoleArn: {
+          'Fn::GetAtt': ['MyAppMonitorIdentityPoolUnauthenticatedRole1FA96655', 'Arn'],
+        },
+        IdentityPoolId: {
+          Ref: 'MyAppMonitorIdentityPoolEF658265',
+        },
+        Telemetries: ['errors', 'http', 'performance'],
+        SessionSampleRate: 1,
+      },
+      Name: 'my-app-monitor',
+      Domain: 'my-website.com',
     }));
   });
 
@@ -84,20 +106,20 @@ describe('App monitor', () => {
       persistence: true,
     });
 
-    expect(stack).to(haveResource('AWS::RUM::AppMonitor', {
-      'AppMonitorConfiguration': {
-        'GuestRoleArn': {
+    expectCDK(stack).to(haveResource('AWS::RUM::AppMonitor', {
+      AppMonitorConfiguration: {
+        GuestRoleArn: {
           'Fn::GetAtt': ['MyAppMonitorIdentityPoolUnauthenticatedRole1FA96655', 'Arn'],
         },
-        'IdentityPoolId': {
-          'Ref': 'MyAppMonitorIdentityPoolEF658265',
+        IdentityPoolId: {
+          Ref: 'MyAppMonitorIdentityPoolEF658265',
         },
-        'Telemetries': ['errors', 'http', 'performance'],
-        'SessionSampleRate': 1,
+        Telemetries: ['errors', 'http', 'performance'],
+        SessionSampleRate: 1,
       },
-      'CwLogEnabled': true,
-      'Name': 'MyAppMonitor',
-      'Domain': 'my-website.com',
+      CwLogEnabled: true,
+      Name: 'MyAppMonitor',
+      Domain: 'my-website.com',
     }));
   });
 
@@ -108,20 +130,20 @@ describe('App monitor', () => {
       allowCookies: true,
     });
 
-    expect(stack).to(haveResource('AWS::RUM::AppMonitor', {
-      'AppMonitorConfiguration': {
-        'AllowCookies': true,
-        'GuestRoleArn': {
+    expectCDK(stack).to(haveResource('AWS::RUM::AppMonitor', {
+      AppMonitorConfiguration: {
+        AllowCookies: true,
+        GuestRoleArn: {
           'Fn::GetAtt': ['MyAppMonitorIdentityPoolUnauthenticatedRole1FA96655', 'Arn'],
         },
-        'IdentityPoolId': {
-          'Ref': 'MyAppMonitorIdentityPoolEF658265',
+        IdentityPoolId: {
+          Ref: 'MyAppMonitorIdentityPoolEF658265',
         },
-        'Telemetries': ['errors', 'http', 'performance'],
-        'SessionSampleRate': 1,
+        Telemetries: ['errors', 'http', 'performance'],
+        SessionSampleRate: 1,
       },
-      'Name': 'MyAppMonitor',
-      'Domain': 'my-website.com',
+      Name: 'MyAppMonitor',
+      Domain: 'my-website.com',
     }));
   });
 
@@ -132,20 +154,20 @@ describe('App monitor', () => {
       enableXRay: true,
     });
 
-    expect(stack).to(haveResource('AWS::RUM::AppMonitor', {
-      'AppMonitorConfiguration': {
-        'EnableXRay': true,
-        'GuestRoleArn': {
+    expectCDK(stack).to(haveResource('AWS::RUM::AppMonitor', {
+      AppMonitorConfiguration: {
+        EnableXRay: true,
+        GuestRoleArn: {
           'Fn::GetAtt': ['MyAppMonitorIdentityPoolUnauthenticatedRole1FA96655', 'Arn'],
         },
-        'IdentityPoolId': {
-          'Ref': 'MyAppMonitorIdentityPoolEF658265',
+        IdentityPoolId: {
+          Ref: 'MyAppMonitorIdentityPoolEF658265',
         },
-        'Telemetries': ['errors', 'http', 'performance'],
-        'SessionSampleRate': 1,
+        Telemetries: ['errors', 'http', 'performance'],
+        SessionSampleRate: 1,
       },
-      'Name': 'MyAppMonitor',
-      'Domain': 'my-website.com',
+      Name: 'MyAppMonitor',
+      Domain: 'my-website.com',
     }));
   });
 
@@ -156,20 +178,20 @@ describe('App monitor', () => {
       excludedPages: ['https://my-website.com/foo', 'https://my-website.com/bar'],
     });
 
-    expect(stack).to(haveResource('AWS::RUM::AppMonitor', {
-      'AppMonitorConfiguration': {
-        'ExcludedPages': ['https://my-website.com/foo', 'https://my-website.com/bar'],
-        'GuestRoleArn': {
+    expectCDK(stack).to(haveResource('AWS::RUM::AppMonitor', {
+      AppMonitorConfiguration: {
+        ExcludedPages: ['https://my-website.com/foo', 'https://my-website.com/bar'],
+        GuestRoleArn: {
           'Fn::GetAtt': ['MyAppMonitorIdentityPoolUnauthenticatedRole1FA96655', 'Arn'],
         },
-        'IdentityPoolId': {
-          'Ref': 'MyAppMonitorIdentityPoolEF658265',
+        IdentityPoolId: {
+          Ref: 'MyAppMonitorIdentityPoolEF658265',
         },
-        'Telemetries': ['errors', 'http', 'performance'],
-        'SessionSampleRate': 1,
+        Telemetries: ['errors', 'http', 'performance'],
+        SessionSampleRate: 1,
       },
-      'Name': 'MyAppMonitor',
-      'Domain': 'my-website.com',
+      Name: 'MyAppMonitor',
+      Domain: 'my-website.com',
     }));
   });
 
@@ -180,20 +202,20 @@ describe('App monitor', () => {
       includedPages: ['https://my-website.com/foo', 'https://my-website.com/bar'],
     });
 
-    expect(stack).to(haveResource('AWS::RUM::AppMonitor', {
-      'AppMonitorConfiguration': {
-        'IncludedPages': ['https://my-website.com/foo', 'https://my-website.com/bar'],
-        'GuestRoleArn': {
+    expectCDK(stack).to(haveResource('AWS::RUM::AppMonitor', {
+      AppMonitorConfiguration: {
+        IncludedPages: ['https://my-website.com/foo', 'https://my-website.com/bar'],
+        GuestRoleArn: {
           'Fn::GetAtt': ['MyAppMonitorIdentityPoolUnauthenticatedRole1FA96655', 'Arn'],
         },
-        'IdentityPoolId': {
-          'Ref': 'MyAppMonitorIdentityPoolEF658265',
+        IdentityPoolId: {
+          Ref: 'MyAppMonitorIdentityPoolEF658265',
         },
-        'Telemetries': ['errors', 'http', 'performance'],
-        'SessionSampleRate': 1,
+        Telemetries: ['errors', 'http', 'performance'],
+        SessionSampleRate: 1,
       },
-      'Name': 'MyAppMonitor',
-      'Domain': 'my-website.com',
+      Name: 'MyAppMonitor',
+      Domain: 'my-website.com',
     }));
   });
 
@@ -204,20 +226,20 @@ describe('App monitor', () => {
       favoritePages: ['https://my-website.com/foo', 'https://my-website.com/bar'],
     });
 
-    expect(stack).to(haveResource('AWS::RUM::AppMonitor', {
-      'AppMonitorConfiguration': {
-        'FavoritePages': ['https://my-website.com/foo', 'https://my-website.com/bar'],
-        'GuestRoleArn': {
+    expectCDK(stack).to(haveResource('AWS::RUM::AppMonitor', {
+      AppMonitorConfiguration: {
+        FavoritePages: ['https://my-website.com/foo', 'https://my-website.com/bar'],
+        GuestRoleArn: {
           'Fn::GetAtt': ['MyAppMonitorIdentityPoolUnauthenticatedRole1FA96655', 'Arn'],
         },
-        'IdentityPoolId': {
-          'Ref': 'MyAppMonitorIdentityPoolEF658265',
+        IdentityPoolId: {
+          Ref: 'MyAppMonitorIdentityPoolEF658265',
         },
-        'Telemetries': ['errors', 'http', 'performance'],
-        'SessionSampleRate': 1,
+        Telemetries: ['errors', 'http', 'performance'],
+        SessionSampleRate: 1,
       },
-      'Name': 'MyAppMonitor',
-      'Domain': 'my-website.com',
+      Name: 'MyAppMonitor',
+      Domain: 'my-website.com',
     }));
   });
 
@@ -228,19 +250,19 @@ describe('App monitor', () => {
       sessionSampleRate: 0.1,
     });
 
-    expect(stack).to(haveResource('AWS::RUM::AppMonitor', {
-      'AppMonitorConfiguration': {
-        'GuestRoleArn': {
+    expectCDK(stack).to(haveResource('AWS::RUM::AppMonitor', {
+      AppMonitorConfiguration: {
+        GuestRoleArn: {
           'Fn::GetAtt': ['MyAppMonitorIdentityPoolUnauthenticatedRole1FA96655', 'Arn'],
         },
-        'IdentityPoolId': {
-          'Ref': 'MyAppMonitorIdentityPoolEF658265',
+        IdentityPoolId: {
+          Ref: 'MyAppMonitorIdentityPoolEF658265',
         },
-        'Telemetries': ['errors', 'http', 'performance'],
-        'SessionSampleRate': 0.1,
+        Telemetries: ['errors', 'http', 'performance'],
+        SessionSampleRate: 0.1,
       },
-      'Name': 'MyAppMonitor',
-      'Domain': 'my-website.com',
+      Name: 'MyAppMonitor',
+      Domain: 'my-website.com',
     }));
   });
 
@@ -251,23 +273,23 @@ describe('App monitor', () => {
       telemetries: [rum.Telemetry.ERRORS],
     });
 
-    expect(stack).to(haveResource('AWS::RUM::AppMonitor', {
-      'AppMonitorConfiguration': {
-        'GuestRoleArn': {
+    expectCDK(stack).to(haveResource('AWS::RUM::AppMonitor', {
+      AppMonitorConfiguration: {
+        GuestRoleArn: {
           'Fn::GetAtt': ['MyAppMonitorIdentityPoolUnauthenticatedRole1FA96655', 'Arn'],
         },
-        'IdentityPoolId': {
-          'Ref': 'MyAppMonitorIdentityPoolEF658265',
+        IdentityPoolId: {
+          Ref: 'MyAppMonitorIdentityPoolEF658265',
         },
-        'Telemetries': ['errors'],
-        'SessionSampleRate': 1,
+        Telemetries: ['errors'],
+        SessionSampleRate: 1,
       },
-      'Name': 'MyAppMonitor',
-      'Domain': 'my-website.com',
+      Name: 'MyAppMonitor',
+      Domain: 'my-website.com',
     }));
   });
 
-  test('App monitor with exist identity pool', () => {
+  test('App monitor with identity pool', () => {
     const stack = new Stack();
     const identityPool = new identitypool.IdentityPool(stack, 'ExistIdentityPool');
     new rum.AppMonitor(stack, 'MyAppMonitor', {
@@ -276,21 +298,21 @@ describe('App monitor', () => {
       role: identityPool.unauthenticatedRole,
     });
 
-    const inspector = expect(stack);
+    const inspector = expectCDK(stack);
 
     inspector.to(haveResource('AWS::RUM::AppMonitor', {
-      'AppMonitorConfiguration': {
-        'GuestRoleArn': {
+      AppMonitorConfiguration: {
+        GuestRoleArn: {
           'Fn::GetAtt': ['ExistIdentityPoolUnauthenticatedRoleADC46387', 'Arn'],
         },
-        'IdentityPoolId': {
-          'Ref': 'ExistIdentityPool911FDB0C',
+        IdentityPoolId: {
+          Ref: 'ExistIdentityPool911FDB0C',
         },
-        'Telemetries': ['errors', 'http', 'performance'],
-        'SessionSampleRate': 1,
+        Telemetries: ['errors', 'http', 'performance'],
+        SessionSampleRate: 1,
       },
-      'Name': 'MyAppMonitor',
-      'Domain': 'my-website.com',
+      Name: 'MyAppMonitor',
+      Domain: 'my-website.com',
     }));
 
     // The only one that is manually created
@@ -299,26 +321,26 @@ describe('App monitor', () => {
 
     // ManagedPolicy generated
     inspector.to(haveResource('AWS::IAM::ManagedPolicy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Action': 'rum:PutRumEvents',
-            'Effect': 'Allow',
-            'Resource': {
+            Action: 'rum:PutRumEvents',
+            Effect: 'Allow',
+            Resource: {
               'Fn::Join': [
                 '',
                 [
                   'arn:',
                   {
-                    'Ref': 'AWS::Partition',
+                    Ref: 'AWS::Partition',
                   },
                   ':rum:',
                   {
-                    'Ref': 'AWS::Region',
+                    Ref: 'AWS::Region',
                   },
                   ':',
                   {
-                    'Ref': 'AWS::AccountId',
+                    Ref: 'AWS::AccountId',
                   },
                   ':appmonitor/MyAppMonitor',
                 ],
@@ -326,20 +348,110 @@ describe('App monitor', () => {
             },
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
-      'Description': '',
-      'Path': '/',
+      Description: '',
+      Path: '/',
     }));
     // The only one role that is manually created
     inspector.to(countResources('AWS::IAM::Role', 2));
     // Added the rum:PutRumEvents policy to automatically generated role
     inspector.to(haveResourceLike('AWS::IAM::Role', {
-      'ManagedPolicyArns': [
+      ManagedPolicyArns: [
         {
-          'Ref': 'MyAppMonitorPutRumEvents137F5C81',
+          Ref: 'MyAppMonitorPutRumEvents137F5C81',
         },
       ],
+    }));
+  });
+
+  test('App monitor with imported identity pool', () => {
+    const stack = new Stack();
+    const identityPool = identitypool.IdentityPool
+      .fromIdentityPoolId(stack, 'ImportedIdentityPool', `${stack.region}:ImportedIdentityPoolId`);
+
+    expect(() => new rum.AppMonitor(stack, 'MissingRoleAppMonitor', {
+      domain: 'my-website.com',
+      identityPool,
+    })).toThrowError('if you are passing an imported \'identityPool\', you must also set the \'role\'');
+
+    const role = iam.Role.fromRoleName(stack, 'ImportedRole', 'UnauthenticatedRole');
+    new rum.AppMonitor(stack, 'MyAppMonitor', {
+      domain: 'my-website.com',
+      identityPool,
+      role,
+    });
+
+    const inspector = expectCDK(stack);
+    inspector.to(haveResource('AWS::RUM::AppMonitor', {
+      AppMonitorConfiguration: {
+        GuestRoleArn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              ':role/UnauthenticatedRole',
+            ],
+          ],
+        },
+        IdentityPoolId: {
+          'Fn::Join': [
+            '',
+            [
+              {
+                Ref: 'AWS::Region',
+              },
+              ':ImportedIdentityPoolId',
+            ],
+          ],
+        },
+        Telemetries: ['errors', 'http', 'performance'],
+        SessionSampleRate: 1,
+      },
+      Name: 'MyAppMonitor',
+      Domain: 'my-website.com',
+    }));
+
+    // ManagedPolicy generated
+    inspector.to(haveResource('AWS::IAM::ManagedPolicy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'rum:PutRumEvents',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':rum:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':appmonitor/MyAppMonitor',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Description: '',
+      Path: '/',
     }));
   });
 
@@ -353,40 +465,40 @@ describe('App monitor', () => {
       role: myRole,
     });
 
-    const inspector = expect(stack);
+    const inspector = expectCDK(stack);
 
     inspector.to(haveResource('AWS::RUM::AppMonitor', {
-      'AppMonitorConfiguration': {
-        'Telemetries': ['errors', 'http', 'performance'],
-        'SessionSampleRate': 1,
+      AppMonitorConfiguration: {
+        Telemetries: ['errors', 'http', 'performance'],
+        SessionSampleRate: 1,
       },
-      'Name': 'MyAppMonitor',
-      'Domain': 'my-website.com',
+      Name: 'MyAppMonitor',
+      Domain: 'my-website.com',
     }));
 
     // Cognito IdentityPool not created
     inspector.to(countResources('AWS::Cognito::IdentityPool', 0));
     inspector.to(haveResource('AWS::IAM::ManagedPolicy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Action': 'rum:PutRumEvents',
-            'Effect': 'Allow',
-            'Resource': {
+            Action: 'rum:PutRumEvents',
+            Effect: 'Allow',
+            Resource: {
               'Fn::Join': [
                 '',
                 [
                   'arn:',
                   {
-                    'Ref': 'AWS::Partition',
+                    Ref: 'AWS::Partition',
                   },
                   ':rum:',
                   {
-                    'Ref': 'AWS::Region',
+                    Ref: 'AWS::Region',
                   },
                   ':',
                   {
-                    'Ref': 'AWS::AccountId',
+                    Ref: 'AWS::AccountId',
                   },
                   ':appmonitor/MyAppMonitor',
                 ],
@@ -394,28 +506,28 @@ describe('App monitor', () => {
             },
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
-      'Description': '',
-      'Path': '/',
+      Description: '',
+      Path: '/',
     }));
     // The only one that is manually created
     inspector.to(countResources('AWS::IAM::Role', 1));
     // Added the rum:PutRumEvents policy
     inspector.to(haveResource('AWS::IAM::Role', {
-      'AssumeRolePolicyDocument': {
-        'Statement': [
+      AssumeRolePolicyDocument: {
+        Statement: [
           {
-            'Effect': 'Allow',
-            'Principal': { 'AWS': '*' },
-            'Action': 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { AWS: '*' },
+            Action: 'sts:AssumeRole',
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
-      'ManagedPolicyArns': [
+      ManagedPolicyArns: [
         {
-          'Ref': 'MyAppMonitorPutRumEvents137F5C81',
+          Ref: 'MyAppMonitorPutRumEvents137F5C81',
         },
       ],
     }));
@@ -430,7 +542,7 @@ describe('App monitor', () => {
       value: appMonitor.appMonitorId,
     });
 
-    const inspector = expect(stack);
+    const inspector = expectCDK(stack);
 
     inspector.to(haveResource('Custom::GetAppMonitor'));;
     inspector.to(haveOutput({
@@ -447,19 +559,33 @@ describe('App monitor', () => {
     new CfnOutput(stack, 'AppMonitorArn', {
       value: appMonitor.appMonitorArn,
     });
-    expect(stack).to(haveOutput({
+    expectCDK(stack).to(haveOutput({
       outputName: 'AppMonitorArn',
       outputValue: {
         'Fn::Join': [
           '',
           [
-            'arn:', { 'Ref': 'AWS::Partition' },
-            ':rum:', { 'Ref': 'AWS::Region' },
-            ':', { 'Ref': 'AWS::AccountId' },
+            'arn:', { Ref: 'AWS::Partition' },
+            ':rum:', { Ref: 'AWS::Region' },
+            ':', { Ref: 'AWS::AccountId' },
             ':appmonitor/MyAppMonitor',
           ],
         ],
       },
+    }));
+  });
+
+  test('Get app monitor Name', () => {
+    const stack = new Stack();
+    const appMonitor = new rum.AppMonitor(stack, 'MyAppMonitor', {
+      domain: 'my-website.com',
+    });
+    new CfnOutput(stack, 'AppMonitorName', {
+      value: appMonitor.appMonitorName,
+    });
+    expectCDK(stack).to(haveOutput({
+      outputName: 'AppMonitorName',
+      outputValue: 'MyAppMonitor',
     }));
   });
 });
