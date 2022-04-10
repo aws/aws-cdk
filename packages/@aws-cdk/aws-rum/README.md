@@ -49,7 +49,7 @@ This module supports the ability for users to create CloudWatch RUM and retrieve
 Define an `AppMonitor` in your stack:
 
 ```ts
-const appMonitor = new AppMonitor(this, 'AppMonitor', {
+new AppMonitor(this, 'AppMonitor', {
   domain: 'my-website.com'
 });
 ```
@@ -77,7 +77,7 @@ You must have administrative permissions to use this option. For more informatio
 see [IAM policies to use CloudWatch RUM](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-permissions.html).
 
 ```ts
-const appMonitor = new AppMonitor(this, 'AppMonitor', {
+new AppMonitor(this, 'AppMonitor', {
   domain: 'my-website.com'
 });
 ```
@@ -91,12 +91,13 @@ you need to pass the `identityPool` and the `role` that associated with your ide
 import * as identitypool from '@aws-cdk/aws-cognito-identitypool';
 import * as iam from '@aws-cdk/aws-iam';
 
-const identityPool = identitypool.IdentityPool.fromIdentityPoolId(this, 'IdentityPool', 'us-east-1:dj2823ryiwuhef937');
-const role = iam.Role.fromRoleName(this, 'Role', 'UnauthenticatedRole');
-const appMonitor = new AppMonitor(this, 'AppMonitor', {
+declare const identityPool: identitypool.IIdentityPool;
+declare const unauthenticatedRole: iam.IRole;
+
+new AppMonitor(this, 'AppMonitor', {
   domain: 'my-website.com',
   identityPool,
-  role
+  role: unauthenticatedRole 
 });
 ```
 
@@ -108,7 +109,7 @@ If you want to use third-party authenticator, you can only pass a `role` that as
 import * as iam from '@aws-cdk/aws-iam';
 
 declare const role: iam.IRole;
-const appMonitor = new AppMonitor(this, 'AppMonitor', {
+new AppMonitor(this, 'AppMonitor', {
   domain: 'my-website.com',
   role
 });
@@ -117,7 +118,7 @@ const appMonitor = new AppMonitor(this, 'AppMonitor', {
 Add the following to your application to have it pass the credentials from your provider to CloudWatch RUM.
 Insert the line so that it runs after a user has signed in to your application and the application has received the credentials to use to access AWS.
 
-```ts
+```js
 cwr('setAwsCredentials', {/* Credentials or CredentialProvider */});
 ```
 

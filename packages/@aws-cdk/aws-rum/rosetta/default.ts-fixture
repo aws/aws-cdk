@@ -1,8 +1,11 @@
 import { Construct } from 'constructs';
 import { Stack } from '@aws-cdk/core';
+import { AppMonitor } from '@aws-cdk/aws-rum';
 
-class MyStack extends Stack {
+const cwr = (setAwsCredentials: string, options: any) => {};
+class Fixture extends Stack {
   constructor(scope: Construct, id: string) {
+    super(scope, id);
     /// here
   }
 }
