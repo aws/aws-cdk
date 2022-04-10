@@ -46,6 +46,18 @@ export enum HttpMethods {
    * The DELETE method deletes the specified resource.
    */
   DELETE = 'DELETE',
+  /**
+   * The PATCH method applies partial modifications to a resource.
+   */
+  PATCH = 'PATCH',
+  /**
+   * The OPTIONS method describes the communication options for the target resource.
+   */
+  OPTIONS = 'OPTIONS',
+  /**
+   * The wildcard entry to allow all methods.
+   */
+  ALL = '*',
 }
 
 /**
