@@ -105,6 +105,7 @@
   "awslint": {
     "exclude": [
       "no-unused-type:@aws-cdk/aws-networkfirewall.Stateful5TupleDirection",
+      "no-unused-type:@aws-cdk/aws-networkfirewall.StatefulDomainListTargetType",
       "no-unused-type:@aws-cdk/aws-networkfirewall.StatefulDomainListType",
       "no-unused-type:@aws-cdk/aws-networkfirewall.StatefulStandardAction",
       "no-unused-type:@aws-cdk/aws-networkfirewall.StatefulStrictAction",
