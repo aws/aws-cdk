@@ -78,6 +78,13 @@ export interface FirewallProps {
    * @default - undefined
    */
   readonly description?: string;
+
+  /**
+   * Tags to be added to the firewall.
+   *
+   * @default No tags applied
+   */
+  readonly tags?: core.Tag[];
 }
 
 /**
@@ -161,7 +168,7 @@ export class Firewall extends FirewallBase {
 				`got: '${props.firewallName}'`);
     }
 
-    // TODO: Auto define new policy?
+    // Auto define new policy?
     //const firewallPolicy:IfirewallPolicy = props.policy ||
     //		new policy(scope, id, {
     //				statelessDefaultActions: [StatelessStandardAction.FORWARD]
@@ -186,7 +193,7 @@ export class Firewall extends FirewallBase {
       subnetMappings: subnets,
       vpcId: props.vpc.vpcId,
       description: props.description,
-      //TODO: tags
+      tags: props.tags || [],
     };
 
     const resource:CfnFirewall = new CfnFirewall(this, id, resourceProps);

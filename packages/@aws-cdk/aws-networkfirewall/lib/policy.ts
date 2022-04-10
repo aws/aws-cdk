@@ -129,13 +129,20 @@ export interface FirewallPolicyProps {
    */
   readonly statelessRuleGroups?: StatelessRuleGroupList[];
 
-
   /**
    * The description of the policy.
    *
    * @default - undefined
    */
   readonly description?: string;
+
+  /**
+   * Tags to be added to the firewall policy.
+   *
+   * @default No tags applied
+   */
+  readonly tags?: core.Tag[];
+
 }
 
 /**
@@ -309,7 +316,7 @@ export class FirewallPolicy extends FirewallPolicyBase {
       firewallPolicy: resourcePolicyProperty,
       firewallPolicyName: props.firewallPolicyName || id,
       description: props.description,
-      //TODO tags
+      tags: props.tags || [],
     };
 
     const resource:CfnFirewallPolicy = new CfnFirewallPolicy(this, props.firewallPolicyName || id, resourceProps);

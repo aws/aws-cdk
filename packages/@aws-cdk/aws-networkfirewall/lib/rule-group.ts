@@ -91,6 +91,13 @@ export interface StatelessRuleGroupProps {
    * @default - undefined
    */
   readonly description?: string;
+
+  /**
+   * Tags to be added to the rule group.
+   *
+   * @default No tags applied
+   */
+  readonly tags?: core.Tag[];
 }
 
 /**
@@ -193,7 +200,7 @@ export class StatelessRuleGroup extends StatelessRuleGroupBase {
       type: RuleGroupType.STATELESS,
       ruleGroup: resourceRuleGroupProperty,
       description: props.description,
-      //tags
+      tags: props.tags || [],
     };
     const resource:CfnRuleGroup = new CfnRuleGroup(this, id, resourceProps);
     this.ruleGroupId = this.getResourceNameAttribute(resource.ref);
@@ -313,6 +320,13 @@ interface StatefulRuleGroupProps {
    * @default - undefined
    */
   readonly description?: string;
+
+  /**
+   * Tags to be added to the rule group.
+   *
+   * @default No tags applied
+   */
+  readonly tags?: core.Tag[];
 }
 
 /**
@@ -407,7 +421,7 @@ export class StatefulSuricataRuleGroup extends StatefulRuleGroup {
       type: RuleGroupType.STATEFUL,
       ruleGroup: resourceRuleGroupProperty,
       description: props.description,
-      //tags
+      tags: props.tags || [],
     };
 
     const resource:CfnRuleGroup = new CfnRuleGroup(this, id, resourceProps);
@@ -476,7 +490,7 @@ export class Stateful5TupleRuleGroup extends StatefulRuleGroup {
       type: RuleGroupType.STATEFUL,
       ruleGroup: resourceRuleGroupProperty,
       description: props.description,
-      //tags
+      tags: props.tags || [],
     };
 
     const resource:CfnRuleGroup = new CfnRuleGroup(this, id, resourceProps);
@@ -535,7 +549,7 @@ export class StatefulDomainListRuleGroup extends StatefulRuleGroup {
       type: RuleGroupType.STATEFUL,
       ruleGroup: resourceRuleGroupProperty,
       description: props.description,
-      //tags
+      tags: props.tags || [],
     };
 
     const resource:CfnRuleGroup = new CfnRuleGroup(this, id, resourceProps);
