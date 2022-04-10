@@ -163,8 +163,8 @@ export class Firewall extends FirewallBase {
      * Validate firewallName
      */
     if (props.firewallName !== undefined &&
-				!/^[_a-zA-Z]+$/.test(props.firewallName)) {
-      throw new Error('firewallName must be non-empty and contain only letters and underscores, ' +
+				!/^[a-zA-Z0-9-]+$/.test(props.firewallName)) {
+      throw new Error('firewallName must be non-empty and contain only letters, numbers, and dashes, ' +
 				`got: '${props.firewallName}'`);
     }
 

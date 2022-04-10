@@ -147,8 +147,8 @@ export class StatelessRuleGroup extends StatelessRuleGroupBase {
      * Validate ruleGroupId
      */
     if (props.ruleGroupName !== undefined &&
-				!/^[_a-zA-Z]+$/.test(props.ruleGroupName)) {
-      throw new Error('ruleGroupName must be non-empty and contain only letters and underscores, ' +
+				!/^[a-zA-Z0-9-]+$/.test(props.ruleGroupName)) {
+      throw new Error('ruleGroupName must be non-empty and contain only letters, numbers, and dashes, ' +
 				`got: '${props.ruleGroupName}'`);
     }
 

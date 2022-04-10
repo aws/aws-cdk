@@ -222,8 +222,8 @@ export class FirewallPolicy extends FirewallPolicyBase {
      * Validate policyId
      */
     if (props.firewallPolicyName !== undefined &&
-	  !/^[_a-zA-Z]+$/.test(props.firewallPolicyName)) {
-      throw new Error('policyId must be non-empty and contain only letters and underscores, ' +
+	  !/^[a-zA-Z0-9-]+$/.test(props.firewallPolicyName)) {
+      throw new Error('policyId must be non-empty and contain only letters, numbers, and dashes, ' +
 		  `got: '${props.firewallPolicyName}'`);
     }
 
