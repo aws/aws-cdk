@@ -9991,6 +9991,9 @@
       "attributes": {},
       "description": "Provides information that defines a DocumentDB endpoint. This information includes the output format of records applied to the endpoint and details of transaction and control table data information. For more information about other available settings, see [Using extra connections attributes with Amazon DocumentDB as a source](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.DocumentDB.html#CHAP_Source.DocumentDB.ECAs) and [Using Amazon DocumentDB as a target for AWS Database Migration Service](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.DocumentDB.html) in the *AWS Database Migration Service User Guide* .",
       "properties": {
+        "DocsToInvestigate": "Indicates the number of documents to preview to determine the document organization. Use this setting when `NestingLevel` is set to `\"one\"` .\n\nMust be a positive value greater than `0` . Default value is `1000` .",
+        "ExtractDocId": "Specifies the document ID. Use this setting when `NestingLevel` is set to `\"none\"` .\n\nDefault value is `\"false\"` .",
+        "NestingLevel": "Specifies either document or table mode.\n\nDefault value is `\"none\"` . Specify `\"none\"` to use document mode. Specify `\"one\"` to use table mode.",
         "SecretsManagerAccessRoleArn": "The full Amazon Resource Name (ARN) of the IAM role that specifies AWS DMS as the trusted entity and grants the required permissions to access the value in `SecretsManagerSecret` . The role must allow the `iam:PassRole` action. `SecretsManagerSecret` has the value of the AWS Secrets Manager secret that allows access to the DocumentDB endpoint.\n\n> You can specify one of two sets of values for these permissions. You can specify the values for this setting and `SecretsManagerSecretId` . Or you can specify clear-text values for `UserName` , `Password` , `ServerName` , and `Port` . You can't specify both.\n> \n> For more information on creating this `SecretsManagerSecret` , the corresponding `SecretsManagerAccessRoleArn` , and the `SecretsManagerSecretId` that is required to access it, see [Using secrets to access AWS Database Migration Service resources](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.html#security-iam-secretsmanager) in the *AWS Database Migration Service User Guide* .",
         "SecretsManagerSecretId": "The full ARN, partial ARN, or display name of the `SecretsManagerSecret` that contains the DocumentDB endpoint connection details."
       }
@@ -10035,8 +10038,11 @@
       "attributes": {},
       "description": "Provides information that defines an IBMDB2 endpoint. This information includes the output format of records applied to the endpoint and details of transaction and control table data information. For more information about other available settings, see [Extra connection attributes when using Db2 LUW as a source for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.DB2.html#CHAP_Source.DB2.ConnectionAttrib) in the *AWS Database Migration Service User Guide* .",
       "properties": {
+        "CurrentLsn": "For ongoing replication (CDC), use CurrentLSN to specify a log sequence number (LSN) where you want the replication to start.",
+        "MaxKBytesPerRead": "Maximum number of bytes per read, as a NUMBER value. The default is 64 KB.",
         "SecretsManagerAccessRoleArn": "The full Amazon Resource Name (ARN) of the IAM role that specifies AWS DMS as the trusted entity and grants the required permissions to access the value in `SecretsManagerSecret` . The role must allow the `iam:PassRole` action. `SecretsManagerSecret` has the value ofthe AWS Secrets Manager secret that allows access to the Db2 LUW endpoint.\n\n> You can specify one of two sets of values for these permissions. You can specify the values for this setting and `SecretsManagerSecretId` . Or you can specify clear-text values for `UserName` , `Password` , `ServerName` , and `Port` . You can't specify both.\n> \n> For more information on creating this `SecretsManagerSecret` , the corresponding `SecretsManagerAccessRoleArn` , and the `SecretsManagerSecretId` that is required to access it, see [Using secrets to access AWS Database Migration Service resources](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.html#security-iam-secretsmanager) in the *AWS Database Migration Service User Guide* .",
-        "SecretsManagerSecretId": "The full ARN, partial ARN, or display name of the `SecretsManagerSecret` that contains the IBMDB2 endpoint connection details."
+        "SecretsManagerSecretId": "The full ARN, partial ARN, or display name of the `SecretsManagerSecret` that contains the IBMDB2 endpoint connection details.",
+        "SetDataCaptureChanges": "Enables ongoing replication (CDC) as a BOOLEAN value. The default is true."
       }
     },
     "AWS::DMS::Endpoint.KafkaSettings": {
@@ -10083,8 +10089,15 @@
       "attributes": {},
       "description": "Provides information that defines a Microsoft SQL Server endpoint. This information includes the output format of records applied to the endpoint and details of transaction and control table data information. For information about other available settings, see [Extra connection attributes when using SQL Server as a source for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.SQLServer.html#CHAP_Source.SQLServer.ConnectionAttrib) and [Extra connection attributes when using SQL Server as a target for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.SQLServer.html#CHAP_Target.SQLServer.ConnectionAttrib) in the *AWS Database Migration Service User Guide* .",
       "properties": {
+        "BcpPacketSize": "The maximum size of the packets (in bytes) used to transfer data using BCP.",
+        "ControlTablesFileGroup": "Specifies a file group for the AWS DMS internal tables. When the replication task starts, all the internal AWS DMS control tables (awsdms_ apply_exception, awsdms_apply, awsdms_changes) are created for the specified file group.",
+        "QuerySingleAlwaysOnNode": "Cleans and recreates table metadata information on the replication instance when a mismatch occurs. An example is a situation where running an alter DDL statement on a table might result in different information about the table cached in the replication instance.",
+        "ReadBackupOnly": "When this attribute is set to `Y` , AWS DMS only reads changes from transaction log backups and doesn't read from the active transaction log file during ongoing replication. Setting this parameter to `Y` enables you to control active transaction log file growth during full load and ongoing replication tasks. However, it can add some source latency to ongoing replication.",
+        "SafeguardPolicy": "Use this attribute to minimize the need to access the backup log and enable AWS DMS to prevent truncation using one of the following two methods.\n\n*Start transactions in the database:* This is the default method. When this method is used, AWS DMS prevents TLOG truncation by mimicking a transaction in the database. As long as such a transaction is open, changes that appear after the transaction started aren't truncated. If you need Microsoft Replication to be enabled in your database, then you must choose this method.\n\n*Exclusively use sp_repldone within a single task* : When this method is used, AWS DMS reads the changes and then uses sp_repldone to mark the TLOG transactions as ready for truncation. Although this method doesn't involve any transactional activities, it can only be used when Microsoft Replication isn't running. Also, when using this method, only one AWS DMS task can access the database at any given time. Therefore, if you need to run parallel AWS DMS tasks against the same database, use the default method.",
         "SecretsManagerAccessRoleArn": "The full Amazon Resource Name (ARN) of the IAM role that specifies AWS DMS as the trusted entity and grants the required permissions to access the value in `SecretsManagerSecret` . The role must allow the `iam:PassRole` action. `SecretsManagerSecret` has the value of the AWS Secrets Manager secret that allows access to the SQL Server endpoint.\n\n> You can specify one of two sets of values for these permissions. You can specify the values for this setting and `SecretsManagerSecretId` . Or you can specify clear-text values for `UserName` , `Password` , `ServerName` , and `Port` . You can't specify both.\n> \n> For more information on creating this `SecretsManagerSecret` , the corresponding `SecretsManagerAccessRoleArn` , and the `SecretsManagerSecretId` that is required to access it, see [Using secrets to access AWS Database Migration Service resources](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.html#security-iam-secretsmanager) in the *AWS Database Migration Service User Guide* .",
-        "SecretsManagerSecretId": "The full ARN, partial ARN, or display name of the `SecretsManagerSecret` that contains the MicrosoftSQLServer endpoint connection details."
+        "SecretsManagerSecretId": "The full ARN, partial ARN, or display name of the `SecretsManagerSecret` that contains the MicrosoftSQLServer endpoint connection details.",
+        "UseBcpFullLoad": "Use this to attribute to transfer data for full-load operations using BCP. When the target table contains an identity column that does not exist in the source table, you must disable the use BCP for loading table option.",
+        "UseThirdPartyBackupDevice": "When this attribute is set to `Y` , DMS processes third-party transaction log backups if they are created in native format."
       }
     },
     "AWS::DMS::Endpoint.MongoDbSettings": {
@@ -10211,8 +10224,31 @@
       "attributes": {},
       "description": "Provides information that defines an Amazon Redshift endpoint. This information includes the output format of records applied to the endpoint and details of transaction and control table data information. For more information about other available settings, see [Extra connection attributes when using Amazon Redshift as a target for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Redshift.html#CHAP_Target.Redshift.ConnectionAttrib) in the *AWS Database Migration Service User Guide* .",
       "properties": {
+        "AcceptAnyDate": "A value that indicates to allow any date format, including invalid formats such as 00/00/00 00:00:00, to be loaded without generating an error. You can choose `true` or `false` (the default).\n\nThis parameter applies only to TIMESTAMP and DATE columns. Always use ACCEPTANYDATE with the DATEFORMAT parameter. If the date format for the data doesn't match the DATEFORMAT specification, Amazon Redshift inserts a NULL value into that field.",
+        "AfterConnectScript": "Code to run after connecting. This parameter should contain the code itself, not the name of a file containing the code.",
+        "BucketFolder": "An S3 folder where the comma-separated-value (.csv) files are stored before being uploaded to the target Redshift cluster.\n\nFor full load mode, AWS DMS converts source records into .csv files and loads them to the *BucketFolder/TableID* path. AWS DMS uses the Redshift `COPY` command to upload the .csv files to the target table. The files are deleted once the `COPY` operation has finished. For more information, see [COPY](https://docs.aws.amazon.com/redshift/latest/dg/r_COPY.html) in the *Amazon Redshift Database Developer Guide* .\n\nFor change-data-capture (CDC) mode, AWS DMS creates a *NetChanges* table, and loads the .csv files to this *BucketFolder/NetChangesTableID* path.",
+        "BucketName": "The name of the intermediate S3 bucket used to store .csv files before uploading data to Redshift.",
+        "CaseSensitiveNames": "If Amazon Redshift is configured to support case sensitive schema names, set `CaseSensitiveNames` to `true` . The default is `false` .",
+        "CompUpdate": "If you set `CompUpdate` to `true` Amazon Redshift applies automatic compression if the table is empty. This applies even if the table columns already have encodings other than `RAW` . If you set `CompUpdate` to `false` , automatic compression is disabled and existing column encodings aren't changed. The default is `true` .",
+        "ConnectionTimeout": "A value that sets the amount of time to wait (in milliseconds) before timing out, beginning from when you initially establish a connection.",
+        "DateFormat": "The date format that you are using. Valid values are `auto` (case-sensitive), your date format string enclosed in quotes, or NULL. If this parameter is left unset (NULL), it defaults to a format of 'YYYY-MM-DD'. Using `auto` recognizes most strings, even some that aren't supported when you use a date format string.\n\nIf your date and time values use formats different from each other, set this to `auto` .",
+        "EmptyAsNull": "A value that specifies whether AWS DMS should migrate empty CHAR and VARCHAR fields as NULL. A value of `true` sets empty CHAR and VARCHAR fields to null. The default is `false` .",
+        "EncryptionMode": "The type of server-side encryption that you want to use for your data. This encryption type is part of the endpoint settings or the extra connections attributes for Amazon S3. You can choose either `SSE_S3` (the default) or `SSE_KMS` .\n\n> For the `ModifyEndpoint` operation, you can change the existing value of the `EncryptionMode` parameter from `SSE_KMS` to `SSE_S3` . But you can\u2019t change the existing value from `SSE_S3` to `SSE_KMS` . \n\nTo use `SSE_S3` , create an AWS Identity and Access Management (IAM) role with a policy that allows `\"arn:aws:s3:::*\"` to use the following actions: `\"s3:PutObject\", \"s3:ListBucket\"`",
+        "ExplicitIds": "This setting is only valid for a full-load migration task. Set `ExplicitIds` to `true` to have tables with `IDENTITY` columns override their auto-generated values with explicit values loaded from the source data files used to populate the tables. The default is `false` .",
+        "FileTransferUploadStreams": "The number of threads used to upload a single file. This parameter accepts a value from 1 through 64. It defaults to 10.\n\nThe number of parallel streams used to upload a single .csv file to an S3 bucket using S3 Multipart Upload. For more information, see [Multipart upload overview](https://docs.aws.amazon.com/AmazonS3/latest/dev/mpuoverview.html) .\n\n`FileTransferUploadStreams` accepts a value from 1 through 64. It defaults to 10.",
+        "LoadTimeout": "The amount of time to wait (in milliseconds) before timing out of operations performed by AWS DMS on a Redshift cluster, such as Redshift COPY, INSERT, DELETE, and UPDATE.",
+        "MaxFileSize": "The maximum size (in KB) of any .csv file used to load data on an S3 bucket and transfer data to Amazon Redshift. It defaults to 1048576KB (1 GB).",
+        "RemoveQuotes": "A value that specifies to remove surrounding quotation marks from strings in the incoming data. All characters within the quotation marks, including delimiters, are retained. Choose `true` to remove quotation marks. The default is `false` .",
+        "ReplaceChars": "A value that specifies to replaces the invalid characters specified in `ReplaceInvalidChars` , substituting the specified characters instead. The default is `\"?\"` .",
+        "ReplaceInvalidChars": "A list of characters that you want to replace. Use with `ReplaceChars` .",
         "SecretsManagerAccessRoleArn": "The full Amazon Resource Name (ARN) of the IAM role that specifies AWS DMS as the trusted entity and grants the required permissions to access the value in `SecretsManagerSecret` . The role must allow the `iam:PassRole` action. `SecretsManagerSecret` has the value of the AWS Secrets Manager secret that allows access to the Amazon Redshift endpoint.\n\n> You can specify one of two sets of values for these permissions. You can specify the values for this setting and `SecretsManagerSecretId` . Or you can specify clear-text values for `UserName` , `Password` , `ServerName` , and `Port` . You can't specify both.\n> \n> For more information on creating this `SecretsManagerSecret` , the corresponding `SecretsManagerAccessRoleArn` , and the `SecretsManagerSecretId` that is required to access it, see [Using secrets to access AWS Database Migration Service resources](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.html#security-iam-secretsmanager) in the *AWS Database Migration Service User Guide* .",
-        "SecretsManagerSecretId": "The full ARN, partial ARN, or display name of the `SecretsManagerSecret` that contains the Amazon Redshift endpoint connection details."
+        "SecretsManagerSecretId": "The full ARN, partial ARN, or display name of the `SecretsManagerSecret` that contains the Amazon Redshift endpoint connection details.",
+        "ServerSideEncryptionKmsKeyId": "The AWS KMS key ID. If you are using `SSE_KMS` for the `EncryptionMode` , provide this key ID. The key that you use needs an attached policy that enables IAM user permissions and allows use of the key.",
+        "ServiceAccessRoleArn": "The Amazon Resource Name (ARN) of the IAM role that has access to the Amazon Redshift service. The role must allow the `iam:PassRole` action.",
+        "TimeFormat": "The time format that you want to use. Valid values are `auto` (case-sensitive), `'timeformat_string'` , `'epochsecs'` , or `'epochmillisecs'` . It defaults to 10. Using `auto` recognizes most strings, even some that aren't supported when you use a time format string.\n\nIf your date and time values use formats different from each other, set this parameter to `auto` .",
+        "TrimBlanks": "A value that specifies to remove the trailing white space characters from a VARCHAR string. This parameter applies only to columns with a VARCHAR data type. Choose `true` to remove unneeded white space. The default is `false` .",
+        "TruncateColumns": "A value that specifies to truncate data in columns to the appropriate number of characters, so that the data fits in the column. This parameter applies only to columns with a VARCHAR or CHAR data type, and rows with a size of 4 MB or less. Choose `true` to truncate data. The default is `false` .",
+        "WriteBufferSize": "The size (in KB) of the in-memory file write buffer used when generating .csv files on the local disk at the DMS replication instance. The default value is 1000 (buffer size is 1000KB)."
       }
     },
     "AWS::DMS::Endpoint.S3Settings": {
@@ -12396,6 +12432,13 @@
         "LicenseConfigurationArn": "The Amazon Resource Name (ARN) of the license configuration."
       }
     },
+    "AWS::EC2::LaunchTemplate.MaintenanceOptions": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "AutoRecovery": ""
+      }
+    },
     "AWS::EC2::LaunchTemplate.MemoryGiBPerVCpu": {
       "attributes": {},
       "description": "The minimum and maximum amount of memory per vCPU, in GiB.",
@@ -13542,6 +13585,7 @@
       "description": "Specifies a target for your Traffic Mirror session.\n\nA Traffic Mirror target is the destination for mirrored traffic. The Traffic Mirror source and the Traffic Mirror target (monitoring appliances) can be in the same VPC, or in different VPCs connected via VPC peering or a transit gateway.\n\nA Traffic Mirror target can be a network interface, or a Network Load Balancer.\n\nTo use the target in a Traffic Mirror session, use [AWS::EC2::TrafficMirrorSession](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-trafficmirrorsession.html) .",
       "properties": {
         "Description": "The description of the Traffic Mirror target.",
+        "GatewayLoadBalancerEndpointId": "",
         "NetworkInterfaceId": "The network interface ID that is associated with the target.",
         "NetworkLoadBalancerArn": "The Amazon Resource Name (ARN) of the Network Load Balancer that is associated with the target.",
         "Tags": "The tags to assign to the Traffic Mirror target."
@@ -25788,6 +25832,7 @@
         "Action": "The action that the principal can use on the function. For example, `lambda:InvokeFunction` or `lambda:GetFunction` .",
         "EventSourceToken": "For Alexa Smart Home functions, a token that must be supplied by the invoker.",
         "FunctionName": "The name of the Lambda function, version, or alias.\n\n**Name formats** - *Function name* - `my-function` (name-only), `my-function:v1` (with alias).\n- *Function ARN* - `arn:aws:lambda:us-west-2:123456789012:function:my-function` .\n- *Partial ARN* - `123456789012:function:my-function` .\n\nYou can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.",
+        "FunctionUrlAuthType": "The type of authentication that your function URL uses. Set to `AWS_IAM` if you want to restrict access to authenticated `IAM` users only. Set to `NONE` if you want to bypass IAM authentication to create a public endpoint. For more information, see [Security and auth model for Lambda function URLs](https://docs.aws.amazon.com/lambda/latest/dg/urls-auth.html) .",
         "Principal": "The AWS service or account that invokes the function. If you specify a service, use `SourceArn` or `SourceAccount` to limit who can invoke the function through that service.",
         "PrincipalOrgID": "The identifier for your organization in AWS Organizations . Use this to grant permissions to all the AWS accounts under this organization.",
         "SourceAccount": "For Amazon S3, the ID of the account that owns the resource. Use this together with `SourceArn` to ensure that the resource is owned by the specified account. It is possible for an Amazon S3 bucket to be deleted by its owner and recreated by another account.",
@@ -25796,15 +25841,13 @@
     },
     "AWS::Lambda::Url": {
       "attributes": {
-        "CreationTime": "",
+        "FunctionArn": "The Amazon Resource Name (ARN) of the function.",
         "FunctionUrl": "The HTTP URL endpoint for your function.",
-        "FunctionUrlArn": "",
-        "LastModifiedTime": "",
         "Ref": "`Ref` returns the resource name."
       },
       "description": "The `AWS::Lambda::Url` resource creates a function URL with the specified configuration parameters. A [function URL](https://docs.aws.amazon.com/lambda/latest/dg/invocation-urls.html) is a dedicated HTTP(S) endpoint that you can use to invoke your function.",
       "properties": {
-        "AuthorizationType": "The type of authorization on your function URL. Set to `AWS_IAM` if you want to use IAM to authenticate requests. Set to `NONE` if you want to bypass IAM and handle authentication in your function code.",
+        "AuthType": "The type of authentication that your function URL uses. Set to `AWS_IAM` if you want to restrict access to authenticated `IAM` users only. Set to `NONE` if you want to bypass IAM authentication to create a public endpoint. For more information, see [Security and auth model for Lambda function URLs](https://docs.aws.amazon.com/lambda/latest/dg/urls-auth.html) .",
         "Cors": "The [Cross-Origin Resource Sharing (CORS)](https://docs.aws.amazon.com/https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) settings for your function URL.",
         "Qualifier": "The alias name.",
         "TargetFunctionArn": "The name of the Lambda function.\n\n**Name formats** - *Function name* - `my-function` .\n- *Function ARN* - `arn:aws:lambda:us-west-2:123456789012:function:my-function` .\n- *Partial ARN* - `123456789012:function:my-function` .\n\nThe length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length."
@@ -38350,7 +38393,7 @@
       "attributes": {
         "Ref": "When you pass the logical ID of an `AWS::SecretsManager::SecretTargetAttachment` resource to the intrinsic `Ref` function, the function returns the ARN of the secret, such as:\n\n`arn:aws:secretsmanager:us-west-2:123456789012:secret:my-path/my-secret-name-1a2b3c`\n\nYou can use the ARN to reference a secret you created in one part of the stack template from within the definition of another resource from a different part of the same template.\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
-      "description": "The `AWS::SecretsManager::SecretTargetAttachment` resource completes the final link between a Secrets Manager secret and the associated database. This is required because each has a dependency on the other.",
+      "description": "The `AWS::SecretsManager::SecretTargetAttachment` resource completes the final link between a Secrets Manager secret and the associated database by adding the database connection information to the secret JSON. If you want to turn on automatic rotation for a database credential secret, the secret must contain the database connection information. For more information, see [JSON structure of Secrets Manager database credential secrets](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_secret_json_structure.html) .",
       "properties": {
         "SecretId": "The ARN or name of the secret. To reference a secret also created in this template, use the see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) function with the secret's logical ID.",
         "TargetId": "The ID of the database or cluster.",
