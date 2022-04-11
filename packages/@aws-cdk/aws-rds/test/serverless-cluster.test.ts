@@ -18,7 +18,7 @@ describe('serverless cluster', () => {
       vpc,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
     });
@@ -331,7 +331,7 @@ describe('serverless cluster', () => {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       vpc,
     });
@@ -861,6 +861,27 @@ describe('serverless cluster', () => {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       vpcSubnets,
     })).toThrow(/A VPC is required to use vpcSubnets in ServerlessCluster. Please add a VPC or remove vpcSubnets/);
+  });
+
+  test('can call exportValue on endpoint.port', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      credentials: { username: 'admin' },
+      vpc,
+    });
+
+    // WHEN
+    stack.exportValue(cluster.clusterEndpoint.port);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasOutput('ExportsOutputFnGetAttDatabaseB269D8BBEndpointPort3ACB3F51', {
+      Value: { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+      Export: { Name: 'Default:ExportsOutputFnGetAttDatabaseB269D8BBEndpointPort3ACB3F51' },
+    });
   });
 });
 

@@ -25,6 +25,11 @@ export interface ICdk {
    * cdk list
    */
   list(options: ListOptions): string;
+
+  /**
+   * cdk synth fast
+   */
+  synthFast(options: SynthFastOptions): void;
 }
 
 /**
@@ -39,7 +44,7 @@ export interface SynthFastOptions {
    * e.g. "node 'bin/my-app.ts'"
    * or 'go run main.go'
    */
-  readonly execCmd: string;
+  readonly execCmd: string[];
 
   /**
    * Emits the synthesized cloud assembly into a directory
@@ -199,13 +204,13 @@ export class CdkCliWrapper implements ICdk {
    * Bypass it to be quicker!
    */
   public synthFast(options: SynthFastOptions): void {
-    exec([`${options.execCmd}`], {
+    exec(options.execCmd, {
       cwd: this.directory,
       env: {
-        ...this.env,
-        ...options.env,
         CDK_CONTEXT_JSON: JSON.stringify(options.context),
         CDK_OUTDIR: options.output,
+        ...this.env,
+        ...options.env,
       },
     });
   }
