@@ -353,7 +353,7 @@ To create a function URL, use the `lambda.FunctionUrl` construct:
 const fn = new lambda.Function(this, 'MyLambda', {
   code: new lambda.InlineCode('hello()'),
   handler: 'index.hello',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
 });
 
 new lambda.FunctionUrl(this, 'FunctionUrl', {
@@ -368,7 +368,7 @@ You can also use the `lambda.addFunctionUrl()` method to create a url for that f
 const fn = new lambda.Function(this, 'MyLambda', {
   code: new lambda.InlineCode('hello()'),
   handler: 'index.hello',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
 });
 
 // fn can be a function or an alias
@@ -383,7 +383,7 @@ You would need to add permissions to the resource policy of the function when cr
 const fn = new lambda.Function(this, 'MyLambda', {
   code: new lambda.InlineCode('hello()'),
   handler: 'index.hello',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
 });
 
 fn.addFunctionUrl();
@@ -401,7 +401,7 @@ You can also specify the CORS configuration for the function URL.
 const fn = new lambda.Function(this, 'MyLambda', {
   code: new lambda.InlineCode('hello()'),
   handler: 'index.hello',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
 });
 
 fn.addFunctionUrl({
