@@ -345,6 +345,9 @@ A function URL is a dedicated HTTP(S) endpoint for your Lambda function. When yo
 
 Function URLs are dual stack-enabled, supporting IPv4 and IPv6, and cross-origin resource sharing (CORS) configuration. After you configure a function URL for your function, you can invoke your function through its HTTP(S) endpoint via a web browser, curl, Postman, or any HTTP client. To invoke a function using IAM authentication your HTTP client must support SigV4 signing.
 
+See the [Invoking Function URLs](https://docs.aws.amazon.com/lambda/latest/dg/urls-invocation.html) section of the AWS Lambda Developer Guide
+for more information on the input and output payloads of Functions invoked in this way.
+
 ### IAM-authenticated Function URLs
 
 To create a Function URL which can be called by an IAM identity, call `addFunctionUrl()`, followed by `grantInvokeFunctionUrl()`:
