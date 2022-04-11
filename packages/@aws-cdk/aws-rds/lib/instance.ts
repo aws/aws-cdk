@@ -1017,7 +1017,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       characterSetName: props.characterSetName,
       kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
       masterUsername: credentials.username,
-      masterUserPassword: credentials.password?.toString(),
+      masterUserPassword: credentials.password?.unsafeUnwrap(),
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
@@ -1095,7 +1095,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.sourceCfnProps,
       dbSnapshotIdentifier: props.snapshotIdentifier,
-      masterUserPassword: secret?.secretValueFromJson('password')?.toString() ?? credentials?.password?.toString(),
+      masterUserPassword: secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
     this.instanceIdentifier = instance.ref;
