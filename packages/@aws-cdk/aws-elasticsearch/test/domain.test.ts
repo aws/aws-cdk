@@ -1059,7 +1059,7 @@ describe('advanced security options', () => {
   const masterUserArn = 'arn:aws:iam::123456789012:user/JohnDoe';
   const masterUserName = 'JohnDoe';
   const password = 'password';
-  const masterUserPassword = SecretValue.plainText(password);
+  const masterUserPassword = SecretValue.unsafePlainText(password);
 
   testDeprecated('enable fine-grained access control with a master user ARN', () => {
     new Domain(stack, 'Domain', {
@@ -1732,7 +1732,7 @@ describe('unsigned basic auth', () => {
   testDeprecated('does not overwrite master user name and password', () => {
     const masterUserName = 'JohnDoe';
     const password = 'password';
-    const masterUserPassword = SecretValue.plainText(password);
+    const masterUserPassword = SecretValue.unsafePlainText(password);
 
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_1,
