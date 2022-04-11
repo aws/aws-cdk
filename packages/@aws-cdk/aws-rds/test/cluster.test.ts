@@ -24,7 +24,7 @@ describe('cluster', () => {
       engine: DatabaseClusterEngine.AURORA,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -82,7 +82,7 @@ describe('cluster', () => {
       instances: 1,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -136,7 +136,7 @@ describe('cluster', () => {
       instances: 1,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -172,7 +172,7 @@ describe('cluster', () => {
       engine: DatabaseClusterEngine.AURORA,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -707,7 +707,7 @@ describe('cluster', () => {
       engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_5_7_12 }),
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceProps: {
         vpc,
@@ -1065,7 +1065,7 @@ describe('cluster', () => {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -1842,7 +1842,7 @@ describe('cluster', () => {
       engine: DatabaseClusterEngine.AURORA,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -1867,7 +1867,7 @@ describe('cluster', () => {
       engine: DatabaseClusterEngine.AURORA,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -1910,7 +1910,7 @@ describe('cluster', () => {
         engine: DatabaseClusterEngine.AURORA,
         credentials: {
           username: 'admin',
-          password: cdk.SecretValue.plainText('tooshort'),
+          password: cdk.SecretValue.unsafePlainText('tooshort'),
         },
         instanceProps: {
           instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -1931,7 +1931,7 @@ describe('cluster', () => {
       engine: DatabaseClusterEngine.AURORA,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),

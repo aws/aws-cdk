@@ -18,7 +18,7 @@ describe('serverless cluster', () => {
       vpc,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
     });
@@ -331,7 +331,7 @@ describe('serverless cluster', () => {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       vpc,
     });

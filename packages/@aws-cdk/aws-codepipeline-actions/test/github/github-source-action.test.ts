@@ -17,7 +17,7 @@ describe('Github source action', () => {
         owner: 'aws',
         repo: 'aws-cdk',
         output: sourceOutput,
-        oauthToken: SecretValue.plainText('secret'),
+        oauthToken: SecretValue.unsafePlainText('secret'),
       });
       new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
@@ -77,7 +77,7 @@ describe('Github source action', () => {
                 owner: 'aws',
                 repo: 'aws-cdk',
                 output: sourceOutput,
-                oauthToken: SecretValue.plainText('secret'),
+                oauthToken: SecretValue.unsafePlainText('secret'),
                 variablesNamespace: 'MyNamespace',
               }),
             ],
@@ -123,7 +123,7 @@ describe('Github source action', () => {
         owner: 'aws',
         repo: 'aws-cdk',
         output: new codepipeline.Artifact(),
-        oauthToken: SecretValue.plainText('secret'),
+        oauthToken: SecretValue.unsafePlainText('secret'),
       });
       const sourceOutput = new codepipeline.Artifact();
       new codepipeline.Pipeline(stack, 'Pipeline', {
@@ -135,7 +135,7 @@ describe('Github source action', () => {
               owner: 'aws',
               repo: 'aws-cdk',
               output: sourceOutput,
-              oauthToken: SecretValue.plainText('secret'),
+              oauthToken: SecretValue.unsafePlainText('secret'),
             })],
           },
           {
@@ -170,7 +170,7 @@ describe('Github source action', () => {
         owner: 'aws',
         repo: 'aws-cdk',
         output: new codepipeline.Artifact(),
-        oauthToken: SecretValue.plainText('secret'),
+        oauthToken: SecretValue.unsafePlainText('secret'),
         variablesNamespace: 'MyNamespace',
       });
       const sourceOutput = new codepipeline.Artifact();
@@ -183,7 +183,7 @@ describe('Github source action', () => {
               owner: 'aws',
               repo: 'aws-cdk',
               output: sourceOutput,
-              oauthToken: SecretValue.plainText('secret'),
+              oauthToken: SecretValue.unsafePlainText('secret'),
             })],
           },
           {

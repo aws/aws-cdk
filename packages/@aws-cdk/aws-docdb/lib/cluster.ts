@@ -459,10 +459,10 @@ export class DatabaseCluster extends DatabaseClusterBase {
       dbClusterParameterGroupName: props.parameterGroup?.parameterGroupName,
       deletionProtection: props.deletionProtection,
       // Admin
-      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
+      masterUsername: secret ? secret.secretValueFromJson('username').unsafeUnwrap() : props.masterUser.username,
       masterUserPassword: secret
-        ? secret.secretValueFromJson('password').toString()
-        : props.masterUser.password!.toString(),
+        ? secret.secretValueFromJson('password').unsafeUnwrap()
+        : props.masterUser.password!.unsafeUnwrap(), // Safe usage
       // Backup
       backupRetentionPeriod: props.backup?.retention?.toDays(),
       preferredBackupWindow: props.backup?.preferredWindow,

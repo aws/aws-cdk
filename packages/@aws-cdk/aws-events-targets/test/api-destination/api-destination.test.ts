@@ -14,7 +14,7 @@ describe('with basic auth connection', () => {
   beforeEach(() => {
     stack = new Stack();
     connection = new events.Connection(stack, 'Connection', {
-      authorization: events.Authorization.basic('username', SecretValue.plainText('password')),
+      authorization: events.Authorization.basic('username', SecretValue.unsafePlainText('password')),
       description: 'ConnectionDescription',
       connectionName: 'testConnection',
     });

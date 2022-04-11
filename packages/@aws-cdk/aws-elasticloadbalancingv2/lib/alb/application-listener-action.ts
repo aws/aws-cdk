@@ -36,7 +36,7 @@ export class ListenerAction implements IListenerAction {
       authenticateOidcConfig: {
         authorizationEndpoint: options.authorizationEndpoint,
         clientId: options.clientId,
-        clientSecret: options.clientSecret.toString(),
+        clientSecret: options.clientSecret.unsafeUnwrap(), // Safe usage
         issuer: options.issuer,
         tokenEndpoint: options.tokenEndpoint,
         userInfoEndpoint: options.userInfoEndpoint,

@@ -8,7 +8,7 @@ const cluster = new rds.ServerlessCluster(stack, 'Serverless Database Without VP
   engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
   credentials: {
     username: 'admin',
-    password: cdk.SecretValue.plainText('7959866cacc02c2d243ecfe177464fe6'),
+    password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6'),
   },
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
