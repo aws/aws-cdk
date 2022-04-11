@@ -1,4 +1,9 @@
 import * as iam from '@aws-cdk/aws-iam';
+
+import { FunctionUrlAuthType } from './function-url';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
 
 /**
@@ -64,4 +69,11 @@ export interface Permission {
    * can invoke the function.
    */
   readonly sourceArn?: string;
+
+  /**
+   * The authType for the function URL that you are granting permissions for.
+   *
+   * @default - No functionUrlAuthType
+   */
+  readonly functionUrlAuthType?: FunctionUrlAuthType;
 }
