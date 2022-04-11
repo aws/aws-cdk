@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { MachineImage } from '@aws-cdk/aws-ec2';
@@ -346,4 +346,42 @@ test('Scheduled Ec2 Task - exposes ECS Task', () => {
 
   // THEN
   expect(scheduledEc2Task.task).toBeDefined();
+});
+
+test('Scheduled Ec2 Task shows warning when minute is not defined in cron', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
+    cluster,
+    scheduledEc2TaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.cron({}),
+  });
+
+  // THEN
+  Annotations.fromStack(stack).hasWarning('/Default', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
+});
+
+test('Scheduled Ec2 Task shows no warning when minute is * in cron', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
+    cluster,
+    scheduledEc2TaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.cron({ minute: '*' }),
+  });
+
+  // THEN
+  Annotations.fromStack(stack).hasNoWarning('/Default', Match.anyValue());
 });

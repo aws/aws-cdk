@@ -183,6 +183,15 @@ export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVers
 export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021';
 
 /**
+ * Enable this flag to make it impossible to accidentally use SecretValues in unsafe locations
+ *
+ * With this flag enabled, `SecretValue` instances can only be passed to
+ * constructs that accept `SecretValue`s; otherwise, `unsafeUnwrap()` must be
+ * called to use it as a regular string.
+ */
+export const CHECK_SECRET_USAGE = '@aws-cdk/core:checkSecretUsage';
+
+/**
  * What regions to include in lookup tables of environment agnostic stacks
  *
  * Has no effect on stacks that have a defined region, but will limit the amount
@@ -216,6 +225,15 @@ export const ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER = '@aws-cdk-contai
 export const EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME = '@aws-cdk/aws-ec2:uniqueImdsv2TemplateName';
 
 /**
+ * Minimize IAM policies by combining Principals, Actions and Resources of two
+ * Statements in the policies, as long as it doesn't change the meaning of the
+ * policy.
+ *
+ * [PERMANENT]
+ */
+export const IAM_MINIMIZE_POLICIES = '@aws-cdk/aws-iam:minimizePolicies';
+
+/**
  * Flag values that should apply for new projects
  *
  * Add a flag in here (typically with the value `true`), to enable
@@ -240,6 +258,8 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
   [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: true,
   [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: true,
+  [CHECK_SECRET_USAGE]: true,
+  [IAM_MINIMIZE_POLICIES]: true,
 };
 
 /**
