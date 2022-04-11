@@ -591,11 +591,6 @@ export class MathExpression implements IMetric {
       warnings.push(...m.warnings ?? []);
     }
 
-    // Only set field if there are any warnings to report, otherwise all the tests that currently do
-    //
-    //    expect(metric).toEqual({ ... });
-    //
-    // Will break.
     if (warnings.length > 0) {
       this.warnings = warnings;
     }
@@ -726,7 +721,7 @@ function validVariableName(x: string) {
  * Return all variable names used in an expression
  */
 function allIdentifiersInExpression(x: string) {
-  return Array.from(x.matchAll(FIND_VARIABLE)).map(m => m[0]);
+  return Array.from(matchAll(x, FIND_VARIABLE)).map(m => m[0]);
 }
 
 /**
@@ -884,4 +879,14 @@ interface IModifiableMetric {
 
 function isModifiableMetric(m: any): m is IModifiableMetric {
   return typeof m === 'object' && m !== null && !!m.with;
+}
+
+// Polyfill for string.matchAll(regexp)
+function matchAll(x: string, re: RegExp): RegExpMatchArray[] {
+  const ret = new Array<RegExpMatchArray>();
+  let m: RegExpExecArray | null;
+  while (m = re.exec(x)) {
+    ret.push(m);
+  }
+  return ret;
 }
