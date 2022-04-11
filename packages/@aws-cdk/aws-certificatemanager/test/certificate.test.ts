@@ -184,6 +184,28 @@ describe('CertificateValidation.fromDns', () => {
     });
   });
 
+  test('with an imported hosted zone', () => {
+    const stack = new Stack();
+
+    const exampleCom = route53.PublicHostedZone.fromHostedZoneId(stack, 'ExampleCom', 'sampleid');
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      validation: CertificateValidation.fromDns(exampleCom),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      DomainValidationOptions: [
+        {
+          DomainName: 'test.example.com',
+          HostedZoneId: 'sampleid',
+        },
+      ],
+      ValidationMethod: 'DNS',
+    });
+  });
+
   test('with hosted zone and a wildcard name', () => {
     const stack = new Stack();
 
