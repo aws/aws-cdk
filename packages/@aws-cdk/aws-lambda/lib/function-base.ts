@@ -7,7 +7,7 @@ import { Architecture } from './architecture';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
-import { FunctionUrlOptions, FunctionUrl } from './function-url';
+import { FunctionUrlAuthType, FunctionUrlOptions, FunctionUrl } from './function-url';
 import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
@@ -98,6 +98,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    * Grant the given identity permissions to invoke this Lambda
    */
   grantInvoke(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to invoke this Lambda Function URL
+   */
+  grantInvokeUrl(identity: iam.IGrantable): iam.Grant;
 
   /**
    * Return the given named metric for this Lambda
@@ -297,6 +302,12 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   protected _invocationGrants: Record<string, iam.Grant> = {};
 
   /**
+   * Mapping of fucntion URL invocation principals to grants. Used to de-dupe `grantInvokeUrl()` calls.
+   * @internal
+   */
+  protected _functionUrlInvocationGrants: Record<string, iam.Grant> = {};
+
+  /**
    * A warning will be added to functions under the following conditions:
    * - permissions that include `lambda:InvokeFunction` are added to the unqualified function.
    * - function.currentVersion is invoked before or after the permission is created.
@@ -408,36 +419,25 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     // Memoize the result so subsequent grantInvoke() calls are idempotent
     let grant = this._invocationGrants[identifier];
     if (!grant) {
-      grant = iam.Grant.addToPrincipalOrResource({
-        grantee,
-        actions: ['lambda:InvokeFunction'],
-        resourceArns: this.resourceArnsForGrantInvoke,
-
-        // Fake resource-like object on which to call addToResourcePolicy(), which actually
-        // calls addPermission()
-        resource: {
-          addToResourcePolicy: (_statement) => {
-            // Couldn't add permissions to the principal, so add them locally.
-            this.addPermission(identifier, {
-              principal: grantee.grantPrincipal!,
-              action: 'lambda:InvokeFunction',
-            });
-
-            const permissionNode = this._functionNode().tryFindChild(identifier);
-            if (!permissionNode && !this._skipPermissions) {
-              throw new Error('Cannot modify permission to lambda function. Function is either imported or $LATEST version.\n'
-                + 'If the function is imported from the same account use `fromFunctionAttributes()` API with the `sameEnvironment` flag.\n'
-                + 'If the function is imported from a different account and already has the correct permissions use `fromFunctionAttributes()` API with the `skipPermissions` flag.');
-            }
-            return { statementAdded: true, policyDependable: permissionNode };
-          },
-          node: this.node,
-          stack: this.stack,
-          env: this.env,
-          applyRemovalPolicy: this.applyRemovalPolicy,
-        },
-      });
+      grant = this.grant(grantee, identifier, 'lambda:InvokeFunction', this.resourceArnsForGrantInvoke);
       this._invocationGrants[identifier] = grant;
+    }
+    return grant;
+  }
+
+  /**
+   * Grant the given identity permissions to invoke this Lambda Function URL
+   */
+  public grantInvokeUrl(grantee: iam.IGrantable): iam.Grant {
+    const identifier = `InvokeFunctionUrl${grantee.grantPrincipal}`; // calls the .toString() of the principal
+
+    // Memoize the result so subsequent grantInvoke() calls are idempotent
+    let grant = this._functionUrlInvocationGrants[identifier];
+    if (!grant) {
+      grant = this.grant(grantee, identifier, 'lambda:InvokeFunctionUrl', [this.functionArn], {
+        functionUrlAuthType: FunctionUrlAuthType.AWS_IAM,
+      });
+      this._functionUrlInvocationGrants[identifier] = grant;
     }
     return grant;
   }
@@ -492,6 +492,47 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       return false;
     }
     return this.stack.splitArn(this.functionArn, ArnFormat.SLASH_RESOURCE_NAME).account === this.stack.account;
+  }
+
+  private grant(
+    grantee: iam.IGrantable,
+    identifier:string,
+    action: string,
+    resourceArns: string[],
+    permissionOverrides?: Partial<Permission>,
+  ): iam.Grant {
+    const grant = iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions: [action],
+      resourceArns,
+
+      // Fake resource-like object on which to call addToResourcePolicy(), which actually
+      // calls addPermission()
+      resource: {
+        addToResourcePolicy: (_statement) => {
+          // Couldn't add permissions to the principal, so add them locally.
+          this.addPermission(identifier, {
+            principal: grantee.grantPrincipal!,
+            action: action,
+            ...permissionOverrides,
+          });
+
+          const permissionNode = this._functionNode().tryFindChild(identifier);
+          if (!permissionNode && !this._skipPermissions) {
+            throw new Error('Cannot modify permission to lambda function. Function is either imported or $LATEST version.\n'
+              + 'If the function is imported from the same account use `fromFunctionAttributes()` API with the `sameEnvironment` flag.\n'
+              + 'If the function is imported from a different account and already has the correct permissions use `fromFunctionAttributes()` API with the `skipPermissions` flag.');
+          }
+          return { statementAdded: true, policyDependable: permissionNode };
+        },
+        node: this.node,
+        stack: this.stack,
+        env: this.env,
+        applyRemovalPolicy: this.applyRemovalPolicy,
+      },
+    });
+
+    return grant;
   }
 
   /**

@@ -2636,73 +2636,111 @@ describe('function', () => {
     }).not.toThrow();
   });
 
-  test('addFunctionUrl creates a function url with default options', () => {
+  describe('FunctionUrl', () => {
+    test('addFunctionUrl creates a function url with default options', () => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const fn = new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('hello()'),
-      handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('hello()'),
+        handler: 'index.hello',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      });
+
+      // WHEN
+      fn.addFunctionUrl();
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Url', {
+        AuthType: 'AWS_IAM',
+        TargetFunctionArn: {
+          'Fn::GetAtt': [
+            'MyLambdaCCE802FB',
+            'Arn',
+          ],
+        },
+      });
     });
 
-    // WHEN
-    fn.addFunctionUrl();
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Url', {
-      AuthType: 'AWS_IAM',
-      TargetFunctionArn: {
-        'Fn::GetAtt': [
-          'MyLambdaCCE802FB',
-          'Arn',
-        ],
-      },
-    });
-  });
-
-  test('addFunctionUrl creates a function url with all options', () => {
+    test('addFunctionUrl creates a function url with all options', () => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const fn = new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('hello()'),
-      handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('hello()'),
+        handler: 'index.hello',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      });
+
+      // WHEN
+      fn.addFunctionUrl({
+        authType: lambda.FunctionUrlAuthType.NONE,
+        cors: {
+          allowCredentials: true,
+          allowedOrigins: ['https://example.com'],
+          allowedMethods: [lambda.HttpMethod.GET],
+          allowedHeaders: ['X-Custom-Header'],
+          maxAge: cdk.Duration.seconds(300),
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Url', {
+        AuthType: 'NONE',
+        TargetFunctionArn: {
+          'Fn::GetAtt': [
+            'MyLambdaCCE802FB',
+            'Arn',
+          ],
+        },
+        Cors: {
+          AllowCredentials: true,
+          AllowHeaders: [
+            'X-Custom-Header',
+          ],
+          AllowMethods: [
+            'GET',
+          ],
+          AllowOrigins: [
+            'https://example.com',
+          ],
+          MaxAge: 300,
+        },
+      });
     });
 
-    // WHEN
-    fn.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.NONE,
-      cors: {
-        allowCredentials: true,
-        allowedOrigins: ['https://example.com'],
-        allowedMethods: [lambda.HttpMethods.GET],
-        allowedHeaders: ['X-Custom-Header'],
-        maxAge: cdk.Duration.seconds(300),
-      },
-    });
+    test('grantInvokeUrl: adds appropriate permissions', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AccountPrincipal('1234'),
+      });
+      const fn = new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('hello()'),
+        handler: 'index.hello',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      });
+      fn.addFunctionUrl();
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Url', {
-      AuthType: 'NONE',
-      TargetFunctionArn: {
-        'Fn::GetAtt': [
-          'MyLambdaCCE802FB',
-          'Arn',
-        ],
-      },
-      Cors: {
-        AllowCredentials: true,
-        AllowHeaders: [
-          'X-Custom-Header',
-        ],
-        AllowMethods: [
-          'GET',
-        ],
-        AllowOrigins: [
-          'https://example.com',
-        ],
-        MaxAge: 300,
-      },
+      // WHEN
+      fn.grantInvokeUrl(role);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 'lambda:InvokeFunctionUrl',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'MyLambdaCCE802FB',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+        },
+      });
     });
   });
 });

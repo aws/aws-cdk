@@ -653,7 +653,6 @@ describe('alias', () => {
       TargetFunctionArn: {
         Ref: 'Alias325C5727',
       },
-      Qualifier: 'prod',
     });
   });
 });

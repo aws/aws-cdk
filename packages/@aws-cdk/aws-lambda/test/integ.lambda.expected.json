@@ -84,20 +84,6 @@
         }
       }
     },
-    "MyLambdafunctionurlpermissionA0CBBCEF": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunctionUrl",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "MyLambdaCCE802FB",
-            "Arn"
-          ]
-        },
-        "Principal": "*",
-        "FunctionUrlAuthType": "AWS_IAM"
-      }
-    },
     "MyLambdaCurrentVersionE7A382CCaab0ffd2d3271bb29338c3fe7c7f3151": {
       "Type": "AWS::Lambda::Version",
       "Properties": {
@@ -137,8 +123,7 @@
         "AuthType": "NONE",
         "TargetFunctionArn": {
           "Ref": "Alias325C5727"
-        },
-        "Qualifier": "prod"
+        }
       }
     },
     "Aliasinvokefunctionurl4CA9917B": {

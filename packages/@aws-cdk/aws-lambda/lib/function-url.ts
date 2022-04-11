@@ -6,7 +6,6 @@ import { IFunction } from './function-base';
 import { IVersion } from './lambda-version';
 import { CfnUrl } from './lambda.generated';
 
-
 /**
  * The auth types for a function url
  */
@@ -25,7 +24,7 @@ export enum FunctionUrlAuthType {
 /**
  * All http request methods
  */
-export enum HttpMethods {
+export enum HttpMethod {
   /**
    * The GET method requests a representation of the specified resource.
    */
@@ -81,9 +80,9 @@ export interface FunctionUrlCorsOptions {
   /**
    * An HTTP method that you allow the origin to execute.
    *
-   * @default - No methods allowed.
+   * @default - [HttpMethod.ALL]
    */
-  readonly allowedMethods?: HttpMethods[];
+  readonly allowedMethods?: HttpMethod[];
 
   /**
    * One or more origins you want customers to be able to access the bucket from.
@@ -102,7 +101,7 @@ export interface FunctionUrlCorsOptions {
   /**
    * The time in seconds that your browser is to cache the preflight response for the specified resource.
    *
-   * @default - No caching.
+   * @default - Browser default of 5 seconds.
    */
   readonly maxAge?: Duration;
 }
@@ -124,6 +123,11 @@ export interface IFunctionUrl extends IResource {
    * @attribute FunctionArn
    */
   readonly functionArn: string;
+
+  /**
+   * Grant the given identity permissions to invoke this Lambda Function URL
+   */
+  grantInvokeUrl(identity: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -172,6 +176,8 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
    */
   public readonly functionArn: string;
 
+  private readonly function: IFunction;
+
   constructor(scope: Construct, id: string, props: FunctionUrlProps) {
     super(scope, id);
 
@@ -179,20 +185,15 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
       throw new Error('FunctionUrl cannot be used with a Version');
     }
 
-    let qualifier: string | undefined = undefined;
-    if (this.instanceOfAlias(props.function)) {
-      qualifier = props.function.aliasName;
-    }
-
     const resource: CfnUrl = new CfnUrl(this, 'Resource', {
       authType: props.authType ?? FunctionUrlAuthType.AWS_IAM,
       targetFunctionArn: props.function.functionArn,
-      qualifier,
       cors: props.cors ? this.renderCors(props.cors) : undefined,
     });
 
     this.url = resource.attrFunctionUrl;
     this.functionArn = resource.attrFunctionArn;
+    this.function = props.function;
 
     if (props.authType === FunctionUrlAuthType.NONE) {
       props.function.addPermission('invoke-function-url', {
@@ -203,6 +204,10 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
     }
   }
 
+  public grantInvokeUrl(grantee: iam.IGrantable): iam.Grant {
+    return this.function.grantInvokeUrl(grantee);
+  }
+
   private instanceOfVersion(fn: IFunction): fn is IVersion {
     return 'version' in fn && !this.instanceOfAlias(fn);
   }
@@ -211,12 +216,11 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
     return 'aliasName' in fn;
   }
 
-
   private renderCors(cors: FunctionUrlCorsOptions): CfnUrl.CorsProperty {
     return {
       allowCredentials: cors.allowCredentials,
       allowHeaders: cors.allowedHeaders,
-      allowMethods: cors.allowedMethods,
+      allowMethods: cors.allowedMethods ?? [HttpMethod.ALL],
       allowOrigins: cors.allowedOrigins,
       exposeHeaders: cors.exposedHeaders,
       maxAge: cors.maxAge?.toSeconds(),

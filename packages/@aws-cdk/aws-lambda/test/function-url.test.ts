@@ -1,4 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
 
@@ -45,7 +46,7 @@ describe('FunctionUrl', () => {
       cors: {
         allowCredentials: true,
         allowedOrigins: ['https://example.com'],
-        allowedMethods: [lambda.HttpMethods.GET],
+        allowedMethods: [lambda.HttpMethod.GET],
         allowedHeaders: ['X-Custom-Header'],
         maxAge: cdk.Duration.seconds(300),
       },
@@ -111,7 +112,6 @@ describe('FunctionUrl', () => {
       TargetFunctionArn: {
         Ref: 'Alias325C5727',
       },
-      Qualifier: 'prod',
     });
   });
 
@@ -135,5 +135,43 @@ describe('FunctionUrl', () => {
         function: version,
       });
     }).toThrow(/FunctionUrl cannot be used with a Version/);
+  });
+
+  test('grantInvokeUrl: adds appropriate permissions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.AccountPrincipal('1234'),
+    });
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+    const fnUrl = new lambda.FunctionUrl(stack, 'FunctionUrl', {
+      function: fn,
+    });
+
+    // WHEN
+    fnUrl.grantInvokeUrl(role);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunctionUrl',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'MyLambdaCCE802FB',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+    });
   });
 });
