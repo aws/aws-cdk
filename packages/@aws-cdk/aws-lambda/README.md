@@ -341,77 +341,64 @@ fn.currentVersion.addAlias('live');
 
 ## Function URL
 
-A function URL is a dedicated HTTP(S) endpoint for your Lambda function. When you create a function URL, Lambda automatically generates a unique URL endpoint for you.
+A function URL is a dedicated HTTP(S) endpoint for your Lambda function. When you create a function URL, Lambda automatically generates a unique URL endpoint for you. Function URLs can be created for the latest version Lambda Functions, or Function Aliases (but not for Versions).
 
-Function URLs are dual stack-enabled, supporting IPv4 and IPv6. After you configure a function URL for your function, you can invoke your function through its HTTP(S) endpoint via a web browser, curl, Postman, or any HTTP client. Lambda function URLs use [resource-based policies](https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html) for security and access control. Function URLs also support cross-origin resource sharing (CORS) configuration options.
+Function URLs are dual stack-enabled, supporting IPv4 and IPv6, and cross-origin resource sharing (CORS) configuration. After you configure a function URL for your function, you can invoke your function through its HTTP(S) endpoint via a web browser, curl, Postman, or any HTTP client. To invoke a function using IAM authentication your HTTP client must support SigV4 signing.
 
-You can apply function URLs to any function alias, or to the $LATEST unpublished function version. You can't add a function URL to any other function version.
+### IAM-authenticated Function URLs
 
-To create a function URL, use the `lambda.FunctionUrl` construct:
+To create a Function URL which can be called by an IAM identity, call `addFunctionUrl()`, followed by `grantInvokeFunctionUrl()`:
 
 ```ts
-const fn = new lambda.Function(this, 'MyLambda', {
-  code: new lambda.InlineCode('hello()'),
-  handler: 'index.hello',
-  runtime: lambda.Runtime.NODEJS_12_X,
-});
+// Can be a Function or an Alias
+declare const fn: lambda.Function;
+declare const myRole: iam.Role;
 
-new lambda.FunctionUrl(this, 'FunctionUrl', {
-  function: fn,
-  authType: lambda.FunctionUrlAuthType.AWS_IAM,
+const fnUrl = fn.addFunctionUrl();
+fnUrl.grantInvokeUrl(myRole);
+
+new CfnOutput(this, 'TheUrl', {
+  // The .url attributes will return the unique Function URL
+  value: fnUrl.url,
 });
 ```
 
-You can also use the `lambda.addFunctionUrl()` method to create a url for that function or alias.
+Calls to this URL need to be signed with SigV4.
+
+### Anonymous Function URLs
+
+To create a Function URL which can be called anonymously, pass `authType: FunctionUrlAuthType.NONE` to `addFunctionUrl()`:
 
 ```ts
-const fn = new lambda.Function(this, 'MyLambda', {
-  code: new lambda.InlineCode('hello()'),
-  handler: 'index.hello',
-  runtime: lambda.Runtime.NODEJS_12_X,
+// Can be a Function or an Alias
+declare const fn: lambda.Function;
+
+const fnUrl = fn.addFunctionUrl({
+  authType: lambda.FunctionUrlAuthType.NONE,
 });
 
-// fn can be a function or an alias
-fn.addFunctionUrl();
-```
-
-A resource policy permissions is added to the function by default when `FunctionUrl` is created with auth type as `NONE`.
-
-You would need to add permissions to the resource policy of the function when creating a `FunctionUrl` with `AWS_IAM` as the auth type (or the principal making the request must have lambda:InvokeFunctionUrl permissions in their identity-based policy):
-
-```ts
-const fn = new lambda.Function(this, 'MyLambda', {
-  code: new lambda.InlineCode('hello()'),
-  handler: 'index.hello',
-  runtime: lambda.Runtime.NODEJS_12_X,
-});
-
-fn.addFunctionUrl();
-
-fn.addPermission('function-url-invoke-permission', {
-  principal: new iam.AccountPrincipal('account-id'),
-  action: 'lambda:InvokeFunctionUrl',
-  functionUrlAuthType: lambda.FunctionUrlAuthType.AWS_IAM,
+new CfnOutput(this, 'TheUrl', {
+  value: fnUrl.url,
 });
 ```
 
-You can also specify the CORS configuration for the function URL.
+### CORS configuration for Function URLs
+
+If you want your Function URLs to be invokable from a web page in browser, you
+will need to configure cross-origin resource sharing to allow the call (if you do
+not do this, your browser will refuse to make the call):
 
 ```ts
-const fn = new lambda.Function(this, 'MyLambda', {
-  code: new lambda.InlineCode('hello()'),
-  handler: 'index.hello',
-  runtime: lambda.Runtime.NODEJS_12_X,
-});
+declare const fn: lambda.Function;
 
 fn.addFunctionUrl({
   authType: lambda.FunctionUrlAuthType.NONE,
   cors: {
-    allowCredentials: true,
+    // Allow this to be called from websites on https://example.com.
+    // Can also be ['*'] to allow all domain.
     allowedOrigins: ['https://example.com'],
-    allowedMethods: [lambda.HttpMethods.GET],
-    allowedHeaders: ['X-Custom-Header'],
-    maxAge: Duration.seconds(300),
+
+    // More options are possible here, see the documentation for FunctionUrlCorsOptions
   },
 });
 ```
