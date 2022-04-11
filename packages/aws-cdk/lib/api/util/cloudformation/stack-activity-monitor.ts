@@ -621,6 +621,10 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
       const color = colorFromStatusActivity(res.event.ResourceStatus);
       const resourceName = res.metadata?.constructPath ?? res.event.LogicalResourceId ?? '';
 
+      if (hasErrorMessage(res.event.ResourceStatus ?? '')) {
+        debugger;
+      }
+
       return util.format('%s | %s | %s | %s%s',
         padLeft(TIMESTAMP_WIDTH, new Date(res.event.Timestamp).toLocaleTimeString()),
         color(padRight(STATUS_WIDTH, (res.event.ResourceStatus || '').slice(0, STATUS_WIDTH))),
@@ -665,7 +669,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
 
     // Display in the same block space, otherwise we're going to have silly empty lines.
     this.block.displayLines(lines);
-    this.block.removeEmptyLines(lines);
+    this.block.removeEmptyLines();
   }
 
   private progressBar(width: number) {
@@ -728,7 +732,7 @@ function colorFromStatusActivity(status?: string) {
     return chalk.red;
   }
 
-  if (status.startsWith('CREATE_') || status.startsWith('UPDATE_')) {
+  if (status.startsWith('CREATE_') || status.startsWith('UPDATE_') || status.startsWith('IMPORT_')) {
     return chalk.green;
   }
   // For stacks, it may also be 'UPDDATE_ROLLBACK_IN_PROGRESS'
