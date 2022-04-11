@@ -1,0 +1,48 @@
+{
+ "Resources": {
+  "Repo02AC86CF": {
+   "Type": "AWS::CodeCommit::Repository",
+   "Properties": {
+    "RepositoryName": "aws-cdk-codecommit-events"
+   }
+  },
+  "RepoOnReferenceCreatedF1C66FF1": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "source": [
+      "aws.codecommit"
+     ],
+     "resources": [
+      {
+       "Fn::GetAtt": [
+        "Repo02AC86CF",
+        "Arn"
+       ]
+      }
+     ],
+     "detail-type": [
+      "CodeCommit Repository State Change"
+     ],
+     "detail": {
+      "event": [
+       "referenceCreated"
+      ]
+     }
+    },
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Ref": "MyTopic86869434"
+      },
+      "Id": "Target0"
+     }
+    ]
+   }
+  },
+  "MyTopic86869434": {
+   "Type": "AWS::SNS::Topic"
+  }
+ }
+}

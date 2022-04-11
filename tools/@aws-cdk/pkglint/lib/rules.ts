@@ -130,7 +130,9 @@ export class RepositoryCorrect extends ValidationRule {
     expectJSON(this.name, pkg, 'repository.type', 'git');
     expectJSON(this.name, pkg, 'repository.url', 'https://github.com/aws/aws-cdk.git');
     const pkgDir = path.relative(monoRepoRoot(), pkg.packageRoot);
-    expectJSON(this.name, pkg, 'repository.directory', pkgDir);
+    // Enforcing '/' separator for builds to work in Windows.
+    const osPkgDir = pkgDir.split(path.sep).join('/');
+    expectJSON(this.name, pkg, 'repository.directory', osPkgDir);
   }
 }
 
@@ -1262,14 +1264,14 @@ export class MustHaveIntegCommand extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!hasIntegTests(pkg)) { return; }
 
-    expectJSON(this.name, pkg, 'scripts.integ', 'cdk-integ');
+    expectJSON(this.name, pkg, 'scripts.integ', 'integ-runner');
 
     // We can't ACTUALLY require cdk-build-tools/package.json here,
     // because WE don't depend on cdk-build-tools and we don't know if
     // the package does.
     expectDevDependency(this.name,
       pkg,
-      '@aws-cdk/cdk-integ-tools',
+      '@aws-cdk/integ-runner',
       `${PKGLINT_VERSION}`); // eslint-disable-line @typescript-eslint/no-require-imports
   }
 }
