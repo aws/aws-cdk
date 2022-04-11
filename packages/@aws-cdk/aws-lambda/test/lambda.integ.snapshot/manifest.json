@@ -34,6 +34,12 @@
             "data": "MyLambdaCCE802FB"
           }
         ],
+        "/aws-cdk-lambda-1/MyLambda/FunctionUrl/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaFunctionUrlC2055677"
+          }
+        ],
         "/aws-cdk-lambda-1/MyLambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -50,6 +56,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AliasAliasPermissionAF30F9E8"
+          }
+        ],
+        "/aws-cdk-lambda-1/Alias/FunctionUrl/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AliasFunctionUrlDC6EC566"
+          }
+        ],
+        "/aws-cdk-lambda-1/Alias/invoke-function-url": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Aliasinvokefunctionurl4CA9917B"
           }
         ]
       },
