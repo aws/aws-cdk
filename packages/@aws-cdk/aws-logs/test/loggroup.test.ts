@@ -1,7 +1,7 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { CfnParameter, RemovalPolicy, Stack } from '@aws-cdk/core';
+import { CfnParameter, Fn, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { LogGroup, RetentionDays } from '../lib';
 
 describe('log group', () => {
@@ -16,12 +16,9 @@ describe('log group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       KmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
-
     });
-
-
   });
 
   test('fixed retention', () => {
@@ -34,11 +31,9 @@ describe('log group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       RetentionInDays: 7,
     });
-
-
   });
 
   test('default retention', () => {
@@ -49,11 +44,9 @@ describe('log group', () => {
     new LogGroup(stack, 'LogGroup');
 
     // THEN
-    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       RetentionInDays: 731,
     });
-
-
   });
 
   test('infinite retention/dont delete log group by default', () => {
@@ -66,7 +59,7 @@ describe('log group', () => {
     });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         LogGroupF5B46931: {
           Type: 'AWS::Logs::LogGroup',
@@ -75,8 +68,6 @@ describe('log group', () => {
         },
       },
     });
-
-
   });
 
   test('infinite retention via legacy method', () => {
@@ -92,7 +83,7 @@ describe('log group', () => {
     });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         LogGroupF5B46931: {
           Type: 'AWS::Logs::LogGroup',
@@ -101,8 +92,6 @@ describe('log group', () => {
         },
       },
     });
-
-
   });
 
   test('unresolved retention', () => {
@@ -116,13 +105,11 @@ describe('log group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       RetentionInDays: {
         Ref: 'RetentionInDays',
       },
     });
-
-
   });
 
   test('will delete log group if asked to', () => {
@@ -136,7 +123,7 @@ describe('log group', () => {
     });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         LogGroupF5B46931: {
           Type: 'AWS::Logs::LogGroup',
@@ -145,8 +132,6 @@ describe('log group', () => {
         },
       },
     });
-
-
   });
 
   test('import from ARN, same region', () => {
@@ -160,10 +145,9 @@ describe('log group', () => {
     // THEN
     expect(imported.logGroupName).toEqual('my-log-group');
     expect(imported.logGroupArn).toEqual('arn:aws:logs:us-east-1:123456789012:log-group:my-log-group:*');
-    expect(stack2).toHaveResource('AWS::Logs::LogStream', {
+    Template.fromStack(stack2).hasResourceProperties('AWS::Logs::LogStream', {
       LogGroupName: 'my-log-group',
     });
-
   });
 
   test('import from ARN, different region', () => {
@@ -182,10 +166,10 @@ describe('log group', () => {
     expect(imported.env.region).not.toEqual(stack.region);
     expect(imported.env.region).toEqual(importRegion);
 
-    expect(stack).toHaveResource('AWS::Logs::LogStream', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogStream', {
       LogGroupName: 'my-log-group',
     });
-    expect(stack).toCountResources('AWS::Logs::LogGroup', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
   });
 
   test('import from name', () => {
@@ -200,10 +184,9 @@ describe('log group', () => {
     expect(imported.logGroupName).toEqual('my-log-group');
     expect(imported.logGroupArn).toMatch(/^arn:.+:logs:.+:.+:log-group:my-log-group:\*$/);
 
-    expect(stack).toHaveResource('AWS::Logs::LogStream', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogStream', {
       LogGroupName: 'my-log-group',
     });
-
   });
 
   describe('loggroups imported by name have stream wildcard appended to grant ARN', () => void dataDrivenTests([
@@ -221,7 +204,7 @@ describe('log group', () => {
     imported.grantWrite(user);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -243,9 +226,8 @@ describe('log group', () => {
         ],
       },
     });
+
     expect(imported.logGroupName).toEqual('my-log-group');
-
-
   }));
 
   describe('loggroups imported by ARN have stream wildcard appended to grant ARN', () => void dataDrivenTests([
@@ -263,7 +245,7 @@ describe('log group', () => {
     imported.grantWrite(user);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -275,9 +257,8 @@ describe('log group', () => {
         ],
       },
     });
+
     expect(imported.logGroupName).toEqual('my-log-group');
-
-
   }));
 
   test('extractMetric', () => {
@@ -289,7 +270,7 @@ describe('log group', () => {
     const metric = lg.extractMetric('$.myField', 'MyService', 'Field');
 
     // THEN
-    expect(stack).toHaveResource('AWS::Logs::MetricFilter', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::MetricFilter', {
       FilterPattern: '{ $.myField = "*" }',
       LogGroupName: { Ref: 'LogGroupF5B46931' },
       MetricTransformations: [
@@ -300,10 +281,9 @@ describe('log group', () => {
         },
       ],
     });
+
     expect(metric.namespace).toEqual('MyService');
     expect(metric.metricName).toEqual('Field');
-
-
   });
 
   test('extractMetric allows passing in namespaces with "/"', () => {
@@ -315,7 +295,7 @@ describe('log group', () => {
     const metric = lg.extractMetric('$.myField', 'MyNamespace/MyService', 'Field');
 
     // THEN
-    expect(stack).toHaveResource('AWS::Logs::MetricFilter', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::MetricFilter', {
       FilterPattern: '{ $.myField = "*" }',
       MetricTransformations: [
         {
@@ -325,10 +305,9 @@ describe('log group', () => {
         },
       ],
     });
+
     expect(metric.namespace).toEqual('MyNamespace/MyService');
     expect(metric.metricName).toEqual('Field');
-
-
   });
 
   test('grant', () => {
@@ -341,7 +320,7 @@ describe('log group', () => {
     lg.grantWrite(user);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -353,8 +332,6 @@ describe('log group', () => {
         Version: '2012-10-17',
       },
     });
-
-
   });
 
   test('grant to service principal', () => {
@@ -367,7 +344,7 @@ describe('log group', () => {
     lg.grantWrite(sp);
 
     // THEN
-    expect(stack).toHaveResource('AWS::Logs::ResourcePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
       PolicyDocument: {
         'Fn::Join': [
           '',
@@ -385,11 +362,9 @@ describe('log group', () => {
       },
       PolicyName: 'LogGroupPolicy643B329C',
     });
-
   });
 
-
-  test('can add a policy to the log group', () => {
+  test('when added to log groups, IAM users are converted into account IDs in the resource policy', () => {
     // GIVEN
     const stack = new Stack();
     const lg = new LogGroup(stack, 'LogGroup');
@@ -402,9 +377,41 @@ describe('log group', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResource('AWS::Logs::ResourcePolicy', {
-      PolicyDocument: '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"arn:aws:iam::123456789012:user/user-name"},"Resource":"*"}],"Version":"2012-10-17"}',
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"123456789012"},"Resource":"*"}],"Version":"2012-10-17"}',
       PolicyName: 'LogGroupPolicy643B329C',
+    });
+  });
+
+  test('imported values are treated as if they are ARNs and converted to account IDs via CFN pseudo parameters', () => {
+    // GIVEN
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    lg.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['logs:PutLogEvents'],
+      principals: [iam.Role.fromRoleArn(stack, 'Role', Fn.importValue('SomeRole'))],
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          [
+            '{\"Statement\":[{\"Action\":\"logs:PutLogEvents\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"',
+            {
+              'Fn::Select': [
+                4,
+                { 'Fn::Split': [':', { 'Fn::ImportValue': 'SomeRole' }] },
+              ],
+            },
+            '\"},\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}',
+          ],
+        ],
+      },
     });
   });
 
@@ -419,11 +426,9 @@ describe('log group', () => {
 
     // THEN
     expect(logGroup.logGroupPhysicalName()).toEqual('my-log-group');
-    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       LogGroupName: 'my-log-group',
     });
-
-
   });
 });
 
@@ -434,5 +439,4 @@ function dataDrivenTests(cases: string[], body: (suffix: string) => void): void 
       body(args);
     });
   }
-
 }

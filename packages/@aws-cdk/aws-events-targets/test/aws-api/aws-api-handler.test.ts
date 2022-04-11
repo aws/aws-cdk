@@ -31,10 +31,7 @@ test('calls the SDK with the right parameters', async () => {
   expect(updateServiceMock).toHaveBeenCalledWith({
     service: 'cool-service',
     forceNewDeployment: true,
-    // NOTE - The below (representing a callback) should be included in the output.
-    // However, this was broken by aws-sdk-mock@5.5.0.
-    // See https://github.com/dwyl/aws-sdk-mock/issues/256 for more details.
-  }/*, expect.any(Function)*/);
+  }, expect.any(Function));
 
   expect(console.log).toHaveBeenLastCalledWith('Response: %j', {
     success: true,

@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Architecture } from '@aws-cdk/aws-lambda';
 import { Bundling } from './bundling';
-import { PackageManager } from './package-manager';
+import { LockFile } from './package-manager';
 import { BundlingOptions } from './types';
 import { callsites, findUpMultiple } from './util';
 
@@ -138,9 +138,9 @@ function findLockFile(depsLockFilePath?: string): string {
   }
 
   const lockFiles = findUpMultiple([
-    PackageManager.PNPM.lockFile,
-    PackageManager.YARN.lockFile,
-    PackageManager.NPM.lockFile,
+    LockFile.PNPM,
+    LockFile.YARN,
+    LockFile.NPM,
   ]);
 
   if (lockFiles.length === 0) {
@@ -158,10 +158,11 @@ function findLockFile(depsLockFilePath?: string): string {
  * 1. Given entry file
  * 2. A .ts file named as the defining file with id as suffix (defining-file.id.ts)
  * 3. A .js file name as the defining file with id as suffix (defining-file.id.js)
+ * 4. A .mjs file name as the defining file with id as suffix (defining-file.id.mjs)
  */
 function findEntry(id: string, entry?: string): string {
   if (entry) {
-    if (!/\.(jsx?|tsx?)$/.test(entry)) {
+    if (!/\.(jsx?|tsx?|mjs)$/.test(entry)) {
       throw new Error('Only JavaScript or TypeScript entry files are supported.');
     }
     if (!fs.existsSync(entry)) {
@@ -183,7 +184,12 @@ function findEntry(id: string, entry?: string): string {
     return jsHandlerFile;
   }
 
-  throw new Error(`Cannot find handler file ${tsHandlerFile} or ${jsHandlerFile}`);
+  const mjsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.mjs`);
+  if (fs.existsSync(mjsHandlerFile)) {
+    return mjsHandlerFile;
+  }
+
+  throw new Error(`Cannot find handler file ${tsHandlerFile}, ${jsHandlerFile} or ${mjsHandlerFile}`);
 }
 
 /**

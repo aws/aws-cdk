@@ -1,4 +1,4 @@
-import { Tokenization } from '@aws-cdk/core';
+import { Tokenization, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 import {
@@ -9,6 +9,7 @@ import {
   NetworkMode,
   TaskDefinition,
 } from '../base/task-definition';
+import { RuntimePlatform } from '../runtime-platform';
 
 /**
  * The properties for a task definition.
@@ -59,6 +60,15 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    * @default 20
    */
   readonly ephemeralStorageGiB?: number;
+
+  /**
+   * The operating system that your task definitions are running on.
+   *
+   * A runtimePlatform is supported only for tasks using the Fargate launch type.
+   *
+   * @default - Undefined.
+   */
+  readonly runtimePlatform?: RuntimePlatform;
 }
 
 /**
@@ -130,7 +140,8 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
       networkMode: NetworkMode.AWS_VPC,
     });
 
-    if (props.ephemeralStorageGiB && (props.ephemeralStorageGiB < 21 || props.ephemeralStorageGiB > 200)) {
+    // eslint-disable-next-line max-len
+    if (props.ephemeralStorageGiB && !Token.isUnresolved(props.ephemeralStorageGiB) && (props.ephemeralStorageGiB < 21 || props.ephemeralStorageGiB > 200)) {
       throw new Error('Ephemeral storage size must be between 21GiB and 200GiB');
     }
 

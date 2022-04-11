@@ -1,5 +1,5 @@
 {
-  "$version": "51.0.0",
+  "$version": "66.0.0",
   "PropertyTypes": {
     "AWS::AppMesh::GatewayRoute.GatewayRouteHostnameMatch": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appmesh-gatewayroute-gatewayroutehostnamematch.html",
@@ -465,6 +465,10 @@
           "UpdateType": "Mutable"
         }
       }
+    },
+    "AWS::AppMesh::Mesh.MeshServiceDiscovery": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appmesh-mesh-meshservicediscovery.html",
+      "Properties": {}
     },
     "AWS::AppMesh::Mesh.MeshSpec": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appmesh-mesh-meshspec.html",

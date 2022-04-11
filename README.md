@@ -79,7 +79,7 @@ For a detailed walkthrough, see the [tutorial](https://docs.aws.amazon.com/cdk/l
 Install or update the [AWS CDK CLI] from npm (requires [Node.js ≥ 14.15.0](https://nodejs.org/download/release/latest-v14.x/)). We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
 
 ```console
-$ npm i -g aws-cdk
+npm i -g aws-cdk
 ```
 
 (See [Manual Installation](./MANUAL_INSTALLATION.md) for installing the CDK from a signed .zip file).
@@ -87,9 +87,9 @@ $ npm i -g aws-cdk
 Initialize a project:
 
 ```console
-$ mkdir hello-cdk
-$ cd hello-cdk
-$ cdk init sample-app --language=typescript
+mkdir hello-cdk
+cd hello-cdk
+cdk init sample-app --language=typescript
 ```
 
 This creates a sample project looking like this:
@@ -113,7 +113,7 @@ export class HelloCdkStack extends cdk.Stack {
 Deploy this to your account:
 
 ```console
-$ cdk deploy
+cdk deploy
 ```
 
 Use the `cdk` command-line toolkit to interact with your project:
@@ -153,6 +153,12 @@ this capability, please see the
 ## More Resources
 * [CDK Workshop](https://cdkworkshop.com/)
 * [Construct Hub](https://constructs.dev) - Find and use open-source Cloud Development Kit (CDK) libraries
+* Best Practices
+  * [Best practices for developing cloud applications with AWS CDK](https://aws.amazon.com/blogs/devops/best-practices-for-developing-cloud-applications-with-aws-cdk/)
+  * [Align with best practices while creating infrastructure using cdk aspects](https://aws.amazon.com/blogs/devops/align-with-best-practices-while-creating-infrastructure-using-cdk-aspects/)
+  * [Recommended AWS CDK project structure for Python applications](https://aws.amazon.com/blogs/developer/recommended-aws-cdk-project-structure-for-python-applications/)
+  * [Best practices for discoverability of a construct library on Construct Hub](https://aws.amazon.com/blogs/opensource/best-practices-for-discoverability-of-a-construct-library-on-construct-hub/)
+* [All developer blog posts about AWS CDK](https://aws.amazon.com/blogs/developer/category/developer-tools/aws-cloud-development-kit/)
 * **[CDK Construction Zone](https://www.twitch.tv/collections/9kCOGphNZBYVdA)** - A Twitch live coding series hosted by the CDK team, season one episodes:
   * Triggers: Join us as we implement [Triggers](https://github.com/aws/aws-cdk-rfcs/issues/71), a Construct for configuring deploy time actions. Episodes 1-3:
     * [S1E1](https://www.twitch.tv/videos/917691798): Triggers (part 1); **Participants:** @NetaNir, @eladb, @richardhboyd

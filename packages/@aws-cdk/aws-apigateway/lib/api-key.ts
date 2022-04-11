@@ -165,7 +165,7 @@ export class ApiKey extends ApiKeyBase {
     const resource = new CfnApiKey(this, 'Resource', {
       customerId: props.customerId,
       description: props.description,
-      enabled: props.enabled || true,
+      enabled: props.enabled ?? true,
       generateDistinctId: props.generateDistinctId,
       name: this.physicalName,
       stageKeys: this.renderStageKeys(props.resources),

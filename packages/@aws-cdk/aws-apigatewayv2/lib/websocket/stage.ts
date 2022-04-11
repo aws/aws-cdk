@@ -91,6 +91,10 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       apiId: props.webSocketApi.apiId,
       stageName: this.physicalName,
       autoDeploy: props.autoDeploy,
+      defaultRouteSettings: !props.throttle ? undefined : {
+        throttlingBurstLimit: props.throttle?.burstLimit,
+        throttlingRateLimit: props.throttle?.rateLimit,
+      },
     });
 
     if (props.domainMapping) {
@@ -131,7 +135,7 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
     return Grant.addToPrincipal({
       grantee: identity,
       actions: ['execute-api:ManageConnections'],
-      resourceArns: [`${arn}/${this.stageName}/POST/@connections/*`],
+      resourceArns: [`${arn}/${this.stageName}/*/@connections/*`],
     });
   }
 }

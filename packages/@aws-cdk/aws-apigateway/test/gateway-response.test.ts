@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { ResponseType, RestApi } from '../lib';
 
@@ -20,12 +19,12 @@ describe('gateway response', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::GatewayResponse', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::GatewayResponse', {
       ResponseType: 'ACCESS_DENIED',
       RestApiId: stack.resolve(api.restApiId),
-      StatusCode: ABSENT,
-      ResponseParameters: ABSENT,
-      ResponseTemplates: ABSENT,
+      StatusCode: Match.absent(),
+      ResponseParameters: Match.absent(),
+      ResponseTemplates: Match.absent(),
     });
   });
 
@@ -50,7 +49,7 @@ describe('gateway response', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::GatewayResponse', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::GatewayResponse', {
       ResponseType: 'AUTHORIZER_FAILURE',
       RestApiId: stack.resolve(api.restApiId),
       StatusCode: '500',
@@ -58,7 +57,7 @@ describe('gateway response', () => {
         'gatewayresponse.header.Access-Control-Allow-Origin': 'test.com',
         'gatewayresponse.header.test-key': 'test-value',
       },
-      ResponseTemplates: ABSENT,
+      ResponseTemplates: Match.absent(),
     });
   });
 
@@ -82,11 +81,11 @@ describe('gateway response', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::GatewayResponse', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::GatewayResponse', {
       ResponseType: 'AUTHORIZER_FAILURE',
       RestApiId: stack.resolve(api.restApiId),
       StatusCode: '500',
-      ResponseParameters: ABSENT,
+      ResponseParameters: Match.absent(),
       ResponseTemplates: {
         'application/json': '{ "message": $context.error.messageString, "statusCode": "488" }',
       },

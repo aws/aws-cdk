@@ -28,7 +28,7 @@ export interface SourceCodeProviderConfig {
   /**
    * The repository for the application. Must use the `HTTPS` protocol.
    *
-   * @example https://github.com/aws/aws-cdk
+   * For example, `https://github.com/aws/aws-cdk`.
    */
   readonly repository: string;
 
@@ -37,7 +37,7 @@ export interface SourceCodeProviderConfig {
    * to create webhook and read-only deploy key. OAuth token is not stored.
    *
    * Either `accessToken` or `oauthToken` must be specified if `repository`
-   * is sepcified.
+   * is specified.
    *
    * @default - do not use a token
    */
@@ -223,7 +223,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
     const sourceCodeProviderOptions = props.sourceCodeProvider?.bind(this);
 
     const app = new CfnApp(this, 'Resource', {
-      accessToken: sourceCodeProviderOptions?.accessToken?.toString(),
+      accessToken: sourceCodeProviderOptions?.accessToken?.unsafeUnwrap(), // Safe usage
       autoBranchCreationConfig: props.autoBranchCreation && {
         autoBranchCreationPatterns: props.autoBranchCreation.patterns,
         basicAuthConfig: props.autoBranchCreation.basicAuth
@@ -247,7 +247,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
       environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.environmentVariables) }, { omitEmptyArray: true }),
       iamServiceRole: role.roleArn,
       name: props.appName || this.node.id,
-      oauthToken: sourceCodeProviderOptions?.oauthToken?.toString(),
+      oauthToken: sourceCodeProviderOptions?.oauthToken?.unsafeUnwrap(), // Safe usage
       repository: sourceCodeProviderOptions?.repository,
       customHeaders: props.customResponseHeaders ? renderCustomResponseHeaders(props.customResponseHeaders) : undefined,
     });

@@ -202,7 +202,7 @@ const principal = new iam.AccountPrincipal('123456789000')
 
 > NOTE: If you need to define an IAM condition that uses a token (such as a
 > deploy-time attribute of another resource) in a JSON map key, use `CfnJson` to
-> render this condition. See [this test](./test/integ-condition-with-ref.ts) for
+> render this condition. See [this test](./test/integ.condition-with-ref.ts) for
 > an example.
 
 The `WebIdentityPrincipal` class can be used as a principal for web identities like
@@ -456,6 +456,27 @@ const user = iam.User.fromUserAttributes(this, 'MyImportedUserByAttributes', {
   userArn: 'arn:aws:iam::123456789012:user/johnsmith',
 });
 ```
+
+### Access Keys
+
+The ability for a user to make API calls via the CLI or an SDK is enabled by the user having an
+access key pair. To create an access key:
+
+```ts
+const user = new iam.User(this, 'MyUser');
+const accessKey = new iam.AccessKey(this, 'MyAccessKey', { user: user });
+```
+
+You can force CloudFormation to rotate the access key by providing a monotonically increasing `serial`
+property. Simply provide a higher serial value than any number used previously: 
+
+```ts
+const user = new iam.User(this, 'MyUser');
+const accessKey = new iam.AccessKey(this, 'MyAccessKey', { user: user, serial: 1 });
+```
+
+An access key may only be associated with a single user and cannot be "moved" between users. Changing
+the user associated with an access key replaces the access key (and its ID and secret value).
 
 ## Groups
 

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { CloudFrontWebDistribution, FailoverStatusCode } from '../lib';
@@ -28,85 +28,82 @@ describe('origin group', () => {
       ],
     });
 
-    expect(stack)
-      .toHaveResourceLike('AWS::CloudFront::Distribution', {
-        DistributionConfig: {
-          OriginGroups: {
-            Items: [
-              {
-                FailoverCriteria: {
-                  StatusCodes: {
-                    Items: [
-                      500,
-                      502,
-                      503,
-                      504,
-                    ],
-                    Quantity: 4,
-                  },
-                },
-                Id: 'OriginGroup1',
-                Members: {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        OriginGroups: {
+          Items: [
+            {
+              FailoverCriteria: {
+                StatusCodes: {
                   Items: [
-                    {
-                      OriginId: 'origin1',
-                    },
-                    {
-                      OriginId: 'originSecondary1',
-                    },
+                    500,
+                    502,
+                    503,
+                    504,
                   ],
-                  Quantity: 2,
+                  Quantity: 4,
                 },
               },
-            ],
-            Quantity: 1,
-          },
-          Origins: [
-            {
-              CustomOriginConfig: {
-                HTTPPort: 80,
-                HTTPSPort: 443,
-                OriginKeepaliveTimeout: 5,
-                OriginProtocolPolicy: 'https-only',
-                OriginReadTimeout: 30,
-                OriginSSLProtocols: [
-                  'TLSv1.2',
+              Id: 'OriginGroup1',
+              Members: {
+                Items: [
+                  {
+                    OriginId: 'origin1',
+                  },
+                  {
+                    OriginId: 'originSecondary1',
+                  },
                 ],
+                Quantity: 2,
               },
-              DomainName: 'myoriginfallback.com',
-              Id: 'originSecondary1',
-              OriginCustomHeaders: [
-                {
-                  HeaderName: 'X-Custom-Header',
-                  HeaderValue: 'somevalue',
-                },
-              ],
-            },
-            {
-              CustomOriginConfig: {
-                HTTPPort: 80,
-                HTTPSPort: 443,
-                OriginKeepaliveTimeout: 5,
-                OriginProtocolPolicy: 'https-only',
-                OriginReadTimeout: 30,
-                OriginSSLProtocols: [
-                  'TLSv1.2',
-                ],
-              },
-              DomainName: 'myorigin.com',
-              Id: 'origin1',
-              OriginCustomHeaders: [
-                {
-                  HeaderName: 'X-Custom-Header',
-                  HeaderValue: 'somevalue',
-                },
-              ],
             },
           ],
+          Quantity: 1,
         },
-      });
-
-
+        Origins: [
+          Match.objectLike({
+            CustomOriginConfig: {
+              HTTPPort: 80,
+              HTTPSPort: 443,
+              OriginKeepaliveTimeout: 5,
+              OriginProtocolPolicy: 'https-only',
+              OriginReadTimeout: 30,
+              OriginSSLProtocols: [
+                'TLSv1.2',
+              ],
+            },
+            DomainName: 'myoriginfallback.com',
+            Id: 'originSecondary1',
+            OriginCustomHeaders: [
+              {
+                HeaderName: 'X-Custom-Header',
+                HeaderValue: 'somevalue',
+              },
+            ],
+          }),
+          Match.objectLike({
+            CustomOriginConfig: {
+              HTTPPort: 80,
+              HTTPSPort: 443,
+              OriginKeepaliveTimeout: 5,
+              OriginProtocolPolicy: 'https-only',
+              OriginReadTimeout: 30,
+              OriginSSLProtocols: [
+                'TLSv1.2',
+              ],
+            },
+            DomainName: 'myorigin.com',
+            Id: 'origin1',
+            OriginCustomHeaders: [
+              {
+                HeaderName: 'X-Custom-Header',
+                HeaderValue: 'somevalue',
+              },
+            ],
+          }),
+        ],
+      },
+    });
   });
 
   test('Distribution with s3 origin failover', () => {
@@ -139,92 +136,91 @@ describe('origin group', () => {
       ],
     });
 
-    expect(stack)
-      .toHaveResourceLike('AWS::CloudFront::Distribution', {
-        DistributionConfig: {
-          OriginGroups: {
-            Items: [
-              {
-                FailoverCriteria: {
-                  StatusCodes: {
-                    Items: [
-                      500,
-                    ],
-                    Quantity: 1,
-                  },
-                },
-                Id: 'OriginGroup1',
-                Members: {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        OriginGroups: {
+          Items: [
+            {
+              FailoverCriteria: {
+                StatusCodes: {
                   Items: [
-                    {
-                      OriginId: 'origin1',
-                    },
-                    {
-                      OriginId: 'originSecondary1',
-                    },
+                    500,
                   ],
-                  Quantity: 2,
+                  Quantity: 1,
                 },
               },
-            ],
-            Quantity: 1,
-          },
-          Origins: [
-            {
-              DomainName: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'myoriginbucketfallback.s3.',
-                    {
-                      Ref: 'AWS::Region',
-                    },
-                    '.',
-                    {
-                      Ref: 'AWS::URLSuffix',
-                    },
-                  ],
+              Id: 'OriginGroup1',
+              Members: {
+                Items: [
+                  {
+                    OriginId: 'origin1',
+                  },
+                  {
+                    OriginId: 'originSecondary1',
+                  },
                 ],
+                Quantity: 2,
               },
-              Id: 'originSecondary1',
-              OriginCustomHeaders: [
-                {
-                  HeaderName: 'myHeader2',
-                  HeaderValue: '21',
-                },
-              ],
-              OriginPath: '/somwhere',
-              S3OriginConfig: {},
-            },
-            {
-              DomainName: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'myoriginbucket.s3.',
-                    {
-                      Ref: 'AWS::Region',
-                    },
-                    '.',
-                    {
-                      Ref: 'AWS::URLSuffix',
-                    },
-                  ],
-                ],
-              },
-              Id: 'origin1',
-              OriginCustomHeaders: [
-                {
-                  HeaderName: 'myHeader',
-                  HeaderValue: '42',
-                },
-              ],
-              OriginPath: '/',
-              S3OriginConfig: {},
             },
           ],
+          Quantity: 1,
         },
-      });
+        Origins: [
+          Match.objectLike({
+            DomainName: {
+              'Fn::Join': [
+                '',
+                [
+                  'myoriginbucketfallback.s3.',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  '.',
+                  {
+                    Ref: 'AWS::URLSuffix',
+                  },
+                ],
+              ],
+            },
+            Id: 'originSecondary1',
+            OriginCustomHeaders: [
+              {
+                HeaderName: 'myHeader2',
+                HeaderValue: '21',
+              },
+            ],
+            OriginPath: '/somwhere',
+            S3OriginConfig: {},
+          }),
+          Match.objectLike({
+            DomainName: {
+              'Fn::Join': [
+                '',
+                [
+                  'myoriginbucket.s3.',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  '.',
+                  {
+                    Ref: 'AWS::URLSuffix',
+                  },
+                ],
+              ],
+            },
+            Id: 'origin1',
+            OriginCustomHeaders: [
+              {
+                HeaderName: 'myHeader',
+                HeaderValue: '42',
+              },
+            ],
+            OriginPath: '/',
+            S3OriginConfig: {},
+          }),
+        ],
+      },
+    });
 
 
   });

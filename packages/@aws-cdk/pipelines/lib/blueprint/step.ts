@@ -1,4 +1,5 @@
 import { Stack, Token } from '@aws-cdk/core';
+import { StepOutput } from '../helpers-internal/step-output';
 import { FileSet, IFileSetProducer } from './file-set';
 
 /**
@@ -13,6 +14,10 @@ import { FileSet, IFileSetProducer } from './file-set';
 export abstract class Step implements IFileSetProducer {
   /**
    * Define a sequence of steps to be executed in order.
+   *
+   * If you need more fine-grained step ordering, use the `addStepDependency()`
+   * API. For example, if you want `secondStep` to occur after `firstStep`, call
+   * `secondStep.addStepDependency(firstStep)`.
    */
   public static sequence(steps: Step[]): Step[] {
     for (let i = 1; i < steps.length; i++) {
@@ -35,7 +40,7 @@ export abstract class Step implements IFileSetProducer {
 
   private _primaryOutput?: FileSet;
 
-  private _dependencies: Step[] = [];
+  private _dependencies = new Set<Step>();
 
   constructor(
     /** Identifier for this step */
@@ -50,7 +55,10 @@ export abstract class Step implements IFileSetProducer {
    * Return the steps this step depends on, based on the FileSets it requires
    */
   public get dependencies(): Step[] {
-    return this.dependencyFileSets.map(f => f.producer).concat(this._dependencies);
+    return Array.from(new Set([
+      ...this.dependencyFileSets.map(f => f.producer),
+      ...this._dependencies,
+    ]));
   }
 
   /**
@@ -75,7 +83,7 @@ export abstract class Step implements IFileSetProducer {
    * Add a dependency on another step.
    */
   public addStepDependency(step: Step) {
-    this._dependencies.push(step);
+    this._dependencies.add(step);
   }
 
   /**
@@ -92,6 +100,21 @@ export abstract class Step implements IFileSetProducer {
    */
   protected configurePrimaryOutput(fs: FileSet) {
     this._primaryOutput = fs;
+  }
+
+  /**
+   * Crawl the given structure for references to StepOutputs and add dependencies on all steps found
+   *
+   * Should be called in the constructor of subclasses based on what the user
+   * passes in as construction properties. The format of the structure passed in
+   * here does not have to correspond exactly to what gets rendered into the
+   * engine, it just needs to contain the same data.
+   */
+  protected discoverReferencedOutputs(structure: any) {
+    for (const output of StepOutput.findAll(structure)) {
+      this._dependencies.add(output.step);
+      StepOutput.recordProducer(output);
+    }
   }
 }
 
@@ -124,5 +147,4 @@ export interface StackSteps {
    * @default - no additional steps
    */
   readonly post?: Step[];
-
 }

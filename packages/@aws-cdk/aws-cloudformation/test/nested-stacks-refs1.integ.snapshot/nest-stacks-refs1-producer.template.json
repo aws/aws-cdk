@@ -1,0 +1,20 @@
+{
+ "Resources": {
+  "MyTopic86869434": {
+   "Type": "AWS::SNS::Topic"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttMyTopic86869434TopicNameFCC96FA2": {
+   "Value": {
+    "Fn::GetAtt": [
+     "MyTopic86869434",
+     "TopicName"
+    ]
+   },
+   "Export": {
+    "Name": "nest-stacks-refs1-producer:ExportsOutputFnGetAttMyTopic86869434TopicNameFCC96FA2"
+   }
+  }
+ }
+}

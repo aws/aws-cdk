@@ -19,11 +19,11 @@
     "VPCPublicSubnet1SubnetB4246D30": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.0.0/18",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
+        "CidrBlock": "10.0.0.0/18",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -116,11 +116,11 @@
     "VPCPublicSubnet2Subnet74179F39": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.64.0/18",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
+        "CidrBlock": "10.0.64.0/18",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -213,11 +213,11 @@
     "VPCPrivateSubnet1Subnet8BCA10E0": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.128.0/18",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
+        "CidrBlock": "10.0.128.0/18",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -275,11 +275,11 @@
     "VPCPrivateSubnet2SubnetCFCDAA7A": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.192.0/18",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
+        "CidrBlock": "10.0.192.0/18",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -628,7 +628,7 @@
       "Properties": {
         "DBInstanceClass": "db.t3.medium",
         "AllocatedStorage": "100",
-        "AutoMinorVersionUpgrade": false,
+        "AutoMinorVersionUpgrade": true,
         "BackupRetentionPeriod": 7,
         "CopyTagsToSnapshot": true,
         "DBName": "ORCL",
@@ -696,8 +696,8 @@
           }
         ]
       },
-      "UpdateReplacePolicy": "Snapshot",
-      "DeletionPolicy": "Snapshot"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "InstanceLogRetentiontrace487771C8": {
       "Type": "Custom::LogRetention",
@@ -984,8 +984,8 @@
           "Statement": [
             {
               "Action": [
-                "logs:PutRetentionPolicy",
-                "logs:DeleteRetentionPolicy"
+                "logs:DeleteRetentionPolicy",
+                "logs:PutRetentionPolicy"
               ],
               "Effect": "Allow",
               "Resource": "*"
@@ -1008,7 +1008,7 @@
         "Runtime": "nodejs14.x",
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersdd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9S3BucketE7DA8D4B"
+            "Ref": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3Bucket0D8A173B"
           },
           "S3Key": {
             "Fn::Join": [
@@ -1021,7 +1021,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersdd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9S3VersionKey534293E7"
+                          "Ref": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3VersionKeyE95BF332"
                         }
                       ]
                     }
@@ -1034,7 +1034,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersdd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9S3VersionKey534293E7"
+                          "Ref": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3VersionKeyE95BF332"
                         }
                       ]
                     }
@@ -1131,7 +1131,7 @@
     "InstanceRotationSingleUserSARMappingFEA0C86E": {
       "aws": {
         "applicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSOracleRotationSingleUser",
-        "semanticVersion": "1.1.60"
+        "semanticVersion": "1.1.225"
       },
       "aws-cn": {
         "applicationId": "arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/SecretsManagerRDSOracleRotationSingleUser",
@@ -1144,17 +1144,17 @@
     }
   },
   "Parameters": {
-    "AssetParametersdd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9S3BucketE7DA8D4B": {
+    "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3Bucket0D8A173B": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"dd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9\""
+      "Description": "S3 bucket for asset \"22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665\""
     },
-    "AssetParametersdd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9S3VersionKey534293E7": {
+    "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3VersionKeyE95BF332": {
       "Type": "String",
-      "Description": "S3 key for asset version \"dd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9\""
+      "Description": "S3 key for asset version \"22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665\""
     },
-    "AssetParametersdd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9ArtifactHash3CB520C3": {
+    "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665ArtifactHashF4A1E70E": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"dd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9\""
+      "Description": "Artifact hash for asset \"22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665\""
     }
   }
 }

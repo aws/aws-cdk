@@ -21,7 +21,9 @@ async function main() {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const version = require('../package.json').version;
+  const cfnSpecPkgJson = require('../package.json');
+  const version = cfnSpecPkgJson.version;
+  const jestTypesVersion = cfnSpecPkgJson.devDependencies['@types/jest'];
 
   // iterate over all cloudformation namespaces
   for (const namespace of cfnspec.namespaces()) {
@@ -172,7 +174,7 @@ async function main() {
         '@aws-cdk/cdk-build-tools': version,
         '@aws-cdk/cfn2ts': version,
         '@aws-cdk/pkglint': version,
-        '@types/jest': '^26.0.22',
+        '@types/jest': jestTypesVersion,
       },
       dependencies: {
         '@aws-cdk/core': version,
@@ -293,12 +295,11 @@ async function main() {
     await addDependencyToMegaPackage(path.join('@aws-cdk', 'cloudformation-include'), module.packageName, version, ['dependencies', 'peerDependencies']);
     await addDependencyToMegaPackage('aws-cdk-lib', module.packageName, version, ['devDependencies']);
     await addDependencyToMegaPackage('monocdk', module.packageName, version, ['devDependencies']);
-    await addDependencyToMegaPackage('decdk', module.packageName, version, ['dependencies']);
   }
 }
 
 /**
- * A few of our packages (e.g., decdk, aws-cdk-lib) require a dependency on every service package.
+ * A few of our packages (e.g., aws-cdk-lib) require a dependency on every service package.
  * This automates adding the dependency (and peer dependency) to the package.json.
  */
 async function addDependencyToMegaPackage(megaPackageName: string, packageName: string, version: string, dependencyTypes: string[]) {
