@@ -40,6 +40,13 @@ import { Token, Tokenization } from './token';
  */
 export class SecretValue extends Intrinsic {
   /**
+   * Test whether an object is a SecretValue
+   */
+  public static isSecretValue(x: any): x is SecretValue {
+    return typeof x === 'object' && x && x[SECRET_VALUE_SYM];
+  }
+
+  /**
    * Construct a literal secret value for use with secret-aware constructs
    *
    * Do not use this method for any secrets that you care about! The value
@@ -231,3 +238,12 @@ export interface SecretsManagerSecretOptions {
    */
   readonly jsonField?: string;
 }
+
+const SECRET_VALUE_SYM = Symbol.for('@aws-cdk/core.SecretValue');
+
+Object.defineProperty(SecretValue.prototype, SECRET_VALUE_SYM, {
+  value: true,
+  configurable: false,
+  enumerable: false,
+  writable: false,
+});

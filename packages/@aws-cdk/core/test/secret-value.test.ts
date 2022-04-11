@@ -24,6 +24,13 @@ describe('secret value', () => {
     expect(stack.resolve(v)).toEqual('this just resolves to a string');
   });
 
+  test('isSecretValue returns true', () => {
+    const v = SecretValue.unsafePlainText('this just resolves to a string');
+
+    // THEN
+    expect(SecretValue.isSecretValue(v)).toEqual(true);
+  });
+
   test('secret resolution fails if feature flag is switched on, secret can be unwrapped', () => {
     const app = new App({
       context: { '@aws-cdk/core:checkSecretUsage': true },

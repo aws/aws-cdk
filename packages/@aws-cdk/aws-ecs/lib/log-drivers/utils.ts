@@ -40,7 +40,7 @@ export function stringifyOptions(options: { [key: string]: (SecretValue | Durati
 
   for (const [key, value] of Object.entries(filteredOptions)) {
     // Convert value to string
-    _options[key] = isSecretValue(value) ? value.unsafeUnwrap() : `${value}`;
+    _options[key] = SecretValue.isSecretValue(value) ? value.unsafeUnwrap() : `${value}`;
   }
 
   return _options;
@@ -70,8 +70,4 @@ CfnTaskDefinition.SecretProperty[] {
     });
   }
   return secrets;
-}
-
-function isSecretValue(x: any): x is SecretValue {
-  return typeof x === 'object' && x && 'unsafeUnwrap' in x;
 }
