@@ -518,6 +518,21 @@ describe('DatabaseCluster', () => {
     });
   });
 
+  test('minimal imported cluster throws on accessing attributes for unprovided parameters', () => {
+    const stack = testStack();
+
+    const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
+      clusterIdentifier: 'identifier',
+    });
+
+    expect(cluster.clusterIdentifier).toEqual('identifier');
+    expect(() => cluster.clusterEndpoint).toThrow(/Cannot access `clusterEndpoint` of an imported cluster/);
+    expect(() => cluster.clusterReadEndpoint).toThrow(/Cannot access `clusterReadEndpoint` of an imported cluster/);
+    expect(() => cluster.instanceIdentifiers).toThrow(/Cannot access `instanceIdentifiers` of an imported cluster/);
+    expect(() => cluster.instanceEndpoints).toThrow(/Cannot access `instanceEndpoints` of an imported cluster/);
+    expect(() => cluster.securityGroupId).toThrow(/Cannot access `securityGroupId` of an imported cluster/);
+  });
+
   test('backup retention period respected', () => {
     // GIVEN
     const stack = testStack();
