@@ -378,6 +378,8 @@ async function prepareAndExecuteChangeSet(
       // This shouldn't really happen, but catch it anyway. You never know.
       if (!finalStack) { throw new Error('Stack deploy failed (the stack disappeared while we were deploying it)'); }
       cloudFormationStack = finalStack;
+    } catch (e) {
+      throw new Error(suffixWithErrors(e.message, monitor?.errors));
     } finally {
       await monitor?.stop();
     }
@@ -510,6 +512,8 @@ export async function destroyStack(options: DestroyStackOptions) {
     if (destroyedStack && destroyedStack.stackStatus.name !== 'DELETE_COMPLETE') {
       throw new Error(`Failed to destroy ${deployName}: ${destroyedStack.stackStatus}`);
     }
+  } catch (e) {
+    throw new Error(suffixWithErrors(e.message, monitor?.errors));
   } finally {
     if (monitor) { await monitor.stop(); }
   }
@@ -639,4 +643,10 @@ function restUrlFromManifest(url: string, environment: cxapi.Environment, sdk: I
 
   const urlSuffix: string = sdk.getEndpointSuffix(environment.region);
   return `https://s3.${environment.region}.${urlSuffix}/${bucketName}/${objectKey}`;
+}
+
+function suffixWithErrors(msg: string, errors?: string[]) {
+  return errors && errors.length > 0
+    ? `${msg}: ${errors.join(', ')}`
+    : msg;
 }
