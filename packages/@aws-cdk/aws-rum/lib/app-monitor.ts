@@ -138,15 +138,21 @@ export interface AppMonitorProps {
    */
   readonly appMonitorName?: string;
   /**
-   * IdentityPool to authorization.
+   * Cognito identity pool that allows the application to send data to this app monitor.
+   * Set if you are using an existing Cognito identity pool. If you are using a Cognito identity pool imported from outside the stack, you must also configure roles.
    *
-   * @default - If role is not passed, then create a new one.
+   * @default - If this prop and role are not passed, then create a new one.
    */
   readonly identityPool?: identitypool.IIdentityPool;
   /**
-   * Role to authorization.
+   * Role that allows the application to send data to this app monitor.
+   * The policy will be added to allow applications to send data to this app monitor.
    *
-   * @default - If identityPool is not passed, then create a new one.
+   * If you set this Prop but not identityPool, the app monitor will assume you are using a third-party provider
+   * and will not add the configuration for authentication to the code snippet.
+   * Please see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-get-started-authorization.html#CloudWatch-RUM-get-started-authorization-thirdparty.
+   *
+   * @default - If this prop and identityPool are not passed, then create a new one.
    */
   readonly role?: iam.IRole;
   /**
