@@ -149,7 +149,7 @@ application stages in the source code, or new stacks to `MyApplication`, the
 pipeline will automatically reconfigure itself to deploy those new stages and
 stacks.
 
-(Note that have to *bootstrap* all environments before the above code
+(Note that you have to *bootstrap* all environments before the above code
 will work, and switch on "Modern synthesis" if you are using
 CDKv1. See the section **CDK Environment Bootstrapping** below for
 more information).
