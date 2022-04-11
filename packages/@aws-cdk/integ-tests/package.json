@@ -5,6 +5,39 @@
   "private": false,
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.integtests",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-integ-tests"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.IntegTests",
+        "packageId": "Amazon.CDK.IntegTests",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.integ-tests",
+        "module": "aws_cdk.integ_tests",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
+  },
   "scripts": {
     "build": "cdk-build",
     "lint": "cdk-lint",
@@ -16,8 +49,9 @@
     "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
     "compat": "cdk-compat",
-    "build+extract": "yarn build",
-    "build+test+extract": "yarn build+test"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -36,7 +70,7 @@
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "fs-extra": "^9.1.0"
+    "constructs": "^3.3.69"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -64,6 +98,11 @@
     "tag": "latest"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.3.69"
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

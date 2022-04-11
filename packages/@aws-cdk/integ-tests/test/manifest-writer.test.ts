@@ -1,10 +1,11 @@
+import * as fs from 'fs';
 import * as os from 'os';
+import * as path from 'path';
 import { IntegManifest, Manifest } from '@aws-cdk/cloud-assembly-schema';
-import * as fs from 'fs-extra';
 import { IntegManifestWriter } from '../lib/manifest-writer';
 
 describe(IntegManifestWriter, () => {
-  const tmpDir = fs.mkdtempSync(os.tmpdir());
+  let tmpDir: string;
   const manifest: IntegManifest = {
     version: 'does not matter',
     testCases: {
@@ -20,7 +21,11 @@ describe(IntegManifestWriter, () => {
   };
 
   beforeEach(() => {
-    fs.emptyDirSync(tmpDir);
+    tmpDir = fs.mkdtempSync(os.tmpdir());
+  });
+
+  afterEach(() => {
+    deleteFolderRecursive(tmpDir);
   });
 
   it('writes manifests to default location in the specified directory', () => {
@@ -39,3 +44,19 @@ describe(IntegManifestWriter, () => {
     expect(loaded).toEqual({ ...manifest, version: Manifest.version() });
   });
 });
+
+function deleteFolderRecursive(directoryPath: string) {
+  if (fs.existsSync(directoryPath)) {
+    fs.readdirSync(directoryPath).forEach((file) => {
+      const curPath = path.join(directoryPath, file);
+      if (fs.lstatSync(curPath).isDirectory()) {
+        // recurse
+        deleteFolderRecursive(curPath);
+      } else {
+        // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(directoryPath);
+  }
+};
