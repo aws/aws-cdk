@@ -109,7 +109,7 @@
     "jsonschema": "^1.4.0",
     "minimatch": "^3.1.2",
     "punycode": "^2.1.1",
-    "semver": "^7.3.5",
+    "semver": "^7.3.6",
     "yaml": "1.10.2"
   },
   "devDependencies": {
@@ -270,6 +270,7 @@
     "@aws-cdk/aws-medialive": "0.0.0",
     "@aws-cdk/aws-mediapackage": "0.0.0",
     "@aws-cdk/aws-mediastore": "0.0.0",
+    "@aws-cdk/aws-mediatailor": "0.0.0",
     "@aws-cdk/aws-memorydb": "0.0.0",
     "@aws-cdk/aws-msk": "0.0.0",
     "@aws-cdk/aws-mwaa": "0.0.0",

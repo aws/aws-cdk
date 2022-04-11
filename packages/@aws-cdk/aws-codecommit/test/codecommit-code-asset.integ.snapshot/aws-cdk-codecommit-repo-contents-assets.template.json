@@ -1,0 +1,64 @@
+{
+ "Resources": {
+  "Repo02AC86CF": {
+   "Type": "AWS::CodeCommit::Repository",
+   "Properties": {
+    "RepositoryName": "aws-cdk-codecommit-repo-contents-assets",
+    "Code": {
+     "S3": {
+      "Bucket": {
+       "Ref": "AssetParameters32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3S3BucketD4E005C8"
+      },
+      "Key": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           0,
+           {
+            "Fn::Split": [
+             "||",
+             {
+              "Ref": "AssetParameters32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3S3VersionKey52BCEABD"
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "||",
+             {
+              "Ref": "AssetParameters32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3S3VersionKey52BCEABD"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       ]
+      }
+     }
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "AssetParameters32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3S3BucketD4E005C8": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3\""
+  },
+  "AssetParameters32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3S3VersionKey52BCEABD": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3\""
+  },
+  "AssetParameters32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3ArtifactHash1A78403B": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3\""
+  }
+ }
+}
