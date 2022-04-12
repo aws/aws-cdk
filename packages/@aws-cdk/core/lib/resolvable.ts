@@ -18,6 +18,11 @@ export interface IResolveContext {
   readonly preparing: boolean;
 
   /**
+   * Path in the JSON document that is being constructed
+   */
+  readonly documentPath: string[];
+
+  /**
    * Resolve an inner object
    */
   resolve(x: any, options?: ResolveChangeContextOptions): any;
