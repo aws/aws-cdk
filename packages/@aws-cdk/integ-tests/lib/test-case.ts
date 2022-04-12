@@ -1,5 +1,5 @@
-import { IntegManifest, TestCase } from '@aws-cdk/cloud-assembly-schema';
-import { attachCustomSynthesis, ISynthesisSession } from '@aws-cdk/core';
+import { IntegManifest, TestCase, TestOptions } from '@aws-cdk/cloud-assembly-schema';
+import { attachCustomSynthesis, ISynthesisSession, Stack } from '@aws-cdk/core';
 import { IntegManifestWriter } from './manifest-writer';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -9,7 +9,11 @@ import { Construct } from '@aws-cdk/core';
 /**
  * Properties of an integration test case
  */
-export interface IntegTestCaseProps extends TestCase {
+export interface IntegTestCaseProps extends TestOptions {
+  /**
+   * Stacks to be deployed during the test
+   */
+  readonly stacks: Stack[];
 }
 
 /**
@@ -25,11 +29,18 @@ export class IntegTestCase extends Construct {
         const snapshotDir = session.assembly.outdir;
         const manifest: IntegManifest = {
           version: '',
-          testCases: { [id]: props },
+          testCases: { [id]: toTestCase(props) },
         };
 
         IntegManifestWriter.write(manifest, snapshotDir);
       },
     });
   }
+}
+
+function toTestCase(props: IntegTestCaseProps): TestCase {
+  return {
+    ...props,
+    stacks: props.stacks.map(s => s.artifactId),
+  };
 }

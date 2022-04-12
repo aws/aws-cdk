@@ -66,17 +66,16 @@ class StackUnderTest extends Stack {
 // Beginning of the test suite
 const app = new App();
 
-new StackUnderTest(app, 'Stack1', {
-  architecture: lambda.Architecture.ARM_64,
-});
-
-new StackUnderTest(app, 'Stack2', {
-  architecture: lambda.Architecture.X86_64,
-});
-
 const stack = new Stack(app, 'stack');
 new IntegTestCase(stack, 'DifferentArchitectures', {
-  stacks: ['Stack1', 'Stack2'],
+  stacks: [
+    new StackUnderTest(app, 'Stack1', {
+      architecture: lambda.Architecture.ARM_64,
+    }),
+    new StackUnderTest(app, 'Stack2', {
+      architecture: lambda.Architecture.X86_64,
+    }),
+  ],
 });
 ```
 
@@ -86,10 +85,13 @@ customize the behavior of the runner by changing its parameters. For example:
 
 ```ts
 const app = new App();
+
+const stackUnderTest = new Stack(app, 'StackUnderTest', /* ... */);
+
 const stack = new Stack(app, 'stack');
 
 new IntegTestCase(stack, 'CustomizedDeploymentWorkflow', {
-  stacks: ['MyStack'],
+  stacks: [stackUnderTest],
   diffAssets: true,
   stackUpdateWorkflow: true,
   cdkCommandOptions: {
