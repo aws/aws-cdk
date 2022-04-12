@@ -120,11 +120,6 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "aws-lint": {
-    "exclude": [
-      "resource-attribute:@aws-cdk/aws-opensearchservice.Domain.domainArn"
-    ]
-  },
   "stability": "stable",
   "maturity": "stable",
   "features": [

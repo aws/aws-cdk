@@ -1,0 +1,15 @@
+{
+  "PropertyTypes": {
+    "AWS::OpenSearchService::Domain": {
+      "patch": {
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Attributes/DomainArn"
+          }
+        ],
+        "description": "Remove unsupported DomainArn attribute"
+      }
+    }
+  }
+}
