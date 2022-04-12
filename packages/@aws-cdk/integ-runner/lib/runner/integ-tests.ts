@@ -52,6 +52,13 @@ export class IntegrationTests {
     return allTests;
   }
 
+  /**
+   * If the user provides a list of tests, these can either be a list of tests to include or a list of tests to exclude.
+   *
+   * - If it is a list of tests to include then we discover all available tests and check whether they have provided valid tests.
+   *   If they have provided a test name that we don't find, then we write out that error message.
+   * - If it is a list of tests to exclude, then we discover all available tests and filter out the tests that were provided by the user.
+   */
   private filterTests(discoveredTests: IntegTestConfig[], requestedTests?: string[], exclude?: boolean): IntegTestConfig[] {
     if (!requestedTests || requestedTests.length === 0) {
       return discoveredTests;
