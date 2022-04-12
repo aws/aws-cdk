@@ -22,22 +22,20 @@ Suppose you have a simple stack, that only encapsulates a Lambda function with a
 certain handler:
 
 ```ts
-import { Function, FunctionOptions } from '../lib';
-
-interface StackUnderTestProps extends StackOptions {
-  functionProps?: FunctionOptions;
+interface StackUnderTestProps extends StackProps {
+  functionProps?: lambda.FunctionProps;
 }
 
 class StackUnderTest extends Stack {
   constructor(scope: Construct, id: string, props: StackUnderTestProps) {
     super(scope, id, props);
 	
-	new Function(this, 'Handler', {
-	  runtime: Runtime.NODEJS_12_X,
-	  handler: 'index.handler',
-	  code: Code.fromAsset(path.join(__dirname, 'lambda-handler')),
-	  ...props.functionProps,
-	});
+    new lambda.Function(this, 'Handler', {
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+      ...props.functionProps,
+    });
   }
 }
 ```
@@ -48,22 +46,37 @@ for the Lambda function. In particular, it should work for both `ARM_64` and
 `X86_64`. So you can create an `IntegTestCase` that exercises both scenarios:
 
 ```ts
-const app = new App();
-const stack = new Stack(app, 'stack');
+interface StackUnderTestProps extends StackProps {
+  architecture?: lambda.Architecture;
+}
 
+class StackUnderTest extends Stack {
+  constructor(scope: Construct, id: string, props: StackUnderTestProps) {
+    super(scope, id, props);
+	
+    new lambda.Function(this, 'Handler', {
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+      architecture: props.architecture,
+    });
+  }
+}
+
+// Beginning of the test suite
+const app = new App();
+
+new StackUnderTest(app, 'Stack1', {
+  architecture: lambda.Architecture.ARM_64,
+});
+
+new StackUnderTest(app, 'Stack2', {
+  architecture: lambda.Architecture.X86_64,
+});
+
+const stack = new Stack(app, 'stack');
 new IntegTestCase(stack, 'DifferentArchitectures', {
-  stacks: [
-    new StackUnderTest(app, 'Stack1', {
-      functionProps: {
-        architecture: lambda.Architecture.ARM_64,
-      },
-    }),
-    new StackUnderTest(app, 'Stack2', {
-      functionProps: {
-        architecture: lambda.Architecture.X86_64,
-      },
-  	}),
-  ]
+  stacks: ['Stack1', 'Stack2'],
 });
 ```
 
@@ -76,15 +89,9 @@ const app = new App();
 const stack = new Stack(app, 'stack');
 
 new IntegTestCase(stack, 'CustomizedDeploymentWorkflow', {
-  stacks: [
-    new StackUnderTest(app, 'Stack1', {
-      functionProps: {
-        architecture: lambda.Architecture.ARM_64,
-      },
-	  }),
-  ],
+  stacks: ['MyStack'],
   diffAssets: true,
-  update: true,
+  stackUpdateWorkflow: true,
   cdkCommandOptions: {
     deploy: {
       args: {
