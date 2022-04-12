@@ -2,7 +2,7 @@ import * as https from 'https';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
-import { debug, print } from './logging';
+import { debug, print, trace } from './logging';
 import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
 import { versionNumber } from './version';
@@ -323,7 +323,7 @@ function loadTree(outdir: string) {
   try {
     return fs.readJSONSync(path.join(outdir, 'tree.json'));
   } catch (e) {
-    debug(`Failed to get tree.json file: ${e}`);
+    trace(`Failed to get tree.json file: ${e}. Proceeding with empty tree.`);
     return {};
   }
 }
