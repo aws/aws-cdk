@@ -17,7 +17,7 @@
                 {
                   "op": "add",
                   "path": "/PrimitiveType",
-                  "value": "JSON"
+                  "value": "Json"
                 }
               ]
             }
@@ -37,7 +37,7 @@
                 {
                   "op": "add",
                   "path": "/PrimitiveType",
-                  "value": "JSON"
+                  "value": "Json"
                 }
               ]
             }
