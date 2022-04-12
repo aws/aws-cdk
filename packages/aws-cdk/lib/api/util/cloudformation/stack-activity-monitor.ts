@@ -621,10 +621,6 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
       const color = colorFromStatusActivity(res.event.ResourceStatus);
       const resourceName = res.metadata?.constructPath ?? res.event.LogicalResourceId ?? '';
 
-      if (hasErrorMessage(res.event.ResourceStatus ?? '')) {
-        debugger;
-      }
-
       return util.format('%s | %s | %s | %s%s',
         padLeft(TIMESTAMP_WIDTH, new Date(res.event.Timestamp).toLocaleTimeString()),
         color(padRight(STATUS_WIDTH, (res.event.ResourceStatus || '').slice(0, STATUS_WIDTH))),
