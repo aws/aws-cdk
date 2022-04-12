@@ -682,7 +682,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
 
     // Display in the same block space, otherwise we're going to have silly empty lines.
     this.block.displayLines(lines);
-    this.block.removeEmptyLines(lines);
+    this.block.removeEmptyLines();
   }
 
   private progressBar(width: number) {
@@ -745,7 +745,7 @@ function colorFromStatusActivity(status?: string) {
     return chalk.red;
   }
 
-  if (status.startsWith('CREATE_') || status.startsWith('UPDATE_')) {
+  if (status.startsWith('CREATE_') || status.startsWith('UPDATE_') || status.startsWith('IMPORT_')) {
     return chalk.green;
   }
   // For stacks, it may also be 'UPDDATE_ROLLBACK_IN_PROGRESS'
