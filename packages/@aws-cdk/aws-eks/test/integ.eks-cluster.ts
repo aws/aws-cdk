@@ -1,25 +1,24 @@
-/// !cdk-integ pragma:ignore-assets
+/// !cdk-integ pragma:ignore-assets pragma:disable-update-workflow
 import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { Asset } from '@aws-cdk/aws-s3-assets';
-import { App, CfnOutput, Duration, Token, Fn } from '@aws-cdk/core';
+import { App, CfnOutput, Duration, Token, Fn, Stack, StackProps } from '@aws-cdk/core';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-21';
 import * as constructs from 'constructs';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
-import { TestStack } from './util';
 
 
-class EksClusterStack extends TestStack {
+class EksClusterStack extends Stack {
 
   private cluster: eks.Cluster;
   private vpc: ec2.IVpc;
 
-  constructor(scope: App, id: string) {
-    super(scope, id);
+  constructor(scope: App, id: string, props?: StackProps) {
+    super(scope, id, props);
 
     // allow all account users to assume this role in order to admin the cluster
     const mastersRole = new iam.Role(this, 'AdminRole', {
@@ -292,7 +291,9 @@ const app = new App();
 
 // since the EKS optimized AMI is hard-coded here based on the region,
 // we need to actually pass in a specific region.
-const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-test');
+const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-test', {
+  env: { region: 'us-east-1' },
+});
 
 if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
 

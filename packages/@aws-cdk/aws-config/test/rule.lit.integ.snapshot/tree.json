@@ -1,0 +1,399 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "aws-cdk-config-rule-integ": {
+        "id": "aws-cdk-config-rule-integ",
+        "path": "aws-cdk-config-rule-integ",
+        "children": {
+          "CustomFunction": {
+            "id": "CustomFunction",
+            "path": "aws-cdk-config-rule-integ/CustomFunction",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-config-rule-integ/CustomFunction/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-config-rule-integ/CustomFunction/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSConfigRulesExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-config-rule-integ/CustomFunction/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = (event) => console.log(event);"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "CustomFunctionServiceRoleD3F73B79",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs14.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "Permission": {
+                "id": "Permission",
+                "path": "aws-cdk-config-rule-integ/CustomFunction/Permission",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "CustomFunctionBADD59E7",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "config.amazonaws.com",
+                    "sourceAccount": {
+                      "Ref": "AWS::AccountId"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Custom": {
+            "id": "Custom",
+            "path": "aws-cdk-config-rule-integ/Custom",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-config-rule-integ/Custom/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Config::ConfigRule",
+                  "aws:cdk:cloudformation:props": {
+                    "source": {
+                      "owner": "CUSTOM_LAMBDA",
+                      "sourceDetails": [
+                        {
+                          "eventSource": "aws.config",
+                          "messageType": "ConfigurationItemChangeNotification"
+                        },
+                        {
+                          "eventSource": "aws.config",
+                          "messageType": "OversizedConfigurationItemChangeNotification"
+                        }
+                      ],
+                      "sourceIdentifier": {
+                        "Fn::GetAtt": [
+                          "CustomFunctionBADD59E7",
+                          "Arn"
+                        ]
+                      }
+                    },
+                    "scope": {
+                      "complianceResourceTypes": [
+                        "AWS::EC2::Instance"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-config.CfnConfigRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-config.CustomRule",
+              "version": "0.0.0"
+            }
+          },
+          "Drift": {
+            "id": "Drift",
+            "path": "aws-cdk-config-rule-integ/Drift",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-config-rule-integ/Drift/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Config::ConfigRule",
+                  "aws:cdk:cloudformation:props": {
+                    "source": {
+                      "owner": "AWS",
+                      "sourceIdentifier": "CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK"
+                    },
+                    "inputParameters": {
+                      "cloudformationRoleArn": {
+                        "Fn::GetAtt": [
+                          "DriftRole8A5FB833",
+                          "Arn"
+                        ]
+                      }
+                    },
+                    "scope": {
+                      "complianceResourceTypes": [
+                        "AWS::CloudFormation::Stack"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-config.CfnConfigRule",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "aws-cdk-config-rule-integ/Drift/Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-config-rule-integ/Drift/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "config.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/ReadOnlyAccess"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "ComplianceChange": {
+                "id": "ComplianceChange",
+                "path": "aws-cdk-config-rule-integ/Drift/ComplianceChange",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-config-rule-integ/Drift/ComplianceChange/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                      "aws:cdk:cloudformation:props": {
+                        "eventPattern": {
+                          "source": [
+                            "aws.config"
+                          ],
+                          "detail": {
+                            "configRuleName": [
+                              {
+                                "Ref": "Drift34D3210F"
+                              }
+                            ]
+                          },
+                          "detail-type": [
+                            "Config Rules Compliance Change"
+                          ]
+                        },
+                        "state": "ENABLED",
+                        "targets": [
+                          {
+                            "id": "Target0",
+                            "arn": {
+                              "Ref": "ComplianceTopic0229448B"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-events.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-events.Rule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-config.CloudFormationStackDriftDetectionCheck",
+              "version": "0.0.0"
+            }
+          },
+          "ComplianceTopic": {
+            "id": "ComplianceTopic",
+            "path": "aws-cdk-config-rule-integ/ComplianceTopic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-config-rule-integ/ComplianceTopic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "aws-cdk-config-rule-integ/ComplianceTopic/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-config-rule-integ/ComplianceTopic/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::TopicPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sns:Publish",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "events.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Ref": "ComplianceTopic0229448B"
+                              },
+                              "Sid": "0"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "topics": [
+                          {
+                            "Ref": "ComplianceTopic0229448B"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sns.CfnTopicPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.TopicPolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sns.Topic",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

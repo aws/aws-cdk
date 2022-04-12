@@ -275,10 +275,10 @@ OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHE
 
 ----------------
 
-** graceful-fs@4.2.9 - https://www.npmjs.com/package/graceful-fs/v/4.2.9 | ISC
+** graceful-fs@4.2.10 - https://www.npmjs.com/package/graceful-fs/v/4.2.10 | ISC
 The ISC License
 
-Copyright (c) Isaac Z. Schlueter, Ben Noordhuis, and Contributors
+Copyright (c) 2011-2022 Isaac Z. Schlueter, Ben Noordhuis, and Contributors
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -421,10 +421,10 @@ terms above.
 
 ----------------
 
-** lru-cache@6.0.0 - https://www.npmjs.com/package/lru-cache/v/6.0.0 | ISC
+** lru-cache@7.8.0 - https://www.npmjs.com/package/lru-cache/v/7.8.0 | ISC
 The ISC License
 
-Copyright (c) Isaac Z. Schlueter and Contributors
+Copyright (c) 2010-2022 Isaac Z. Schlueter and Contributors
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -468,7 +468,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** semver@7.3.5 - https://www.npmjs.com/package/semver/v/7.3.5 | ISC
+** semver@7.3.6 - https://www.npmjs.com/package/semver/v/7.3.6 | ISC
 The ISC License
 
 Copyright (c) Isaac Z. Schlueter and Contributors
@@ -832,26 +832,6 @@ INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
 OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
-
-
-----------------
-
-** yallist@4.0.0 - https://www.npmjs.com/package/yallist/v/4.0.0 | ISC
-The ISC License
-
-Copyright (c) Isaac Z. Schlueter and Contributors
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted, provided that the above
-copyright notice and this permission notice appear in all copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
-IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
 ----------------
