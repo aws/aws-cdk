@@ -150,98 +150,11 @@ Test Results:
 Tests:    1 passed, 1 total
 ```
 
-
 ### integ.json schema
 
 See [@aws-cdk/cloud-assembly-schema/lib/integ-tests/schema.ts](../cloud-assembly-schema/lib/integ-tests/schema.ts)
 
-### defining an integration test
+### Defining an integration test
 
-In most cases an integration test will be an instance of a stack
-
-```ts
-import { Function, FunctionOptions } from '../lib';
-
-interface MyIntegTestProps extends StackOptions {
-  functionProps?: FunctionOptions;
-}
-class MyIntegTest extends Stack {
-  constructor(scope: Construct, id: string, props: MyIntegTestProps) {
-    super(scope, id, props);
-	
-	new Function(this, 'Handler', {
-	  runtime: Runtime.NODEJS_12_X,
-	  handler: 'index.handler',
-	  code: Code.fromAsset(path.join(__dirname, 'lambda-handler')),
-	  ...props.functionProps,
-	});
-  }
-}
-```
-
-You would then use the `IntegTest` construct to create your test cases
-
-```ts
-new IntegTeset(app, 'ArmTest', {
-  stacks: [
-    new MyIntegTest(app, 'Stack1', {
-	  functionProps: {
-	    architecture: lambda.Architecture.ARM_64,
-	  },
-	}),
-  ],
-  diffAssets: true,
-  update: true,
-  cdkCommandOptions: {
-    deploy: {
-	  args: {
-	    requireApproval: RequireApproval.NEVER,
-		json: true,
-	  },
-	},
-	destroy: {
-	  args: {
-	    force: true,
-	  },
-	},
-  },
-});
-
-new IntegTeset(app, 'AmdTest', {
-  stacks: [
-    new MyIntegTest(app, 'Stack2', {
-	  functionProps: {
-	    architecture: lambda.Architecture.X86_64,
-	  },
-	}),
-  ],
-});
-```
-
-This will synthesize an `integ.json` file with the following contents
-
-```json
-{
-  "ArmTest": {
-    "stacks": ["Stack1"],
-	"diffAssets": true,
-	"update": true,
-	"cdkCommands": {
-	  "deploy": {
-	    "args": {
-		  "requireApproval": "never",
-		  "json": true
-		}
-	  },
-	  "destroy": {
-	    "args": {
-		  "force": true
-		}
-	  }
-	}
-  },
-  "AmdTest": {
-    "stacks": ["Stack2"]
-  }
-}
-```
+See the `@aws-cdk/integ-tests` module for information on how to define
+integration tests for the runner to exercise.
