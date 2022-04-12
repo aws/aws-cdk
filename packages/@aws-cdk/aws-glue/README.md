@@ -454,7 +454,8 @@ new glue.Table(this, 'MyTable', {
 A Glue view describes a view that consists of an SQL statement and a column definition as used by a Table. A minimal view definition looks like this:
 
 ```ts
-new glue.View(stack, "MyView", {
+declare const myDatabase: glue.Database;
+new glue.View(this, "MyView", {
   database: myDatabase,
   tableName: "my_view",
   columns: [{
@@ -470,7 +471,8 @@ new glue.View(stack, "MyView", {
 A view's SQL statement may refer to resources like tables which you want to replace at deploy time. Take the following view as an example:
 
 ```ts
-new glue.View(stack, "MyView", {
+declare const myDatabase: glue.Database;
+new glue.View(this, "MyView", {
   database: myDatabase,
   tableName: "my_view",
   columns: [{
@@ -484,7 +486,10 @@ new glue.View(stack, "MyView", {
 Now imagine that the table names can't be hardcoded. You replace value in a view's SQL statement with the optional `placeHolders` property:
 
 ```ts
-new glue.View(stack, "MyView", {
+declare const myDatabase: glue.Database;
+declare const myTable: glue.Table;
+declare const myOtherTable: glue.Table;
+new glue.View(this, "MyView", {
   database: myDatabase,
   tableName: "my_view",
   columns: [{
@@ -493,8 +498,8 @@ new glue.View(stack, "MyView", {
   }],
   statement: "SELECT x from ${table1} UNION SELECT x from ${table2}",
   placeHolders: {
-    table1: table1.tableName,
-    table2: table2.tableName
+    table1: myTable.tableName,
+    table2: myOtherTable.tableName
   }
 });
 ```
@@ -515,9 +520,10 @@ You can include the statement and replace the placeholders like this:
 
 ```ts
 import * as fs from 'fs';
-import * as path from 'path';
-
-new glue.View(stack, "MyView", {
+declare const myDatabase: glue.Database;
+declare const myTable: glue.Table;
+declare const myOtherTable: glue.Table;
+new glue.View(this, "MyView", {
   database: myDatabase,
   tableName: "my_view",
   columns: [{
@@ -528,8 +534,8 @@ new glue.View(stack, "MyView", {
     .readFileSync(path.join(__dirname, 'myView.sql'))
     .toString(),
   placeHolders: {
-    table1: table1.tableName,
-    table2: table2.tableName,
+    table1: myTable.tableName,
+    table2: myOtherTable.tableName,
   },
 });
 ```
