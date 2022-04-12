@@ -1523,10 +1523,72 @@ describe('auto scaling group', () => {
         }),
         vpc: mockVpc(stack),
       });
-    }).toThrow();
+    }).toThrow('Setting \'machineImage\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
   });
 
-  test('Cannot be created without machine image', () => {
+  test('Cannot specify Launch Template without instance type', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lt = new LaunchTemplate(stack, 'lt', {
+      machineImage: new AmazonLinuxImage({
+        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
+        cpuType: AmazonLinuxCpuType.X86_64,
+      }),
+    });
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'imported-lt-asg', {
+        launchTemplate: lt,
+        vpc: mockVpc(stack),
+      });
+    }).toThrow('Setting \'launchTemplate\' requires its \'instanceType\' to be set');
+  });
+
+  test('Cannot specify Launch Template without machine image', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lt = new LaunchTemplate(stack, 'lt', {
+      instanceType: new InstanceType('t3.micro'),
+    });
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'imported-lt-asg', {
+        launchTemplate: lt,
+        vpc: mockVpc(stack),
+      });
+    }).toThrow('Setting \'launchTemplate\' requires its \'machineImage\' to be set');
+  });
+
+  test('Cannot specify mixed instance policy without machine image', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lt = new LaunchTemplate(stack, 'lt', {
+      instanceType: new InstanceType('t3.micro'),
+    });
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'imported-lt-asg', {
+        mixedInstancesPolicy: {
+          launchTemplate: lt,
+          launchTemplateOverrides: [{
+            instanceType: new InstanceType('t3.micro'),
+          }],
+        },
+        vpc: mockVpc(stack),
+      });
+    }).toThrow('Setting \'mixedInstancesPolicy.launchTemplate\' requires its \'machineImage\' to be set');
+  });
+
+  test('Cannot be created with launch configuration without machine image', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -1536,10 +1598,10 @@ describe('auto scaling group', () => {
         instanceType: new InstanceType('t3.micro'),
         vpc: mockVpc(stack),
       });
-    }).toThrow();
+    }).toThrow('Setting \'machineImage\' is required when \'launchTemplate\' and \'mixedInstancesPolicy\' is not set');
   });
 
-  test('Cannot be created without instance type', () => {
+  test('Cannot be created with launch configuration without instance type', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -1552,7 +1614,7 @@ describe('auto scaling group', () => {
         }),
         vpc: mockVpc(stack),
       });
-    }).toThrow();
+    }).toThrow('Setting \'instanceType\' is required when \'launchTemplate\' and \'mixedInstancesPolicy\' is not set');
   });
 
   test('Should throw when accessing inferred fields with imported Launch Template', () => {
@@ -1571,19 +1633,19 @@ describe('auto scaling group', () => {
     // THEN
     expect(() => {
       asg.userData;
-    }).toThrow();
+    }).toThrow('The provided launch template does not expose its user data.');
 
     expect(() => {
       asg.connections;
-    }).toThrow();
+    }).toThrow('AutoScalingGroup can only be used as IConnectable if it is not created from an imported Launch Template.');
 
     expect(() => {
       asg.role;
-    }).toThrow();
+    }).toThrow('The provided launch template does not expose or does not define its role.');
 
     expect(() => {
       asg.addSecurityGroup(mockSecurityGroup(stack));
-    }).toThrow();
+    }).toThrow('You cannot add security groups when the Auto Scaling Group is created from a Launch Template.');
   });
 
   test('Should throw when accessing inferred fields with in-stack Launch Template not having corresponding properties', () => {
@@ -1605,19 +1667,19 @@ describe('auto scaling group', () => {
     // THEN
     expect(() => {
       asg.userData;
-    }).toThrow();
+    }).toThrow('The provided launch template does not expose its user data.');
 
     expect(() => {
       asg.connections;
-    }).toThrow();
+    }).toThrow('LaunchTemplate can only be used as IConnectable if a securityGroup is provided when constructing it.');
 
     expect(() => {
       asg.role;
-    }).toThrow();
+    }).toThrow('The provided launch template does not expose or does not define its role.');
 
     expect(() => {
       asg.addSecurityGroup(mockSecurityGroup(stack));
-    }).toThrow();
+    }).toThrow('You cannot add security groups when the Auto Scaling Group is created from a Launch Template.');
   });
 
   test('Should not throw when accessing inferred fields with in-stack Launch Template having corresponding properties', () => {
@@ -1654,7 +1716,7 @@ describe('auto scaling group', () => {
 
     expect(() => {
       asg.addSecurityGroup(mockSecurityGroup(stack));
-    }).toThrow();
+    }).toThrow('You cannot add security groups when the Auto Scaling Group is created from a Launch Template.');
   });
 });
 

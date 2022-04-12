@@ -1165,16 +1165,32 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     if (props.launchTemplate || props.mixedInstancesPolicy) {
       this.verifyNoLaunchConfigPropIsGiven(props);
 
-      if (props.launchTemplate && props.mixedInstancesPolicy) {
+      const bareLaunchTemplate = props.launchTemplate;
+      const mixedInstancesPolicy = props.mixedInstancesPolicy;
+
+      if (bareLaunchTemplate && mixedInstancesPolicy) {
         throw new Error('Setting \'mixedInstancesPolicy\' must not be set when \'launchTemplate\' is set');
       }
 
-      if (props.launchTemplate && props.launchTemplate instanceof ec2.LaunchTemplate) {
-        this.launchTemplate = props.launchTemplate;
+      if (bareLaunchTemplate && bareLaunchTemplate instanceof ec2.LaunchTemplate) {
+        if (!bareLaunchTemplate.instanceType) {
+          throw new Error('Setting \'launchTemplate\' requires its \'instanceType\' to be set');
+        }
+
+        if (!bareLaunchTemplate.imageId) {
+          throw new Error('Setting \'launchTemplate\' requires its \'machineImage\' to be set');
+        }
+
+        this.launchTemplate = bareLaunchTemplate;
+
       }
 
-      if (props.mixedInstancesPolicy && props.mixedInstancesPolicy.launchTemplate instanceof ec2.LaunchTemplate) {
-        this.launchTemplate = props.mixedInstancesPolicy.launchTemplate;
+      if (mixedInstancesPolicy && mixedInstancesPolicy.launchTemplate instanceof ec2.LaunchTemplate) {
+        if (!mixedInstancesPolicy.launchTemplate.imageId) {
+          throw new Error('Setting \'mixedInstancesPolicy.launchTemplate\' requires its \'machineImage\' to be set');
+        }
+
+        this.launchTemplate = mixedInstancesPolicy.launchTemplate;
       }
 
       this._role = this.launchTemplate?.role;
