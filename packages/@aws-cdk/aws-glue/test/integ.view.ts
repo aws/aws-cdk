@@ -3,7 +3,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import * as glue from '../lib';
+import { Database, Schema, Table, OutputFormat, InputFormat, SerializationLibrary, View } from '../lib';
+import { CfnTable } from '../lib/glue.generated';
 
 /*
  * Stack verification steps:
@@ -18,54 +19,54 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-glue');
 
-const database = new glue.Database(stack, 'database', {
+const database = new Database(stack, 'database', {
   databaseName: 'mydatabase',
 });
 
 const dataBucket = new s3.Bucket(stack, 'dataBucket');
 
 const partitionKeys = [
-  { name: 'year', type: glue.Schema.STRING },
-  { name: 'month', type: glue.Schema.STRING },
-  { name: 'day', type: glue.Schema.STRING },
-  { name: 'hour', type: glue.Schema.STRING },
+  { name: 'year', type: Schema.STRING },
+  { name: 'month', type: Schema.STRING },
+  { name: 'day', type: Schema.STRING },
+  { name: 'hour', type: Schema.STRING },
 ];
 
-const sourceTable = new glue.Table(stack, 'sourceTable', {
+const sourceTable = new Table(stack, 'sourceTable', {
   columns: [
-    { name: 'date', type: glue.Schema.DATE },
-    { name: 'time', type: glue.Schema.STRING },
-    { name: 'location', type: glue.Schema.STRING },
-    { name: 'bytes', type: glue.Schema.BIG_INT },
-    { name: 'request_ip', type: glue.Schema.STRING },
-    { name: 'method', type: glue.Schema.STRING },
-    { name: 'host', type: glue.Schema.STRING },
-    { name: 'uri', type: glue.Schema.STRING },
-    { name: 'status', type: glue.Schema.INTEGER },
-    { name: 'referrer', type: glue.Schema.STRING },
-    { name: 'user_agent', type: glue.Schema.STRING },
-    { name: 'query_string', type: glue.Schema.STRING },
-    { name: 'cookie', type: glue.Schema.STRING },
-    { name: 'result_type', type: glue.Schema.STRING },
-    { name: 'request_id', type: glue.Schema.STRING },
-    { name: 'host_header', type: glue.Schema.STRING },
-    { name: 'request_protocol', type: glue.Schema.STRING },
-    { name: 'request_bytes', type: glue.Schema.BIG_INT },
-    { name: 'time_taken', type: glue.Schema.FLOAT },
-    { name: 'xforwarded_for', type: glue.Schema.STRING },
-    { name: 'ssl_protocol', type: glue.Schema.STRING },
-    { name: 'ssl_cipher', type: glue.Schema.STRING },
-    { name: 'response_result_type', type: glue.Schema.STRING },
-    { name: 'http_version', type: glue.Schema.STRING },
-    { name: 'fle_status', type: glue.Schema.STRING },
-    { name: 'fle_encrypted_fields', type: glue.Schema.INTEGER },
-    { name: 'c_port', type: glue.Schema.INTEGER },
-    { name: 'time_to_first_byte', type: glue.Schema.FLOAT },
-    { name: 'x_edge_detailed_result_type', type: glue.Schema.STRING },
-    { name: 'sc_content_type', type: glue.Schema.STRING },
-    { name: 'sc_content_len', type: glue.Schema.BIG_INT },
-    { name: 'sc_range_start', type: glue.Schema.BIG_INT },
-    { name: 'sc_range_end', type: glue.Schema.BIG_INT },
+    { name: 'date', type: Schema.DATE },
+    { name: 'time', type: Schema.STRING },
+    { name: 'location', type: Schema.STRING },
+    { name: 'bytes', type: Schema.BIG_INT },
+    { name: 'request_ip', type: Schema.STRING },
+    { name: 'method', type: Schema.STRING },
+    { name: 'host', type: Schema.STRING },
+    { name: 'uri', type: Schema.STRING },
+    { name: 'status', type: Schema.INTEGER },
+    { name: 'referrer', type: Schema.STRING },
+    { name: 'user_agent', type: Schema.STRING },
+    { name: 'query_string', type: Schema.STRING },
+    { name: 'cookie', type: Schema.STRING },
+    { name: 'result_type', type: Schema.STRING },
+    { name: 'request_id', type: Schema.STRING },
+    { name: 'host_header', type: Schema.STRING },
+    { name: 'request_protocol', type: Schema.STRING },
+    { name: 'request_bytes', type: Schema.BIG_INT },
+    { name: 'time_taken', type: Schema.FLOAT },
+    { name: 'xforwarded_for', type: Schema.STRING },
+    { name: 'ssl_protocol', type: Schema.STRING },
+    { name: 'ssl_cipher', type: Schema.STRING },
+    { name: 'response_result_type', type: Schema.STRING },
+    { name: 'http_version', type: Schema.STRING },
+    { name: 'fle_status', type: Schema.STRING },
+    { name: 'fle_encrypted_fields', type: Schema.INTEGER },
+    { name: 'c_port', type: Schema.INTEGER },
+    { name: 'time_to_first_byte', type: Schema.FLOAT },
+    { name: 'x_edge_detailed_result_type', type: Schema.STRING },
+    { name: 'sc_content_type', type: Schema.STRING },
+    { name: 'sc_content_len', type: Schema.BIG_INT },
+    { name: 'sc_range_start', type: Schema.BIG_INT },
+    { name: 'sc_range_end', type: Schema.BIG_INT },
   ],
   partitionKeys: partitionKeys,
   database: database,
@@ -74,13 +75,13 @@ const sourceTable = new glue.Table(stack, 'sourceTable', {
   s3Prefix: 'partitioned_gz',
   bucket: dataBucket,
   dataFormat: {
-    outputFormat: glue.OutputFormat.HIVE_IGNORE_KEY_TEXT,
-    inputFormat: glue.InputFormat.TEXT,
-    serializationLibrary: glue.SerializationLibrary.LAZY_SIMPLE,
+    outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
+    inputFormat: InputFormat.TEXT,
+    serializationLibrary: SerializationLibrary.LAZY_SIMPLE,
   },
 });
 
-const sourceCfnTable = sourceTable.node.defaultChild as glue.CfnTable;
+const sourceCfnTable = sourceTable.node.defaultChild as CfnTable;
 sourceCfnTable.addOverride(
   'Properties.TableInput.Parameters.skip\\.header\\.line\\.count',
   '2',
@@ -94,7 +95,7 @@ sourceCfnTable.addOverride(
   '\\t',
 );
 
-const targetTable = new glue.Table(stack, 'targetTable', {
+const targetTable = new Table(stack, 'targetTable', {
   columns: sourceTable.columns,
   partitionKeys: sourceTable.partitionKeys,
   database: database,
@@ -103,22 +104,22 @@ const targetTable = new glue.Table(stack, 'targetTable', {
   s3Prefix: 'partitioned_parquet',
   bucket: dataBucket,
   dataFormat: {
-    outputFormat: glue.OutputFormat.PARQUET,
-    inputFormat: glue.InputFormat.PARQUET,
-    serializationLibrary: glue.SerializationLibrary.PARQUET,
+    outputFormat: OutputFormat.PARQUET,
+    inputFormat: InputFormat.PARQUET,
+    serializationLibrary: SerializationLibrary.PARQUET,
   },
 });
 
-const targetCfnTable = targetTable.node.defaultChild as glue.CfnTable;
+const targetCfnTable = targetTable.node.defaultChild as CfnTable;
 targetCfnTable.addOverride(
   'Properties.TableInput.Parameters.parquet\\.compression',
   'snappy',
 );
 
-new glue.View(stack, 'combinedView', {
+new View(stack, 'combinedView', {
   columns: sourceTable.columns.concat(partitionKeys, {
     name: 'file',
-    type: glue.Schema.STRING,
+    type: Schema.STRING,
   }),
   database: database,
   tableName: 'combined_view',
