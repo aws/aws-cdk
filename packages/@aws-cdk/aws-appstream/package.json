@@ -24,7 +24,8 @@
         "distName": "aws-cdk.aws-appstream",
         "module": "aws_cdk.aws_appstream",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

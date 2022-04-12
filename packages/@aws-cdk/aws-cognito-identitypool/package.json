@@ -23,7 +23,8 @@
         "distName": "aws-cdk.aws-cognito-identitypool",
         "module": "aws_cdk.aws_cognito_identitypool",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
