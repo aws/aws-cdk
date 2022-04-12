@@ -24,7 +24,8 @@
         "distName": "aws-cdk.aws-cassandra",
         "module": "aws_cdk.aws_cassandra",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

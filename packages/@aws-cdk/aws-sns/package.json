@@ -24,7 +24,8 @@
         "distName": "aws-cdk.aws-sns",
         "module": "aws_cdk.aws_sns",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

@@ -24,7 +24,8 @@
         "distName": "aws-cdk.aws-sns-subscriptions",
         "module": "aws_cdk.aws_sns_subscriptions",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

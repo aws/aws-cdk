@@ -23,7 +23,8 @@
         "distName": "aws-cdk.aws-globalaccelerator-endpoints",
         "module": "aws_cdk.aws_globalaccelerator_endpoints",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

@@ -24,7 +24,8 @@
         "distName": "aws-cdk.aws-autoscalingplans",
         "module": "aws_cdk.aws_autoscalingplans",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

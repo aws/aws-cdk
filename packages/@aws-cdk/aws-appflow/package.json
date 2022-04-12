@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-appflow",
         "module": "aws_cdk.aws_appflow",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

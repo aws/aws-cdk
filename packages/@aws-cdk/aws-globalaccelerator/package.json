@@ -24,7 +24,8 @@
         "distName": "aws-cdk.aws-globalaccelerator",
         "module": "aws_cdk.aws_globalaccelerator",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

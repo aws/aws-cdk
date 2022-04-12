@@ -23,7 +23,8 @@
         "distName": "aws-cdk.aws-kinesisanalytics-flink",
         "module": "aws_cdk.aws_kinesisanalytics_flink",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

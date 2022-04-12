@@ -23,7 +23,8 @@
         "distName": "aws-cdk.lambda-layer-kubectl",
         "module": "aws_cdk.lambda_layer_kubectl",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

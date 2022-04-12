@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-applicationinsights",
         "module": "aws_cdk.aws_applicationinsights",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
