@@ -584,7 +584,12 @@ export class CfnInclude extends core.CfnElement {
     return cfnCondition;
   }
 
-  private getOrCreateResource(logicalId: string): core.CfnResource {
+  private getOrCreateResource(logicalId: string, cycleChain: string[] = []): core.CfnResource {
+    cycleChain = cycleChain.concat([logicalId]);
+    if (cycleChain.length !== new Set(cycleChain).size) {
+      throw new Error(`Found a cycle between resources in the template: ${cycleChain.join(' depends on ')}`);
+    }
+
     const ret = this.resources[logicalId];
     if (ret) {
       return ret;
@@ -618,7 +623,7 @@ export class CfnInclude extends core.CfnElement {
         if (!(lId in (self.template.Resources || {}))) {
           return undefined;
         }
-        return self.getOrCreateResource(lId);
+        return self.getOrCreateResource(lId, cycleChain);
       },
 
       findRefTarget(elementName: string): core.CfnElement | undefined {
