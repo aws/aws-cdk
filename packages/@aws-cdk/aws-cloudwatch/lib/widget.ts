@@ -1,3 +1,5 @@
+import { IMetric } from './metric-types';
+
 /**
  * The width of the grid we're filling
  */
@@ -16,6 +18,11 @@ export interface IWidget {
    * The amount of vertical grid units the widget will take up
    */
   readonly height: number;
+
+  /**
+   * Any warnings that are produced as a result of putting together this widget
+   */
+  readonly warnings?: string[];
 
   /**
    * Place the widget at a given position
@@ -39,6 +46,8 @@ export abstract class ConcreteWidget implements IWidget {
   protected x?: number;
   protected y?: number;
 
+  public readonly warnings: string[] | undefined = [];
+
   constructor(width: number, height: number) {
     this.width = width;
     this.height = height;
@@ -54,4 +63,11 @@ export abstract class ConcreteWidget implements IWidget {
   }
 
   public abstract toJson(): any[];
+
+  /**
+   * Copy the warnings from the given metric
+   */
+  protected copyMetricWarnings(...ms: IMetric[]) {
+    this.warnings?.push(...ms.flatMap(m => m.warnings ?? []));
+  }
 }

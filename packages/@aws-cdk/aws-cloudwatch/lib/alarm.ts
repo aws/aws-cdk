@@ -1,4 +1,4 @@
-import { ArnFormat, Lazy, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, Lazy, Stack, Token, Annotations } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IAlarmAction } from './alarm-action';
 import { AlarmBase, IAlarm } from './alarm-base';
@@ -203,6 +203,10 @@ export class Alarm extends AlarmBase {
       label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${datapoints} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
       value: props.threshold,
     };
+
+    for (const w of this.metric.warnings ?? []) {
+      Annotations.of(this).addWarning(w);
+    }
   }
 
   /**
