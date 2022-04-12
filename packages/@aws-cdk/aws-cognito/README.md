@@ -334,7 +334,7 @@ new cognito.UserPool(this, 'myuserpool', {
 For typical production environments, the default email limit is below the required delivery volume.
 To enable a higher delivery volume, you can configure the UserPool to send emails through Amazon SES. To do
 so, follow the steps in the [Cognito Developer Guide](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html#user-pool-email-developer)
-to verify an email address, move the account out of the SES sandbox, and grant Cognito email permissions via an
+to verify an email address or a domain, move the account out of the SES sandbox, and grant Cognito email permissions via an
 authorization policy.
 
 Once the SES setup is complete, the UserPool can be configured to use the SES email.
@@ -345,6 +345,7 @@ new cognito.UserPool(this, 'myuserpool', {
     fromEmail: 'noreply@myawesomeapp.com',
     fromName: 'Awesome App',
     replyTo: 'support@myawesomeapp.com',
+    sesVerifiedDomain: 'myawesomeapp.com',
   }),
 });
 ```

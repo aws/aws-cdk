@@ -7,12 +7,10 @@ import { toASCII as punycodeEncode } from 'punycode/';
  */
 export interface UserPoolSESOptions {
   /**
-   * The verified Amazon SES email address that Cognito should
-   * use to send emails.
+   * The email address that Cognito should use to send emails.
    *
-   * The email address used must be a verified email address
-   * in Amazon SES and must be configured to allow Cognito to
-   * send emails.
+   * If sending email with a verified domain, you must set `sesVerifiedDomain`.
+   * Otherwise, this email address must be verified with Amazon SES.
    *
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html
    */
@@ -22,14 +20,14 @@ export interface UserPoolSESOptions {
    * An optional name that should be used as the sender's name
    * along with the email.
    *
-   * @default - no name
+   * @default no name
    */
   readonly fromName?: string;
 
   /**
-   * The destination to which the receiver of the email should reploy to.
+   * The destination to which the receiver of the email should reply to.
    *
-   * @default - same as the fromEmail
+   * @default same as the fromEmail
    */
   readonly replyTo?: string;
 
@@ -39,23 +37,35 @@ export interface UserPoolSESOptions {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-emailconfiguration.html#cfn-cognito-userpool-emailconfiguration-configurationset
    *
-   * @default - no configuration set
+   * @default no configuration set
    */
   readonly configurationSetName?: string;
 
   /**
    * Required if the UserPool region is different than the SES region.
    *
-   * If sending emails with a Amazon SES verified email address,
+   * If sending emails with a Amazon SES verified email address or domain,
    * and the region that SES is configured is different than the
    * region in which the UserPool is deployed, you must specify that
    * region here.
    *
    * Must be 'us-east-1', 'us-west-2', or 'eu-west-1'
    *
-   * @default - The same region as the Cognito UserPool
+   * @default The same region as the Cognito UserPool
    */
   readonly sesRegion?: string;
+
+  /**
+   * The verified Amazon SES domain that Cognito should
+   * use to send emails.
+   *
+   * If you use a verified domain, the email address set in `fromEmail`
+   * does not need to be verified.
+   * Must match the domain set in `fromEmail`
+   *
+   * @default no domain set
+   */
+  readonly sesVerifiedDomain?: string;
 }
 
 /**
@@ -65,7 +75,7 @@ interface UserPoolEmailConfig {
   /**
    * The name of the configuration set in SES.
    *
-   * @default - none
+   * @default none
    */
   readonly configurationSet?: string;
 
@@ -73,7 +83,7 @@ interface UserPoolEmailConfig {
    * Specifies whether to use Cognito's built in email functionality
    * or SES.
    *
-   * @default - Cognito built in email functionality
+   * @default Cognito built in email functionality
    */
   readonly emailSendingAccount?: string;
 
@@ -90,7 +100,7 @@ interface UserPoolEmailConfig {
   /**
    * The destination to which the receiver of the email should reply to.
    *
-   * @default - same as `from`
+   * @default same as `from`
    */
   readonly replyToEmailAddress?: string;
 
@@ -100,7 +110,7 @@ interface UserPoolEmailConfig {
    * required if emailSendingAccount is DEVELOPER or if
    * 'from' is provided.
    *
-   * @default - none
+   * @default none
    */
   readonly sourceArn?: string;
 }
@@ -123,14 +133,12 @@ export abstract class UserPoolEmail {
     return new SESEmail(options);
   }
 
-
   /**
    * Returns the email configuration for a Cognito UserPool
    * that controls how Cognito will send emails
    * @internal
    */
   public abstract _bind(scope: Construct): UserPoolEmailConfig;
-
 }
 
 class CognitoEmail extends UserPoolEmail {
@@ -143,7 +151,6 @@ class CognitoEmail extends UserPoolEmail {
       replyToEmailAddress: encodeAndTest(this.replyTo),
       emailSendingAccount: 'COGNITO_DEFAULT',
     };
-
   }
 }
 
@@ -172,7 +179,9 @@ class SESEmail extends UserPoolEmail {
       sourceArn: Stack.of(scope).formatArn({
         service: 'ses',
         resource: 'identity',
-        resourceName: encodeAndTest(this.options.fromEmail),
+        resourceName: this.options.sesVerifiedDomain
+          ? punycodeEncode(this.options.sesVerifiedDomain)
+          : encodeAndTest(this.options.fromEmail),
         region: this.options.sesRegion ?? region,
       }),
     };
