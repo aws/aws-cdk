@@ -24,7 +24,8 @@
         "distName": "aws-cdk.aws-codestarnotifications",
         "module": "aws_cdk.aws_codestarnotifications",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

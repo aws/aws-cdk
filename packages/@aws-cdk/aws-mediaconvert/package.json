@@ -24,7 +24,8 @@
         "distName": "aws-cdk.aws-mediaconvert",
         "module": "aws_cdk.aws_mediaconvert",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

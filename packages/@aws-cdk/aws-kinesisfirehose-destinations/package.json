@@ -23,7 +23,8 @@
         "distName": "aws-cdk.aws-kinesisfirehose-destinations",
         "module": "aws_cdk.aws_kinesisfirehose_destinations",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

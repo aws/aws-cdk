@@ -23,7 +23,8 @@
       },
       "python": {
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ],
         "distName": "aws-cdk.aws-ivs",
         "module": "aws_cdk.aws_ivs"
