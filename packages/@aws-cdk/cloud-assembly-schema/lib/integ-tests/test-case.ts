@@ -1,5 +1,8 @@
 import { DeployOptions, DestroyOptions } from './commands';
 
+/**
+ * The set of options to control the workflow of the test runner
+ */
 export interface TestOptions {
   /**
    * Run update workflow on this test case
@@ -8,25 +11,25 @@ export interface TestOptions {
    *
    * @default true
    */
-   readonly stackUpdateWorkflow?: boolean;
+  readonly stackUpdateWorkflow?: boolean;
 
-   /**
+  /**
     * Additional options to use for each CDK command
     *
     * @default - runner default options
     */
-   readonly cdkCommandOptions?: CdkCommands;
- 
-   /**
+  readonly cdkCommandOptions?: CdkCommands;
+
+  /**
     * Additional commands to run at predefined points in the test workflow
     *
     * e.g. { postDeploy: ['yarn', 'test'] }
     *
     * @default - no hooks
     */
-   readonly hooks?: Hooks;
- 
-   /**
+  readonly hooks?: Hooks;
+
+  /**
     * Whether or not to include asset hashes in the diff
     * Asset hashes can introduces a lot of unneccessary noise into tests,
     * but there are some cases where asset hashes _should_ be included. For example
@@ -34,9 +37,9 @@ export interface TestOptions {
     *
     * @default false
     */
-   readonly diffAssets?: boolean;
- 
-   /**
+  readonly diffAssets?: boolean;
+
+  /**
     * List of CloudFormation resource types in this stack that can
     * be destroyed as part of an update without failing the test.
     *
@@ -49,18 +52,18 @@ export interface TestOptions {
     *
     * @default - do not allow destruction of any resources on update
     */
-   readonly allowDestroy?: string[];
- 
-   /**
+  readonly allowDestroy?: string[];
+
+  /**
     * Limit deployment to these regions
     *
     * @default - can run in any region
     */
-   readonly regions?: string[]; 
+  readonly regions?: string[];
 }
 
 /**
- * Represents an integration test test case
+ * Represents an integration test case
  */
 export interface TestCase extends TestOptions {
   /**
