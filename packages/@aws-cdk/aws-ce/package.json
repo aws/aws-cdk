@@ -24,7 +24,8 @@
         "distName": "aws-cdk.aws-ce",
         "module": "aws_cdk.aws_ce",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

@@ -24,7 +24,8 @@
         "distName": "aws-cdk.aws-codedeploy",
         "module": "aws_cdk.aws_codedeploy",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

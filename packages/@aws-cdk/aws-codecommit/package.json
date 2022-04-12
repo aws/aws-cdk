@@ -24,7 +24,8 @@
         "distName": "aws-cdk.aws-codecommit",
         "module": "aws_cdk.aws_codecommit",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

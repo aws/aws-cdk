@@ -24,7 +24,8 @@
         "distName": "aws-cdk.aws-datapipeline",
         "module": "aws_cdk.aws_datapipeline",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

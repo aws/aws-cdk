@@ -23,7 +23,8 @@
         "distName": "aws-cdk.aws-iotevents-actions",
         "module": "aws_cdk.aws_iotevents_actions",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

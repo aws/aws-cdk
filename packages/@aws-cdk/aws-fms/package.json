@@ -24,7 +24,8 @@
         "distName": "aws-cdk.aws-fms",
         "module": "aws_cdk.aws_fms",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

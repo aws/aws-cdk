@@ -24,7 +24,8 @@
       },
       "python": {
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ],
         "distName": "aws-cdk.aws-s3objectlambda",
         "module": "aws_cdk.aws_s3objectlambda"

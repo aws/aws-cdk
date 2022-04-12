@@ -24,7 +24,8 @@
         "distName": "aws-cdk.aws-securityhub",
         "module": "aws_cdk.aws_securityhub",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

@@ -24,7 +24,8 @@
         "distName": "aws-cdk.cdk-assets-schema",
         "module": "aws_cdk.cdk_assets_schema",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

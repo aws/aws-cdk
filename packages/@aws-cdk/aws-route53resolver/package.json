@@ -24,7 +24,8 @@
         "distName": "aws-cdk.aws-route53resolver",
         "module": "aws_cdk.aws_route53resolver",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

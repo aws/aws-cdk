@@ -24,7 +24,8 @@
       },
       "python": {
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ],
         "distName": "aws-cdk.aws-lookoutvision",
         "module": "aws_cdk.aws_lookoutvision"

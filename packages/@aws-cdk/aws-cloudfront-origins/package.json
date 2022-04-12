@@ -24,7 +24,8 @@
         "distName": "aws-cdk.aws-cloudfront-origins",
         "module": "aws_cdk.aws_cloudfront_origins",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

@@ -24,7 +24,8 @@
         "distName": "aws-cdk.aws-dlm",
         "module": "aws_cdk.aws_dlm",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

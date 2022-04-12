@@ -40,7 +40,8 @@
         "distName": "aws-cdk.cdk-cli-wrapper",
         "module": "aws_cdk.cdk_cli_wrapper",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
