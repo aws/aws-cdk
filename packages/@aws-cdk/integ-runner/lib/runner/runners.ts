@@ -30,6 +30,13 @@ export interface IntegRunnerOptions {
   readonly fileName: string,
 
   /**
+   * The AWS profile to use when invoking the CDK CLI
+   *
+   * @default - no profile is passed, the default profile is used
+   */
+  readonly profile?: string;
+
+  /**
    * Additional environment variables that will be available
    * to the CDK CLI
    *
@@ -120,6 +127,8 @@ export abstract class IntegRunner {
    */
   protected readonly cdkOutDir: string;
 
+  protected readonly profile?: string;
+
   constructor(options: IntegRunnerOptions) {
     const parsed = path.parse(options.fileName);
     this.directory = parsed.dir;
@@ -146,6 +155,7 @@ export abstract class IntegRunner {
     });
     this.cdkOutDir = options.integOutDir ?? `${CDK_OUTDIR_PREFIX}.${testName}`;
     this.cdkApp = `node ${parsed.base}`;
+    this.profile = options.profile;
     if (this.hasSnapshot()) {
       this.loadManifest();
     }
@@ -291,6 +301,7 @@ export abstract class IntegRunner {
         ...this.defaultArgs,
         all: true,
         app: this.cdkApp,
+        profile: this.profile,
         output: this.cdkOutDir,
       })).split('\n');
       if (stacks.length !== 1) {
@@ -298,6 +309,9 @@ export abstract class IntegRunner {
           '  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n' +
           `      ${CDK_INTEG_STACK_PRAGMA} STACK ...\n\n` +
           `  Available stacks: ${stacks.join(' ')} (wildcards are also supported)\n`);
+      }
+      if (stacks.length === 1 && stacks[0] === '') {
+        throw new Error(`No stack found for test ${this.testName}`);
       }
       tests.stacks.push(...stacks);
     }
@@ -433,6 +447,7 @@ export class IntegTestRunner extends IntegRunner {
       if (!options.dryRun) {
         this.cdk.deploy({
           ...this.defaultArgs,
+          profile: this.profile,
           stacks: options.testCase.stacks,
           requireApproval: RequireApproval.NEVER,
           output: this.cdkOutDir,
@@ -460,6 +475,7 @@ export class IntegTestRunner extends IntegRunner {
         if (clean) {
           this.cdk.destroy({
             ...this.defaultArgs,
+            profile: this.profile,
             stacks: options.testCase.stacks,
             force: true,
             app: this.cdkApp,

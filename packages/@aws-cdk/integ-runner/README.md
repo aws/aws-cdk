@@ -54,7 +54,11 @@ to be a self contained CDK app. The runner will execute the following for each f
   Search for integration tests recursively from this starting directory
 - `--force` (default=`false`)
   Rerun integration test even if the test passes
-- `--file`
+- `--profiles`
+  List of AWS Profiles to use when running tests in parallel
+- `--exclude` (default=`false`)
+  If this is set to `true` then the list of tests provided will be excluded
+- `--from-file`
   Read the list of tests from this file
 
 Example:

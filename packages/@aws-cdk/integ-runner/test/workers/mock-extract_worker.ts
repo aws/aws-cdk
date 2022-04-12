@@ -1,15 +1,13 @@
 import * as workerpool from 'workerpool';
-import { IntegBatchResponse } from '../../lib/workers/common';
+import { IntegTestConfig } from '../../lib/runner';
 import { IntegTestBatchRequest } from '../../lib/workers/integ-test-worker';
 
 
-function integTestBatch(request: IntegTestBatchRequest): IntegBatchResponse {
-  return {
-    failedTests: request.tests,
-  };
+function integTestWorker(request: IntegTestBatchRequest): IntegTestConfig[] {
+  return request.tests;
 }
 
 workerpool.worker({
-  integTestBatch,
+  integTestWorker,
 });
 

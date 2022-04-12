@@ -170,6 +170,39 @@ describe('IntegTest runIntegTests', () => {
     });
   });
 
+  test('with profile', () => {
+    // WHEN
+    integTest.runIntegTestCase({
+      testCase: {
+        stacks: ['stack1'],
+      },
+    });
+
+    // THEN
+    expect(deployMock).toHaveBeenCalledTimes(1);
+    expect(destroyMock).toHaveBeenCalledTimes(1);
+    expect(synthMock).toHaveBeenCalledTimes(0);
+    expect(deployMock.mock.calls[0][0]).toEqual({
+      app: 'node integ.integ-test1.js',
+      requireApproval: 'never',
+      pathMetadata: false,
+      assetMetadata: false,
+      versionReporting: false,
+      lookups: false,
+      stacks: ['stack1'],
+      output: 'cdk-integ.out.integ-test1',
+    });
+    expect(destroyMock.mock.calls[0][0]).toEqual({
+      app: 'node integ.integ-test1.js',
+      pathMetadata: false,
+      assetMetadata: false,
+      versionReporting: false,
+      force: true,
+      stacks: ['stack1'],
+      output: 'cdk-integ.out.integ-test1',
+    });
+  });
+
   test('with lookups', () => {
     // WHEN
     integTest = new IntegTestRunner({ fileName: path.join(__dirname, '../test-data/integ.test-with-snapshot-assets-diff.js') });
@@ -316,6 +349,64 @@ describe('IntegTest no pragma', () => {
         CDK_INTEG_REGION: 'test-region',
       }),
       output: 'cdk-integ.out.integ-test2',
+    });
+  });
+});
+
+describe('IntegTest runIntegTests with profile', () => {
+  let integTest: IntegTestRunner;
+  let deployMock: jest.SpyInstance;
+  let destroyMock: jest.SpyInstance;
+  let synthMock: jest.SpyInstance;
+  // let stderrMock: jest.SpyInstance;
+  beforeEach(() => {
+    integTest = new IntegTestRunner({ fileName: 'test/test-data/integ.integ-test1.js', profile: 'test-profile' });
+    deployMock = jest.spyOn(integTest.cdk, 'deploy').mockImplementation();
+    destroyMock = jest.spyOn(integTest.cdk, 'destroy').mockImplementation();
+    synthMock = jest.spyOn(integTest.cdk, 'synthFast').mockImplementation();
+    jest.spyOn(integTest.cdk, 'list').mockImplementation();
+    jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
+    jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
+    jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
+    jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+  });
+  test('with defaults', () => {
+    // WHEN
+    integTest.runIntegTestCase({
+      testCase: {
+        stacks: ['stack1'],
+      },
+    });
+
+    // THEN
+    expect(deployMock).toHaveBeenCalledTimes(1);
+    expect(destroyMock).toHaveBeenCalledTimes(1);
+    expect(synthMock).toHaveBeenCalledTimes(0);
+    expect(deployMock.mock.calls[0][0]).toEqual({
+      app: 'node integ.integ-test1.js',
+      requireApproval: 'never',
+      pathMetadata: false,
+      assetMetadata: false,
+      versionReporting: false,
+      profile: 'test-profile',
+      lookups: false,
+      stacks: ['stack1'],
+      output: 'cdk-integ.out.integ-test1',
+    });
+    expect(destroyMock.mock.calls[0][0]).toEqual({
+      app: 'node integ.integ-test1.js',
+      pathMetadata: false,
+      assetMetadata: false,
+      versionReporting: false,
+      profile: 'test-profile',
+      force: true,
+      stacks: ['stack1'],
+      output: 'cdk-integ.out.integ-test1',
     });
   });
 });
