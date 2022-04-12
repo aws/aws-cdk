@@ -681,8 +681,6 @@ describe('Graphs', () => {
         setPeriodToTimeRange: true,
       },
     }]);
-
-
   });
 
   test('GraphWidget supports stat and period', () => {
@@ -710,7 +708,5 @@ describe('Graphs', () => {
         period: 172800,
       },
     }]);
-
-
   });
 });

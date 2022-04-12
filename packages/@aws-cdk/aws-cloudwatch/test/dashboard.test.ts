@@ -1,6 +1,6 @@
-import { Template } from '@aws-cdk/assertions';
+import { Template, Annotations, Match } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
-import { Dashboard, GraphWidget, PeriodOverride, TextWidget } from '../lib';
+import { Dashboard, GraphWidget, PeriodOverride, TextWidget, MathExpression } from '../lib';
 
 describe('Dashboard', () => {
   test('widgets in different adds are laid out underneath each other', () => {
@@ -175,8 +175,23 @@ describe('Dashboard', () => {
 
     // THEN
     expect(() => toThrow()).toThrow(/field dashboardName contains invalid characters/);
+  });
 
+  test('metric warnings are added to dashboard', () => {
+    const app = new App();
+    const stack = new Stack(app, 'MyStack');
+    const m = new MathExpression({ expression: 'oops' });
 
+    // WHEN
+    new Dashboard(stack, 'MyDashboard', {
+      widgets: [
+        [new GraphWidget({ left: [m] }), new TextWidget({ markdown: 'asdf' })],
+      ],
+    });
+
+    // THEN
+    const template = Annotations.fromStack(stack);
+    template.hasWarning('/MyStack/MyDashboard', Match.stringLikeRegexp("Math expression 'oops' references unknown identifiers"));
   });
 });
 
