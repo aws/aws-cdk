@@ -10,7 +10,7 @@ import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
-import { defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS, renderCredentials } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials } from './private/util';
 import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { CfnDBCluster, CfnDBClusterProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -521,7 +521,7 @@ export class ServerlessCluster extends ServerlessClusterNew {
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       masterUsername: credentials.username,
-      masterUserPassword: credentials.password?.toString(),
+      masterUserPassword: credentials.password?.unsafeUnwrap(),
       kmsKeyId: props.storageEncryptionKey?.keyArn,
     });
 
@@ -558,13 +558,11 @@ export class ServerlessCluster extends ServerlessClusterNew {
     }
 
     return new secretsmanager.SecretRotation(this, id, {
+      ...applyDefaultRotationOptions(options, this.vpcSubnets),
       secret: this.secret,
       application: this.singleUserRotationApplication,
       vpc: this.vpc,
-      vpcSubnets: this.vpcSubnets,
       target: this,
-      ...options,
-      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
     });
   }
 
@@ -581,12 +579,11 @@ export class ServerlessCluster extends ServerlessClusterNew {
     }
 
     return new secretsmanager.SecretRotation(this, id, {
-      ...options,
-      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
+      ...applyDefaultRotationOptions(options, this.vpcSubnets),
+      secret: options.secret,
       masterSecret: this.secret,
       application: this.multiUserRotationApplication,
       vpc: this.vpc,
-      vpcSubnets: this.vpcSubnets,
       target: this,
     });
   }
@@ -695,7 +692,7 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       snapshotIdentifier: props.snapshotIdentifier,
-      masterUserPassword: secret?.secretValueFromJson('password')?.toString() ?? credentials?.password?.toString(),
+      masterUserPassword: secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
     this.clusterIdentifier = cluster.ref;

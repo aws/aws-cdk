@@ -64,29 +64,37 @@ const input = new iotevents.Input(this, 'MyInput', {
 const warmState = new iotevents.State({
   stateName: 'warm',
   onEnter: [{
-    eventName: 'test-event',
+    eventName: 'test-enter-event',
     condition: iotevents.Expression.currentInput(input),
     actions: [new actions.LambdaInvokeAction(func)], // optional
+  }],
+  onInput: [{ // optional
+    eventName: 'test-input-event',
+    actions: [new actions.LambdaInvokeAction(func)],
+  }],
+  onExit: [{ // optional
+    eventName: 'test-exit-event',
+    actions: [new actions.LambdaInvokeAction(func)],
   }],
 });
 const coldState = new iotevents.State({
   stateName: 'cold',
 });
 
-// transit to coldState when temperature is 10
+// transit to coldState when temperature is less than 15
 warmState.transitionTo(coldState, {
   eventName: 'to_coldState', // optional property, default by combining the names of the States
-  when: iotevents.Expression.eq(
+  when: iotevents.Expression.lt(
     iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-    iotevents.Expression.fromString('10'),
+    iotevents.Expression.fromString('15'),
   ),
   executing: [new actions.LambdaInvokeAction(func)], // optional
 });
-// transit to warmState when temperature is 20
+// transit to warmState when temperature is greater than or equal to 15
 coldState.transitionTo(warmState, {
-  when: iotevents.Expression.eq(
+  when: iotevents.Expression.gte(
     iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-    iotevents.Expression.fromString('20'),
+    iotevents.Expression.fromString('15'),
   ),
 });
 

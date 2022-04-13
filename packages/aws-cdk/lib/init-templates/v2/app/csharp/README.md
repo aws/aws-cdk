@@ -1,6 +1,6 @@
 # Welcome to your CDK C# project!
 
-This is a blank project for C# development with CDK.
+This is a blank project for CDK development with C#.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 

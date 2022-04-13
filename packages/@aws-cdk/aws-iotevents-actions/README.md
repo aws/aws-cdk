@@ -24,7 +24,36 @@ AWS IoT Events can trigger actions when it detects a specified event or transiti
 
 Currently supported are:
 
+- Set variable to detector instanse
 - Invoke a Lambda function
+
+## Set variable to detector instanse
+
+The code snippet below creates an Action that set variable to detector instanse
+when it is triggered.
+
+```ts
+import * as iotevents from '@aws-cdk/aws-iotevents';
+import * as actions from '@aws-cdk/aws-iotevents-actions';
+
+declare const input: iotevents.IInput;
+
+const state = new iotevents.State({
+  stateName: 'MyState',
+  onEnter: [{
+    eventName: 'test-event',
+    condition: iotevents.Expression.currentInput(input),
+    actions: [
+      actions: [
+        new actions.SetVariableAction(
+          'MyVariable',
+          iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+        ),
+      ],
+    ],
+  }],
+});
+```
 
 ## Invoke a Lambda function
 

@@ -523,6 +523,27 @@ const aspect = new autoscaling.AutoScalingGroupRequireImdsv2Aspect();
 Aspects.of(this).add(aspect);
 ```
 
+## Warm Pool
+
+Auto Scaling offers [a warm pool](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html) which gives an ability to decrease latency for applications that have exceptionally long boot times. You can create a warm pool with default parameters as below:
+
+```ts
+declare const autoScalingGroup: autoscaling.AutoScalingGroup;
+
+autoScalingGroup.addWarmPool();
+```
+
+You can also customize a warm pool by configuring parameters:
+
+```ts
+declare const autoScalingGroup: autoscaling.AutoScalingGroup;
+
+autoScalingGroup.addWarmPool({
+  minSize: 1,
+  reuseOnScaleIn: true,
+});
+```
+
 ## Future work
 
 * [ ] CloudWatch Events (impossible to add currently as the AutoScalingGroup ARN is

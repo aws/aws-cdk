@@ -239,7 +239,7 @@ export abstract class Credentials {
    */
   public static fromSecret(secret: secretsmanager.ISecret, username?: string): Credentials {
     return {
-      username: username ?? secret.secretValueFromJson('username').toString(),
+      username: username ?? secret.secretValueFromJson('username').unsafeUnwrap(),
       password: secret.secretValueFromJson('password'),
       encryptionKey: secret.encryptionKey,
       secret,
@@ -384,7 +384,7 @@ export abstract class SnapshotCredentials {
    * }
    * ```
    */
-  public static fromSecret(secret: secretsmanager.Secret): SnapshotCredentials {
+  public static fromSecret(secret: secretsmanager.ISecret): SnapshotCredentials {
     return {
       generatePassword: false,
       password: secret.secretValueFromJson('password'),
@@ -435,7 +435,7 @@ export abstract class SnapshotCredentials {
    *
    * @default - none
    */
-  public abstract readonly secret?: secretsmanager.Secret;
+  public abstract readonly secret?: secretsmanager.ISecret;
 
   /**
    * The characters to exclude from the generated password.
@@ -456,7 +456,7 @@ export abstract class SnapshotCredentials {
 /**
  * Properties common to single-user and multi-user rotation options.
  */
-interface CommonRotationUserOptions {
+export interface CommonRotationUserOptions {
   /**
    * Specifies the number of days after the previous rotation
    * before Secrets Manager triggers the next automatic rotation.

@@ -1,11 +1,10 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { AmazonLinuxCpuType, AmazonLinuxGeneration, AmazonLinuxImage, InstanceType, LaunchTemplate } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import * as autoscaling from '../lib';
 import { OnDemandAllocationStrategy, SpotAllocationStrategy } from '../lib';
@@ -761,7 +760,24 @@ describe('auto scaling group', () => {
     });
   });
 
-  test('throws if maxInstanceLifetime < 7 days', () => {
+  test('can configure maxInstanceLifetime with 0', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      maxInstanceLifetime: cdk.Duration.days(0),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      'MaxInstanceLifetime': 0,
+    });
+  });
+
+  test('throws if maxInstanceLifetime < 1 day', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -772,9 +788,9 @@ describe('auto scaling group', () => {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
         machineImage: new ec2.AmazonLinuxImage(),
         vpc,
-        maxInstanceLifetime: cdk.Duration.days(6),
+        maxInstanceLifetime: cdk.Duration.hours(23),
       });
-    }).toThrow(/maxInstanceLifetime must be between 7 and 365 days \(inclusive\)/);
+    }).toThrow(/maxInstanceLifetime must be between 1 and 365 days \(inclusive\)/);
   });
 
   test('throws if maxInstanceLifetime > 365 days', () => {
@@ -790,7 +806,7 @@ describe('auto scaling group', () => {
         vpc,
         maxInstanceLifetime: cdk.Duration.days(366),
       });
-    }).toThrow(/maxInstanceLifetime must be between 7 and 365 days \(inclusive\)/);
+    }).toThrow(/maxInstanceLifetime must be between 1 and 365 days \(inclusive\)/);
   });
 
   test('can configure instance monitoring', () => {
@@ -877,7 +893,7 @@ describe('auto scaling group', () => {
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
 
-    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
@@ -892,8 +908,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(asg.node.metadataEntry[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-    expect(asg.node.metadataEntry[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+    Annotations.fromStack(stack).hasWarning('/Default/MyStack', 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
   });
 
   test('warning if iops and volumeType !== IO1', () => {
@@ -901,7 +916,7 @@ describe('auto scaling group', () => {
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
 
-    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
@@ -917,8 +932,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(asg.node.metadataEntry[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-    expect(asg.node.metadataEntry[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+    Annotations.fromStack(stack).hasWarning('/Default/MyStack', 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
   });
 
   test('step scaling on metric', () => {

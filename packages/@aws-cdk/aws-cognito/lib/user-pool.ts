@@ -523,6 +523,14 @@ export interface UserPoolProps {
   readonly smsRoleExternalId?: string;
 
   /**
+   * The region to integrate with SNS to send SMS messages
+   *
+   * This property will do nothing if SMS configuration is not configured
+   * @default - The same region as the user pool, with a few exceptions - https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-sms-settings.html#user-pool-sms-settings-first-time
+   */
+  readonly snsRegion?: string;
+
+  /**
    * Setting this would explicitly enable or disable SMS role creation.
    * When left unspecified, CDK will determine based on other properties if a role is needed or not.
    * @default - CDK will determine based on other properties of the user pool if an SMS role should be created or not.
@@ -585,8 +593,8 @@ export interface UserPoolProps {
   /**
    * Configure the MFA types that users can use in this user pool. Ignored if `mfa` is set to `OFF`.
    *
-   * @default - { sms: true, oneTimePassword: false }, if `mfa` is set to `OPTIONAL` or `REQUIRED`.
-   * { sms: false, oneTimePassword: false }, otherwise
+   * @default - { sms: true, otp: false }, if `mfa` is set to `OPTIONAL` or `REQUIRED`.
+   * { sms: false, otp: false }, otherwise
    */
   readonly mfaSecondFactor?: MfaSecondFactor;
 
@@ -928,7 +936,7 @@ export class UserPool extends UserPoolBase {
     const capitalize = name.charAt(0).toUpperCase() + name.slice(1);
     fn.addPermission(`${capitalize}Cognito`, {
       principal: new ServicePrincipal('cognito-idp.amazonaws.com'),
-      sourceArn: this.userPoolArn,
+      sourceArn: Lazy.string({ produce: () => this.userPoolArn }),
     });
   }
 
@@ -1032,6 +1040,7 @@ export class UserPool extends UserPoolBase {
       return {
         snsCallerArn: props.smsRole.roleArn,
         externalId: props.smsRoleExternalId,
+        snsRegion: props.snsRegion,
       };
     }
 
@@ -1046,7 +1055,7 @@ export class UserPool extends UserPoolBase {
       return undefined;
     }
 
-    const smsRoleExternalId = Names.uniqueId(this).substr(0, 1223); // sts:ExternalId max length of 1224
+    const smsRoleExternalId = Names.uniqueId(this).slice(0, 1223); // sts:ExternalId max length of 1224
     const smsRole = props.smsRole ?? new Role(this, 'smsRole', {
       assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com', {
         conditions: {
@@ -1072,6 +1081,7 @@ export class UserPool extends UserPoolBase {
     return {
       externalId: smsRoleExternalId,
       snsCallerArn: smsRole.roleArn,
+      snsRegion: props.snsRegion,
     };
   }
 
