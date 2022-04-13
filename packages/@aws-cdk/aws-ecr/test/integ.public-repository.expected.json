@@ -1,0 +1,118 @@
+{
+  "Resources": {
+    "PublicRepo59BDF279": {
+      "Type": "AWS::ECR::PublicRepository",
+      "Properties": {
+        "RepositoryCatalogData": {
+          "RepositoryDescription": "Some description",
+          "AboutText": "Some about",
+          "UsageText": "Some usage",
+          "Architectures": [
+            "ARM 64",
+            "x8086"
+          ],
+          "OperatingSystems": [
+            "Linux"
+          ]
+        },
+        "RepositoryPolicyText": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr-public:BatchCheckLayerAvailability",
+                "ecr-public:CompleteLayerUpload",
+                "ecr-public:InitiateLayerUpload",
+                "ecr-public:PutImage",
+                "ecr-public:UploadLayerPart"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "TestPushRole464E7858",
+                    "Arn"
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "TestPushRole464E7858": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "TestPushRoleDefaultPolicy9F9AF889": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr-public:BatchCheckLayerAvailability",
+                "ecr-public:CompleteLayerUpload",
+                "ecr-public:InitiateLayerUpload",
+                "ecr-public:PutImage",
+                "ecr-public:UploadLayerPart"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PublicRepo59BDF279",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "ecr-public:GetAuthorizationToken",
+                "sts:GetServiceBearerToken"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "TestPushRoleDefaultPolicy9F9AF889",
+        "Roles": [
+          {
+            "Ref": "TestPushRole464E7858"
+          }
+        ]
+      }
+    }
+  }
+}

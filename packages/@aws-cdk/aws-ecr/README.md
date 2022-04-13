@@ -13,10 +13,19 @@
 
 This package contains constructs for working with Amazon Elastic Container Registry.
 
-## Repositories
+## Public Repository
 
-Define a repository by creating a new instance of `Repository`. A repository
-holds multiple verions of a single container image.
+Define a public repository by creating a new instance of `PublicRepository`. A repository
+holds multiple versions of a single container image.
+
+```ts
+const publicRepository = new ecr.PublicRepository(this, 'PublicRepository');
+```
+
+## Private Repository
+
+Define a private repository by creating a new instance of `Repository`. A repository
+holds multiple versions of a single container image.
 
 ```ts
 const repository = new ecr.Repository(this, 'Repository');
