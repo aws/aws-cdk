@@ -13,7 +13,7 @@ export async function realHandler(options: CommandOptions): Promise<number> {
     await configuration.saveContext();
     print('All context values cleared.');
   } else if (args.reset) {
-    invalidateContext(configuration.context, args.reset as string);
+    invalidateContext(configuration.context, args.reset as string, args.force as boolean);
     await configuration.saveContext();
   } else {
     // List -- support '--json' flag
@@ -56,7 +56,7 @@ function listContext(context: Context) {
   print(`Run ${chalk.blue('cdk context --reset KEY_OR_NUMBER')} to remove a context key. It will be refreshed on the next CDK synthesis run.`);
 }
 
-function invalidateContext(context: Context, key: string) {
+function invalidateContext(context: Context, key: string, force: boolean) {
   const i = parseInt(key, 10);
   if (`${i}` === key) {
     // was a number and we fully parsed it.
@@ -73,7 +73,9 @@ function invalidateContext(context: Context, key: string) {
 
     // Value must be in readonly bag
     error('Only context values specified in %s can be reset through the CLI', chalk.blue(PROJECT_CONTEXT));
-    throw new Error(`Cannot reset readonly context value with key: ${key}`);
+    if (!force) {
+      throw new Error(`Cannot reset readonly context value with key: ${key}`);
+    }
   }
 
   // check if value is expression matching keys
@@ -94,13 +96,14 @@ function invalidateContext(context: Context, key: string) {
     printReadonly(readonly);
 
     // throw when none of the matches were reset
-    if (unset.length === 0) {
+    if (!force && unset.length === 0) {
       throw new Error('None of the matched context values could be reset');
     }
     return;
   }
-
-  throw new Error(`No context value matching key: ${key}`);
+  if (!force) {
+    throw new Error(`No context value matching key: ${key}`);
+  }
 }
 function printUnset(unset: string[]) {
   if (unset.length === 0) return;
