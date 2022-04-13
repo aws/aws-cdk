@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Match, Template } from '@aws-cdk/assertions';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools';
+import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as lambda from '../lib';
@@ -31,7 +31,11 @@ describe('code', () => {
 
     test('only one Asset object gets created even if multiple functions use the same AssetCode', () => {
       // GIVEN
-      const app = new cdk.App();
+      const app = new cdk.App({
+        context: {
+          [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+        },
+      });
       const stack = new cdk.Stack(app, 'MyStack');
       const directoryAsset = lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler'));
 
@@ -279,8 +283,7 @@ describe('code', () => {
   });
 
   describe('lambda.Code.fromImageAsset', () => {
-    const flags = { [cxapi.DOCKER_IGNORE_SUPPORT]: true };
-    testFutureBehavior('repository uri is correctly identified', flags, cdk.App, (app) => {
+    testLegacyBehavior('repository uri is correctly identified', cdk.App, (app) => {
       // given
       const stack = new cdk.Stack(app);
 
@@ -334,33 +337,6 @@ describe('code', () => {
       });
     });
 
-    test('only one Asset object gets created even if multiple functions use the same AssetImageCode', () => {
-      // given
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'MyStack');
-      const directoryAsset = lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler'));
-
-      // when
-      new lambda.Function(stack, 'Fn1', {
-        code: directoryAsset,
-        handler: lambda.Handler.FROM_IMAGE,
-        runtime: lambda.Runtime.FROM_IMAGE,
-      });
-
-      new lambda.Function(stack, 'Fn2', {
-        code: directoryAsset,
-        handler: lambda.Handler.FROM_IMAGE,
-        runtime: lambda.Runtime.FROM_IMAGE,
-      });
-
-      // then
-      const assembly = app.synth();
-      const synthesized = assembly.stacks[0];
-
-      // Func1 has an asset, Func2 does not
-      expect(synthesized.assets.length).toEqual(1);
-    });
-
     test('adds code asset metadata', () => {
       // given
       const stack = new cdk.Stack();
@@ -384,7 +360,7 @@ describe('code', () => {
       // then
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.dd84d39b518e69c0e62a55312372cdd9ab3ef901c74a4861d92e951215257b3c',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.30b57ded32316be9aa6553a1d81689f1e0cb475a94306c557e05048f9f56bd79',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: dockerfilePath,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY]: dockerBuildArgs,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY]: dockerBuildTarget,
@@ -408,7 +384,7 @@ describe('code', () => {
       // then
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.b7767e24de8d852617d9600e7a60395334454ca017d648f93b2d990aec7f50fd',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.768d7b6c1d41b85135f498fe0cca69fea410be3c3322c69cf08690aaad29a610',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: 'Dockerfile',
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code.ImageUri',
         },
