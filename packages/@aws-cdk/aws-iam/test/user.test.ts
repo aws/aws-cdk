@@ -16,7 +16,7 @@ describe('IAM user', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     new User(stack, 'MyUser', {
-      password: SecretValue.plainText('1234'),
+      password: SecretValue.unsafePlainText('1234'),
     });
 
     Template.fromStack(stack).templateMatches({

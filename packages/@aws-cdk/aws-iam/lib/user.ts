@@ -100,7 +100,7 @@ export interface UserProps {
    * The password for the user. This is required so the user can access the
    * AWS Management Console.
    *
-   * You can use `SecretValue.plainText` to specify a password in plain text or
+   * You can use `SecretValue.unsafePlainText` to specify a password in plain text or
    * use `secretsmanager.Secret.fromSecretAttributes` to reference a secret in
    * Secrets Manager.
    *
@@ -333,7 +333,7 @@ export class User extends Resource implements IIdentity, IUser {
   private parseLoginProfile(props: UserProps): CfnUser.LoginProfileProperty | undefined {
     if (props.password) {
       return {
-        password: props.password.toString(),
+        password: props.password.unsafeUnwrap(), // Safe usage
         passwordResetRequired: props.passwordResetRequired,
       };
     }
