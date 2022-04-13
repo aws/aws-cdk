@@ -320,7 +320,7 @@ export class EcrSource extends Source {
       imageRepository: {
         imageConfiguration: this.props.imageConfiguration,
         imageIdentifier: this.props.repository.repositoryUriForTagOrDigest(
-          this.props.tagOrDigest || this.props.tag || 'latest'
+          this.props.tagOrDigest || this.props.tag || 'latest',
         ),
         imageRepositoryType: ImageRepositoryType.ECR,
       },
