@@ -447,6 +447,13 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   public readonly osType?: OperatingSystemType;
 
   /**
+   * The AMI ID of the image to use
+   *
+   * @attribute
+   */
+  public readonly imageId?: string;
+
+  /**
    * IAM Role assumed by instances that are launched from this template.
    *
    * @attribute
@@ -459,6 +466,13 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    * @attribute
    */
   public readonly userData?: UserData;
+
+  /**
+   * Type of instance to launch.
+   *
+   * @attribute
+   */
+  public readonly instanceType?: InstanceType;
 
   // =============================================
   //   Private/protected data members
@@ -525,7 +539,10 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     const imageConfig: MachineImageConfig | undefined = props.machineImage?.getImage(this);
     if (imageConfig) {
       this.osType = imageConfig.osType;
+      this.imageId = imageConfig.imageId;
     }
+
+    this.instanceType = props.instanceType;
 
     let marketOptions: any = undefined;
     if (props?.spotOptions) {
