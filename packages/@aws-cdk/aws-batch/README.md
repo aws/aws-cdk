@@ -300,6 +300,26 @@ new batch.JobDefinition(this, 'job-def', {
 });
 ```
 
+### Using the secret on secrets manager
+
+You can set the environment variables from secrets manager.
+
+```ts
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * from ecs from '@aws-cdk/aws-ecs';
+
+ const dbSecret = new secretsmanager.Secret(this, 'secret');
+
+new batch.JobDefinition(this, 'batch-job-def-secrets', {
+  container: {
+    image: ecs.EcrImage.fromRegistry('docker/whalesay'),
+    secrets: {
+      PASSWORD: ecs.Secret.fromSecretsManager(dbSecret, 'password'),
+    }
+  },
+});
+```
+
 ### Importing an existing Job Definition
 
 #### From ARN
