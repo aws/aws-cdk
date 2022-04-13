@@ -312,7 +312,7 @@ test('can set states with transitions', () => {
   firstState.transitionTo(secondState, {
     when: iotevents.Expression.eq(
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-      iotevents.Expression.fromString('12'),
+      iotevents.Expression.asNumber(12),
     ),
   });
   // transition as 2nd -> 1st, make circular reference
@@ -320,14 +320,14 @@ test('can set states with transitions', () => {
     eventName: 'secondToFirst',
     when: iotevents.Expression.eq(
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-      iotevents.Expression.fromString('21'),
+      iotevents.Expression.asNumber(21),
     ),
   });
   // transition as 2nd -> 3rd, to test recursive calling
   secondState.transitionTo(thirdState, {
     when: iotevents.Expression.eq(
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-      iotevents.Expression.fromString('23'),
+      iotevents.Expression.asNumber(23),
     ),
   });
 
@@ -391,7 +391,7 @@ test('can set actions to transitions', () => {
   firstState.transitionTo(secondState, {
     when: iotevents.Expression.eq(
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-      iotevents.Expression.fromString('12'),
+      iotevents.Expression.asNumber(12),
     ),
     executing: [{ bind: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
   });
@@ -483,7 +483,7 @@ test('cannot create transitions that transit to duprecated target state', () => 
   firstState.transitionTo(secondState, {
     when: iotevents.Expression.eq(
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-      iotevents.Expression.fromString('12.1'),
+      iotevents.Expression.asNumber(12.1),
     ),
   });
 
@@ -491,7 +491,7 @@ test('cannot create transitions that transit to duprecated target state', () => 
     firstState.transitionTo(secondState, {
       when: iotevents.Expression.eq(
         iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-        iotevents.Expression.fromString('12.2'),
+        iotevents.Expression.asNumber(12.2),
       ),
     });
   }).toThrow("State 'firstState' already has a transition defined to 'secondState'");
@@ -510,8 +510,8 @@ describe('Expression', () => {
     ['bitwiseOr', () => E.bitwiseOr(E.asNumber(5), E.asNumber(2)), '5 | 2'],
     ['bitwiseAnd', () => E.bitwiseAnd(E.asNumber(5), E.asNumber(2)), '5 & 2'],
     ['bitwiseXor', () => E.bitwiseXor(E.asNumber(5), E.asNumber(2)), '5 ^ 2'],
-    ['eq', () => E.eq(E.fromString('"aaa"'), E.fromString('"bbb"')), '"aaa" == "bbb"'],
-    ['neq', () => E.neq(E.fromString('"aaa"'), E.fromString('"bbb"')), '"aaa" != "bbb"'],
+    ['eq', () => E.eq(E.asString('aaa'), E.asString('bbb')), '"aaa" == "bbb"'],
+    ['neq', () => E.neq(E.asString('aaa'), E.asString('bbb')), '"aaa" != "bbb"'],
     ['lt', () => E.lt(E.asNumber(5), E.asNumber(2)), '5 < 2'],
     ['lte', () => E.lte(E.asNumber(5), E.asNumber(2)), '5 <= 2'],
     ['gt', () => E.gt(E.asNumber(5), E.asNumber(2)), '5 > 2'],
