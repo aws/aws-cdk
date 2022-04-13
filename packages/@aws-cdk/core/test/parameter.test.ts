@@ -1,4 +1,5 @@
-import { CfnParameter, CfnResource, Construct, Stack } from '../lib';
+import { Construct } from 'constructs';
+import { CfnParameter, CfnResource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 describe('parameter', () => {

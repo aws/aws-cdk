@@ -728,7 +728,7 @@ describe('with Lambda@Edge functions', () => {
               EventType: 'origin-request',
               IncludeBody: true,
               LambdaFunctionARN: {
-                Ref: 'FunctionCurrentVersion4E2B2261477a5ae8059bbaa7813f752292c0f65e',
+                Ref: 'FunctionCurrentVersion4E2B2261f9b8c8b9c774af866281167c3323362d',
               },
             },
           ],
@@ -798,7 +798,7 @@ describe('with Lambda@Edge functions', () => {
               {
                 EventType: 'viewer-request',
                 LambdaFunctionARN: {
-                  Ref: 'FunctionCurrentVersion4E2B2261477a5ae8059bbaa7813f752292c0f65e',
+                  Ref: 'FunctionCurrentVersion4E2B2261f9b8c8b9c774af866281167c3323362d',
                 },
               },
             ],
@@ -904,7 +904,7 @@ describe('with Lambda@Edge functions', () => {
             {
               EventType: 'origin-request',
               LambdaFunctionARN: {
-                Ref: 'SingletonLambdasingletonforcloudfrontCurrentVersion0078406348a0962a52448a200cd0dbc0e22edb2a',
+                Ref: 'SingletonLambdasingletonforcloudfrontCurrentVersion00784063de5dfb6e46a8d2a0436a69c9a8bfabae',
               },
             },
           ],
