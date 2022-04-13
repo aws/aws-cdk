@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "MyFunction1ServiceRole9852B06B": {
+    "MyFunction2ServiceRole9852B06B": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {

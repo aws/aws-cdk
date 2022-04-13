@@ -3,20 +3,21 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { snapshotTestWorker } from '../../lib/workers/extract';
 
+beforeEach(() => {
+  jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
+  jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
+  jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
+  jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
+  jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
+});
+afterEach(() => {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+});
+
 const directory = path.join(__dirname, '../test-data');
 describe('Snapshot tests', () => {
-  beforeEach(() => {
-    jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
-    jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
-    jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
-    jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
-    jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
-  });
-  afterEach(() => {
-    jest.clearAllMocks();
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
-  });
   test('no snapshot', () => {
     // WHEN
     const test = {
@@ -48,7 +49,7 @@ describe('Snapshot tests', () => {
     jest.spyOn(child_process, 'spawnSync').mockRejectedValue;
     const test = {
       fileName: path.join(directory, 'integ.test-with-snapshot-assets.js'),
-      directory: directory,
+      destructiveChanges: [],
     };
     const result = snapshotTestWorker(test);
 

@@ -60,6 +60,8 @@ to be a self contained CDK app. The runner will execute the following for each f
   If this is set to `true` then the list of tests provided will be excluded
 - `--from-file`
   Read the list of tests from this file
+- `--disable-update-workflow` (default=`false`)
+  If this is set to `true` then the [update workflow](#update-workflow) will be disabled
 
 Example:
 
@@ -149,6 +151,26 @@ Test Results:
 
 Tests:    1 passed, 1 total
 ```
+
+#### Update Workflow
+
+By default, integration tests are run with the "update workflow" enabled. This can be disabled by using the `--disable-update-workflow` command line option.
+
+If an existing snapshot is being updated, the integration test runner will first deploy the existing snapshot and then perform a stack update
+with the new changes. This is to test for cases where an update would cause a breaking change only on a stack update.
+
+The `integ-runner` will also attempt to warn you if you are making any destructive changes with a message like:
+
+```bash
+!!! This test contains destructive changes !!!
+    Stack: aws-cdk-lambda-1 - Resource: MyLambdaServiceRole4539ECB6 - Impact: WILL_DESTROY
+    Stack: aws-cdk-lambda-1 - Resource: AliasAliasPermissionAF30F9E8 - Impact: WILL_REPLACE
+    Stack: aws-cdk-lambda-1 - Resource: AliasFunctionUrlDC6EC566 - Impact: WILL_REPLACE
+    Stack: aws-cdk-lambda-1 - Resource: Aliasinvokefunctionurl4CA9917B - Impact: WILL_REPLACE
+!!! If these destructive changes are necessary, please indicate this on the PR !!!
+```
+
+If the destructive changes are expected (and required) then please indicate this on your PR.
 
 ### integ.json schema
 

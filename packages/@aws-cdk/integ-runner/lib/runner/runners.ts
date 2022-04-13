@@ -2,14 +2,16 @@ import * as path from 'path';
 import { Writable, WritableOptions } from 'stream';
 import { StringDecoder, NodeStringDecoder } from 'string_decoder';
 import { TestCase, RequireApproval, DefaultCdkOptions } from '@aws-cdk/cloud-assembly-schema';
-import { diffTemplate, formatDifferences } from '@aws-cdk/cloudformation-diff';
+import { diffTemplate, formatDifferences, ResourceDifference, ResourceImpact } from '@aws-cdk/cloudformation-diff';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS, TARGET_PARTITIONS } from '@aws-cdk/cx-api';
 import { CdkCliWrapper, ICdk } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
-import { Diagnostic, DiagnosticReason } from '../workers/common';
+import * as logger from '../logger';
+import { Diagnostic, DiagnosticReason, DestructiveChange } from '../workers/common';
 import { canonicalizeTemplate } from './private/canonicalize-assets';
-import { AssemblyManifestReader } from './private/cloud-assembly';
+import { AssemblyManifestReader, ManifestTrace } from './private/cloud-assembly';
 import { IntegManifestReader } from './private/integ-manifest';
+import { exec } from './private/utils';
 
 const CDK_OUTDIR_PREFIX = 'cdk-integ.out';
 const CDK_INTEG_STACK_PRAGMA = '/// !cdk-integ';
@@ -18,6 +20,7 @@ const SET_CONTEXT_PRAGMA_PREFIX = 'pragma:set-context:';
 const VERIFY_ASSET_HASHES = 'pragma:include-assets-hashes';
 const ENABLE_LOOKUPS_PRAGMA = 'pragma:enable-lookups';
 const DISABLE_UPDATE_WORKFLOW = 'pragma:disable-update-workflow';
+const DESTRUCTIVE_CHANGES = '!!DESTRUCTIVE_CHANGES:';
 
 /**
  * Options for creating an integration test runner
@@ -129,6 +132,8 @@ export abstract class IntegRunner {
 
   protected readonly profile?: string;
 
+  protected _destructiveChanges?: DestructiveChange[];
+
   constructor(options: IntegRunnerOptions) {
     const parsed = path.parse(options.fileName);
     this.directory = parsed.dir;
@@ -211,11 +216,26 @@ export abstract class IntegRunner {
     if (fs.existsSync(cdkOutPath)) {
       fs.removeSync(cdkOutPath);
     }
-    if (fs.existsSync(this.snapshotDir)) {
-      this.removeAssetsCacheFromSnapshot();
-      const assembly = AssemblyManifestReader.fromPath(this.snapshotDir);
-      assembly.cleanManifest();
-    }
+  }
+
+  /**
+   * If there are any destructive changes to a stack then this will record
+   * those in the manifest.json file
+   */
+  private renderTraceData(): ManifestTrace {
+    const traceData: ManifestTrace = new Map();
+    const destructiveChanges = this._destructiveChanges ?? [];
+    destructiveChanges.forEach(change => {
+      const trace = traceData.get(change.stackName);
+      if (trace) {
+        trace.set(change.logicalId, `${DESTRUCTIVE_CHANGES} ${change.impact}`);
+      } else {
+        traceData.set(change.stackName, new Map([
+          [change.logicalId, `${DESTRUCTIVE_CHANGES} ${change.impact}`],
+        ]));
+      }
+    });
+    return traceData;
   }
 
   /**
@@ -272,10 +292,14 @@ export abstract class IntegRunner {
     } else {
       fs.moveSync(path.join(this.directory, this.cdkOutDir), this.snapshotDir, { overwrite: true });
     }
-    if (this.disableUpdateWorkflow) {
-      this.removeAssetsFromSnapshot();
+    if (fs.existsSync(this.snapshotDir)) {
+      if (this.disableUpdateWorkflow) {
+        this.removeAssetsFromSnapshot();
+      }
+      const assembly = AssemblyManifestReader.fromPath(this.snapshotDir);
+      assembly.cleanManifest();
+      assembly.recordTrace(this.renderTraceData());
     }
-    this.cleanup();
   }
 
   /**
@@ -423,6 +447,17 @@ export interface RunOptions {
    * @default false
    */
   readonly dryRun?: boolean;
+
+  /**
+   * If this is set to false then the stack update workflow will
+   * not be run
+   *
+   * The update workflow exists to check for cases where a change would cause
+   * a failure to an existing stack, but not for a newly created stack.
+   *
+   * @default true
+   */
+  readonly updateWorkflow?: boolean;
 }
 
 /**
@@ -430,21 +465,101 @@ export interface RunOptions {
  * integration tests
  */
 export class IntegTestRunner extends IntegRunner {
-  constructor(options: IntegRunnerOptions) {
+  constructor(options: IntegRunnerOptions, destructiveChanges?: DestructiveChange[]) {
     super(options);
+    this._destructiveChanges = destructiveChanges;
+  }
+
+  /**
+   * When running integration tests with the update path workflow
+   * it is important that the snapshot that is deployed is the current snapshot
+   * from the upstream branch. In order to guarantee that, first checkout the latest
+   * (to the user) snapshot from upstream
+   *
+   * It is not straightforward to figure out what branch the current
+   * working branch was created from. This is a best effort attempt to do so.
+   * This assumes that there is an 'origin'. `git remote show origin` returns a list of
+   * all branches and we then search for one that starts with `HEAD branch: `
+   */
+  private checkoutSnapshot(): void {
+    const cwd = path.dirname(this.snapshotDir);
+    // https://git-scm.com/docs/git-merge-base
+    let baseBranch: string | undefined = undefined;
+    // try to find the base branch that the working branch was created from
+    try {
+      const origin: string = exec(['git', 'remote', 'show', 'origin'], {
+        cwd,
+      });
+      const originLines = origin.split('\n');
+      for (const line of originLines) {
+        if (line.trim().startsWith('HEAD branch: ')) {
+          baseBranch = line.trim().split('HEAD branch: ')[1];
+        }
+      }
+    } catch (e) {
+      logger.warning('%s\n%s',
+        'Could not determine git origin branch.',
+        `You need to manually checkout the snapshot directory ${this.snapshotDir}` +
+        'from the merge-base (https://git-scm.com/docs/git-merge-base)',
+      );
+      logger.warning('error: %s', e);
+    }
+
+    // if we found the base branch then get the merge-base (most recent common commit)
+    // and checkout the snapshot using that commit
+    if (baseBranch) {
+      try {
+        const base = exec(['git', 'merge-base', 'HEAD', baseBranch], {
+          cwd,
+        });
+        exec(['git', 'checkout', base, '--', this.relativeSnapshotDir], {
+          cwd,
+        });
+      } catch (e) {
+        logger.warning('%s\n%s',
+          `Could not checkout snapshot directory ${this.snapshotDir} using these commands: `,
+          `git merge-base HEAD ${baseBranch} && git checkout {merge-base} -- ${this.relativeSnapshotDir}`,
+        );
+        logger.warning('error: %s', e);
+      }
+    }
   }
 
   /**
    * Orchestrates running integration tests. Currently this includes
    *
-   * 1. Deploying the integration test stacks
-   * 2. Saving the snapshot
-   * 3. Destroying the integration test stacks
+   * 1. (if update workflow is enabled) Deploying the snapshot test stacks
+   * 2. Deploying the integration test stacks
+   * 2. Saving the snapshot (if successful)
+   * 3. Destroying the integration test stacks (if clean=false)
+   *
+   * The update workflow exists to check for cases where a change would cause
+   * a failure to an existing stack, but not for a newly created stack.
    */
   public runIntegTestCase(options: RunOptions): void {
     const clean = options.clean ?? true;
+    const updateWorkflowEnabled = (options.updateWorkflow ?? true) && (options.testCase.stackUpdateWorkflow ?? true);
     try {
       if (!options.dryRun) {
+        // if the update workflow is not disabled, first
+        // perform a deployment with the exising snapshot
+        // then perform a deployment (which will be a stack update)
+        // with the current integration test
+        // We also only want to run the update workflow if there is an existing
+        // snapshot (otherwise there is nothing to update)
+        if (!this.disableUpdateWorkflow && updateWorkflowEnabled && this.hasSnapshot()) {
+          // make sure the snapshot is the latest from 'origin'
+          this.checkoutSnapshot();
+          this.cdk.deploy({
+            ...this.defaultArgs,
+            stacks: options.testCase.stacks,
+            requireApproval: RequireApproval.NEVER,
+            output: this.cdkOutDir,
+            app: this.relativeSnapshotDir,
+            lookups: this.enableLookups,
+            ...options.testCase.cdkCommandOptions?.deploy,
+          });
+        }
         this.cdk.deploy({
           ...this.defaultArgs,
           profile: this.profile,
@@ -453,11 +568,14 @@ export class IntegTestRunner extends IntegRunner {
           output: this.cdkOutDir,
           app: this.cdkApp,
           lookups: this.enableLookups,
+          ...options.testCase.cdkCommandOptions?.deploy,
         });
       } else {
         const env: Record<string, any> = {
           ...DEFAULT_SYNTH_OPTIONS.env,
         };
+        // if lookups are enabled then we need to synth
+        // with the "dummy" context
         if (this.enableLookups) {
           env.CDK_CONTEXT_JSON = JSON.stringify(this.getContext());
         }
@@ -480,6 +598,7 @@ export class IntegTestRunner extends IntegRunner {
             force: true,
             app: this.cdkApp,
             output: this.cdkOutDir,
+            ...options.testCase.cdkCommandOptions?.destroy,
           });
         }
       }
@@ -520,8 +639,10 @@ export class IntegSnapshotRunner extends IntegRunner {
   /**
    * Synth the integration tests and compare the templates
    * to the existing snapshot.
+   *
+   * @returns any diagnostics and any destructive changes
    */
-  public testSnapshot(): Diagnostic[] {
+  public testSnapshot(): { diagnostics: Diagnostic[], destructiveChanges: DestructiveChange[] } {
     try {
       // read the existing snapshot
       const expectedStacks = this.readAssembly(this.snapshotDir);
@@ -529,7 +650,7 @@ export class IntegSnapshotRunner extends IntegRunner {
       const env: Record<string, any> = {
         ...DEFAULT_SYNTH_OPTIONS.env,
       };
-      // if lookups are enabled then write the dummy context file
+      // if lookups are enabled then use "dummy" context
       if (this.enableLookups) {
         env.CDK_CONTEXT_JSON = JSON.stringify(this.getContext());
       }
@@ -551,9 +672,23 @@ export class IntegSnapshotRunner extends IntegRunner {
     }
   }
 
-  private diffAssembly(existing: Record<string, any>, actual: Record<string, any>): Diagnostic[] {
+  /**
+   * Find any differences between the existing and expected snapshots
+   *
+   * @param existing - the existing (expected) snapshot
+   * @param actual - the new (actual) snapshot
+   * @returns any diagnostics and any destructive changes
+   */
+  private diffAssembly(
+    existing: Record<string, any>,
+    actual: Record<string, any>,
+  ): { diagnostics: Diagnostic[], destructiveChanges: DestructiveChange[] } {
     const verifyHashes = this.pragmas().includes(VERIFY_ASSET_HASHES);
     const failures: Diagnostic[] = [];
+    const destructiveChanges: DestructiveChange[] = [];
+
+    // check if there is a CFN template in the current snapshot
+    // that does not exist in the "actual" snapshot
     for (const templateId of Object.keys(existing)) {
       if (!actual.hasOwnProperty(templateId)) {
         failures.push({
@@ -565,6 +700,8 @@ export class IntegSnapshotRunner extends IntegRunner {
     }
 
     for (const templateId of Object.keys(actual)) {
+      // check if there is a CFN template in the "actual" snapshot
+      // that does not exist in the current snapshot
       if (!existing.hasOwnProperty(templateId)) {
         failures.push({
           testName: this.testName,
@@ -575,14 +712,43 @@ export class IntegSnapshotRunner extends IntegRunner {
         let actualTemplate = actual[templateId];
         let expectedTemplate = existing[templateId];
 
+        // if we are not verifying asset hashes then remove the specific
+        // asset hashes from the templates so they are not part of the diff
+        // comparison
         if (!verifyHashes) {
           actualTemplate = canonicalizeTemplate(actualTemplate);
           expectedTemplate = canonicalizeTemplate(expectedTemplate);
         }
-        const diff = diffTemplate(expectedTemplate, actualTemplate);
-        if (!diff.isEmpty) {
+        const templateDiff = diffTemplate(expectedTemplate, actualTemplate);
+        if (!templateDiff.isEmpty) {
+          // go through all the resource differences and check for any
+          // "destructive" changes
+          templateDiff.resources.forEachDifference((logicalId: string, change: ResourceDifference) => {
+            // if the change is a removal it will not show up as a 'changeImpact'
+            // so need to check for it separately
+            if (change.isRemoval) {
+              destructiveChanges.push({
+                impact: ResourceImpact.WILL_DESTROY,
+                logicalId,
+                stackName: templateId,
+              });
+            } else {
+              switch (change.changeImpact) {
+                case ResourceImpact.MAY_REPLACE:
+                case ResourceImpact.WILL_ORPHAN:
+                case ResourceImpact.WILL_DESTROY:
+                case ResourceImpact.WILL_REPLACE:
+                  destructiveChanges.push({
+                    impact: change.changeImpact,
+                    logicalId,
+                    stackName: templateId,
+                  });
+                  break;
+              }
+            }
+          });
           const writable = new StringWritable({});
-          formatDifferences(writable, diff);
+          formatDifferences(writable, templateDiff);
           failures.push({
             reason: DiagnosticReason.SNAPSHOT_FAILED,
             message: writable.data,
@@ -592,7 +758,10 @@ export class IntegSnapshotRunner extends IntegRunner {
       }
     }
 
-    return failures;
+    return {
+      diagnostics: failures,
+      destructiveChanges,
+    };
   }
 
   private readAssembly(dir: string): Record<string, any> {
