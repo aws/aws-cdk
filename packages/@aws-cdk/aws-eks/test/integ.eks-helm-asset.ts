@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -46,6 +47,15 @@ class EksClusterStack extends Stack {
     });
     this.cluster.addHelmChart('test-chart', {
       chartAsset: chartAsset,
+    });
+
+    this.cluster.addHelmChart('test-oci-chart', {
+      chart: 's3-chart',
+      release: 's3-chart',
+      repository: 'oci://public.ecr.aws/aws-controllers-k8s/s3-chart',
+      version: 'v0.0.19',
+      namespace: 'ack-system',
+      createNamespace: true,
     });
   }
 }

@@ -1,6 +1,6 @@
 import * as net from 'net';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { IResource, Resource, Token } from '@aws-cdk/core';
+import { IResource, Resource, SecretValue, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import {
   CfnCustomerGateway,
@@ -45,13 +45,25 @@ export interface IVpnGateway extends IResource {
 
 export interface VpnTunnelOption {
   /**
-   * The pre-shared key (PSK) to establish initial authentication between the virtual
-   * private gateway and customer gateway. Allowed characters are alphanumeric characters
-   * and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).
+   * The pre-shared key (PSK) to establish initial authentication between the
+   * virtual private gateway and customer gateway. Allowed characters are
+   * alphanumeric characters period `.` and underscores `_`. Must be between 8
+   * and 64 characters in length and cannot start with zero (0).
+   *
+   * @default an Amazon generated pre-shared key
+   * @deprecated Use `preSharedKeySecret` instead
+   */
+  readonly preSharedKey?: string;
+
+  /**
+   * The pre-shared key (PSK) to establish initial authentication between the
+   * virtual private gateway and customer gateway. Allowed characters are
+   * alphanumeric characters period `.` and underscores `_`. Must be between 8
+   * and 64 characters in length and cannot start with zero (0).
    *
    * @default an Amazon generated pre-shared key
    */
-  readonly preSharedKey?: string;
+  readonly preSharedKeySecret?: SecretValue;
 
   /**
    * The range of inside IP addresses for the tunnel. Any specified CIDR blocks must be
@@ -252,6 +264,10 @@ export class VpnConnection extends Resource implements IVpnConnection {
       }
 
       props.tunnelOptions.forEach((options, index) => {
+        if (options.preSharedKey && options.preSharedKeySecret) {
+          throw new Error("Specify at most one of 'preSharedKey' and 'preSharedKeySecret'.");
+        }
+
         if (options.preSharedKey && !Token.isUnresolved(options.preSharedKey) && !/^[a-zA-Z1-9._][a-zA-Z\d._]{7,63}$/.test(options.preSharedKey)) {
           /* eslint-disable max-len */
           throw new Error(`The \`preSharedKey\` ${options.preSharedKey} for tunnel ${index + 1} is invalid. Allowed characters are alphanumeric characters and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).`);
@@ -276,7 +292,10 @@ export class VpnConnection extends Resource implements IVpnConnection {
       customerGatewayId: customerGateway.ref,
       staticRoutesOnly: props.staticRoutes ? true : false,
       vpnGatewayId: props.vpc.vpnGatewayId,
-      vpnTunnelOptionsSpecifications: props.tunnelOptions,
+      vpnTunnelOptionsSpecifications: props.tunnelOptions?.map(t => ({
+        preSharedKey: t.preSharedKeySecret?.unsafeUnwrap() ?? t.preSharedKey,
+        tunnelInsideCidr: t.tunnelInsideCidr,
+      })),
     });
 
     this.vpnId = vpnConnection.ref;
