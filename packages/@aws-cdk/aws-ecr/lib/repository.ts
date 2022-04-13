@@ -178,7 +178,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[:TAG]
    *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[@DIGEST]
    *
-   * @param tagOrDigest Optional image tag or digest
+   * @param tagOrDigest Optional image tag or digest (digests must start with `sha256:`)
    */
   public repositoryUriForTagOrDigest(tagOrDigest?: string): string {
     if (tagOrDigest?.startsWith('sha256:')) {
