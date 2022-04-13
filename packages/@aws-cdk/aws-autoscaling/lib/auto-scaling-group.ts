@@ -1182,7 +1182,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         }
 
         this.launchTemplate = bareLaunchTemplate;
-
       }
 
       if (mixedInstancesPolicy && mixedInstancesPolicy.launchTemplate instanceof ec2.LaunchTemplate) {
