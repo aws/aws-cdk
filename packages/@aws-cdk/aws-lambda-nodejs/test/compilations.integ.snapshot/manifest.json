@@ -1,0 +1,79 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      },
+      "metadata": {}
+    },
+    "cdk-integ-compilations-lambda-nodejs": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-compilations-lambda-nodejs.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-integ-compilations-lambda-nodejs": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.eabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8db",
+              "id": "eabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8db",
+              "packaging": "zip",
+              "sourceHash": "eabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8db",
+              "s3BucketParameter": "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3BucketC4E7C2DF",
+              "s3KeyParameter": "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3VersionKey76453C6B",
+              "artifactHashParameter": "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbArtifactHashA173AEE4"
+            }
+          }
+        ],
+        "/cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tsdecoratorhandlerServiceRole61E9E52C"
+          }
+        ],
+        "/cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tsdecoratorhandlerC8E2F076"
+          }
+        ],
+        "/cdk-integ-compilations-lambda-nodejs/AssetParameters/eabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8db/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3BucketC4E7C2DF"
+          }
+        ],
+        "/cdk-integ-compilations-lambda-nodejs/AssetParameters/eabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8db/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3VersionKey76453C6B"
+          }
+        ],
+        "/cdk-integ-compilations-lambda-nodejs/AssetParameters/eabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8db/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbArtifactHashA173AEE4"
+          }
+        ],
+        "/cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tsdecoratorhandlertsconfigServiceRoleC4AE481E"
+          }
+        ],
+        "/cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tsdecoratorhandlertsconfig68EC191E"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-compilations-lambda-nodejs"
+    }
+  }
+}
