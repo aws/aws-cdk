@@ -178,11 +178,13 @@ Below is a flow chart that describes how your PR may be treated by repository ma
 graph TD
     A[Incoming PR] -->B[Is an issue attached?]
     B -->|Yes - labels copied from issue| C[Is it labeled P1?]
-    B -->|No - auto-labeled as P2| D["Is it trivial or effort/small?"]
+    B -->|No - auto-labeled as P2| D["Is the effort small?"]
     C -->|Yes - P1| E[Is the PR build succeeding?]
     C -->|No - it is P2| D
     D -->|Yes| E
-    D -->|No| F[Unfortunately, we don't have the time to review <br/> PRs that are large effort and low priority.]
+    D -->|No| F[Unfortunately, we may not have time to review your PR. <br/> Can you break down the PR into smaller chunks?]
+    F -->|Yes| I[Please do. This will help get traction on your PR.]
+    F -->|No| J[Try to garner community support on the issue you are <br/> trying to solve. With 20 +1s, the issue will be relabeled as P1.]
     E -->|Yes| G[We will review your PR as soon as we can]
     E -->|No| H[If the build is failing for more than 4 weeks <br/> without any work on it, we will close the PR.]
 ```
