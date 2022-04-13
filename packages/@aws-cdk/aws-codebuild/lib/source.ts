@@ -501,7 +501,8 @@ interface ThirdPartyGitSourceProps extends GitSourceProps {
   readonly webhookFilters?: FilterGroup[];
 
   /**
-   * The URL that the build will report back to the source provider. Can use built-in CodeBuild variables, like $AWS_REGION
+   * The URL that the build will report back to the source provider.
+   * Can use built-in CodeBuild variables, like $AWS_REGION.
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/create-project-cli.html#cli.source.buildstatusconfig.targeturl
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
@@ -678,10 +679,12 @@ abstract class CommonGithubSource extends ThirdPartyGitSource {
     return {
       sourceProperty: {
         ...superConfig.sourceProperty,
-        buildStatusConfig: {
-          context: this.buildStatusContext,
-          targetUrl: this.buildStatusUrl,
-        },
+        buildStatusConfig: this.buildStatusContext !== undefined || this.buildStatusUrl !== undefined
+          ? {
+            context: this.buildStatusContext,
+            targetUrl: this.buildStatusUrl,
+          }
+          : undefined,
       },
       sourceVersion: superConfig.sourceVersion,
       buildTriggers: superConfig.buildTriggers,
@@ -859,10 +862,12 @@ class BitBucketSource extends ThirdPartyGitSource {
       sourceProperty: {
         ...superConfig.sourceProperty,
         location: this.httpsCloneUrl,
-        buildStatusConfig: {
-          context: this.buildStatusName,
-          targetUrl: this.buildStatusUrl,
-        },
+        buildStatusConfig: this.buildStatusName !== undefined || this.buildStatusUrl !== undefined
+          ? {
+            context: this.buildStatusName,
+            targetUrl: this.buildStatusUrl,
+          }
+          : undefined,
       },
       sourceVersion: superConfig.sourceVersion,
       buildTriggers: superConfig.buildTriggers,
