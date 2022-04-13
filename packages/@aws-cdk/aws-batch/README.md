@@ -305,10 +305,7 @@ new batch.JobDefinition(this, 'job-def', {
 You can set the environment variables from secrets manager.
 
 ```ts
-import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import * as ecs from '@aws-cdk/aws-ecs';
-
- const dbSecret = new secretsmanager.Secret(this, 'secret');
+const dbSecret = new secretsmanager.Secret(this, 'secret');
 
 new batch.JobDefinition(this, 'batch-job-def-secrets', {
   container: {
