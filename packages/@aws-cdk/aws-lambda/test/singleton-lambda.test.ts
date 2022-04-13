@@ -172,19 +172,20 @@ describe('singleton lambda', () => {
 
     // WHEN
     const invokeResult = singleton.grantInvoke(new iam.ServicePrincipal('events.amazonaws.com'));
-    const statement = stack.resolve(invokeResult.resourceStatement);
+    const statement = stack.resolve(invokeResult.resourceStatement?.toJSON());
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       Principal: 'events.amazonaws.com',
     });
-    expect(statement.action).toEqual(['lambda:InvokeFunction']);
-    expect(statement.principal).toEqual({ Service: ['events.amazonaws.com'] });
-    expect(statement.effect).toEqual('Allow');
-    expect(statement.resource).toEqual([{
-      'Fn::GetAtt': ['SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38', 'Arn'],
-    }]);
+    expect(statement.Action).toEqual('lambda:InvokeFunction');
+    expect(statement.Principal).toEqual({ Service: 'events.amazonaws.com' });
+    expect(statement.Effect).toEqual('Allow');
+    expect(statement.Resource).toEqual([
+      { 'Fn::GetAtt': ['SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38', 'Arn'] },
+      { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38', 'Arn'] }, ':*']] },
+    ]);
   });
 
   test('check edge compatibility', () => {

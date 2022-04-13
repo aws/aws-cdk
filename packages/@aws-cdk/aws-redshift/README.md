@@ -172,7 +172,7 @@ The table can be configured to have distStyle attribute and a distKey column:
 ```ts fixture=cluster
 new Table(this, 'Table', {
   tableColumns: [
-    { name: 'col1', dataType: 'varchar(4)', distKey: true }, 
+    { name: 'col1', dataType: 'varchar(4)', distKey: true },
     { name: 'col2', dataType: 'float' },
   ],
   cluster: cluster,
@@ -186,7 +186,7 @@ The table can also be configured to have sortStyle attribute and sortKey columns
 ```ts fixture=cluster
 new Table(this, 'Table', {
   tableColumns: [
-    { name: 'col1', dataType: 'varchar(4)', sortKey: true }, 
+    { name: 'col1', dataType: 'varchar(4)', sortKey: true },
     { name: 'col2', dataType: 'float', sortKey: true },
   ],
   cluster: cluster,
@@ -248,7 +248,7 @@ const tableName = 'mytable'
 
 const user = User.fromUserAttributes(this, 'User', {
   username: username,
-  password: SecretValue.plainText('NOT_FOR_PRODUCTION'),
+  password: SecretValue.unsafePlainText('NOT_FOR_PRODUCTION'),
   cluster: cluster,
   databaseName: databaseName,
 });
