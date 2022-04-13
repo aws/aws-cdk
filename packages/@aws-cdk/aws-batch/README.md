@@ -306,7 +306,7 @@ You can set the environment variables from secrets manager.
 
 ```ts
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import * from ecs from '@aws-cdk/aws-ecs';
+import * as ecs from '@aws-cdk/aws-ecs';
 
  const dbSecret = new secretsmanager.Secret(this, 'secret');
 
