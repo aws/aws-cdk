@@ -172,23 +172,47 @@ eval $(gp env -e)
 
 ## Pull Requests
 
+Below is a flow chart that describes how your PR may be treated by repository maintainers:
+
+```mermaid
+graph TD
+    A[Incoming PR] -->B[Is an issue attached?]
+    B -->|Yes - labels copied from issue| C[Is it labeled P1?]
+    B -->|No - auto-labeled as P2| D["Is it trivial or effort/small?"]
+    C -->|Yes - P1| E[Is the PR build succeeding?]
+    C -->|No - it is P2| D
+    D -->|Yes| E
+    D -->|No| F[Unfortunately, we don't have the time to review <br/> PRs that are large effort and low priority.]
+    E -->|Yes| G[We will review your PR as soon as we can]
+    E -->|No| H[If the build is failing for more than 4 weeks <br/> without any work on it, we will close the PR.]
+```
+
+Note that, if we do not have time to review your PR, it is not the end of the road. We are asking
+for more community support on the attached issue before we focus our attention there. Any `P2` issue
+with 20 or more +1s will be automatically upgraded from `P2`to `P1`.
+
 ### Step 1: Find something to work on
 
-If you want to contribute a specific feature or fix you have in mind, look at active [pull
-requests](https://github.com/aws/aws-cdk/pulls) to see if someone else is already working on it. If not, you can start
-contributing your changes.
+If you want to contribute a specific feature or fix you have in mind, look to see if an issue
+already exists in our [backlog](https://github.com/aws/aws-cdk/issues). If not, please contribute
+a feature request or bug report prior to contributing the PR. We will triage this issue promptly,
+and the priority of the issue (`P1` or `P2`) will give indication of how much attention your PR
+may get.
+
+It's not required to submit an issue first, but PRs that come in without attached issues will be
+automatically labeled as `P2`.
 
 On the other hand, if you are here looking for an issue to work on, explore our [backlog of
-issues](https://github.com/aws/aws-cdk/issues) and find something that piques your interest. We have labeled all of our
-issues for easy searching.
-If you are looking for your first contribution, the ['good first issue'
-label](https://github.com/aws/aws-cdk/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) will be of help.
+issues](https://github.com/aws/aws-cdk/issues) and find something that piques your interest.
+We have labeled all of our issues for easy searching. If you are looking for your first contribution,
+the ['good first issue' label](https://github.com/aws/aws-cdk/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+will be of help.
 
 It's a good idea to keep the priority of issues in mind when deciding what to
 work on. If we have labelled an issue as `P2`, it means it's something we won't
 get to soon, and we're waiting on more feedback from the community (in the form
 of +1s and comments) to give it a higher priority. A PR for a `P2` issue may
-take us some time to review, especially if it involves a complex
+be closed by a maintainer, especially if it involves a complex
 implementation. `P1` issues impact a significant number of customers, so we are
 much more likely to give a PR for those issues prompt attention.
 
@@ -324,6 +348,9 @@ $ yarn watch & # runs in the background
   ```
 
 * Once the pull request is submitted, a reviewer will be assigned by the maintainers.
+
+* If the PR build is failing, update the PR with fixes until the build succeeds. You may have trouble getting attention
+  from maintainers if your build is failing, and after 4 weeks of staleness, your PR will be automatically closed. 
 
 * Discuss review comments and iterate until you get at least one "Approve". When iterating, push new commits to the
   same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
