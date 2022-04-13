@@ -79,7 +79,7 @@ new lambda.DockerImageFunction(this, 'ECRFunction', {
 ```
 
 The props for these docker image resources allow overriding the image's `CMD`, `ENTRYPOINT`, and `WORKDIR`
-configurations. See their docs for more information.
+configurations as well as choosing a specific tag or digest. See their docs for more information.
 
 ## Execution Role
 
