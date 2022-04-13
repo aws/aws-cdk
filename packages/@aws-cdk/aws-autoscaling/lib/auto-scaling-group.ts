@@ -23,6 +23,7 @@ import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-p
 import { BaseTargetTrackingProps, PredefinedMetric, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
 import { TerminationPolicy } from './termination-policy';
 import { BlockDevice, BlockDeviceVolume, EbsDeviceVolumeType } from './volume';
+import { WarmPool, WarmPoolOptions } from './warm-pool';
 
 /**
  * Name tag constant
@@ -745,6 +746,16 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   }
 
   /**
+   * Add a pool of pre-initialized EC2 instances that sits alongside an Auto Scaling group
+   */
+  public addWarmPool(options?: WarmPoolOptions): WarmPool {
+    return new WarmPool(this, 'WarmPool', {
+      autoScalingGroup: this,
+      ...options,
+    });
+  }
+
+  /**
    * Scale out or in based on time
    */
   public scaleOnSchedule(id: string, props: BasicScheduledActionProps): ScheduledAction {
@@ -1024,9 +1035,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     this.maxInstanceLifetime = props.maxInstanceLifetime;
-    if (this.maxInstanceLifetime &&
-      (this.maxInstanceLifetime.toSeconds() < 604800 || this.maxInstanceLifetime.toSeconds() > 31536000)) {
-      throw new Error('maxInstanceLifetime must be between 7 and 365 days (inclusive)');
+    // See https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-max-instance-lifetime.html for details on max instance lifetime.
+    if (this.maxInstanceLifetime && !this.maxInstanceLifetime.isUnresolved() &&
+      (this.maxInstanceLifetime.toSeconds() !== 0) &&
+      (this.maxInstanceLifetime.toSeconds() < 86400 || this.maxInstanceLifetime.toSeconds() > 31536000)) {
+      throw new Error('maxInstanceLifetime must be between 1 and 365 days (inclusive)');
     }
 
     if (props.notificationsTopic && props.notifications) {
@@ -1629,6 +1642,11 @@ export interface IAutoScalingGroup extends IResource, iam.IGrantable {
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
    */
   addLifecycleHook(id: string, props: BasicLifecycleHookProps): LifecycleHook;
+
+  /**
+   * Add a pool of pre-initialized EC2 instances that sits alongside an Auto Scaling group
+   */
+  addWarmPool(options?: WarmPoolOptions): WarmPool;
 
   /**
    * Scale out or in based on time
