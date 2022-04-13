@@ -91,7 +91,7 @@ export class BasicAuth {
     if (this.props.password) {
       return {
         ...config,
-        password: this.props.password.toString(),
+        password: this.props.password.unsafeUnwrap(), // Safe usage
       };
     }
 
@@ -103,7 +103,7 @@ export class BasicAuth {
     });
     return {
       ...config,
-      password: secret.secretValueFromJson('password').toString(),
+      password: secret.secretValueFromJson('password').unsafeUnwrap(),
     };
   }
 }
