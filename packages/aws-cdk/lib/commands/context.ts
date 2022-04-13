@@ -1,13 +1,13 @@
 import * as chalk from 'chalk';
-import * as minimatch from 'minimatch';
 import * as version from '../../lib/version';
 import { CommandOptions } from '../command-api';
-import { print, error, warning } from '../logging';
-import { Context, PROJECT_CONFIG, PROJECT_CONTEXT, USER_DEFAULTS } from '../settings';
+import { print } from '../logging';
+import { Context, PROJECT_CONFIG } from '../settings';
 import { renderTable } from '../util';
 
 export async function realHandler(options: CommandOptions): Promise<number> {
   const { configuration, args } = options;
+
   if (args.clear) {
     configuration.context.clear();
     await configuration.saveContext();
@@ -48,8 +48,9 @@ function listContext(context: Context) {
     const jsonWithoutNewlines = JSON.stringify(context.all[key], undefined, 2).replace(/\s+/g, ' ');
     data.push([i, key, jsonWithoutNewlines]);
   }
-  print('Context found in %s:', chalk.blue(PROJECT_CONFIG));
-  print('');
+
+  print(`Context found in ${chalk.blue(PROJECT_CONFIG)}:\n`);
+
   print(renderTable(data, process.stdout.columns));
 
   // eslint-disable-next-line max-len
@@ -62,75 +63,14 @@ function invalidateContext(context: Context, key: string) {
     // was a number and we fully parsed it.
     key = keyByNumber(context, i);
   }
+
   // Unset!
   if (context.has(key)) {
     context.unset(key);
-    // check if the value was actually unset.
-    if (!context.has(key)) {
-      print('Context value %s reset. It will be refreshed on next synthesis', chalk.blue(key));
-      return;
-    }
-
-    // Value must be in readonly bag
-    error('Only context values specified in %s can be reset through the CLI', chalk.blue(PROJECT_CONTEXT));
-    throw new Error(`Cannot reset readonly context value with key: ${key}`);
+    print(`Context value ${chalk.blue(key)} reset. It will be refreshed on next synthesis`);
+  } else {
+    print(`No context value with key ${chalk.blue(key)}`);
   }
-
-  // check if value is expression matching keys
-  const matches = keysByExpression(context, key);
-
-  if (matches.length > 0) {
-
-    matches.forEach((match) => {
-      context.unset(match);
-    });
-
-    const { unset, readonly } = getUnsetAndReadonly(context, matches);
-
-    // output the reset values
-    printUnset(unset);
-
-    // warn about values not reset
-    printReadonly(readonly);
-
-    // throw when none of the matches were reset
-    if (unset.length === 0) {
-      throw new Error('None of the matched context values could be reset');
-    }
-    return;
-  }
-
-  throw new Error(`No context value matching key: ${key}`);
-}
-function printUnset(unset: string[]) {
-  if (unset.length === 0) return;
-  print('The following matched context values reset. They will be refreshed on next synthesis');
-  unset.forEach((match) => {
-    print('  %s', match);
-  });
-}
-function printReadonly(readonly: string[]) {
-  if (readonly.length === 0) return;
-  warning('The following matched context values could not be reset through the CLI');
-  readonly.forEach((match) => {
-    print('  %s', match);
-  });
-  print('');
-  print('This usually means they are configured in %s or %s', chalk.blue(PROJECT_CONFIG), chalk.blue(USER_DEFAULTS));
-}
-function keysByExpression(context: Context, expression: string) {
-  return context.keys.filter(minimatch.filter(expression));
-}
-
-function getUnsetAndReadonly(context: Context, matches: string[]) {
-  return matches.reduce<{ unset: string[], readonly: string[] }>((acc, match) => {
-    if (context.has(match)) {
-      acc.readonly.push(match);
-    } else {
-      acc.unset.push(match);
-    }
-    return acc;
-  }, { unset: [], readonly: [] });
 }
 
 function keyByNumber(context: Context, n: number) {
