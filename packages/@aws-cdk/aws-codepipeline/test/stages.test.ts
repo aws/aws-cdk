@@ -178,7 +178,7 @@ describe('stages', () => {
         ],
         DisableInboundStageTransitions: [
           {
-            Reason: 'Transitions disabled',
+            Reason: 'Transition disabled',
             StageName: 'SecondStage',
           },
         ],
