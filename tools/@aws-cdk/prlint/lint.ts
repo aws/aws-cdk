@@ -45,7 +45,7 @@ function testChanged(files: any[]) {
 }
 
 function integTestChanged(files: any[]) {
-  return files.filter(f => f.filename.toLowerCase().match(/^integ.*.ts$/)).length != 0;
+  return files.filter(f => f.filename.toLowerCase().match(/integ.*.ts$/)).length != 0;
 }
 
 function readmeChanged(files: any[]) {
@@ -112,7 +112,7 @@ function validateBreakingChangeFormat(title: string, body: string) {
     if (!m[0].startsWith('BREAKING CHANGE: ')) {
       throw new LinterError(`Breaking changes should be indicated by starting a line with 'BREAKING CHANGE: ', variations are not allowed. (found: '${m[0]}')`);
     }
-    if (m[0].substr('BREAKING CHANGE:'.length).trim().length === 0) {
+    if (m[0].slice('BREAKING CHANGE:'.length).trim().length === 0) {
       throw new LinterError("The description of the first breaking change should immediately follow the 'BREAKING CHANGE: ' clause");
     }
     const titleRe = /^[a-z]+\([0-9a-z-_]+\)/;

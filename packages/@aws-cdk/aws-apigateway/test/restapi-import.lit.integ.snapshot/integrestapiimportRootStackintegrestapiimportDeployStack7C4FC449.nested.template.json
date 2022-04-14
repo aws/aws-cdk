@@ -1,0 +1,29 @@
+{
+ "Resources": {
+  "Deployment37BBD5E4": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
+    }
+   }
+  },
+  "Stage0E8C2AF5": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
+    },
+    "DeploymentId": {
+     "Ref": "Deployment37BBD5E4"
+    },
+    "StageName": "prod"
+   }
+  }
+ },
+ "Parameters": {
+  "referencetointegrestapiimportRootStackRestApi2647DA4CRef": {
+   "Type": "String"
+  }
+ }
+}

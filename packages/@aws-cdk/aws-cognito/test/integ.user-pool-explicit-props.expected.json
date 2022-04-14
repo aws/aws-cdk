@@ -61,7 +61,13 @@
             "Arn"
           ]
         },
-        "Principal": "cognito-idp.amazonaws.com"
+        "Principal": "cognito-idp.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "myuserpool01998219",
+            "Arn"
+          ]
+        }
       }
     },
     "customMessageServiceRoleB4AE7F17": {
@@ -125,7 +131,13 @@
             "Arn"
           ]
         },
-        "Principal": "cognito-idp.amazonaws.com"
+        "Principal": "cognito-idp.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "myuserpool01998219",
+            "Arn"
+          ]
+        }
       }
     },
     "defineAuthChallengeServiceRole9E2D15DF": {
@@ -189,7 +201,13 @@
             "Arn"
           ]
         },
-        "Principal": "cognito-idp.amazonaws.com"
+        "Principal": "cognito-idp.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "myuserpool01998219",
+            "Arn"
+          ]
+        }
       }
     },
     "postAuthenticationServiceRole5B3B242A": {
@@ -253,7 +271,13 @@
             "Arn"
           ]
         },
-        "Principal": "cognito-idp.amazonaws.com"
+        "Principal": "cognito-idp.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "myuserpool01998219",
+            "Arn"
+          ]
+        }
       }
     },
     "postConfirmationServiceRole864BE5F9": {
@@ -317,7 +341,13 @@
             "Arn"
           ]
         },
-        "Principal": "cognito-idp.amazonaws.com"
+        "Principal": "cognito-idp.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "myuserpool01998219",
+            "Arn"
+          ]
+        }
       }
     },
     "preAuthenticationServiceRole9712F4D8": {
@@ -381,7 +411,13 @@
             "Arn"
           ]
         },
-        "Principal": "cognito-idp.amazonaws.com"
+        "Principal": "cognito-idp.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "myuserpool01998219",
+            "Arn"
+          ]
+        }
       }
     },
     "preSignUpServiceRole0A7E91EB": {
@@ -445,7 +481,13 @@
             "Arn"
           ]
         },
-        "Principal": "cognito-idp.amazonaws.com"
+        "Principal": "cognito-idp.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "myuserpool01998219",
+            "Arn"
+          ]
+        }
       }
     },
     "preTokenGenerationServiceRole430C3D14": {
@@ -509,7 +551,13 @@
             "Arn"
           ]
         },
-        "Principal": "cognito-idp.amazonaws.com"
+        "Principal": "cognito-idp.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "myuserpool01998219",
+            "Arn"
+          ]
+        }
       }
     },
     "userMigrationServiceRole091766B0": {
@@ -573,7 +621,13 @@
             "Arn"
           ]
         },
-        "Principal": "cognito-idp.amazonaws.com"
+        "Principal": "cognito-idp.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "myuserpool01998219",
+            "Arn"
+          ]
+        }
       }
     },
     "verifyAuthChallengeResponseServiceRole7077884C": {
@@ -637,7 +691,13 @@
             "Arn"
           ]
         },
-        "Principal": "cognito-idp.amazonaws.com"
+        "Principal": "cognito-idp.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "myuserpool01998219",
+            "Arn"
+          ]
+        }
       }
     },
     "myuserpoolsmsRole0E16FDD9": {
@@ -833,6 +893,9 @@
               "myuserpoolsmsRole0E16FDD9",
               "Arn"
             ]
+          },
+          "SnsRegion": {
+            "Ref": "AWS::Region"
           }
         },
         "SmsVerificationMessage": "verification sms message from the integ test. Code is {####}.",
@@ -850,7 +913,7 @@
     "myuserpoolmyuserpooldomainEE1E11AF": {
       "Type": "AWS::Cognito::UserPoolDomain",
       "Properties": {
-        "Domain": "myawesomeapp",
+        "Domain": "cdkintegrationtestuserpoolexplicitprops",
         "UserPoolId": {
           "Ref": "myuserpool01998219"
         }
