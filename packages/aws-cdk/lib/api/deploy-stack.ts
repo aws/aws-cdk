@@ -1,5 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
+import * as fs from 'fs-extra';
 import * as uuid from 'uuid';
 import { addMetadataAssetsToManifest } from '../assets';
 import { Tag } from '../cdk-toolkit';
@@ -15,7 +16,7 @@ import { ICON } from './hotswap/common';
 import { ToolkitInfo } from './toolkit-info';
 import {
   changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
-  waitForStackDeploy, waitForStackDelete, ParameterValues, ParameterChanges,
+  waitForStackDeploy, waitForStackDelete, ParameterValues, ParameterChanges, ResourcesToImport,
 } from './util/cloudformation';
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 
@@ -189,6 +190,19 @@ export interface DeployStackOptions {
    * @default - nothing extra is appended to the User-Agent header
    */
   readonly extraUserAgent?: string;
+
+  /**
+   * If set, change set of type IMPORT will be created, and resourcesToImport
+   * passed to it.
+   */
+  readonly resourcesToImport?: ResourcesToImport;
+
+  /**
+   * If present, use this given template instead of the stored one
+   *
+   * @default - Use the stored template
+   */
+  readonly overrideTemplate?: any;
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
@@ -245,7 +259,13 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     debug(`${deployName}: deploying...`);
   }
 
-  const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, legacyAssets, options.toolkitInfo, options.sdk);
+  const bodyParameter = await makeBodyParameter(
+    stackArtifact,
+    options.resolvedEnvironment,
+    legacyAssets,
+    options.toolkitInfo,
+    options.sdk,
+    options.overrideTemplate);
   await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv);
 
   if (options.hotswap) {
@@ -298,7 +318,8 @@ async function prepareAndExecuteChangeSet(
   const changeSet = await cfn.createChangeSet({
     StackName: deployName,
     ChangeSetName: changeSetName,
-    ChangeSetType: update ? 'UPDATE' : 'CREATE',
+    ChangeSetType: options.resourcesToImport ? 'IMPORT' : update ? 'UPDATE' : 'CREATE',
+    ResourcesToImport: options.resourcesToImport,
     Description: `CDK Changeset for execution ${executionId}`,
     TemplateBody: bodyParameter.TemplateBody,
     TemplateURL: bodyParameter.TemplateURL,
@@ -357,6 +378,8 @@ async function prepareAndExecuteChangeSet(
       // This shouldn't really happen, but catch it anyway. You never know.
       if (!finalStack) { throw new Error('Stack deploy failed (the stack disappeared while we were deploying it)'); }
       cloudFormationStack = finalStack;
+    } catch (e) {
+      throw new Error(suffixWithErrors(e.message, monitor?.errors));
     } finally {
       await monitor?.stop();
     }
@@ -386,15 +409,17 @@ async function makeBodyParameter(
   resolvedEnvironment: cxapi.Environment,
   assetManifest: AssetManifestBuilder,
   toolkitInfo: ToolkitInfo,
-  sdk: ISDK): Promise<TemplateBodyParameter> {
+  sdk: ISDK,
+  overrideTemplate?: any,
+): Promise<TemplateBodyParameter> {
 
   // If the template has already been uploaded to S3, just use it from there.
-  if (stack.stackTemplateAssetObjectUrl) {
+  if (stack.stackTemplateAssetObjectUrl && !overrideTemplate) {
     return { TemplateURL: restUrlFromManifest(stack.stackTemplateAssetObjectUrl, resolvedEnvironment, sdk) };
   }
 
   // Otherwise, pass via API call (if small) or upload here (if large)
-  const templateJson = toYAML(stack.template);
+  const templateJson = toYAML(overrideTemplate ?? stack.template);
 
   if (templateJson.length <= LARGE_TEMPLATE_SIZE_KB * 1024) {
     return { TemplateBody: templateJson };
@@ -413,8 +438,15 @@ async function makeBodyParameter(
   const templateHash = contentHash(templateJson);
   const key = `cdk/${stack.id}/${templateHash}.yml`;
 
+  let templateFile = stack.templateFile;
+  if (overrideTemplate) {
+    // Add a variant of this template
+    templateFile = `${stack.templateFile}-${templateHash}.yaml`;
+    await fs.writeFile(templateFile, templateJson, { encoding: 'utf-8' });
+  }
+
   assetManifest.addFileAsset(templateHash, {
-    path: stack.templateFile,
+    path: templateFile,
   }, {
     bucketName: toolkitInfo.bucketName,
     objectKey: key,
@@ -423,6 +455,33 @@ async function makeBodyParameter(
   const templateURL = `${toolkitInfo.bucketUrl}/${key}`;
   debug('Storing template in S3 at:', templateURL);
   return { TemplateURL: templateURL };
+}
+
+/**
+ * Prepare a body parameter for CFN, performing the upload
+ *
+ * Return it as-is if it is small enough to pass in the API call,
+ * upload to S3 and return the coordinates if it is not.
+ */
+export async function makeBodyParameterAndUpload(
+  stack: cxapi.CloudFormationStackArtifact,
+  resolvedEnvironment: cxapi.Environment,
+  toolkitInfo: ToolkitInfo,
+  sdkProvider: SdkProvider,
+  sdk: ISDK,
+  overrideTemplate?: any): Promise<TemplateBodyParameter> {
+
+  // We don't have access to the actual asset manifest here, so pretend that the
+  // stack doesn't have a pre-published URL.
+  const forceUploadStack = Object.create(stack, {
+    stackTemplateAssetObjectUrl: { value: undefined },
+  });
+
+  const builder = new AssetManifestBuilder();
+  const bodyparam = await makeBodyParameter(forceUploadStack, resolvedEnvironment, builder, toolkitInfo, sdk, overrideTemplate);
+  const manifest = builder.toManifest(stack.assembly.directory);
+  await publishAssets(manifest, sdkProvider, resolvedEnvironment, { quiet: true });
+  return bodyparam;
 }
 
 export interface DestroyStackOptions {
@@ -453,6 +512,8 @@ export async function destroyStack(options: DestroyStackOptions) {
     if (destroyedStack && destroyedStack.stackStatus.name !== 'DELETE_COMPLETE') {
       throw new Error(`Failed to destroy ${deployName}: ${destroyedStack.stackStatus}`);
     }
+  } catch (e) {
+    throw new Error(suffixWithErrors(e.message, monitor?.errors));
   } finally {
     if (monitor) { await monitor.stop(); }
   }
@@ -582,4 +643,10 @@ function restUrlFromManifest(url: string, environment: cxapi.Environment, sdk: I
 
   const urlSuffix: string = sdk.getEndpointSuffix(environment.region);
   return `https://s3.${environment.region}.${urlSuffix}/${bucketName}/${objectKey}`;
+}
+
+function suffixWithErrors(msg: string, errors?: string[]) {
+  return errors && errors.length > 0
+    ? `${msg}: ${errors.join(', ')}`
+    : msg;
 }
