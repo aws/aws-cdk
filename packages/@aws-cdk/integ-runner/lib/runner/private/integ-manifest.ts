@@ -17,6 +17,15 @@ export interface IntegTestConfig {
    * @default false
    */
   readonly enableLookups: boolean;
+
+  /**
+   * Run update workflow on this integration test
+   * This should only be set to false to test scenarios
+   * that are not possible to test as part of the update workflow
+   *
+   * @default true
+   */
+  readonly stackUpdateWorkflow: boolean;
 }
 
 /**
@@ -71,6 +80,7 @@ export class IntegManifestReader {
     return {
       testCases: this.manifest.testCases,
       enableLookups: this.manifest.enableLookups ?? false,
+      stackUpdateWorkflow: this.manifest.stackUpdateWorkflow ?? true,
     };
   }
 }

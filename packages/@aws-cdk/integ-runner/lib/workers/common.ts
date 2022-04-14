@@ -1,7 +1,7 @@
 import { ResourceImpact } from '@aws-cdk/cloudformation-diff';
 import * as chalk from 'chalk';
 import * as logger from '../logger';
-import { IntegTestConfig } from '../runner/integ-tests';
+import { IntegTestConfig } from '../runner/integration-tests';
 
 /**
  * Config for an integration test

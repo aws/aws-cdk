@@ -1,6 +1,6 @@
 import * as workerpool from 'workerpool';
 import * as logger from '../logger';
-import { IntegTestConfig } from '../runner/integ-tests';
+import { IntegTestConfig } from '../runner/integration-tests';
 import { printSummary, printResults, flatten, IntegTestWorkerConfig } from './common';
 
 /**

@@ -64,6 +64,7 @@ describe('Integ manifest reader', () => {
         },
       },
       enableLookups: false,
+      stackUpdateWorkflow: true,
     });
   });
 });

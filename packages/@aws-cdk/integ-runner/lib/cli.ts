@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 import * as workerpool from 'workerpool';
 import * as logger from './logger';
-import { IntegrationTests, IntegTestConfig } from './runner/integ-tests';
+import { IntegrationTests, IntegTestConfig } from './runner/integration-tests';
 import { runSnapshotTests, runIntegrationTests, IntegRunnerMetrics, IntegTestWorkerConfig, DestructiveChange } from './workers';
 
 // https://github.com/yargs/yargs/issues/1929
@@ -61,11 +61,11 @@ async function main() {
     if (argv._.length > 0 && fromFile) {
       throw new Error('A list of tests cannot be provided if "--from-file" is provided');
     } else if (argv._.length === 0 && !fromFile) {
-      testsFromArgs.push(...(await new IntegrationTests(argv.directory).fromCliArgs()));
+      testsFromArgs.push(...(await new IntegrationTests(path.resolve(argv.directory)).fromCliArgs()));
     } else if (fromFile) {
-      testsFromArgs.push(...(await new IntegrationTests(argv.directory).fromFile(fromFile)));
+      testsFromArgs.push(...(await new IntegrationTests(path.resolve(argv.directory)).fromFile(path.resolve(fromFile))));
     } else {
-      testsFromArgs.push(...(await new IntegrationTests(argv.directory).fromCliArgs(argv._.map((x: any) => x.toString()), exclude)));
+      testsFromArgs.push(...(await new IntegrationTests(path.resolve(argv.directory)).fromCliArgs(argv._.map((x: any) => x.toString()), exclude)));
     }
 
     // always run snapshot tests, but if '--force' is passed then

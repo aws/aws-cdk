@@ -99,7 +99,7 @@ describe('cloud assembly manifest reader', () => {
     // THEN
     const newManifest = Manifest.loadAssetManifest(manifestFile);
     expect(newManifest).toEqual({
-      version: '17.0.0',
+      version: expect.any(String),
       artifacts: {
         'Tree': {
           type: 'cdk:tree',
@@ -146,7 +146,7 @@ describe('cloud assembly manifest reader', () => {
     // THEN
     const newManifest = Manifest.loadAssetManifest(manifestFile);
     expect(newManifest).toEqual({
-      version: '17.0.0',
+      version: expect.any(String),
       artifacts: {
         'Tree': {
           type: 'cdk:tree',
@@ -194,7 +194,7 @@ describe('cloud assembly manifest reader', () => {
     // THEN
     const newManifest = Manifest.loadAssetManifest(manifestFile);
     expect(newManifest).toEqual({
-      version: '17.0.0',
+      version: expect.any(String),
       artifacts: {
         'Tree': {
           type: 'cdk:tree',

@@ -11,6 +11,12 @@ export interface IntegTestConfig {
    * of integ.{test-name}.js
    */
   readonly fileName: string;
+
+  /**
+   * The base directory where the tests are
+   * discovered from
+   */
+  readonly directory: string;
 }
 
 /**

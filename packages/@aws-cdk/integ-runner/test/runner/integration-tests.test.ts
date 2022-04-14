@@ -1,5 +1,5 @@
 import * as mockfs from 'mock-fs';
-import { IntegrationTests } from '../../lib/runner/integ-tests';
+import { IntegrationTests } from '../../lib/runner/integration-tests';
 
 describe('IntegrationTests', () => {
   const testsFile = '/tmp/foo/bar/does/not/exist/tests.json';

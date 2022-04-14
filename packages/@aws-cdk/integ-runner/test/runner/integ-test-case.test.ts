@@ -1,0 +1,282 @@
+import * as path from 'path';
+import { ListOptions } from 'cdk-cli-wrapper';
+import * as mockfs from 'mock-fs';
+import { IntegTestCases, LegacyIntegTestCases } from '../../lib/runner/integ-test-case';
+import { MockCdkProvider } from '../helpers';
+
+describe('Integration test cases', () => {
+  const testsFile = '/tmp/foo/bar/does/not/exist/integ.json';
+  afterEach(() => {
+    mockfs.restore();
+  });
+
+  test('basic manifest', () => {
+    // GIVEN
+    mockfs({
+      [testsFile]: JSON.stringify({
+        version: 'v1.0.0',
+        testCases: {
+          test1: {
+            stacks: [
+              'test-stack',
+            ],
+          },
+        },
+      }),
+    });
+    // WHEN
+    const testCases = IntegTestCases.fromPath(path.dirname(testsFile));
+
+    // THEN
+    expect(testCases.enableLookups).toEqual(false);
+    expect(testCases.stackUpdateWorkflow).toEqual(true);
+    expect(testCases.testCases).toEqual({
+      test1: {
+        stacks: [
+          'test-stack',
+        ],
+      },
+    });
+  });
+
+  test('manifest with non defaults', () => {
+    // GIVEN
+    mockfs({
+      [testsFile]: JSON.stringify({
+        version: 'v1.0.0',
+        enableLookups: true,
+        stackUpdateWorkflow: false,
+        testCases: {
+          test1: {
+            diffAssets: true,
+            allowDestroy: ['AWS::IAM::Role'],
+            stacks: [
+              'test-stack',
+            ],
+          },
+        },
+      }),
+    });
+    // WHEN
+    const testCases = IntegTestCases.fromPath(path.dirname(testsFile));
+
+    // THEN
+    expect(testCases.enableLookups).toEqual(true);
+    expect(testCases.stackUpdateWorkflow).toEqual(false);
+    expect(testCases.testCases).toEqual({
+      test1: {
+        diffAssets: true,
+        allowDestroy: ['AWS::IAM::Role'],
+        stacks: [
+          'test-stack',
+        ],
+      },
+    });
+  });
+
+  test('get options for stack', () => {
+    // GIVEN
+    mockfs({
+      [testsFile]: JSON.stringify({
+        version: 'v1.0.0',
+        enableLookups: true,
+        stackUpdateWorkflow: false,
+        testCases: {
+          test1: {
+            diffAssets: true,
+            allowDestroy: ['AWS::IAM::Role'],
+            stacks: [
+              'test-stack1',
+            ],
+          },
+          test2: {
+            diffAssets: false,
+            stacks: [
+              'test-stack2',
+            ],
+          },
+        },
+      }),
+    });
+    // WHEN
+    const testCases = IntegTestCases.fromPath(path.dirname(testsFile));
+
+    // THEN
+    expect(testCases.getOptionsForStack('test-stack1')).toEqual({
+      diffAssets: true,
+      regions: undefined,
+      hooks: undefined,
+      cdkCommandOptions: undefined,
+      allowDestroy: ['AWS::IAM::Role'],
+    });
+    expect(testCases.getOptionsForStack('test-stack2')).toEqual({
+      diffAssets: false,
+      allowDestroy: undefined,
+      regions: undefined,
+      hooks: undefined,
+      cdkCommandOptions: undefined,
+    });
+    expect(testCases.getOptionsForStack('test-stack-does-not-exist')).toBeUndefined();
+  });
+});
+
+describe('Legacy Integration test cases', () => {
+  let cdkMock: MockCdkProvider;
+  let listMock: (options: ListOptions) => string;
+  const testsFile = '/tmp/foo/bar/does/not/exist/integ.test.js';
+  beforeEach(() => {
+    cdkMock = new MockCdkProvider({ directory: 'test/test-data' });
+  });
+
+  afterEach(() => {
+    mockfs.restore();
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+  });
+
+  test('basic manifest', () => {
+    // GIVEN
+    mockfs({
+      [testsFile]: '/// !cdk-integ test-stack',
+    });
+    listMock = jest.fn().mockImplementation(() => {
+      return 'stackabc';
+    });
+    cdkMock.mockList(listMock);
+
+    // WHEN
+    const testCases = LegacyIntegTestCases.fromLegacy({
+      cdk: cdkMock.cdk,
+      testName: 'test',
+      listOptions: {},
+      integSourceFilePath: testsFile,
+    });
+
+    // THEN
+    expect(listMock).not.toHaveBeenCalled();
+    expect(testCases.enableLookups).toEqual(false);
+    expect(testCases.stackUpdateWorkflow).toEqual(true);
+    expect(testCases.testCases).toEqual({
+      test: {
+        diffAssets: false,
+        stacks: [
+          'test-stack',
+        ],
+      },
+    });
+  });
+
+  test('manifest with pragma', () => {
+    // GIVEN
+    mockfs({
+      [testsFile]: '/// !cdk-integ test-stack pragma:enable-lookups pragma:disable-update-workflow pragma:include-assets-hashes',
+    });
+    listMock = jest.fn().mockImplementation(() => {
+      return 'stackabc';
+    });
+    cdkMock.mockList(listMock);
+
+    // WHEN
+    const testCases = LegacyIntegTestCases.fromLegacy({
+      cdk: cdkMock.cdk,
+      testName: 'test',
+      listOptions: {},
+      integSourceFilePath: testsFile,
+    });
+
+    // THEN
+    expect(listMock).not.toHaveBeenCalled();
+    expect(testCases.enableLookups).toEqual(true);
+    expect(testCases.stackUpdateWorkflow).toEqual(false);
+    expect(testCases.testCases).toEqual({
+      test: {
+        diffAssets: true,
+        stacks: [
+          'test-stack',
+        ],
+      },
+    });
+  });
+
+  test('manifest with no pragma', () => {
+    // GIVEN
+    mockfs({
+      [testsFile]: '',
+    });
+    listMock = jest.fn().mockImplementation(() => {
+      return 'stackabc';
+    });
+    cdkMock.mockList(listMock);
+
+    // WHEN
+    const testCases = LegacyIntegTestCases.fromLegacy({
+      cdk: cdkMock.cdk,
+      testName: 'test',
+      listOptions: {},
+      integSourceFilePath: testsFile,
+    });
+
+    // THEN
+    expect(listMock).toHaveBeenCalled();
+    expect(testCases.enableLookups).toEqual(false);
+    expect(testCases.stackUpdateWorkflow).toEqual(true);
+    expect(testCases.testCases).toEqual({
+      test: {
+        diffAssets: false,
+        stacks: [
+          'stackabc',
+        ],
+      },
+    });
+  });
+
+  test('manifest with no pragma and multiple stack throws', () => {
+    // GIVEN
+    mockfs({
+      [testsFile]: '',
+    });
+    listMock = jest.fn().mockImplementation(() => {
+      return 'stack1\nstack2';
+    });
+    cdkMock.mockList(listMock);
+
+    // THEN
+    expect(() => {
+      LegacyIntegTestCases.fromLegacy({
+        cdk: cdkMock.cdk,
+        testName: 'test',
+        listOptions: {},
+        integSourceFilePath: testsFile,
+      });
+    }).toThrow();
+  });
+
+  test('can get context from pragma', () => {
+    // GIVEN
+    mockfs({
+      [testsFile]: '/// !cdk-integ test-stack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true',
+    });
+
+    // WHEN
+    const context = LegacyIntegTestCases.getPragmaContext(testsFile);
+
+    //THEN
+    expect(context).toEqual({
+      '@aws-cdk/core:newStyleStackSynthesis': 'true',
+    });
+
+  });
+
+  test('invalid pragma context throws', () => {
+    // GIVEN
+    mockfs({
+      [testsFile]: '/// !cdk-integ test-stack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis true',
+    });
+
+    // WHEN
+    expect(() => {
+      LegacyIntegTestCases.getPragmaContext(testsFile);
+    }).toThrow();
+  });
+});
