@@ -36,7 +36,7 @@ export class Stage implements IStage {
 
     this.stageName = props.stageName;
     this.disableTransition = props.disableTransition ?? false;
-    this.disableTransitionReason = props.disableTransitionReason ?? 'Transitions disabled';
+    this.disableTransitionReason = props.disableTransitionReason ?? 'Transition disabled';
     this._pipeline = pipeline;
     this.scope = new cdk.Construct(pipeline, this.stageName);
 
