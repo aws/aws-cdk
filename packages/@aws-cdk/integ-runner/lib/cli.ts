@@ -1,10 +1,9 @@
 // Exercise all integ stacks and if they deploy, update the expected synth files
-import * as os from 'os';
 import * as path from 'path';
 import * as workerpool from 'workerpool';
 import * as logger from './logger';
 import { IntegrationTests, IntegTestConfig } from './runner/integ-tests';
-import { runSnapshotTests, runIntegrationTests } from './workers';
+import { runSnapshotTests, runIntegrationTests, IntegRunnerMetrics } from './workers';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492
@@ -24,13 +23,14 @@ async function main() {
     .option('parallel', { type: 'boolean', default: false, desc: 'run integration tests in parallel' })
     .option('parallel-regions', { type: 'array', desc: 'if --parallel is used then these regions are used to run tests in parallel', nargs: 1, default: [] })
     .options('directory', { type: 'string', default: 'test', desc: 'starting directory to discover integration tests' })
+    .options('profiles', { type: 'array', desc: 'list of AWS profiles to use. Tests will be run in parallel across each profile+regions', nargs: 1, default: [] })
+    .options('max-workers', { type: 'number', desc: 'The max number of workerpool workers to use when running integration tests in parallel', default: 16 })
+    .options('exclude', { type: 'boolean', desc: 'All tests should be run, except for the list of tests provided', default: false })
+    .options('from-file', { type: 'string', desc: 'Import tests to include or exclude from a file' })
     .argv;
 
-  // Cap to a reasonable top-level limit to prevent thrash on machines with many, many cores.
-  const maxWorkers = parseInt(process.env.CDK_INTEG_MAX_WORKER_COUNT ?? '16');
-  const N = Math.min(maxWorkers, Math.max(1, Math.ceil(os.cpus().length / 2)));
   const pool = workerpool.pool(path.join(__dirname, '../lib/workers/extract/index.js'), {
-    maxWorkers: N,
+    maxWorkers: argv['max-workers'],
   });
 
   // list of integration tests that will be executed
@@ -38,42 +38,60 @@ async function main() {
   const testsFromArgs: IntegTestConfig[] = [];
   const parallelRegions = arrayFromYargs(argv['parallel-regions']);
   const testRegions: string[] = parallelRegions ?? ['us-east-1', 'us-east-2', 'us-west-2'];
+  const profiles = arrayFromYargs(argv.profiles);
   const runUpdateOnFailed = argv['update-on-failed'] ?? false;
-  try {
+  const fromFile: string | undefined = argv['from-file'];
+  const exclude: boolean = argv.exclude;
 
+  let failedSnapshots: IntegTestConfig[] = [];
+  if (argv['max-workers'] < testRegions.length * (profiles ?? [1]).length) {
+    logger.warning('You are attempting to run %s tests in parallel, but only have %s workers. Not all of your profiles+regions will be utilized', argv.profiles*argv['parallel-regions'], argv['max-workers']);
+  }
+
+  try {
     if (argv.list) {
       const tests = await new IntegrationTests(argv.directory).fromCliArgs();
       process.stdout.write(tests.map(t => t.fileName).join('\n') + '\n');
       return;
     }
 
-    if (argv._.length === 0) {
+    if (argv._.length > 0 && fromFile) {
+      throw new Error('A list of tests cannot be provided if "--from-file" is provided');
+    } else if (argv._.length === 0 && !fromFile) {
       testsFromArgs.push(...(await new IntegrationTests(argv.directory).fromCliArgs()));
+    } else if (fromFile) {
+      testsFromArgs.push(...(await new IntegrationTests(argv.directory).fromFile(fromFile)));
     } else {
-      testsFromArgs.push(...(await new IntegrationTests(argv.directory).fromCliArgs(argv._.map((x: any) => x.toString()))));
+      testsFromArgs.push(...(await new IntegrationTests(argv.directory).fromCliArgs(argv._.map((x: any) => x.toString()), exclude)));
     }
 
     // If `--force` is not used then first validate the snapshots and gather
     // the failed snapshot tests. If `--force` is used then we will skip snapshot
     // tests and run integration tests for all tests
     if (!argv.force) {
-      const failedSnapshots = await runSnapshotTests(pool, testsFromArgs);
+      failedSnapshots = await runSnapshotTests(pool, testsFromArgs);
       testsToRun.push(...failedSnapshots);
     } else {
       testsToRun.push(...testsFromArgs);
     }
 
-
     // run integration tests if `--update-on-failed` OR `--force` is used
     if (runUpdateOnFailed || argv.force) {
-      await runIntegrationTests({
+      const { success, metrics } = await runIntegrationTests({
         pool,
         tests: testsToRun,
         regions: testRegions,
+        profiles,
         clean: argv.clean,
         dryRun: argv['dry-run'],
         verbose: argv.verbose,
       });
+      if (!success) {
+        throw new Error('Some integration tests failed!');
+      }
+      if (argv.verbose) {
+        printMetrics(metrics);
+      }
 
       if (argv.clean === false) {
         logger.warning('Not cleaning up stacks since "--no-clean" was used');
@@ -82,6 +100,24 @@ async function main() {
   } finally {
     void pool.terminate();
   }
+
+  if (failedSnapshots.length > 0) {
+    let message = '';
+    if (!runUpdateOnFailed) {
+      message = 'To re-run failed tests run: yarn integ-runner --update-on-failed';
+    }
+    throw new Error(`Some snapshot tests failed!\n${message}`);
+  }
+}
+
+function printMetrics(metrics: IntegRunnerMetrics[]): void {
+  logger.highlight('   --- Integration test metrics ---');
+  const sortedMetrics = metrics.sort((a, b) => a.duration - b.duration);
+  sortedMetrics.forEach(metric => {
+    logger.print('Profile %s + Region %s total time: %s', metric.profile, metric.region, metric.duration);
+    const sortedTests = Object.entries(metric.tests).sort((a, b) => a[1] - b[1]);
+    sortedTests.forEach(test => logger.print('  %s: %s', test[0], test[1]));
+  });
 }
 
 /**
