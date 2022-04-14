@@ -429,7 +429,7 @@ export class Pipeline extends PipelineBase {
       artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
       artifactStores: Lazy.any({ produce: () => this.renderArtifactStoresProperty() }),
       stages: Lazy.any({ produce: () => this.renderStages() }),
-      disableInboundStageTransitions: Lazy.any({ produce: () => this.renderDisabledTransitions() }),
+      disableInboundStageTransitions: Lazy.any({ produce: () => this.renderDisabledTransitions() }, { omitEmptyArray: true }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       name: this.physicalName,
