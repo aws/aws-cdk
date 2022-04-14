@@ -342,7 +342,7 @@
                     },
                     "disableInboundStageTransitions": [
                       {
-                        "reason": "Transitions disabled",
+                        "reason": "Transition disabled",
                         "stageName": "Disabled"
                       }
                     ]
