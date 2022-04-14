@@ -68,14 +68,15 @@ export interface StageProps {
   readonly actions?: IAction[];
 
   /**
-   * Whether to enable transition to this stage
+   * Whether to enable transition to this stage.
    *
    * @default true
    */
   readonly transitionToEnabled?: boolean;
 
   /**
-   * The reason for disabling transition to this stage
+   * The reason for disabling transition to this stage. Only applicable
+   * if `transitionToEnabled` is set to `false`.
    *
    * @default 'Transition disabled'
    */
