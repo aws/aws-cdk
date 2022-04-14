@@ -1,4 +1,4 @@
-import { SecretValue } from 'aws-cdk-lib';
+import { SecretValue } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Group, Policy, User } from '../lib';
 
