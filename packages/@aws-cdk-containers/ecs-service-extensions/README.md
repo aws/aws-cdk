@@ -11,7 +11,6 @@
 
 > ⚠️ v2 of this library is now available! It is compatible with AWS CDK v2 and available in
 > multiple languages.
-
 > The source code for v2 lives [here](https://github.com/cdklabs/cdk-ecs-service-extensions).
 > To migrate from this library to v2, see the [Migration Guide](https://github.com/cdklabs/cdk-ecs-service-extensions/blob/main/MIGRATING.md).
 
