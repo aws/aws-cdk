@@ -4,28 +4,58 @@ import * as fs from 'fs-extra';
 import * as workerpool from 'workerpool';
 import { integTestWorker } from '../../lib/workers/extract';
 import { runIntegrationTestsInParallel, runIntegrationTests } from '../../lib/workers/integ-test-worker';
+let stderrMock: jest.SpyInstance;
+let pool: workerpool.WorkerPool;
+let spawnSyncMock: jest.SpyInstance;
+beforeAll(() => {
+  pool = workerpool.pool(path.join(__dirname, './mock-extract_worker.js'));
+});
+beforeEach(() => {
+  jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
+  jest.spyOn(fs, 'emptyDirSync').mockImplementation(() => { return true; });
+  jest.spyOn(fs, 'unlinkSync').mockImplementation(() => { return true; });
+  jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
+  jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
+  spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValueOnce({
+    status: 0,
+    stderr: Buffer.from('HEAD branch: master\nother'),
+    stdout: Buffer.from('HEAD branch: master\nother'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  }).mockReturnValueOnce({
+    status: 0,
+    stderr: Buffer.from('abc'),
+    stdout: Buffer.from('abc'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  }).mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stack1'),
+    stdout: Buffer.from('stack1'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
+  jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
+});
+afterEach(() => {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+});
+afterAll(async () => {
+  await pool.terminate();
+});
 
 describe('test runner', () => {
-  beforeEach(() => {
-    jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
-    jest.spyOn(fs, 'emptyDirSync').mockImplementation(() => { return true; });
-    jest.spyOn(fs, 'unlinkSync').mockImplementation(() => { return true; });
-    jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
-    jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
-    jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
-  });
-  afterEach(() => {
-    jest.clearAllMocks();
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
-  });
-
   test('no snapshot', () => {
     // WHEN
     const test = {
       fileName: 'test/test-data/integ.integ-test1.js',
     };
-    const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockImplementation();
     integTestWorker({
       tests: [test],
       region: 'us-east-1',
@@ -48,14 +78,7 @@ describe('test runner', () => {
     const test = {
       fileName: 'test/test-data/integ.integ-test2.js',
     };
-    jest.spyOn(child_process, 'spawnSync').mockReturnValue({
-      status: 0,
-      stderr: Buffer.from(''),
-      stdout: Buffer.from(''),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
+    jest.spyOn(child_process, 'spawnSync').mockImplementation();
     const results = integTestWorker({
       tests: [test],
       region: 'us-east-1',
@@ -69,18 +92,34 @@ describe('test runner', () => {
     const test = {
       fileName: 'test/test-data/integ.test-with-snapshot.js',
     };
-    jest.spyOn(child_process, 'spawnSync').mockReturnValue({
-      status: 0,
-      stderr: Buffer.from('stack1'),
-      stdout: Buffer.from('stack1'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
     const results = integTestWorker({
       tests: [test],
       region: 'us-east-1',
     });
+
+    expect(spawnSyncMock).toHaveBeenCalledWith(
+      expect.stringMatching(/git/),
+      ['remote', 'show', 'origin'],
+      expect.objectContaining({
+        cwd: 'test/test-data',
+      }),
+    );
+
+    expect(spawnSyncMock).toHaveBeenCalledWith(
+      expect.stringMatching(/git/),
+      ['merge-base', 'HEAD', 'master'],
+      expect.objectContaining({
+        cwd: 'test/test-data',
+      }),
+    );
+
+    expect(spawnSyncMock).toHaveBeenCalledWith(
+      expect.stringMatching(/git/),
+      ['checkout', 'abc', '--', 'test-with-snapshot.integ.snapshot'],
+      expect.objectContaining({
+        cwd: 'test/test-data',
+      }),
+    );
 
     expect(results.length).toEqual(0);
   });
@@ -108,23 +147,6 @@ describe('test runner', () => {
 });
 
 describe('parallel worker', () => {
-  let pool: workerpool.WorkerPool;
-  let stderrMock: jest.SpyInstance;
-  beforeEach(() => {
-    pool = workerpool.pool(path.join(__dirname, './mock-extract_worker.js'));
-    jest.spyOn(child_process, 'spawnSync').mockImplementation();
-    stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
-    jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
-    jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
-    jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
-    jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
-  });
-  afterEach(async () => {
-    await pool.terminate();
-    jest.clearAllMocks();
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
-  });
   test('run all integration tests', async () => {
     const tests = [
       {

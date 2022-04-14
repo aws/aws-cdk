@@ -133,6 +133,7 @@ export async function runIntegrationTestsInParallel(
         clean: options.clean,
         dryRun: options.dryRun,
         verbose: options.verbose,
+        updateWorkflow: options.updateWorkflow,
       }], {
         on: printResults,
       });

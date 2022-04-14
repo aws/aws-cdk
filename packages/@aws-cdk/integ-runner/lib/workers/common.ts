@@ -1,6 +1,40 @@
+import { ResourceImpact } from '@aws-cdk/cloudformation-diff';
 import * as chalk from 'chalk';
 import * as logger from '../logger';
 import { IntegTestConfig } from '../runner/integ-tests';
+
+/**
+ * Config for an integration test
+ */
+export interface IntegTestWorkerConfig extends IntegTestConfig {
+  /**
+   * A list of any destructive changes
+   *
+   * @default []
+   */
+  readonly destructiveChanges?: DestructiveChange[];
+}
+
+/**
+ * Information on any destructive changes
+ */
+export interface DestructiveChange {
+  /**
+   * The logicalId of the resource with a destructive change
+   */
+  readonly logicalId: string;
+
+  /**
+   * The name of the stack that contains the destructive change
+   */
+  readonly stackName: string;
+
+  /**
+   * The impact of the destructive change
+   */
+  readonly impact: ResourceImpact;
+}
+
 
 /**
  * Represents integration tests metrics for a given worker
@@ -57,7 +91,7 @@ export interface IntegTestOptions {
    * A list of integration tests to run
    * in this batch
    */
-  readonly tests: IntegTestConfig[];
+  readonly tests: IntegTestWorkerConfig[];
 
   /**
    * Whether or not to destroy the stacks at the
@@ -82,6 +116,13 @@ export interface IntegTestOptions {
    * @default false
    */
   readonly verbose?: boolean;
+
+  /**
+   * If this is set to true then the stack update workflow will be disabled
+   *
+   * @default true
+   */
+  readonly updateWorkflow?: boolean;
 }
 
 /**
