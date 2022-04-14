@@ -157,7 +157,7 @@ describe('stages', () => {
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
       const firstStage = pipeline.addStage({ stageName: 'FirstStage' });
-      const secondStage = pipeline.addStage({ stageName: 'SecondStage', disableTransition: true });
+      const secondStage = pipeline.addStage({ stageName: 'SecondStage', transitionToEnabled: false });
 
       // -- dummy actions here are needed to satisfy validation rules
       const sourceArtifact = new codepipeline.Artifact();

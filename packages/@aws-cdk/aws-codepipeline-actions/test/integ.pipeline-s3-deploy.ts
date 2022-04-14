@@ -51,7 +51,7 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
     },
     {
       stageName: 'Disabled',
-      disableTransition: true,
+      transitionToEnabled: false,
       actions: [
         new cpactions.S3DeployAction({
           actionName: 'DisabledDeployAction',

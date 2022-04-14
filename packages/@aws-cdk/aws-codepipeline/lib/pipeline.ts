@@ -68,18 +68,18 @@ export interface StageProps {
   readonly actions?: IAction[];
 
   /**
-   * Whether to disable transition to this stage
+   * Whether to enable transition to this stage
    *
-   * @default false
+   * @default true
    */
-  readonly disableTransition?: boolean;
+  readonly transitionToEnabled?: boolean;
 
   /**
    * The reason for disabling transition to this stage
    *
-   * @default 'Transitions disabled'
+   * @default 'Transition disabled'
    */
-  readonly disableTransitionReason?: string;
+  readonly transitionDisabledReason?: string;
 }
 
 export interface StageOptions extends StageProps {
@@ -1056,9 +1056,9 @@ export class Pipeline extends PipelineBase {
 
   private renderDisabledTransitions(): CfnPipeline.StageTransitionProperty[] {
     return this._stages
-      .filter(stage => stage.disableTransition)
+      .filter(stage => !stage.transitionToEnabled)
       .map(stage => ({
-        reason: stage.disableTransitionReason,
+        reason: stage.transitionDisabledReason,
         stageName: stage.stageName,
       }));
   }

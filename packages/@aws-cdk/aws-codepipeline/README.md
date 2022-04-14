@@ -115,7 +115,8 @@ declare const pipeline: codepipeline.Pipeline;
 
 const someStage = pipeline.addStage({
   stageName: 'SomeStage',
-  disableTransition: true,
+  transitionToEnabled: false,
+  transitionDisabledReason: 'Manual transition only', // optional reason
 })
 ```
 
