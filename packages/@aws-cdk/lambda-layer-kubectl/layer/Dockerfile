@@ -6,8 +6,8 @@ FROM public.ecr.aws/lambda/provided:latest
 #
 
 # KUBECTL_VERSION should not be changed at the moment, see https://github.com/aws/aws-cdk/issues/15736
-# Version 1.21.0 is not compatible with version 1.20 (and lower) of the server.
-ARG KUBECTL_VERSION=1.20.0 
+# Version 1.22.0 is not compatible with version 1.20 (and lower) of the server.
+ARG KUBECTL_VERSION=1.22.0 
 ARG HELM_VERSION=3.8.1
 
 USER root
