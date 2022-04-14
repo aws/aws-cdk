@@ -66,6 +66,20 @@ export interface StageProps {
    * You can always add more Actions later by calling {@link IStage#addAction}.
    */
   readonly actions?: IAction[];
+
+  /**
+   * Whether to disable transition to this stage
+   *
+   * @default false
+   */
+  readonly disableTransition?: boolean;
+
+  /**
+   * The reason for disabling transition to this stage
+   *
+   * @default 'Transitions disabled'
+   */
+  readonly disableTransitionReason?: string;
 }
 
 export interface StageOptions extends StageProps {
@@ -415,6 +429,7 @@ export class Pipeline extends PipelineBase {
       artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
       artifactStores: Lazy.any({ produce: () => this.renderArtifactStoresProperty() }),
       stages: Lazy.any({ produce: () => this.renderStages() }),
+      disableInboundStageTransitions: Lazy.any({ produce: () => this.renderDisabledTransitions() }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       name: this.physicalName,
@@ -1037,6 +1052,15 @@ export class Pipeline extends PipelineBase {
 
   private renderStages(): CfnPipeline.StageDeclarationProperty[] {
     return this._stages.map(stage => stage.render());
+  }
+
+  private renderDisabledTransitions(): CfnPipeline.StageTransitionProperty[] {
+    return this._stages
+      .filter(stage => stage.disableTransition)
+      .map(stage => ({
+        reason: stage.disableTransitionReason,
+        stageName: stage.stageName,
+      }));
   }
 
   private requireRegion(): string {

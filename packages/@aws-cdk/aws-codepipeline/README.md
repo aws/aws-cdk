@@ -107,6 +107,21 @@ const someStage = pipeline.addStage({
 });
 ```
 
+You can disable transition to a Stage:
+
+```ts
+// Disable transition to a stage
+declare const pipeline: codepipeline.Pipeline;
+
+const someStage = pipeline.addStage({
+  stageName: 'SomeStage',
+  disableTransition: true,
+})
+```
+
+This is useful if you don't want every executions of the pipeline to flow into
+this stage automatically. The transition can then be "manually" enabled later on.
+
 ## Actions
 
 Actions live in a separate package, `@aws-cdk/aws-codepipeline-actions`.

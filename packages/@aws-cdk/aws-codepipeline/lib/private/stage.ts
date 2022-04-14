@@ -22,6 +22,8 @@ export class Stage implements IStage {
    * The Pipeline this Stage is a part of.
    */
   public readonly stageName: string;
+  public readonly disableTransition: boolean;
+  public readonly disableTransitionReason: string;
   private readonly scope: cdk.Construct;
   private readonly _pipeline: Pipeline;
   private readonly _actions = new Array<FullActionDescriptor>();
@@ -33,6 +35,8 @@ export class Stage implements IStage {
     validation.validateName('Stage', props.stageName);
 
     this.stageName = props.stageName;
+    this.disableTransition = props.disableTransition ?? false;
+    this.disableTransitionReason = props.disableTransitionReason ?? 'Transitions disabled';
     this._pipeline = pipeline;
     this.scope = new cdk.Construct(pipeline, this.stageName);
 
