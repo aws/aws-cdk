@@ -172,6 +172,17 @@ The `integ-runner` will also attempt to warn you if you are making any destructi
 
 If the destructive changes are expected (and required) then please indicate this on your PR.
 
+##### New tests
+
+If you are adding a new test which creates a new snapshot then you should run that specific test with `--disable-update-workflow`.
+For example, if you are working on a new test `integ.new-test.js` then you would run:
+
+```bash
+yarn integ --update-on-failed --disable-update-workflow integ.new-test.js
+```
+
+This is because for a new test we do not need to test the update workflow (there is nothing to update).
+
 ### integ.json schema
 
 See [@aws-cdk/cloud-assembly-schema/lib/integ-tests/schema.ts](../cloud-assembly-schema/lib/integ-tests/schema.ts)

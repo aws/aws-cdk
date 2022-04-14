@@ -1,3 +1,4 @@
+import * as child_process from 'child_process';
 import * as path from 'path';
 import { SynthFastOptions, DestroyOptions, ListOptions, SynthOptions, DeployOptions } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
@@ -25,6 +26,7 @@ beforeEach(() => {
   cdkMock.mockDeploy(deployMock);
   cdkMock.mockSynthFast(synthFastMock);
   cdkMock.mockDestroy(destroyMock);
+  jest.spyOn(child_process, 'spawnSync').mockImplementation();
   jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
   jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
@@ -84,9 +86,14 @@ describe('IntegTest runSnapshotTests', () => {
       testName: integTest.testName,
       message: expect.stringContaining('foobar'),
     })]));
-    expect(results.destructiveChanges).toEqual([{
+    expect(results.destructiveChanges).not.toEqual([{
       impact: 'WILL_DESTROY',
       logicalId: 'MyFunction1ServiceRole9852B06B',
+      stackName: 'test-stack',
+    }]);
+    expect(results.destructiveChanges).toEqual([{
+      impact: 'WILL_DESTROY',
+      logicalId: 'MyLambdaFuncServiceRoleDefaultPolicyBEB0E748',
       stackName: 'test-stack',
     }]);
   });

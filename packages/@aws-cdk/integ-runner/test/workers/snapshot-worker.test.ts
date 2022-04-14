@@ -41,7 +41,7 @@ describe('Snapshot tests', () => {
     const result = snapshotTestWorker(test);
 
     // THEN
-    expect(result.length).toEqual(0);
+    expect(result.length).toEqual(1);
   });
 
   test('failed snapshot', () => {

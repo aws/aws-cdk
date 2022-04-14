@@ -673,6 +673,22 @@ export class IntegSnapshotRunner extends IntegRunner {
   }
 
   /**
+   * For a given stack return all resource types that are allowed to be destroyed
+   * as part of a stack update
+   *
+   * @param stackId the stack id
+   * @returns a list of resource types or undefined if none are found
+   */
+  private getAllowedDestroyTypesForStack(stackId: string): string[] | undefined {
+    for (const testCase of Object.values(this.tests ?? {})) {
+      if (testCase.stacks.includes(stackId)) {
+        return testCase.allowDestroy;
+      }
+    }
+    return undefined;
+  }
+
+  /**
    * Find any differences between the existing and expected snapshots
    *
    * @param existing - the existing (expected) snapshot
@@ -711,6 +727,7 @@ export class IntegSnapshotRunner extends IntegRunner {
       } else {
         let actualTemplate = actual[templateId];
         let expectedTemplate = existing[templateId];
+        const allowedDestroyTypes = this.getAllowedDestroyTypesForStack(templateId) ?? [];
 
         // if we are not verifying asset hashes then remove the specific
         // asset hashes from the templates so they are not part of the diff
@@ -725,7 +742,12 @@ export class IntegSnapshotRunner extends IntegRunner {
           // "destructive" changes
           templateDiff.resources.forEachDifference((logicalId: string, change: ResourceDifference) => {
             // if the change is a removal it will not show up as a 'changeImpact'
-            // so need to check for it separately
+            // so need to check for it separately, unless it is a resourceType that
+            // has been "allowed" to be destroyed
+            const resourceType = change.oldValue?.Type ?? change.newValue?.Type;
+            if (resourceType && allowedDestroyTypes.includes(resourceType)) {
+              return;
+            }
             if (change.isRemoval) {
               destructiveChanges.push({
                 impact: ResourceImpact.WILL_DESTROY,
