@@ -5,6 +5,8 @@ const _ENV = process.env;
 
 beforeEach(() => {
   process.env= Object.assign({}, _ENV);
+  process.env.AWS_CONTAINER_CREDENTIALS_RELATIVE_URI=undefined;
+  process.env.AWS_CONTAINER_CREDENTIALS_FULL_URI=undefined;
 });
 
 
