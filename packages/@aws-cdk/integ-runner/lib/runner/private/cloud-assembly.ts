@@ -3,6 +3,19 @@ import { AssemblyManifest, Manifest, ArtifactType, AwsCloudFormationStackPropert
 import * as fs from 'fs-extra';
 
 /**
+ * Trace information for stack
+ * map of resource logicalId to trace message
+ */
+export type StackTrace = Map<string, string>;
+
+/**
+ * Trace information for a assembly
+ *
+ * map of stackId to StackTrace
+ */
+export type ManifestTrace = Map<string, StackTrace>;
+
+/**
  * Reads a Cloud Assembly manifest
  */
 export class AssemblyManifestReader {
@@ -65,6 +78,17 @@ export class AssemblyManifestReader {
   }
 
   /**
+   * Write trace data to the assembly manifest metadata
+   */
+  public recordTrace(trace: ManifestTrace): void {
+    const newManifest = {
+      ...this.manifest,
+      artifacts: this.renderArtifacts(trace),
+    };
+    Manifest.saveAssemblyManifest(newManifest, this.manifestFileName);
+  }
+
+  /**
    * Clean the manifest of any unneccesary data. Currently that includes
    * the metadata trace information since this includes trace information like
    * file system locations and file lines that will change depending on what machine the test is run on
@@ -77,10 +101,22 @@ export class AssemblyManifestReader {
     Manifest.saveAssemblyManifest(newManifest, this.manifestFileName);
   }
 
-  private renderArtifactMetadata(metadata: { [id: string]: MetadataEntry[] } | undefined): { [id: string]: MetadataEntry[] } {
+  private renderArtifactMetadata(artifact: ArtifactManifest, trace?: StackTrace): { [id: string]: MetadataEntry[] } | undefined {
     const newMetadata: { [id: string]: MetadataEntry[] } = {};
-    for (const [metadataId, metadataEntry] of Object.entries(metadata ?? {})) {
+    if (!artifact.metadata) return artifact.metadata;
+    for (const [metadataId, metadataEntry] of Object.entries(artifact.metadata ?? {})) {
       newMetadata[metadataId] = metadataEntry.map((meta: MetadataEntry) => {
+        if (meta.type === 'aws:cdk:logicalId' && trace && meta.data) {
+          const traceData = trace.get(meta.data.toString());
+          if (traceData) {
+            trace.delete(meta.data.toString());
+            return {
+              type: meta.type,
+              data: meta.data,
+              trace: [traceData],
+            };
+          }
+        }
         // return metadata without the trace data
         return {
           type: meta.type,
@@ -88,15 +124,28 @@ export class AssemblyManifestReader {
         };
       });
     }
+    if (trace && trace.size > 0) {
+      for (const [id, data] of trace.entries()) {
+        newMetadata[id] = [{
+          type: 'aws:cdk:logicalId',
+          data: id,
+          trace: [data],
+        }];
+      }
+    }
     return newMetadata;
   }
 
-  private renderArtifacts(): { [id: string]: ArtifactManifest } | undefined {
+  private renderArtifacts(trace?: ManifestTrace): { [id: string]: ArtifactManifest } | undefined {
     const newArtifacts: { [id: string]: ArtifactManifest } = {};
     for (const [artifactId, artifact] of Object.entries(this.manifest.artifacts ?? {})) {
+      let stackTrace: StackTrace | undefined = undefined;
+      if (artifact.type === ArtifactType.AWS_CLOUDFORMATION_STACK && trace) {
+        stackTrace = trace.get(artifactId);
+      }
       newArtifacts[artifactId] = {
         ...artifact,
-        metadata: this.renderArtifactMetadata(artifact.metadata),
+        metadata: this.renderArtifactMetadata(artifact, stackTrace),
       };
     }
     return newArtifacts;
