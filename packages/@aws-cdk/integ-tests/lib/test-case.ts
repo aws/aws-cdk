@@ -29,7 +29,7 @@ export class IntegTestCase extends Construct {
         const snapshotDir = session.assembly.outdir;
         const manifest: IntegManifest = {
           version: '',
-          testCases: { [id]: toTestCase(props) },
+          testCases: { [id]: toTestCase(props, Stack.of(this)) },
         };
 
         IntegManifestWriter.write(manifest, snapshotDir);
@@ -38,9 +38,7 @@ export class IntegTestCase extends Construct {
   }
 }
 
-function toTestCase(props: IntegTestCaseProps): TestCase {
-  return {
-    ...props,
-    stacks: props.stacks.map(s => s.artifactId),
-  };
+function toTestCase(props: IntegTestCaseProps, stack: Stack): TestCase {
+  const stacks = props.stacks.concat(stack).map(s => s.artifactId);
+  return { ...props, stacks };
 }
