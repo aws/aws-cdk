@@ -364,6 +364,20 @@ new cognito.UserPool(this, 'myuserpool', {
 
 ```
 
+Sending emails through SES verified domain, you could use the prop `sesVerifiedDomain` and pass your verified domain value.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  email: cognito.UserPoolEmail.withSES({
+    sesRegion: 'us-east-1',
+    fromEmail: 'noreply@myawesomeapp.com',
+    fromName: 'Awesome App',
+    replyTo: 'support@myawesomeapp.com',
+    sesVerifiedDomain: 'myawesomeapp.com',
+  }),
+});
+
+
 ### Device Tracking
 
 User pools can be configured to track devices that users have logged in to.
