@@ -656,6 +656,7 @@ class S3Source extends Source {
 interface CommonGithubSourceProps extends ThirdPartyGitSourceProps {
   /**
    * This parameter is used for the `context` parameter in the GitHub commit status.
+   * Can use built-in CodeBuild variables, like $AWS_REGION.
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/create-project-cli.html#cli.source.buildstatusconfig.context
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
@@ -674,8 +675,8 @@ abstract class CommonGithubSource extends ThirdPartyGitSource {
     this.buildStatusContext = props.buildStatusContext;
   }
 
-  public bind(_scope: CoreConstruct, project: IProject): SourceConfig {
-    const superConfig = super.bind(_scope, project);
+  public bind(scope: CoreConstruct, project: IProject): SourceConfig {
+    const superConfig = super.bind(scope, project);
     return {
       sourceProperty: {
         ...superConfig.sourceProperty,
@@ -827,6 +828,7 @@ export interface BitBucketSourceProps extends ThirdPartyGitSourceProps {
 
   /**
    * This parameter is used for the `name` parameter in the Bitbucket commit status.
+   * Can use built-in CodeBuild variables, like $AWS_REGION.
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/create-project-cli.html#cli.source.buildstatusconfig.context
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
