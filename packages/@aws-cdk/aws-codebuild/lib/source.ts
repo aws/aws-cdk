@@ -672,7 +672,7 @@ abstract class CommonGithubSource extends ThirdPartyGitSource {
     this.buildStatusContext = props.buildStatusContext;
   }
 
-  public bind(scope: CoreConstruct, project: IProject): SourceConfig {
+  public bind(scope: Construct, project: IProject): SourceConfig {
     const superConfig = super.bind(scope, project);
     return {
       sourceProperty: {
