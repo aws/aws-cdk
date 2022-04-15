@@ -1,0 +1,382 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
+        }
+      },
+      "IntegApiGatewayV2Iam": {
+        "id": "IntegApiGatewayV2Iam",
+        "path": "IntegApiGatewayV2Iam",
+        "children": {
+          "User": {
+            "id": "User",
+            "path": "IntegApiGatewayV2Iam/User",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "IntegApiGatewayV2Iam/User/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "IntegApiGatewayV2Iam/User/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "IntegApiGatewayV2Iam/User/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "execute-api:Invoke",
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:aws:execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "HttpApiF5A9A8A7"
+                                      },
+                                      "/*/*/books/*"
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:aws:execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "HttpApiF5A9A8A7"
+                                      },
+                                      "/*/*/foo"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "UserDefaultPolicy1F97781E",
+                        "users": [
+                          {
+                            "Ref": "User00B015A1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "UserAccess": {
+            "id": "UserAccess",
+            "path": "IntegApiGatewayV2Iam/UserAccess",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "IntegApiGatewayV2Iam/UserAccess/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::AccessKey",
+                  "aws:cdk:cloudformation:props": {
+                    "userName": {
+                      "Ref": "User00B015A1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnAccessKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.AccessKey",
+              "version": "0.0.0"
+            }
+          },
+          "HttpApi": {
+            "id": "HttpApi",
+            "path": "IntegApiGatewayV2Iam/HttpApi",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "IntegApiGatewayV2Iam/HttpApi/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "HttpApi",
+                    "protocolType": "HTTP"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultStage": {
+                "id": "DefaultStage",
+                "path": "IntegApiGatewayV2Iam/HttpApi/DefaultStage",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "IntegApiGatewayV2Iam/HttpApi/DefaultStage/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "HttpApiF5A9A8A7"
+                        },
+                        "stageName": "$default",
+                        "autoDeploy": true
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigatewayv2.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.HttpStage",
+                  "version": "0.0.0"
+                }
+              },
+              "ANY--foo": {
+                "id": "ANY--foo",
+                "path": "IntegApiGatewayV2Iam/HttpApi/ANY--foo",
+                "children": {
+                  "examplecom": {
+                    "id": "examplecom",
+                    "path": "IntegApiGatewayV2Iam/HttpApi/ANY--foo/examplecom",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "IntegApiGatewayV2Iam/HttpApi/ANY--foo/examplecom/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "HttpApiF5A9A8A7"
+                            },
+                            "integrationType": "HTTP_PROXY",
+                            "integrationMethod": "GET",
+                            "integrationUri": "https://www.example.com/",
+                            "payloadFormatVersion": "1.0"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "IntegApiGatewayV2Iam/HttpApi/ANY--foo/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "HttpApiF5A9A8A7"
+                        },
+                        "routeKey": "ANY /foo",
+                        "authorizationType": "AWS_IAM",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "HttpApiANYfooexamplecom903F7A9F"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "ANY--books--{book}": {
+                "id": "ANY--books--{book}",
+                "path": "IntegApiGatewayV2Iam/HttpApi/ANY--books--{book}",
+                "children": {
+                  "examplecom": {
+                    "id": "examplecom",
+                    "path": "IntegApiGatewayV2Iam/HttpApi/ANY--books--{book}/examplecom",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "IntegApiGatewayV2Iam/HttpApi/ANY--books--{book}/examplecom/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "HttpApiF5A9A8A7"
+                            },
+                            "integrationType": "HTTP_PROXY",
+                            "integrationMethod": "GET",
+                            "integrationUri": "https://www.example.com/",
+                            "payloadFormatVersion": "1.0"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "IntegApiGatewayV2Iam/HttpApi/ANY--books--{book}/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "HttpApiF5A9A8A7"
+                        },
+                        "routeKey": "ANY /books/{book}",
+                        "authorizationType": "AWS_IAM",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "HttpApiANYbooksbookexamplecom5C333C98"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigatewayv2.HttpApi",
+              "version": "0.0.0"
+            }
+          },
+          "API": {
+            "id": "API",
+            "path": "IntegApiGatewayV2Iam/API",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "TESTACCESSKEYID": {
+            "id": "TESTACCESSKEYID",
+            "path": "IntegApiGatewayV2Iam/TESTACCESSKEYID",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "TESTSECRETACCESSKEY": {
+            "id": "TESTSECRETACCESSKEY",
+            "path": "IntegApiGatewayV2Iam/TESTSECRETACCESSKEY",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "TESTREGION": {
+            "id": "TESTREGION",
+            "path": "IntegApiGatewayV2Iam/TESTREGION",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

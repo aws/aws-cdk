@@ -1,0 +1,100 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-glue": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-glue.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-glue/DataBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataBucketE3889A50"
+          }
+        ],
+        "/aws-cdk-glue/MyDatabase/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDatabase1E2517DB"
+          }
+        ],
+        "/aws-cdk-glue/AVROTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AVROTable58646ABF"
+          }
+        ],
+        "/aws-cdk-glue/CSVTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSVTableE499CABA"
+          }
+        ],
+        "/aws-cdk-glue/JSONTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JSONTable00348F1D"
+          }
+        ],
+        "/aws-cdk-glue/ParquetTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParquetTableE84E985F"
+          }
+        ],
+        "/aws-cdk-glue/MyKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyKey6AB29FA6"
+          }
+        ],
+        "/aws-cdk-glue/MyEncryptedTable/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyEncryptedTableBucket7B28486D"
+          }
+        ],
+        "/aws-cdk-glue/MyEncryptedTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyEncryptedTable981A88C6"
+          }
+        ],
+        "/aws-cdk-glue/MyUser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyUserDC45028B"
+          }
+        ],
+        "/aws-cdk-glue/MyUser/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyUserDefaultPolicy7B897426"
+          }
+        ],
+        "/aws-cdk-glue/AnotherUser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherUser254B09E3"
+          }
+        ],
+        "/aws-cdk-glue/AnotherUser/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherUserDefaultPolicyDBDB9923"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-glue"
+    }
+  }
+}
