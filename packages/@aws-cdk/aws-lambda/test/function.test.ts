@@ -12,7 +12,7 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import { Lazy, Size } from 'aws-cdk-lib';
+import { Lazy, Size } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
