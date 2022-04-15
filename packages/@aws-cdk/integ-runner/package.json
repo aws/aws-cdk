@@ -53,6 +53,8 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@types/mock-fs": "^4.13.1",
+    "mock-fs": "^4.14.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/jest": "^27.4.1",

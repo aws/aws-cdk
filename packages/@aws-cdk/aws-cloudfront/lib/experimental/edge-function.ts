@@ -116,6 +116,9 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public grantInvoke(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvoke(identity);
   }
+  public grantInvokeUrl(identity: iam.IGrantable): iam.Grant {
+    return this.lambda.grantInvokeUrl(identity);
+  }
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.lambda.metric(metricName, { ...props, region: EdgeFunction.EDGE_REGION });
   }
@@ -137,6 +140,9 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   }
   public configureAsyncInvoke(options: lambda.EventInvokeConfigOptions): void {
     return this.lambda.configureAsyncInvoke(options);
+  }
+  public addFunctionUrl(options?: lambda.FunctionUrlOptions): lambda.FunctionUrl {
+    return this.lambda.addFunctionUrl(options);
   }
 
   /** Create a function in-region */

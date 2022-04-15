@@ -79,9 +79,8 @@ function installLatestSdk(): void {
   latestSdkInstalled = true;
 }
 
-const patchedServices: { serviceName: string; apiVersions: string[] }[] = [
-  { serviceName: 'OpenSearch', apiVersions: ['2021-01-01'] },
-];
+// no currently patched services
+const patchedServices: { serviceName: string; apiVersions: string[] }[] = [];
 /**
  * Patches the AWS SDK by loading service models in the same manner as the actual SDK
  */

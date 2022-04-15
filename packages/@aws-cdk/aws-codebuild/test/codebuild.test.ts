@@ -1028,6 +1028,78 @@ describe('secondary sources', () => {
   });
 });
 
+describe('sources with customised build status configuration', () => {
+  test('GitHub', () => {
+    const context = 'My custom CodeBuild worker!';
+    const stack = new cdk.Stack();
+    const source = codebuild.Source.gitHub({
+      owner: 'awslabs',
+      repo: 'aws-cdk',
+      buildStatusContext: context,
+    });
+
+    new codebuild.Project(stack, 'MyProject', { source });
+    Template.fromStack(stack).findParameters('AWS::CodeBuild::Project', {
+      Source: {
+        buildStatusConfig: {
+          context: context,
+        },
+      },
+    });
+  });
+
+  test('GitHub Enterprise', () => {
+    const context = 'My custom CodeBuild worker!';
+    const stack = new cdk.Stack();
+    const source = codebuild.Source.gitHubEnterprise({
+      httpsCloneUrl: 'url',
+      buildStatusContext: context,
+    });
+    new codebuild.Project(stack, 'MyProject', { source });
+    Template.fromStack(stack).findParameters('AWS::CodeBuild::Project', {
+      Source: {
+        buildStatusConfig: {
+          context: context,
+        },
+      },
+    });
+  });
+
+  test('BitBucket', () => {
+    const context = 'My custom CodeBuild worker!';
+    const stack = new cdk.Stack();
+    const source = codebuild.Source.bitBucket({ owner: 'awslabs', repo: 'aws-cdk' });
+    new codebuild.Project(stack, 'MyProject', { source });
+    Template.fromStack(stack).findParameters('AWS::CodeBuild::Project', {
+      Source: {
+        buildStatusConfig: {
+          context: context,
+        },
+      },
+    });
+  });
+});
+
+describe('sources with customised build status configuration', () => {
+  test('GitHub with targetUrl', () => {
+    const targetUrl = 'https://example.com';
+    const stack = new cdk.Stack();
+    const source = codebuild.Source.gitHub({
+      owner: 'awslabs',
+      repo: 'aws-cdk',
+      buildStatusUrl: targetUrl,
+    });
+    new codebuild.Project(stack, 'MyProject', { source });
+    Template.fromStack(stack).findParameters('AWS::CodeBuild::Project', {
+      Source: {
+        buildStatusConfig: {
+          targetUrl: targetUrl,
+        },
+      },
+    });
+  });
+});
+
 describe('secondary source versions', () => {
   test('allow secondary source versions', () => {
     const stack = new cdk.Stack();

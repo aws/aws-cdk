@@ -1,0 +1,371 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
+        }
+      },
+      "appsync-elasticsearch": {
+        "id": "appsync-elasticsearch",
+        "path": "appsync-elasticsearch",
+        "children": {
+          "User": {
+            "id": "User",
+            "path": "appsync-elasticsearch/User",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "appsync-elasticsearch/User/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "Domain": {
+            "id": "Domain",
+            "path": "appsync-elasticsearch/Domain",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "appsync-elasticsearch/Domain/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Elasticsearch::Domain",
+                  "aws:cdk:cloudformation:props": {
+                    "advancedSecurityOptions": {
+                      "enabled": true,
+                      "internalUserDatabaseEnabled": false,
+                      "masterUserOptions": {
+                        "masterUserArn": {
+                          "Fn::GetAtt": [
+                            "User00B015A1",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "cognitoOptions": {
+                      "enabled": false
+                    },
+                    "domainEndpointOptions": {
+                      "enforceHttps": true,
+                      "tlsSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+                    },
+                    "ebsOptions": {
+                      "ebsEnabled": true,
+                      "volumeSize": 10,
+                      "volumeType": "gp2"
+                    },
+                    "elasticsearchClusterConfig": {
+                      "dedicatedMasterEnabled": false,
+                      "instanceCount": 1,
+                      "instanceType": "r5.large.elasticsearch",
+                      "zoneAwarenessEnabled": false
+                    },
+                    "elasticsearchVersion": "7.1",
+                    "encryptionAtRestOptions": {
+                      "enabled": true
+                    },
+                    "logPublishingOptions": {},
+                    "nodeToNodeEncryptionOptions": {
+                      "enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-elasticsearch.CfnDomain",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-elasticsearch.Domain",
+              "version": "0.0.0"
+            }
+          },
+          "api": {
+            "id": "api",
+            "path": "appsync-elasticsearch/api",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "appsync-elasticsearch/api/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
+                  "aws:cdk:cloudformation:props": {
+                    "authenticationType": "API_KEY",
+                    "name": "api"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.CfnGraphQLApi",
+                  "version": "0.0.0"
+                }
+              },
+              "Schema": {
+                "id": "Schema",
+                "path": "appsync-elasticsearch/api/Schema",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLSchema",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "apiC8550315",
+                        "ApiId"
+                      ]
+                    },
+                    "definition": "type test {\n  version: String!\n}\ntype Query {\n  getTests: [test]!\n}\ntype Mutation {\n  addTest(version: String!): test\n}\n"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.CfnGraphQLSchema",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultApiKey": {
+                "id": "DefaultApiKey",
+                "path": "appsync-elasticsearch/api/DefaultApiKey",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::ApiKey",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "apiC8550315",
+                        "ApiId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.CfnApiKey",
+                  "version": "0.0.0"
+                }
+              },
+              "ds": {
+                "id": "ds",
+                "path": "appsync-elasticsearch/api/ds",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "appsync-elasticsearch/api/ds/ServiceRole",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "appsync-elasticsearch/api/ds/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "appsync.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "appsync-elasticsearch/api/ds/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "appsync-elasticsearch/api/ds/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "es:ESHttpDelete",
+                                        "es:ESHttpGet",
+                                        "es:ESHttpHead",
+                                        "es:ESHttpPatch",
+                                        "es:ESHttpPost",
+                                        "es:ESHttpPut"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "Domain66AC69E0",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "Domain66AC69E0",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              "/*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "apidsServiceRoleDefaultPolicy5634EFD0",
+                                "roles": [
+                                  {
+                                    "Ref": "apidsServiceRoleBDB08107"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "appsync-elasticsearch/api/ds/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "apiC8550315",
+                            "ApiId"
+                          ]
+                        },
+                        "name": "ds",
+                        "type": "AMAZON_ELASTICSEARCH",
+                        "elasticsearchConfig": {
+                          "awsRegion": {
+                            "Ref": "AWS::Region"
+                          },
+                          "endpoint": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "https://",
+                                {
+                                  "Fn::GetAtt": [
+                                    "Domain66AC69E0",
+                                    "DomainEndpoint"
+                                  ]
+                                }
+                              ]
+                            ]
+                          }
+                        },
+                        "serviceRoleArn": {
+                          "Fn::GetAtt": [
+                            "apidsServiceRoleBDB08107",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.CfnDataSource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetTestsResolver": {
+                    "id": "QuerygetTestsResolver",
+                    "path": "appsync-elasticsearch/api/ds/QuerygetTestsResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "appsync-elasticsearch/api/ds/QuerygetTestsResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "apiC8550315",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getTests",
+                            "typeName": "Query",
+                            "dataSourceName": "ds",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\":\"2017-02-28\",\"operation\":\"GET\",\"path\":\"/id/post/_search\",\"params\":{\"headers\":{},\"queryString\":{},\"body\":{\"from\":0,\"size\":50}}}",
+                            "responseMappingTemplate": "{\"version\":\"2017-02-28\",\"operation\":\"GET\",\"path\":\"/id/post/_search\",\"params\":{\"headers\":{},\"queryString\":{},\"body\":{\"from\":0,\"size\":50,\"query\":{\"term\":{\"author\":\"$util.toJson($context.arguments.author)\"}}}}}"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.ElasticsearchDataSource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appsync.GraphqlApi",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

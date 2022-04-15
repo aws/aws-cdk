@@ -25,3 +25,29 @@ test("correctly chooses a string array from the type unions of the 'policies' pr
     Policies: ['AWSLambdaExecute'],
   });
 });
+
+test('has the correct deployment preference hooks structure', () => {
+  const stack = new cdk.Stack();
+
+  new sam.CfnFunction(stack, 'MyFunction', {
+    deploymentPreference: {
+      enabled: true,
+      type: 'AllAtOnce',
+      hooks: {
+        preTraffic: 'pre-traffic-hook-arn',
+        postTraffic: 'post-traffic-hook-arn',
+      },
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Function', {
+    DeploymentPreference: {
+      Enabled: true,
+      Type: 'AllAtOnce',
+      Hooks: {
+        PreTraffic: 'pre-traffic-hook-arn',
+        PostTraffic: 'post-traffic-hook-arn',
+      },
+    },
+  });
+});
