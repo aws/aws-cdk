@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { Chain } from '../chain';
+import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 import { StateType } from './private/state-type';
@@ -59,6 +60,16 @@ export interface ParallelProps {
    * @default - None
    */
   readonly resultSelector?: { [key: string]: any };
+
+  /**
+   * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-parameters
+   *
+   * @default No parameters
+   */
+  readonly parameters?: { [key: string]: any };
 }
 
 /**
@@ -144,6 +155,7 @@ export class Parallel extends State implements INextable {
       ...this.renderInputOutput(),
       ...this.renderRetryCatch(),
       ...this.renderBranches(),
+      ...this.renderParameters(),
       ...this.renderResultSelector(),
     };
   }
@@ -153,8 +165,17 @@ export class Parallel extends State implements INextable {
    */
   protected validate(): string[] {
     if (this.branches.length === 0) {
-      return ['Parallel must have at least one branch'];
+      return ["Parallel must have at least one branch"];
     }
     return [];
+  }
+
+  /**
+   * Render Parameters in ASL JSON format
+   */
+  private renderParameters(): any {
+    return FieldUtils.renderObject({
+      Parameters: this.parameters,
+    });
   }
 }
