@@ -404,11 +404,7 @@
                 "path": "aws-cdk-codepipeline-ecs-deploy/EcrRepo/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
-                  "aws:cdk:cloudformation:props": {
-                    "imageScanningConfiguration": {
-                      "scanOnPush": false
-                    }
-                  }
+                  "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-ecr.CfnRepository",
