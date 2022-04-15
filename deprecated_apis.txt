@@ -403,7 +403,6 @@ aws-cdk-lib.aws_cloudfront.AliasConfiguration#acmCertRef
 aws-cdk-lib.aws_cloudfront.AliasConfiguration#names
 aws-cdk-lib.aws_cloudfront.AliasConfiguration#securityPolicy
 aws-cdk-lib.aws_cloudfront.AliasConfiguration#sslMethod
-aws-cdk-lib.aws_cloudfront.Behavior#trustedSigners
 aws-cdk-lib.aws_cloudfront.CloudFrontWebDistribution#domainName
 aws-cdk-lib.aws_cloudfront.CloudFrontWebDistributionProps#aliasConfiguration
 aws-cdk-lib.aws_cloudfront.GeoRestriction#blacklist

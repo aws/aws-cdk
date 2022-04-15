@@ -1,0 +1,196 @@
+{
+ "Resources": {
+  "UserPool6BA7E5F2": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "myauthorizer23CB99DD": {
+   "Type": "AWS::ApiGateway::Authorizer",
+   "Properties": {
+    "Name": "CognitoUserPoolsAuthorizerIntegmyauthorizer10C804C1",
+    "RestApiId": {
+     "Ref": "myrestapi551C8392"
+    },
+    "Type": "COGNITO_USER_POOLS",
+    "IdentitySource": "method.request.header.Authorization",
+    "ProviderARNs": [
+     {
+      "Fn::GetAtt": [
+       "UserPool6BA7E5F2",
+       "Arn"
+      ]
+     }
+    ]
+   }
+  },
+  "myrestapi551C8392": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "myrestapi"
+   }
+  },
+  "myrestapiCloudWatchRoleC48DA1DD": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "myrestapiAccountA49A05BE": {
+   "Type": "AWS::ApiGateway::Account",
+   "Properties": {
+    "CloudWatchRoleArn": {
+     "Fn::GetAtt": [
+      "myrestapiCloudWatchRoleC48DA1DD",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "myrestapi551C8392"
+   ]
+  },
+  "myrestapiDeployment419B1464b903292b53d7532ca4296973bcb95b1a": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "myrestapi551C8392"
+    },
+    "Description": "Automatically created by the RestApi construct"
+   },
+   "DependsOn": [
+    "myrestapiANY94B0497F"
+   ]
+  },
+  "myrestapiDeploymentStageprodA9250EA4": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "myrestapi551C8392"
+    },
+    "DeploymentId": {
+     "Ref": "myrestapiDeployment419B1464b903292b53d7532ca4296973bcb95b1a"
+    },
+    "StageName": "prod"
+   },
+   "DependsOn": [
+    "myrestapiAccountA49A05BE"
+   ]
+  },
+  "myrestapiANY94B0497F": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "HttpMethod": "ANY",
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "myrestapi551C8392",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "myrestapi551C8392"
+    },
+    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizerId": {
+     "Ref": "myauthorizer23CB99DD"
+    },
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "StatusCode": "200"
+      }
+     ],
+     "PassthroughBehavior": "NEVER",
+     "RequestTemplates": {
+      "application/json": "{ \"statusCode\": 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "StatusCode": "200"
+     }
+    ]
+   }
+  }
+ },
+ "Outputs": {
+  "myrestapiEndpointE06F9D98": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "myrestapi551C8392"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "myrestapiDeploymentStageprodA9250EA4"
+      },
+      "/"
+     ]
+    ]
+   }
+  }
+ }
+}

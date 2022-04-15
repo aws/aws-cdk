@@ -21,3 +21,7 @@ lib/sdk-api-metadata.json
 !build-tools/*.js
 
 junit.xml
+!**/*.integ.snapshot/**/asset.*/*.js
+!**/*.integ.snapshot/**/asset.*/*.d.ts
+
+!**/*.integ.snapshot/**/asset.*/**

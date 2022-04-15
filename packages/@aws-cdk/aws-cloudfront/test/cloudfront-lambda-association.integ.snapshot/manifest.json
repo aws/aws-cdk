@@ -1,0 +1,52 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-cloudfront": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-cloudfront.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-cloudfront/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77"
+          }
+        ],
+        "/aws-cdk-cloudfront/Lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaServiceRoleA8ED4D3B"
+          }
+        ],
+        "/aws-cdk-cloudfront/Lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaD247545B"
+          }
+        ],
+        "/aws-cdk-cloudfront/LambdaVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaVersionFA49E61E"
+          }
+        ],
+        "/aws-cdk-cloudfront/MyDistribution/CFDistribution": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDistributionCFDistributionDE147309"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-cloudfront"
+    }
+  }
+}

@@ -108,7 +108,7 @@ def get_oci_cmd(repository, version):
             ]
     else:
         logger.info("Non AWS OCI repository found")
-        cmnd = ['HELM_EXPERIMENTAL_OCI=1', 'helm', 'pull', repository, '--version', version, '--untar']
+        cmnd = ['helm', 'pull', repository, '--version', version, '--untar']
 
     return cmnd
 
@@ -123,7 +123,7 @@ def get_chart_from_oci(tmpdir, release, repository = None, version = None):
         try:
             logger.info(cmnd)
             env = get_env_with_oci_flag()
-            output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=tmpdir, env=env, shell=True)
+            output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=tmpdir, env=env)
             logger.info(output)
 
             return os.path.join(tmpdir, release)

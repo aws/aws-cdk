@@ -1,0 +1,82 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "lambda-event-source-kinesis-with-dlq": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-event-source-kinesis-with-dlq.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/lambda-event-source-kinesis-with-dlq/F/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRole3AC82EE1"
+          }
+        ],
+        "/lambda-event-source-kinesis-with-dlq/F/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRoleDefaultPolicy17A19BFA"
+          }
+        ],
+        "/lambda-event-source-kinesis-with-dlq/F/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FC4345940"
+          }
+        ],
+        "/lambda-event-source-kinesis-with-dlq/F/KinesisEventSource:lambdaeventsourcekinesiswithdlqSD357FCB8/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FKinesisEventSourcelambdaeventsourcekinesiswithdlqSD357FCB87EEA8CB4"
+          }
+        ],
+        "/lambda-event-source-kinesis-with-dlq/FunctionArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FunctionArn"
+          }
+        ],
+        "/lambda-event-source-kinesis-with-dlq/S/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S509448A1"
+          }
+        ],
+        "/lambda-event-source-kinesis-with-dlq/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+          }
+        ],
+        "/lambda-event-source-kinesis-with-dlq/InputKinesisStreamName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InputKinesisStreamName"
+          }
+        ],
+        "/lambda-event-source-kinesis-with-dlq/Q/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Q63C6E3AB"
+          }
+        ],
+        "/lambda-event-source-kinesis-with-dlq/DlqSqsQueueUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DlqSqsQueueUrl"
+          }
+        ]
+      },
+      "displayName": "lambda-event-source-kinesis-with-dlq"
+    }
+  }
+}

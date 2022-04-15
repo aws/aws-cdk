@@ -1,0 +1,243 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "integ-user-pool-signup-link": {
+        "id": "integ-user-pool-signup-link",
+        "path": "integ-user-pool-signup-link",
+        "children": {
+          "myuserpool": {
+            "id": "myuserpool",
+            "path": "integ-user-pool-signup-link/myuserpool",
+            "children": {
+              "smsRole": {
+                "id": "smsRole",
+                "path": "integ-user-pool-signup-link/myuserpool/smsRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-user-pool-signup-link/myuserpool/smsRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Condition": {
+                                "StringEquals": {
+                                  "sts:ExternalId": "integuserpoolsignuplinkmyuserpoolA8374994"
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "cognito-idp.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policies": [
+                          {
+                            "policyName": "sns-publish",
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sns:Publish",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-user-pool-signup-link/myuserpool/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:props": {
+                    "accountRecoverySetting": {
+                      "recoveryMechanisms": [
+                        {
+                          "name": "verified_phone_number",
+                          "priority": 1
+                        },
+                        {
+                          "name": "verified_email",
+                          "priority": 2
+                        }
+                      ]
+                    },
+                    "adminCreateUserConfig": {
+                      "allowAdminCreateUserOnly": false
+                    },
+                    "autoVerifiedAttributes": [
+                      "email",
+                      "phone_number"
+                    ],
+                    "policies": {
+                      "passwordPolicy": {
+                        "minimumLength": 8,
+                        "requireLowercase": false,
+                        "requireUppercase": false,
+                        "requireNumbers": false,
+                        "requireSymbols": false
+                      }
+                    },
+                    "smsConfiguration": {
+                      "externalId": "integuserpoolsignuplinkmyuserpoolA8374994",
+                      "snsCallerArn": {
+                        "Fn::GetAtt": [
+                          "myuserpoolsmsRole0E16FDD9",
+                          "Arn"
+                        ]
+                      }
+                    },
+                    "smsVerificationMessage": "integ-test: Account verification code is {####}",
+                    "userPoolName": "MyUserPool",
+                    "verificationMessageTemplate": {
+                      "defaultEmailOption": "CONFIRM_WITH_LINK",
+                      "emailMessageByLink": "integ-test: Verify by clicking on {##Verify Email##}",
+                      "emailSubjectByLink": "integ-test: Verify your account",
+                      "smsMessage": "integ-test: Account verification code is {####}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.CfnUserPool",
+                  "version": "0.0.0"
+                }
+              },
+              "myuserpooldomain": {
+                "id": "myuserpooldomain",
+                "path": "integ-user-pool-signup-link/myuserpool/myuserpooldomain",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-user-pool-signup-link/myuserpool/myuserpooldomain/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolDomain",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "integ-user-pool-signup-link",
+                        "userPoolId": {
+                          "Ref": "myuserpool01998219"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-cognito.CfnUserPoolDomain",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.UserPoolDomain",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cognito.UserPool",
+              "version": "0.0.0"
+            }
+          },
+          "myuserpoolclient": {
+            "id": "myuserpoolclient",
+            "path": "integ-user-pool-signup-link/myuserpoolclient",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-user-pool-signup-link/myuserpoolclient/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
+                  "aws:cdk:cloudformation:props": {
+                    "userPoolId": {
+                      "Ref": "myuserpool01998219"
+                    },
+                    "allowedOAuthFlows": [
+                      "implicit",
+                      "code"
+                    ],
+                    "allowedOAuthFlowsUserPoolClient": true,
+                    "allowedOAuthScopes": [
+                      "profile",
+                      "phone",
+                      "email",
+                      "openid",
+                      "aws.cognito.signin.user.admin"
+                    ],
+                    "callbackUrLs": [
+                      "https://example.com"
+                    ],
+                    "clientName": "signup-test",
+                    "generateSecret": false,
+                    "supportedIdentityProviders": [
+                      "COGNITO"
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.CfnUserPoolClient",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cognito.UserPoolClient",
+              "version": "0.0.0"
+            }
+          },
+          "user-pool-id": {
+            "id": "user-pool-id",
+            "path": "integ-user-pool-signup-link/user-pool-id",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "client-id": {
+            "id": "client-id",
+            "path": "integ-user-pool-signup-link/client-id",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -1,0 +1,438 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
+        }
+      },
+      "test-stack": {
+        "id": "test-stack",
+        "path": "test-stack",
+        "children": {
+          "TopicRule": {
+            "id": "TopicRule",
+            "path": "test-stack/TopicRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "test-stack/TopicRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoT::TopicRule",
+                  "aws:cdk:cloudformation:props": {
+                    "topicRulePayload": {
+                      "actions": [
+                        {
+                          "firehose": {
+                            "batchMode": true,
+                            "deliveryStreamName": {
+                              "Ref": "MyStream5C050E93"
+                            },
+                            "roleArn": {
+                              "Fn::GetAtt": [
+                                "TopicRuleTopicRuleActionRole246C4F77",
+                                "Arn"
+                              ]
+                            },
+                            "separator": "\n"
+                          }
+                        }
+                      ],
+                      "awsIotSqlVersion": "2016-03-23",
+                      "sql": "SELECT * FROM 'device/+/data'"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iot.CfnTopicRule",
+                  "version": "0.0.0"
+                }
+              },
+              "TopicRuleActionRole": {
+                "id": "TopicRuleActionRole",
+                "path": "test-stack/TopicRule/TopicRuleActionRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-stack/TopicRule/TopicRuleActionRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "iot.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "test-stack/TopicRule/TopicRuleActionRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "test-stack/TopicRule/TopicRuleActionRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "firehose:PutRecord",
+                                    "firehose:PutRecordBatch"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MyStream5C050E93",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687",
+                            "roles": [
+                              {
+                                "Ref": "TopicRuleTopicRuleActionRole246C4F77"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iot.TopicRule",
+              "version": "0.0.0"
+            }
+          },
+          "MyBucket": {
+            "id": "MyBucket",
+            "path": "test-stack/MyBucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "test-stack/MyBucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
+          "MyStream": {
+            "id": "MyStream",
+            "path": "test-stack/MyStream",
+            "children": {
+              "Service Role": {
+                "id": "Service Role",
+                "path": "test-stack/MyStream/Service Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-stack/MyStream/Service Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "firehose.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "S3 Destination Role": {
+                "id": "S3 Destination Role",
+                "path": "test-stack/MyStream/S3 Destination Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-stack/MyStream/S3 Destination Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "firehose.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "test-stack/MyStream/S3 Destination Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "test-stack/MyStream/S3 Destination Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "s3:Abort*",
+                                    "s3:DeleteObject*",
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*",
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "MyBucketF68F3FF0",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "MyBucketF68F3FF0",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MyStreamLogGroupAB67AB09",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyStreamS3DestinationRoleDefaultPolicy401EF6F2",
+                            "roles": [
+                              {
+                                "Ref": "MyStreamS3DestinationRole5E0BA960"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "test-stack/MyStream/LogGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-stack/MyStream/LogGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 731
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "S3Destination": {
+                    "id": "S3Destination",
+                    "path": "test-stack/MyStream/LogGroup/S3Destination",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "test-stack/MyStream/LogGroup/S3Destination/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Logs::LogStream",
+                          "aws:cdk:cloudformation:props": {
+                            "logGroupName": {
+                              "Ref": "MyStreamLogGroupAB67AB09"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-logs.CfnLogStream",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-logs.LogStream",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.LogGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "test-stack/MyStream/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KinesisFirehose::DeliveryStream",
+                  "aws:cdk:cloudformation:props": {
+                    "deliveryStreamType": "DirectPut",
+                    "extendedS3DestinationConfiguration": {
+                      "cloudWatchLoggingOptions": {
+                        "enabled": true,
+                        "logGroupName": {
+                          "Ref": "MyStreamLogGroupAB67AB09"
+                        },
+                        "logStreamName": {
+                          "Ref": "MyStreamLogGroupS3Destination423E82A8"
+                        }
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "MyStreamS3DestinationRole5E0BA960",
+                          "Arn"
+                        ]
+                      },
+                      "bucketArn": {
+                        "Fn::GetAtt": [
+                          "MyBucketF68F3FF0",
+                          "Arn"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-kinesisfirehose.CfnDeliveryStream",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-kinesisfirehose.DeliveryStream",
+              "version": "0.0.0"
+            }
+          },
+          "@aws-cdk--aws-kinesisfirehose.CidrBlocks": {
+            "id": "@aws-cdk--aws-kinesisfirehose.CidrBlocks",
+            "path": "test-stack/@aws-cdk--aws-kinesisfirehose.CidrBlocks",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnMapping",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

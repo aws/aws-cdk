@@ -1,0 +1,100 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "test-3": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "test-3.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/test-3/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77"
+          }
+        ],
+        "/test-3/Bucket/Notifications/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketNotifications8F2E257D"
+          }
+        ],
+        "/test-3/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicBFC7AF6E"
+          }
+        ],
+        "/test-3/Topic/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicPolicyA1747468"
+          }
+        ],
+        "/test-3/Topic3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Topic3DEAE47A7"
+          }
+        ],
+        "/test-3/Topic3/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Topic3Policy49BDDFBD"
+          }
+        ],
+        "/test-3/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+          }
+        ],
+        "/test-3/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36"
+          }
+        ],
+        "/test-3/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691"
+          }
+        ],
+        "/test-3/Bucket2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket25524B414"
+          }
+        ],
+        "/test-3/Bucket2/Notifications/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket2NotificationsD9BA2A77"
+          }
+        ],
+        "/test-3/Bucket3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket3CFB7F7D7"
+          }
+        ],
+        "/test-3/Bucket3Imported/Notifications/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket3ImportedNotificationsB1625F39"
+          }
+        ]
+      },
+      "displayName": "test-3"
+    }
+  }
+}

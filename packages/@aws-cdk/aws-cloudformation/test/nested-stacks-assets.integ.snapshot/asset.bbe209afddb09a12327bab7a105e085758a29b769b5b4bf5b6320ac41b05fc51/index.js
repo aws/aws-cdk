@@ -1,0 +1,7 @@
+"use strict";
+/* eslint-disable no-console */
+exports.handler = async (evt) => {
+    console.error(JSON.stringify(evt, undefined, 2));
+    return 'hello, world!';
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUEsK0JBQStCO0FBRS9CLE9BQU8sQ0FBQyxPQUFPLEdBQUcsS0FBSyxFQUFFLEdBQVEsRUFBRSxFQUFFO0lBQ25DLE9BQU8sQ0FBQyxLQUFLLENBQUMsSUFBSSxDQUFDLFNBQVMsQ0FBQyxHQUFHLEVBQUUsU0FBUyxFQUFFLENBQUMsQ0FBQyxDQUFDLENBQUM7SUFDakQsT0FBTyxlQUFlLENBQUM7QUFDekIsQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyogZXNsaW50LWRpc2FibGUgbm8tY29uc29sZSAqL1xuXG5leHBvcnRzLmhhbmRsZXIgPSBhc3luYyAoZXZ0OiBhbnkpID0+IHtcbiAgY29uc29sZS5lcnJvcihKU09OLnN0cmluZ2lmeShldnQsIHVuZGVmaW5lZCwgMikpO1xuICByZXR1cm4gJ2hlbGxvLCB3b3JsZCEnO1xufTtcbiJdfQ==

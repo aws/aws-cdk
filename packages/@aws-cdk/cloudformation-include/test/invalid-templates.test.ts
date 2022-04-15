@@ -140,6 +140,12 @@ describe('CDK Include', () => {
       includeTestTemplate(stack, 'short-form-get-att-no-dot.yaml');
     }).toThrow(/Short-form Fn::GetAtt must contain a '.' in its string argument, got: 'Bucket1Arn'/);
   });
+
+  test('detects a cycle between resources in the template', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'cycle-in-resources.json');
+    }).toThrow(/Found a cycle between resources in the template: Bucket1 depends on Bucket2 depends on Bucket1/);
+  });
 });
 
 function includeTestTemplate(scope: constructs.Construct, testTemplate: string): inc.CfnInclude {

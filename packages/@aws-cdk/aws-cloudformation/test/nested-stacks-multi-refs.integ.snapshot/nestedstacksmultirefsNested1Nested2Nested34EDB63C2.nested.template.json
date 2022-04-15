@@ -1,0 +1,48 @@
+{
+ "Resources": {
+  "Level3ReferencesLevel13289AD09": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::Split": [
+        "-",
+        {
+         "Ref": "referencetonestedstacksmultirefsLevel19FB2466DTopicName"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "Level3ReferencesLevel2717B87DB": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::Split": [
+        "-",
+        {
+         "Ref": "referencetonestedstacksmultirefsNested1Nested2Level2ReferencesLevel1B9551936TopicName"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "referencetonestedstacksmultirefsLevel19FB2466DTopicName": {
+   "Type": "String"
+  },
+  "referencetonestedstacksmultirefsNested1Nested2Level2ReferencesLevel1B9551936TopicName": {
+   "Type": "String"
+  }
+ }
+}

@@ -630,4 +630,29 @@ describe('alias', () => {
     const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
     expect(annotations.length).toBe(0);
   });
+
+  test('addFunctionUrl creates a function url', () => {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version: fn.currentVersion,
+    });
+
+    // WHEN
+    alias.addFunctionUrl();
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Url', {
+      AuthType: 'AWS_IAM',
+      TargetFunctionArn: {
+        Ref: 'Alias325C5727',
+      },
+    });
+  });
 });

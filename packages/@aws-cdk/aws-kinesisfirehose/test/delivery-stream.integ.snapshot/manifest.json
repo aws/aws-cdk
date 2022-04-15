@@ -1,0 +1,70 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-firehose-delivery-stream": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-firehose-delivery-stream.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-firehose-delivery-stream/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Role1ABCC5F0"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RoleDefaultPolicy5FFB7DAB"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Key961B73FD"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream/Delivery Stream/Service Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamServiceRole964EEBCC"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream/Delivery Stream/Service Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamServiceRoleDefaultPolicyB87D9ACF"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream/Delivery Stream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamF6D5572D"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdkawskinesisfirehoseCidrBlocks"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-firehose-delivery-stream"
+    }
+  }
+}

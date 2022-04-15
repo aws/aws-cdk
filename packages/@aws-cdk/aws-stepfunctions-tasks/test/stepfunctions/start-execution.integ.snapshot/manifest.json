@@ -1,0 +1,64 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-sfn-start-execution": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-sfn-start-execution.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-sfn-start-execution/Child/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChildRole1E3E0EF5"
+          }
+        ],
+        "/integ-sfn-start-execution/Child/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChildDAB30558"
+          }
+        ],
+        "/integ-sfn-start-execution/Parent/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParentRole5F0C366C"
+          }
+        ],
+        "/integ-sfn-start-execution/Parent/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParentRoleDefaultPolicy9BDC56DC"
+          }
+        ],
+        "/integ-sfn-start-execution/Parent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Parent8B210403"
+          }
+        ],
+        "/integ-sfn-start-execution/StateMachineARN": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineARN"
+          }
+        ],
+        "/integ-sfn-start-execution/Service-principalMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceprincipalMap"
+          }
+        ]
+      },
+      "displayName": "integ-sfn-start-execution"
+    }
+  }
+}

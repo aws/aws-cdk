@@ -1,0 +1,228 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-init": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-init.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-init": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b",
+              "id": "f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b",
+              "packaging": "zip",
+              "sourceHash": "f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b",
+              "s3BucketParameter": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3Bucket597083AB",
+              "s3KeyParameter": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3VersionKey89F61A12",
+              "artifactHashParameter": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bArtifactHash088925E9"
+            }
+          }
+        ],
+        "/integ-init/IntegInitVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpc0D4FCCB3"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet1Subnet41A6F6D4"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet1RouteTable837CD5FB"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet1RouteTableAssociation00D33741"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet1DefaultRoute5BB90E8C"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet1EIP46FCC3D6"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet1NATGateway46F32F7F"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet2Subnet9A384F16"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet2RouteTableF7E8F920"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet2RouteTableAssociationB816F9F3"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet2DefaultRoute2393995F"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet2EIP553B40DC"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet2NATGateway9CCB4A9C"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPrivateSubnet1Subnet259B51C1"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPrivateSubnet1RouteTableCB37994B"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPrivateSubnet1RouteTableAssociation067DEF9D"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPrivateSubnet1DefaultRoute654ACECF"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPrivateSubnet2Subnet1643B059"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPrivateSubnet2RouteTable030EC93B"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPrivateSubnet2RouteTableAssociation6B52BD72"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPrivateSubnet2DefaultRoute6A10B6EA"
+          }
+        ],
+        "/integ-init/IntegInitVpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcIGWF019AC85"
+          }
+        ],
+        "/integ-init/IntegInitVpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcVPCGW85EDC292"
+          }
+        ],
+        "/integ-init/Instance2/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Instance2InstanceSecurityGroupC6129B1D"
+          }
+        ],
+        "/integ-init/Instance2/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Instance2InstanceRole03DD7CB2"
+          }
+        ],
+        "/integ-init/Instance2/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Instance2InstanceRoleDefaultPolicy610B37CD"
+          }
+        ],
+        "/integ-init/Instance2/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Instance2InstanceProfile582F915C"
+          }
+        ],
+        "/integ-init/Instance2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Instance255F352651ad64873f230a4d2"
+          }
+        ],
+        "/integ-init/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/integ-init/AssetParameters/f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3Bucket597083AB"
+          }
+        ],
+        "/integ-init/AssetParameters/f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3VersionKey89F61A12"
+          }
+        ],
+        "/integ-init/AssetParameters/f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bArtifactHash088925E9"
+          }
+        ]
+      },
+      "displayName": "integ-init"
+    }
+  }
+}

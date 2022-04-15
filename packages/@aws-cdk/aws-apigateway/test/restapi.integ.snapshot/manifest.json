@@ -1,0 +1,193 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "test-apigateway-restapi": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "test-apigateway-restapi.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/test-apigateway-restapi/my-api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapi4C7BF186"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiCloudWatchRole095452E5"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiAccountEC421A0A"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeployment92F2CB4963d40685c54c6f8da21d80a83f16d3d5"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/DeploymentStage.beta/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeploymentStagebeta96434BEB"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiEndpoint3628AFE3"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Default/v1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv113487378"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Default/v1/toys/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1toysA55FCBC4"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Default/v1/toys/GET/ApiPermission.testapigatewayrestapimyapi1AE401C4.GET..v1.toys": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1toysGETApiPermissiontestapigatewayrestapimyapi1AE401C4GETv1toysA829D1CC"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Default/v1/toys/GET/ApiPermission.Test.testapigatewayrestapimyapi1AE401C4.GET..v1.toys": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1toysGETApiPermissionTesttestapigatewayrestapimyapi1AE401C4GETv1toys9E0BAE9F"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Default/v1/toys/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1toysGET7348114D"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Default/v1/toys/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1toysPOST55128058"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Default/v1/toys/PUT/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1toysPUT59AFBBC2"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Default/v1/appliances/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1appliances507FEFF4"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Default/v1/appliances/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1appliancesGET8FE872EC"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Default/v1/books/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1books1D4BE6C1"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Default/v1/books/GET/ApiPermission.testapigatewayrestapimyapi1AE401C4.GET..v1.books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1booksGETApiPermissiontestapigatewayrestapimyapi1AE401C4GETv1books484ACD3F"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Default/v1/books/GET/ApiPermission.Test.testapigatewayrestapimyapi1AE401C4.GET..v1.books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1booksGETApiPermissionTesttestapigatewayrestapimyapi1AE401C4GETv1booksE255E31A"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Default/v1/books/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1booksGETC6B996D0"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Default/v1/books/POST/ApiPermission.testapigatewayrestapimyapi1AE401C4.POST..v1.books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1booksPOSTApiPermissiontestapigatewayrestapimyapi1AE401C4POSTv1books2B1BC62B"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Default/v1/books/POST/ApiPermission.Test.testapigatewayrestapimyapi1AE401C4.POST..v1.books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1booksPOSTApiPermissionTesttestapigatewayrestapimyapi1AE401C4POSTv1books816A6B37"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/Default/v1/books/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1booksPOST53E2832E"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/ApiKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiApiKey43446CCF"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/UsagePlan/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiUsagePlan56F9C4F2"
+          }
+        ],
+        "/test-apigateway-restapi/my-api/UsagePlan/UsagePlanKeyResource:testapigatewayrestapimyapiApiKeyC43601CB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiUsagePlanUsagePlanKeyResourcetestapigatewayrestapimyapiApiKeyC43601CB600D112D"
+          }
+        ],
+        "/test-apigateway-restapi/MyHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHandlerServiceRoleFFA06653"
+          }
+        ],
+        "/test-apigateway-restapi/MyHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHandler6B74D312"
+          }
+        ],
+        "myapiUsagePlanUsagePlanKeyResource050D133F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiUsagePlanUsagePlanKeyResource050D133F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "test-apigateway-restapi"
+    }
+  }
+}

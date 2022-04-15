@@ -1,0 +1,360 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-redshift-cluster-database": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-redshift-cluster-database.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-redshift-cluster-database": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.9a16f9040563cb46c6618b0d3d564a644ab266bb79ea51e97bb8b02e57b15b73",
+              "id": "9a16f9040563cb46c6618b0d3d564a644ab266bb79ea51e97bb8b02e57b15b73",
+              "packaging": "zip",
+              "sourceHash": "9a16f9040563cb46c6618b0d3d564a644ab266bb79ea51e97bb8b02e57b15b73",
+              "s3BucketParameter": "AssetParameters9a16f9040563cb46c6618b0d3d564a644ab266bb79ea51e97bb8b02e57b15b73S3Bucket13557C0F",
+              "s3KeyParameter": "AssetParameters9a16f9040563cb46c6618b0d3d564a644ab266bb79ea51e97bb8b02e57b15b73S3VersionKey2A8A3D0D",
+              "artifactHashParameter": "AssetParameters9a16f9040563cb46c6618b0d3d564a644ab266bb79ea51e97bb8b02e57b15b73ArtifactHashD498841C"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9",
+              "id": "8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9",
+              "packaging": "zip",
+              "sourceHash": "8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9",
+              "s3BucketParameter": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90",
+              "s3KeyParameter": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212",
+              "artifactHashParameter": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9ArtifactHash26B5BCAA"
+            }
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2EIP3C605A87"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2NATGateway9182C01D"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/custom-kms-key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "customkmskey377C6F9A"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Cluster/Subnets/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSubnetsDCFA5CB7"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Cluster/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSecurityGroup0921994B"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Cluster/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSecret6368BD0F"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Cluster/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSecretAttachment769E6258"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Cluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterEB0386A7"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/User/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserSecretE2C04A69"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/User/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserSecretAttachment02022609"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/User/Resource/Provider/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserProviderframeworkonEventServiceRole8FBA2FBD"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/User/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserProviderframeworkonEventServiceRoleDefaultPolicy9A9E044F"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/User/Resource/Provider/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserProviderframeworkonEvent4EC32885"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/User/Resource/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserFDDCDD17"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/User/TablePrivileges/Resource/Provider/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserTablePrivilegesProviderframeworkonEventServiceRole56BAEC9A"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/User/TablePrivileges/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserTablePrivilegesProviderframeworkonEventServiceRoleDefaultPolicy3B6EF50C"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/User/TablePrivileges/Resource/Provider/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserTablePrivilegesProviderframeworkonEvent3F5C1851"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/User/TablePrivileges/Resource/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserTablePrivileges3829D614"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRole0A90D717"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRoleDefaultPolicyDDD1388D"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Query Redshift Database3de5bea727da479686625efb56431b5f/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/AssetParameters/9a16f9040563cb46c6618b0d3d564a644ab266bb79ea51e97bb8b02e57b15b73/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters9a16f9040563cb46c6618b0d3d564a644ab266bb79ea51e97bb8b02e57b15b73S3Bucket13557C0F"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/AssetParameters/9a16f9040563cb46c6618b0d3d564a644ab266bb79ea51e97bb8b02e57b15b73/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters9a16f9040563cb46c6618b0d3d564a644ab266bb79ea51e97bb8b02e57b15b73S3VersionKey2A8A3D0D"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/AssetParameters/9a16f9040563cb46c6618b0d3d564a644ab266bb79ea51e97bb8b02e57b15b73/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters9a16f9040563cb46c6618b0d3d564a644ab266bb79ea51e97bb8b02e57b15b73ArtifactHashD498841C"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/AssetParameters/8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/AssetParameters/8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/AssetParameters/8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9ArtifactHash26B5BCAA"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Table/Resource/Provider/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableProviderframeworkonEventServiceRoleC3128F67"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Table/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Table/Resource/Provider/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableProviderframeworkonEvent97F3951A"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Table/Resource/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Table7ABB320E"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-redshift-cluster-database"
+    }
+  }
+}

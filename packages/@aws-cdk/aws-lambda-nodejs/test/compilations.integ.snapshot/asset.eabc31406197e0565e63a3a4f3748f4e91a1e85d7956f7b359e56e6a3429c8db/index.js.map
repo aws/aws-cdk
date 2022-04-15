@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../integ-handlers/ts-decorator-handler.ts"],
+  "sourcesContent": ["function enumerable(value: boolean) {\n  return function (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) {\n    descriptor.enumerable = value;\n  };\n}\n\nclass Greeter {\n  greeting: string;\n  constructor(message: string) {\n    this.greeting = message;\n  }\n\n  @enumerable(false)\n  greet() {\n    return 'Hello, ' + this.greeting;\n  }\n}\n\n\nexport async function handler(): Promise<void> {\n  const message = new Greeter('World').greet();\n  console.log(message); // eslint-disable-line no-console\n}\n"],
+  "mappings": "kcAAA,WAAoB,EAAc,CAChC,MAAO,UAAU,EAAc,EAAsB,EAA8B,CACjF,EAAW,WAAa,CAC1B,CACF,CAEA,WAAa,CAEX,YAAY,EAAe,CACzB,KAAK,SAAW,CAClB,CAGA,OAAK,CACH,MAAO,UAAY,KAAK,QAC1B,GAFA,EAAA,CADC,EAAW,EAAK,6BAOZ,kBAAsB,CAC3B,GAAM,GAAU,GAAI,GAAQ,OAAO,EAAE,MAAK,EAC1C,QAAQ,IAAI,CAAO,CACrB,CAHA,QAAA,QAAA",
+  "names": []
+}

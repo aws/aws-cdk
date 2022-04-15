@@ -1,0 +1,227 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "integ-mock-websocket-integration": {
+        "id": "integ-mock-websocket-integration",
+        "path": "integ-mock-websocket-integration",
+        "children": {
+          "mywsapi": {
+            "id": "mywsapi",
+            "path": "integ-mock-websocket-integration/mywsapi",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-mock-websocket-integration/mywsapi/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "mywsapi",
+                    "protocolType": "WEBSOCKET",
+                    "routeSelectionExpression": "$request.body.action"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "$default-Route": {
+                "id": "$default-Route",
+                "path": "integ-mock-websocket-integration/mywsapi/$default-Route",
+                "children": {
+                  "DefaultIntegration": {
+                    "id": "DefaultIntegration",
+                    "path": "integ-mock-websocket-integration/mywsapi/$default-Route/DefaultIntegration",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-mock-websocket-integration/mywsapi/$default-Route/DefaultIntegration/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "mywsapi32E6CE11"
+                            },
+                            "integrationType": "MOCK",
+                            "integrationUri": ""
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigatewayv2.WebSocketIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-mock-websocket-integration/mywsapi/$default-Route/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "mywsapi32E6CE11"
+                        },
+                        "routeKey": "$default",
+                        "authorizationType": "NONE",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "mywsapidefaultRouteDefaultIntegrationFFCB3BA9"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.WebSocketRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "sendmessage-Route": {
+                "id": "sendmessage-Route",
+                "path": "integ-mock-websocket-integration/mywsapi/sendmessage-Route",
+                "children": {
+                  "SendMessageIntegration": {
+                    "id": "SendMessageIntegration",
+                    "path": "integ-mock-websocket-integration/mywsapi/sendmessage-Route/SendMessageIntegration",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-mock-websocket-integration/mywsapi/sendmessage-Route/SendMessageIntegration/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "mywsapi32E6CE11"
+                            },
+                            "integrationType": "MOCK",
+                            "integrationUri": ""
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigatewayv2.WebSocketIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-mock-websocket-integration/mywsapi/sendmessage-Route/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "mywsapi32E6CE11"
+                        },
+                        "routeKey": "sendmessage",
+                        "authorizationType": "NONE",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "mywsapisendmessageRouteSendMessageIntegrationD29E12F9"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.WebSocketRoute",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigatewayv2.WebSocketApi",
+              "version": "0.0.0"
+            }
+          },
+          "mystage": {
+            "id": "mystage",
+            "path": "integ-mock-websocket-integration/mystage",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-mock-websocket-integration/mystage/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "mywsapi32E6CE11"
+                    },
+                    "stageName": "dev",
+                    "autoDeploy": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnStage",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigatewayv2.WebSocketStage",
+              "version": "0.0.0"
+            }
+          },
+          "ApiEndpoint": {
+            "id": "ApiEndpoint",
+            "path": "integ-mock-websocket-integration/ApiEndpoint",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

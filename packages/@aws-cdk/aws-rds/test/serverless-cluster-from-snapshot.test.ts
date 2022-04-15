@@ -125,7 +125,7 @@ describe('serverless cluster from snapshot', () => {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       vpc,
       snapshotIdentifier: 'mySnapshot',
-      credentials: SnapshotCredentials.fromPassword(cdk.SecretValue.plainText('mysecretpassword')),
+      credentials: SnapshotCredentials.fromPassword(cdk.SecretValue.unsafePlainText('mysecretpassword')),
     });
 
     // THEN

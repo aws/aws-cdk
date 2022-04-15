@@ -8,7 +8,7 @@ test('basic connection', () => {
 
   // WHEN
   new events.Connection(stack, 'Connection', {
-    authorization: events.Authorization.basic('username', SecretValue.plainText('password')),
+    authorization: events.Authorization.basic('username', SecretValue.unsafePlainText('password')),
     connectionName: 'testConnection',
     description: 'ConnectionDescription',
   });
@@ -34,7 +34,7 @@ test('API key connection', () => {
 
   // WHEN
   new events.Connection(stack, 'Connection', {
-    authorization: events.Authorization.apiKey('keyname', SecretValue.plainText('keyvalue')),
+    authorization: events.Authorization.apiKey('keyname', SecretValue.unsafePlainText('keyvalue')),
   });
 
   // THEN
@@ -59,7 +59,7 @@ test('oauth connection', () => {
     authorization: events.Authorization.oauth({
       authorizationEndpoint: 'authorizationEndpoint',
       clientId: 'clientID',
-      clientSecret: SecretValue.plainText('clientSecret'),
+      clientSecret: SecretValue.unsafePlainText('clientSecret'),
       httpMethod: events.HttpMethod.GET,
       headerParameters: {
         oAuthHeaderKey: events.HttpParameter.fromString('oAuthHeaderValue'),

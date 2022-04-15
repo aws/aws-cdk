@@ -1,0 +1,251 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-stepfunctions-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-stepfunctions-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-stepfunctions-integ": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "repositoryName": "aws-cdk/assets",
+              "imageTag": "8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b",
+              "id": "8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b",
+              "packaging": "container-image",
+              "path": "asset.8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b",
+              "sourceHash": "8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b"
+            }
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcA2121C38"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1Subnet2E65531E"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1RouteTable48A2DF9B"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1RouteTableAssociation5D3F4579"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1DefaultRoute10708846"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1EIPDA49DCBE"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1NATGateway9C16659E"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2Subnet009B674F"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2RouteTableEB40D4CB"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2RouteTableAssociation21F81B59"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2DefaultRouteA1EC0F60"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2EIP9B3743B1"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2NATGateway9B8AE11A"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet1Subnet934893E8"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet1RouteTableB41A48CC"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet1RouteTableAssociation67945127"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet1DefaultRoute1AA8E2E5"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet2Subnet7031C2BA"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet2RouteTable7280F23E"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet2RouteTableAssociation007E94D3"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet2DefaultRouteB0E07F99"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcIGWE57CBDCA"
+          }
+        ],
+        "/aws-stepfunctions-integ/vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcVPCGW7984C166"
+          }
+        ],
+        "/aws-stepfunctions-integ/ComputeEnv/Resource-Security-Group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ComputeEnvResourceSecurityGroupB84CF86B"
+          }
+        ],
+        "/aws-stepfunctions-integ/ComputeEnv/Ecs-Instance-Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ComputeEnvEcsInstanceRoleCFB290F9"
+          }
+        ],
+        "/aws-stepfunctions-integ/ComputeEnv/Instance-Profile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ComputeEnvInstanceProfile81AFCCF2"
+          }
+        ],
+        "/aws-stepfunctions-integ/ComputeEnv/Resource-Service-Instance-Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ComputeEnvResourceServiceInstanceRoleCF89E9E1"
+          }
+        ],
+        "/aws-stepfunctions-integ/ComputeEnv/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ComputeEnv2C40ACC2"
+          }
+        ],
+        "/aws-stepfunctions-integ/JobQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JobQueueEE3AD499"
+          }
+        ],
+        "/aws-stepfunctions-integ/JobDefinition/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JobDefinition24FFE3ED"
+          }
+        ],
+        "/aws-stepfunctions-integ/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/aws-stepfunctions-integ/StateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+          }
+        ],
+        "/aws-stepfunctions-integ/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/aws-stepfunctions-integ/JobQueueArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JobQueueArn"
+          }
+        ],
+        "/aws-stepfunctions-integ/StateMachineArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineArn"
+          }
+        ],
+        "/aws-stepfunctions-integ/Service-principalMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceprincipalMap"
+          }
+        ]
+      },
+      "displayName": "aws-stepfunctions-integ"
+    }
+  }
+}

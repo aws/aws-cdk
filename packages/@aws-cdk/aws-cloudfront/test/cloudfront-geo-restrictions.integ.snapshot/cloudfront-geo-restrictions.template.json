@@ -1,0 +1,66 @@
+{
+ "Resources": {
+  "Bucket83908E77": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyDistributionCFDistributionDE147309": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "DefaultCacheBehavior": {
+      "AllowedMethods": [
+       "GET",
+       "HEAD"
+      ],
+      "CachedMethods": [
+       "GET",
+       "HEAD"
+      ],
+      "Compress": true,
+      "ForwardedValues": {
+       "Cookies": {
+        "Forward": "none"
+       },
+       "QueryString": false
+      },
+      "TargetOriginId": "origin1",
+      "ViewerProtocolPolicy": "redirect-to-https"
+     },
+     "DefaultRootObject": "index.html",
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "ConnectionAttempts": 3,
+       "ConnectionTimeout": 10,
+       "DomainName": {
+        "Fn::GetAtt": [
+         "Bucket83908E77",
+         "RegionalDomainName"
+        ]
+       },
+       "Id": "origin1",
+       "S3OriginConfig": {}
+      }
+     ],
+     "PriceClass": "PriceClass_100",
+     "Restrictions": {
+      "GeoRestriction": {
+       "Locations": [
+        "US",
+        "GB"
+       ],
+       "RestrictionType": "whitelist"
+      }
+     },
+     "ViewerCertificate": {
+      "CloudFrontDefaultCertificate": true
+     }
+    }
+   }
+  }
+ }
+}

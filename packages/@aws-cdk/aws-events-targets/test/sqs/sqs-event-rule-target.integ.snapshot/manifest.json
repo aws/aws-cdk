@@ -1,0 +1,58 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-sqs-event-target": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-sqs-event-target.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-sqs-event-target/MyKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyKey6AB29FA6"
+          }
+        ],
+        "/aws-cdk-sqs-event-target/MyRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRuleA44AB831"
+          }
+        ],
+        "/aws-cdk-sqs-event-target/MyQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueueE6CA6235"
+          }
+        ],
+        "/aws-cdk-sqs-event-target/MyQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueuePolicy6BBEDDAC"
+          }
+        ],
+        "/aws-cdk-sqs-event-target/MyDeadLetterQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeadLetterQueueD997968A"
+          }
+        ],
+        "/aws-cdk-sqs-event-target/MyDeadLetterQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeadLetterQueuePolicyCC35D52C"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-sqs-event-target"
+    }
+  }
+}

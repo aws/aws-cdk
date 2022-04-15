@@ -1,0 +1,117 @@
+{
+ "Resources": {
+  "pool056F3F7E": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "poolclient2623294C": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "UserPoolId": {
+     "Ref": "pool056F3F7E"
+    },
+    "AllowedOAuthFlows": [
+     "implicit",
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "profile",
+     "phone",
+     "email",
+     "openid",
+     "aws.cognito.signin.user.admin"
+    ],
+    "CallbackURLs": [
+     "https://example.com"
+    ],
+    "SupportedIdentityProviders": [
+     {
+      "Ref": "amazon2D32744A"
+     },
+     "COGNITO"
+    ]
+   }
+  },
+  "pooldomain430FA744": {
+   "Type": "AWS::Cognito::UserPoolDomain",
+   "Properties": {
+    "Domain": "nija-test-pool",
+    "UserPoolId": {
+     "Ref": "pool056F3F7E"
+    }
+   }
+  },
+  "amazon2D32744A": {
+   "Type": "AWS::Cognito::UserPoolIdentityProvider",
+   "Properties": {
+    "ProviderName": "LoginWithAmazon",
+    "ProviderType": "LoginWithAmazon",
+    "UserPoolId": {
+     "Ref": "pool056F3F7E"
+    },
+    "AttributeMapping": {
+     "given_name": "name",
+     "email": "email",
+     "userId": "user_id"
+    },
+    "ProviderDetails": {
+     "client_id": "amzn-client-id",
+     "client_secret": "amzn-client-secret",
+     "authorize_scopes": "profile"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "SignInLink": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "pooldomain430FA744"
+      },
+      ".auth.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazoncognito.com/login?client_id=",
+      {
+       "Ref": "poolclient2623294C"
+      },
+      "&response_type=code&redirect_uri=https://example.com"
+     ]
+    ]
+   }
+  }
+ }
+}
