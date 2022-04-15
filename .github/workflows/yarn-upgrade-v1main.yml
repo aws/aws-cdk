@@ -1,4 +1,4 @@
-name: Yarn Upgrade
+name: Yarn Upgrade v1-main
 
 on:
   schedule:
