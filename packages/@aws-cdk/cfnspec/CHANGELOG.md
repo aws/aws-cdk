@@ -1,3 +1,129 @@
+# CloudFormation Resource Specification v66.1.0
+
+## New Resource Types
+
+* AWS::AppRunner::ObservabilityConfiguration
+
+## Attribute Changes
+
+* AWS::Athena::WorkGroup WorkGroupConfigurationUpdates.EngineVersion.EffectiveEngineVersion (__deleted__)
+
+## Property Changes
+
+* AWS::AppRunner::Service ObservabilityConfiguration (__added__)
+* AWS::AppStream::Fleet SessionScriptS3Location (__added__)
+* AWS::Athena::WorkGroup WorkGroupConfigurationUpdates (__deleted__)
+* AWS::Batch::ComputeEnvironment ReplaceComputeEnvironment (__deleted__)
+* AWS::Batch::ComputeEnvironment UpdatePolicy (__deleted__)
+* AWS::CE::AnomalyMonitor ResourceTags (__added__)
+* AWS::CE::AnomalySubscription ResourceTags (__added__)
+* AWS::CloudWatch::MetricStream StatisticsConfigurations (__added__)
+* AWS::EC2::TrafficMirrorTarget GatewayLoadBalancerEndpointId (__deleted__)
+* AWS::SSM::Document UpdateMethod (__added__)
+* AWS::SSM::Document Attachments.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document Content.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document DocumentFormat.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document Requires.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document TargetType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document VersionName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::Athena::WorkGroup.ResultConfigurationUpdates (__removed__)
+* AWS::Athena::WorkGroup.WorkGroupConfigurationUpdates (__removed__)
+* AWS::Batch::ComputeEnvironment.UpdatePolicy (__removed__)
+* AWS::AppRunner::Service.ServiceObservabilityConfiguration (__added__)
+* AWS::AppStream::Fleet.S3Location (__added__)
+* AWS::CE::AnomalyMonitor.ResourceTag (__added__)
+* AWS::CE::AnomalySubscription.ResourceTag (__added__)
+* AWS::CloudWatch::MetricStream.MetricStreamStatisticsConfiguration (__added__)
+* AWS::CloudWatch::MetricStream.MetricStreamStatisticsMetric (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.AmiDistributionConfiguration (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.ContainerDistributionConfiguration (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.LaunchPermissionConfiguration (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.TargetContainerRepository (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources UpdateToLatestImageVersion (__deleted__)
+* AWS::Batch::ComputeEnvironment.ComputeResources AllocationStrategy.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources BidPercentage.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2Configuration.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2KeyPair.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources ImageId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceRole.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceTypes.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources LaunchTemplate.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources PlacementGroup.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Tags.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Type.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.Ec2ConfigurationObject ImageIdOverride.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.Ec2ConfigurationObject ImageType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification LaunchTemplateId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification LaunchTemplateName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification Version.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ImageBuilder::DistributionConfiguration.Distribution AmiDistributionConfiguration.PrimitiveType (__deleted__)
+* AWS::ImageBuilder::DistributionConfiguration.Distribution AmiDistributionConfiguration.Type (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.Distribution ContainerDistributionConfiguration.PrimitiveType (__deleted__)
+* AWS::ImageBuilder::DistributionConfiguration.Distribution ContainerDistributionConfiguration.Type (__added__)
+* AWS::SSM::Document.AttachmentsSource Key.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document.AttachmentsSource Name.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document.AttachmentsSource Values.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document.DocumentRequires Name.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document.DocumentRequires Version.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
 # CloudFormation Resource Specification v66.0.0
 
 ## New Resource Types
