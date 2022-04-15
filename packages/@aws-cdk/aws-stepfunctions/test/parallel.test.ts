@@ -87,7 +87,7 @@ test('State Machine With Parallel State and Parameters', () => {
           },
         ],
         Parameters: {
-          buz: 'buz',
+          'buz': 'buz',
           'baz.$': '$.baz',
         },
       },
