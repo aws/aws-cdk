@@ -3,6 +3,7 @@ import { Writable, WritableOptions } from 'stream';
 import { StringDecoder, NodeStringDecoder } from 'string_decoder';
 import { TestCase, RequireApproval, DefaultCdkOptions } from '@aws-cdk/cloud-assembly-schema';
 import { diffTemplate, formatDifferences, ResourceDifference, ResourceImpact } from '@aws-cdk/cloudformation-diff';
+import * as cxapi from '@aws-cdk/cx-api';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS, TARGET_PARTITIONS } from '@aws-cdk/cx-api';
 import { CdkCliWrapper, ICdk } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
@@ -285,7 +286,7 @@ export abstract class IntegRunner {
         execCmd: this.cdkApp.split(' '),
         env: {
           ...DEFAULT_SYNTH_OPTIONS.env,
-          CDK_CONTEXT_JSON: JSON.stringify(this.getContext()),
+          CDK_CONTEXT_JSON: JSON.stringify(this.getContext(true)),
         },
         output: this.relativeSnapshotDir,
       });
@@ -394,7 +395,7 @@ export abstract class IntegRunner {
     return (this.readIntegPragma()).filter(p => p.startsWith(PRAGMA_PREFIX));
   }
 
-  protected getContext(additionalContext?: Record<string, any>): Record<string, any> {
+  protected getContext(enableLookups?: boolean, additionalContext?: Record<string, any>): Record<string, any> {
     const ctxPragmaContext: Record<string, any> = {};
 
     // apply context from set-context pragma
@@ -410,7 +411,8 @@ export abstract class IntegRunner {
       ctxPragmaContext[key] = value;
     }
     return {
-      ...DEFAULT_SYNTH_OPTIONS.context,
+      ...enableLookups ? [DEFAULT_SYNTH_OPTIONS.context] : [],
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
       ...ctxPragmaContext,
       ...additionalContext,
     };
@@ -573,12 +575,10 @@ export class IntegTestRunner extends IntegRunner {
       } else {
         const env: Record<string, any> = {
           ...DEFAULT_SYNTH_OPTIONS.env,
+          CDK_CONTEXT_JSON: JSON.stringify(this.getContext(this.enableLookups)),
         };
         // if lookups are enabled then we need to synth
         // with the "dummy" context
-        if (this.enableLookups) {
-          env.CDK_CONTEXT_JSON = JSON.stringify(this.getContext());
-        }
         this.cdk.synthFast({
           execCmd: this.cdkApp.split(' '),
           env,
@@ -647,13 +647,11 @@ export class IntegSnapshotRunner extends IntegRunner {
       // read the existing snapshot
       const expectedStacks = this.readAssembly(this.snapshotDir);
 
+      // if lookups are enabled then use "dummy" context
       const env: Record<string, any> = {
         ...DEFAULT_SYNTH_OPTIONS.env,
+        CDK_CONTEXT_JSON: JSON.stringify(this.getContext(this.enableLookups)),
       };
-      // if lookups are enabled then use "dummy" context
-      if (this.enableLookups) {
-        env.CDK_CONTEXT_JSON = JSON.stringify(this.getContext());
-      }
       // synth the integration test
       this.cdk.synthFast({
         execCmd: this.cdkApp.split(' '),
