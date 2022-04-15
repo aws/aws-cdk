@@ -413,7 +413,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
     }
 
-    if (this.isExternalCompatible && !(this.networkMode === NetworkMode.BRIDGE && this.networkMode === NetworkMode.NONE && this.networkMode === NetworkMode.HOST)) {
+    if (this.isExternalCompatible && !(this.networkMode === NetworkMode.BRIDGE || this.networkMode === NetworkMode.NONE || this.networkMode === NetworkMode.HOST)) {
       throw new Error(`External tasks can only have Bridge, Host or None network mode, got: ${this.networkMode}`);
     }
 
