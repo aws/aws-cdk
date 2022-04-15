@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-ecs-patterns-queue-isolated": {
@@ -1239,11 +1239,11 @@
                                   "Statement": [
                                     {
                                       "Action": [
-                                        "sqs:ReceiveMessage",
                                         "sqs:ChangeMessageVisibility",
-                                        "sqs:GetQueueUrl",
                                         "sqs:DeleteMessage",
-                                        "sqs:GetQueueAttributes"
+                                        "sqs:GetQueueAttributes",
+                                        "sqs:GetQueueUrl",
+                                        "sqs:ReceiveMessage"
                                       ],
                                       "Effect": "Allow",
                                       "Resource": {
@@ -1305,7 +1305,7 @@
                                   {
                                     "Ref": "AWS::URLSuffix"
                                   },
-                                  "/aws-cdk/assets:df8476644bbc9943ba146e5aba5b9ae7ab8804a49ff767c357606ffee5c4d9e4"
+                                  "/aws-cdk/assets:95cefedd43575452a70cdeeeceb0f1c5728fd58c9ff8e81e760c3dac33c46417"
                                 ]
                               ]
                             },
@@ -1463,8 +1463,8 @@
                                     {
                                       "Action": [
                                         "ecr:BatchCheckLayerAvailability",
-                                        "ecr:GetDownloadUrlForLayer",
-                                        "ecr:BatchGetImage"
+                                        "ecr:BatchGetImage",
+                                        "ecr:GetDownloadUrlForLayer"
                                       ],
                                       "Effect": "Allow",
                                       "Resource": {
@@ -1557,7 +1557,6 @@
                           "maximumPercent": 200,
                           "minimumHealthyPercent": 50
                         },
-                        "desiredCount": 1,
                         "enableEcsManagedTags": false,
                         "launchType": "FARGATE",
                         "networkConfiguration": {

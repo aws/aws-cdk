@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-fargate-integ": {
       "type": "aws:cloudformation:stack",
@@ -21,11 +20,11 @@
             "type": "aws:cdk:asset",
             "data": {
               "repositoryName": "aws-cdk/assets",
-              "imageTag": "aba53d5f05c76afcd7e420dc8cd283ddc31657866bb4ba4ce221e13d8128d92c",
-              "id": "aba53d5f05c76afcd7e420dc8cd283ddc31657866bb4ba4ce221e13d8128d92c",
+              "imageTag": "0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14",
+              "id": "0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14",
               "packaging": "container-image",
-              "path": "asset.aba53d5f05c76afcd7e420dc8cd283ddc31657866bb4ba4ce221e13d8128d92c",
-              "sourceHash": "aba53d5f05c76afcd7e420dc8cd283ddc31657866bb4ba4ce221e13d8128d92c"
+              "path": "asset.0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14",
+              "sourceHash": "0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
             }
           }
         ],
@@ -128,7 +127,10 @@
         "/aws-fargate-integ/ScheduledFargateTask/ScheduledTaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ScheduledFargateTaskScheduledTaskDef521FA675"
+            "data": "ScheduledFargateTaskScheduledTaskDef521FA675",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-fargate-integ/ScheduledFargateTask/ScheduledTaskDef/ScheduledContainer/LogGroup/Resource": [
