@@ -21,7 +21,7 @@ import { ISubnetGroup, SubnetGroup } from './subnet-group';
  * Common properties for a new database cluster or cluster from snapshot.
  */
 interface DatabaseClusterBaseProps {
-  /**
+/**
    * What kind of database to start
    */
   readonly engine: IClusterEngine;
@@ -265,6 +265,12 @@ interface DatabaseClusterBaseProps {
   * @default - if storageEncrypted is true then the default master key, no key otherwise
   */
   readonly storageEncryptionKey?: kms.IKey;
+  /**
+  * Whether to copy tags to the snapshot when a snapshot is created.
+  *
+  * @default: true
+  */
+   readonly copyTagsToSnapshot?: boolean;
 }
 
 /**
@@ -425,6 +431,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       // Encryption
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
+      //Tag
+      copyTagsToSnapshot: props.copyTagsToSnapshot ?? true
     };
   }
 }
@@ -501,13 +509,6 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
    * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
    */
   readonly credentials?: Credentials;
-
-  /**
-   * Whether to copy tags to the snapshot when a snapshot is created.
-   *
-   * @default: true
-   */
-  readonly copyTagsToSnapshot?: boolean;
 }
 
 /**
@@ -558,8 +559,6 @@ export class DatabaseCluster extends DatabaseClusterNew {
       // Admin
       masterUsername: credentials.username,
       masterUserPassword: credentials.password?.unsafeUnwrap(),
-      // Tags
-      copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
     });
 
     this.clusterIdentifier = cluster.ref;
