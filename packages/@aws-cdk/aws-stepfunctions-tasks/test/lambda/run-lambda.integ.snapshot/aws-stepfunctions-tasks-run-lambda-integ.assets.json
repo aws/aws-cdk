@@ -1,0 +1,19 @@
+{
+  "version": "17.0.0",
+  "files": {
+    "9b5ec5a7b043dcc8daa8f06b35c3cc6448cbabaa36fa7ed6da51f453a4173dec": {
+      "source": {
+        "path": "aws-stepfunctions-tasks-run-lambda-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9b5ec5a7b043dcc8daa8f06b35c3cc6448cbabaa36fa7ed6da51f453a4173dec.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

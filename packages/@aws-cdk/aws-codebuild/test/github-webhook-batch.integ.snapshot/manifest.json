@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "test-codebuild-github-webhook-batch": {
       "type": "aws:cloudformation:stack",

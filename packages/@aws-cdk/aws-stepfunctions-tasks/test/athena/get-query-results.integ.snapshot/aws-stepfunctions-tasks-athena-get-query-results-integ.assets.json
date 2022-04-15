@@ -1,0 +1,19 @@
+{
+  "version": "17.0.0",
+  "files": {
+    "7ef3ede4cfafbc3daa9324a61c0d83ba5d4c8de82e6bcc9ce10ac9c8af8e9f04": {
+      "source": {
+        "path": "aws-stepfunctions-tasks-athena-get-query-results-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7ef3ede4cfafbc3daa9324a61c0d83ba5d4c8de82e6bcc9ce10ac9c8af8e9f04.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

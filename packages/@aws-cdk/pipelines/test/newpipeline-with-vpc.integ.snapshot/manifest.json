@@ -6,48 +6,21 @@
       "properties": {
         "directoryName": "assembly-PipelineStack-Beta",
         "displayName": "PipelineStack/Beta"
-      },
-      "metadata": {}
+      }
     },
     "Tree": {
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
-    },
-    "PipelineStack.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "PipelineStack.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      },
-      "metadata": {}
+      }
     },
     "PipelineStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "PipelineStack.template.json",
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b92001398a72048e88383894de1c7b330a172b541bbbbf24764adf16ec0151d0.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "PipelineStack.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
+        "validateOnSynth": false
       },
-      "dependencies": [
-        "PipelineStack.assets"
-      ],
       "metadata": {
         "/PipelineStack/Vpc/Resource": [
           {
@@ -217,10 +190,10 @@
             "data": "Pipeline9850B417"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Source/rix0rrr_cdk-pipelines-demo/WebhookResource": [
+        "/PipelineStack/Pipeline/Pipeline/Source/aws_aws-cdk/WebhookResource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineSourcerix0rrrcdkpipelinesdemoWebhookResourceDB0C1BCA"
+            "data": "PipelineSourceawsawscdkWebhookResource46EC529B"
           }
         ],
         "/PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/Resource": [
@@ -277,28 +250,40 @@
             "data": "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleDefaultPolicyE626265B"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Assets/FileAsset1/CodePipelineActionRole/Resource": [
+        "/PipelineStack/Pipeline/Pipeline/Beta/Prepare/CodePipelineActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileAsset1CodePipelineActionRoleC0EC649A"
+            "data": "PipelineBetaPrepareCodePipelineActionRoleB746DA86"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Assets/FileAsset1/CodePipelineActionRole/DefaultPolicy/Resource": [
+        "/PipelineStack/Pipeline/Pipeline/Beta/Prepare/CodePipelineActionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileAsset1CodePipelineActionRoleDefaultPolicy5F0BE7E8"
+            "data": "PipelineBetaPrepareCodePipelineActionRoleDefaultPolicy30879019"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Assets/FileAsset2/CodePipelineActionRole/Resource": [
+        "/PipelineStack/Pipeline/Pipeline/Beta/Prepare/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileAsset2CodePipelineActionRole06965A59"
+            "data": "PipelineBetaPrepareRoleD66446CC"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Assets/FileAsset2/CodePipelineActionRole/DefaultPolicy/Resource": [
+        "/PipelineStack/Pipeline/Pipeline/Beta/Prepare/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileAsset2CodePipelineActionRoleDefaultPolicy2399F4BC"
+            "data": "PipelineBetaPrepareRoleDefaultPolicy74006BE8"
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/Beta/Deploy/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineBetaDeployCodePipelineActionRole2B286DC9"
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/Beta/Deploy/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineBetaDeployCodePipelineActionRoleDefaultPolicy540F1C35"
           }
         ],
         "/PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Role/Resource": [
@@ -331,58 +316,112 @@
             "data": "PipelineUpdatePipelineSelfMutationPolicyDocumentD327DC74"
           }
         ],
-        "/PipelineStack/Pipeline/Assets/FileRole/Resource": [
+        "PipelineSourcerix0rrrcdkpipelinesdemoWebhookResourceDB0C1BCA": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileRole59943A77"
+            "data": "PipelineSourcerix0rrrcdkpipelinesdemoWebhookResourceDB0C1BCA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
-        "/PipelineStack/Pipeline/Assets/FileRole/DefaultPolicy/Resource": [
+        "PipelineAssetsFileAsset1CodePipelineActionRoleC0EC649A": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileRoleDefaultPolicy14DB8755"
+            "data": "PipelineAssetsFileAsset1CodePipelineActionRoleC0EC649A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
-        "/PipelineStack/Pipeline/Assets/FileAsset1/SecurityGroup/Resource": [
+        "PipelineAssetsFileAsset1CodePipelineActionRoleDefaultPolicy5F0BE7E8": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileAsset1SecurityGroupF04F1AD4"
+            "data": "PipelineAssetsFileAsset1CodePipelineActionRoleDefaultPolicy5F0BE7E8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
-        "/PipelineStack/Pipeline/Assets/FileAsset1/Resource": [
+        "PipelineAssetsFileAsset2CodePipelineActionRole06965A59": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileAsset185A67CB4"
+            "data": "PipelineAssetsFileAsset2CodePipelineActionRole06965A59",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
-        "/PipelineStack/Pipeline/Assets/FileAsset1/PolicyDocument/Resource": [
+        "PipelineAssetsFileAsset2CodePipelineActionRoleDefaultPolicy2399F4BC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileAsset1PolicyDocument4681543E"
+            "data": "PipelineAssetsFileAsset2CodePipelineActionRoleDefaultPolicy2399F4BC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
-        "/PipelineStack/Pipeline/Assets/FileAsset2/SecurityGroup/Resource": [
+        "PipelineAssetsFileRole59943A77": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileAsset2SecurityGroupA400C1A5"
+            "data": "PipelineAssetsFileRole59943A77",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
-        "/PipelineStack/Pipeline/Assets/FileAsset2/Resource": [
+        "PipelineAssetsFileRoleDefaultPolicy14DB8755": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileAsset24D2D639B"
+            "data": "PipelineAssetsFileRoleDefaultPolicy14DB8755",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
-        "/PipelineStack/BootstrapVersion": [
+        "PipelineAssetsFileAsset1SecurityGroupF04F1AD4": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
+            "data": "PipelineAssetsFileAsset1SecurityGroupF04F1AD4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
-        "/PipelineStack/CheckBootstrapVersion": [
+        "PipelineAssetsFileAsset185A67CB4": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
+            "data": "PipelineAssetsFileAsset185A67CB4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "PipelineAssetsFileAsset1PolicyDocument4681543E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsFileAsset1PolicyDocument4681543E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "PipelineAssetsFileAsset2SecurityGroupA400C1A5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsFileAsset2SecurityGroupA400C1A5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "PipelineAssetsFileAsset24D2D639B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsFileAsset24D2D639B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

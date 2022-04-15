@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "Integ-SecretsManager-Secret": {
       "type": "aws:cloudformation:stack",

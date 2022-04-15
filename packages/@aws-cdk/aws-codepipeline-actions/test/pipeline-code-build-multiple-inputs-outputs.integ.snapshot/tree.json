@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-cdk-codepipeline-codebuild-multiple-inputs-outputs": {
@@ -196,12 +196,16 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "s3:GetObject*",
-                                    "s3:GetBucket*",
-                                    "s3:List*",
+                                    "s3:Abort*",
                                     "s3:DeleteObject*",
-                                    "s3:PutObject*",
-                                    "s3:Abort*"
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*",
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": [
@@ -239,11 +243,11 @@
                                 },
                                 {
                                   "Action": [
+                                    "codecommit:CancelUploadArchive",
                                     "codecommit:GetBranch",
                                     "codecommit:GetCommit",
-                                    "codecommit:UploadArchive",
                                     "codecommit:GetUploadArchiveStatus",
-                                    "codecommit:CancelUploadArchive"
+                                    "codecommit:UploadArchive"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {
@@ -255,8 +259,8 @@
                                 },
                                 {
                                   "Action": [
-                                    "s3:GetObject*",
                                     "s3:GetBucket*",
+                                    "s3:GetObject*",
                                     "s3:List*"
                                   ],
                                   "Effect": "Allow",
@@ -278,36 +282,6 @@
                                             ]
                                           },
                                           "/some/path"
-                                        ]
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "Action": [
-                                    "s3:DeleteObject*",
-                                    "s3:PutObject*",
-                                    "s3:Abort*"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": [
-                                    {
-                                      "Fn::GetAtt": [
-                                        "MyBucketF68F3FF0",
-                                        "Arn"
-                                      ]
-                                    },
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          {
-                                            "Fn::GetAtt": [
-                                              "MyBucketF68F3FF0",
-                                              "Arn"
-                                            ]
-                                          },
-                                          "/*"
                                         ]
                                       ]
                                     }
@@ -531,22 +505,22 @@
                     "id": "Source1",
                     "path": "aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/Pipeline/Source/Source1",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   },
                   "Source2": {
                     "id": "Source2",
                     "path": "aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/Pipeline/Source/Source2",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "EventsRole": {
@@ -653,22 +627,22 @@
                     "id": "Build1",
                     "path": "aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/Pipeline/Build/Build1",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   },
                   "Build2": {
                     "id": "Build2",
                     "path": "aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/Pipeline/Build/Build2",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
@@ -749,7 +723,8 @@
                                           ":log-group:/aws/codebuild/",
                                           {
                                             "Ref": "MyBuildProject30DB9D6E"
-                                          }
+                                          },
+                                          ":*"
                                         ]
                                       ]
                                     },
@@ -772,8 +747,7 @@
                                           ":log-group:/aws/codebuild/",
                                           {
                                             "Ref": "MyBuildProject30DB9D6E"
-                                          },
-                                          ":*"
+                                          }
                                         ]
                                       ]
                                     }
@@ -781,12 +755,16 @@
                                 },
                                 {
                                   "Action": [
-                                    "s3:GetObject*",
-                                    "s3:GetBucket*",
-                                    "s3:List*",
+                                    "s3:Abort*",
                                     "s3:DeleteObject*",
-                                    "s3:PutObject*",
-                                    "s3:Abort*"
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*",
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": [

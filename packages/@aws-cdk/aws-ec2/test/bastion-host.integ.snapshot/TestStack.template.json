@@ -445,9 +445,9 @@
      "Statement": [
       {
        "Action": [
-        "ssmmessages:*",
+        "ec2messages:*",
         "ssm:UpdateInstanceInformation",
-        "ec2messages:*"
+        "ssmmessages:*"
        ],
        "Effect": "Allow",
        "Resource": "*"

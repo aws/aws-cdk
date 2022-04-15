@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-cdk-vpc-nat-instances": {
@@ -56,7 +56,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "test-region-1a",
+                        "availabilityZone": "dummy1a",
                         "cidrBlock": "10.0.0.0/19",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -177,7 +177,7 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Instance",
                           "aws:cdk:cloudformation:props": {
-                            "availabilityZone": "test-region-1a",
+                            "availabilityZone": "dummy1a",
                             "iamInstanceProfile": {
                               "Ref": "MyVpcPublicSubnet1NatInstanceInstanceProfile2FD934CB"
                             },
@@ -236,7 +236,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "test-region-1b",
+                        "availabilityZone": "dummy1b",
                         "cidrBlock": "10.0.32.0/19",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -357,7 +357,7 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Instance",
                           "aws:cdk:cloudformation:props": {
-                            "availabilityZone": "test-region-1b",
+                            "availabilityZone": "dummy1b",
                             "iamInstanceProfile": {
                               "Ref": "MyVpcPublicSubnet2NatInstanceInstanceProfile5AB09EF6"
                             },
@@ -416,7 +416,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "test-region-1c",
+                        "availabilityZone": "dummy1c",
                         "cidrBlock": "10.0.64.0/19",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -528,7 +528,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "test-region-1a",
+                        "availabilityZone": "dummy1a",
                         "cidrBlock": "10.0.96.0/19",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -640,7 +640,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "test-region-1b",
+                        "availabilityZone": "dummy1b",
                         "cidrBlock": "10.0.128.0/19",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -752,7 +752,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "test-region-1c",
+                        "availabilityZone": "dummy1c",
                         "cidrBlock": "10.0.160.0/19",
                         "mapPublicIpOnLaunch": false,
                         "tags": [

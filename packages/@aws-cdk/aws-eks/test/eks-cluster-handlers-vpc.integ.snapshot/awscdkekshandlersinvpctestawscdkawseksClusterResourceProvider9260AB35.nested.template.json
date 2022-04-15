@@ -422,6 +422,12 @@
        "Resource": [
         {
          "Fn::GetAtt": [
+          "IsCompleteHandler7073F4DA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
           "OnEventHandler42BEBAE0",
           "Arn"
          ]
@@ -432,24 +438,12 @@
           [
            {
             "Fn::GetAtt": [
-             "OnEventHandler42BEBAE0",
+             "IsCompleteHandler7073F4DA",
              "Arn"
             ]
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "IsCompleteHandler7073F4DA",
-          "Arn"
          ]
         },
         {
@@ -458,7 +452,7 @@
           [
            {
             "Fn::GetAtt": [
-             "IsCompleteHandler7073F4DA",
+             "OnEventHandler42BEBAE0",
              "Arn"
             ]
            },
@@ -650,6 +644,12 @@
        "Resource": [
         {
          "Fn::GetAtt": [
+          "IsCompleteHandler7073F4DA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
           "OnEventHandler42BEBAE0",
           "Arn"
          ]
@@ -660,24 +660,12 @@
           [
            {
             "Fn::GetAtt": [
-             "OnEventHandler42BEBAE0",
+             "IsCompleteHandler7073F4DA",
              "Arn"
             ]
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "IsCompleteHandler7073F4DA",
-          "Arn"
          ]
         },
         {
@@ -686,7 +674,7 @@
           [
            {
             "Fn::GetAtt": [
-             "IsCompleteHandler7073F4DA",
+             "OnEventHandler42BEBAE0",
              "Arn"
             ]
            },
@@ -868,6 +856,12 @@
        "Resource": [
         {
          "Fn::GetAtt": [
+          "IsCompleteHandler7073F4DA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
           "OnEventHandler42BEBAE0",
           "Arn"
          ]
@@ -878,24 +872,12 @@
           [
            {
             "Fn::GetAtt": [
-             "OnEventHandler42BEBAE0",
+             "IsCompleteHandler7073F4DA",
              "Arn"
             ]
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "IsCompleteHandler7073F4DA",
-          "Arn"
          ]
         },
         {
@@ -904,7 +886,7 @@
           [
            {
             "Fn::GetAtt": [
-             "IsCompleteHandler7073F4DA",
+             "OnEventHandler42BEBAE0",
              "Arn"
             ]
            },
@@ -1073,6 +1055,12 @@
          ]
         },
         {
+         "Fn::GetAtt": [
+          "ProviderframeworkonTimeout0B47CA38",
+          "Arn"
+         ]
+        },
+        {
          "Fn::Join": [
           "",
           [
@@ -1084,18 +1072,6 @@
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "ProviderframeworkonTimeout0B47CA38",
-          "Arn"
          ]
         },
         {

@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-deep-learning-container-build-image": {
@@ -88,7 +88,8 @@
                                           ":log-group:/aws/codebuild/",
                                           {
                                             "Ref": "ProjectC78D97AD"
-                                          }
+                                          },
+                                          ":*"
                                         ]
                                       ]
                                     },
@@ -111,8 +112,7 @@
                                           ":log-group:/aws/codebuild/",
                                           {
                                             "Ref": "ProjectC78D97AD"
-                                          },
-                                          ":*"
+                                          }
                                         ]
                                       ]
                                     }
@@ -120,11 +120,11 @@
                                 },
                                 {
                                   "Action": [
-                                    "codebuild:CreateReportGroup",
-                                    "codebuild:CreateReport",
-                                    "codebuild:UpdateReport",
+                                    "codebuild:BatchPutCodeCoverages",
                                     "codebuild:BatchPutTestCases",
-                                    "codebuild:BatchPutCodeCoverages"
+                                    "codebuild:CreateReport",
+                                    "codebuild:CreateReportGroup",
+                                    "codebuild:UpdateReport"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {
@@ -155,8 +155,8 @@
                                 {
                                   "Action": [
                                     "ecr:BatchCheckLayerAvailability",
-                                    "ecr:GetDownloadUrlForLayer",
-                                    "ecr:BatchGetImage"
+                                    "ecr:BatchGetImage",
+                                    "ecr:GetDownloadUrlForLayer"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {

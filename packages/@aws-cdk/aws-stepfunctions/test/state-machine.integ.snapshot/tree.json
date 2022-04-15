@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-stepfunctions-integ": {
@@ -68,7 +68,8 @@
                             {
                               "Action": [
                                 "states:ListExecutions",
-                                "states:ListStateMachines"
+                                "states:ListStateMachines",
+                                "states:SendTaskSuccess"
                               ],
                               "Effect": "Allow",
                               "Resource": {
@@ -119,19 +120,12 @@
                             },
                             {
                               "Action": [
-                                "states:ListActivities",
+                                "states:DescribeActivity",
                                 "states:DescribeStateMachine",
-                                "states:DescribeActivity"
+                                "states:ListActivities"
                               ],
                               "Effect": "Allow",
                               "Resource": "*"
-                            },
-                            {
-                              "Action": "states:SendTaskSuccess",
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Ref": "StateMachine2E01A3A5"
-                              }
                             }
                           ],
                           "Version": "2012-10-17"

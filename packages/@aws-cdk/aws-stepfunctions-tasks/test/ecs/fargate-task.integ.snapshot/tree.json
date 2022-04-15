@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-ecs-integ2": {
@@ -744,7 +744,7 @@
                               {
                                 "Ref": "AWS::URLSuffix"
                               },
-                              "/aws-cdk/assets:4d89079ab189da6e7e125fec1718add5cd8dadcf7f13797441a2f5d21aecfd9d"
+                              "/aws-cdk/assets:7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2"
                             ]
                           ]
                         },
@@ -892,8 +892,8 @@
                                 {
                                   "Action": [
                                     "ecr:BatchCheckLayerAvailability",
-                                    "ecr:GetDownloadUrlForLayer",
-                                    "ecr:BatchGetImage"
+                                    "ecr:BatchGetImage",
+                                    "ecr:GetDownloadUrlForLayer"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {
@@ -1083,8 +1083,8 @@
                                 },
                                 {
                                   "Action": [
-                                    "ecs:StopTask",
-                                    "ecs:DescribeTasks"
+                                    "ecs:DescribeTasks",
+                                    "ecs:StopTask"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": "*"
@@ -1095,13 +1095,13 @@
                                   "Resource": [
                                     {
                                       "Fn::GetAtt": [
-                                        "TaskDefTaskRole1EDB4A67",
+                                        "TaskDefExecutionRoleB4775C97",
                                         "Arn"
                                       ]
                                     },
                                     {
                                       "Fn::GetAtt": [
-                                        "TaskDefExecutionRoleB4775C97",
+                                        "TaskDefTaskRole1EDB4A67",
                                         "Arn"
                                       ]
                                     }
@@ -1109,9 +1109,9 @@
                                 },
                                 {
                                   "Action": [
-                                    "events:PutTargets",
+                                    "events:DescribeRule",
                                     "events:PutRule",
-                                    "events:DescribeRule"
+                                    "events:PutTargets"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {

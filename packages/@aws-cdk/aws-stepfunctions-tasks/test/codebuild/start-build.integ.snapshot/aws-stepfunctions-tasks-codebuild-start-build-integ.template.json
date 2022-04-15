@@ -49,7 +49,8 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "ProjectC78D97AD"
-           }
+           },
+           ":*"
           ]
          ]
         },
@@ -72,8 +73,7 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "ProjectC78D97AD"
-           },
-           ":*"
+           }
           ]
          ]
         }
@@ -81,11 +81,11 @@
       },
       {
        "Action": [
-        "codebuild:CreateReportGroup",
-        "codebuild:CreateReport",
-        "codebuild:UpdateReport",
+        "codebuild:BatchPutCodeCoverages",
         "codebuild:BatchPutTestCases",
-        "codebuild:BatchPutCodeCoverages"
+        "codebuild:CreateReport",
+        "codebuild:CreateReportGroup",
+        "codebuild:UpdateReport"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -193,10 +193,10 @@
      "Statement": [
       {
        "Action": [
-        "codebuild:StartBuild",
-        "codebuild:StopBuild",
         "codebuild:BatchGetBuilds",
-        "codebuild:BatchGetReports"
+        "codebuild:BatchGetReports",
+        "codebuild:StartBuild",
+        "codebuild:StopBuild"
        ],
        "Effect": "Allow",
        "Resource": {

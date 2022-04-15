@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-cdk-dynamodb": {
@@ -514,13 +514,13 @@
                             {
                               "Action": [
                                 "dynamodb:BatchGetItem",
+                                "dynamodb:ConditionCheckItem",
+                                "dynamodb:DescribeTable",
+                                "dynamodb:GetItem",
                                 "dynamodb:GetRecords",
                                 "dynamodb:GetShardIterator",
                                 "dynamodb:Query",
-                                "dynamodb:GetItem",
-                                "dynamodb:Scan",
-                                "dynamodb:ConditionCheckItem",
-                                "dynamodb:DescribeTable"
+                                "dynamodb:Scan"
                               ],
                               "Effect": "Allow",
                               "Resource": [
@@ -530,24 +530,6 @@
                                     "Arn"
                                   ]
                                 },
-                                {
-                                  "Ref": "AWS::NoValue"
-                                }
-                              ]
-                            },
-                            {
-                              "Action": [
-                                "dynamodb:BatchGetItem",
-                                "dynamodb:GetRecords",
-                                "dynamodb:GetShardIterator",
-                                "dynamodb:Query",
-                                "dynamodb:GetItem",
-                                "dynamodb:Scan",
-                                "dynamodb:ConditionCheckItem",
-                                "dynamodb:DescribeTable"
-                              ],
-                              "Effect": "Allow",
-                              "Resource": [
                                 {
                                   "Fn::GetAtt": [
                                     "TableWithGlobalAndLocalSecondaryIndexBC540710",
@@ -567,6 +549,9 @@
                                       "/index/*"
                                     ]
                                   ]
+                                },
+                                {
+                                  "Ref": "AWS::NoValue"
                                 }
                               ]
                             }

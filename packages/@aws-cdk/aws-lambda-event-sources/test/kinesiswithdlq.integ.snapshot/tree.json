@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "lambda-event-source-kinesis-with-dlq": {
@@ -77,9 +77,9 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "sqs:SendMessage",
                                     "sqs:GetQueueAttributes",
-                                    "sqs:GetQueueUrl"
+                                    "sqs:GetQueueUrl",
+                                    "sqs:SendMessage"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {
@@ -91,24 +91,14 @@
                                 },
                                 {
                                   "Action": [
+                                    "kinesis:DescribeStream",
                                     "kinesis:DescribeStreamSummary",
                                     "kinesis:GetRecords",
                                     "kinesis:GetShardIterator",
                                     "kinesis:ListShards",
-                                    "kinesis:SubscribeToShard",
-                                    "kinesis:DescribeStream",
-                                    "kinesis:ListStreams"
+                                    "kinesis:ListStreams",
+                                    "kinesis:SubscribeToShard"
                                   ],
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "S509448A1",
-                                      "Arn"
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": "kinesis:DescribeStream",
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [

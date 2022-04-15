@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-cdk-codebuild-secondary-sources-artifacts": {
       "type": "aws:cloudformation:stack",

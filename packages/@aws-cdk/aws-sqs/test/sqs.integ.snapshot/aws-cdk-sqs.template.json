@@ -28,23 +28,7 @@
     "KeyPolicy": {
      "Statement": [
       {
-       "Action": [
-        "kms:Create*",
-        "kms:Describe*",
-        "kms:Enable*",
-        "kms:List*",
-        "kms:Put*",
-        "kms:Update*",
-        "kms:Revoke*",
-        "kms:Disable*",
-        "kms:Get*",
-        "kms:Delete*",
-        "kms:ScheduleKeyDeletion",
-        "kms:CancelKeyDeletion",
-        "kms:GenerateDataKey",
-        "kms:TagResource",
-        "kms:UntagResource"
-       ],
+       "Action": "kms:*",
        "Effect": "Allow",
        "Principal": {
         "AWS": {
@@ -61,19 +45,6 @@
            },
            ":root"
           ]
-         ]
-        }
-       },
-       "Resource": "*"
-      },
-      {
-       "Action": "kms:Decrypt",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "Role1ABCC5F0",
-          "Arn"
          ]
         }
        },
@@ -149,51 +120,39 @@
      "Statement": [
       {
        "Action": [
-        "sqs:ReceiveMessage",
         "sqs:ChangeMessageVisibility",
-        "sqs:GetQueueUrl",
         "sqs:DeleteMessage",
-        "sqs:GetQueueAttributes"
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "DeadLetterQueue9F481546",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": [
-        "sqs:ReceiveMessage",
-        "sqs:ChangeMessageVisibility",
-        "sqs:GetQueueUrl",
-        "sqs:DeleteMessage",
-        "sqs:GetQueueAttributes"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "Queue4A7E3555",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": [
-        "sqs:ReceiveMessage",
-        "sqs:ChangeMessageVisibility",
-        "sqs:GetQueueUrl",
-        "sqs:DeleteMessage",
-        "sqs:GetQueueAttributes"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "FifoQueueE5FF7273",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DeadLetterQueue9F481546",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "FifoQueueE5FF7273",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "HighThroughputFifoQueue40A0EEE4",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "Queue4A7E3555",
+          "Arn"
+         ]
+        }
+       ]
       },
       {
        "Action": "kms:Decrypt",
@@ -201,22 +160,6 @@
        "Resource": {
         "Fn::GetAtt": [
          "EncryptionKey1B843E66",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": [
-        "sqs:ReceiveMessage",
-        "sqs:ChangeMessageVisibility",
-        "sqs:GetQueueUrl",
-        "sqs:DeleteMessage",
-        "sqs:GetQueueAttributes"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "HighThroughputFifoQueue40A0EEE4",
          "Arn"
         ]
        }

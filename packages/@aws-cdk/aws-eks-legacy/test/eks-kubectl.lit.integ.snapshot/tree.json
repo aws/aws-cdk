@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "k8s-vpc": {
@@ -56,7 +56,7 @@
                         "vpcId": {
                           "Ref": "vpcA2121C38"
                         },
-                        "availabilityZone": "test-region-1a",
+                        "availabilityZone": "dummy1a",
                         "cidrBlock": "10.0.0.0/18",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -232,7 +232,7 @@
                         "vpcId": {
                           "Ref": "vpcA2121C38"
                         },
-                        "availabilityZone": "test-region-1b",
+                        "availabilityZone": "dummy1b",
                         "cidrBlock": "10.0.64.0/18",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -408,7 +408,7 @@
                         "vpcId": {
                           "Ref": "vpcA2121C38"
                         },
-                        "availabilityZone": "test-region-1a",
+                        "availabilityZone": "dummy1a",
                         "cidrBlock": "10.0.128.0/18",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -528,7 +528,7 @@
                         "vpcId": {
                           "Ref": "vpcA2121C38"
                         },
-                        "availabilityZone": "test-region-1b",
+                        "availabilityZone": "dummy1b",
                         "cidrBlock": "10.0.192.0/18",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -725,8 +725,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           }
         },
@@ -1099,8 +1099,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "KubernetesResourceHandler": {
@@ -1716,8 +1716,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444": {
@@ -1750,14 +1750,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "AdminRole": {

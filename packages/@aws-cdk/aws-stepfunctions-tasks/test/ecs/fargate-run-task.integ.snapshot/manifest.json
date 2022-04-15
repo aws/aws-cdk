@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-sfn-tasks-ecs-fargate-integ": {
       "type": "aws:cloudformation:stack",
@@ -21,11 +20,11 @@
             "type": "aws:cdk:asset",
             "data": {
               "repositoryName": "aws-cdk/assets",
-              "imageTag": "4d89079ab189da6e7e125fec1718add5cd8dadcf7f13797441a2f5d21aecfd9d",
-              "id": "4d89079ab189da6e7e125fec1718add5cd8dadcf7f13797441a2f5d21aecfd9d",
+              "imageTag": "7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2",
+              "id": "7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2",
               "packaging": "container-image",
-              "path": "asset.4d89079ab189da6e7e125fec1718add5cd8dadcf7f13797441a2f5d21aecfd9d",
-              "sourceHash": "4d89079ab189da6e7e125fec1718add5cd8dadcf7f13797441a2f5d21aecfd9d"
+              "path": "asset.7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2",
+              "sourceHash": "7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2"
             }
           }
         ],
@@ -182,7 +181,10 @@
         "/aws-sfn-tasks-ecs-fargate-integ/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDef54694570"
+            "data": "TaskDef54694570",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-sfn-tasks-ecs-fargate-integ/TaskDef/TheContainer/LogGroup/Resource": [

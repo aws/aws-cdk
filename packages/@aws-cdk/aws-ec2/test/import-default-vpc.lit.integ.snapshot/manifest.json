@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-cdk-ec2-import": {
       "type": "aws:cloudformation:stack",
@@ -19,7 +18,10 @@
         "/aws-cdk-ec2-import/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SecurityGroupDD263621"
+            "data": "SecurityGroupDD263621",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-ec2-import/PublicSubnets": [
@@ -43,5 +45,19 @@
       },
       "displayName": "aws-cdk-ec2-import"
     }
-  }
+  },
+  "missing": [
+    {
+      "key": "vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true",
+      "provider": "vpc-provider",
+      "props": {
+        "account": "12345678",
+        "region": "test-region",
+        "filter": {
+          "isDefault": "true"
+        },
+        "returnAsymmetricSubnets": true
+      }
+    }
+  ]
 }

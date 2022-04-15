@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-stepfunctions-integ": {
@@ -76,14 +76,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "Glue Job Role": {
@@ -143,8 +143,8 @@
                           "Statement": [
                             {
                               "Action": [
-                                "s3:GetObject*",
                                 "s3:GetBucket*",
+                                "s3:GetObject*",
                                 "s3:List*"
                               ],
                               "Effect": "Allow",
@@ -160,7 +160,8 @@
                                       ":s3:::",
                                       {
                                         "Ref": "AssetParametersd030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0dS3BucketB8F6851B"
-                                      }
+                                      },
+                                      "/*"
                                     ]
                                   ]
                                 },
@@ -175,8 +176,7 @@
                                       ":s3:::",
                                       {
                                         "Ref": "AssetParametersd030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0dS3BucketB8F6851B"
-                                      },
-                                      "/*"
+                                      }
                                     ]
                                   ]
                                 }
@@ -352,10 +352,10 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "glue:StartJobRun",
+                                    "glue:BatchStopJobRun",
                                     "glue:GetJobRun",
                                     "glue:GetJobRuns",
-                                    "glue:BatchStopJobRun"
+                                    "glue:StartJobRun"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {

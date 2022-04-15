@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "sqs-bucket-notifications": {
@@ -46,8 +46,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
@@ -86,9 +86,9 @@
                           "Statement": [
                             {
                               "Action": [
-                                "sqs:SendMessage",
                                 "sqs:GetQueueAttributes",
-                                "sqs:GetQueueUrl"
+                                "sqs:GetQueueUrl",
+                                "sqs:SendMessage"
                               ],
                               "Condition": {
                                 "ArnLike": {
@@ -113,9 +113,9 @@
                             },
                             {
                               "Action": [
-                                "sqs:SendMessage",
                                 "sqs:GetQueueAttributes",
-                                "sqs:GetQueueUrl"
+                                "sqs:GetQueueUrl",
+                                "sqs:SendMessage"
                               ],
                               "Condition": {
                                 "ArnLike": {
@@ -267,8 +267,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "Bucket2": {
@@ -301,8 +301,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
@@ -328,23 +328,7 @@
                         "keyPolicy": {
                           "Statement": [
                             {
-                              "Action": [
-                                "kms:Create*",
-                                "kms:Describe*",
-                                "kms:Enable*",
-                                "kms:List*",
-                                "kms:Put*",
-                                "kms:Update*",
-                                "kms:Revoke*",
-                                "kms:Disable*",
-                                "kms:Get*",
-                                "kms:Delete*",
-                                "kms:ScheduleKeyDeletion",
-                                "kms:CancelKeyDeletion",
-                                "kms:GenerateDataKey",
-                                "kms:TagResource",
-                                "kms:UntagResource"
-                              ],
+                              "Action": "kms:*",
                               "Effect": "Allow",
                               "Principal": {
                                 "AWS": {
@@ -370,8 +354,8 @@
                               "Action": [
                                 "kms:Decrypt",
                                 "kms:Encrypt",
-                                "kms:ReEncrypt*",
-                                "kms:GenerateDataKey*"
+                                "kms:GenerateDataKey*",
+                                "kms:ReEncrypt*"
                               ],
                               "Condition": {
                                 "ArnLike": {
@@ -391,8 +375,8 @@
                             },
                             {
                               "Action": [
-                                "kms:GenerateDataKey*",
-                                "kms:Decrypt"
+                                "kms:Decrypt",
+                                "kms:GenerateDataKey*"
                               ],
                               "Effect": "Allow",
                               "Principal": {
@@ -450,9 +434,9 @@
                           "Statement": [
                             {
                               "Action": [
-                                "sqs:SendMessage",
                                 "sqs:GetQueueAttributes",
-                                "sqs:GetQueueUrl"
+                                "sqs:GetQueueUrl",
+                                "sqs:SendMessage"
                               ],
                               "Condition": {
                                 "ArnLike": {
