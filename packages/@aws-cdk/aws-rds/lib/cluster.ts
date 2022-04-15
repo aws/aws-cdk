@@ -21,7 +21,7 @@ import { ISubnetGroup, SubnetGroup } from './subnet-group';
  * Common properties for a new database cluster or cluster from snapshot.
  */
 interface DatabaseClusterBaseProps {
-/**
+  /**
    * What kind of database to start
    */
   readonly engine: IClusterEngine;
