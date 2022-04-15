@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-ecs-integ": {
@@ -839,8 +839,8 @@
                                     },
                                     {
                                       "Action": [
-                                        "ecs:DiscoverPollEndpoint",
                                         "ecr:GetAuthorizationToken",
+                                        "ecs:DiscoverPollEndpoint",
                                         "logs:CreateLogStream",
                                         "logs:PutLogEvents"
                                       ],
@@ -1039,10 +1039,10 @@
                                           "Statement": [
                                             {
                                               "Action": [
-                                                "ec2:DescribeInstances",
+                                                "ec2:DescribeHosts",
                                                 "ec2:DescribeInstanceAttribute",
                                                 "ec2:DescribeInstanceStatus",
-                                                "ec2:DescribeHosts"
+                                                "ec2:DescribeInstances"
                                               ],
                                               "Effect": "Allow",
                                               "Resource": "*"
@@ -1077,7 +1077,9 @@
                                             {
                                               "Action": [
                                                 "ecs:DescribeContainerInstances",
-                                                "ecs:DescribeTasks"
+                                                "ecs:DescribeTasks",
+                                                "ecs:ListTasks",
+                                                "ecs:UpdateContainerInstancesState"
                                               ],
                                               "Condition": {
                                                 "ArnEquals": {
@@ -1105,24 +1107,6 @@
                                                   "Arn"
                                                 ]
                                               }
-                                            },
-                                            {
-                                              "Action": [
-                                                "ecs:UpdateContainerInstancesState",
-                                                "ecs:ListTasks"
-                                              ],
-                                              "Condition": {
-                                                "ArnEquals": {
-                                                  "ecs:cluster": {
-                                                    "Fn::GetAtt": [
-                                                      "ClusterEB0386A7",
-                                                      "Arn"
-                                                    ]
-                                                  }
-                                                }
-                                              },
-                                              "Effect": "Allow",
-                                              "Resource": "*"
                                             }
                                           ],
                                           "Version": "2012-10-17"
@@ -1255,8 +1239,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   },
                   "LifecycleHookDrainHook": {
@@ -1957,7 +1941,6 @@
                           "maximumPercent": 200,
                           "minimumHealthyPercent": 50
                         },
-                        "desiredCount": 1,
                         "enableEcsManagedTags": false,
                         "healthCheckGracePeriodSeconds": 60,
                         "launchType": "EC2",

@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "cdk-dynamodb-global-20191121": {
@@ -105,22 +105,21 @@
                                       "Fn::Join": [
                                         "",
                                         [
+                                          "arn:",
                                           {
-                                            "Fn::GetAtt": [
-                                              "TableCD117FA1",
-                                              "Arn"
-                                            ]
+                                            "Ref": "AWS::Partition"
                                           },
-                                          "/index/*"
+                                          ":dynamodb:eu-central-1:",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":table/",
+                                          {
+                                            "Ref": "TableCD117FA1"
+                                          }
                                         ]
                                       ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "Action": "dynamodb:*",
-                                  "Effect": "Allow",
-                                  "Resource": [
+                                    },
                                     {
                                       "Fn::Join": [
                                         "",
@@ -144,18 +143,13 @@
                                       "Fn::Join": [
                                         "",
                                         [
-                                          "arn:",
                                           {
-                                            "Ref": "AWS::Partition"
+                                            "Fn::GetAtt": [
+                                              "TableCD117FA1",
+                                              "Arn"
+                                            ]
                                           },
-                                          ":dynamodb:eu-central-1:",
-                                          {
-                                            "Ref": "AWS::AccountId"
-                                          },
-                                          ":table/",
-                                          {
-                                            "Ref": "TableCD117FA1"
-                                          }
+                                          "/index/*"
                                         ]
                                       ]
                                     }
@@ -199,8 +193,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "SourceTableAttachedManagedPolicy-cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole39716128": {
@@ -283,8 +277,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "Replicaeu-west-2": {
@@ -725,6 +719,12 @@
                                           "Resource": [
                                             {
                                               "Fn::GetAtt": [
+                                                "IsCompleteHandler7073F4DA",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::GetAtt": [
                                                 "OnEventHandler42BEBAE0",
                                                 "Arn"
                                               ]
@@ -735,24 +735,12 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "OnEventHandler42BEBAE0",
+                                                      "IsCompleteHandler7073F4DA",
                                                       "Arn"
                                                     ]
                                                   },
                                                   ":*"
                                                 ]
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Action": "lambda:InvokeFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "IsCompleteHandler7073F4DA",
-                                                "Arn"
                                               ]
                                             },
                                             {
@@ -761,7 +749,7 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "IsCompleteHandler7073F4DA",
+                                                      "OnEventHandler42BEBAE0",
                                                       "Arn"
                                                     ]
                                                   },
@@ -983,6 +971,12 @@
                                           "Resource": [
                                             {
                                               "Fn::GetAtt": [
+                                                "IsCompleteHandler7073F4DA",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::GetAtt": [
                                                 "OnEventHandler42BEBAE0",
                                                 "Arn"
                                               ]
@@ -993,24 +987,12 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "OnEventHandler42BEBAE0",
+                                                      "IsCompleteHandler7073F4DA",
                                                       "Arn"
                                                     ]
                                                   },
                                                   ":*"
                                                 ]
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Action": "lambda:InvokeFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "IsCompleteHandler7073F4DA",
-                                                "Arn"
                                               ]
                                             },
                                             {
@@ -1019,7 +1001,7 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "IsCompleteHandler7073F4DA",
+                                                      "OnEventHandler42BEBAE0",
                                                       "Arn"
                                                     ]
                                                   },
@@ -1231,6 +1213,12 @@
                                           "Resource": [
                                             {
                                               "Fn::GetAtt": [
+                                                "IsCompleteHandler7073F4DA",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::GetAtt": [
                                                 "OnEventHandler42BEBAE0",
                                                 "Arn"
                                               ]
@@ -1241,24 +1229,12 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "OnEventHandler42BEBAE0",
+                                                      "IsCompleteHandler7073F4DA",
                                                       "Arn"
                                                     ]
                                                   },
                                                   ":*"
                                                 ]
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Action": "lambda:InvokeFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "IsCompleteHandler7073F4DA",
-                                                "Arn"
                                               ]
                                             },
                                             {
@@ -1267,7 +1243,7 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "IsCompleteHandler7073F4DA",
+                                                      "OnEventHandler42BEBAE0",
                                                       "Arn"
                                                     ]
                                                   },
@@ -1470,6 +1446,12 @@
                                               ]
                                             },
                                             {
+                                              "Fn::GetAtt": [
+                                                "ProviderframeworkonTimeout0B47CA38",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
                                               "Fn::Join": [
                                                 "",
                                                 [
@@ -1481,18 +1463,6 @@
                                                   },
                                                   ":*"
                                                 ]
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Action": "lambda:InvokeFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "ProviderframeworkonTimeout0B47CA38",
-                                                "Arn"
                                               ]
                                             },
                                             {
@@ -1549,8 +1519,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   }
                 },
@@ -1641,7 +1611,7 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParameters6e16ff784a7a6bab88632b5463434b8553ce9ee0394e79173c44c07a0dd705b0S3Bucket54D2A087"
+                            "Ref": "AssetParameters4e586e7cfb8e3f78586d8846f6f2265bf37ad7412337b9009908eb08a7f8c2a1S3BucketEFD92F83"
                           },
                           "/",
                           {
@@ -1651,7 +1621,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters6e16ff784a7a6bab88632b5463434b8553ce9ee0394e79173c44c07a0dd705b0S3VersionKey4B3509A9"
+                                    "Ref": "AssetParameters4e586e7cfb8e3f78586d8846f6f2265bf37ad7412337b9009908eb08a7f8c2a1S3VersionKeyA21907A7"
                                   }
                                 ]
                               }
@@ -1664,7 +1634,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters6e16ff784a7a6bab88632b5463434b8553ce9ee0394e79173c44c07a0dd705b0S3VersionKey4B3509A9"
+                                    "Ref": "AssetParameters4e586e7cfb8e3f78586d8846f6f2265bf37ad7412337b9009908eb08a7f8c2a1S3VersionKeyA21907A7"
                                   }
                                 ]
                               }
@@ -1696,8 +1666,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "AssetParameters": {
@@ -1734,8 +1704,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9": {
@@ -1768,17 +1738,17 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
-              "6e16ff784a7a6bab88632b5463434b8553ce9ee0394e79173c44c07a0dd705b0": {
-                "id": "6e16ff784a7a6bab88632b5463434b8553ce9ee0394e79173c44c07a0dd705b0",
-                "path": "cdk-dynamodb-global-20191121/AssetParameters/6e16ff784a7a6bab88632b5463434b8553ce9ee0394e79173c44c07a0dd705b0",
+              "4e586e7cfb8e3f78586d8846f6f2265bf37ad7412337b9009908eb08a7f8c2a1": {
+                "id": "4e586e7cfb8e3f78586d8846f6f2265bf37ad7412337b9009908eb08a7f8c2a1",
+                "path": "cdk-dynamodb-global-20191121/AssetParameters/4e586e7cfb8e3f78586d8846f6f2265bf37ad7412337b9009908eb08a7f8c2a1",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "cdk-dynamodb-global-20191121/AssetParameters/6e16ff784a7a6bab88632b5463434b8553ce9ee0394e79173c44c07a0dd705b0/S3Bucket",
+                    "path": "cdk-dynamodb-global-20191121/AssetParameters/4e586e7cfb8e3f78586d8846f6f2265bf37ad7412337b9009908eb08a7f8c2a1/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -1786,7 +1756,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "cdk-dynamodb-global-20191121/AssetParameters/6e16ff784a7a6bab88632b5463434b8553ce9ee0394e79173c44c07a0dd705b0/S3VersionKey",
+                    "path": "cdk-dynamodb-global-20191121/AssetParameters/4e586e7cfb8e3f78586d8846f6f2265bf37ad7412337b9009908eb08a7f8c2a1/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -1794,7 +1764,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "cdk-dynamodb-global-20191121/AssetParameters/6e16ff784a7a6bab88632b5463434b8553ce9ee0394e79173c44c07a0dd705b0/ArtifactHash",
+                    "path": "cdk-dynamodb-global-20191121/AssetParameters/4e586e7cfb8e3f78586d8846f6f2265bf37ad7412337b9009908eb08a7f8c2a1/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -1802,14 +1772,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           }
         },

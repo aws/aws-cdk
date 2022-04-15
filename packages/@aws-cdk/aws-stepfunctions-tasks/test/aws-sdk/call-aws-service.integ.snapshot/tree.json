@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-stepfunctions-aws-sdk-integ": {
@@ -116,43 +116,11 @@
                             "policyDocument": {
                               "Statement": [
                                 {
-                                  "Action": "s3:putObject",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        {
-                                          "Fn::GetAtt": [
-                                            "Bucket83908E77",
-                                            "Arn"
-                                          ]
-                                        },
-                                        "/*"
-                                      ]
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": "s3:getObject",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        {
-                                          "Fn::GetAtt": [
-                                            "Bucket83908E77",
-                                            "Arn"
-                                          ]
-                                        },
-                                        "/*"
-                                      ]
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": "s3:deleteObject",
+                                  "Action": [
+                                    "s3:deleteObject",
+                                    "s3:getObject",
+                                    "s3:putObject"
+                                  ],
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::Join": [

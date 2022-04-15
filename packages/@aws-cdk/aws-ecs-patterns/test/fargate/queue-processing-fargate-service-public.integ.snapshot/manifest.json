@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-ecs-patterns-queue-public": {
       "type": "aws:cloudformation:stack",
@@ -21,11 +20,11 @@
             "type": "aws:cdk:asset",
             "data": {
               "repositoryName": "aws-cdk/assets",
-              "imageTag": "df8476644bbc9943ba146e5aba5b9ae7ab8804a49ff767c357606ffee5c4d9e4",
-              "id": "df8476644bbc9943ba146e5aba5b9ae7ab8804a49ff767c357606ffee5c4d9e4",
+              "imageTag": "95cefedd43575452a70cdeeeceb0f1c5728fd58c9ff8e81e760c3dac33c46417",
+              "id": "95cefedd43575452a70cdeeeceb0f1c5728fd58c9ff8e81e760c3dac33c46417",
               "packaging": "container-image",
-              "path": "asset.df8476644bbc9943ba146e5aba5b9ae7ab8804a49ff767c357606ffee5c4d9e4",
-              "sourceHash": "df8476644bbc9943ba146e5aba5b9ae7ab8804a49ff767c357606ffee5c4d9e4"
+              "path": "asset.95cefedd43575452a70cdeeeceb0f1c5728fd58c9ff8e81e760c3dac33c46417",
+              "sourceHash": "95cefedd43575452a70cdeeeceb0f1c5728fd58c9ff8e81e760c3dac33c46417"
             }
           }
         ],
@@ -218,7 +217,10 @@
         "/aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PublicQueueServiceQueueProcessingTaskDef858327F6"
+            "data": "PublicQueueServiceQueueProcessingTaskDef858327F6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/QueueProcessingContainer/LogGroup/Resource": [

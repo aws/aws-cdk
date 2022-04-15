@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-cdk-ec2-import": {
@@ -36,9 +36,33 @@
                   "version": "0.0.0"
                 }
               },
-              "PublicSubnet3": {
-                "id": "PublicSubnet3",
-                "path": "aws-cdk-ec2-import/VPC/PublicSubnet3",
+              "PrivateSubnet1": {
+                "id": "PrivateSubnet1",
+                "path": "aws-cdk-ec2-import/VPC/PrivateSubnet1",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "PrivateSubnet2": {
+                "id": "PrivateSubnet2",
+                "path": "aws-cdk-ec2-import/VPC/PrivateSubnet2",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "IsolatedSubnet1": {
+                "id": "IsolatedSubnet1",
+                "path": "aws-cdk-ec2-import/VPC/IsolatedSubnet1",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "IsolatedSubnet2": {
+                "id": "IsolatedSubnet2",
+                "path": "aws-cdk-ec2-import/VPC/IsolatedSubnet2",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
@@ -68,7 +92,7 @@
                         "ipProtocol": "-1"
                       }
                     ],
-                    "vpcId": "vpc-60900905"
+                    "vpcId": "vpc-12345"
                   }
                 },
                 "constructInfo": {

@@ -9,14 +9,10 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      },
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "edgelambda.amazonaws.com"
+        "Service": [
+         "edgelambda.amazonaws.com",
+         "lambda.amazonaws.com"
+        ]
        }
       }
      ],
@@ -57,7 +53,7 @@
     "Lambda2ServiceRole31A072E1"
    ]
   },
-  "Lambda2CurrentVersion72012B74f573e76ebc7c7027f95b6b63cc2c7d0f": {
+  "Lambda2CurrentVersion72012B74da2ca4572056a1112d9804f75b5b7491": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -70,7 +66,7 @@
    "Properties": {
     "Type": "String",
     "Value": {
-     "Ref": "Lambda2CurrentVersion72012B74f573e76ebc7c7027f95b6b63cc2c7d0f"
+     "Ref": "Lambda2CurrentVersion72012B74da2ca4572056a1112d9804f75b5b7491"
     },
     "Name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda2"
    }
@@ -83,7 +79,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "Lambda2CurrentVersion72012B74f573e76ebc7c7027f95b6b63cc2c7d0f",
+      "Lambda2CurrentVersion72012B74da2ca4572056a1112d9804f75b5b7491",
       "Version"
      ]
     },

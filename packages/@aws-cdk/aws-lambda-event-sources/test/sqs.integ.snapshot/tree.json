@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "lambda-event-source-sqs": {
@@ -77,11 +77,11 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "sqs:ReceiveMessage",
                                     "sqs:ChangeMessageVisibility",
-                                    "sqs:GetQueueUrl",
                                     "sqs:DeleteMessage",
-                                    "sqs:GetQueueAttributes"
+                                    "sqs:GetQueueAttributes",
+                                    "sqs:GetQueueUrl",
+                                    "sqs:ReceiveMessage"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {

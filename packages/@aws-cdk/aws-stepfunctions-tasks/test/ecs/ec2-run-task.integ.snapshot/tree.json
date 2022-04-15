@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-sfn-tasks-ecs-ec2-integ": {
@@ -810,8 +810,8 @@
                                     },
                                     {
                                       "Action": [
-                                        "ecs:DiscoverPollEndpoint",
                                         "ecr:GetAuthorizationToken",
+                                        "ecs:DiscoverPollEndpoint",
                                         "logs:CreateLogStream",
                                         "logs:PutLogEvents"
                                       ],
@@ -1010,10 +1010,10 @@
                                           "Statement": [
                                             {
                                               "Action": [
-                                                "ec2:DescribeInstances",
+                                                "ec2:DescribeHosts",
                                                 "ec2:DescribeInstanceAttribute",
                                                 "ec2:DescribeInstanceStatus",
-                                                "ec2:DescribeHosts"
+                                                "ec2:DescribeInstances"
                                               ],
                                               "Effect": "Allow",
                                               "Resource": "*"
@@ -1048,7 +1048,9 @@
                                             {
                                               "Action": [
                                                 "ecs:DescribeContainerInstances",
-                                                "ecs:DescribeTasks"
+                                                "ecs:DescribeTasks",
+                                                "ecs:ListTasks",
+                                                "ecs:UpdateContainerInstancesState"
                                               ],
                                               "Condition": {
                                                 "ArnEquals": {
@@ -1076,24 +1078,6 @@
                                                   "Arn"
                                                 ]
                                               }
-                                            },
-                                            {
-                                              "Action": [
-                                                "ecs:UpdateContainerInstancesState",
-                                                "ecs:ListTasks"
-                                              ],
-                                              "Condition": {
-                                                "ArnEquals": {
-                                                  "ecs:cluster": {
-                                                    "Fn::GetAtt": [
-                                                      "Ec2ClusterEE43E89D",
-                                                      "Arn"
-                                                    ]
-                                                  }
-                                                }
-                                              },
-                                              "Effect": "Allow",
-                                              "Resource": "*"
                                             }
                                           ],
                                           "Version": "2012-10-17"
@@ -1226,8 +1210,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   },
                   "LifecycleHookDrainHook": {
@@ -1470,7 +1454,7 @@
                               {
                                 "Ref": "AWS::URLSuffix"
                               },
-                              "/aws-cdk/assets:4d89079ab189da6e7e125fec1718add5cd8dadcf7f13797441a2f5d21aecfd9d"
+                              "/aws-cdk/assets:7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2"
                             ]
                           ]
                         },
@@ -1616,8 +1600,8 @@
                                 {
                                   "Action": [
                                     "ecr:BatchCheckLayerAvailability",
-                                    "ecr:GetDownloadUrlForLayer",
-                                    "ecr:BatchGetImage"
+                                    "ecr:BatchGetImage",
+                                    "ecr:GetDownloadUrlForLayer"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {
@@ -1879,8 +1863,8 @@
                                 },
                                 {
                                   "Action": [
-                                    "ecs:StopTask",
-                                    "ecs:DescribeTasks"
+                                    "ecs:DescribeTasks",
+                                    "ecs:StopTask"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": "*"
@@ -1891,13 +1875,13 @@
                                   "Resource": [
                                     {
                                       "Fn::GetAtt": [
-                                        "TaskDefTaskRole1EDB4A67",
+                                        "TaskDefExecutionRoleB4775C97",
                                         "Arn"
                                       ]
                                     },
                                     {
                                       "Fn::GetAtt": [
-                                        "TaskDefExecutionRoleB4775C97",
+                                        "TaskDefTaskRole1EDB4A67",
                                         "Arn"
                                       ]
                                     }
@@ -1905,9 +1889,9 @@
                                 },
                                 {
                                   "Action": [
-                                    "events:PutTargets",
+                                    "events:DescribeRule",
                                     "events:PutRule",
-                                    "events:DescribeRule"
+                                    "events:PutTargets"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {
