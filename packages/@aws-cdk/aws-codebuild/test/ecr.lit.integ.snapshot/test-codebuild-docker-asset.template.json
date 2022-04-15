@@ -2,11 +2,6 @@
  "Resources": {
   "MyRepoF4F48043": {
    "Type": "AWS::ECR::Repository",
-   "Properties": {
-    "ImageScanningConfiguration": {
-     "ScanOnPush": false
-    }
-   },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
