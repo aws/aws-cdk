@@ -600,7 +600,6 @@ describe('bucket', () => {
   });
 
   describe('import/export', () => {
-
     test('static import(ref) allows importing an external/existing bucket', () => {
       const stack = new cdk.Stack();
 
@@ -712,6 +711,72 @@ describe('bucket', () => {
       expect(() => s3.Bucket.fromBucketAttributes(stack, 'MyBucket3', {
         bucketName: 'arn:aws:s3:::example-com',
       })).toThrow();
+    });
+  });
+
+  describe('fromCfnBucket()', () => {
+    let stack: cdk.Stack;
+    let cfnBucket: s3.CfnBucket;
+    let bucket: s3.IBucket;
+
+    beforeEach(() => {
+      stack = new cdk.Stack();
+      cfnBucket = new s3.CfnBucket(stack, 'CfnBucket');
+      bucket = s3.Bucket.fromCfnBucket(cfnBucket);
+    });
+
+    test("correctly resolves the 'bucketName' property", () => {
+      expect(stack.resolve(bucket.bucketName)).toStrictEqual({
+        Ref: 'CfnBucket',
+      });
+    });
+
+    test("correctly resolves the 'bucketArn' property", () => {
+      expect(stack.resolve(bucket.bucketArn)).toStrictEqual({
+        'Fn::GetAtt': ['CfnBucket', 'Arn'],
+      });
+    });
+
+    test('allows setting the RemovalPolicy of the underlying resource', () => {
+      bucket.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
+
+      Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
+        UpdateReplacePolicy: 'Retain',
+        DeletionPolicy: 'Retain',
+      });
+    });
+
+    test('correctly sets the default child of the returned L2', () => {
+      expect(bucket.node.defaultChild).toBe(cfnBucket);
+    });
+
+    test('allows granting permissions to Principals', () => {
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AccountRootPrincipal(),
+      });
+      bucket.grantRead(role);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': [
+                's3:GetObject*',
+                's3:GetBucket*',
+                's3:List*',
+              ],
+              'Resource': [{
+                'Fn::GetAtt': ['CfnBucket', 'Arn'],
+              }, {
+                'Fn::Join': ['', [
+                  { 'Fn::GetAtt': ['CfnBucket', 'Arn'] },
+                  '/*',
+                ]],
+              }],
+            },
+          ],
+        },
+      });
     });
   });
 
