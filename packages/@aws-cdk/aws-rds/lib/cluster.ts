@@ -270,7 +270,7 @@ interface DatabaseClusterBaseProps {
   *
   * @default: true
   */
-   readonly copyTagsToSnapshot?: boolean;
+  readonly copyTagsToSnapshot?: boolean;
 }
 
 /**
@@ -432,7 +432,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
       //Tag
-      copyTagsToSnapshot: props.copyTagsToSnapshot ?? true
+      copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
     };
   }
 }
