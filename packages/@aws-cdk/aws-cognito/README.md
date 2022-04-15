@@ -364,7 +364,9 @@ new cognito.UserPool(this, 'myuserpool', {
 
 ```
 
-Sending emails through SES verified domain, you could use the prop `sesVerifiedDomain` and pass your verified domain value.
+Sending emails through SES verified domain, `sesVerifiedDomain` must be used to specify the domain.
+When sending emails with a verified domain, the email address does not need to be verified.
+In that case, the identity of the email configuration is allow to be set to the domain instead of the email address.
 
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
@@ -376,7 +378,7 @@ new cognito.UserPool(this, 'myuserpool', {
     sesVerifiedDomain: 'myawesomeapp.com',
   }),
 });
-
+```
 
 ### Device Tracking
 
