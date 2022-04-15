@@ -85,7 +85,10 @@ export interface TaskStateBaseProps {
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token
    *
-   * @default IntegrationPattern.REQUEST_RESPONSE
+   * @default - `IntegrationPattern.REQUEST_RESPONSE` for most tasks.
+   * `IntegrationPattern.RUN_JOB` for the following exceptions:
+   *  `BatchSubmitJob`, `EmrAddStep`, `EmrCreateCluster`, `EmrTerminationCluster`, and `EmrContainersStartJobRun`.
+   *
    */
   readonly integrationPattern?: IntegrationPattern;
 }
