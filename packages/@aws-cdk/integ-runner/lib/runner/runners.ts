@@ -3,8 +3,7 @@ import { Writable, WritableOptions } from 'stream';
 import { StringDecoder, NodeStringDecoder } from 'string_decoder';
 import { TestCase, RequireApproval, DefaultCdkOptions } from '@aws-cdk/cloud-assembly-schema';
 import { diffTemplate, formatDifferences, ResourceDifference, ResourceImpact } from '@aws-cdk/cloudformation-diff';
-import * as cxapi from '@aws-cdk/cx-api';
-import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS, TARGET_PARTITIONS } from '@aws-cdk/cx-api';
+import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, TARGET_PARTITIONS, NEW_STYLE_STACK_SYNTHESIS_CONTEXT, FUTURE_FLAGS, FUTURE_FLAGS_EXPIRED } from '@aws-cdk/cx-api';
 import { CdkCliWrapper, ICdk } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import * as logger from '../logger';
@@ -412,7 +411,10 @@ export abstract class IntegRunner {
     }
     return {
       ...enableLookups ? [DEFAULT_SYNTH_OPTIONS.context] : [],
-      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      // !!! keep these next two lines in v2-main !!!
+      [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      ...futureFlags,
+      // !!! keep these previous two lines in v2-main !!!
       ...ctxPragmaContext,
       ...additionalContext,
     };
@@ -816,6 +818,11 @@ class StringWritable extends Writable {
   }
 }
 
+const futureFlags: {[key: string]: any} = {};
+Object.entries(FUTURE_FLAGS)
+  .filter(([k, _]) => !FUTURE_FLAGS_EXPIRED.includes(k))
+  .forEach(([k, v]) => futureFlags[k] = v);
+
 // Default context we run all integ tests with, so they don't depend on the
 // account of the exercising user.
 const DEFAULT_SYNTH_OPTIONS = {
@@ -854,7 +861,9 @@ const DEFAULT_SYNTH_OPTIONS = {
       ],
     },
     // Enable feature flags for all integ tests
-    ...FUTURE_FLAGS,
+    // !!! keep this next line in v2-main !!!
+    ...futureFlags,
+    // !!! keep this previous line in v2-main !!!
 
     // Restricting to these target partitions makes most service principals synthesize to
     // `service.${URL_SUFFIX}`, which is technically *incorrect* (it's only `amazonaws.com`
