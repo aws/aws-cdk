@@ -2,6 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualService } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
+import { renderMeshOwner } from './private/utils';
 import { IVirtualNode } from './virtual-node';
 import { IVirtualRouter } from './virtual-router';
 
@@ -39,7 +40,7 @@ export interface VirtualServiceProps {
    * It is recommended this follows the fully-qualified domain name format,
    * such as "my-service.default.svc.cluster.local".
    *
-   * @example service.domain.local
+   * Example value: `service.domain.local`
    * @default - A name is automatically generated
    */
   readonly virtualServiceName?: string;
@@ -64,7 +65,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
   public static fromVirtualServiceArn(scope: Construct, id: string, virtualServiceArn: string): IVirtualService {
     return new class extends cdk.Resource implements IVirtualService {
       readonly virtualServiceArn = virtualServiceArn;
-      private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualServiceArn).resourceName!);
+      private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(virtualServiceArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
       readonly virtualServiceName = cdk.Fn.select(2, this.parsedArn);
       readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
     }(scope, id);
@@ -110,6 +111,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
 
     const svc = new CfnVirtualService(this, 'Resource', {
       meshName: this.mesh.meshName,
+      meshOwner: renderMeshOwner(this.env.account, this.mesh.env.account),
       virtualServiceName: this.physicalName,
       spec: {
         provider: providerConfig.virtualNodeProvider || providerConfig.virtualRouterProvider

@@ -16,5 +16,11 @@ nyc.config.js
 !jest.config.js
 
 !lib/experimental/edge-function/index.js
+!test/function-code.js
 
 junit.xml
+
+!**/*.integ.snapshot/**/asset.*/*.js
+!**/*.integ.snapshot/**/asset.*/*.d.ts
+
+!**/*.integ.snapshot/**/asset.*/**

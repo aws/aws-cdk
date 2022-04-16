@@ -12,8 +12,10 @@ import {
   TagType,
   Tags,
   Token,
+  Aspects,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { LaunchTemplateRequireImdsv2Aspect } from '.';
 import { Connections, IConnectable } from './connections';
 import { CfnLaunchTemplate } from './ec2.generated';
 import { InstanceType } from './instance-types';
@@ -332,6 +334,13 @@ export interface LaunchTemplateProps {
    * @default No security group is assigned.
    */
   readonly securityGroup?: ISecurityGroup;
+
+  /**
+   * Whether IMDSv2 should be required on launched instances.
+   *
+   * @default - false
+   */
+  readonly requireImdsv2?: boolean;
 }
 
 /**
@@ -438,6 +447,13 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   public readonly osType?: OperatingSystemType;
 
   /**
+   * The AMI ID of the image to use
+   *
+   * @attribute
+   */
+  public readonly imageId?: string;
+
+  /**
    * IAM Role assumed by instances that are launched from this template.
    *
    * @attribute
@@ -450,6 +466,13 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    * @attribute
    */
   public readonly userData?: UserData;
+
+  /**
+   * Type of instance to launch.
+   *
+   * @attribute
+   */
+  public readonly instanceType?: InstanceType;
 
   // =============================================
   //   Private/protected data members
@@ -516,7 +539,10 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     const imageConfig: MachineImageConfig | undefined = props.machineImage?.getImage(this);
     if (imageConfig) {
       this.osType = imageConfig.osType;
+      this.imageId = imageConfig.imageId;
     }
+
+    this.instanceType = props.instanceType;
 
     let marketOptions: any = undefined;
     if (props?.spotOptions) {
@@ -637,6 +663,10 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     this.latestVersionNumber = resource.attrLatestVersionNumber;
     this.launchTemplateId = resource.ref;
     this.versionNumber = Token.asString(resource.getAtt('LatestVersionNumber'));
+
+    if (props.requireImdsv2) {
+      Aspects.of(this).add(new LaunchTemplateRequireImdsv2Aspect());
+    }
   }
 
   /**

@@ -1,3 +1,4 @@
+import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
 import { CloudFormationStack, TemplateParameters } from '../../lib/api/util/cloudformation';
 import { MockedObject, MockSdkProvider, SyncHandlerSubsetOf } from './mock-sdk';
 
@@ -20,7 +21,7 @@ beforeEach(async () => {
       .mockImplementation(() => ({ Stacks: [] })),
   };
   sdkProvider.stubCloudFormation(cfnMocks as any);
-  cfn = (await sdkProvider.forEnvironment()).cloudFormation();
+  cfn = (await sdkProvider.forEnvironment()).sdk.cloudFormation();
 });
 
 test('A non-existent stack pretends to have an empty template', async () => {
@@ -81,10 +82,32 @@ test('if a parameter is retrieved from SSM, the parameters always count as chang
   const oldValues = { Foo: '/Some/Key' };
 
   // If we don't pass a new value
-  expect(params.updateExisting({}, oldValues).hasChanges(oldValues)).toEqual(true);
+  expect(params.updateExisting({}, oldValues).hasChanges(oldValues)).toEqual('ssm');
 
   // If we do pass a new value but it's the same as the old one
-  expect(params.updateExisting({ Foo: '/Some/Key' }, oldValues).hasChanges(oldValues)).toEqual(true);
+  expect(params.updateExisting({ Foo: '/Some/Key' }, oldValues).hasChanges(oldValues)).toEqual('ssm');
+});
+
+test('if a parameter is retrieved from SSM, the parameters doesnt count as changed if it has the magic marker', () => {
+  const params = TemplateParameters.fromTemplate({
+    Parameters: {
+      Foo: {
+        Type: 'AWS::SSM::Parameter::Name',
+        Default: '/Some/Key',
+        Description: `blabla ${SSMPARAM_NO_INVALIDATE}`,
+      },
+    },
+  });
+  const oldValues = { Foo: '/Some/Key' };
+
+  // If we don't pass a new value
+  expect(params.updateExisting({}, oldValues).hasChanges(oldValues)).toEqual(false);
+
+  // If we do pass a new value but it's the same as the old one
+  expect(params.updateExisting({ Foo: '/Some/Key' }, oldValues).hasChanges(oldValues)).toEqual(false);
+
+  // If we do pass a new value and it's different
+  expect(params.updateExisting({ Foo: '/OTHER/Key' }, oldValues).hasChanges(oldValues)).toEqual(true);
 });
 
 test('empty string is a valid update value', () => {

@@ -1,10 +1,9 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
-import { Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
-import { BastionHostLinux, BlockDeviceVolume, InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc } from '../lib';
+import { Template } from '@aws-cdk/assertions';
+import { Duration, Stack } from '@aws-cdk/core';
+import { BastionHostLinux, BlockDeviceVolume, CloudFormationInit, InitCommand, InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc } from '../lib';
 
-nodeunitShim({
-  'default instance is created in basic'(test: Test) {
+describe('bastion host', () => {
+  test('default instance is created in basic', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
@@ -15,20 +14,20 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       InstanceType: 't3.nano',
       SubnetId: { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-    }));
+    });
 
-    test.done();
-  },
-  'default instance is created in isolated vpc'(test: Test) {
+
+  });
+  test('default instance is created in isolated vpc', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC', {
       subnetConfiguration: [
         {
-          subnetType: SubnetType.ISOLATED,
+          subnetType: SubnetType.PRIVATE_ISOLATED,
           name: 'Isolated',
         },
       ],
@@ -40,20 +39,20 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       InstanceType: 't3.nano',
       SubnetId: { Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6' },
-    }));
+    });
 
-    test.done();
-  },
-  'ebs volume is encrypted'(test: Test) {
+
+  });
+  test('ebs volume is encrypted', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC', {
       subnetConfiguration: [
         {
-          subnetType: SubnetType.ISOLATED,
+          subnetType: SubnetType.PRIVATE_ISOLATED,
           name: 'Isolated',
         },
       ],
@@ -71,7 +70,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       BlockDeviceMappings: [
         {
           DeviceName: 'EBSBastionHost',
@@ -81,11 +80,11 @@ nodeunitShim({
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
-  'x86-64 instances use x86-64 image by default'(test: Test) {
+
+  });
+  test('x86-64 instances use x86-64 image by default', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
@@ -96,15 +95,15 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       ImageId: {
         Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
       },
-    }));
+    });
 
-    test.done();
-  },
-  'arm instances use arm image by default'(test: Test) {
+
+  });
+  test('arm instances use arm image by default', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
@@ -116,12 +115,70 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       ImageId: {
         Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmarm64gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
       },
-    }));
+    });
 
-    test.done();
-  },
+
+  });
+
+  test('add CloudFormation Init to instance', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+
+    // WHEN
+    new BastionHostLinux(stack, 'Bastion', {
+      vpc,
+      initOptions: {
+        timeout: Duration.minutes(30),
+      },
+      init: CloudFormationInit.fromElements(
+        InitCommand.shellCommand('echo hello'),
+      ),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
+      CreationPolicy: {
+        ResourceSignal: {
+          Timeout: 'PT30M',
+        },
+      },
+      Metadata: {
+        'AWS::CloudFormation::Init': {
+          config: {
+            commands: {
+              '000': {
+                command: 'echo hello',
+              },
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('imdsv2 is required', () => {
+    //GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+
+    //WHEN
+    new BastionHostLinux(stack, 'Bastion', {
+      vpc,
+      requireImdsv2: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        MetadataOptions: {
+          HttpTokens: 'required',
+        },
+      },
+    });
+  });
 });

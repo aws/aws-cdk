@@ -24,3 +24,6 @@ tsconfig.json
 junit.xml
 
 test/
+jest.config.js
+**/*.integ.snapshot
+**/*.integ.snapshot

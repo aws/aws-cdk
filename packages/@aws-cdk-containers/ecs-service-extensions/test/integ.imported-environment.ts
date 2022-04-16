@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import { Vpc } from '@aws-cdk/aws-ec2';
 import { Cluster, ContainerImage } from '@aws-cdk/aws-ecs';
 import { App, NestedStack, Stack } from '@aws-cdk/core';

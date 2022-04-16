@@ -1,4 +1,4 @@
-import { Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
 import { Authorizer, IAuthorizer } from './authorizer';
@@ -74,15 +74,18 @@ export interface MethodOptions {
    *
    * @example
    *
+   *     declare const api: apigateway.RestApi;
+   *     declare const userLambda: lambda.Function;
+   *
    *     const userModel: apigateway.Model = api.addModel('UserModel', {
    *         schema: {
-   *             type: apigateway.JsonSchemaType.OBJECT
+   *             type: apigateway.JsonSchemaType.OBJECT,
    *             properties: {
    *                 userId: {
-   *                     type: apigateway.JsonSchema.STRING
+   *                     type: apigateway.JsonSchemaType.STRING
    *                 },
    *                 name: {
-   *                     type: apigateway.JsonSchema.STRING
+   *                     type: apigateway.JsonSchemaType.STRING
    *                 }
    *             },
    *             required: ['userId']
@@ -165,6 +168,8 @@ export class Method extends Resource {
    */
   public readonly api: IRestApi;
 
+  private methodResponses: MethodResponse[];
+
   constructor(scope: Construct, id: string, props: MethodProps) {
     super(scope, id);
 
@@ -193,6 +198,8 @@ export class Method extends Resource {
       authorizer._attachToApi(this.api);
     }
 
+    this.methodResponses = options.methodResponses ?? [];
+
     const integration = props.integration ?? this.resource.defaultIntegration ?? new MockIntegration();
     const bindResult = integration.bind(this);
 
@@ -206,7 +213,7 @@ export class Method extends Resource {
       authorizerId,
       requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,
       integration: this.renderIntegration(bindResult),
-      methodResponses: this.renderMethodResponses(options.methodResponses),
+      methodResponses: Lazy.any({ produce: () => this.renderMethodResponses(this.methodResponses) }, { omitEmptyArray: true }),
       requestModels: this.renderRequestModels(options.requestModels),
       requestValidatorId: this.requestValidatorId(options),
       authorizationScopes: options.authorizationScopes ?? defaultMethodOptions.authorizationScopes,
@@ -264,6 +271,13 @@ export class Method extends Resource {
     return this.api.arnForExecuteApi(this.httpMethod, pathForArn(this.resource.path), 'test-invoke-stage');
   }
 
+  /**
+   * Add a method response to this method
+   */
+  public addMethodResponse(methodResponse: MethodResponse): void {
+    this.methodResponses.push(methodResponse);
+  }
+
   private renderIntegration(bindResult: IntegrationConfig): CfnMethod.IntegrationProperty {
     const options = bindResult.options ?? {};
     let credentials;
@@ -272,7 +286,7 @@ export class Method extends Resource {
     } else if (options.credentialsPassthrough) {
       // arn:aws:iam::*:user/*
       // eslint-disable-next-line max-len
-      credentials = Stack.of(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' });
+      credentials = Stack.of(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', arnFormat: ArnFormat.SLASH_RESOURCE_NAME, resourceName: '*' });
     }
 
     return {
@@ -343,7 +357,7 @@ export class Method extends Resource {
     }
 
     if (options.requestValidatorOptions) {
-      const validator = this.restApi.addRequestValidator('validator', options.requestValidatorOptions);
+      const validator = (this.api as RestApi).addRequestValidator('validator', options.requestValidatorOptions);
       return validator.requestValidatorId;
     }
 

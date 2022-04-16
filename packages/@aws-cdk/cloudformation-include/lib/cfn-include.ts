@@ -1,5 +1,5 @@
 import * as core from '@aws-cdk/core';
-import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
+import * as cfn_parse from '@aws-cdk/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
@@ -584,7 +584,12 @@ export class CfnInclude extends core.CfnElement {
     return cfnCondition;
   }
 
-  private getOrCreateResource(logicalId: string): core.CfnResource {
+  private getOrCreateResource(logicalId: string, cycleChain: string[] = []): core.CfnResource {
+    cycleChain = cycleChain.concat([logicalId]);
+    if (cycleChain.length !== new Set(cycleChain).size) {
+      throw new Error(`Found a cycle between resources in the template: ${cycleChain.join(' depends on ')}`);
+    }
+
     const ret = this.resources[logicalId];
     if (ret) {
       return ret;
@@ -618,7 +623,7 @@ export class CfnInclude extends core.CfnElement {
         if (!(lId in (self.template.Resources || {}))) {
           return undefined;
         }
-        return self.getOrCreateResource(lId);
+        return self.getOrCreateResource(lId, cycleChain);
       },
 
       findRefTarget(elementName: string): core.CfnElement | undefined {
@@ -682,8 +687,8 @@ export class CfnInclude extends core.CfnElement {
     const nestedStackProps = cfnParser.parseValue(nestedStackAttributes.Properties);
     const nestedStack = new core.NestedStack(this, nestedStackId, {
       parameters: this.parametersForNestedStack(nestedStackProps.Parameters, nestedStackId),
-      notificationArns: nestedStackProps.NotificationArns,
-      timeout: nestedStackProps.Timeout,
+      notificationArns: cfn_parse.FromCloudFormation.getStringArray(nestedStackProps.NotificationARNs).value,
+      timeout: this.timeoutForNestedStack(nestedStackProps.TimeoutInMinutes),
     });
     const template = new CfnInclude(nestedStack, nestedStackId, this.nestedStacksToInclude[nestedStackId]);
     this.nestedStacks[nestedStackId] = { stack: nestedStack, includedTemplate: template };
@@ -694,7 +699,7 @@ export class CfnInclude extends core.CfnElement {
     return nestedStackResource;
   }
 
-  private parametersForNestedStack(parameters: any, nestedStackId: string): { [key: string]: any } | undefined {
+  private parametersForNestedStack(parameters: any, nestedStackId: string): { [key: string]: string } | undefined {
     if (parameters == null) {
       return undefined;
     }
@@ -703,10 +708,18 @@ export class CfnInclude extends core.CfnElement {
     const ret: { [key: string]: string } = {};
     for (const paramName of Object.keys(parameters)) {
       if (!(paramName in parametersToReplace)) {
-        ret[paramName] = parameters[paramName];
+        ret[paramName] = cfn_parse.FromCloudFormation.getString(parameters[paramName]).value;
       }
     }
     return ret;
+  }
+
+  private timeoutForNestedStack(value: any): core.Duration | undefined {
+    if (value == null) {
+      return undefined;
+    }
+
+    return core.Duration.minutes(cfn_parse.FromCloudFormation.getNumber(value).value);
   }
 
   private overrideLogicalIdIfNeeded(element: core.CfnElement, id: string): void {

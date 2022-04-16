@@ -7,6 +7,10 @@ import { RetentionDays } from './log-group';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
+import { ArnFormat } from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
@@ -107,7 +111,7 @@ export class LogRetention extends CoreConstruct {
       service: 'logs',
       resource: 'log-group',
       resourceName: `${logGroupName}:*`,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
   }
 
@@ -128,8 +132,10 @@ export class LogRetention extends CoreConstruct {
 /**
  * Private provider Lambda function to support the log retention custom resource.
  */
-class LogRetentionFunction extends CoreConstruct {
+class LogRetentionFunction extends CoreConstruct implements cdk.ITaggable {
   public readonly functionArn: cdk.Reference;
+
+  public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'AWS::Lambda::Function');
 
   constructor(scope: Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
@@ -158,15 +164,18 @@ class LogRetentionFunction extends CoreConstruct {
       type: 'AWS::Lambda::Function',
       properties: {
         Handler: 'index.handler',
-        Runtime: 'nodejs12.x',
+        Runtime: 'nodejs14.x', // Equivalent to Runtime.NODEJS_14_X
         Code: {
           S3Bucket: asset.s3BucketName,
           S3Key: asset.s3ObjectKey,
         },
         Role: role.roleArn,
+        Tags: this.tags.renderedTags,
       },
     });
     this.functionArn = resource.getAtt('Arn');
+
+    asset.addResourceMetadata(resource, 'Code');
 
     // Function dependencies
     role.node.children.forEach((child) => {

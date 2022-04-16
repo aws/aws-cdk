@@ -206,13 +206,39 @@ export interface GraphWidgetProps extends MetricWidgetProps {
    */
   readonly liveData?: boolean;
 
-
   /**
    * Display this metric
    *
    * @default TimeSeries
    */
   readonly view?: GraphWidgetView;
+
+  /**
+   * Whether to show the value from the entire time range. Only applicable for Bar and Pie charts.
+   *
+   * If false, values will be from the most recent period of your chosen time range;
+   * if true, shows the value from the entire time range.
+   *
+   * @default false
+   */
+  readonly setPeriodToTimeRange?: boolean;
+
+  /**
+   * The default period for all metrics in this widget.
+   * The period is the length of time represented by one data point on the graph.
+   * This default can be overridden within each metric definition.
+   *
+   * @default cdk.Duration.seconds(300)
+   */
+  readonly period?: cdk.Duration;
+
+  /**
+   * The default statistic to be displayed for each metric.
+   * This default can be overridden within the definition of each individual metric
+   *
+   * @default - The statistic for each metric is used
+   */
+  readonly statistic?: string;
 }
 
 /**
@@ -230,6 +256,7 @@ export class GraphWidget extends ConcreteWidget {
     this.props = props;
     this.leftMetrics = props.left ?? [];
     this.rightMetrics = props.right ?? [];
+    this.copyMetricWarnings(...this.leftMetrics, ...this.rightMetrics);
   }
 
   /**
@@ -239,6 +266,7 @@ export class GraphWidget extends ConcreteWidget {
    */
   public addLeftMetric(metric: IMetric) {
     this.leftMetrics.push(metric);
+    this.copyMetricWarnings(metric);
   }
 
   /**
@@ -248,6 +276,7 @@ export class GraphWidget extends ConcreteWidget {
    */
   public addRightMetric(metric: IMetric) {
     this.rightMetrics.push(metric);
+    this.copyMetricWarnings(metric);
   }
 
   public toJson(): any[] {
@@ -276,6 +305,9 @@ export class GraphWidget extends ConcreteWidget {
         },
         legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
         liveData: this.props.liveData,
+        setPeriodToTimeRange: this.props.setPeriodToTimeRange,
+        period: this.props.period?.toSeconds(),
+        stat: this.props.statistic,
       },
     }];
   }
@@ -314,6 +346,7 @@ export class SingleValueWidget extends ConcreteWidget {
   constructor(props: SingleValueWidgetProps) {
     super(props.width || 6, props.height || 3);
     this.props = props;
+    this.copyMetricWarnings(...props.metrics);
   }
 
   public toJson(): any[] {
@@ -421,6 +454,8 @@ export class Color {
 
   /** red - hex #d62728 */
   public static readonly RED = '#d62728';
+
+  private constructor() {}
 }
 
 /**

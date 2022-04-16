@@ -1,5 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { IRole } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { CfnResource, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -136,6 +138,51 @@ export interface DatabaseClusterProps {
    * @default - Retain cluster.
    */
   readonly removalPolicy?: RemovalPolicy
+
+  /**
+   * Specifies whether this cluster can be deleted. If deletionProtection is
+   * enabled, the cluster cannot be deleted unless it is modified and
+   * deletionProtection is disabled. deletionProtection protects clusters from
+   * being accidentally deleted.
+   *
+   * @default - false
+   */
+  readonly deletionProtection?: boolean;
+
+  /**
+   * Whether the profiler logs should be exported to CloudWatch.
+   * Note that you also have to configure the profiler log export in the Cluster's Parameter Group.
+   *
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/profiling.html#profiling.enable-profiling
+   * @default false
+   */
+  readonly exportProfilerLogsToCloudWatch?: boolean;
+
+  /**
+   * Whether the audit logs should be exported to CloudWatch.
+   * Note that you also have to configure the audit log export in the Cluster's Parameter Group.
+   *
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/event-auditing.html#event-auditing-enabling-auditing
+   * @default false
+   */
+  readonly exportAuditLogsToCloudWatch?: boolean;
+
+  /**
+   * The number of days log events are kept in CloudWatch Logs. When updating
+   * this property, unsetting it doesn't remove the log retention policy. To
+   * remove the retention policy, set the value to `Infinity`.
+   *
+   * @default - logs never expire
+   */
+  readonly cloudWatchLogsRetention?: logs.RetentionDays;
+
+  /**
+    * The IAM role for the Lambda function associated with the custom resource
+    * that sets the retention policy.
+    *
+    * @default - a new role is created.
+    */
+  readonly cloudWatchLogsRetentionRole?: IRole;
 }
 
 /**
@@ -210,17 +257,55 @@ export class DatabaseCluster extends DatabaseClusterBase {
    */
   public static fromDatabaseClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
     class Import extends DatabaseClusterBase implements IDatabaseCluster {
-      public readonly defaultPort = ec2.Port.tcp(attrs.port);
+      public readonly defaultPort = typeof attrs.port !== 'undefined' ? ec2.Port.tcp(attrs.port) : undefined;
       public readonly connections = new ec2.Connections({
-        securityGroups: [attrs.securityGroup],
+        securityGroups: attrs.securityGroup ? [attrs.securityGroup] : undefined,
         defaultPort: this.defaultPort,
       });
       public readonly clusterIdentifier = attrs.clusterIdentifier;
-      public readonly instanceIdentifiers = attrs.instanceIdentifiers;
-      public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.port);
-      public readonly clusterReadEndpoint = new Endpoint(attrs.readerEndpointAddress, attrs.port);
-      public readonly instanceEndpoints = attrs.instanceEndpointAddresses.map(a => new Endpoint(a, attrs.port));
-      public readonly securityGroupId = attrs.securityGroup.securityGroupId;
+      private readonly _instanceIdentifiers = attrs.instanceIdentifiers;
+      private readonly _clusterEndpoint = attrs.clusterEndpointAddress && typeof attrs.port !== 'undefined' ?
+        new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
+      private readonly _clusterReadEndpoint = attrs.readerEndpointAddress && typeof attrs.port !== 'undefined' ?
+        new Endpoint(attrs.readerEndpointAddress, attrs.port) : undefined;
+      private readonly _instanceEndpoints = attrs.instanceEndpointAddresses && typeof attrs.port !== 'undefined' ?
+        attrs.instanceEndpointAddresses.map(addr => new Endpoint(addr, attrs.port!)) : undefined;
+      private readonly _securityGroupId = attrs.securityGroup?.securityGroupId;
+
+      public get instanceIdentifiers(): string[] {
+        if (!this._instanceIdentifiers) {
+          throw new Error('Cannot access `instanceIdentifiers` of an imported cluster without provided instanceIdentifiers');
+        }
+        return this._instanceIdentifiers;
+      }
+
+      public get clusterEndpoint(): Endpoint {
+        if (!this._clusterEndpoint) {
+          throw new Error('Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port');
+        }
+        return this._clusterEndpoint;
+      }
+
+      public get clusterReadEndpoint(): Endpoint {
+        if (!this._clusterReadEndpoint) {
+          throw new Error('Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port');
+        }
+        return this._clusterReadEndpoint;
+      }
+
+      public get instanceEndpoints(): Endpoint[] {
+        if (!this._instanceEndpoints) {
+          throw new Error('Cannot access `instanceEndpoints` of an imported cluster without instanceEndpointAddresses and port');
+        }
+        return this._instanceEndpoints;
+      }
+
+      public get securityGroupId(): string {
+        if (!this._securityGroupId) {
+          throw new Error('Cannot access `securityGroupId` of an imported cluster without securityGroupId');
+        }
+        return this._securityGroupId;
+      }
     }
 
     return new Import(scope, id);
@@ -284,6 +369,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
   public readonly secret?: secretsmanager.ISecret;
 
   /**
+   * The underlying CloudFormation resource for a database cluster.
+   */
+  private readonly cluster: CfnDBCluster;
+
+  /**
    * The VPC where the DB subnet group is created.
    */
   private readonly vpc: ec2.IVpc;
@@ -331,12 +421,23 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
     this.securityGroupId = securityGroup.securityGroupId;
 
+    // Create the CloudwatchLogsConfiguratoin
+    const enableCloudwatchLogsExports: string[] = [];
+    if (props.exportAuditLogsToCloudWatch) {
+      enableCloudwatchLogsExports.push('audit');
+    }
+    if (props.exportProfilerLogsToCloudWatch) {
+      enableCloudwatchLogsExports.push('profiler');
+    }
+
     // Create the secret manager secret if no password is specified
     let secret: DatabaseSecret | undefined;
     if (!props.masterUser.password) {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUser.username,
         encryptionKey: props.masterUser.kmsKey,
+        excludeCharacters: props.masterUser.excludeCharacters,
+        secretName: props.masterUser.secretName,
       });
     }
 
@@ -348,7 +449,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     // Create the DocDB cluster
-    const cluster = new CfnDBCluster(this, 'Resource', {
+    this.cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
       engineVersion: props.engineVersion,
       dbClusterIdentifier: props.dbClusterName,
@@ -356,30 +457,35 @@ export class DatabaseCluster extends DatabaseClusterBase {
       port: props.port,
       vpcSecurityGroupIds: [this.securityGroupId],
       dbClusterParameterGroupName: props.parameterGroup?.parameterGroupName,
+      deletionProtection: props.deletionProtection,
       // Admin
-      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
+      masterUsername: secret ? secret.secretValueFromJson('username').unsafeUnwrap() : props.masterUser.username,
       masterUserPassword: secret
-        ? secret.secretValueFromJson('password').toString()
-        : props.masterUser.password!.toString(),
+        ? secret.secretValueFromJson('password').unsafeUnwrap()
+        : props.masterUser.password!.unsafeUnwrap(), // Safe usage
       // Backup
       backupRetentionPeriod: props.backup?.retention?.toDays(),
       preferredBackupWindow: props.backup?.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
+      // EnableCloudwatchLogsExports
+      enableCloudwatchLogsExports: enableCloudwatchLogsExports.length > 0 ? enableCloudwatchLogsExports : undefined,
       // Encryption
       kmsKeyId: props.kmsKey?.keyArn,
       storageEncrypted,
     });
 
-    cluster.applyRemovalPolicy(props.removalPolicy, {
+    this.cluster.applyRemovalPolicy(props.removalPolicy, {
       applyToUpdateReplacePolicy: true,
     });
 
-    this.clusterIdentifier = cluster.ref;
-    this.clusterResourceIdentifier = cluster.attrClusterResourceId;
+    this.clusterIdentifier = this.cluster.ref;
+    this.clusterResourceIdentifier = this.cluster.attrClusterResourceId;
 
-    const port = Token.asNumber(cluster.attrPort);
-    this.clusterEndpoint = new Endpoint(cluster.attrEndpoint, port);
-    this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpoint, port);
+    const port = Token.asNumber(this.cluster.attrPort);
+    this.clusterEndpoint = new Endpoint(this.cluster.attrEndpoint, port);
+    this.clusterReadEndpoint = new Endpoint(this.cluster.attrReadEndpoint, port);
+
+    this.setLogRetention(this, props, enableCloudwatchLogsExports);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -399,7 +505,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
-        dbClusterIdentifier: cluster.ref,
+        dbClusterIdentifier: this.cluster.ref,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties
         dbInstanceClass: databaseInstanceType(props.instanceType),
@@ -424,6 +530,21 @@ export class DatabaseCluster extends DatabaseClusterBase {
   }
 
   /**
+   * Sets up CloudWatch log retention if configured.
+   */
+  private setLogRetention(cluster: DatabaseCluster, props: DatabaseClusterProps, cloudwatchLogsExports: string[]) {
+    if (props.cloudWatchLogsRetention) {
+      for (const log of cloudwatchLogsExports) {
+        new logs.LogRetention(cluster, `LogRetention${log}`, {
+          logGroupName: `/aws/docdb/${cluster.clusterIdentifier}/${log}`,
+          retention: props.cloudWatchLogsRetention,
+          role: props.cloudWatchLogsRetentionRole,
+        });
+      }
+    }
+  }
+
+  /**
    * Adds the single user rotation of the master password to this cluster.
    *
    * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
@@ -444,6 +565,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       secret: this.secret,
       automaticallyAfter,
       application: DatabaseCluster.SINGLE_USER_ROTATION_APPLICATION,
+      excludeCharacters: (this.node.tryFindChild('Secret') as DatabaseSecret)._excludedCharacters,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
@@ -461,11 +583,23 @@ export class DatabaseCluster extends DatabaseClusterBase {
       secret: options.secret,
       masterSecret: this.secret,
       automaticallyAfter: options.automaticallyAfter,
+      excludeCharacters: (this.node.tryFindChild('Secret') as DatabaseSecret)._excludedCharacters,
       application: DatabaseCluster.MULTI_USER_ROTATION_APPLICATION,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
     });
+  }
+
+  /**
+   * Adds security groups to this cluster.
+   * @param securityGroups The security groups to add.
+   */
+  public addSecurityGroups(...securityGroups: ec2.ISecurityGroup[]): void {
+    if (this.cluster.vpcSecurityGroupIds === undefined) {
+      this.cluster.vpcSecurityGroupIds = [];
+    }
+    this.cluster.vpcSecurityGroupIds.push(...securityGroups.map(sg => sg.securityGroupId));
   }
 }
 

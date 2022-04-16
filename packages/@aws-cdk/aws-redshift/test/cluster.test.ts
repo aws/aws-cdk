@@ -1,10 +1,10 @@
-import { ABSENT, expect as cdkExpect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { CfnCluster, Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType } from '../lib';
+import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType } from '../lib';
+import { CfnCluster } from '../lib/redshift.generated';
 
 let stack: cdk.Stack;
 let vpc: ec2.IVpc;
@@ -19,13 +19,13 @@ test('check that instantiation works', () => {
   new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
-      masterPassword: cdk.SecretValue.plainText('tooshort'),
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
     },
     vpc,
   });
 
   // THEN
-  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+  Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
     Properties: {
       AllowVersionUpgrade: true,
       MasterUsername: 'admin',
@@ -42,9 +42,9 @@ test('check that instantiation works', () => {
     },
     DeletionPolicy: 'Retain',
     UpdateReplacePolicy: 'Retain',
-  }, ResourcePart.CompleteDefinition));
+  });
 
-  cdkExpect(stack).to(haveResource('AWS::Redshift::ClusterSubnetGroup', {
+  Template.fromStack(stack).hasResource('AWS::Redshift::ClusterSubnetGroup', {
     Properties: {
       Description: 'Subnets for Redshift Redshift cluster',
       SubnetIds: [
@@ -55,7 +55,7 @@ test('check that instantiation works', () => {
     },
     DeletionPolicy: 'Retain',
     UpdateReplacePolicy: 'Retain',
-  }, ResourcePart.CompleteDefinition));
+  });
 });
 
 test('can create a cluster with imported vpc and security group', () => {
@@ -69,19 +69,19 @@ test('can create a cluster with imported vpc and security group', () => {
   new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
-      masterPassword: cdk.SecretValue.plainText('tooshort'),
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
     },
     vpc,
     securityGroups: [sg],
   });
 
   // THEN
-  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
     ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },
     MasterUsername: 'admin',
     MasterUserPassword: 'tooshort',
     VpcSecurityGroupIds: ['SecurityGroupId12345'],
-  }));
+  });
 });
 
 test('creates a secret when master credentials are not specified', () => {
@@ -94,7 +94,7 @@ test('creates a secret when master credentials are not specified', () => {
   });
 
   // THEN
-  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
     MasterUsername: {
       'Fn::Join': [
         '',
@@ -119,16 +119,16 @@ test('creates a secret when master credentials are not specified', () => {
         ],
       ],
     },
-  }));
+  });
 
-  cdkExpect(stack).to(haveResource('AWS::SecretsManager::Secret', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
     GenerateSecretString: {
       ExcludeCharacters: '"@/\\\ \'',
       GenerateStringKey: 'password',
       PasswordLength: 30,
       SecretStringTemplate: '{"username":"admin"}',
     },
-  }));
+  });
 });
 
 describe('node count', () => {
@@ -144,10 +144,10 @@ describe('node count', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
       ClusterType: 'single-node',
-      NumberOfNodes: ABSENT,
-    }));
+      NumberOfNodes: Match.absent(),
+    });
   });
 
   test('Single Node Clusters treat 1 node as undefined', () => {
@@ -162,10 +162,10 @@ describe('node count', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
       ClusterType: 'single-node',
-      NumberOfNodes: ABSENT,
-    }));
+      NumberOfNodes: Match.absent(),
+    });
   });
 
   test('Single Node Clusters throw if any other node count is specified', () => {
@@ -192,10 +192,10 @@ describe('node count', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
       ClusterType: 'multi-node',
       NumberOfNodes: 2,
-    }));
+    });
   });
 
   test.each([0, 1, -1, 101])('Multi-Node Clusters throw with %s nodes', (numberOfNodes: number) => {
@@ -227,12 +227,12 @@ describe('node count', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
       ClusterType: 'multi-node',
       NumberOfNodes: {
         Ref: 'numberOfNodes',
       },
-    }));
+    });
   });
 });
 
@@ -247,14 +247,11 @@ test('create an encrypted cluster with custom KMS key', () => {
   });
 
   // THEN
-  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
     KmsKeyId: {
-      'Fn::GetAtt': [
-        'Key961B73FD',
-        'Arn',
-      ],
+      Ref: 'Key961B73FD',
     },
-  }));
+  });
 });
 
 test('cluster with parameter group', () => {
@@ -275,9 +272,9 @@ test('cluster with parameter group', () => {
   });
 
   // THEN
-  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
     ClusterParameterGroupName: { Ref: 'ParamsA8366201' },
-  }));
+  });
 
 });
 
@@ -292,9 +289,9 @@ test('publicly accessible cluster', () => {
   });
 
   // THEN
-  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
     PubliclyAccessible: true,
-  }));
+  });
 });
 
 test('imported cluster with imported security group honors allowAllOutbound', () => {
@@ -314,9 +311,9 @@ test('imported cluster with imported security group honors allowAllOutbound', ()
   cluster.connections.allowToAnyIpv4(ec2.Port.tcp(443));
 
   // THEN
-  cdkExpect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
     GroupId: 'sg-123456789',
-  }));
+  });
 });
 
 test('can create a cluster with logging enabled', () => {
@@ -334,12 +331,12 @@ test('can create a cluster with logging enabled', () => {
   });
 
   // THEN
-  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
     LoggingProperties: {
       BucketName: 'logging-bucket',
       S3KeyPrefix: 'prefix',
     },
-  }));
+  });
 });
 
 test('throws when trying to add rotation to a cluster without secret', () => {
@@ -347,7 +344,7 @@ test('throws when trying to add rotation to a cluster without secret', () => {
   const cluster = new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
-      masterPassword: cdk.SecretValue.plainText('tooshort'),
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
     },
     vpc,
   });
@@ -408,8 +405,8 @@ test('can use existing cluster subnet group', () => {
     subnetGroup: ClusterSubnetGroup.fromClusterSubnetGroupName(stack, 'Group', 'my-existing-cluster-subnet-group'),
   });
 
-  expect(stack).not.toHaveResource('AWS::Redshift::ClusterSubnetGroup');
-  expect(stack).toHaveResourceLike('AWS::Redshift::Cluster', {
+  Template.fromStack(stack).resourceCountIs('AWS::Redshift::ClusterSubnetGroup', 0);
+  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
     ClusterSubnetGroupName: 'my-existing-cluster-subnet-group',
   });
 });

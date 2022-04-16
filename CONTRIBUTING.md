@@ -7,20 +7,22 @@ coming from the community. We want to recognize all your hard work
 by getting your code merged as quickly as we can, so please read the guidance
 here carefully to make sure the review process goes smoothly.
 
-This document describes how to set up a development environment and submit your changes. Please 
+The CDK is released under the [Apache license](http://aws.amazon.com/apache2.0/).
+Any code you submit will be released under that license.
+
+This document describes how to set up a development environment and submit your changes. Please
 let us know if it's not up-to-date (even better, submit a PR with your  corrections ;-)).
 
 - [Getting Started](#getting-started)
 - [Pull Requests](#pull-requests)
   - [Step 1: Find something to work on](#step-1-find-something-to-work-on)
-  - [Step 2: Design (optional)](#step-2-design-optional)
+  - [Step 2: Design (optional)](#step-2-design)
   - [Step 3: Work your Magic](#step-3-work-your-magic)
-  - [Step 4: Commit](#step-4-commit)
-  - [Step 5: Pull Request](#step-5-pull-request)
-  - [Step 6: Merge](#step-6-merge)
+  - [Step 4: Pull Request](#step-4-pull-request)
+  - [Step 5: Merge](#step-5-merge)
 - [Breaking Changes](#breaking-changes)
 - [Documentation](#documentation)
-  - [rosetta](#rosetta)
+  - [Rosetta](#rosetta)
 - [Tools](#tools)
   - [Linters](#linters)
   - [cfn2ts](#cfn2ts)
@@ -44,18 +46,19 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
 
 The following steps describe how to set up the AWS CDK repository on your local machine.
 The alternative is to use [Gitpod](https://www.gitpod.io/), a Cloud IDE for your development.
-See [Gitpod section](#gitpod) on how to set up the CDK repo on Gitpod.
+See [Gitpod section](#gitpod-alternative) on how to set up the CDK repo on Gitpod.
 
 ### Setup
 
 The following tools need to be installed on your system prior to installing the CDK:
 
-- [Node.js >= 10.13.0](https://nodejs.org/download/release/latest-v10.x/)
+- [Node.js >= 14.15.0](https://nodejs.org/download/release/latest-v14.x/)
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
-  - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
 - [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
 - [.NET Core SDK 3.1.x](https://www.microsoft.com/net/download)
 - [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
+- [Docker >= 19.03](https://docs.docker.com/get-docker/)
+  - the Docker daemon must also be running
 
 First fork the repository, and then run the following commands to clone the repository locally.
 
@@ -66,7 +69,7 @@ $ yarn install
 ```
 
 We recommend that you use [Visual Studio Code](https://code.visualstudio.com/) to work on the CDK.
-We use `eslint` to keep our code consistent in terms of style and reducing defects. We recommend installing the
+We use `eslint` to keep our code consistent in terms of style and reducing defects. We recommend installing
 the [eslint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) as well.
 
 ### Repo Layout
@@ -86,7 +89,7 @@ specific to the CDK.
 
 ### Build
 
-The full build of the CDK takes a long time complete; 1-2 hours depending on the performance of the build machine.
+The full build of the CDK takes a long time to complete; 1-2 hours depending on the performance of the build machine.
 However, most first time contributions will require changing only one CDK module, sometimes two. A full build of the
 CDK is not required in these cases.
 
@@ -109,12 +112,13 @@ $ yarn build
 $ yarn test
 ```
 
-However, if you wish to build the the entire repository, the following command will achieve this.
+However, if you wish to build the entire repository, the following command will achieve this.
 
 ```console
 cd <root of the CDK repo>
-yarn build
+scripts/foreach.sh yarn build
 ```
+Note: The `foreach` command is resumable by default; you must supply `-r` or `--reset` to start a new session.
 
 You are now ready to start contributing to the CDK. See the [Pull Requests](#pull-requests) section on how to make your
 changes and submit it as a pull request.
@@ -139,20 +143,6 @@ docker$ exit
 ```
 
 The `dist/` folder within each module contains the packaged up language artifacts.
-
-## Docker Build (Alternative)
-
-Build the docker image:
-
-```console
-$ docker build -t aws-cdk .
-```
-
-This allows you to run the CDK in a CDK-compatible directory with a command like:
-
-```console
-$ docker run -v $(pwd):/app -w /app aws-cdk <CDK ARGS>
-```
 
 ## Gitpod (Alternative)
 
@@ -182,23 +172,49 @@ eval $(gp env -e)
 
 ## Pull Requests
 
+Below is a flow chart that describes how your PR may be treated by repository maintainers:
+
+```mermaid
+graph TD
+    A[Incoming PR] -->B[Is an issue attached?]
+    B -->|Yes - labels copied from issue| C[Is it labeled P1?]
+    B -->|No - auto-labeled as P2| D["Is the effort small?"]
+    C -->|Yes - P1| E[Is the PR build succeeding?]
+    C -->|No - it is P2| D
+    D -->|Yes| E
+    D -->|No| F[Can you break down the PR into smaller chunks?]
+    F --->|Yes| I[Please do. This will help get traction on your PR.]
+    F -->|No| J[Try to garner community support on the issue you are <br/> trying to solve. With 20 +1s, the issue will be relabeled as P1.]
+    E --->|Yes| G[We will review your PR as soon as we can]
+    E -->|No| H[If the build is failing for more than 4 weeks <br/> without any work on it, we will close the PR.]
+```
+
+Note that, if we do not have time to review your PR, it is not the end of the road. We are asking
+for more community support on the attached issue before we focus our attention there. Any `P2` issue
+with 20 or more +1s will be automatically upgraded from `P2`to `P1`.
+
 ### Step 1: Find something to work on
 
-If you want to contribute a specific feature or fix you have in mind, look at active [pull
-requests](https://github.com/aws/aws-cdk/pulls) to see if someone else is already working on it. If not, you can start
-contributing your changes.
+If you want to contribute a specific feature or fix you have in mind, look to see if an issue
+already exists in our [backlog](https://github.com/aws/aws-cdk/issues). If not, please contribute
+a feature request or bug report prior to contributing the PR. We will triage this issue promptly,
+and the priority of the issue (`P1` or `P2`) will give indication of how much attention your PR
+may get.
+
+It's not required to submit an issue first, but PRs that come in without attached issues will be
+automatically labeled as `P2`.
 
 On the other hand, if you are here looking for an issue to work on, explore our [backlog of
-issues](https://github.com/aws/aws-cdk/issues) and find something that piques your interest. We have labeled all of our
-issues for easy searching.
-If you are looking for your first contribution, the ['good first issue'
-label](https://github.com/aws/aws-cdk/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) will be of help.
+issues](https://github.com/aws/aws-cdk/issues) and find something that piques your interest.
+We have labeled all of our issues for easy searching. If you are looking for your first contribution,
+the ['good first issue' label](https://github.com/aws/aws-cdk/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+will be of help.
 
 It's a good idea to keep the priority of issues in mind when deciding what to
 work on. If we have labelled an issue as `P2`, it means it's something we won't
 get to soon, and we're waiting on more feedback from the community (in the form
 of +1s and comments) to give it a higher priority. A PR for a `P2` issue may
-take us some time to review, especially if it involves a complex
+be closed by a maintainer, especially if it involves a complex
 implementation. `P1` issues impact a significant number of customers, so we are
 much more likely to give a PR for those issues prompt attention.
 
@@ -227,6 +243,8 @@ Work your magic. Here are some guidelines:
     Watch out for their error messages and adjust your code accordingly.
 * Every change requires a unit test
 * If you change APIs, make sure to update the module's README file
+  * When you add new examples to the module's README file, you must also ensure they compile - the PR build will fail
+    if they do not. To learn more about how to ensure that they compile, see [Documentation](#documentation).
 * Try to maintain a single feature/bugfix per pull request. It's okay to introduce a little bit of housekeeping
   changes along the way, but try to avoid conflating multiple features. Eventually, all these are going to go into a
   single commit, so you can use that to frame your scope.
@@ -242,9 +260,17 @@ Integration tests perform a few functions in the CDK code base -
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
    CloudFormation deployment does not mean that the resources are set up correctly.
 
-If you are working on a new feature that is using previously unused CloudFormation resource types, or involves
-configuring resource types across services, you need to write integration tests that use these resource types or
-features.
+**When are integration tests required?**
+
+The following list contains common scenarios where we _know_ that integration tests are required.
+This is not an exhaustive list and we will, by default, require integration tests for all
+new features unless there is a good reason why one is not needed.
+
+1. Adding a new feature that is using previously unused CloudFormation resource types
+2. Adding a new feature that is using previously unused (or untested) CloudFormation properties
+3. Involves configuring resource types across services (i.e. integrations)
+4. Adding a new supported version (e.g. a new [AuroraMysqlEngineVersion](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_rds.AuroraMysqlEngineVersion.html))
+5. Adding any functionality via a [Custom Resource](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.custom_resources-readme.html)
 
 To the extent possible, include a section (like below) in the integration test file that specifies how the successfully
 deployed stack can be verified for correctness. Correctness here implies that the resources have been set up correctly.
@@ -260,7 +286,17 @@ The steps here are usually AWS CLI commands but they need not be.
 
 Examples:
 * [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
-* [integ.token-authorizer.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.ts#L6)
+* [integ.token-authorizer.lit.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.lit.ts#L7-L12)
+
+**What do do if you cannot run integration tests**
+
+If you are working on a PR that requires an update to an integration test and you are unable
+to run the `cdk-integ` tool to perform a real deployment, please call this out on the pull request
+so a maintainer can run the tests for you. Please **do not** run the `cdk-integ` tool with `--dry-run`
+or manually update the snapshot.
+
+See the [integration test guide](./INTEGRATION_TESTS.md) for a more complete guide on running
+CDK integration tests.
 
 #### yarn watch (Optional)
 
@@ -276,46 +312,80 @@ $ cd packages/@aws-cdk/aws-iam
 $ yarn watch & # runs in the background
 ```
 
-### Step 4: Commit
+### Step 4: Pull Request
 
-Create a commit with the proposed changes:
+* Create a commit with your changes and push them to a
+  [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
+  > Note: CDK core members can push to a branch on the AWS CDK repo (naming convention: `<user>/<feature-bug-name>`).
 
-* Commit title and message (and PR title and description) must adhere to [conventionalcommits](https://www.conventionalcommits.org).
+* Create a [pull request on
+  Github](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork).
+
+* Pull request title and message (and PR title and description) must adhere to
+  [conventionalcommits](https://www.conventionalcommits.org).
   * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
     `chore(module): title`.
   * Title should be lowercase.
   * No period at the end of the title.
 
-* Commit message should describe _motivation_. Think about your code reviewers and what information they need in
+* Pull request message should describe _motivation_. Think about your code reviewers and what information they need in
   order to understand what you did. If it's a big commit (hopefully not), try to provide some good entry points so
   it will be easier to follow.
 
-* Commit message should indicate which issues are fixed: `fixes #<issue>` or `closes #<issue>`.
+* Pull request message should indicate which issues are fixed: `fixes #<issue>` or `closes #<issue>`.
 
 * Shout out to collaborators.
 
+* Call out any new [unconventional dependencies](#adding-new-unconventional-dependencies) that are created as part of your PR.
+
 * If not obvious (i.e. from unit tests), describe how you verified that your change works.
 
-* If this commit includes breaking changes, they must be listed at the end in the following format (notice how multiple breaking changes should be formatted):
+* If this PR includes breaking changes, they must be listed at the end in the following format
+  (notice how multiple breaking changes should be formatted):
 
-```
-BREAKING CHANGE: Description of what broke and how to achieve this behavior now
-* **module-name:** Another breaking change
-* **module-name:** Yet another breaking change
-```
+  ```
+  BREAKING CHANGE: Description of what broke and how to achieve this behavior now
+  * **module-name:** Another breaking change
+  * **module-name:** Yet another breaking change
+  ```
 
-### Step 5: Pull Request
+* Once the pull request is submitted, a reviewer will be assigned by the maintainers.
 
-* Push to a GitHub fork.
-  * CDK core members can push to a branch on the AWS CDK repo (naming convention: `<user>/<feature-bug-name>`).
-* Submit a Pull Request on GitHub. A reviewer will later be assigned by the maintainers.
+* If the PR build is failing, update the PR with fixes until the build succeeds. You may have trouble getting attention
+  from maintainers if your build is failing, and after 4 weeks of staleness, your PR will be automatically closed. 
+
 * Discuss review comments and iterate until you get at least one "Approve". When iterating, push new commits to the
   same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
   for you when you finalize your merge commit message.
+
 * Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
   commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
 
-### Step 6: Merge
+#### Adding new unconventional dependencies
+
+**For the aws-cdk an unconventional dependency is defined as any dependency that is not managed via the module's
+`package.json` file.**
+
+Sometimes constructs introduce new unconventional dependencies.  Any new unconventional dependency that is introduced needs to have
+an auto upgrade process in place. The recommended way to update dependencies is through [dependabot](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates). 
+You can find the dependabot config file [here](./.github/dependabot.yml).
+
+An example of this is the [@aws-cdk/lambda-layer-awscli](packages/@aws-cdk/lambda-layer-awscli) module.
+This module creates a lambda layer that bundles the AWS CLI. This is considered an unconventional
+dependency because the AWS CLI is bundled into the CDK as part of the build, and the version
+of the AWS CLI that is bundled is not managed by the `package.json` file. 
+
+In order to automatically update the version of the AWS CLI, a custom build process was
+created that takes upgrades into consideration. You can take a look at the files in
+[packages/@aws-cdk/lambda-layer-awscli/layer](packages/@aws-cdk/lambda-layer-awscli/layer)
+to see how the build works, but at a high level a [requirements.txt](packages/@aws-cdk/lambda-layer-awscli/layer/requirements.txt)
+file was created to manage the version. This file was then added to [dependabot.yml](https://github.com/aws/aws-cdk/blob/ab57eb6d1ed69b40ed6ec774853c275785acace8/.github/dependabot.yml#L14-L20)
+so that dependabot will automatically upgrade the version as new versions are released.
+
+**If you think your PR introduces a new unconventional dependency, make sure to call it
+out in the description so that we can discuss the best way to manage that dependency.**
+
+### Step 5: Merge
 
 * Make sure your PR builds successfully (we have CodeBuild setup to automatically build all PRs).
 * Once approved and tested, one of our bots will squash-merge to master and will use your PR title/description as the
@@ -323,7 +393,13 @@ BREAKING CHANGE: Description of what broke and how to achieve this behavior now
 
 ## Breaking Changes
 
-_NOTE: Breaking changes will not be allowed in the upcoming v2 release. These instructions apply to v1._
+**_NOTE_**: _Starting with version 2.0.0 of the AWS CDK, **all modules and members vended as part of the main CDK library**_
+_**(`aws-cdk-lib`) will always be stable**; we are committing to never introduce breaking changes in a non-major bump._
+_Breaking changes are only allowed on pre-released (experimental or dev preview) modules_
+_(those with a `stability` of `experimental` in their respective `package.json` files)._
+_For v1, each module is separately released. For v2, only `stable` modules are released as part of the_
+_main `aws-cdk-lib` release, and all `experimental` modules are released independently as `-alpha` versions,_
+_and not included in the main CDK library._
 
 Whenever you are making changes, there is a chance for those changes to be
 *breaking* existing users of the library. A change is breaking if there are
@@ -339,6 +415,7 @@ Breaking changes come in two flavors:
 
 * API surface changes
 * Behavior changes
+
 
 ### API surface changes
 
@@ -459,6 +536,47 @@ If the new behavior is going to be breaking, the user must opt in to it, either 
 Of these two, the first one is preferred if possible (as feature flags have
 non-local effects which can cause unintended effects).
 
+### Adding new experimental ("preview") APIs
+
+To make sure we can keep adding features fast, while keeping our commitment to
+not release breaking changes, we are introducing a new model - API Previews.
+APIs that we want to get in front of developers early, and are not yet
+finalized, will be added to the AWS CDK with a specific suffix: `BetaX`. APIs
+with the preview suffix will never be removed, instead they will be deprecated
+and replaced by either the stable version (without the suffix), or by a newer
+preview version. For example, assume we add the method
+`grantAwesomePowerBeta1`:
+
+```ts
+/**
+ * This methods grants awesome powers
+ */
+grantAwesomePowerBeta1();
+```
+
+Times goes by, we get feedback that this method will actually be much better
+if it accepts a `Principal`. Since adding a required property is a breaking
+change, we will add `grantAwesomePowerBeta2()` and deprecate
+`grantAwesomePowerBeta1`:
+
+```ts
+/**
+* This methods grants awesome powers to the given principal
+*
+* @param grantee The principal to grant powers to
+*/
+grantAwesomePowerBeta2(grantee: iam.IGrantable)
+
+/**
+* This methods grants awesome powers
+* @deprecated use grantAwesomePowerBeta2
+*/
+grantAwesomePowerBeta1()
+```
+
+When we decide its time to graduate the API, the latest preview version will
+be deprecated and the final version - `grantAwesomePower` will be added.
+
 ## Documentation
 
 Every module's README is rendered as the landing page of the official documentation. For example, this is
@@ -466,7 +584,7 @@ the README for the `aws-ec2` module - https://docs.aws.amazon.com/cdk/api/latest
 
 ### Rosetta
 
-The README file contains code snippets written as typescript code.  Code snippets typed in fenced code blocks
+The README file contains code snippets written as typescript code. Code snippets typed in fenced code blocks
 (such as `` ```ts ``) will be automatically extracted, compiled and translated to other languages when the
 during the [pack](#pack) step. We call this feature 'rosetta'.
 
@@ -499,11 +617,12 @@ When no fixture is specified, the fixture with the name
 `rosetta/default.ts-fixture` will be used if present. `nofixture` can be used to
 opt out of that behavior.
 
-In an `@example` block, which is unfenced, the first line of the example can
-contain three slashes to achieve the same effect:
+In an `@example` block, which is unfenced, additional information pertaining to
+the example can be provided via the `@exampleMetadata` tag:
 
 ```
 /**
+ * @exampleMetadata fixture=with-bucket
  * @example
  *   /// fixture=with-bucket
  *   bucket.addLifecycleTransition({ ...props });
@@ -512,6 +631,12 @@ contain three slashes to achieve the same effect:
 
 For a practical example of how making sample code compilable works, see the
 `aws-ec2` package.
+
+> ⚠️ NOTE: README files often contain code snippets that refer to modules that are consumers
+> of the current module, and hence not present in the current module's dependency closure.
+> Compilation of these snippets will fail if the module referenced has not been built.
+> For the best experience when working on snippets, a full build of the CDK repo is required.
+> However, it may be prudent to "build up" these modules as required.
 
 #### Recommendations
 
@@ -534,20 +659,20 @@ cases where some of those do not apply - good judgement is to be applied):
   // ...rest of the example...
   ```
 
-- Within `.ts-fixture` files, make use of `declare` statements instead of
-  writing a compatible value (this will make your fixtures more durable):
+- Make use of `declare` statements directly in examples for values that are
+  necessary for compilation but unimportant to the example:
 
   ```ts
-  // An hypothetical 'rosetta/default.ts-fixture' file in `@aws-cdk/core`
-  import * as kms from '@aws-cdk/aws-kms';
-  import * as s3 from '@aws-cdk/aws-s3';
-  import { StackProps } from '@aws-cdk/core';
-
-  declare const kmsKey: kms.IKey;
-  declare const bucket: s3.Bucket;
-
-  declare const props: StackProps;
+  // An example about adding a stage to a pipeline in the @aws-cdk/pipelines library
+  declare const pipeline: pipelines.CodePipeline;
+  declare const myStage: Stage;
+  pipeline.addStage(myStage);   
   ```
+
+- Utilize the `default.ts-fixture` that already exists rather than writing new
+  `.ts-fixture` files. This is because values stored in `.ts-fixture` files do
+  not surface to the examples visible in the docs, so while they help successful
+  compilation, they do not help users understand the example.
 
 ## Tools (Advanced)
 
@@ -606,7 +731,7 @@ The following linters are used:
 
 #### eslint
 
-All packages in the repo use a standard base configuration found at [eslintrc.js](tools/cdk-build-tools/config/eslintrc.js).
+All packages in the repo use a standard base configuration found at [eslintrc.js](tools/@aws-cdk/cdk-build-tools/config/eslintrc.js).
 This can be customized for any package by modifying the `.eslintrc` file found at its root.
 
 If you're using the VS Code and would like to see eslint violations on it, install the [eslint
@@ -614,7 +739,7 @@ extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-e
 
 #### pkglint
 
-The `pkglint` tool "lints" package.json files across the repo according to [rules.ts](tools/pkglint/lib/rules.ts).
+The `pkglint` tool "lints" package.json files across the repo according to [rules.ts](tools/@aws-cdk/pkglint/lib/rules.ts).
 
 To evaluate (and attempt to fix) all package linting issues in the repo, run the following command from the root of the
 repository (after bootstrapping):
@@ -678,7 +803,7 @@ these directories.
 ### Linking against this repository
 
 If you are developing your own CDK application or library and want to use the locally checked out version of the
-AWS CDK, instead of the the version of npm, the `./link-all.sh` script will help here.
+AWS CDK, instead of the version of npm, the `./link-all.sh` script will help here.
 
 This script symlinks the built modules from the local AWS CDK repo under the `node_modules/` folder of the CDK app or
 library.
@@ -755,46 +880,18 @@ The pattern is simple:
    with the name of the context key that **enables** this new feature (for
    example, `ENABLE_STACK_NAME_DUPLICATES`). The context key should be in the
    form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
-2. Use `node.tryGetContext(cxapi.ENABLE_XXX)` to check if this feature is enabled
+2. Use `FeatureFlags.of(construct).isEnabled(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
 3. Add your feature flag to the `FUTURE_FLAGS` map in
    [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts).
    This map is inserted to generated `cdk.json` files for new projects created
    through `cdk init`.
-4. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
+4. In your tests, use the `testFutureBehavior` and `testLegacyBehavior` [jest helper methods] to test the enabled and disabled behavior.
+5. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
 
-    ```
-    fix(core): impossible to use the same physical stack name for two stacks (under feature flag)
-    ```
-5. Under `BREAKING CHANGES` in your commit message describe this new behavior:
+    `fix(core): impossible to use the same physical stack name for two stacks (under feature flag)`
 
-    ```
-    BREAKING CHANGE: template file names for new projects created through "cdk init"
-    will use the template artifact ID instead of the physical stack name to enable
-    multiple stacks to use the same name. This is enabled through the flag
-    `@aws-cdk/core:enableStackNameDuplicates` in newly generated `cdk.json` files.
-    ```
-
-In the [next major version of the
-CDK](https://github.com/aws/aws-cdk/issues/3398) we will either remove the
-legacy behavior or flip the logic for all these features and then
-reset the `FEATURE_FLAGS` map for the next cycle.
-
-### Feature Flags - CDKv2
-
-We have started working on the next version of the CDK, specifically CDKv2. This is currently being maintained
-on a separate branch `v2-main` whereas `master` continues to track versions `1.x`.
-
-Feature flags introduced in the CDK 1.x and removed in 2.x, must be added to the `FUTURE_FLAGS_EXPIRED` list in
-[cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts)
-on the `v2-main` branch.
-This will make the default behaviour in CDKv2 as if the flag is enabled and also prevents users from disabling
-the feature flag.
-
-A couple of [jest helper methods] are available for use with unit tests. These help run unit tests that test
-behaviour when flags are enabled or disabled in the two major versions.
-
-[jest helper methods]: https://github.com/aws/aws-cdk/blob/master/tools/cdk-build-tools/lib/feature-flag.ts
+[jest helper methods]: https://github.com/aws/aws-cdk/blob/master/tools/@aws-cdk/cdk-build-tools/lib/feature-flag.ts
 
 ## Versioning and Release
 
@@ -945,3 +1042,4 @@ $ node --inspect-brk /path/to/aws-cdk/node_modules/.bin/jest -i -t 'TESTNAME'
 * [Workshop](https://github.com/aws-samples/aws-cdk-intro-workshop): source for https://cdkworkshop.com
 * [Developer Guide](https://github.com/awsdocs/aws-cdk-guide): markdown source for developer guide
 * [jsii](https://github.com/aws/jsii): the technology we use for multi-language support. If you are looking to help us support new languages, start there.
+

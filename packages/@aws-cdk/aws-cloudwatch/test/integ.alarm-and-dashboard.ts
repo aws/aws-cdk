@@ -16,13 +16,13 @@ const queue = new cdk.CfnResource(stack, 'queue', { type: 'AWS::SQS::Queue' });
 const numberOfMessagesVisibleMetric = new cloudwatch.Metric({
   namespace: 'AWS/SQS',
   metricName: 'ApproximateNumberOfMessagesVisible',
-  dimensions: { QueueName: queue.getAtt('QueueName') },
+  dimensionsMap: { QueueName: queue.getAtt('QueueName').toString() },
 });
 
 const sentMessageSizeMetric = new cloudwatch.Metric({
   namespace: 'AWS/SQS',
   metricName: 'SentMessageSize',
-  dimensions: { QueueName: queue.getAtt('QueueName') },
+  dimensionsMap: { QueueName: queue.getAtt('QueueName').toString() },
 });
 
 const alarm = numberOfMessagesVisibleMetric.createAlarm(stack, 'Alarm', {
@@ -44,6 +44,10 @@ dashboard.addWidgets(
 dashboard.addWidgets(new cloudwatch.AlarmWidget({
   title: 'Messages in queue',
   alarm,
+}));
+dashboard.addWidgets(new cloudwatch.AlarmStatusWidget({
+  title: 'Firing alarms',
+  alarms: [alarm],
 }));
 dashboard.addWidgets(new cloudwatch.GraphWidget({
   title: 'More messages in queue with alarm annotation',

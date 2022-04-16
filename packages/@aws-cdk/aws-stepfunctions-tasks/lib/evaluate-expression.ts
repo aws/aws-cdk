@@ -12,7 +12,7 @@ export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
   /**
    * The expression to evaluate. The expression may contain state paths.
    *
-   * @example '$.a + $.b'
+   * Example value: `'$.a + $.b'`
    */
   readonly expression: string;
 
@@ -60,7 +60,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        resources: [this.evalFn.functionArn],
+        resources: this.evalFn.resourceArnsForGrantInvoke,
         actions: ['lambda:InvokeFunction'],
       }),
     ];
@@ -114,7 +114,9 @@ function createEvalFn(runtime: lambda.Runtime, scope: Construct) {
           uuid,
           handler: 'index.handler',
           lambdaPurpose,
-          code: lambda.Code.fromAsset(path.join(__dirname, 'eval-nodejs-handler')),
+          code: lambda.Code.fromAsset(path.join(__dirname, 'eval-nodejs-handler'), {
+            exclude: ['*.ts'],
+          }),
         });
       }
       break;

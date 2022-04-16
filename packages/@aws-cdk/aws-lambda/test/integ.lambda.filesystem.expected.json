@@ -801,6 +801,7 @@
         "EfsEfsMountTarget195B2DD2E",
         "EfsEfsMountTarget2315C927F",
         "EfsEfsMountTarget36646B9A0",
+        "EfsEfsSecurityGroupfromawscdklambda1MyLambdaSecurityGroup86B085EE20490D9864A8",
         "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
         "MyLambdaServiceRole4539ECB6"
       ]
@@ -1048,7 +1049,8 @@
         "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
         "MyLambdaServiceRole4539ECB6",
         "MyLambda2ServiceRoleDefaultPolicy2BECE79D",
-        "MyLambda2ServiceRoleD09B370C"
+        "MyLambda2ServiceRoleD09B370C",
+        "securityGroupfromawscdklambda1MyLambda2SecurityGroup7492F70D20498301D9D2"
       ]
     }
   }

@@ -1,7 +1,6 @@
-import * as cdkassert from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import '@aws-cdk/assert-internal/jest';
 import * as glue from '../lib';
 
 test('a connection with connection properties', () => {
@@ -15,7 +14,7 @@ test('a connection with connection properties', () => {
     },
   });
 
-  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Connection', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Connection', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -27,7 +26,7 @@ test('a connection with connection properties', () => {
       },
       ConnectionType: 'JDBC',
     },
-  }));
+  });
 });
 
 test('a connection with a subnet and security group', () => {
@@ -43,7 +42,7 @@ test('a connection with a subnet and security group', () => {
     subnet,
   });
 
-  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Connection', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Connection', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -55,7 +54,7 @@ test('a connection with a subnet and security group', () => {
         SecurityGroupIdList: ['sgId'],
       },
     },
-  }));
+  });
 });
 
 test('a connection with a name and description', () => {
@@ -66,7 +65,7 @@ test('a connection with a name and description', () => {
     type: glue.ConnectionType.NETWORK,
   });
 
-  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Connection', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Connection', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -75,7 +74,7 @@ test('a connection with a name and description', () => {
       Name: 'name',
       Description: 'description',
     },
-  }));
+  });
 });
 
 test('a connection with a custom type', () => {
@@ -86,7 +85,7 @@ test('a connection with a custom type', () => {
     type: new glue.ConnectionType('CUSTOM_TYPE'),
   });
 
-  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Connection', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Connection', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -95,7 +94,7 @@ test('a connection with a custom type', () => {
       Name: 'name',
       Description: 'description',
     },
-  }));
+  });
 });
 
 test('a connection with match criteria', () => {
@@ -105,7 +104,7 @@ test('a connection with match criteria', () => {
     matchCriteria: ['c1', 'c2'],
   });
 
-  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Connection', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Connection', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -113,7 +112,7 @@ test('a connection with match criteria', () => {
       ConnectionType: 'NETWORK',
       MatchCriteria: ['c1', 'c2'],
     },
-  }));
+  });
 });
 
 test('addProperty', () => {
@@ -123,7 +122,7 @@ test('addProperty', () => {
   });
   connection.addProperty('SomeKey', 'SomeValue');
 
-  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Connection', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Connection', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -133,7 +132,7 @@ test('addProperty', () => {
         SomeKey: 'SomeValue',
       },
     },
-  }));
+  });
 });
 
 test('fromConnectionName', () => {

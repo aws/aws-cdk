@@ -54,6 +54,9 @@ To add additional dependencies, for example other CDK libraries, just add to
 your requirements.txt file and rerun the `pip install -r requirements.txt`
 command.
 
+## Tutorial  
+See [this useful workshop](https://cdkworkshop.com/30-python.html) on working with the AWS CDK for Python projects.
+
 ## Useful commands
 
  * `cdk ls`          list all stacks in the app

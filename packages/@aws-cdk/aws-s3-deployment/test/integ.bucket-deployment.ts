@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as s3deploy from '../lib';
@@ -11,6 +12,7 @@ class TestBucketDeployment extends cdk.Stack {
       websiteIndexDocument: 'index.html',
       publicReadAccess: false,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true, // needed for integration test cleanup
     });
 
     new s3deploy.BucketDeployment(this, 'DeployMe', {
@@ -19,7 +21,19 @@ class TestBucketDeployment extends cdk.Stack {
       retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
 
-    const bucket2 = new s3.Bucket(this, 'Destination2');
+    new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket,
+      destinationKeyPrefix: 'efs/',
+      useEfs: true,
+      vpc: new ec2.Vpc(this, 'InlineVpc'),
+      retainOnDelete: false, // default is true, which will block the integration test cleanup
+    });
+
+    const bucket2 = new s3.Bucket(this, 'Destination2', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true, // needed for integration test cleanup
+    });
 
     new s3deploy.BucketDeployment(this, 'DeployWithPrefix', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
@@ -28,7 +42,10 @@ class TestBucketDeployment extends cdk.Stack {
       retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
 
-    const bucket3 = new s3.Bucket(this, 'Destination3');
+    const bucket3 = new s3.Bucket(this, 'Destination3', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true, // needed for integration test cleanup
+    });
 
     new s3deploy.BucketDeployment(this, 'DeployWithMetadata', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
@@ -43,6 +60,13 @@ class TestBucketDeployment extends cdk.Stack {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
       destinationBucket,
       prune: false,
+      retainOnDelete: false,
+    });
+
+    new s3deploy.BucketDeployment(this, 'DeployMeWithExcludedFilesOnDestination', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket,
+      exclude: ['*.gif'],
       retainOnDelete: false,
     });
 

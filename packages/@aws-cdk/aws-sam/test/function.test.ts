@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as sam from '../lib';
 
@@ -15,7 +15,7 @@ test("correctly chooses a string array from the type unions of the 'policies' pr
     policies: ['AWSLambdaExecute'],
   });
 
-  expect(stack).toHaveResourceLike('AWS::Serverless::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Function', {
     CodeUri: {
       Bucket: 'my-bucket',
       Key: 'my-key',
@@ -23,5 +23,31 @@ test("correctly chooses a string array from the type unions of the 'policies' pr
     Handler: 'index.handler',
     Runtime: 'nodejs-12.x',
     Policies: ['AWSLambdaExecute'],
+  });
+});
+
+test('has the correct deployment preference hooks structure', () => {
+  const stack = new cdk.Stack();
+
+  new sam.CfnFunction(stack, 'MyFunction', {
+    deploymentPreference: {
+      enabled: true,
+      type: 'AllAtOnce',
+      hooks: {
+        preTraffic: 'pre-traffic-hook-arn',
+        postTraffic: 'post-traffic-hook-arn',
+      },
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Function', {
+    DeploymentPreference: {
+      Enabled: true,
+      Type: 'AllAtOnce',
+      Hooks: {
+        PreTraffic: 'pre-traffic-hook-arn',
+        PostTraffic: 'post-traffic-hook-arn',
+      },
+    },
   });
 });

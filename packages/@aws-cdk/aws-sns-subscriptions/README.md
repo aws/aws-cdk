@@ -27,8 +27,6 @@ Subscriptions to Amazon SQS and AWS Lambda can be added on topics across regions
 Create an Amazon SNS Topic to add subscriptions.
 
 ```ts
-import * as sns from '@aws-cdk/aws-sns';
-
 const myTopic = new sns.Topic(this, 'MyTopic');
 ```
 
@@ -37,7 +35,7 @@ const myTopic = new sns.Topic(this, 'MyTopic');
 Add an HTTP or HTTPS Subscription to your topic:
 
 ```ts
-import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
+const myTopic = new sns.Topic(this, 'MyTopic');
 
 myTopic.addSubscription(new subscriptions.UrlSubscription('https://foobar.com/'));
 ```
@@ -48,8 +46,10 @@ parameter](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parame
 following code defines a CloudFormation parameter and uses it in a URL subscription.
 
 ```ts
+const myTopic = new sns.Topic(this, 'MyTopic');
 const url = new CfnParameter(this, 'url-param');
-myTopic.addSubscription(new subscriptions.UrlSubscription(url.valueAsString()));
+
+myTopic.addSubscription(new subscriptions.UrlSubscription(url.valueAsString));
 ```
 
 ### Amazon SQS
@@ -57,13 +57,14 @@ myTopic.addSubscription(new subscriptions.UrlSubscription(url.valueAsString()));
 Subscribe a queue to your topic:
 
 ```ts
-import * as sqs from '@aws-cdk/aws-sqs';
-import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
-
 const myQueue = new sqs.Queue(this, 'MyQueue');
+const myTopic = new sns.Topic(this, 'MyTopic');
 
-myTopic.addSubscription(new subscriptions.SqsSubscription(queue));
+myTopic.addSubscription(new subscriptions.SqsSubscription(myQueue));
 ```
+
+KMS key permissions will automatically be granted to SNS when a subscription is made to
+an encrypted queue.
 
 Note that subscriptions of queues in different accounts need to be manually confirmed by
 reading the initial message from the queue and visiting the link found in it.
@@ -74,14 +75,9 @@ Subscribe an AWS Lambda function to your topic:
 
 ```ts
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
 
-const myFunction = new lambda.Function(this, 'Echo', {
-  handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_12_X,
-  code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`)
-});
-
+const myTopic = new sns.Topic(this, 'myTopic');
+declare const myFunction: lambda.Function;
 myTopic.addSubscription(new subscriptions.LambdaSubscription(myFunction));
 ```
 
@@ -90,8 +86,7 @@ myTopic.addSubscription(new subscriptions.LambdaSubscription(myFunction));
 Subscribe an email address to your topic:
 
 ```ts
-import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
-
+const myTopic = new sns.Topic(this, 'MyTopic');
 myTopic.addSubscription(new subscriptions.EmailSubscription('foo@bar.com'));
 ```
 
@@ -101,8 +96,10 @@ parameter](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parame
 following code defines a CloudFormation parameter and uses it in an email subscription.
 
 ```ts
+const myTopic = new sns.Topic(this, 'Topic');
 const emailAddress = new CfnParameter(this, 'email-param');
-myTopic.addSubscription(new subscriptions.EmailSubscription(emailAddress.valueAsString()));
+
+myTopic.addSubscription(new subscriptions.EmailSubscription(emailAddress.valueAsString));
 ```
 
 Note that email subscriptions require confirmation by visiting the link sent to the
@@ -113,7 +110,7 @@ email address.
 Subscribe an sms number to your topic:
 
 ```ts
-import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
+const myTopic = new sns.Topic(this, 'Topic');
 
 myTopic.addSubscription(new subscriptions.SmsSubscription('+15551231234'));
 ```
@@ -124,6 +121,8 @@ parameter](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parame
 following code defines a CloudFormation parameter and uses it in an sms subscription.
 
 ```ts
+const myTopic = new sns.Topic(this, 'Topic');
 const smsNumber = new CfnParameter(this, 'sms-param');
-myTopic.addSubscription(new subscriptions.SmsSubscription(smsNumber.valueAsString()));
+
+myTopic.addSubscription(new subscriptions.SmsSubscription(smsNumber.valueAsString));
 ```

@@ -79,7 +79,7 @@
           ]
         },
         "Handler": "index.handler",
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "FServiceRoleDefaultPolicy17A19BFA",
@@ -99,8 +99,8 @@
             "StreamArn"
           ]
         },
-        "TumblingWindowInSeconds": 60,
-        "StartingPosition": "TRIM_HORIZON"
+        "StartingPosition": "TRIM_HORIZON",
+        "TumblingWindowInSeconds": 60
       }
     },
     "TD925BC7E": {

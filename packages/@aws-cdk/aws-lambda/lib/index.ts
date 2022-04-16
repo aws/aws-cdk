@@ -17,8 +17,10 @@ export * from './destination';
 export * from './event-invoke-config';
 export * from './scalable-attribute-api';
 export * from './code-signing-config';
-
+export * from './lambda-insights';
 export * from './log-retention';
+export * from './architecture';
+export * from './function-url';
 
 // AWS::Lambda CloudFormation Resources:
 export * from './lambda.generated';

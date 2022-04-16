@@ -100,7 +100,7 @@ export interface UserProps {
    * The password for the user. This is required so the user can access the
    * AWS Management Console.
    *
-   * You can use `SecretValue.plainText` to specify a password in plain text or
+   * You can use `SecretValue.unsafePlainText` to specify a password in plain text or
    * use `secretsmanager.Secret.fromSecretAttributes` to reference a secret in
    * Secrets Manager.
    *
@@ -156,6 +156,9 @@ export class User extends Resource implements IIdentity, IUser {
   /**
    * Import an existing user given a user ARN.
    *
+   * If the ARN comes from a Token, the User cannot have a path; if so, any attempt
+   * to reference its username will fail.
+   *
    * @param scope construct scope
    * @param id construct id
    * @param userArn the ARN of an existing user to import
@@ -167,6 +170,9 @@ export class User extends Resource implements IIdentity, IUser {
   /**
    * Import an existing user given user attributes.
    *
+   * If the ARN comes from a Token, the User cannot have a path; if so, any attempt
+   * to reference its username will fail.
+   *
    * @param scope construct scope
    * @param id construct id
    * @param attrs the attributes of the user to import
@@ -175,7 +181,10 @@ export class User extends Resource implements IIdentity, IUser {
     class Import extends Resource implements IUser {
       public readonly grantPrincipal: IPrincipal = this;
       public readonly principalAccount = Aws.ACCOUNT_ID;
-      public readonly userName: string = Arn.extractResourceName(attrs.userArn, 'user');
+      // Resource name with path can have multiple elements separated by slash.
+      // Therefore, use element after last slash as userName. Happens to work for Tokens since
+      // they don't have a '/' in them.
+      public readonly userName: string = Arn.extractResourceName(attrs.userArn, 'user').split('/').pop()!;
       public readonly userArn: string = attrs.userArn;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
       public readonly policyFragment: PrincipalPolicyFragment = new ArnPrincipal(attrs.userArn).policyFragment;
@@ -267,7 +276,8 @@ export class User extends Resource implements IIdentity, IUser {
       region: '', // IAM is global in each partition
       service: 'iam',
       resource: 'user',
-      resourceName: this.physicalName,
+      // Removes leading slash from path
+      resourceName: `${props.path ? props.path.substr(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
     });
 
     this.policyFragment = new ArnPrincipal(this.userArn).policyFragment;
@@ -323,7 +333,7 @@ export class User extends Resource implements IIdentity, IUser {
   private parseLoginProfile(props: UserProps): CfnUser.LoginProfileProperty | undefined {
     if (props.password) {
       return {
-        password: props.password.toString(),
+        password: props.password.unsafeUnwrap(), // Safe usage
         passwordResetRequired: props.passwordResetRequired,
       };
     }

@@ -3,8 +3,8 @@ import { ISecurityGroup, IVpc, SubnetSelection } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Stack } from '@aws-cdk/core';
-import { StreamEventSource, StreamEventSourceProps } from './stream';
+import { Stack, Names } from '@aws-cdk/core';
+import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -13,15 +13,18 @@ import { Construct } from '@aws-cdk/core';
 /**
  * Properties for a Kafka event source
  */
-export interface KafkaEventSourceProps extends StreamEventSourceProps {
+export interface KafkaEventSourceProps extends BaseStreamEventSourceProps{
   /**
-   * the Kafka topic to subscribe to
+   * The Kafka topic to subscribe to
    */
   readonly topic: string,
   /**
-   * the secret with the Kafka credentials, see https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html for details
+   * The secret with the Kafka credentials, see https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html for details
+   * This field is required if your Kafka brokers are accessed over the Internet
+   *
+   * @default none
    */
-  readonly secret: secretsmanager.ISecret
+  readonly secret?: secretsmanager.ISecret
 }
 
 /**
@@ -29,7 +32,7 @@ export interface KafkaEventSourceProps extends StreamEventSourceProps {
  */
 export interface ManagedKafkaEventSourceProps extends KafkaEventSourceProps {
   /**
-   * an MSK cluster construct
+   * An MSK cluster construct
    */
   readonly clusterArn: string;
 }
@@ -46,6 +49,14 @@ export enum AuthenticationMethod {
    * SASL_SCRAM_256_AUTH authentication method for your Kafka cluster
    */
   SASL_SCRAM_256_AUTH = 'SASL_SCRAM_256_AUTH',
+  /**
+   * BASIC_AUTH (SASL/PLAIN) authentication method for your Kafka cluster
+   */
+  BASIC_AUTH = 'BASIC_AUTH',
+  /**
+   * CLIENT_CERTIFICATE_TLS_AUTH (mTLS) authentication method for your Kafka cluster
+   */
+  CLIENT_CERTIFICATE_TLS_AUTH = 'CLIENT_CERTIFICATE_TLS_AUTH',
 }
 
 /**
@@ -94,6 +105,7 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
 export class ManagedKafkaEventSource extends StreamEventSource {
   // This is to work around JSII inheritance problems
   private innerProps: ManagedKafkaEventSourceProps;
+  private _eventSourceMappingId?: string = undefined;
 
   constructor(props: ManagedKafkaEventSourceProps) {
     super(props);
@@ -101,18 +113,21 @@ export class ManagedKafkaEventSource extends StreamEventSource {
   }
 
   public bind(target: lambda.IFunction) {
-    target.addEventSourceMapping(
-      `KafkaEventSource:${this.innerProps.clusterArn}${this.innerProps.topic}`,
+    const eventSourceMapping = target.addEventSourceMapping(
+      `KafkaEventSource:${Names.nodeUniqueId(target.node)}${this.innerProps.topic}`,
       this.enrichMappingOptions({
         eventSourceArn: this.innerProps.clusterArn,
         startingPosition: this.innerProps.startingPosition,
-        // From https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html#msk-password-limitations, "Amazon MSK only supports SCRAM-SHA-512 authentication."
-        sourceAccessConfigurations: [{ type: lambda.SourceAccessConfigurationType.SASL_SCRAM_512_AUTH, uri: this.innerProps.secret.secretArn }],
+        sourceAccessConfigurations: this.sourceAccessConfigurations(),
         kafkaTopic: this.innerProps.topic,
       }),
     );
 
-    this.innerProps.secret.grantRead(target);
+    this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
+
+    if (this.innerProps.secret !== undefined) {
+      this.innerProps.secret.grantRead(target);
+    }
 
     target.addToRolePolicy(new iam.PolicyStatement(
       {
@@ -122,6 +137,31 @@ export class ManagedKafkaEventSource extends StreamEventSource {
     ));
 
     target.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaMSKExecutionRole'));
+  }
+
+  private sourceAccessConfigurations() {
+    const sourceAccessConfigurations = [];
+    if (this.innerProps.secret !== undefined) {
+      // "Amazon MSK only supports SCRAM-SHA-512 authentication." from https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html#msk-password-limitations
+      sourceAccessConfigurations.push({
+        type: lambda.SourceAccessConfigurationType.SASL_SCRAM_512_AUTH,
+        uri: this.innerProps.secret.secretArn,
+      });
+    }
+
+    return sourceAccessConfigurations.length === 0
+      ? undefined
+      : sourceAccessConfigurations;
+  }
+
+  /**
+  * The identifier for this EventSourceMapping
+  */
+  public get eventSourceMappingId(): string {
+    if (!this._eventSourceMappingId) {
+      throw new Error('KafkaEventSource is not yet bound to an event source mapping');
+    }
+    return this._eventSourceMappingId;
   }
 }
 
@@ -141,6 +181,8 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       if (!props.vpcSubnets) {
         throw new Error('vpcSubnets must be set when providing vpc');
       }
+    } else if (!props.secret) {
+      throw new Error('secret must be set if Kafka brokers accessed over Internet');
     }
     this.innerProps = props;
   }
@@ -156,7 +198,10 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
       }),
     );
-    this.innerProps.secret.grantRead(target);
+
+    if (this.innerProps.secret !== undefined) {
+      this.innerProps.secret.grantRead(target);
+    }
   }
 
   private mappingId(target: lambda.IFunction) {
@@ -169,6 +214,12 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
   private sourceAccessConfigurations() {
     let authType;
     switch (this.innerProps.authenticationMethod) {
+      case AuthenticationMethod.BASIC_AUTH:
+        authType = lambda.SourceAccessConfigurationType.BASIC_AUTH;
+        break;
+      case AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH:
+        authType = lambda.SourceAccessConfigurationType.CLIENT_CERTIFICATE_TLS_AUTH;
+        break;
       case AuthenticationMethod.SASL_SCRAM_256_AUTH:
         authType = lambda.SourceAccessConfigurationType.SASL_SCRAM_256_AUTH;
         break;
@@ -177,7 +228,12 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         authType = lambda.SourceAccessConfigurationType.SASL_SCRAM_512_AUTH;
         break;
     }
-    let sourceAccessConfigurations = [{ type: authType, uri: this.innerProps.secret.secretArn }];
+
+    const sourceAccessConfigurations = [];
+    if (this.innerProps.secret !== undefined) {
+      sourceAccessConfigurations.push({ type: authType, uri: this.innerProps.secret.secretArn });
+    }
+
     if (this.innerProps.vpcSubnets !== undefined && this.innerProps.securityGroup !== undefined) {
       sourceAccessConfigurations.push({
         type: lambda.SourceAccessConfigurationType.VPC_SECURITY_GROUP,
@@ -188,6 +244,9 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         sourceAccessConfigurations.push({ type: lambda.SourceAccessConfigurationType.VPC_SUBNET, uri: id });
       });
     }
-    return sourceAccessConfigurations;
+
+    return sourceAccessConfigurations.length === 0
+      ? undefined
+      : sourceAccessConfigurations;
   }
 }

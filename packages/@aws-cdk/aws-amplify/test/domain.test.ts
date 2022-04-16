@@ -1,5 +1,5 @@
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
-import '@aws-cdk/assert-internal/jest';
 import { App, SecretValue, Stack } from '@aws-cdk/core';
 import * as amplify from '../lib';
 
@@ -10,7 +10,7 @@ test('create a domain', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
   const prodBranch = app.addBranch('master');
@@ -28,7 +28,7 @@ test('create a domain', () => {
   domain.mapSubDomain(devBranch);
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::Domain', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Domain', {
     AppId: {
       'Fn::GetAtt': [
         'AppF1B96344',
@@ -71,7 +71,7 @@ test('map a branch to the domain root', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
   const prodBranch = app.addBranch('master');
@@ -81,7 +81,7 @@ test('map a branch to the domain root', () => {
   domain.mapRoot(prodBranch);
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::Domain', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Domain', {
     AppId: {
       'Fn::GetAtt': [
         'AppF1B96344',
@@ -111,7 +111,7 @@ test('throws at synthesis without subdomains', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
 
@@ -129,7 +129,7 @@ test('auto subdomain all branches', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
   const prodBranch = app.addBranch('master');
@@ -141,7 +141,7 @@ test('auto subdomain all branches', () => {
   domain.mapRoot(prodBranch);
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::Domain', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Domain', {
     EnableAutoSubDomain: true,
     AutoSubDomainCreationPatterns: [
       '*',
@@ -163,7 +163,7 @@ test('auto subdomain some branches', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
   const prodBranch = app.addBranch('master');
@@ -176,7 +176,7 @@ test('auto subdomain some branches', () => {
   domain.mapRoot(prodBranch);
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::Domain', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Domain', {
     EnableAutoSubDomain: true,
     AutoSubDomainCreationPatterns: ['features/**'],
     AutoSubDomainIAMRole: {
@@ -195,7 +195,7 @@ test('auto subdomain with IAM role', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     role: iam.Role.fromRoleArn(
       stack,
@@ -214,7 +214,7 @@ test('auto subdomain with IAM role', () => {
   domain.mapRoot(prodBranch);
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::Domain', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Domain', {
     EnableAutoSubDomain: true,
     AutoSubDomainCreationPatterns: ['features/**'],
     AutoSubDomainIAMRole: {

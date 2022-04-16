@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { App, Aws, Stack } from '@aws-cdk/core';
 import { OriginRequestPolicy, OriginRequestCookieBehavior, OriginRequestHeaderBehavior, OriginRequestQueryStringBehavior } from '../lib';
 
@@ -22,7 +22,7 @@ describe('OriginRequestPolicy', () => {
   test('minimal example', () => {
     new OriginRequestPolicy(stack, 'OriginRequestPolicy');
 
-    expect(stack).toHaveResource('AWS::CloudFront::OriginRequestPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::OriginRequestPolicy', {
       OriginRequestPolicyConfig: {
         Name: 'StackOriginRequestPolicy6B17D9ED',
         CookiesConfig: {
@@ -47,7 +47,7 @@ describe('OriginRequestPolicy', () => {
       queryStringBehavior: OriginRequestQueryStringBehavior.allowList('username'),
     });
 
-    expect(stack).toHaveResource('AWS::CloudFront::OriginRequestPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::OriginRequestPolicy', {
       OriginRequestPolicyConfig: {
         Name: 'MyPolicy',
         Comment: 'A default policy',
@@ -87,6 +87,12 @@ describe('OriginRequestPolicy', () => {
     expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy6', { headerBehavior: OriginRequestHeaderBehavior.allowList('Foo', 'Accept-Encoding', 'Bar') })).toThrow(errorMessage);
 
     expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy7', { headerBehavior: OriginRequestHeaderBehavior.allowList('Foo', 'Bar') })).not.toThrow();
+  });
+
+  test('accepts headers with disallowed keywords as part of the header', () => {
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy1', { headerBehavior: OriginRequestHeaderBehavior.allowList('x-wp-access-authorization') })).not.toThrow();
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy2', { headerBehavior: OriginRequestHeaderBehavior.allowList('do-not-accept-encoding') })).not.toThrow();
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy3', { headerBehavior: OriginRequestHeaderBehavior.allowList('authorization-Header') })).not.toThrow();
   });
 
   test('does not throw if originRequestPolicyName is a token', () => {

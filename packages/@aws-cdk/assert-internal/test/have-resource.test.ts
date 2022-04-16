@@ -1,8 +1,15 @@
-import { writeFileSync } from 'fs';
-import { join } from 'path';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import * as cxapi from '@aws-cdk/cx-api';
-import { ABSENT, arrayWith, exactValue, expect as cdkExpect, haveResource, haveResourceLike, Capture, anything } from '../lib/index';
+import {
+  ABSENT,
+  arrayWith,
+  exactValue,
+  expect as cdkExpect,
+  haveResource,
+  haveResourceLike,
+  Capture,
+  anything,
+  stringLike,
+} from '../lib/index';
+import { mkResource, mkStack } from './cloud-artifact';
 
 test('support resource with no properties', () => {
   const synthStack = mkStack({
@@ -86,7 +93,7 @@ test('haveResource allows to opt in value extension', () => {
 
 describe('property absence', () => {
   test('pass on absence', () => {
-    const synthStack = mkSomeResource({
+    const synthStack = mkResource({
       Prop: 'somevalue',
     });
 
@@ -96,7 +103,7 @@ describe('property absence', () => {
   });
 
   test('fail on presence', () => {
-    const synthStack = mkSomeResource({
+    const synthStack = mkResource({
       PropA: 3,
     });
 
@@ -108,7 +115,7 @@ describe('property absence', () => {
   });
 
   test('pass on deep absence', () => {
-    const synthStack = mkSomeResource({
+    const synthStack = mkResource({
       Deep: {
         Prop: 'somevalue',
       },
@@ -123,7 +130,7 @@ describe('property absence', () => {
   });
 
   test('fail on deep presence', () => {
-    const synthStack = mkSomeResource({
+    const synthStack = mkResource({
       Deep: {
         Prop: 'somevalue',
       },
@@ -139,7 +146,7 @@ describe('property absence', () => {
   });
 
   test('can use matcher to test for list element', () => {
-    const synthStack = mkSomeResource({
+    const synthStack = mkResource({
       List: [
         { Prop: 'distraction' },
         { Prop: 'goal' },
@@ -159,8 +166,32 @@ describe('property absence', () => {
     }).toThrowError(/Array did not contain expected element/);
   });
 
+  test('can use matcher to test stringLike on single-line strings', () => {
+    const synthStack = mkResource({
+      Content: 'something required something',
+    });
+
+    expect(() => {
+      cdkExpect(synthStack).to(haveResource('Some::Resource', {
+        Content: stringLike('*required*'),
+      }));
+    }).not.toThrowError();
+  });
+
+  test('can use matcher to test stringLike on multi-line strings', () => {
+    const synthStack = mkResource({
+      Content: 'something\nrequired\nsomething',
+    });
+
+    expect(() => {
+      cdkExpect(synthStack).to(haveResource('Some::Resource', {
+        Content: stringLike('*required*'),
+      }));
+    }).not.toThrowError();
+  });
+
   test('arrayContaining must match all elements in any order', () => {
-    const synthStack = mkSomeResource({
+    const synthStack = mkResource({
       List: ['a', 'b'],
     });
 
@@ -178,7 +209,7 @@ describe('property absence', () => {
   });
 
   test('exactValue escapes from deep fuzzy matching', () => {
-    const synthStack = mkSomeResource({
+    const synthStack = mkResource({
       Deep: {
         PropA: 'A',
         PropB: 'B',
@@ -216,7 +247,7 @@ describe('property absence', () => {
    * it.
    */
   test('objectContainingDeep has deep effect through lists', () => {
-    const synthStack = mkSomeResource({
+    const synthStack = mkResource({
       List: [
         {
           PropA: 'A',
@@ -240,7 +271,7 @@ describe('property absence', () => {
   });
 
   test('test capturing', () => {
-    const synthStack = mkSomeResource({
+    const synthStack = mkResource({
       Prop: 'somevalue',
     });
 
@@ -252,28 +283,3 @@ describe('property absence', () => {
     expect(propValue.capturedValue).toEqual('somevalue');
   });
 });
-
-function mkStack(template: any): cxapi.CloudFormationStackArtifact {
-  const assembly = new cxapi.CloudAssemblyBuilder();
-  assembly.addArtifact('test', {
-    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
-    environment: cxapi.EnvironmentUtils.format('123456789', 'us-west-2'),
-    properties: {
-      templateFile: 'template.json',
-    },
-  });
-
-  writeFileSync(join(assembly.outdir, 'template.json'), JSON.stringify(template));
-  return assembly.buildAssembly().getStackByName('test');
-}
-
-function mkSomeResource(props: any): cxapi.CloudFormationStackArtifact {
-  return mkStack({
-    Resources: {
-      SomeResource: {
-        Type: 'Some::Resource',
-        Properties: props,
-      },
-    },
-  });
-}

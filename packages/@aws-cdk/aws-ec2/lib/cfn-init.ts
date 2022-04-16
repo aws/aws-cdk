@@ -111,7 +111,7 @@ export class CloudFormationInit {
     // as well as include any asset hashes provided so the fingerprint is accurate.
     const resolvedConfig = attachedResource.stack.resolve(bindResult.configData);
     const fingerprintInput = { config: resolvedConfig, assetHash: bindResult.assetHash };
-    const fingerprint = contentHash(JSON.stringify(fingerprintInput)).substr(0, 16);
+    const fingerprint = contentHash(JSON.stringify(fingerprintInput)).slice(0, 16);
 
     attachOptions.instanceRole.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],
@@ -124,7 +124,20 @@ export class CloudFormationInit {
 
     // To identify the resources that have the metadata and where the signal
     // needs to be sent, we need { region, stackName, logicalId }
-    const resourceLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} --resource ${attachedResource.logicalId}`;
+    let resourceLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} --resource ${attachedResource.logicalId}`;
+    const signalResource = attachOptions.signalResource?.logicalId ?? attachedResource.logicalId;
+    let notifyResourceLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} --resource ${signalResource}`;
+
+    // If specified in attachOptions, include arguments in cfn-init/cfn-signal commands
+    if (attachOptions.includeUrl) {
+      resourceLocator = `${resourceLocator} --url https://cloudformation.${Aws.REGION}.${Aws.URL_SUFFIX}`;
+      notifyResourceLocator = `${notifyResourceLocator} --url https://cloudformation.${Aws.REGION}.${Aws.URL_SUFFIX}`;
+    }
+    if (attachOptions.includeRole) {
+      resourceLocator = `${resourceLocator} --role ${attachOptions.instanceRole.roleName}`;
+      notifyResourceLocator = `${notifyResourceLocator} --role ${attachOptions.instanceRole.roleName}`;
+    }
+
     const configSets = (attachOptions.configSets ?? ['default']).join(',');
     const printLog = attachOptions.printLog ?? true;
 
@@ -135,22 +148,26 @@ export class CloudFormationInit {
 
     if (attachOptions.platform === OperatingSystemType.WINDOWS) {
       const errCode = attachOptions.ignoreFailures ? '0' : '$LASTEXITCODE';
-      attachOptions.userData.addCommands(...[
-        `cfn-init.exe -v ${resourceLocator} -c ${configSets}`,
-        `cfn-signal.exe -e ${errCode} ${resourceLocator}`,
-        ...printLog ? ['type C:\\cfn\\log\\cfn-init.log'] : [],
-      ]);
+      attachOptions.userData.addCommands(
+        ...[
+          `cfn-init.exe -v ${resourceLocator} -c ${configSets}`,
+          `cfn-signal.exe -e ${errCode} ${notifyResourceLocator}`,
+          ...(printLog ? ['type C:\\cfn\\log\\cfn-init.log'] : []),
+        ],
+      );
     } else {
       const errCode = attachOptions.ignoreFailures ? '0' : '$?';
-      attachOptions.userData.addCommands(...[
-        // Run a subshell without 'errexit', so we can signal using the exit code of cfn-init
-        '(',
-        '  set +e',
-        `  /opt/aws/bin/cfn-init -v ${resourceLocator} -c ${configSets}`,
-        `  /opt/aws/bin/cfn-signal -e ${errCode} ${resourceLocator}`,
-        ...printLog ? ['  cat /var/log/cfn-init.log >&2'] : [],
-        ')',
-      ]);
+      attachOptions.userData.addCommands(
+        ...[
+          // Run a subshell without 'errexit', so we can signal using the exit code of cfn-init
+          '(',
+          '  set +e',
+          `  /opt/aws/bin/cfn-init -v ${resourceLocator} -c ${configSets}`,
+          `  /opt/aws/bin/cfn-signal -e ${errCode} ${notifyResourceLocator}`,
+          ...(printLog ? ['  cat /var/log/cfn-init.log >&2'] : []),
+          ')',
+        ],
+      );
     }
   }
 
@@ -347,6 +364,25 @@ export interface AttachInitOptions {
   readonly instanceRole: iam.IRole;
 
   /**
+   * Include --url argument when running cfn-init and cfn-signal commands
+   *
+   * This will be the cloudformation endpoint in the deployed region
+   * e.g. https://cloudformation.us-east-1.amazonaws.com
+   *
+   * @default false
+   */
+  readonly includeUrl?: boolean;
+
+  /**
+   * Include --role argument when running cfn-init and cfn-signal commands
+   *
+   * This will be the IAM instance profile attached to the EC2 instance
+   *
+   * @default false
+   */
+  readonly includeRole?: boolean;
+
+  /**
    * OS Platform the init config will be used for
    */
   readonly platform: OperatingSystemType;
@@ -401,4 +437,13 @@ export interface AttachInitOptions {
    * @default false
    */
   readonly ignoreFailures?: boolean;
+
+  /**
+   * When provided, signals this resource instead of the attached resource
+   *
+   * You can use this to support signaling LaunchTemplate while attaching AutoScalingGroup
+   *
+   * @default - if this property is undefined cfn-signal signals the attached resource
+   */
+  readonly signalResource?: CfnResource;
 }

@@ -4,7 +4,6 @@ import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
-import * as minimatch from 'minimatch';
 import { AssetHashType, AssetOptions, FileAssetPackaging } from './assets';
 import { BundlingOptions, BundlingOutput } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
@@ -188,8 +187,7 @@ export class AssetStaging extends CoreConstruct {
     let skip = false;
     if (props.bundling) {
       // Check if we actually have to bundle for this stack
-      const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
-      skip = !bundlingStacks.find(pattern => minimatch(Stack.of(this).stackName, pattern));
+      skip = !Stack.of(this).bundlingRequired;
       const bundling = props.bundling;
       stageThisAsset = () => this.stageByBundling(bundling, skip);
     } else {
@@ -336,6 +334,15 @@ export class AssetStaging extends CoreConstruct {
     const stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash, bundledAsset.extension));
 
     this.stageAsset(bundledAsset.path, stagedPath, 'move');
+
+    // If bundling produced a single archive file we "touch" this file in the bundling
+    // directory after it has been moved to the staging directory. This way if bundling
+    // is skipped because the bundling directory already exists we can still determine
+    // the correct packaging type.
+    if (bundledAsset.packaging === FileAssetPackaging.FILE) {
+      fs.closeSync(fs.openSync(bundledAsset.path, 'w'));
+    }
+
     return {
       assetHash,
       stagedPath,
@@ -419,16 +426,6 @@ export class AssetStaging extends CoreConstruct {
     // Chmod the bundleDir to full access.
     fs.chmodSync(bundleDir, 0o777);
 
-    let user: string;
-    if (options.user) {
-      user = options.user;
-    } else { // Default to current user
-      const userInfo = os.userInfo();
-      user = userInfo.uid !== -1 // uid is -1 on Windows
-        ? `${userInfo.uid}:${userInfo.gid}`
-        : '1000:1000';
-    }
-
     // Always mount input and output dir
     const volumes = [
       {
@@ -448,12 +445,23 @@ export class AssetStaging extends CoreConstruct {
 
       localBundling = options.local?.tryBundle(bundleDir, options);
       if (!localBundling) {
+        let user: string;
+        if (options.user) {
+          user = options.user;
+        } else { // Default to current user
+          const userInfo = os.userInfo();
+          user = userInfo.uid !== -1 // uid is -1 on Windows
+            ? `${userInfo.uid}:${userInfo.gid}`
+            : '1000:1000';
+        }
+
         options.image.run({
           command: options.command,
           user,
           volumes,
           environment: options.environment,
           workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
+          securityOpt: options.securityOpt ?? '',
         });
       }
     } catch (err) {

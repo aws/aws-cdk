@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { CloudAssembly } from '../lib';
 
 const FIXTURES = path.join(__dirname, 'fixtures');
@@ -105,7 +106,7 @@ test('fails for invalid dependencies', () => {
   expect(() => new CloudAssembly(path.join(FIXTURES, 'invalid-depends'))).toThrow('Artifact StackC depends on non-existing artifact StackX');
 });
 
-test('stack artifacts can specify an explicit stack name that is different from the artifact id', () => {
+testDeprecated('stack artifacts can specify an explicit stack name that is different from the artifact id', () => {
   const assembly = new CloudAssembly(path.join(FIXTURES, 'explicit-stack-name'));
 
   expect(assembly.getStackByName('TheStackName').stackName).toStrictEqual('TheStackName');
@@ -131,7 +132,22 @@ test('getStackArtifact retrieves a stack by artifact id', () => {
   expect(assembly.getStackArtifact('stack1').id).toEqual('stack1');
 });
 
-test('displayName shows both artifact ID and stack name if needed', () => {
+test('displayName shows hierarchical ID for nested stack without explicit stackName', () => {
+  const assembly = new CloudAssembly(path.join(FIXTURES, 'nested-stacks'));
+  const stackArtifact = assembly.getStackArtifact('topLevelStackNestedStackDAC87084');
+  expect(stackArtifact.hierarchicalId).toStrictEqual('topLevelStack/nestedStack');
+  expect(stackArtifact.displayName).toStrictEqual('topLevelStack/nestedStack');
+});
+
+test('displayName shows hierarchical ID and stackName for nested stack with explicit stackName', () => {
+  const assembly = new CloudAssembly(path.join(FIXTURES, 'nested-stacks'));
+  const nestedStack = assembly.getStackArtifact('topLevelStackNestedStackWithStackName6D28EAEF');
+  expect(nestedStack.hierarchicalId).toStrictEqual('topLevelStack/nestedStackWithStackName');
+  expect(nestedStack.stackName).toStrictEqual('explicitStackName');
+  expect(nestedStack.displayName).toStrictEqual('topLevelStack/nestedStackWithStackName (explicitStackName)');
+});
+
+test('displayName shows both hierarchical ID and stack name if needed', () => {
   const a1 = new CloudAssembly(path.join(FIXTURES, 'multiple-stacks-same-name'));
   expect(a1.getStackArtifact('stack1').displayName).toStrictEqual('stack1 (the-physical-name-of-the-stack)');
   expect(a1.getStackArtifact('stack2').displayName).toStrictEqual('stack2 (the-physical-name-of-the-stack)');

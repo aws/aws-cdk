@@ -206,7 +206,15 @@ export interface ResourceConfig {
   /**
    * ML compute instance type.
    *
-   * @default is the 'm4.xlarge' instance type.
+   * To provide an instance type from the task input, supply an instance type in the following way
+   * where the value in the task input is an EC2 instance type prepended with "ml.":
+   *
+   * ```ts
+   * new ec2.InstanceType(sfn.JsonPath.stringAt('$.path.to.instanceType'));
+   * ```
+   * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ResourceConfig.html#sagemaker-Type-ResourceConfig-InstanceType
+   *
+   * @default ec2.InstanceType(ec2.InstanceClass.M4, ec2.InstanceType.XLARGE)
    */
   readonly instanceType: ec2.InstanceType;
 
@@ -345,10 +353,10 @@ export abstract class DockerImage {
    * Reference a Docker image stored in an ECR repository.
    *
    * @param repository the ECR repository where the image is hosted.
-   * @param tag an optional `tag`
+   * @param tagOrDigest an optional tag or digest (digests must start with `sha256:`)
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): DockerImage {
-    return new StandardDockerImage({ repository, imageUri: repository.repositoryUriForTag(tag) });
+  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): DockerImage {
+    return new StandardDockerImage({ repository, imageUri: repository.repositoryUriForTagOrDigest(tagOrDigest) });
   }
 
   /**

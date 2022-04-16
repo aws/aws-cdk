@@ -1,0 +1,16 @@
+{
+  "PropertyTypes": {
+    "patch": {
+      "description": "Add type",
+      "operations": [
+        {
+          "op": "add",
+          "path": "/AWS::Lightsail::Instance.Networking/Properties/MonthlyTransfer",
+          "value": {
+            "PrimitiveType": "Integer"
+          }
+        }
+      ]
+    }
+  }
+}

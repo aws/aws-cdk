@@ -1,13 +1,12 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as codedeploy from '@aws-cdk/aws-codedeploy';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
-nodeunitShim({
-  'CodeDeploy ECS Deploy Action': {
-    'throws an exception if more than 4 container image inputs are provided'(test: Test) {
+describe('CodeDeploy ECS Deploy Action', () => {
+  describe('CodeDeploy ECS Deploy Action', () => {
+    test('throws an exception if more than 4 container image inputs are provided', () => {
       const stack = new cdk.Stack();
       const deploymentGroup = addEcsDeploymentGroup(stack);
       const artifact = new codepipeline.Artifact('Artifact');
@@ -19,7 +18,7 @@ nodeunitShim({
         });
       }
 
-      test.throws(() => {
+      expect(() => {
         new cpactions.CodeDeployEcsDeployAction({
           actionName: 'DeployToECS',
           deploymentGroup,
@@ -27,18 +26,18 @@ nodeunitShim({
           appSpecTemplateInput: artifact,
           containerImageInputs,
         });
-      }, /Action cannot have more than 4 container image inputs, got: 5/);
+      }).toThrow(/Action cannot have more than 4 container image inputs, got: 5/);
 
-      test.done();
-    },
 
-    'throws an exception if both appspec artifact input and file are specified'(test: Test) {
+    });
+
+    test('throws an exception if both appspec artifact input and file are specified', () => {
       const stack = new cdk.Stack();
       const deploymentGroup = addEcsDeploymentGroup(stack);
       const artifact = new codepipeline.Artifact('Artifact');
       const artifactPath = new codepipeline.ArtifactPath(artifact, 'hello');
 
-      test.throws(() => {
+      expect(() => {
         new cpactions.CodeDeployEcsDeployAction({
           actionName: 'DeployToECS',
           deploymentGroup,
@@ -46,34 +45,34 @@ nodeunitShim({
           appSpecTemplateInput: artifact,
           appSpecTemplateFile: artifactPath,
         });
-      }, /Exactly one of 'appSpecTemplateInput' or 'appSpecTemplateFile' can be provided in the ECS CodeDeploy Action/);
+      }).toThrow(/Exactly one of 'appSpecTemplateInput' or 'appSpecTemplateFile' can be provided in the ECS CodeDeploy Action/);
 
-      test.done();
-    },
 
-    'throws an exception if neither appspec artifact input nor file are specified'(test: Test) {
+    });
+
+    test('throws an exception if neither appspec artifact input nor file are specified', () => {
       const stack = new cdk.Stack();
       const deploymentGroup = addEcsDeploymentGroup(stack);
       const artifact = new codepipeline.Artifact('Artifact');
 
-      test.throws(() => {
+      expect(() => {
         new cpactions.CodeDeployEcsDeployAction({
           actionName: 'DeployToECS',
           deploymentGroup,
           taskDefinitionTemplateInput: artifact,
         });
-      }, /Specifying one of 'appSpecTemplateInput' or 'appSpecTemplateFile' is required for the ECS CodeDeploy Action/);
+      }).toThrow(/Specifying one of 'appSpecTemplateInput' or 'appSpecTemplateFile' is required for the ECS CodeDeploy Action/);
 
-      test.done();
-    },
 
-    'throws an exception if both task definition artifact input and file are specified'(test: Test) {
+    });
+
+    test('throws an exception if both task definition artifact input and file are specified', () => {
       const stack = new cdk.Stack();
       const deploymentGroup = addEcsDeploymentGroup(stack);
       const artifact = new codepipeline.Artifact('Artifact');
       const artifactPath = new codepipeline.ArtifactPath(artifact, 'hello');
 
-      test.throws(() => {
+      expect(() => {
         new cpactions.CodeDeployEcsDeployAction({
           actionName: 'DeployToECS',
           deploymentGroup,
@@ -81,28 +80,28 @@ nodeunitShim({
           taskDefinitionTemplateFile: artifactPath,
           appSpecTemplateInput: artifact,
         });
-      }, /Exactly one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' can be provided in the ECS CodeDeploy Action/);
+      }).toThrow(/Exactly one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' can be provided in the ECS CodeDeploy Action/);
 
-      test.done();
-    },
 
-    'throws an exception if neither task definition artifact input nor file are specified'(test: Test) {
+    });
+
+    test('throws an exception if neither task definition artifact input nor file are specified', () => {
       const stack = new cdk.Stack();
       const deploymentGroup = addEcsDeploymentGroup(stack);
       const artifact = new codepipeline.Artifact('Artifact');
 
-      test.throws(() => {
+      expect(() => {
         new cpactions.CodeDeployEcsDeployAction({
           actionName: 'DeployToECS',
           deploymentGroup,
           appSpecTemplateInput: artifact,
         });
-      }, /Specifying one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' is required for the ECS CodeDeploy Action/);
+      }).toThrow(/Specifying one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' is required for the ECS CodeDeploy Action/);
 
-      test.done();
-    },
 
-    'defaults task definition and appspec template paths'(test: Test) {
+    });
+
+    test('defaults task definition and appspec template paths', () => {
       const stack = new cdk.Stack();
       const deploymentGroup = addEcsDeploymentGroup(stack);
       addCodeDeployECSCodePipeline(stack, {
@@ -112,7 +111,7 @@ nodeunitShim({
         appSpecTemplateInput: new codepipeline.Artifact('AppSpecArtifact'),
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: [
           {},
           {
@@ -138,12 +137,12 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'defaults task definition placeholder string'(test: Test) {
+    });
+
+    test('defaults task definition placeholder string', () => {
       const stack = new cdk.Stack();
       const deploymentGroup = addEcsDeploymentGroup(stack);
       const artifact1 = new codepipeline.Artifact();
@@ -163,7 +162,7 @@ nodeunitShim({
         ],
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: [
           {},
           {
@@ -193,11 +192,11 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
-  },
+
+    });
+  });
 });
 
 function addEcsDeploymentGroup(stack: cdk.Stack): codedeploy.IEcsDeploymentGroup {
@@ -219,14 +218,14 @@ function addCodeDeployECSCodePipeline(stack: cdk.Stack, props: cpactions.CodeDep
           new cpactions.GitHubSourceAction({
             actionName: 'GitHub',
             output: props.taskDefinitionTemplateInput || props.taskDefinitionTemplateFile!.artifact,
-            oauthToken: cdk.SecretValue.plainText('secret'),
+            oauthToken: cdk.SecretValue.unsafePlainText('secret'),
             owner: 'awslabs',
             repo: 'aws-cdk',
           }),
           new cpactions.GitHubSourceAction({
             actionName: 'GitHub2',
             output: props.appSpecTemplateInput || props.appSpecTemplateFile!.artifact,
-            oauthToken: cdk.SecretValue.plainText('secret'),
+            oauthToken: cdk.SecretValue.unsafePlainText('secret'),
             owner: 'awslabs',
             repo: 'aws-cdk-2',
           }),

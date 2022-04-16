@@ -13,7 +13,7 @@ class SecretsManagerStack extends cdk.Stack {
     const secret = new secretsmanager.Secret(this, 'Secret');
     secret.grantRead(role);
 
-    new iam.User(this, 'User', {
+    const user = new iam.User(this, 'User', {
       password: secret.secretValue,
     });
 
@@ -26,8 +26,16 @@ class SecretsManagerStack extends cdk.Stack {
     });
 
     new iam.User(this, 'OtherUser', {
-      userName: templatedSecret.secretValueFromJson('username').toString(),
+      // 'userName' is not actually a secret, so it's okay to use `unsafeUnwrap` to convert
+      // the `SecretValue` into a 'string'.
+      userName: templatedSecret.secretValueFromJson('username').unsafeUnwrap(),
       password: templatedSecret.secretValueFromJson('password'),
+    });
+
+    // Secret with predefined value
+    const accessKey = new iam.AccessKey(this, 'AccessKey', { user });
+    new secretsmanager.Secret(this, 'PredefinedSecret', {
+      secretStringValue: accessKey.secretAccessKey,
     });
     /// !hide
   }

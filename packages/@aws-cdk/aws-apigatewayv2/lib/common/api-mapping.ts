@@ -1,7 +1,6 @@
 import { IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApiMapping, CfnApiMappingProps } from '../apigatewayv2.generated';
-import { HttpApi } from '../http/api';
 import { IApi } from './api';
 import { IDomainName } from './domain-name';
 import { IStage } from './stage';
@@ -82,25 +81,21 @@ export class ApiMapping extends Resource implements IApiMapping {
    */
   public readonly mappingKey?: string;
 
+  /**
+   * API domain name
+   */
+  public readonly domainName: IDomainName;
+
   constructor(scope: Construct, id: string, props: ApiMappingProps) {
     super(scope, id);
 
-    let stage = props.stage;
+    // defaultStage is present in IHttpStage.
+    // However, importing "http" or "websocket" must import "common", but creating dependencies
+    // the other way will cause potential cycles.
+    // So casting to 'any'
+    let stage = props.stage ?? (props.api as any).defaultStage;
     if (!stage) {
-      if (props.api instanceof HttpApi) {
-        if (props.api.defaultStage) {
-          stage = props.api.defaultStage;
-        } else {
-          throw new Error('stage is required if default stage is not available');
-        }
-      } else {
-        throw new Error('stage is required for WebSocket API');
-      }
-    }
-
-    const paramRe = '^[a-zA-Z0-9]*[-_.+!,$]?[a-zA-Z0-9]*$';
-    if (props.apiMappingKey && !new RegExp(paramRe).test(props.apiMappingKey)) {
-      throw new Error('An ApiMapping key may contain only letters, numbers and one of $-_.+!*\'(),');
+      throw new Error('stage property must be specified');
     }
 
     if (props.apiMappingKey === '') {
@@ -121,5 +116,6 @@ export class ApiMapping extends Resource implements IApiMapping {
 
     this.apiMappingId = resource.ref;
     this.mappingKey = props.apiMappingKey;
+    this.domainName = props.domainName;
   }
 }

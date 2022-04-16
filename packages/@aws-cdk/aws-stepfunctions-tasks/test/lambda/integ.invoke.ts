@@ -25,7 +25,7 @@ const submitJobLambda = new Function(stack, 'submitJobLambda', {
           body: 'hello, world!'
         };
       };`),
-  runtime: Runtime.NODEJS_10_X,
+  runtime: Runtime.NODEJS_14_X,
   handler: 'index.handler',
 });
 
@@ -40,13 +40,15 @@ const checkJobStateLambda = new Function(stack, 'checkJobStateLambda', {
           status: event.statusCode === '200' ? 'SUCCEEDED' : 'FAILED'
         };
   };`),
-  runtime: Runtime.NODEJS_10_X,
+  runtime: Runtime.NODEJS_14_X,
   handler: 'index.handler',
 });
 
 const checkJobState = new LambdaInvoke(stack, 'Check the job state', {
   lambdaFunction: checkJobStateLambda,
-  outputPath: '$.Payload',
+  resultSelector: {
+    status: sfn.JsonPath.stringAt('$.Payload.status'),
+  },
 });
 
 const isComplete = new sfn.Choice(stack, 'Job Complete?');

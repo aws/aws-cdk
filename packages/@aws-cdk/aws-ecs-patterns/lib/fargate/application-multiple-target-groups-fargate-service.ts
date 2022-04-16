@@ -136,6 +136,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
         logging: this.logDriver,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
+        dockerLabels: taskImageOptions.dockerLabels,
       });
       if (taskImageOptions.containerPorts) {
         for (const containerPort of taskImageOptions.containerPorts) {

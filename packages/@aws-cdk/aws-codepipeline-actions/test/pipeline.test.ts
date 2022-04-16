@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource, haveResourceLike, not, SynthUtils } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
@@ -8,13 +8,12 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
 import { App, Aws, CfnParameter, ConstructNode, SecretValue, Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../lib';
 
 /* eslint-disable quote-props */
 
-nodeunitShim({
-  'basic pipeline'(test: Test) {
+describe('pipeline', () => {
+  test('basic pipeline', () => {
     const stack = new Stack();
 
     const repository = new codecommit.Repository(stack, 'MyRepo', {
@@ -45,34 +44,17 @@ nodeunitShim({
       ],
     });
 
-    test.notDeepEqual(SynthUtils.toCloudFormation(stack), {});
-    test.deepEqual([], ConstructNode.validate(pipeline.node));
-    test.done();
-  },
+    expect(Template.fromStack(stack).toJSON()).not.toEqual({});
+    expect([]).toEqual(ConstructNode.validate(pipeline.node));
 
-  'Tokens can be used as physical names of the Pipeline'(test: Test) {
+  });
+
+  test('Tokens can be used as physical names of the Pipeline', () => {
     const stack = new Stack(undefined, 'StackName');
 
-    new codepipeline.Pipeline(stack, 'Pipeline', {
+    const p = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineName: Aws.STACK_NAME,
     });
-
-    expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-      'Name': {
-        'Ref': 'AWS::StackName',
-      },
-    }));
-
-    test.done();
-  },
-
-  'pipeline with GitHub source with poll trigger'(test: Test) {
-    const stack = new Stack();
-
-    const secret = new CfnParameter(stack, 'GitHubToken', { type: 'String', default: 'my-token' });
-
-    const p = new codepipeline.Pipeline(stack, 'P');
-
     p.addStage({
       stageName: 'Source',
       actions: [
@@ -81,7 +63,7 @@ nodeunitShim({
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.valueAsString),
+          oauthToken: SecretValue.unsafePlainText('secret'),
           owner: 'foo',
           repo: 'bar',
           trigger: cpactions.GitHubTrigger.POLL,
@@ -96,9 +78,48 @@ nodeunitShim({
       ],
     });
 
-    expect(stack).to(not(haveResourceLike('AWS::CodePipeline::Webhook')));
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      'Name': {
+        'Ref': 'AWS::StackName',
+      },
+    });
 
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+
+  });
+
+  test('pipeline with GitHub source with poll trigger', () => {
+    const stack = new Stack();
+
+    const secret = new CfnParameter(stack, 'GitHubToken', { type: 'String', default: 'my-token' });
+
+    const p = new codepipeline.Pipeline(stack, 'P');
+
+    p.addStage({
+      stageName: 'Source',
+      actions: [
+        new cpactions.GitHubSourceAction({
+          actionName: 'GH',
+          runOrder: 8,
+          output: new codepipeline.Artifact('A'),
+          branch: 'branch',
+          oauthToken: SecretValue.unsafePlainText(secret.valueAsString),
+          owner: 'foo',
+          repo: 'bar',
+          trigger: cpactions.GitHubTrigger.POLL,
+        }),
+      ],
+    });
+
+    p.addStage({
+      stageName: 'Two',
+      actions: [
+        new cpactions.ManualApprovalAction({ actionName: 'Boo' }),
+      ],
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::CodePipeline::Webhook', 0);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         {
           'Actions': [
@@ -120,12 +141,12 @@ nodeunitShim({
           'Name': 'Two',
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'pipeline with GitHub source without triggers'(test: Test) {
+  });
+
+  test('pipeline with GitHub source without triggers', () => {
     const stack = new Stack();
 
     const secret = new CfnParameter(stack, 'GitHubToken', { type: 'String', default: 'my-token' });
@@ -140,7 +161,7 @@ nodeunitShim({
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.valueAsString),
+          oauthToken: SecretValue.unsafePlainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
           trigger: cpactions.GitHubTrigger.NONE,
@@ -155,9 +176,9 @@ nodeunitShim({
       ],
     });
 
-    expect(stack).to(not(haveResourceLike('AWS::CodePipeline::Webhook')));
+    Template.fromStack(stack).resourceCountIs('AWS::CodePipeline::Webhook', 0);
 
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         {
           'Actions': [
@@ -179,12 +200,12 @@ nodeunitShim({
           'Name': 'Two',
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'github action uses ThirdParty owner'(test: Test) {
+  });
+
+  test('github action uses ThirdParty owner', () => {
     const stack = new Stack();
 
     const secret = new CfnParameter(stack, 'GitHubToken', { type: 'String', default: 'my-token' });
@@ -199,7 +220,7 @@ nodeunitShim({
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.valueAsString),
+          oauthToken: SecretValue.unsafePlainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
         }),
@@ -213,9 +234,9 @@ nodeunitShim({
       ],
     });
 
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Webhook'));
+    Template.fromStack(stack).resourceCountIs('AWS::CodePipeline::Webhook', 1);
 
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'ArtifactStore': {
         'Location': {
           'Ref': 'PArtifactsBucket5E711C12',
@@ -274,13 +295,13 @@ nodeunitShim({
           'Name': 'Two',
         },
       ],
-    }));
+    });
 
-    test.deepEqual([], ConstructNode.validate(p.node));
-    test.done();
-  },
+    expect([]).toEqual(ConstructNode.validate(p.node));
 
-  'onStateChange'(test: Test) {
+  });
+
+  test('onStateChange', () => {
     const stack = new Stack();
 
     const topic = new sns.Topic(stack, 'Topic');
@@ -316,7 +337,7 @@ nodeunitShim({
       },
     });
 
-    expect(stack).to(haveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       'Description': 'desc',
       'EventPattern': {
         'detail': {
@@ -365,22 +386,22 @@ nodeunitShim({
           'Id': 'Target0',
         },
       ],
-    }));
+    });
 
-    test.deepEqual([], ConstructNode.validate(pipeline.node));
-    test.done();
-  },
+    expect([]).toEqual(ConstructNode.validate(pipeline.node));
 
-  'PipelineProject': {
-    'with a custom Project Name': {
-      'sets the source and artifacts to CodePipeline'(test: Test) {
+  });
+
+  describe('PipelineProject', () => {
+    describe('with a custom Project Name', () => {
+      test('sets the source and artifacts to CodePipeline', () => {
         const stack = new Stack();
 
         new codebuild.PipelineProject(stack, 'MyProject', {
           projectName: 'MyProject',
         });
 
-        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
           'Name': 'MyProject',
           'Source': {
             'Type': 'CODEPIPELINE',
@@ -400,14 +421,14 @@ nodeunitShim({
             'Image': 'aws/codebuild/standard:1.0',
             'ComputeType': 'BUILD_GENERAL1_SMALL',
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
-  },
 
-  'Lambda PipelineInvokeAction can be used to invoke Lambda functions from a CodePipeline'(test: Test) {
+      });
+    });
+  });
+
+  test('Lambda PipelineInvokeAction can be used to invoke Lambda functions from a CodePipeline', () => {
     const stack = new Stack();
 
     const lambdaFun = new lambda.Function(stack, 'Function', {
@@ -459,7 +480,7 @@ nodeunitShim({
       actions: [lambdaAction],
     });
 
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'ArtifactStore': {
         'Location': {
           'Ref': 'PipelineArtifactsBucket22248F97',
@@ -506,11 +527,11 @@ nodeunitShim({
           'Name': 'Stage',
         },
       ],
-    }));
+    });
 
-    test.equal((lambdaAction.actionProperties.outputs || []).length, 3);
+    expect((lambdaAction.actionProperties.outputs || []).length).toEqual(3);
 
-    expect(stack, /* skip validation */ true).to(haveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -530,13 +551,13 @@ nodeunitShim({
           'Ref': 'FunctionServiceRole675BB04A',
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'cross-region Pipeline': {
-    'generates the required Action & ArtifactStores properties in the template'(test: Test) {
+  });
+
+  describe('cross-region Pipeline', () => {
+    test('generates the required Action & ArtifactStores properties in the template', () => {
       const pipelineRegion = 'us-west-2';
       const pipelineAccount = '123';
 
@@ -594,7 +615,7 @@ nodeunitShim({
         ],
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'ArtifactStores': [
           {
             'Region': 'us-west-1',
@@ -644,36 +665,35 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
-      test.notEqual(pipeline.crossRegionSupport[pipelineRegion], undefined);
-      test.notEqual(pipeline.crossRegionSupport['us-west-1'], undefined);
+      expect(pipeline.crossRegionSupport[pipelineRegion]).toBeDefined();
+      expect(pipeline.crossRegionSupport['us-west-1']).toBeDefined();
 
       const usEast1Support = pipeline.crossRegionSupport['us-east-1'];
-      test.notEqual(usEast1Support, undefined);
-      test.equal(usEast1Support.stack.region, 'us-east-1');
-      test.equal(usEast1Support.stack.account, pipelineAccount);
-      test.ok(usEast1Support.stack.node.id.indexOf('us-east-1') !== -1,
-        `expected '${usEast1Support.stack.node.id}' to contain 'us-east-1'`);
+      expect(usEast1Support).toBeDefined();
+      expect(usEast1Support.stack.region).toEqual('us-east-1');
+      expect(usEast1Support.stack.account).toEqual(pipelineAccount);
+      expect(usEast1Support.stack.node.id.indexOf('us-east-1')).not.toEqual(-1);
 
-      test.done();
-    },
 
-    'allows specifying only one of artifactBucket and crossRegionReplicationBuckets'(test: Test) {
+    });
+
+    test('allows specifying only one of artifactBucket and crossRegionReplicationBuckets', () => {
       const stack = new Stack();
 
-      test.throws(() => {
+      expect(() => {
         new codepipeline.Pipeline(stack, 'Pipeline', {
           artifactBucket: new s3.Bucket(stack, 'Bucket'),
           crossRegionReplicationBuckets: {
             // even an empty map should trigger this validation...
           },
         });
-      }, /Only one of artifactBucket and crossRegionReplicationBuckets can be specified!/);
-      test.done();
-    },
+      }).toThrow(/Only one of artifactBucket and crossRegionReplicationBuckets can be specified!/);
 
-    'does not create a new artifact Bucket if one was provided in the cross-region Buckets for the Pipeline region'(test: Test) {
+    });
+
+    test('does not create a new artifact Bucket if one was provided in the cross-region Buckets for the Pipeline region', () => {
       const pipelineRegion = 'us-west-2';
 
       const stack = new Stack(undefined, undefined, {
@@ -712,9 +732,9 @@ nodeunitShim({
         ],
       });
 
-      expect(stack).to(countResources('AWS::S3::Bucket', 1));
+      Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'ArtifactStores': [
           {
             'Region': pipelineRegion,
@@ -726,12 +746,12 @@ nodeunitShim({
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'allows providing a resource-backed action from a different region directly'(test: Test) {
+    });
+
+    test('allows providing a resource-backed action from a different region directly', () => {
       const account = '123456789012';
       const app = new App();
 
@@ -765,7 +785,7 @@ nodeunitShim({
         ],
       });
 
-      expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'ArtifactStores': [
           {
             'Region': replicationRegion,
@@ -810,18 +830,18 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
-      expect(replicationStack).to(haveResourceLike('AWS::S3::Bucket', {
+      Template.fromStack(replicationStack).hasResourceProperties('AWS::S3::Bucket', {
         'BucketName': 'replicationstackeplicationbucket2464cd5c33b386483b66',
-      }));
+      });
 
-      test.done();
-    },
-  },
 
-  'cross-account Pipeline': {
-    'with a CodeBuild Project in a different account works correctly'(test: Test) {
+    });
+  });
+
+  describe('cross-account Pipeline', () => {
+    test('with a CodeBuild Project in a different account works correctly', () => {
       const app = new App();
 
       const buildAccount = '901234567890';
@@ -874,7 +894,7 @@ nodeunitShim({
         ],
       });
 
-      expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -903,9 +923,9 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
-      expect(buildStack).to(haveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(buildStack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
@@ -958,12 +978,12 @@ nodeunitShim({
             },
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'adds a dependency on the Stack containing a new action Role'(test: Test) {
+    });
+
+    test('adds a dependency on the Stack containing a new action Role', () => {
       const region = 'us-west-2';
       const pipelineAccount = '123456789012';
       const buildAccount = '901234567890';
@@ -1017,7 +1037,7 @@ nodeunitShim({
         ],
       });
 
-      expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -1041,14 +1061,14 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
-      test.equal(pipelineStack.dependencies.length, 1);
+      expect(pipelineStack.dependencies.length).toEqual(1);
 
-      test.done();
-    },
 
-    'does not add a dependency on the Stack containing an imported action Role'(test: Test) {
+    });
+
+    test('does not add a dependency on the Stack containing an imported action Role', () => {
       const region = 'us-west-2';
       const pipelineAccount = '123456789012';
       const buildAccount = '901234567890';
@@ -1101,7 +1121,7 @@ nodeunitShim({
         ],
       });
 
-      expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -1119,11 +1139,11 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
-      test.equal(pipelineStack.dependencies.length, 0);
+      expect(pipelineStack.dependencies.length).toEqual(0);
 
-      test.done();
-    },
-  },
+
+    });
+  });
 });

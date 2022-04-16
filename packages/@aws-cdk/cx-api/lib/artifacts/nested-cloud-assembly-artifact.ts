@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudArtifact } from '../cloud-artifact';
-import { CloudAssembly } from '../cloud-assembly';
+import type { CloudAssembly } from '../cloud-assembly';
 
 /**
  * Asset manifest is a description of a set of assets which need to be built and published
@@ -17,11 +17,6 @@ export class NestedCloudAssemblyArtifact extends CloudArtifact {
    */
   public readonly displayName: string;
 
-  /**
-   * Cache for the inner assembly loading
-   */
-  private _nestedAssembly?: CloudAssembly;
-
   constructor(assembly: CloudAssembly, name: string, artifact: cxschema.ArtifactManifest) {
     super(assembly, name, artifact);
 
@@ -36,14 +31,13 @@ export class NestedCloudAssemblyArtifact extends CloudArtifact {
   public get fullPath(): string {
     return path.join(this.assembly.directory, this.directoryName);
   }
+}
 
+export interface NestedCloudAssemblyArtifact {
   /**
    * The nested Assembly
    */
-  public get nestedAssembly(): CloudAssembly {
-    if (!this._nestedAssembly) {
-      this._nestedAssembly = new CloudAssembly(this.fullPath);
-    }
-    return this._nestedAssembly;
-  }
+  readonly nestedAssembly: CloudAssembly;
+
+  // Declared in a different file
 }

@@ -1,4 +1,7 @@
 import { Duration, SecretValue, Token } from '@aws-cdk/core';
+import { TaskDefinition } from '../base/task-definition';
+import { Secret } from '../container-definition';
+import { CfnTaskDefinition } from '../ecs.generated';
 import { BaseLogDriverProps } from './base-log-driver';
 
 /**
@@ -35,9 +38,9 @@ export function stringifyOptions(options: { [key: string]: (SecretValue | Durati
   const _options: { [key: string]: string } = {};
   const filteredOptions = removeEmpty(options);
 
-  for (const key of Object.keys(filteredOptions)) {
+  for (const [key, value] of Object.entries(filteredOptions)) {
     // Convert value to string
-    _options[key] = `${filteredOptions[key]}`;
+    _options[key] = SecretValue.isSecretValue(value) ? value.unsafeUnwrap() : `${value}`;
   }
 
   return _options;
@@ -54,4 +57,17 @@ export function renderCommonLogDriverOptions(opts: BaseLogDriverProps) {
 
 export function joinWithCommas(xs?: string[]): string | undefined {
   return xs && xs.join(',');
+}
+
+export function renderLogDriverSecretOptions(secretValue: { [key: string]: Secret }, taskDefinition: TaskDefinition):
+CfnTaskDefinition.SecretProperty[] {
+  const secrets = [];
+  for (const [name, secret] of Object.entries(secretValue)) {
+    secret.grantRead(taskDefinition.obtainExecutionRole());
+    secrets.push({
+      name,
+      valueFrom: secret.arn,
+    });
+  }
+  return secrets;
 }

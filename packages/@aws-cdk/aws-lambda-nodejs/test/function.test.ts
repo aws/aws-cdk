@@ -1,13 +1,11 @@
-import '@aws-cdk/assert-internal/jest';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ABSENT } from '@aws-cdk/assert-internal';
+import { Template, Match } from '@aws-cdk/assertions';
 import { Vpc } from '@aws-cdk/aws-ec2';
 import { CodeConfig, Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
 import { NodejsFunction } from '../lib';
 import { Bundling } from '../lib/bundling';
-import { nodeMajorVersion } from '../lib/util';
 
 jest.mock('../lib/bundling', () => {
   return {
@@ -41,13 +39,9 @@ test('NodejsFunction with .ts handler', () => {
     entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
   }));
 
-  const runtime = nodeMajorVersion() >= 14
-    ? Runtime.NODEJS_14_X
-    : Runtime.NODEJS_12_X;
-
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.handler',
-    Runtime: runtime.name,
+    Runtime: 'nodejs14.x',
   });
 });
 
@@ -58,6 +52,17 @@ test('NodejsFunction with .js handler', () => {
   // THEN
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringContaining('function.test.handler2.js'), // Automatically finds .ts handler file
+  }));
+});
+
+test('NodejsFunction with .mjs handler', () => {
+  // WHEN
+  new NodejsFunction(stack, 'handler3');
+
+
+  // THEN
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    entry: expect.stringContaining('function.test.handler3.mjs'), // Automatically finds .mjs handler file
   }));
 });
 
@@ -103,7 +108,7 @@ test('throws when entry does not exist', () => {
 });
 
 test('throws when entry cannot be automatically found', () => {
-  expect(() => new NodejsFunction(stack, 'Fn')).toThrow(/Cannot find entry file./);
+  expect(() => new NodejsFunction(stack, 'Fn')).toThrow(/Cannot find handler file .*function.test.Fn.ts, .*function.test.Fn.js or .*function.test.Fn.mjs/);
 });
 
 test('throws with the wrong runtime family', () => {
@@ -149,7 +154,7 @@ test('configures connection reuse for aws sdk', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1');
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Environment: {
       Variables: {
         AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
@@ -164,8 +169,8 @@ test('can opt-out of connection reuse for aws sdk', () => {
     awsSdkConnectionReuse: false,
   });
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
-    Environment: ABSENT,
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Environment: Match.absent(),
   });
 });
 
@@ -177,7 +182,7 @@ test('NodejsFunction in a VPC', () => {
   new NodejsFunction(stack, 'handler1', { vpc });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     VpcConfig: {
       SecurityGroupIds: [
         {

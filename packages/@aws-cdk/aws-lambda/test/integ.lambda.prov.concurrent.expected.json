@@ -58,21 +58,21 @@
         "Code": {
           "ZipFile": "exports.handler =  async function(event, context) { console.log(\"Hello from CDK! with Alias Provisioned Concurrent Exec!\");}"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "MyLambdaAliasPCEServiceRoleF7C9F212",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "MyLambdaAliasPCEServiceRoleDefaultPolicyE7418D56",
         "MyLambdaAliasPCEServiceRoleF7C9F212"
       ]
     },
-    "MyLambdaAliasPCEVersion15F479C08": {
+    "MyLambdaAliasPCECurrentVersion072335D3f742c0f8cc0b7f48bb32fb34b63bc22c": {
       "Type": "AWS::Lambda::Version",
       "Properties": {
         "FunctionName": {
@@ -88,7 +88,7 @@
         },
         "FunctionVersion": {
           "Fn::GetAtt": [
-            "MyLambdaAliasPCEVersion15F479C08",
+            "MyLambdaAliasPCECurrentVersion072335D3f742c0f8cc0b7f48bb32fb34b63bc22c",
             "Version"
           ]
         },
@@ -166,21 +166,21 @@
         "Code": {
           "ZipFile": "exports.handler =  async function(event, context) { console.log(\"Hello from CDK! with Version Provisioned Concurrent Exec!\");}"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "MyLambdaVersionPCEServiceRole2ACFB73E",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "MyLambdaVersionPCEServiceRoleDefaultPolicy229A1552",
         "MyLambdaVersionPCEServiceRole2ACFB73E"
       ]
     },
-    "MyLambdaVersionPCEVersion2C704112A": {
+    "MyLambdaVersionPCECurrentVersion27FC3932fbc6188ae863cb6dc15d61f96ad00420": {
       "Type": "AWS::Lambda::Version",
       "Properties": {
         "FunctionName": {
@@ -199,7 +199,7 @@
         },
         "FunctionVersion": {
           "Fn::GetAtt": [
-            "MyLambdaVersionPCEVersion2C704112A",
+            "MyLambdaVersionPCECurrentVersion27FC3932fbc6188ae863cb6dc15d61f96ad00420",
             "Version"
           ]
         },

@@ -3,7 +3,11 @@ import * as path from 'path';
 import { randomString, withDefaultFixture } from '../helpers/cdk';
 import { integTest } from '../helpers/test-helpers';
 
-jest.setTimeout(600_000);
+const timeout = process.env.CODEBUILD_BUILD_ID ? // if the process is running in CodeBuild
+  3_600_000 : // 1 hour
+  600_000; // 10 minutes
+jest.setTimeout(timeout);
+process.stdout.write(`bootstrapping.integtest.ts: Setting jest time out to ${timeout} ms`);
 
 integTest('can bootstrap without execution', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
@@ -123,23 +127,6 @@ integTest('deploy old style synthesis to new style bootstrap', withDefaultFixtur
       '--toolkit-stack-name', bootstrapStackName,
     ],
   });
-}));
-
-integTest('deploying new style synthesis to old style bootstrap fails', withDefaultFixture(async (fixture) => {
-  const bootstrapStackName = fixture.bootstrapStackName;
-
-  await fixture.cdkBootstrapLegacy({
-    toolkitStackName: bootstrapStackName,
-  });
-
-  // Deploy stack that uses file assets, this fails because the bootstrap stack
-  // is version checked.
-  await expect(fixture.cdkDeploy('lambda', {
-    options: [
-      '--toolkit-stack-name', bootstrapStackName,
-      '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
-    ],
-  })).rejects.toThrow('exited with error');
 }));
 
 integTest('can create a legacy bootstrap stack with --public-access-block-configuration=false', withDefaultFixture(async (fixture) => {

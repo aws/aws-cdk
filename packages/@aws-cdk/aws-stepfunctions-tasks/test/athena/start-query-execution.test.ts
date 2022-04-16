@@ -153,4 +153,25 @@ describe('Start Query Execution', () => {
       },
     });
   });
+
+  test('omit QueryExecutionContext if no catalog or database name provided', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const task = new AthenaStartQueryExecution(stack, 'Query', {
+      queryString: 'CREATE DATABASE database',
+      clientRequestToken: 'unique-client-request-token',
+      resultConfiguration: {
+        outputLocation: {
+          bucketName: 'query-results-bucket',
+          objectKey: 'folder',
+        },
+      },
+    });
+
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).not.toHaveProperty('Parameters.QueryExecutionContext');
+  });
 });

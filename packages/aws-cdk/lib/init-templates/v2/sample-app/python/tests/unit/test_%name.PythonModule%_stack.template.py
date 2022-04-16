@@ -1,19 +1,21 @@
-import json
-import pytest
-
-import aws_cdk_lib as core
-from %name%.%name.PythonModule%_stack import %name.PascalCased%Stack
-
-
-def get_template():
-    app = core.App()
-    %name.PascalCased%Stack(app, "%name.StackName%")
-    return json.dumps(app.synth().get_stack("%name.StackName%").template)
+import aws_cdk as core
+import aws_cdk.assertions as assertions
+from %name.PythonModule%.%name.PythonModule%_stack import %name.PascalCased%Stack
 
 
 def test_sqs_queue_created():
-    assert("AWS::SQS::Queue" in get_template())
+    app = core.App()
+    stack = %name.PascalCased%Stack(app, "%name.StackName%")
+    template = assertions.Template.from_stack(stack)
+
+    template.has_resource_properties("AWS::SQS::Queue", {
+        "VisibilityTimeout": 300
+    })
 
 
 def test_sns_topic_created():
-    assert("AWS::SNS::Topic" in get_template())
+    app = core.App()
+    stack = %name.PascalCased%Stack(app, "%name.StackName%")
+    template = assertions.Template.from_stack(stack)
+
+    template.resource_count_is("AWS::SNS::Topic", 1)

@@ -5,7 +5,7 @@ import { Duration, Lazy, Size, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig, S3DataType, StoppingCondition, VpcConfig } from './base-types';
-import { renderTags } from './private/utils';
+import { renderEnvironment, renderTags } from './private/utils';
 
 /**
  * Properties for creating an Amazon SageMaker training job
@@ -31,6 +31,13 @@ export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps 
    * Identifies the training algorithm to use.
    */
   readonly algorithmSpecification: AlgorithmSpecification;
+
+  /**
+   * Isolates the training container. No inbound or outbound network calls can be made to or from the training container.
+   *
+   * @default false
+   */
+  readonly enableNetworkIsolation?: boolean;
 
   /**
    * Algorithm-specific parameters that influence the quality of the model. Set hyperparameters before you start the learning process.
@@ -78,6 +85,13 @@ export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps 
    * @default - No VPC
    */
   readonly vpcConfig?: VpcConfig;
+
+  /**
+   * Environment variables to set in the Docker container.
+   *
+   * @default - No environment variables
+   */
+  readonly environment?: { [key: string]: string };
 }
 
 /**
@@ -217,6 +231,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
   private renderParameters(): { [key: string]: any } {
     return {
       TrainingJobName: this.props.trainingJobName,
+      EnableNetworkIsolation: this.props.enableNetworkIsolation,
       RoleArn: this._role!.roleArn,
       ...this.renderAlgorithmSpecification(this.algorithmSpecification),
       ...this.renderInputDataConfig(this.inputDataConfig),
@@ -226,6 +241,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
       ...this.renderHyperparameters(this.props.hyperparameters),
       ...renderTags(this.props.tags),
       ...this.renderVpcConfig(this.props.vpcConfig),
+      ...renderEnvironment(this.props.environment),
     };
   }
 
@@ -277,7 +293,8 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     return {
       ResourceConfig: {
         InstanceCount: config.instanceCount,
-        InstanceType: 'ml.' + config.instanceType,
+        InstanceType: sfn.JsonPath.isEncodedJsonPath(config.instanceType.toString())
+          ? config.instanceType.toString() : `ml.${config.instanceType}`,
         VolumeSizeInGB: config.volumeSize.toGibibytes(),
         ...(config.volumeEncryptionKey ? { VolumeKmsKeyId: config.volumeEncryptionKey.keyArn } : {}),
       },

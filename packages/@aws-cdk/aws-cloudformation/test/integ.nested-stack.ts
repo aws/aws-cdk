@@ -2,14 +2,13 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sns_subscriptions from '@aws-cdk/aws-sns-subscriptions';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { App, CfnParameter, Stack } from '@aws-cdk/core';
-import * as cfn from '../lib';
+import { App, CfnParameter, NestedStack, Stack } from '@aws-cdk/core';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
 
-/* eslint-disable cdk/no-core-construct */
+/* eslint-disable @aws-cdk/no-core-construct */
 
 interface MyNestedStackProps {
   readonly subscriber?: sqs.Queue;
@@ -18,7 +17,7 @@ interface MyNestedStackProps {
   readonly topicNamePrefix: string;
 }
 
-class MyNestedStack extends cfn.NestedStack {
+class MyNestedStack extends NestedStack {
   constructor(scope: Construct, id: string, props: MyNestedStackProps) {
     const topicNamePrefixLogicalId = 'TopicNamePrefix';
 
@@ -42,7 +41,7 @@ class MyNestedStack extends cfn.NestedStack {
 
     if (props.subscriber) {
       new lambda.Function(this, 'fn', {
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromInline('console.error("hi")'),
         handler: 'index.handler',
         environment: {

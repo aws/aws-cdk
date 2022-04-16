@@ -202,6 +202,14 @@ export interface CodeImageConfig {
    * @default - use the ENTRYPOINT in the docker image or Dockerfile.
    */
   readonly entrypoint?: string[];
+
+  /**
+   * Specify or override the WORKDIR on the specified Docker image or Dockerfile.
+   * A WORKDIR allows you to configure the working directory the container will use.
+   * @see https://docs.docker.com/engine/reference/builder/#workdir
+   * @default - use the WORKDIR in the docker image or Dockerfile.
+   */
+  readonly workingDirectory?: string;
 }
 
 /**
@@ -436,10 +444,25 @@ export interface EcrImageCodeProps {
   readonly entrypoint?: string[];
 
   /**
+   * Specify or override the WORKDIR on the specified Docker image or Dockerfile.
+   * A WORKDIR allows you to configure the working directory the container will use.
+   * @see https://docs.docker.com/engine/reference/builder/#workdir
+   * @default - use the WORKDIR in the docker image or Dockerfile.
+   */
+  readonly workingDirectory?: string;
+
+  /**
    * The image tag to use when pulling the image from ECR.
    * @default 'latest'
+   * @deprecated use `tagOrDigest`
    */
   readonly tag?: string;
+
+  /**
+   * The image tag or digest to use when pulling the image from ECR (digests must start with `sha256:`).
+   * @default 'latest'
+   */
+  readonly tagOrDigest?: string;
 }
 
 /**
@@ -457,9 +480,10 @@ export class EcrImageCode extends Code {
 
     return {
       image: {
-        imageUri: this.repository.repositoryUriForTag(this.props?.tag ?? 'latest'),
+        imageUri: this.repository.repositoryUriForTagOrDigest(this.props?.tagOrDigest ?? this.props?.tag ?? 'latest'),
         cmd: this.props.cmd,
         entrypoint: this.props.entrypoint,
+        workingDirectory: this.props.workingDirectory,
       },
     };
   }
@@ -485,6 +509,14 @@ export interface AssetImageCodeProps extends ecr_assets.DockerImageAssetOptions 
    * @default - use the ENTRYPOINT in the docker image or Dockerfile.
    */
   readonly entrypoint?: string[];
+
+  /**
+   * Specify or override the WORKDIR on the specified Docker image or Dockerfile.
+   * A WORKDIR allows you to configure the working directory the container will use.
+   * @see https://docs.docker.com/engine/reference/builder/#workdir
+   * @default - use the WORKDIR in the docker image or Dockerfile.
+   */
+  readonly workingDirectory?: string;
 }
 
 /**
@@ -492,26 +524,44 @@ export interface AssetImageCodeProps extends ecr_assets.DockerImageAssetOptions 
  */
 export class AssetImageCode extends Code {
   public readonly isInline: boolean = false;
+  private asset?: ecr_assets.DockerImageAsset;
 
   constructor(private readonly directory: string, private readonly props: AssetImageCodeProps) {
     super();
   }
 
   public bind(scope: Construct): CodeConfig {
-    const asset = new ecr_assets.DockerImageAsset(scope, 'AssetImage', {
-      directory: this.directory,
-      ...this.props,
-    });
-
-    asset.repository.grantPull(new iam.ServicePrincipal('lambda.amazonaws.com'));
+    // If the same AssetImageCode is used multiple times, retain only the first instantiation.
+    if (!this.asset) {
+      this.asset = new ecr_assets.DockerImageAsset(scope, 'AssetImage', {
+        directory: this.directory,
+        ...this.props,
+      });
+      this.asset.repository.grantPull(new iam.ServicePrincipal('lambda.amazonaws.com'));
+    } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
+      throw new Error(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+        'Create a new Code instance for every stack.');
+    }
 
     return {
       image: {
-        imageUri: asset.imageUri,
+        imageUri: this.asset.imageUri,
         entrypoint: this.props.entrypoint,
         cmd: this.props.cmd,
+        workingDirectory: this.props.workingDirectory,
       },
     };
+  }
+
+  public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
+    if (!this.asset) {
+      throw new Error('bindToResource() must be called after bind()');
+    }
+
+    const resourceProperty = options.resourceProperty || 'Code.ImageUri';
+
+    // https://github.com/aws/aws-cdk/issues/14593
+    this.asset.addResourceMetadata(resource, resourceProperty);
   }
 }
 

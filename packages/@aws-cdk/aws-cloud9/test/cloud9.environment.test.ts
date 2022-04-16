@@ -1,4 +1,4 @@
-import { expect as expectCDK, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
@@ -16,7 +16,7 @@ test('create resource correctly with only vpc provide', () => {
   // WHEN
   new cloud9.Ec2Environment(stack, 'C9Env', { vpc });
   // THEN
-  expectCDK(stack).to(haveResource('AWS::Cloud9::EnvironmentEC2'));
+  Template.fromStack(stack).resourceCountIs('AWS::Cloud9::EnvironmentEC2', 1);
 });
 
 test('create resource correctly with both vpc and subnetSelectio', () => {
@@ -28,7 +28,7 @@ test('create resource correctly with both vpc and subnetSelectio', () => {
     },
   });
   // THEN
-  expectCDK(stack).to(haveResource('AWS::Cloud9::EnvironmentEC2'));
+  Template.fromStack(stack).resourceCountIs('AWS::Cloud9::EnvironmentEC2', 1);
 });
 
 test('import correctly from existing environment', () => {
@@ -45,7 +45,7 @@ test('create correctly with instanceType specified', () => {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
   });
   // THEN
-  expectCDK(stack).to(haveResource('AWS::Cloud9::EnvironmentEC2'));
+  Template.fromStack(stack).resourceCountIs('AWS::Cloud9::EnvironmentEC2', 1);
 });
 
 test('throw error when subnetSelection not specified and the provided VPC has no public subnets', () => {
@@ -80,7 +80,7 @@ test('can use CodeCommit repositories', () => {
     ],
   });
   // THEN
-  expectCDK(stack).to(haveResourceLike('AWS::Cloud9::EnvironmentEC2', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
     InstanceType: 't2.micro',
     Repositories: [
       {
@@ -103,5 +103,5 @@ test('can use CodeCommit repositories', () => {
         },
       },
     ],
-  }));
+  });
 });

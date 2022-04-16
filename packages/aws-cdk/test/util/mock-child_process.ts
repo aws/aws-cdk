@@ -6,15 +6,10 @@ if (!(child_process as any).spawn.mockImplementationOnce) {
 }
 
 export interface Invocation {
-  commandLine: string[];
+  commandLine: string;
   cwd?: string;
   exitCode?: number;
   stdout?: string;
-
-  /**
-   * Only match a prefix of the command (don't care about the details of the arguments)
-   */
-  prefix?: boolean;
 
   /**
    * Run this function as a side effect, if present
@@ -26,14 +21,8 @@ export function mockSpawn(...invocations: Invocation[]) {
   let mock = (child_process.spawn as any);
   for (const _invocation of invocations) {
     const invocation = _invocation; // Mirror into variable for closure
-    mock = mock.mockImplementationOnce((binary: string, args: string[], options: child_process.SpawnOptions) => {
-      if (invocation.prefix) {
-        // Match command line prefix
-        expect([binary, ...args].slice(0, invocation.commandLine.length)).toEqual(invocation.commandLine);
-      } else {
-        // Match full command line
-        expect([binary, ...args]).toEqual(invocation.commandLine);
-      }
+    mock = mock.mockImplementationOnce((binary: string, options: child_process.SpawnOptions) => {
+      expect(binary).toEqual(invocation.commandLine);
 
       if (invocation.cwd != null) {
         expect(options.cwd).toBe(invocation.cwd);
@@ -60,8 +49,8 @@ export function mockSpawn(...invocations: Invocation[]) {
     });
   }
 
-  mock.mockImplementation((binary: string, args: string[], _options: any) => {
-    throw new Error(`Did not expect call of ${JSON.stringify([binary, ...args])}`);
+  mock.mockImplementation((binary: string, _options: any) => {
+    throw new Error(`Did not expect call of ${binary}`);
   });
 }
 

@@ -45,7 +45,8 @@ export interface BaseTargetGroupProps {
   /**
    * Health check configuration
    *
-   * @default - None.
+   * @default - The default value for each property in this configuration varies depending on the target.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-targetgroup.html#aws-resource-elasticloadbalancingv2-targetgroup-properties
    */
   readonly healthCheck?: HealthCheck;
 
@@ -186,7 +187,7 @@ export abstract class TargetGroupBase extends CoreConstruct implements ITargetGr
    * This identifier is emitted as a dimensions of the metrics of this target
    * group.
    *
-   * @example app/my-load-balancer/123456789
+   * Example value: `app/my-load-balancer/123456789`
    */
   public abstract readonly firstLoadBalancerFullName: string;
 
@@ -269,7 +270,7 @@ export abstract class TargetGroupBase extends CoreConstruct implements ITargetGr
       healthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.healthyThresholdCount }),
       unhealthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.unhealthyThresholdCount }),
       matcher: cdk.Lazy.any({
-        produce: () => this.healthCheck?.healthyHttpCodes !== undefined || this.healthCheck?.healthyGrpcCodes !== undefined ? {
+        produce: () => this.healthCheck?.healthyHttpCodes !== undefined || this.healthCheck?.healthyGrpcCodes !== undefined ? {
           grpcCode: this.healthCheck.healthyGrpcCodes,
           httpCode: this.healthCheck.healthyHttpCodes,
         } : undefined,
@@ -338,6 +339,20 @@ export abstract class TargetGroupBase extends CoreConstruct implements ITargetGr
       ret.push("'vpc' is required for a non-Lambda TargetGroup");
     }
 
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-targetgroup.html#cfn-elasticloadbalancingv2-targetgroup-name
+    const targetGroupName = this.resource.name;
+    if (!cdk.Token.isUnresolved(targetGroupName) && targetGroupName !== undefined) {
+      if (targetGroupName.length > 32) {
+        ret.push(`Target group name: "${targetGroupName}" can have a maximum of 32 characters.`);
+      }
+      if (targetGroupName.startsWith('-') || targetGroupName.endsWith('-')) {
+        ret.push(`Target group name: "${targetGroupName}" must not begin or end with a hyphen.`);
+      }
+      if (!/^[0-9a-z-]+$/i.test(targetGroupName)) {
+        ret.push(`Target group name: "${targetGroupName}" must contain only alphanumeric characters or hyphens.`);
+      }
+    }
+
     return ret;
   }
 }
@@ -376,6 +391,11 @@ export interface TargetGroupImportProps extends TargetGroupAttributes {
  * A target group
  */
 export interface ITargetGroup extends cdk.IConstruct {
+  /**
+   * The name of the target group
+   */
+  readonly targetGroupName: string;
+
   /**
    * ARN of the target group
    */

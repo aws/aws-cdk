@@ -1,4 +1,5 @@
 import * as events from '@aws-cdk/aws-events';
+import * as kms from '@aws-cdk/aws-kms';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../../lib';
@@ -12,11 +13,21 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-sqs-event-target');
 
+const key = new kms.Key(stack, 'MyKey');
+
 const event = new events.Rule(stack, 'MyRule', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
 });
 
-const queue = new sqs.Queue(stack, 'MyQueue');
-event.addTarget(new targets.SqsQueue(queue));
+const queue = new sqs.Queue(stack, 'MyQueue', {
+  encryption: sqs.QueueEncryption.KMS,
+  encryptionMasterKey: key,
+});
+
+const deadLetterQueue = new sqs.Queue(stack, 'MyDeadLetterQueue');
+
+event.addTarget(new targets.SqsQueue(queue, {
+  deadLetterQueue,
+}));
 
 app.synth();

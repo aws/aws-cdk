@@ -4,10 +4,13 @@ import * as cdk from '@aws-cdk/core';
 import * as ecsPatterns from '../../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-ecs-integ');
+const stack = new cdk.Stack(app, 'aws-ecs-integ-l3-vpconly');
 
+// Create VPC only
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
-new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'L3', {
+
+// Create ALB service
+new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'ALBFargateService', {
   vpc,
   memoryLimitMiB: 1024,
   cpu: 512,
@@ -16,18 +19,9 @@ new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'L3', {
   },
 });
 
-const vpc2 = new ec2.Vpc(stack, 'Vpc2', { maxAzs: 2 });
-new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'L3b', {
-  vpc: vpc2,
-  memoryLimitMiB: 1024,
-  cpu: 512,
-  taskImageOptions: {
-    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-  },
-});
-
-new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'L3c', {
-  vpc: vpc2,
+// Create NLB service
+new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'NLBFargateService', {
+  vpc,
   memoryLimitMiB: 1024,
   cpu: 512,
   taskImageOptions: {

@@ -34,11 +34,14 @@ Higher level constructs for Websocket APIs | ![Experimental](https://img.shields
   - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
   - [Publishing HTTP APIs](#publishing-http-apis)
   - [Custom Domain](#custom-domain)
-  - [Managing access](#managing-access)
+  - [Mutual TLS](#mutual-tls-mtls)
+  - [Managing access to HTTP APIs](#managing-access-to-http-apis)
   - [Metrics](#metrics)
   - [VPC Link](#vpc-link)
   - [Private Integration](#private-integration)
 - [WebSocket API](#websocket-api)
+  - [Manage Connections Permission](#manage-connections-permission)
+  - [Managing access to WebSocket APIs](#managing-access-to-websocket-apis)
 
 ## Introduction
 
@@ -74,25 +77,23 @@ As an early example, the following code snippet configures a route `GET /books` 
 configures all other HTTP method calls to `/books` to a lambda proxy.
 
 ```ts
-const getBooksIntegration = new HttpProxyIntegration({
-  url: 'https://get-books-proxy.myproxy.internal',
-});
+import { HttpUrlIntegration, HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
-const booksDefaultFn = new lambda.Function(stack, 'BooksDefaultFn', { ... });
-const booksDefaultIntegration = new LambdaProxyIntegration({
-  handler: booksDefaultFn,
-});
+const getBooksIntegration = new HttpUrlIntegration('GetBooksIntegration', 'https://get-books-proxy.myproxy.internal');
 
-const httpApi = new HttpApi(stack, 'HttpApi');
+declare const booksDefaultFn: lambda.Function;
+const booksDefaultIntegration = new HttpLambdaIntegration('BooksIntegration', booksDefaultFn);
+
+const httpApi = new apigwv2.HttpApi(this, 'HttpApi');
 
 httpApi.addRoutes({
   path: '/books',
-  methods: [ HttpMethod.GET ],
+  methods: [ apigwv2.HttpMethod.GET ],
   integration: getBooksIntegration,
 });
 httpApi.addRoutes({
   path: '/books',
-  methods: [ HttpMethod.ANY ],
+  methods: [ apigwv2.HttpMethod.ANY ],
   integration: booksDefaultIntegration,
 });
 ```
@@ -100,7 +101,7 @@ httpApi.addRoutes({
 The URL to the endpoint can be retrieved via the `apiEndpoint` attribute. By default this URL is enabled for clients. Use `disableExecuteApiEndpoint` to disable it.
 
 ```ts
-const httpApi = new HttpApi(stack, 'HttpApi', {
+const httpApi = new apigwv2.HttpApi(this, 'HttpApi', {
   disableExecuteApiEndpoint: true,
 });
 ```
@@ -109,10 +110,10 @@ The `defaultIntegration` option while defining HTTP APIs lets you create a defau
 matched when a client reaches a route that is not explicitly defined.
 
 ```ts
-new HttpApi(stack, 'HttpProxyApi', {
-  defaultIntegration: new HttpProxyIntegration({
-    url:'http://example.com',
-  }),
+import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+new apigwv2.HttpApi(this, 'HttpProxyApi', {
+  defaultIntegration: new HttpUrlIntegration('DefaultIntegration', 'https://example.com'),
 });
 ```
 
@@ -130,10 +131,15 @@ API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-cors.
 The `corsPreflight` option lets you specify a CORS configuration for an API.
 
 ```ts
-new HttpApi(stack, 'HttpProxyApi', {
+new apigwv2.HttpApi(this, 'HttpProxyApi', {
   corsPreflight: {
     allowHeaders: ['Authorization'],
-    allowMethods: [CorsHttpMethod.GET, CorsHttpMethod.HEAD, CorsHttpMethod.OPTIONS, CorsHttpMethod.POST],
+    allowMethods: [
+      apigwv2.CorsHttpMethod.GET,
+      apigwv2.CorsHttpMethod.HEAD,
+      apigwv2.CorsHttpMethod.OPTIONS,
+      apigwv2.CorsHttpMethod.POST,
+    ],
     allowOrigins: ['*'],
     maxAge: Duration.days(10),
   },
@@ -150,7 +156,9 @@ Use `HttpStage` to create a Stage resource for HTTP APIs. The following code set
 `https://{api_id}.execute-api.{region}.amazonaws.com/beta`.
 
 ```ts
-new HttpStage(stack, 'Stage', {
+declare const api: apigwv2.HttpApi;
+
+new apigwv2.HttpStage(this, 'Stage', {
   httpApi: api,
   stageName: 'beta',
 });
@@ -169,16 +177,20 @@ The code snippet below creates a custom domain and configures a default domain m
 custom domain to the `$default` stage of the API.
 
 ```ts
+import * as acm from '@aws-cdk/aws-certificatemanager';
+import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
 const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
 const domainName = 'example.com';
 
-const dn = new DomainName(stack, 'DN', {
+const dn = new apigwv2.DomainName(this, 'DN', {
   domainName,
-  certificate: acm.Certificate.fromCertificateArn(stack, 'cert', certArn),
+  certificate: acm.Certificate.fromCertificateArn(this, 'cert', certArn),
 });
 
-const api = new HttpApi(stack, 'HttpProxyProdApi', {
-  defaultIntegration: new LambdaProxyIntegration({ handler }),
+declare const handler: lambda.Function;
+const api = new apigwv2.HttpApi(this, 'HttpProxyProdApi', {
+  defaultIntegration: new HttpLambdaIntegration('DefaultIntegration', handler),
   // https://${dn.domainName}/foo goes to prodApi $default stage
   defaultDomainMapping: {
     domainName: dn,
@@ -187,9 +199,16 @@ const api = new HttpApi(stack, 'HttpProxyProdApi', {
 });
 ```
 
+To migrate a domain endpoint from one type to another, you can add a new endpoint configuration via `addEndpoint()`
+and then configure DNS records to route traffic to the new endpoint. After that, you can remove the previous endpoint configuration. 
+Learn more at [Migrating a custom domain name](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-regional-api-custom-domain-migrate.html)
+
 To associate a specific `Stage` to a custom domain mapping -
 
 ```ts
+declare const api: apigwv2.HttpApi;
+declare const dn: apigwv2.DomainName;
+
 api.addStage('beta', {
   stageName: 'beta',
   autoDeploy: true,
@@ -204,8 +223,13 @@ api.addStage('beta', {
 The same domain name can be associated with stages across different `HttpApi` as so -
 
 ```ts
-const apiDemo = new HttpApi(stack, 'DemoApi', {
-  defaultIntegration: new LambdaProxyIntegration({ handler }),
+import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+declare const handler: lambda.Function;
+declare const dn: apigwv2.DomainName;
+
+const apiDemo = new apigwv2.HttpApi(this, 'DemoApi', {
+  defaultIntegration: new HttpLambdaIntegration('DefaultIntegration', handler),
   // https://${dn.domainName}/demo goes to apiDemo $default stage
   defaultDomainMapping: {
     domainName: dn,
@@ -224,7 +248,39 @@ with 3 API mapping resources across different APIs and Stages.
 | api | beta  |   `https://${domainName}/bar`  |
 | apiDemo | $default  |   `https://${domainName}/demo`  |
 
-### Managing access
+You can retrieve the full domain URL with mapping key using the `domainUrl` property as so -
+
+```ts
+declare const apiDemo: apigwv2.HttpApi;
+const demoDomainUrl = apiDemo.defaultStage?.domainUrl; // returns "https://example.com/demo"
+```
+
+### Mutual TLS (mTLS)
+
+Mutual TLS can be configured to limit access to your API based by using client certificates instead of (or as an extension of) using authorization headers.
+
+```ts
+import * as s3 from '@aws-cdk/aws-s3';
+import * as acm from '@aws-cdk/aws-certificatemanager';
+
+const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
+const domainName = 'example.com';
+declare const bucket: s3.Bucket;
+
+new apigwv2.DomainName(this, 'DomainName', {
+  domainName,
+  certificate: acm.Certificate.fromCertificateArn(this, 'cert', certArn),
+  mtls: {
+    bucket,
+    key: 'someca.pem',
+    version: 'version',
+  },
+});
+```
+
+Instructions for configuring your trust store can be found [here](https://aws.amazon.com/blogs/compute/introducing-mutual-tls-authentication-for-amazon-api-gateway/)
+
+### Managing access to HTTP APIs
 
 API Gateway supports multiple mechanisms for [controlling and managing access to your HTTP
 API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html) through authorizers.
@@ -239,7 +295,7 @@ The APIs with the `metric` prefix can be used to get reference to specific metri
 the method below refers to the client side errors metric for this API.
 
 ```ts
-const api = new apigw.HttpApi(stack, 'my-api');
+const api = new apigwv2.HttpApi(this, 'my-api');
 const clientErrorMetric = api.metricClientError();
 ```
 
@@ -247,9 +303,9 @@ Please note that this will return a metric for all the stages defined in the api
 the `metric` methods from the `Stage` construct.
 
 ```ts
-const api = new apigw.HttpApi(stack, 'my-api');
-const stage = new HttpStage(stack, 'Stage', {
-   httpApi: api,
+const api = new apigwv2.HttpApi(this, 'my-api');
+const stage = new apigwv2.HttpStage(this, 'Stage', {
+  httpApi: api,
 });
 const clientErrorMetric = stage.metricClientError();
 ```
@@ -261,14 +317,22 @@ Load Balancers, Network Load Balancers or a Cloud Map service. The `VpcLink` con
 The following code creates a `VpcLink` to a private VPC.
 
 ```ts
-const vpc = new ec2.Vpc(stack, 'VPC');
-const vpcLink = new VpcLink(stack, 'VpcLink', { vpc });
+import * as ec2 from '@aws-cdk/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'VPC');
+const vpcLink = new apigwv2.VpcLink(this, 'VpcLink', { vpc });
 ```
 
-Any existing `VpcLink` resource can be imported into the CDK app via the `VpcLink.fromVpcLinkId()`.
+Any existing `VpcLink` resource can be imported into the CDK app via the `VpcLink.fromVpcLinkAttributes()`.
 
 ```ts
-const awesomeLink = VpcLink.fromVpcLinkId(stack, 'awesome-vpc-link', 'us-east-1_oiuR12Abd');
+import * as ec2 from '@aws-cdk/aws-ec2';
+
+declare const vpc: ec2.Vpc;
+const awesomeLink = apigwv2.VpcLink.fromVpcLinkAttributes(this, 'awesome-vpc-link', {
+  vpcLinkId: 'us-east-1_oiuR12Abd',
+  vpc,
+});
 ```
 
 ### Private Integration
@@ -277,7 +341,7 @@ Private integrations enable integrating an HTTP API route with private resources
 Amazon ECS container-based applications.  Using private integrations, resources in a VPC can be exposed for access by
 clients outside of the VPC.
 
-These integrations can be found in the [APIGatewayV2-Integrations](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-integrations-readme.html) constructs library.
+These integrations can be found in the [aws-apigatewayv2-integrations](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-integrations-readme.html) constructs library.
 
 ## WebSocket API
 
@@ -298,26 +362,88 @@ Integrations are available in the `aws-apigatewayv2-integrations` module and mor
 To add the default WebSocket routes supported by API Gateway (`$connect`, `$disconnect` and `$default`), configure them as part of api props:
 
 ```ts
-const webSocketApi = new WebSocketApi(stack, 'mywsapi', {
-  connectRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: connectHandler }) },
-  disconnectRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: disconnetHandler }) },
-  defaultRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: defaultHandler }) },
+import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+declare const connectHandler: lambda.Function;
+declare const disconnectHandler: lambda.Function;
+declare const defaultHandler: lambda.Function;
+
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi', {
+  connectRouteOptions: { integration: new WebSocketLambdaIntegration('ConnectIntegration', connectHandler) },
+  disconnectRouteOptions: { integration: new WebSocketLambdaIntegration('DisconnectIntegration',disconnectHandler) },
+  defaultRouteOptions: { integration: new WebSocketLambdaIntegration('DefaultIntegration', defaultHandler) },
 });
 
-new WebSocketStage(stack, 'mystage', {
+new apigwv2.WebSocketStage(this, 'mystage', {
   webSocketApi,
   stageName: 'dev',
   autoDeploy: true,
 });
 ```
 
+To retrieve a websocket URL and a callback URL:
+
+```ts
+declare const webSocketStage: apigwv2.WebSocketStage;
+
+const webSocketURL = webSocketStage.url;
+// wss://${this.api.apiId}.execute-api.${s.region}.${s.urlSuffix}/${urlPath}
+const callbackURL = webSocketStage.callbackUrl;
+// https://${this.api.apiId}.execute-api.${s.region}.${s.urlSuffix}/${urlPath}
+```
+
 To add any other route:
 
 ```ts
-const webSocketApi = new WebSocketApi(stack, 'mywsapi');
+import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+declare const messageHandler: lambda.Function;
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
 webSocketApi.addRoute('sendmessage', {
-  integration: new LambdaWebSocketIntegration({
-    handler: messageHandler,
-  }),
+  integration: new WebSocketLambdaIntegration('SendMessageIntegration', messageHandler),
 });
 ```
+
+To import an existing WebSocketApi:
+
+```ts
+const webSocketApi = apigwv2.WebSocketApi.fromWebSocketApiAttributes(this, 'mywsapi', { webSocketId: 'api-1234' });
+```
+
+### Manage Connections Permission
+
+Grant permission to use API Gateway Management API of a WebSocket API by calling the `grantManageConnections` API.
+You can use Management API to send a callback message to a connected client, get connection information, or disconnect the client. Learn more at [Use @connections commands in your backend service](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-how-to-call-websocket-api-connections.html).
+
+```ts
+declare const fn: lambda.Function;
+
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
+const stage = new apigwv2.WebSocketStage(this, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+});
+// per stage permission
+stage.grantManagementApiAccess(fn);
+// for all the stages permission
+webSocketApi.grantManageConnections(fn);
+```
+
+### Managing access to WebSocket APIs
+
+API Gateway supports multiple mechanisms for [controlling and managing access to a WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-control-access.html) through authorizers.
+
+These authorizers can be found in the [APIGatewayV2-Authorizers](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-authorizers-readme.html) constructs library.
+
+### API Keys
+
+Websocket APIs also support usage of API Keys. An API Key is a key that is used to grant access to an API. These are useful for controlling and tracking access to an API, when used together with [usage plans](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html). These together allow you to configure controls around API access such as quotas and throttling, along with per-API Key metrics on usage.
+
+To require an API Key when accessing the Websocket API:
+
+```ts
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi',{
+  apiKeySelectionExpression: apigwv2.WebSocketApiKeySelectionExpression.HEADER_X_API_KEY,
+});
+```
+

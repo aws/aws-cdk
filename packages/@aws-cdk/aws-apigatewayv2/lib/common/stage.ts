@@ -23,51 +23,6 @@ export interface IStage extends IResource {
    * @default - average over 5 minutes
    */
   metric(metricName: string, props?: MetricOptions): Metric
-
-  /**
-   * Metric for the number of client-side errors captured in a given period.
-   *
-   * @default - sum over 5 minutes
-   */
-  metricClientError(props?: MetricOptions): Metric
-
-  /**
-   * Metric for the number of server-side errors captured in a given period.
-   *
-   * @default - sum over 5 minutes
-   */
-  metricServerError(props?: MetricOptions): Metric
-
-  /**
-   * Metric for the amount of data processed in bytes.
-   *
-   * @default - sum over 5 minutes
-   */
-  metricDataProcessed(props?: MetricOptions): Metric
-
-  /**
-   * Metric for the total number API requests in a given period.
-   *
-   * @default - SampleCount over 5 minutes
-   */
-  metricCount(props?: MetricOptions): Metric
-
-  /**
-   * Metric for the time between when API Gateway relays a request to the backend
-   * and when it receives a response from the backend.
-   *
-   * @default - no statistic
-   */
-  metricIntegrationLatency(props?: MetricOptions): Metric
-
-  /**
-   * The time between when API Gateway receives a request from a client
-   * and when it returns a response to the client.
-   * The latency includes the integration latency and other API Gateway overhead.
-   *
-   * @default - no statistic
-   */
-  metricLatency(props?: MetricOptions): Metric
 }
 
 /**
@@ -104,6 +59,13 @@ export interface StageOptions {
    * @default - no custom domain and api mapping configuration
    */
   readonly domainMapping?: DomainMappingOptions;
+
+  /**
+   * Throttle settings for the routes of this stage
+   *
+   * @default - no throttling configuration
+   */
+  readonly throttle?: ThrottleSettings;
 }
 
 /**
@@ -114,4 +76,21 @@ export interface StageAttributes {
    * The name of the stage
    */
   readonly stageName: string;
+}
+
+/**
+ * Container for defining throttling parameters to API stages
+ */
+export interface ThrottleSettings {
+  /**
+   * The API request steady-state rate limit (average requests per second over an extended period of time)
+   * @default none
+   */
+  readonly rateLimit?: number;
+
+  /**
+   * The maximum API request rate limit over a time ranging from one to a few seconds.
+   * @default none
+   */
+  readonly burstLimit?: number;
 }

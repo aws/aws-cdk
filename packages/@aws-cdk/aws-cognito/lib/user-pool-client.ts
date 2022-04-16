@@ -243,7 +243,7 @@ export interface UserPoolClientOptions {
    * user does not exist in the user pool (false), or whether it returns
    * another type of error that doesn't reveal the user's absence.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-managing-errors.html
-   * @default true for new stacks
+   * @default false
    */
   readonly preventUserExistenceErrors?: boolean;
 
@@ -293,6 +293,13 @@ export interface UserPoolClientOptions {
    * @default - all standard and custom attributes
    */
   readonly writeAttributes?: ClientAttributes;
+
+  /**
+   * Enable token revocation for this client.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/token-revocation.html#enable-token-revocation
+   * @default true for new user pool clients
+   */
+  readonly enableTokenRevocation?: boolean;
 }
 
 /**
@@ -381,6 +388,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       supportedIdentityProviders: this.configureIdentityProviders(props),
       readAttributes: props.readAttributes?.attributes(),
       writeAttributes: props.writeAttributes?.attributes(),
+      enableTokenRevocation: props.enableTokenRevocation,
     });
     this.configureTokenValidity(resource, props);
 

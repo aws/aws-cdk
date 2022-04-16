@@ -1,5 +1,6 @@
 import { AssetManifest, IManifestEntry } from './asset-manifest';
 import { IAws } from './aws';
+import { IHandlerHost } from './private/asset-handler';
 import { makeAssetHandler } from './private/handlers';
 import { EventType, IPublishProgress, IPublishProgressListener } from './progress';
 
@@ -22,6 +23,13 @@ export interface AssetPublishingOptions {
    * @default true
    */
   readonly throwOnError?: boolean;
+
+  /**
+   * Whether to publish in parallel
+   *
+   * @default false
+   */
+  readonly publishInParallel?: boolean;
 }
 
 /**
@@ -55,48 +63,66 @@ export class AssetPublishing implements IPublishProgress {
   private readonly totalOperations: number;
   private completedOperations: number = 0;
   private aborted = false;
+  private readonly handlerHost: IHandlerHost;
+  private readonly publishInParallel: boolean;
 
   constructor(private readonly manifest: AssetManifest, private readonly options: AssetPublishingOptions) {
     this.assets = manifest.entries;
     this.totalOperations = this.assets.length;
+    this.publishInParallel = options.publishInParallel ?? false;
+
+    const self = this;
+    this.handlerHost = {
+      aws: this.options.aws,
+      get aborted() { return self.aborted; },
+      emitMessage(t, m) { self.progressEvent(t, m); },
+    };
   }
 
   /**
    * Publish all assets from the manifest
    */
   public async publish(): Promise<void> {
-    const self = this;
-
-    for (const asset of this.assets) {
-      if (this.aborted) { break; }
-      this.currentAsset = asset;
-
-      try {
-        if (this.progressEvent(EventType.START, `Publishing ${asset.id}`)) { break; }
-
-        const handler = makeAssetHandler(this.manifest, asset, {
-          aws: this.options.aws,
-          get aborted() { return self.aborted; },
-          emitMessage(t, m) { self.progressEvent(t, m); },
-        });
-        await handler.publish();
-
-        if (this.aborted) {
-          throw new Error('Aborted');
+    if (this.publishInParallel) {
+      await Promise.all(this.assets.map(async (asset) => this.publishAsset(asset)));
+    } else {
+      for (const asset of this.assets) {
+        if (!await this.publishAsset(asset)) {
+          break;
         }
-
-        this.completedOperations++;
-        if (this.progressEvent(EventType.SUCCESS, `Published ${asset.id}`)) { break; }
-      } catch (e) {
-        this.failures.push({ asset, error: e });
-        this.completedOperations++;
-        if (this.progressEvent(EventType.FAIL, e.message)) { break; }
       }
     }
 
     if ((this.options.throwOnError ?? true) && this.failures.length > 0) {
       throw new Error(`Error publishing: ${this.failures.map(e => e.error.message)}`);
     }
+  }
+
+  /**
+   * Publish an asset.
+   * @param asset The asset to publish
+   * @returns false when publishing should stop
+   */
+  private async publishAsset(asset: IManifestEntry) {
+    try {
+      if (this.progressEvent(EventType.START, `Publishing ${asset.id}`)) { return false; }
+
+      const handler = makeAssetHandler(this.manifest, asset, this.handlerHost);
+      await handler.publish();
+
+      if (this.aborted) {
+        throw new Error('Aborted');
+      }
+
+      this.completedOperations++;
+      if (this.progressEvent(EventType.SUCCESS, `Published ${asset.id}`)) { return false; }
+    } catch (e) {
+      this.failures.push({ asset, error: e });
+      this.completedOperations++;
+      if (this.progressEvent(EventType.FAIL, e.message)) { return false; }
+    }
+
+    return true;
   }
 
   public get percentComplete() {

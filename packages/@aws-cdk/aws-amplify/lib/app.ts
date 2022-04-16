@@ -2,6 +2,7 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as iam from '@aws-cdk/aws-iam';
 import { IResource, Lazy, Resource, SecretValue } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import * as YAML from 'yaml';
 import { CfnApp } from './amplify.generated';
 import { BasicAuth } from './basic-auth';
 import { Branch, BranchOptions } from './branch';
@@ -27,7 +28,7 @@ export interface SourceCodeProviderConfig {
   /**
    * The repository for the application. Must use the `HTTPS` protocol.
    *
-   * @example https://github.com/aws/aws-cdk
+   * For example, `https://github.com/aws/aws-cdk`.
    */
   readonly repository: string;
 
@@ -36,7 +37,7 @@ export interface SourceCodeProviderConfig {
    * to create webhook and read-only deploy key. OAuth token is not stored.
    *
    * Either `accessToken` or `oauthToken` must be specified if `repository`
-   * is sepcified.
+   * is specified.
    *
    * @default - do not use a token
    */
@@ -117,6 +118,16 @@ export interface AppProps {
    * @default - no build spec
    */
   readonly buildSpec?: codebuild.BuildSpec;
+
+
+  /**
+   * The custom HTTP response headers for an Amplify app.
+   *
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/custom-headers.html
+   *
+   * @default - no custom response headers
+   */
+  readonly customResponseHeaders?: CustomResponseHeader[];
 
   /**
    * Custom rewrite/redirect rules for the application
@@ -212,10 +223,12 @@ export class App extends Resource implements IApp, iam.IGrantable {
     const sourceCodeProviderOptions = props.sourceCodeProvider?.bind(this);
 
     const app = new CfnApp(this, 'Resource', {
-      accessToken: sourceCodeProviderOptions?.accessToken?.toString(),
+      accessToken: sourceCodeProviderOptions?.accessToken?.unsafeUnwrap(), // Safe usage
       autoBranchCreationConfig: props.autoBranchCreation && {
         autoBranchCreationPatterns: props.autoBranchCreation.patterns,
-        basicAuthConfig: props.autoBranchCreation.basicAuth && props.autoBranchCreation.basicAuth.bind(this, 'BranchBasicAuth'),
+        basicAuthConfig: props.autoBranchCreation.basicAuth
+          ? props.autoBranchCreation.basicAuth.bind(this, 'BranchBasicAuth')
+          : { enableBasicAuth: false },
         buildSpec: props.autoBranchCreation.buildSpec && props.autoBranchCreation.buildSpec.toBuildSpec(),
         enableAutoBranchCreation: true,
         enableAutoBuild: props.autoBranchCreation.autoBuild ?? true,
@@ -225,15 +238,18 @@ export class App extends Resource implements IApp, iam.IGrantable {
         stage: props.autoBranchCreation.stage,
       },
       enableBranchAutoDeletion: props.autoBranchDeletion,
-      basicAuthConfig: props.basicAuth && props.basicAuth.bind(this, 'AppBasicAuth'),
+      basicAuthConfig: props.basicAuth
+        ? props.basicAuth.bind(this, 'AppBasicAuth')
+        : { enableBasicAuth: false },
       buildSpec: props.buildSpec && props.buildSpec.toBuildSpec(),
       customRules: Lazy.any({ produce: () => this.customRules }, { omitEmptyArray: true }),
       description: props.description,
       environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.environmentVariables) }, { omitEmptyArray: true }),
       iamServiceRole: role.roleArn,
       name: props.appName || this.node.id,
-      oauthToken: sourceCodeProviderOptions?.oauthToken?.toString(),
+      oauthToken: sourceCodeProviderOptions?.oauthToken?.unsafeUnwrap(), // Safe usage
       repository: sourceCodeProviderOptions?.repository,
+      customHeaders: props.customResponseHeaders ? renderCustomResponseHeaders(props.customResponseHeaders) : undefined,
     });
 
     this.appId = app.attrAppId;
@@ -481,4 +497,29 @@ export class CustomRule {
     this.status = options.status;
     this.condition = options.condition;
   }
+}
+
+/**
+ * Custom response header of an Amplify App.
+ */
+export interface CustomResponseHeader {
+  /**
+   * These custom headers will be applied to all URL file paths that match this pattern.
+   */
+  readonly pattern: string;
+
+  /**
+   * The map of custom headers to be applied.
+   */
+  readonly headers: { [key: string]: string };
+}
+
+function renderCustomResponseHeaders(customHeaders: CustomResponseHeader[]): string {
+  const modifiedHeaders = customHeaders.map(customHeader => ({
+    ...customHeader,
+    headers: Object.entries(customHeader.headers).map(([key, value]) => ({ key, value })),
+  }));
+
+  const customHeadersObject = { customHeaders: modifiedHeaders };
+  return YAML.stringify(customHeadersObject);
 }

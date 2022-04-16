@@ -21,7 +21,7 @@ const APP_MESH_ENVOY_SIDECAR_VERSION = 'v1.15.1.0-prod';
  */
 export interface MeshProps {
   /**
-   * The service mesh into which to register the service
+   * The service mesh into which to register the service.
    */
   readonly mesh: appmesh.Mesh;
 
@@ -39,9 +39,9 @@ export interface MeshProps {
  * to the container in a service mesh.
  *
  * The service will then be available to other App Mesh services at the
- * address `<service name>.<environment name>`. For example a service called
+ * address `<service name>.<environment name>`. For example, a service called
  * `orders` deploying in an environment called `production` would be accessible
- * to other App Mesh enabled services at the address `http://orders.production`
+ * to other App Mesh enabled services at the address `http://orders.production`.
  */
 export class AppMeshExtension extends ServiceExtension {
   protected virtualNode!: appmesh.VirtualNode;
@@ -138,6 +138,7 @@ export class AppMeshExtension extends ServiceExtension {
 
   public useTaskDefinition(taskDefinition: ecs.TaskDefinition) {
     var region = cdk.Stack.of(this.scope).region;
+    var partition = cdk.Stack.of(this.scope).partition;
     var appMeshRepo;
 
     // This is currently necessary because App Mesh has different images in each region,
@@ -151,6 +152,8 @@ export class AppMeshExtension extends ServiceExtension {
         'ap-southeast-1': this.accountIdForRegion('ap-southeast-1'),
         'ap-southeast-2': this.accountIdForRegion('ap-southeast-1'),
         'ca-central-1': this.accountIdForRegion('ca-central-1'),
+        'cn-north-1': this.accountIdForRegion('cn-north-1'),
+        'cn-northwest-1': this.accountIdForRegion('cn-northwest-1'),
         'eu-central-1': this.accountIdForRegion('eu-central-1'),
         'eu-north-1': this.accountIdForRegion('eu-north-1'),
         'eu-south-1': this.accountIdForRegion('eu-south-1'),
@@ -177,7 +180,7 @@ export class AppMeshExtension extends ServiceExtension {
       `${this.parentService.id}-envoy-repo`,
       {
         repositoryName: 'aws-appmesh-envoy',
-        repositoryArn: `arn:aws:ecr:${region}:${ownerAccount}:repository/aws-appmesh-envoy`,
+        repositoryArn: `arn:${partition}:ecr:${region}:${ownerAccount}:repository/aws-appmesh-envoy`,
       },
     );
 
@@ -249,7 +252,7 @@ export class AppMeshExtension extends ServiceExtension {
     } as ServiceBuild;
   }
 
-  // Now that the service is defined we can create the AppMesh virtual service
+  // Now that the service is defined, we can create the AppMesh virtual service
   // and virtual node for the real service
   public useService(service: ecs.Ec2Service | ecs.FargateService) {
     const containerextension = this.parentService.serviceDescription.get('service-container') as Container;
@@ -285,9 +288,7 @@ export class AppMeshExtension extends ServiceExtension {
       mesh: this.mesh,
       virtualNodeName: this.parentService.id,
       serviceDiscovery: service.cloudMapService
-        ? appmesh.ServiceDiscovery.cloudMap({
-          service: service.cloudMapService,
-        })
+        ? appmesh.ServiceDiscovery.cloudMap(service.cloudMapService)
         : undefined,
       listeners: [addListener(this.protocol, containerextension.trafficPort)],
     });
