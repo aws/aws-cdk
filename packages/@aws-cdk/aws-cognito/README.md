@@ -364,9 +364,8 @@ new cognito.UserPool(this, 'myuserpool', {
 
 ```
 
-Sending emails through SES verified domain, `sesVerifiedDomain` must be used to specify the domain.
-When sending emails with a verified domain, the email address does not need to be verified.
-In that case, the identity of the email configuration is allow to be set to the domain instead of the email address.
+When sending emails from an SES verified domain, `sesVerifiedDomain` can be used to specify the domain.
+The email address does not need to be verified when sending emails from a verified domain, because the identity of the email configuration is can be determined from the domain alone.
 
 ```ts
 new cognito.UserPool(this, 'myuserpool', {

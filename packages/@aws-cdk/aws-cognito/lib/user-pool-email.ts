@@ -171,6 +171,13 @@ class SESEmail extends UserPoolEmail {
       from = `${this.options.fromName} <${this.options.fromEmail}>`;
     }
 
+    if (this.options.sesVerifiedDomain) {
+      const domainFromEmail = this.options.fromEmail.split('@').pop();
+      if (domainFromEmail !== this.options.sesVerifiedDomain) {
+        throw new Error('"fromEmail" contains a different domain than the "sesVerifiedDomain"');
+      }
+    }
+
     return {
       from: encodeAndTest(from),
       replyToEmailAddress: encodeAndTest(this.options.replyTo),
