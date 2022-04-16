@@ -76,6 +76,7 @@ new rds.DatabaseClusterFromSnapshot(this, 'Database', {
   copyTagsToSnapshot: false
 });
 ```
+
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
