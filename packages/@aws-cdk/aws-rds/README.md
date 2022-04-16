@@ -63,7 +63,7 @@ new rds.DatabaseClusterFromSnapshot(this, 'Database', {
 });
 ```
 
-By default, all tags will be copied to the snapshots of clusters, to disable the same `copyTagsToSnapshot` attribute can be set to `false`.
+By default, `copyTagsToSnaphot` attribute is set to `true` for both `DatabaseCluster` and `DatabaseClusterFromSnapshot` and all tags will be copied to the snapshots of clusters, to disable this, `copyTagsToSnapshot` attribute can be set to `false` as shown below.
 
 ```ts
 declare const vpc: ec2.Vpc;
