@@ -62,12 +62,12 @@ export interface ParallelProps {
   readonly resultSelector?: { [key: string]: any };
 
   /**
-   * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
+   * Parameters pass a collection of key-value pairs as input. Values can be literals or JSONPath expressions that select from the step input.
    *
    * @see
    * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-parameters
    *
-   * @default No parameters
+   * @default - No parameters
    */
   readonly parameters?: { [key: string]: any };
 }

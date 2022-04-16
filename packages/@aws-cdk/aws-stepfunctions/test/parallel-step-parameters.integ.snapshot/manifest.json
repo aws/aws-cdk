@@ -1,0 +1,152 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-stepfunctions-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-stepfunctions-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-stepfunctions-integ/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Role1ABCC5F0",
+            "trace": [
+              "new Role (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/aws-iam/lib/role.js:58:22)",
+              "Object.<anonymous> (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/aws-stepfunctions/test/integ.parallel-step-parameters.js:23:14)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-stepfunctions-integ/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RoleDefaultPolicy5FFB7DAB",
+            "trace": [
+              "new Policy (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/aws-iam/lib/policy.js:58:26)",
+              "Role.addToPrincipalPolicy (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/aws-iam/lib/role.js:224:34)",
+              "Function.addToPrincipal (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/aws-iam/lib/grant.js:103:65)",
+              "StateMachine.grantRead (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/aws-stepfunctions/lib/state-machine.js:103:19)",
+              "Object.<anonymous> (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/aws-stepfunctions/test/integ.parallel-step-parameters.js:29:14)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-stepfunctions-integ/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D",
+            "trace": [
+              "new Role (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/aws-iam/lib/role.js:58:22)",
+              "new StateMachine (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/aws-stepfunctions/lib/state-machine.js:274:35)",
+              "Object.<anonymous> (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/aws-stepfunctions/test/integ.parallel-step-parameters.js:26:22)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-stepfunctions-integ/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5",
+            "trace": [
+              "new StateMachine (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/aws-stepfunctions/lib/state-machine.js:280:26)",
+              "Object.<anonymous> (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/aws-stepfunctions/test/integ.parallel-step-parameters.js:26:22)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-stepfunctions-integ/Service-principalMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceprincipalMap",
+            "trace": [
+              "Object.deployTimeLookup (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/region-lookup.js:35:19)",
+              "Stack.regionalFact (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/stack.js:640:32)",
+              "ServicePrincipalToken.resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/aws-iam/lib/principals.js:746:22)",
+              "RememberingTokenResolver.resolveToken (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/resolvable.js:64:30)",
+              "RememberingTokenResolver.resolveToken (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:198:22)",
+              "resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:131:55)",
+              "Object.resolve [as mapToken] (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:58:48)",
+              "TokenizedStringFragments.mapTokens (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/string-fragments.js:78:43)",
+              "RememberingTokenResolver.resolveString (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/resolvable.js:93:26)",
+              "RememberingTokenResolver.resolveString (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:201:27)",
+              "resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:98:54)",
+              "Object.resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:58:48)",
+              "resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:146:51)",
+              "Object.resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:58:48)",
+              "resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:146:51)",
+              "Object.resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:58:48)",
+              "/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:122:51",
+              "Array.map (<anonymous>)",
+              "resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:122:14)",
+              "Object.resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:58:48)",
+              "resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:146:51)",
+              "Object.resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:58:48)",
+              "RememberingTokenResolver.resolveToken (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/resolvable.js:66:32)",
+              "RememberingTokenResolver.resolveToken (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:198:22)",
+              "resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:131:55)",
+              "Object.resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:58:48)",
+              "resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:146:51)",
+              "Object.resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:58:48)",
+              "RememberingTokenResolver.resolveToken (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/resolvable.js:66:32)",
+              "RememberingTokenResolver.resolveToken (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:198:22)",
+              "resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:131:55)",
+              "Object.resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:58:48)",
+              "resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:146:51)",
+              "Object.resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:58:48)",
+              "RememberingTokenResolver.resolveToken (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/resolvable.js:66:32)",
+              "RememberingTokenResolver.resolveToken (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:198:22)",
+              "resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:131:55)",
+              "Object.resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:58:48)",
+              "resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:146:51)",
+              "Object.resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:58:48)",
+              "resolve (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:146:51)",
+              "Object.findTokens (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/resolve.js:184:5)",
+              "findAllReferences (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/refs.js:97:38)",
+              "Object.resolveReferences (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/refs.js:20:19)",
+              "Object.prepareApp (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/prepare-app.js:30:12)",
+              "Object.synthesize (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/private/synthesis.js:21:19)",
+              "App.synth (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/core/lib/stage.js:105:41)",
+              "Object.<anonymous> (/Users/luribeiro/Code/aws-cdk/packages/@aws-cdk/aws-stepfunctions/test/integ.parallel-step-parameters.js:31:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-stepfunctions-integ"
+    }
+  }
+}
