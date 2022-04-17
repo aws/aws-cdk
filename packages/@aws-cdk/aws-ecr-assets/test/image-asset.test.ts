@@ -271,11 +271,33 @@ describe('image asset', () => {
     // When the deprecated property is removed source code, this block can be dropped.
 
     testFutureBehavior('docker directory is staged without files specified in .dockerignore', flags, App, (app) => {
-      testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app);
+      testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app, false);
+    });
+
+    testFutureBehavior('docker directory is staged without files specified in Dockerfile.dockerignore', flags, App, (app) => {
+      testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app, true);
     });
 
     testFutureBehavior('docker directory is staged without files specified in .dockerignore with IgnoreMode.GLOB', flags, App, (app) => {
-      testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app, IgnoreMode.GLOB);
+      testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app, false, IgnoreMode.GLOB);
+    });
+
+    testFutureBehavior('docker directory is staged without files specified in Dockderfile.dockerignore with IgnoreMode.GLOB', flags, App, (app) => {
+      testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app, true, IgnoreMode.GLOB);
+    });
+  });
+
+  describe('docker file ignores with multiple custom images', () => {
+    testFutureBehavior('Dockerfile w/ .dockerignore', flags, App, (app) => {
+      testDockerDirectoryIsStagedByCustomIgnoreFiles(app, 'Dockerfile', ['.dockerignore', 'default.txt', 'index.py']);
+    });
+
+    testFutureBehavior('DockerfileA w/ DockerfileA.dockerignore', flags, App, (app) => {
+      testDockerDirectoryIsStagedByCustomIgnoreFiles(app, 'DockerfileA', ['DockerfileA.dockerignore', 'a.txt', 'index.py']);
+    });
+
+    testFutureBehavior('DockerfileB w/ DockerfileB.dockerignore', flags, App, (app) => {
+      testDockerDirectoryIsStagedByCustomIgnoreFiles(app, 'DockerfileB', ['DockerfileB.dockerignore', 'b.txt', 'index.py']);
     });
   });
 
@@ -371,22 +393,50 @@ describe('image asset', () => {
   });
 });
 
-function testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app: App, ignoreMode?: IgnoreMode) {
+function testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app: App, dockerfileIgnore: boolean, ignoreMode?: IgnoreMode) {
   const stack = new Stack(app);
+  const directory = dockerfileIgnore ? 'dockerfileignore-image' : 'dockerignore-image';
   const image = new DockerImageAsset(stack, 'MyAsset', {
     ignoreMode,
-    directory: path.join(__dirname, 'dockerignore-image'),
+    directory: path.join(__dirname, directory),
   });
 
   const session = app.synth();
 
-  // .dockerignore itself should be included in output to be processed during docker build
-  expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, '.dockerignore'))).toBeDefined();
+  // Dockerfile.dockerignore or .dockerignore itself should be included in output to be processed during docker build
+  const dockerignoreFile = dockerfileIgnore ? 'Dockerfile.dockerignore' : '.dockerignore';
+
+  expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, dockerignoreFile))).toBeDefined();
   expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'Dockerfile'))).toBeDefined();
   expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'index.py'))).toBeDefined();
   expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'foobar.txt'))).toBeDefined();
   expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory'))).toBeDefined();
   expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory', 'baz.txt'))).toBeDefined();
+}
+
+function testDockerDirectoryIsStagedByCustomIgnoreFiles(app: App, dockerfile: string, expectedFiles: string[]) {
+  const stack = new Stack(app);
+  const image = new DockerImageAsset(stack, 'MyAsset', {
+    file: dockerfile,
+    directory: path.join(__dirname, 'dockerfileignore-custom-images'),
+  });
+
+  const session = app.synth();
+
+  const allFiles = [
+    '.dockerignore', 'Dockerfile', 'default.txt',
+    'DockerfileA', 'DockerfileA.dockerignore', 'a.txt',
+    'DockerfileB', 'DockerfileB.dockerignore', 'b.txt',
+    'index.py',
+  ];
+
+  allFiles.forEach(file => {
+    let shouldExist = false;
+    if (expectedFiles.includes(file) || file === dockerfile) {
+      shouldExist = true;
+    }
+    expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, file))).toBe(shouldExist);
+  });
 }
 
 function testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app: App, ignoreMode?: IgnoreMode) {

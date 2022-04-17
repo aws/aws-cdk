@@ -1,0 +1,8 @@
+.dockerignore
+Dockerfile
+DockerfileA
+DockerfileA.dockerignore
+DockerfileB
+DockerfileB.dockerignore
+a.txt
+default.txt
