@@ -254,17 +254,28 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
 
     let exclude: string[] = props.exclude || [];
 
-    const ignore = path.join(dir, '.dockerignore');
+    let ignore: string | undefined = undefined;
+    let ignorePaths: string[] = [
+      path.join(dir, this.dockerfilePath + '.dockerignore'),
+      path.join(dir, '.dockerignore'),
+    ];
 
-    if (fs.existsSync(ignore)) {
+    for (let i in ignorePaths) {
+      if (fs.existsSync(ignorePaths[i])) {
+        ignore = ignorePaths[i];
+        break;
+      }
+    }
+
+    if (ignore !== undefined) {
       const dockerIgnorePatterns = fs.readFileSync(ignore).toString().split('\n').filter(e => !!e);
 
       exclude = [
         ...dockerIgnorePatterns,
         ...exclude,
 
-        // Ensure .dockerignore is included no matter what.
-        '!.dockerignore',
+        // Ensure Dockerfile.dockerignore or .dockerignore is included no matter what.
+        '!' + path.basename(ignore),
       ];
     }
 
