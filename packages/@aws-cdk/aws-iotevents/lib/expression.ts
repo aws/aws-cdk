@@ -13,20 +13,6 @@ export abstract class Expression {
   }
 
   /**
-   * Create a expression as String from the given string.
-   */
-  public static asString(value: string): Expression {
-    return this.fromString(`"${value}"`);
-  }
-
-  /**
-   * Create a expression as Number from the given string.
-   */
-  public static asNumber(value: number): Expression {
-    return this.fromString(value.toString());
-  }
-
-  /**
    * Create a expression for function `currentInput()`.
    * It is evaluated to true if the specified input message was received.
    */

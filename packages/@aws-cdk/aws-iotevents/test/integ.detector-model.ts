@@ -19,7 +19,7 @@ class TestStack extends cdk.Stack {
           iotevents.Expression.currentInput(input),
           iotevents.Expression.eq(
             iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-            iotevents.Expression.asNumber(31.5),
+            iotevents.Expression.fromString('31.5'),
           ),
         ),
       }],
@@ -27,14 +27,14 @@ class TestStack extends cdk.Stack {
         eventName: 'test-input-event',
         condition: iotevents.Expression.eq(
           iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-          iotevents.Expression.asNumber(31.6),
+          iotevents.Expression.fromString('31.6'),
         ),
       }],
       onExit: [{
         eventName: 'test-exit-event',
         condition: iotevents.Expression.eq(
           iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-          iotevents.Expression.asNumber(31.7),
+          iotevents.Expression.fromString('31.7'),
         ),
       }],
     });
@@ -46,14 +46,14 @@ class TestStack extends cdk.Stack {
     onlineState.transitionTo(offlineState, {
       when: iotevents.Expression.eq(
         iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-        iotevents.Expression.asNumber(12),
+        iotevents.Expression.fromString('12'),
       ),
     });
     // 2st => 1st
     offlineState.transitionTo(onlineState, {
       when: iotevents.Expression.eq(
         iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-        iotevents.Expression.asNumber(21),
+        iotevents.Expression.fromString('21'),
       ),
     });
 

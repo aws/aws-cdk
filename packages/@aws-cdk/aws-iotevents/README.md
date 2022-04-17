@@ -86,7 +86,7 @@ warmState.transitionTo(coldState, {
   eventName: 'to_coldState', // optional property, default by combining the names of the States
   when: iotevents.Expression.lt(
     iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-    iotevents.Expression.asNumber(15),
+    iotevents.Expression.fromString('15'),
   ),
   executing: [new actions.LambdaInvokeAction(func)], // optional
 });
@@ -94,7 +94,7 @@ warmState.transitionTo(coldState, {
 coldState.transitionTo(warmState, {
   when: iotevents.Expression.gte(
     iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-    iotevents.Expression.asNumber(15),
+    iotevents.Expression.fromString('15'),
   ),
 });
 
