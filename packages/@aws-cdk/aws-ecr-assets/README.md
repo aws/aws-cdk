@@ -34,9 +34,11 @@ parameters to your stack.
 By default, all files in the given directory will be copied into the docker
 *build context*. If there is a large directory that you know you definitely
 don't need in the build context you can improve the performance by adding the
-names of files and directories to ignore to a file called `.dockerignore`, or
-pass them via the `exclude` property. If both are available, the patterns
-found in `exclude` are appended to the patterns found in `.dockerignore`.
+names of files and directories to ignore to a file called `.dockerignore`,
+or to a file called `${file}.dockerignore` where `${file}` is the name of
+the Dockerfile, or pass them via the `exclude` property. If both the `exclude`
+property and a dockerignore file are available, the patterns found in `exclude`
+are appended to the patterns found in the dockerignore file.
 
 The `ignoreMode` property controls how the set of ignore patterns is
 interpreted. The recommended setting for Docker image assets is
