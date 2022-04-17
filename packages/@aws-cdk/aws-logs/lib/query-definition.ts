@@ -1,6 +1,7 @@
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnQueryDefinition } from '.';
+import { ILogGroup } from './log-group';
 
 
 /**
@@ -10,91 +11,80 @@ export interface QueryStringProps {
   /**
   * Retrieves the specified fields from log events for display.
   *
-  * @default no fields in QueryString
+  * @default undefined no fields in QueryString
   */
-  readonly fields?: string;
+  readonly fields?: string[];
 
   /**
   * Extracts data from a log field and creates one or more ephemeral fields that you can process further in the query.
   *
-  * @default no parse in QueryString
+  * @default undefined no parse in QueryString
   */
   readonly parse?: string;
 
   /**
   * Filters the results of a query that's based on one or more conditions.
   *
-  * @default no filter in QueryString
+  * @default undefined no filter in QueryString
   */
   readonly filter?: string;
 
   /**
   * Uses log field values to calculate aggregate statistics.
   *
-  * @default no stats in QueryString
+  * @default undefined no stats in QueryString
   */
   readonly stats?: string;
 
   /**
   * Sorts the retrieved log events.
   *
-  * @default no sort in QueryString
+  * @default undefined no sort in QueryString
   */
   readonly sort?: string;
 
   /**
   * Specifies the number of log events returned by the query.
   *
-  * @default no limit in QueryString
+  * @default undefined no limit in QueryString
   */
   readonly limit?: Number;
 
   /**
   * Specifies which fields to display in the query results.
   *
-  * @default no display in QueryString
+  * @default undefined no display in QueryString
   */
   readonly display?: string;
+}
+
+interface QueryStringMap {
+  readonly fields?: string,
+  readonly parse?: string,
+  readonly filter?: string,
+  readonly stats?: string,
+  readonly sort?: string,
+  readonly limit?: Number,
+  readonly display?: string,
 }
 
 /**
  * Define a QueryString
  */
 export class QueryString {
-  /**
-  * Retrieves the specified fields from log events for display.
-  */
-  private fields?: string;
+  private readonly fields?: string[];
 
-  /**
-  * Extracts data from a log field and creates one or more ephemeral fields that you can process further in the query.
-  */
-  private parse?: string;
+  private readonly parse?: string;
 
-  /**
-  * Filters the results of a query that's based on one or more conditions.
-  */
-  private filter?: string;
+  private readonly filter?: string;
 
-  /**
-  * Uses log field values to calculate aggregate statistics.
-  */
-  private stats?: string;
+  private readonly stats?: string;
 
-  /**
-  * Sorts the retrieved log events.
-  */
-  private sort?: string;
+  private readonly sort?: string;
 
-  /**
-  * Specifies the number of log events returned by the query.
-  */
-  private limit?: Number;
+  private readonly limit?: Number;
 
-  /**
-  * Specifies which fields to display in the query results.
-  */
-  private display?: string;
+  private readonly display?: string;
 
   constructor(props: QueryStringProps = {}) {
     this.fields = props.fields;
@@ -107,74 +97,23 @@ export class QueryString {
   }
 
   /**
-  * Adds fields to QueryString of the query definition.
-  */
-  public addFields(fields: string) {
-    this.fields = fields;
-  }
-
-  /**
-  * Adds parse to QueryString of the query definition.
-  */
-  public addParse(parse: string) {
-    this.parse = parse;
-  }
-
-  /**
-  * Adds filter to QueryString of the query definition.
-  */
-  public addFilter(filter: string) {
-    this.filter = filter;
-  }
-
-  /**
-  * Adds stats to QueryString of the query definition.
-  */
-  public addStats(stats: string) {
-    this.stats = stats;
-  }
-
-  /**
-  * Adds sort to QueryString of the query definition.
-  */
-  public addSort(sort: string) {
-    this.sort = sort;
-  }
-
-  /**
-  * Adds limit to QueryString of the query definition.
-  */
-  public addLimit(limit: Number) {
-    this.limit = limit;
-  }
-
-  /**
-  * Adds display to QueryString of the query definition.
-  */
-  public addDisplay(display: string) {
-    this.display = display;
-  }
-
-  /**
   * String representation of this QueryString.
   */
   public toString(): string {
-    let queryStringMap = {
-      fields: this.fields,
+    return noUndef({
+      fields: this.fields !== undefined ? this.fields.join(', ') : this.fields,
       parse: this.parse,
       filter: this.filter,
       stats: this.stats,
       sort: this.sort,
       limit: this.limit,
       display: this.display,
-    };
-
-    return noUndef(queryStringMap).join(' | ');
+    }).join(' | ');
   }
 }
 
-function noUndef(x: any): any {
-  const ret: any = [];
+function noUndef(x: QueryStringMap): string[] {
+  const ret: string[] = [];
   for (const [key, value] of Object.entries(x)) {
     if (value !== undefined) {
       ret.push(`${key} ${value}`);
@@ -200,9 +139,9 @@ export interface QueryDefinitionProps {
   /**
   * Specify certain log groups for the query definition.
   *
-  * @default - No log groups.
+  * @default undefined no specified log groups
   */
-  readonly logGroupNames?: string[];
+  readonly logGroups?: ILogGroup[];
 }
 
 /**
@@ -221,12 +160,12 @@ export class QueryDefinition extends Resource {
       physicalName: props.queryDefinitionName,
     });
 
-    const resource = new CfnQueryDefinition(this, 'Resource', {
+    const queryDefinition = new CfnQueryDefinition(this, 'Resource', {
       name: props.queryDefinitionName,
       queryString: props.queryString.toString(),
-      logGroupNames: props.logGroupNames,
+      logGroupNames: typeof props.logGroups === 'undefined' ? [] : props.logGroups.flatMap(logGroup => logGroup.logGroupName),
     });
 
-    this.queryDefinitionId = resource.attrQueryDefinitionId;
+    this.queryDefinitionId = queryDefinition.attrQueryDefinitionId;
   }
 }
