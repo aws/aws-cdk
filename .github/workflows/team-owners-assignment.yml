@@ -12,4 +12,4 @@ jobs:
           github-token: "${{ secrets.PROJEN_GITHUB_TOKEN }}"
           team: "aws-cdk-owners"
           exempt-team: "aws-cdk-team"
-          target: "pull_requests"
+
