@@ -1,6 +1,5 @@
 import * as child_process from 'child_process';
 import * as path from 'path';
-import { FUTURE_FLAGS } from '@aws-cdk/cx-api';
 import { SynthFastOptions, DestroyOptions, ListOptions, SynthOptions, DeployOptions } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import { IntegTestRunner, IntegSnapshotRunner } from '../../lib/runner/runners';
@@ -168,9 +167,7 @@ describe('IntegTest runIntegTests', () => {
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
-      context: expect.objectContaining({
-        ...FUTURE_FLAGS,
-      }),
+      context: expect.any(Object),
       versionReporting: false,
       lookups: false,
       stacks: ['stack1'],
@@ -181,9 +178,7 @@ describe('IntegTest runIntegTests', () => {
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
-      context: expect.objectContaining({
-        ...FUTURE_FLAGS,
-      }),
+      context: expect.any(Object),
       versionReporting: false,
       lookups: false,
       stacks: ['stack1'],
@@ -193,9 +188,7 @@ describe('IntegTest runIntegTests', () => {
       app: 'node integ.test-with-snapshot.js',
       pathMetadata: false,
       assetMetadata: false,
-      context: expect.objectContaining({
-        ...FUTURE_FLAGS,
-      }),
+      context: expect.any(Object),
       versionReporting: false,
       force: true,
       stacks: ['stack1'],
@@ -236,9 +229,7 @@ describe('IntegTest runIntegTests', () => {
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
-      context: expect.objectContaining({
-        ...FUTURE_FLAGS,
-      }),
+      context: expect.any(Object),
       force: true,
       stacks: ['stack1'],
       output: 'cdk-integ.out.integ-test1',
@@ -421,9 +412,7 @@ describe('IntegTest runIntegTests with profile', () => {
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
-      context: expect.objectContaining({
-        ...FUTURE_FLAGS,
-      }),
+      context: expect.any(Object),
       profile: 'test-profile',
       lookups: false,
       stacks: ['stack1'],
@@ -434,9 +423,7 @@ describe('IntegTest runIntegTests with profile', () => {
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
-      context: expect.objectContaining({
-        ...FUTURE_FLAGS,
-      }),
+      context: expect.any(Object),
       profile: 'test-profile',
       force: true,
       stacks: ['stack1'],
