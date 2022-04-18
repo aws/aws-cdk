@@ -5,7 +5,7 @@
    "Properties": {
     "RedrivePolicy": {
      "deadLetterTargetArn": {
-      "Fn::ImportValue": "Beta-Stack1:BetaStack1ExportsOutputFnGetAttQueue4A7E3555Arn7828EB2B"
+      "Fn::ImportValue": "Beta-Stack1:ExportsOutputFnGetAttQueue4A7E3555Arn15A7202E"
      },
      "maxReceiveCount": 5
     }

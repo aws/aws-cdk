@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "cloudfront-custom-s3-integ": {
       "type": "aws:cloudformation:stack",
