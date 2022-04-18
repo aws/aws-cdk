@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-glue-job": {
@@ -203,13 +203,13 @@
                   "version": "0.0.0"
                 }
               },
-              "Code009934fdb50a7d9d52a9b30175796b8d": {
-                "id": "Code009934fdb50a7d9d52a9b30175796b8d",
-                "path": "aws-glue-job/EtlJob/Code009934fdb50a7d9d52a9b30175796b8d",
+              "Code091b8d1d12512c9c73f5ef5b87b54c6b": {
+                "id": "Code091b8d1d12512c9c73f5ef5b87b54c6b",
+                "path": "aws-glue-job/EtlJob/Code091b8d1d12512c9c73f5ef5b87b54c6b",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-glue-job/EtlJob/Code009934fdb50a7d9d52a9b30175796b8d/Stage",
+                    "path": "aws-glue-job/EtlJob/Code091b8d1d12512c9c73f5ef5b87b54c6b/Stage",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.AssetStaging",
                       "version": "0.0.0"
@@ -217,7 +217,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-glue-job/EtlJob/Code009934fdb50a7d9d52a9b30175796b8d/AssetBucket",
+                    "path": "aws-glue-job/EtlJob/Code091b8d1d12512c9c73f5ef5b87b54c6b/AssetBucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-s3.BucketBase",
                       "version": "0.0.0"
@@ -420,14 +420,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "StreamingJob": {

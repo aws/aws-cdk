@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/cdk-assets-schema",
   "version": "0.0.0",
+  "private": true,
   "description": "Schema definition for the Asset Manifest",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -24,7 +25,7 @@
         "module": "aws_cdk.cdk_assets_schema",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -75,7 +76,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "deprecated",
   "awscdkio": {

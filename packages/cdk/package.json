@@ -41,6 +41,6 @@
     "node": ">= 8.10.0"
   },
   "publishConfig": {
-    "tag": "latest-1"
+    "tag": "latest"
   }
 }

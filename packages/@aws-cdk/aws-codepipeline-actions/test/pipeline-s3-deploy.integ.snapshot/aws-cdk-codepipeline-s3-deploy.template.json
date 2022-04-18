@@ -91,12 +91,6 @@
         },
         {
          "Fn::GetAtt": [
-          "PipelineDisabledDisabledDeployActionCodePipelineActionRole9CEF3915",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
           "PipelineSourceCodePipelineActionRoleC6F9E7F5",
           "Arn"
          ]
