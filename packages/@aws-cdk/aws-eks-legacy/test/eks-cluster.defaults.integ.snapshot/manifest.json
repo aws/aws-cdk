@@ -483,15 +483,5 @@
       },
       "displayName": "eks-integ-defaults"
     }
-  },
-  "missing": [
-    {
-      "key": "availability-zones:account=12345678:region=test-region",
-      "provider": "availability-zones",
-      "props": {
-        "account": "12345678",
-        "region": "test-region"
-      }
-    }
-  ]
+  }
 }
