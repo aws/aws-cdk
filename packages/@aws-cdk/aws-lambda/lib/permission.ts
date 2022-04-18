@@ -26,19 +26,21 @@ export interface Permission {
    * A unique token that must be supplied by the principal invoking the
    * function.
    *
-   * @default The caller would not need to present a token.
+   * @default - The caller would not need to present a token.
    */
   readonly eventSourceToken?: string;
 
   /**
    * The entity for which you are granting permission to invoke the Lambda
-   * function. This entity can be any valid AWS service principal, such as
-   * s3.amazonaws.com or sns.amazonaws.com, or, if you are granting
-   * cross-account permission, an AWS account ID. For example, you might want
-   * to allow a custom application in another AWS account to push events to
-   * Lambda by invoking your function.
+   * function. This entity can be any of the following:
    *
-   * The principal can be either an AccountPrincipal or a ServicePrincipal.
+   * - a valid AWS service principal, such as `s3.amazonaws.com` or `sns.amazonaws.com`
+   * - an AWS account ID for cross-account permissions. For example, you might want
+   *   to allow a custom application in another AWS account to push events to
+   *   Lambda by invoking your function.
+   * - an AWS organization principal to grant permissions to an entire organization.
+   *
+   * The principal can be an AccountPrincipal, a ServicePrincipal, or an OrganizationPrincipal.
    */
   readonly principal: iam.IPrincipal;
 
@@ -69,6 +71,16 @@ export interface Permission {
    * can invoke the function.
    */
   readonly sourceArn?: string;
+
+  /**
+   * The organization you want to grant permissions to. Use this ONLY if you
+   * need to grant permissions to a subset of the organization. In most cases,
+   * sending the organization principal through the `principal` property will
+   * suffice.
+   *
+   * @default - No principalOrg
+   */
+  readonly principalOrg?: iam.OrganizationPrincipal;
 
   /**
    * The authType for the function URL that you are granting permissions for.
