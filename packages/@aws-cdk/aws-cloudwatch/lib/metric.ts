@@ -1,7 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
-import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
+import { Alarm, ComparisonOperator } from './alarm';
+import { AnomalyDetectionAlarm, AnomalyDetectionAlarmOptions } from './anomaly-detection-alarm';
 import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Unit } from './metric-types';
 import { dispatchMetric, metricKey } from './private/metric-util';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
@@ -446,6 +447,16 @@ export class Metric implements IMetric {
     });
   }
 
+  /**
+   * Make a new AnomalyDetectionAlarm for this metric.
+   */
+  public createAnomalyDetectionAlarm(scope: Construct, id: string, options: AnomalyDetectionAlarmOptions): AnomalyDetectionAlarm {
+    return new AnomalyDetectionAlarm(scope, id, {
+      metric: this,
+      ...options,
+    });
+  }
+
   public toString() {
     return this.label || this.metricName;
   }
@@ -677,6 +688,17 @@ export class MathExpression implements IMetric {
     });
   }
 
+  /**
+   * Make a new AnomalyDetectionAlarm for this metric
+   */
+  public createAnomalyDetectionAlarm(scope: Construct, id: string, options: AnomalyDetectionAlarmOptions): AnomalyDetectionAlarm {
+    return new AnomalyDetectionAlarm(scope, id, {
+      metric: this,
+      ...options,
+    });
+  }
+
+
   public toString() {
     return this.label || this.expression;
   }
@@ -722,6 +744,31 @@ function validVariableName(x: string) {
  */
 function allIdentifiersInExpression(x: string) {
   return Array.from(matchAll(x, FIND_VARIABLE)).map(m => m[0]);
+}
+
+/**
+ * Specify how missing data points are treated during alarm evaluation
+ */
+export enum TreatMissingData {
+  /**
+   * Missing data points are treated as breaching the threshold
+   */
+  BREACHING = 'breaching',
+
+  /**
+   * Missing data points are treated as being within the threshold
+   */
+  NOT_BREACHING = 'notBreaching',
+
+  /**
+   * The current alarm state is maintained
+   */
+  IGNORE = 'ignore',
+
+  /**
+   * The alarm does not consider missing data points when evaluating whether to change state
+   */
+  MISSING = 'missing'
 }
 
 /**

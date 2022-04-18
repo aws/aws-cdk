@@ -1,0 +1,230 @@
+{
+ "Resources": {
+  "Alarm1F9009D71": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "LessThanLowerOrGreaterThanUpperThreshold",
+    "EvaluationPeriods": 3,
+    "Metrics": [
+     {
+      "Id": "m1",
+      "MetricStat": {
+       "Metric": {
+        "MetricName": "Metric",
+        "Namespace": "CDK/Test"
+       },
+       "Period": 300,
+       "Stat": "Average"
+      },
+      "ReturnData": true
+     },
+     {
+      "Expression": "ANOMALY_DETECTION_BAND(m1, 2)",
+      "Id": "ad1",
+      "Label": "Expected",
+      "ReturnData": true
+     }
+    ],
+    "ThresholdMetricId": "ad1"
+   }
+  },
+  "Alarm2A7122E13": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "LessThanLowerThreshold",
+    "EvaluationPeriods": 5,
+    "ActionsEnabled": false,
+    "AlarmDescription": "Alarm description 2",
+    "AlarmName": "Alarm 2",
+    "DatapointsToAlarm": 3,
+    "Metrics": [
+     {
+      "Id": "m1",
+      "MetricStat": {
+       "Metric": {
+        "MetricName": "Metric",
+        "Namespace": "CDK/Test"
+       },
+       "Period": 300,
+       "Stat": "p90"
+      },
+      "ReturnData": true
+     },
+     {
+      "Expression": "ANOMALY_DETECTION_BAND(m1, 3)",
+      "Id": "ad1",
+      "Label": "Expected",
+      "ReturnData": true
+     }
+    ],
+    "ThresholdMetricId": "ad1",
+    "TreatMissingData": "notBreaching"
+   }
+  },
+  "Alarm32341D8D9": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "LessThanLowerOrGreaterThanUpperThreshold",
+    "EvaluationPeriods": 3,
+    "Metrics": [
+     {
+      "Id": "m1",
+      "MetricStat": {
+       "Metric": {
+        "MetricName": "Metric",
+        "Namespace": "CDK/Test"
+       },
+       "Period": 300,
+       "Stat": "Average"
+      },
+      "ReturnData": true
+     },
+     {
+      "Expression": "ANOMALY_DETECTION_BAND(m1, 2)",
+      "Id": "ad1",
+      "Label": "Expected",
+      "ReturnData": true
+     }
+    ],
+    "ThresholdMetricId": "ad1"
+   }
+  },
+  "Alarm4671832C8": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanUpperThreshold",
+    "EvaluationPeriods": 5,
+    "ActionsEnabled": false,
+    "AlarmDescription": "Alarm description 4",
+    "AlarmName": "Alarm 4",
+    "DatapointsToAlarm": 3,
+    "Metrics": [
+     {
+      "Id": "m1",
+      "MetricStat": {
+       "Metric": {
+        "MetricName": "Metric",
+        "Namespace": "CDK/Test"
+       },
+       "Period": 300,
+       "Stat": "p90"
+      },
+      "ReturnData": true
+     },
+     {
+      "Expression": "ANOMALY_DETECTION_BAND(m1, 3)",
+      "Id": "ad1",
+      "Label": "Expected",
+      "ReturnData": true
+     }
+    ],
+    "ThresholdMetricId": "ad1",
+    "TreatMissingData": "notBreaching"
+   }
+  },
+  "Alarm548383B2F": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "LessThanLowerOrGreaterThanUpperThreshold",
+    "EvaluationPeriods": 3,
+    "Metrics": [
+     {
+      "Expression": "testMetric / 60",
+      "Id": "expr_2",
+      "ReturnData": true
+     },
+     {
+      "Id": "testMetric",
+      "MetricStat": {
+       "Metric": {
+        "MetricName": "Metric",
+        "Namespace": "CDK/Test"
+       },
+       "Period": 300,
+       "Stat": "Average"
+      },
+      "ReturnData": false
+     },
+     {
+      "Expression": "ANOMALY_DETECTION_BAND(expr_2, 2)",
+      "Id": "expr_1",
+      "Label": "Expected",
+      "ReturnData": true
+     }
+    ],
+    "ThresholdMetricId": "expr_1"
+   }
+  },
+  "Alarm65738D89F": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "LessThanLowerOrGreaterThanUpperThreshold",
+    "EvaluationPeriods": 3,
+    "Metrics": [
+     {
+      "Expression": "testMetric / 60",
+      "Id": "expr_2",
+      "ReturnData": true
+     },
+     {
+      "Id": "testMetric",
+      "MetricStat": {
+       "Metric": {
+        "MetricName": "Metric",
+        "Namespace": "CDK/Test"
+       },
+       "Period": 300,
+       "Stat": "Average"
+      },
+      "ReturnData": false
+     },
+     {
+      "Expression": "ANOMALY_DETECTION_BAND(expr_2, 2)",
+      "Id": "expr_1",
+      "Label": "Expected",
+      "ReturnData": true
+     }
+    ],
+    "ThresholdMetricId": "expr_1"
+   }
+  },
+  "Alarm77B1024B6": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "LessThanLowerOrGreaterThanUpperThreshold",
+    "EvaluationPeriods": 5,
+    "ActionsEnabled": false,
+    "AlarmDescription": "Alarm description 7",
+    "AlarmName": "Alarm 7",
+    "DatapointsToAlarm": 3,
+    "Metrics": [
+     {
+      "Expression": "testMetric / 60",
+      "Id": "expr_2",
+      "ReturnData": true
+     },
+     {
+      "Id": "testMetric",
+      "MetricStat": {
+       "Metric": {
+        "MetricName": "Metric",
+        "Namespace": "CDK/Test"
+       },
+       "Period": 300,
+       "Stat": "Average"
+      },
+      "ReturnData": false
+     },
+     {
+      "Expression": "ANOMALY_DETECTION_BAND(expr_2, 2)",
+      "Id": "expr_1",
+      "Label": "Expected",
+      "ReturnData": true
+     }
+    ],
+    "ThresholdMetricId": "expr_1",
+    "TreatMissingData": "notBreaching"
+   }
+  }
+ }
+}

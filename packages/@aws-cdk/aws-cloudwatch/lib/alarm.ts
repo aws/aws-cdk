@@ -51,18 +51,24 @@ export enum ComparisonOperator {
   /**
    * Specified statistic is lower than or greater than the anomaly model band.
    * Used only for alarms based on anomaly detection models
+   *
+   * @deprecated Use AnomalyDetectionAlarm instead.
    */
   LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD = 'LessThanLowerOrGreaterThanUpperThreshold',
 
   /**
    * Specified statistic is greater than the anomaly model band.
    * Used only for alarms based on anomaly detection models
+   *
+   * @deprecated Use AnomalyDetectionAlarm instead.
    */
   GREATER_THAN_UPPER_THRESHOLD = 'GreaterThanUpperThreshold',
 
   /**
    * Specified statistic is lower than the anomaly model band.
    * Used only for alarms based on anomaly detection models
+   *
+   * @deprecated Use AnomalyDetectionAlarm instead.
    */
   LESS_THAN_LOWER_THRESHOLD = 'LessThanLowerThreshold',
 }
@@ -73,31 +79,6 @@ const OPERATOR_SYMBOLS: {[key: string]: string} = {
   LessThanThreshold: '<',
   LessThanOrEqualToThreshold: '<=',
 };
-
-/**
- * Specify how missing data points are treated during alarm evaluation
- */
-export enum TreatMissingData {
-  /**
-   * Missing data points are treated as breaching the threshold
-   */
-  BREACHING = 'breaching',
-
-  /**
-   * Missing data points are treated as being within the threshold
-   */
-  NOT_BREACHING = 'notBreaching',
-
-  /**
-   * The current alarm state is maintained
-   */
-  IGNORE = 'ignore',
-
-  /**
-   * The alarm does not consider missing data points when evaluating whether to change state
-   */
-  MISSING = 'missing'
-}
 
 /**
  * An alarm on a CloudWatch metric

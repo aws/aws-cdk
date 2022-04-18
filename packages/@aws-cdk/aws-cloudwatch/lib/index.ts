@@ -2,6 +2,7 @@ export * from './alarm';
 export * from './alarm-action';
 export * from './alarm-base';
 export * from './alarm-rule';
+export * from './anomaly-detection-alarm';
 export * from './composite-alarm';
 export * from './dashboard';
 export * from './graph';
