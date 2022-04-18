@@ -26,7 +26,7 @@
         "module": "aws_cdk.aws_lambda_go",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -83,16 +83,16 @@
   "dependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "experimental",
   "maturity": "experimental",
@@ -105,6 +105,7 @@
     ]
   },
   "publishConfig": {
-    "tag": "latest"
-  }
+    "tag": "next"
+  },
+  "private": true
 }

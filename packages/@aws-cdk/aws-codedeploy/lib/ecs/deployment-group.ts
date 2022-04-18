@@ -35,7 +35,7 @@ export interface IEcsDeploymentGroup extends cdk.IResource {
  * Note: This class currently stands as a namespaced container for importing an ECS
  * Deployment Group defined outside the CDK app until CloudFormation supports provisioning
  * ECS Deployment Groups. Until then it is closed (private constructor) and does not
- * extend {@link cdk.Construct}.
+ * extend {@link Construct}.
  *
  * @resource AWS::CodeDeploy::DeploymentGroup
  */

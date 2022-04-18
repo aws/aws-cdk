@@ -350,7 +350,10 @@
         "/test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faDE9EC34B"
+            "data": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faDE9EC34B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsSecurityGroup/Resource": [
@@ -368,19 +371,28 @@
         "/test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsMountTarget1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTarget140913EA1"
+            "data": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTarget140913EA1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsMountTarget2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTarget215F1A11A"
+            "data": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTarget215F1A11A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/AccessPoint/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faAccessPoint657AFA25"
+            "data": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faAccessPoint657AFA25",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/ServiceRole/Resource": [
