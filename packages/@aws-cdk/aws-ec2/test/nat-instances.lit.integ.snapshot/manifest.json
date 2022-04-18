@@ -258,37 +258,5 @@
       },
       "displayName": "aws-cdk-vpc-nat-instances"
     }
-  },
-  "missing": [
-    {
-      "key": "availability-zones:account=12345678:region=test-region",
-      "provider": "availability-zones",
-      "props": {
-        "account": "12345678",
-        "region": "test-region"
-      }
-    },
-    {
-      "key": "ami:account=12345678:filters.image-type.0=machine:filters.name.0=amzn-ami-vpc-nat-*:filters.state.0=available:owners.0=amazon:region=test-region",
-      "provider": "ami",
-      "props": {
-        "account": "12345678",
-        "region": "test-region",
-        "owners": [
-          "amazon"
-        ],
-        "filters": {
-          "name": [
-            "amzn-ami-vpc-nat-*"
-          ],
-          "state": [
-            "available"
-          ],
-          "image-type": [
-            "machine"
-          ]
-        }
-      }
-    }
-  ]
+  }
 }

@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "cdk-integ-lambda-nodejs-dependencies": {
       "type": "aws:cloudformation:stack",

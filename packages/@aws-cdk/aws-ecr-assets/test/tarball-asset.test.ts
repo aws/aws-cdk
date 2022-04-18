@@ -123,7 +123,7 @@ describe('image asset', () => {
 
     const session = app.synth();
 
-    expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}.tar`))).toBeDefined();
+    expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}.tar`))).toBe(true);
   });
 
   test('fails if the file does not exist', () => {

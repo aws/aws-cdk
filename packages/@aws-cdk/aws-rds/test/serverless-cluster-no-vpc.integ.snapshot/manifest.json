@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-cdk-sls-cluster-no-vpc-integ": {
       "type": "aws:cloudformation:stack",
