@@ -159,6 +159,17 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @default - hash all parameters
    */
   readonly invalidation?: DockerImageAssetInvalidationOptions;
+
+  /**
+   * Enable Docker BuildKit `${file}.dockerignore` ignore files.
+   *
+   * By default, only the `.dockerignore` file is used to ignore files.
+   * If set to `true`, an ignore file named `${file}.dockerignore` will
+   * take precedence over the default `.dockerignore` file.
+   *
+   * @default false
+   */
+  readonly buildkitIgnore?: boolean;
 }
 
 /**
@@ -255,10 +266,10 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
     let exclude: string[] = props.exclude || [];
 
     let ignore: string | undefined = undefined;
-    let ignorePaths: string[] = [
-      path.join(dir, this.dockerfilePath + '.dockerignore'),
-      path.join(dir, '.dockerignore'),
-    ];
+    let ignorePaths: string[] = [path.join(dir, '.dockerignore')];
+    if (props.buildkitIgnore === true) {
+      ignorePaths.unshift(path.join(dir, this.dockerfilePath + '.dockerignore'));
+    }
 
     for (let i in ignorePaths) {
       if (fs.existsSync(ignorePaths[i])) {

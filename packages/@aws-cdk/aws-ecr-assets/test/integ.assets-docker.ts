@@ -17,6 +17,7 @@ const asset = new assets.DockerImageAsset(stack, 'DockerImage', {
 
 const asset2 = new assets.DockerImageAsset(stack, 'DockerImage2', {
   directory: path.join(__dirname, 'demo-image'),
+  buildkitIgnore: true,
 });
 
 const user = new iam.User(stack, 'MyUser');

@@ -399,6 +399,7 @@ function testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app: App
   const image = new DockerImageAsset(stack, 'MyAsset', {
     ignoreMode,
     directory: path.join(__dirname, directory),
+    buildkitIgnore: dockerfileIgnore,
   });
 
   const session = app.synth();
@@ -419,6 +420,7 @@ function testDockerDirectoryIsStagedByCustomIgnoreFiles(app: App, dockerfile: st
   const image = new DockerImageAsset(stack, 'MyAsset', {
     file: dockerfile,
     directory: path.join(__dirname, 'dockerfileignore-custom-images'),
+    buildkitIgnore: true,
   });
 
   const session = app.synth();
