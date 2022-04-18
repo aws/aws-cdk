@@ -95,15 +95,17 @@ async function main() {
         verbose: argv.verbose,
         updateWorkflow: !argv['disable-update-workflow'],
       });
-      if (!success) {
-        throw new Error('Some integration tests failed!');
+
+      if (argv.clean === false) {
+        logger.warning('Not cleaning up stacks since "--no-clean" was used');
       }
+
       if (argv.verbose) {
         printMetrics(metrics);
       }
 
-      if (argv.clean === false) {
-        logger.warning('Not cleaning up stacks since "--no-clean" was used');
+      if (!success) {
+        throw new Error('Some integration tests failed!');
       }
     }
   } finally {

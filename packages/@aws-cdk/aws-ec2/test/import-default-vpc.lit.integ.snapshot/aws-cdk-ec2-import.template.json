@@ -11,19 +11,19 @@
       "IpProtocol": "-1"
      }
     ],
-    "VpcId": "vpc-12345"
+    "VpcId": "vpc-60900905"
    }
   }
  },
  "Outputs": {
   "PublicSubnets": {
-   "Value": "ids:s-12345,s-67890"
+   "Value": "ids:subnet-e19455ca,subnet-e0c24797,subnet-ccd77395"
   },
   "PrivateSubnets": {
-   "Value": "ids:p-12345,p-67890"
+   "Value": "ids:"
   },
   "PublicRouteTables": {
-   "Value": "ids: rtb-12345s, rtb-67890s"
+   "Value": "ids: rtb-e19455ca, rtb-e0c24797, rtb-ccd77395"
   }
  }
 }

@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "lambda-bucket-notifications": {
       "type": "aws:cloudformation:stack",
