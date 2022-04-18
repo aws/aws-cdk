@@ -411,7 +411,7 @@ export abstract class IntegRunner {
       ctxPragmaContext[key] = value;
     }
     return {
-      ...enableLookups ? [DEFAULT_SYNTH_OPTIONS.context] : [],
+      ...enableLookups ? DEFAULT_SYNTH_OPTIONS.context : {},
       ...FUTURE_FLAGS,
       ...ctxPragmaContext,
       ...additionalContext,
@@ -855,8 +855,6 @@ const DEFAULT_SYNTH_OPTIONS = {
         },
       ],
     },
-    // Enable feature flags for all integ tests
-    ...FUTURE_FLAGS,
 
     // Restricting to these target partitions makes most service principals synthesize to
     // `service.${URL_SUFFIX}`, which is technically *incorrect* (it's only `amazonaws.com`

@@ -56,7 +56,10 @@
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1Subnet3BFE1BDA"
+            "data": "ClusterDefaultVpcPublicSubnet1Subnet3BFE1BDA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1/RouteTable": [
@@ -68,7 +71,10 @@
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1RouteTableAssociationAFBE6789"
+            "data": "ClusterDefaultVpcPublicSubnet1RouteTableAssociationAFBE6789",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1/DefaultRoute": [
@@ -86,13 +92,19 @@
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1NATGateway6E21013E"
+            "data": "ClusterDefaultVpcPublicSubnet1NATGateway6E21013E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2SubnetC4E9A966"
+            "data": "ClusterDefaultVpcPublicSubnet2SubnetC4E9A966",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2/RouteTable": [
@@ -104,7 +116,10 @@
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2RouteTableAssociationA8539C50"
+            "data": "ClusterDefaultVpcPublicSubnet2RouteTableAssociationA8539C50",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2/DefaultRoute": [
@@ -122,13 +137,19 @@
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2NATGateway4AF4B728"
+            "data": "ClusterDefaultVpcPublicSubnet2NATGateway4AF4B728",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet3Subnet1A46184A"
+            "data": "ClusterDefaultVpcPublicSubnet3Subnet1A46184A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3/RouteTable": [
@@ -140,7 +161,10 @@
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet3RouteTableAssociation7C5D21CC"
+            "data": "ClusterDefaultVpcPublicSubnet3RouteTableAssociation7C5D21CC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3/DefaultRoute": [
@@ -158,13 +182,19 @@
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet3NATGatewayEF4BA49A"
+            "data": "ClusterDefaultVpcPublicSubnet3NATGatewayEF4BA49A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet1Subnet03F39409"
+            "data": "ClusterDefaultVpcPrivateSubnet1Subnet03F39409",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet1/RouteTable": [
@@ -176,7 +206,10 @@
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet1RouteTableAssociationF8A67D95"
+            "data": "ClusterDefaultVpcPrivateSubnet1RouteTableAssociationF8A67D95",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet1/DefaultRoute": [
@@ -188,7 +221,10 @@
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet2SubnetA526AEA7"
+            "data": "ClusterDefaultVpcPrivateSubnet2SubnetA526AEA7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet2/RouteTable": [
@@ -200,7 +236,10 @@
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet2RouteTableAssociationE1240DF2"
+            "data": "ClusterDefaultVpcPrivateSubnet2RouteTableAssociationE1240DF2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet2/DefaultRoute": [
@@ -212,7 +251,10 @@
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet3/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet3SubnetB64BC839"
+            "data": "ClusterDefaultVpcPrivateSubnet3SubnetB64BC839",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet3/RouteTable": [
@@ -224,7 +266,10 @@
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet3/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet3RouteTableAssociation3007DC36"
+            "data": "ClusterDefaultVpcPrivateSubnet3RouteTableAssociation3007DC36",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet3/DefaultRoute": [
@@ -438,15 +483,5 @@
       },
       "displayName": "eks-integ-defaults"
     }
-  },
-  "missing": [
-    {
-      "key": "availability-zones:account=12345678:region=test-region",
-      "provider": "availability-zones",
-      "props": {
-        "account": "12345678",
-        "region": "test-region"
-      }
-    }
-  ]
+  }
 }

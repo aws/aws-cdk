@@ -24,7 +24,10 @@
         "/k8s-vpc/vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "vpcPublicSubnet1Subnet2E65531E"
+            "data": "vpcPublicSubnet1Subnet2E65531E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/k8s-vpc/vpc/PublicSubnet1/RouteTable": [
@@ -36,7 +39,10 @@
         "/k8s-vpc/vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "vpcPublicSubnet1RouteTableAssociation5D3F4579"
+            "data": "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/k8s-vpc/vpc/PublicSubnet1/DefaultRoute": [
@@ -54,13 +60,19 @@
         "/k8s-vpc/vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "vpcPublicSubnet1NATGateway9C16659E"
+            "data": "vpcPublicSubnet1NATGateway9C16659E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/k8s-vpc/vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "vpcPublicSubnet2Subnet009B674F"
+            "data": "vpcPublicSubnet2Subnet009B674F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/k8s-vpc/vpc/PublicSubnet2/RouteTable": [
@@ -72,7 +84,10 @@
         "/k8s-vpc/vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "vpcPublicSubnet2RouteTableAssociation21F81B59"
+            "data": "vpcPublicSubnet2RouteTableAssociation21F81B59",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/k8s-vpc/vpc/PublicSubnet2/DefaultRoute": [
@@ -90,13 +105,19 @@
         "/k8s-vpc/vpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "vpcPublicSubnet2NATGateway9B8AE11A"
+            "data": "vpcPublicSubnet2NATGateway9B8AE11A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/k8s-vpc/vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "vpcPrivateSubnet1Subnet934893E8"
+            "data": "vpcPrivateSubnet1Subnet934893E8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/k8s-vpc/vpc/PrivateSubnet1/RouteTable": [
@@ -108,7 +129,10 @@
         "/k8s-vpc/vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "vpcPrivateSubnet1RouteTableAssociation67945127"
+            "data": "vpcPrivateSubnet1RouteTableAssociation67945127",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/k8s-vpc/vpc/PrivateSubnet1/DefaultRoute": [
@@ -120,7 +144,10 @@
         "/k8s-vpc/vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "vpcPrivateSubnet2Subnet7031C2BA"
+            "data": "vpcPrivateSubnet2Subnet7031C2BA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/k8s-vpc/vpc/PrivateSubnet2/RouteTable": [
@@ -132,7 +159,10 @@
         "/k8s-vpc/vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "vpcPrivateSubnet2RouteTableAssociation007E94D3"
+            "data": "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/k8s-vpc/vpc/PrivateSubnet2/DefaultRoute": [
@@ -482,15 +512,5 @@
       },
       "displayName": "k8s-cluster"
     }
-  },
-  "missing": [
-    {
-      "key": "availability-zones:account=12345678:region=test-region",
-      "provider": "availability-zones",
-      "props": {
-        "account": "12345678",
-        "region": "test-region"
-      }
-    }
-  ]
+  }
 }
