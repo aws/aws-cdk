@@ -56,7 +56,7 @@
                         "vpcId": {
                           "Ref": "vpcA2121C38"
                         },
-                        "availabilityZone": "dummy1a",
+                        "availabilityZone": "test-region-1a",
                         "cidrBlock": "10.0.0.0/18",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -232,7 +232,7 @@
                         "vpcId": {
                           "Ref": "vpcA2121C38"
                         },
-                        "availabilityZone": "dummy1b",
+                        "availabilityZone": "test-region-1b",
                         "cidrBlock": "10.0.64.0/18",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -408,7 +408,7 @@
                         "vpcId": {
                           "Ref": "vpcA2121C38"
                         },
-                        "availabilityZone": "dummy1a",
+                        "availabilityZone": "test-region-1a",
                         "cidrBlock": "10.0.128.0/18",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -528,7 +528,7 @@
                         "vpcId": {
                           "Ref": "vpcA2121C38"
                         },
-                        "availabilityZone": "dummy1b",
+                        "availabilityZone": "test-region-1b",
                         "cidrBlock": "10.0.192.0/18",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
