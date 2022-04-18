@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-cdk-ec2-import": {
       "type": "aws:cloudformation:stack",
@@ -43,5 +42,19 @@
       },
       "displayName": "aws-cdk-ec2-import"
     }
-  }
+  },
+  "missing": [
+    {
+      "key": "vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true",
+      "provider": "vpc-provider",
+      "props": {
+        "account": "12345678",
+        "region": "test-region",
+        "filter": {
+          "isDefault": "true"
+        },
+        "returnAsymmetricSubnets": true
+      }
+    }
+  ]
 }

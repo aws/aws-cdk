@@ -56,7 +56,7 @@
                         "vpcId": {
                           "Ref": "VPCB9E5F0B4"
                         },
-                        "availabilityZone": "test-region-1a",
+                        "availabilityZone": "dummy1a",
                         "cidrBlock": "10.0.0.0/19",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -232,7 +232,7 @@
                         "vpcId": {
                           "Ref": "VPCB9E5F0B4"
                         },
-                        "availabilityZone": "test-region-1b",
+                        "availabilityZone": "dummy1b",
                         "cidrBlock": "10.0.32.0/19",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -408,7 +408,7 @@
                         "vpcId": {
                           "Ref": "VPCB9E5F0B4"
                         },
-                        "availabilityZone": "test-region-1c",
+                        "availabilityZone": "dummy1c",
                         "cidrBlock": "10.0.64.0/19",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -584,7 +584,7 @@
                         "vpcId": {
                           "Ref": "VPCB9E5F0B4"
                         },
-                        "availabilityZone": "test-region-1a",
+                        "availabilityZone": "dummy1a",
                         "cidrBlock": "10.0.96.0/19",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -704,7 +704,7 @@
                         "vpcId": {
                           "Ref": "VPCB9E5F0B4"
                         },
-                        "availabilityZone": "test-region-1b",
+                        "availabilityZone": "dummy1b",
                         "cidrBlock": "10.0.128.0/19",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -824,7 +824,7 @@
                         "vpcId": {
                           "Ref": "VPCB9E5F0B4"
                         },
-                        "availabilityZone": "test-region-1c",
+                        "availabilityZone": "dummy1c",
                         "cidrBlock": "10.0.160.0/19",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
