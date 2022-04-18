@@ -846,8 +846,8 @@
                                 },
                                 {
                                   "Action": [
-                                    "logs:CreateLogStream",
                                     "logs:CreateLogGroup",
+                                    "logs:CreateLogStream",
                                     "logs:PutLogEvents"
                                   ],
                                   "Effect": "Allow",

@@ -1124,7 +1124,6 @@
                         "deploymentController": {
                           "type": "ECS"
                         },
-                        "desiredCount": 1,
                         "enableEcsManagedTags": false,
                         "healthCheckGracePeriodSeconds": 60,
                         "launchType": "FARGATE",

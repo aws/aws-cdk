@@ -330,7 +330,8 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "MyProject39F7B0AE"
-           }
+           },
+           ":*"
           ]
          ]
         },
@@ -353,8 +354,7 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "MyProject39F7B0AE"
-           },
-           ":*"
+           }
           ]
          ]
         }
@@ -429,11 +429,11 @@
       {
        "Action": [
         "ec2:CreateNetworkInterface",
-        "ec2:DescribeNetworkInterfaces",
         "ec2:DeleteNetworkInterface",
-        "ec2:DescribeSubnets",
-        "ec2:DescribeSecurityGroups",
         "ec2:DescribeDhcpOptions",
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeSubnets",
         "ec2:DescribeVpcs"
        ],
        "Effect": "Allow",

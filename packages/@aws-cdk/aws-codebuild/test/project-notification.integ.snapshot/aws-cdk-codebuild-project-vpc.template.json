@@ -49,7 +49,8 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "MyProject39F7B0AE"
-           }
+           },
+           ":*"
           ]
          ]
         },
@@ -72,8 +73,7 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "MyProject39F7B0AE"
-           },
-           ":*"
+           }
           ]
          ]
         }
@@ -81,11 +81,11 @@
       },
       {
        "Action": [
-        "codebuild:CreateReportGroup",
-        "codebuild:CreateReport",
-        "codebuild:UpdateReport",
+        "codebuild:BatchPutCodeCoverages",
         "codebuild:BatchPutTestCases",
-        "codebuild:BatchPutCodeCoverages"
+        "codebuild:CreateReport",
+        "codebuild:CreateReportGroup",
+        "codebuild:UpdateReport"
        ],
        "Effect": "Allow",
        "Resource": {

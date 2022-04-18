@@ -445,8 +445,8 @@
      "Statement": [
       {
        "Action": [
-        "s3:GetObject*",
         "s3:GetBucket*",
+        "s3:GetObject*",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -462,7 +462,8 @@
            ":s3:::",
            {
             "Ref": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3Bucket597083AB"
-           }
+           },
+           "/*"
           ]
          ]
         },
@@ -477,8 +478,7 @@
            ":s3:::",
            {
             "Ref": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3Bucket597083AB"
-           },
-           "/*"
+           }
           ]
          ]
         }

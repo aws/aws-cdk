@@ -41,6 +41,12 @@
        "Effect": "Allow",
        "Resource": [
         {
+         "Fn::GetAtt": [
+          "EventBus7B8748AA",
+          "Arn"
+         ]
+        },
+        {
          "Fn::Join": [
           "",
           [
@@ -58,12 +64,6 @@
            },
            ":event-bus/default"
           ]
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "EventBus7B8748AA",
-          "Arn"
          ]
         }
        ]

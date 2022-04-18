@@ -669,6 +669,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EFS::FileSystem",
                   "aws:cdk:cloudformation:props": {
+                    "encrypted": true,
                     "fileSystemTags": [
                       {
                         "key": "Name",

@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "integ-servicecatalogappregistry-attribute-group": {
       "type": "aws:cloudformation:stack",

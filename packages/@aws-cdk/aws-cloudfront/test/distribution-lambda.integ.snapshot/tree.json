@@ -36,14 +36,10 @@
                               "Action": "sts:AssumeRole",
                               "Effect": "Allow",
                               "Principal": {
-                                "Service": "lambda.amazonaws.com"
-                              }
-                            },
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "edgelambda.amazonaws.com"
+                                "Service": [
+                                  "edgelambda.amazonaws.com",
+                                  "lambda.amazonaws.com"
+                                ]
                               }
                             }
                           ],
@@ -170,7 +166,7 @@
                         "lambdaFunctionAssociations": [
                           {
                             "lambdaFunctionArn": {
-                              "Ref": "LambdaCurrentVersionDF706F6A8cedba3e8e1b3bbf7614644bfafda118"
+                              "Ref": "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d"
                             },
                             "eventType": "origin-request"
                           }

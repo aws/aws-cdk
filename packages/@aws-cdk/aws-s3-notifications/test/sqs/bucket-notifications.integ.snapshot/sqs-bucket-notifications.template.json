@@ -65,9 +65,9 @@
      "Statement": [
       {
        "Action": [
-        "sqs:SendMessage",
         "sqs:GetQueueAttributes",
-        "sqs:GetQueueUrl"
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
        ],
        "Condition": {
         "ArnLike": {
@@ -92,9 +92,9 @@
       },
       {
        "Action": [
-        "sqs:SendMessage",
         "sqs:GetQueueAttributes",
-        "sqs:GetQueueUrl"
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
        ],
        "Condition": {
         "ArnLike": {
@@ -256,23 +256,7 @@
     "KeyPolicy": {
      "Statement": [
       {
-       "Action": [
-        "kms:Create*",
-        "kms:Describe*",
-        "kms:Enable*",
-        "kms:List*",
-        "kms:Put*",
-        "kms:Update*",
-        "kms:Revoke*",
-        "kms:Disable*",
-        "kms:Get*",
-        "kms:Delete*",
-        "kms:ScheduleKeyDeletion",
-        "kms:CancelKeyDeletion",
-        "kms:GenerateDataKey",
-        "kms:TagResource",
-        "kms:UntagResource"
-       ],
+       "Action": "kms:*",
        "Effect": "Allow",
        "Principal": {
         "AWS": {
@@ -298,8 +282,8 @@
        "Action": [
         "kms:Decrypt",
         "kms:Encrypt",
-        "kms:ReEncrypt*",
-        "kms:GenerateDataKey*"
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
        ],
        "Condition": {
         "ArnLike": {
@@ -319,8 +303,8 @@
       },
       {
        "Action": [
-        "kms:GenerateDataKey*",
-        "kms:Decrypt"
+        "kms:Decrypt",
+        "kms:GenerateDataKey*"
        ],
        "Effect": "Allow",
        "Principal": {
@@ -356,9 +340,9 @@
      "Statement": [
       {
        "Action": [
-        "sqs:SendMessage",
         "sqs:GetQueueAttributes",
-        "sqs:GetQueueUrl"
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
        ],
        "Condition": {
         "ArnLike": {

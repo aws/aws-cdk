@@ -88,7 +88,8 @@
                                           ":log-group:/aws/codebuild/",
                                           {
                                             "Ref": "MyProject39F7B0AE"
-                                          }
+                                          },
+                                          ":*"
                                         ]
                                       ]
                                     },
@@ -111,8 +112,7 @@
                                           ":log-group:/aws/codebuild/",
                                           {
                                             "Ref": "MyProject39F7B0AE"
-                                          },
-                                          ":*"
+                                          }
                                         ]
                                       ]
                                     }
@@ -189,9 +189,9 @@
                               "Statement": [
                                 {
                                   "Action": [
+                                    "codebuild:RetryBuild",
                                     "codebuild:StartBuild",
-                                    "codebuild:StopBuild",
-                                    "codebuild:RetryBuild"
+                                    "codebuild:StopBuild"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {

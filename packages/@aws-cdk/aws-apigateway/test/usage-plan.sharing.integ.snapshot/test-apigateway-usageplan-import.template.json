@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "myusageplanUsagePlanKeyResource095B4EA9": {
+  "myusageplanUsagePlanKeyResourcetestapigatewayusageplanimportmyapikey14CF31667CCB4183": {
    "Type": "AWS::ApiGateway::UsagePlanKey",
    "Properties": {
     "KeyId": {

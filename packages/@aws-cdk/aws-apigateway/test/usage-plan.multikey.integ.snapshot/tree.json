@@ -32,9 +32,9 @@
                   "version": "0.0.0"
                 }
               },
-              "UsagePlanKeyResource": {
-                "id": "UsagePlanKeyResource",
-                "path": "test-apigateway-usageplan-multikey/myusageplan/UsagePlanKeyResource",
+              "UsagePlanKeyResource:testapigatewayusageplanmultikeymyapikey1DDABC389": {
+                "id": "UsagePlanKeyResource:testapigatewayusageplanmultikeymyapikey1DDABC389",
+                "path": "test-apigateway-usageplan-multikey/myusageplan/UsagePlanKeyResource:testapigatewayusageplanmultikeymyapikey1DDABC389",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::UsagePlanKey",
                   "aws:cdk:cloudformation:props": {

@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "globdynamodbintegglobdynamodbinteguseast11DF47AEF": {
       "type": "aws:cloudformation:stack",

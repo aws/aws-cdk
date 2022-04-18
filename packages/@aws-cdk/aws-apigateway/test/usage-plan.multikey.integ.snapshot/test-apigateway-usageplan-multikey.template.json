@@ -3,7 +3,7 @@
   "myusageplan4B391740": {
    "Type": "AWS::ApiGateway::UsagePlan"
   },
-  "myusageplanUsagePlanKeyResource095B4EA9": {
+  "myusageplanUsagePlanKeyResourcetestapigatewayusageplanmultikeymyapikey1DDABC389A2809A73": {
    "Type": "AWS::ApiGateway::UsagePlanKey",
    "Properties": {
     "KeyId": {

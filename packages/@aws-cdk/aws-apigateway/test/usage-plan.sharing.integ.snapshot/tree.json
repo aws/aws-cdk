@@ -70,9 +70,9 @@
             "id": "myusageplan",
             "path": "test-apigateway-usageplan-import/myusageplan",
             "children": {
-              "UsagePlanKeyResource": {
-                "id": "UsagePlanKeyResource",
-                "path": "test-apigateway-usageplan-import/myusageplan/UsagePlanKeyResource",
+              "UsagePlanKeyResource:testapigatewayusageplanimportmyapikey14CF3166": {
+                "id": "UsagePlanKeyResource:testapigatewayusageplanimportmyapikey14CF3166",
+                "path": "test-apigateway-usageplan-import/myusageplan/UsagePlanKeyResource:testapigatewayusageplanimportmyapikey14CF3166",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::UsagePlanKey",
                   "aws:cdk:cloudformation:props": {

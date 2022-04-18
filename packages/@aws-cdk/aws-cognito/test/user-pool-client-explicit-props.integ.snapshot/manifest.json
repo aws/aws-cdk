@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "integ-user-pool-client-explicit-props": {
       "type": "aws:cloudformation:stack",

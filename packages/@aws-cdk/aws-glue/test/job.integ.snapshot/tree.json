@@ -77,12 +77,16 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "s3:GetObject*",
-                                    "s3:GetBucket*",
-                                    "s3:List*",
+                                    "s3:Abort*",
                                     "s3:DeleteObject*",
-                                    "s3:PutObject*",
-                                    "s3:Abort*"
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*",
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": [
@@ -110,8 +114,8 @@
                                 },
                                 {
                                   "Action": [
-                                    "s3:GetObject*",
                                     "s3:GetBucket*",
+                                    "s3:GetObject*",
                                     "s3:List*"
                                   ],
                                   "Effect": "Allow",
@@ -127,7 +131,8 @@
                                           ":s3:::",
                                           {
                                             "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
-                                          }
+                                          },
+                                          "/*"
                                         ]
                                       ]
                                     },
@@ -142,8 +147,7 @@
                                           ":s3:::",
                                           {
                                             "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
-                                          },
-                                          "/*"
+                                          }
                                         ]
                                       ]
                                     }
@@ -199,13 +203,13 @@
                   "version": "0.0.0"
                 }
               },
-              "Code91943aa782d6cac43cc107fc7435cdea": {
-                "id": "Code91943aa782d6cac43cc107fc7435cdea",
-                "path": "aws-glue-job/EtlJob/Code91943aa782d6cac43cc107fc7435cdea",
+              "Code009934fdb50a7d9d52a9b30175796b8d": {
+                "id": "Code009934fdb50a7d9d52a9b30175796b8d",
+                "path": "aws-glue-job/EtlJob/Code009934fdb50a7d9d52a9b30175796b8d",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-glue-job/EtlJob/Code91943aa782d6cac43cc107fc7435cdea/Stage",
+                    "path": "aws-glue-job/EtlJob/Code009934fdb50a7d9d52a9b30175796b8d/Stage",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.AssetStaging",
                       "version": "0.0.0"
@@ -213,7 +217,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-glue-job/EtlJob/Code91943aa782d6cac43cc107fc7435cdea/AssetBucket",
+                    "path": "aws-glue-job/EtlJob/Code009934fdb50a7d9d52a9b30175796b8d/AssetBucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-s3.BucketBase",
                       "version": "0.0.0"
@@ -487,8 +491,8 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "s3:GetObject*",
                                     "s3:GetBucket*",
+                                    "s3:GetObject*",
                                     "s3:List*"
                                   ],
                                   "Effect": "Allow",
@@ -504,7 +508,8 @@
                                           ":s3:::",
                                           {
                                             "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
-                                          }
+                                          },
+                                          "/*"
                                         ]
                                       ]
                                     },
@@ -519,8 +524,7 @@
                                           ":s3:::",
                                           {
                                             "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
-                                          },
-                                          "/*"
+                                          }
                                         ]
                                       ]
                                     }
@@ -692,8 +696,8 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "s3:GetObject*",
                                     "s3:GetBucket*",
+                                    "s3:GetObject*",
                                     "s3:List*"
                                   ],
                                   "Effect": "Allow",
@@ -709,7 +713,8 @@
                                           ":s3:::",
                                           {
                                             "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
-                                          }
+                                          },
+                                          "/*"
                                         ]
                                       ]
                                     },
@@ -724,8 +729,7 @@
                                           ":s3:::",
                                           {
                                             "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
-                                          },
-                                          "/*"
+                                          }
                                         ]
                                       ]
                                     }

@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-cdk-codepipeline-cloudformation-cross-region-with-action-role": {
       "type": "aws:cloudformation:stack",

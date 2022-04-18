@@ -1256,7 +1256,6 @@
                           "maximumPercent": 200,
                           "minimumHealthyPercent": 50
                         },
-                        "desiredCount": 1,
                         "enableEcsManagedTags": true,
                         "healthCheckGracePeriodSeconds": 60,
                         "launchType": "FARGATE",

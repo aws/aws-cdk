@@ -107,8 +107,8 @@
                                     },
                                     {
                                       "Action": [
-                                        "s3:GetObject*",
                                         "s3:GetBucket*",
+                                        "s3:GetObject*",
                                         "s3:List*"
                                       ],
                                       "Effect": "Allow",
@@ -225,12 +225,16 @@
                                   "Statement": [
                                     {
                                       "Action": [
-                                        "s3:GetObject*",
-                                        "s3:GetBucket*",
-                                        "s3:List*",
+                                        "s3:Abort*",
                                         "s3:DeleteObject*",
-                                        "s3:PutObject*",
-                                        "s3:Abort*"
+                                        "s3:GetBucket*",
+                                        "s3:GetObject*",
+                                        "s3:List*",
+                                        "s3:PutObject",
+                                        "s3:PutObjectLegalHold",
+                                        "s3:PutObjectRetention",
+                                        "s3:PutObjectTagging",
+                                        "s3:PutObjectVersionTagging"
                                       ],
                                       "Effect": "Allow",
                                       "Resource": [
@@ -259,49 +263,43 @@
                                     {
                                       "Action": "sts:AssumeRole",
                                       "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
-                                          "Arn"
-                                        ]
-                                      }
-                                    },
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF",
-                                          "Arn"
-                                        ]
-                                      }
-                                    },
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::Join": [
-                                          "",
-                                          [
-                                            "arn:",
-                                            {
-                                              "Ref": "AWS::Partition"
-                                            },
-                                            ":iam::",
-                                            {
-                                              "Ref": "AWS::AccountId"
-                                            },
-                                            ":role/cdk-hnb659fds-deploy-role-",
-                                            {
-                                              "Ref": "AWS::AccountId"
-                                            },
-                                            "-",
-                                            {
-                                              "Ref": "AWS::Region"
-                                            }
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
+                                            "Arn"
                                           ]
-                                        ]
-                                      }
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":iam::",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":role/cdk-hnb659fds-deploy-role-",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              "-",
+                                              {
+                                                "Ref": "AWS::Region"
+                                              }
+                                            ]
+                                          ]
+                                        }
+                                      ]
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -2083,7 +2081,8 @@
                                                           ":log-group:/aws/codebuild/",
                                                           {
                                                             "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
-                                                          }
+                                                          },
+                                                          ":*"
                                                         ]
                                                       ]
                                                     },
@@ -2106,8 +2105,7 @@
                                                           ":log-group:/aws/codebuild/",
                                                           {
                                                             "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
-                                                          },
-                                                          ":*"
+                                                          }
                                                         ]
                                                       ]
                                                     }
@@ -2115,11 +2113,11 @@
                                                 },
                                                 {
                                                   "Action": [
-                                                    "codebuild:CreateReportGroup",
-                                                    "codebuild:CreateReport",
-                                                    "codebuild:UpdateReport",
+                                                    "codebuild:BatchPutCodeCoverages",
                                                     "codebuild:BatchPutTestCases",
-                                                    "codebuild:BatchPutCodeCoverages"
+                                                    "codebuild:CreateReport",
+                                                    "codebuild:CreateReportGroup",
+                                                    "codebuild:UpdateReport"
                                                   ],
                                                   "Effect": "Allow",
                                                   "Resource": {
@@ -2149,12 +2147,16 @@
                                                 },
                                                 {
                                                   "Action": [
-                                                    "s3:GetObject*",
-                                                    "s3:GetBucket*",
-                                                    "s3:List*",
+                                                    "s3:Abort*",
                                                     "s3:DeleteObject*",
-                                                    "s3:PutObject*",
-                                                    "s3:Abort*"
+                                                    "s3:GetBucket*",
+                                                    "s3:GetObject*",
+                                                    "s3:List*",
+                                                    "s3:PutObject",
+                                                    "s3:PutObjectLegalHold",
+                                                    "s3:PutObjectRetention",
+                                                    "s3:PutObjectTagging",
+                                                    "s3:PutObjectVersionTagging"
                                                   ],
                                                   "Effect": "Allow",
                                                   "Resource": [
@@ -2858,7 +2860,8 @@
                                                   ":log-group:/aws/codebuild/",
                                                   {
                                                     "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
-                                                  }
+                                                  },
+                                                  ":*"
                                                 ]
                                               ]
                                             },
@@ -2881,8 +2884,7 @@
                                                   ":log-group:/aws/codebuild/",
                                                   {
                                                     "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
-                                                  },
-                                                  ":*"
+                                                  }
                                                 ]
                                               ]
                                             }
@@ -2890,11 +2892,11 @@
                                         },
                                         {
                                           "Action": [
-                                            "codebuild:CreateReportGroup",
-                                            "codebuild:CreateReport",
-                                            "codebuild:UpdateReport",
+                                            "codebuild:BatchPutCodeCoverages",
                                             "codebuild:BatchPutTestCases",
-                                            "codebuild:BatchPutCodeCoverages"
+                                            "codebuild:CreateReport",
+                                            "codebuild:CreateReportGroup",
+                                            "codebuild:UpdateReport"
                                           ],
                                           "Effect": "Allow",
                                           "Resource": {
@@ -2948,19 +2950,17 @@
                                           }
                                         },
                                         {
-                                          "Action": "cloudformation:DescribeStacks",
-                                          "Effect": "Allow",
-                                          "Resource": "*"
-                                        },
-                                        {
-                                          "Action": "s3:ListBucket",
+                                          "Action": [
+                                            "cloudformation:DescribeStacks",
+                                            "s3:ListBucket"
+                                          ],
                                           "Effect": "Allow",
                                           "Resource": "*"
                                         },
                                         {
                                           "Action": [
-                                            "s3:GetObject*",
                                             "s3:GetBucket*",
+                                            "s3:GetObject*",
                                             "s3:List*"
                                           ],
                                           "Effect": "Allow",
@@ -3157,7 +3157,7 @@
                           "aws:cdk:cloudformation:props": {
                             "redrivePolicy": {
                               "deadLetterTargetArn": {
-                                "Fn::ImportValue": "Beta-Stack1:BetaStack1ExportsOutputFnGetAttQueue4A7E3555Arn7828EB2B"
+                                "Fn::ImportValue": "Beta-Stack1:ExportsOutputFnGetAttQueue4A7E3555Arn15A7202E"
                               },
                               "maxReceiveCount": 5
                             }
@@ -3288,7 +3288,7 @@
                           "aws:cdk:cloudformation:props": {
                             "redrivePolicy": {
                               "deadLetterTargetArn": {
-                                "Fn::ImportValue": "Prod1-Stack1:Prod1Stack1ExportsOutputFnGetAttQueue4A7E3555Arn386FDF4B"
+                                "Fn::ImportValue": "Prod1-Stack1:ExportsOutputFnGetAttQueue4A7E3555Arn15A7202E"
                               },
                               "maxReceiveCount": 5
                             }
@@ -3419,7 +3419,7 @@
                           "aws:cdk:cloudformation:props": {
                             "redrivePolicy": {
                               "deadLetterTargetArn": {
-                                "Fn::ImportValue": "Prod2-Stack1:Prod2Stack1ExportsOutputFnGetAttQueue4A7E3555Arn94DA2B38"
+                                "Fn::ImportValue": "Prod2-Stack1:ExportsOutputFnGetAttQueue4A7E3555Arn15A7202E"
                               },
                               "maxReceiveCount": 5
                             }
@@ -3550,7 +3550,7 @@
                           "aws:cdk:cloudformation:props": {
                             "redrivePolicy": {
                               "deadLetterTargetArn": {
-                                "Fn::ImportValue": "Prod3-Stack1:Prod3Stack1ExportsOutputFnGetAttQueue4A7E3555Arn2E6EAF25"
+                                "Fn::ImportValue": "Prod3-Stack1:ExportsOutputFnGetAttQueue4A7E3555Arn15A7202E"
                               },
                               "maxReceiveCount": 5
                             }
@@ -3681,7 +3681,7 @@
                           "aws:cdk:cloudformation:props": {
                             "redrivePolicy": {
                               "deadLetterTargetArn": {
-                                "Fn::ImportValue": "Prod4-Stack1:Prod4Stack1ExportsOutputFnGetAttQueue4A7E3555Arn689FE6B0"
+                                "Fn::ImportValue": "Prod4-Stack1:ExportsOutputFnGetAttQueue4A7E3555Arn15A7202E"
                               },
                               "maxReceiveCount": 5
                             }
@@ -3812,7 +3812,7 @@
                           "aws:cdk:cloudformation:props": {
                             "redrivePolicy": {
                               "deadLetterTargetArn": {
-                                "Fn::ImportValue": "Prod5-Stack1:Prod5Stack1ExportsOutputFnGetAttQueue4A7E3555Arn32BE3F4F"
+                                "Fn::ImportValue": "Prod5-Stack1:ExportsOutputFnGetAttQueue4A7E3555Arn15A7202E"
                               },
                               "maxReceiveCount": 5
                             }
@@ -3943,7 +3943,7 @@
                           "aws:cdk:cloudformation:props": {
                             "redrivePolicy": {
                               "deadLetterTargetArn": {
-                                "Fn::ImportValue": "Prod6-Stack1:Prod6Stack1ExportsOutputFnGetAttQueue4A7E3555Arn0D51AEE3"
+                                "Fn::ImportValue": "Prod6-Stack1:ExportsOutputFnGetAttQueue4A7E3555Arn15A7202E"
                               },
                               "maxReceiveCount": 5
                             }

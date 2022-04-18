@@ -454,9 +454,9 @@
      "Statement": [
       {
        "Action": [
+        "ec2messages:GetMessages",
         "ssm:*",
-        "ssmmessages:*",
-        "ec2messages:GetMessages"
+        "ssmmessages:*"
        ],
        "Effect": "Allow",
        "Resource": "*"

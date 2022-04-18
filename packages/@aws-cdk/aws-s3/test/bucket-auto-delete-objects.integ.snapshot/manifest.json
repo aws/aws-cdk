@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "cdk-s3-bucket-auto-delete-objects": {
       "type": "aws:cloudformation:stack",

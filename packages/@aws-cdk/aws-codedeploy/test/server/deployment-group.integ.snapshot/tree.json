@@ -762,8 +762,8 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "s3:GetObject*",
                                     "s3:GetBucket*",
+                                    "s3:GetObject*",
                                     "s3:List*"
                                   ],
                                   "Effect": "Allow",
@@ -779,7 +779,8 @@
                                           ":s3:::aws-codedeploy-",
                                           {
                                             "Ref": "AWS::Region"
-                                          }
+                                          },
+                                          "/latest/*"
                                         ]
                                       ]
                                     },
@@ -794,8 +795,7 @@
                                           ":s3:::aws-codedeploy-",
                                           {
                                             "Ref": "AWS::Region"
-                                          },
-                                          "/latest/*"
+                                          }
                                         ]
                                       ]
                                     }

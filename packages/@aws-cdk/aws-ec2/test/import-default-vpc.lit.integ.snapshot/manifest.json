@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-cdk-ec2-import": {
       "type": "aws:cloudformation:stack",
@@ -19,7 +18,10 @@
         "/aws-cdk-ec2-import/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SecurityGroupDD263621"
+            "data": "SecurityGroupDD263621",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-ec2-import/PublicSubnets": [
