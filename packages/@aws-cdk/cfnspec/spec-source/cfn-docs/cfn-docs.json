@@ -538,7 +538,7 @@
       },
       "description": "The AWS::Amplify::App resource creates Apps in the Amplify Console. An App is a collection of branches.",
       "properties": {
-        "AccessToken": "The personal access token for a GitHub repository for an Amplify app. The personal access token is used to authorize access to a GitHub repository using the Amplify GitHub App. The token is not stored.\n\nUse `AccessToken` for GitHub repositories only. To authorize access to a repository provider such as Bitbucket or CodeCommit, use `OauthToken` .\n\nYou must specify either `AccessToken` or `OauthToken` when you create a new app.\n\nExisting Amplify apps deployed from a GitHub repository using OAuth continue to work with CI/CD. However, we strongly recommend that you migrate these apps to use the GitHub App. For more information, see [Migrating an existing OAuth app to the Amplify GitHub App](https://docs.aws.amazon.com/amplify/latest/UserGuide/setting-up-GitHub-access.html#migrating-to-github-app-auth) in the *Amplify User Guide* .\n\n*Length Constraints:* Minimum length of 1. Maximum length of 255.",
+        "AccessToken": "The personal access token for a GitHub repository for an Amplify app. The personal access token is used to authorize access to a GitHub repository using the Amplify GitHub App. The token is not stored.\n\nUse `AccessToken` for GitHub repositories only. To authorize access to a repository provider such as Bitbucket or CodeCommit, use `OauthToken` .\n\nYou must specify either `AccessToken` or `OauthToken` when you create a new app.\n\nExisting Amplify apps deployed from a GitHub repository using OAuth continue to work with CI/CD. However, we strongly recommend that you migrate these apps to use the GitHub App. For more information, see [Migrating an existing OAuth app to the Amplify GitHub App](https://docs.aws.amazon.com/amplify/latest/userguide/setting-up-GitHub-access.html#migrating-to-github-app-auth) in the *Amplify User Guide* .\n\n*Length Constraints:* Minimum length of 1. Maximum length of 255.",
         "AutoBranchCreationConfig": "Sets the configuration for your automatic branch creation.",
         "BasicAuthConfig": "The credentials for basic authorization for an Amplify app. You must base64-encode the authorization credentials and provide them in the format `user:password` .",
         "BuildSpec": "The build specification (build spec) for an Amplify app.\n\n*Length Constraints:* Minimum length of 1. Maximum length of 25000.\n\n*Pattern:* (?s).+",
@@ -549,7 +549,7 @@
         "EnvironmentVariables": "The environment variables map for an Amplify app.",
         "IAMServiceRole": "The AWS Identity and Access Management (IAM) service role for the Amazon Resource Name (ARN) of the Amplify app.\n\n*Length Constraints:* Minimum length of 0. Maximum length of 1000.\n\n*Pattern:* (?s).*",
         "Name": "The name for an Amplify app.\n\n*Length Constraints:* Minimum length of 1. Maximum length of 255.\n\n*Pattern:* (?s).+",
-        "OauthToken": "The OAuth token for a third-party source control system for an Amplify app. The OAuth token is used to create a webhook and a read-only deploy key using SSH cloning. The OAuth token is not stored.\n\nUse `OauthToken` for repository providers other than GitHub, such as Bitbucket or CodeCommit. To authorize access to GitHub as your repository provider, use `AccessToken` .\n\nYou must specify either `OauthToken` or `AccessToken` when you create a new app.\n\nExisting Amplify apps deployed from a GitHub repository using OAuth continue to work with CI/CD. However, we strongly recommend that you migrate these apps to use the GitHub App. For more information, see [Migrating an existing OAuth app to the Amplify GitHub App](https://docs.aws.amazon.com/amplify/latest/UserGuide/setting-up-GitHub-access.html#migrating-to-github-app-auth) in the *Amplify User Guide* .\n\n*Length Constraints:* Maximum length of 1000.\n\n*Pattern:* (?s).*",
+        "OauthToken": "The OAuth token for a third-party source control system for an Amplify app. The OAuth token is used to create a webhook and a read-only deploy key using SSH cloning. The OAuth token is not stored.\n\nUse `OauthToken` for repository providers other than GitHub, such as Bitbucket or CodeCommit. To authorize access to GitHub as your repository provider, use `AccessToken` .\n\nYou must specify either `OauthToken` or `AccessToken` when you create a new app.\n\nExisting Amplify apps deployed from a GitHub repository using OAuth continue to work with CI/CD. However, we strongly recommend that you migrate these apps to use the GitHub App. For more information, see [Migrating an existing OAuth app to the Amplify GitHub App](https://docs.aws.amazon.com/amplify/latest/userguide/setting-up-GitHub-access.html#migrating-to-github-app-auth) in the *Amplify User Guide* .\n\n*Length Constraints:* Maximum length of 1000.\n\n*Pattern:* (?s).*",
         "Repository": "The repository for an Amplify app.\n\n*Pattern:* (?s).*",
         "Tags": "The tag for an Amplify app."
       }
@@ -4054,7 +4054,7 @@
       "description": "Specify an AWS App Runner VPC connector by using the `AWS::AppRunner::VpcConnector` resource in an AWS CloudFormation template. \n\nThe `AWS::AppRunner::VpcConnector` resource is an AWS App Runner resource type that specifies an App Runner VPC connector.\n\nApp Runner requires this resource when you want to associate your App Runner service to a custom Amazon Virtual Private Cloud ( Amazon VPC ).",
       "properties": {
         "SecurityGroups": "A list of IDs of security groups that App Runner should use for access to AWS resources under the specified subnets. If not specified, App Runner uses the default security group of the Amazon VPC. The default security group allows all outbound traffic.",
-        "Subnets": "A list of IDs of subnets that App Runner should use when it associates your service with a custom Amazon VPC. Specify IDs of subnets of a single Amazon VPC. App Runner determines the Amazon VPC from the subnets you specify.",
+        "Subnets": "A list of IDs of subnets that App Runner should use when it associates your service with a custom Amazon VPC. Specify IDs of subnets of a single Amazon VPC. App Runner determines the Amazon VPC from the subnets you specify.\n\n> App Runner currently only provides support for IPv4.",
         "Tags": "A list of metadata items that you can associate with your VPC connector resource. A tag is a key-value pair.",
         "VpcConnectorName": "A name for the VPC connector.\n\nIf you don't specify a name, AWS CloudFormation generates a name for your VPC connector."
       }
@@ -5035,8 +5035,7 @@
       "attributes": {
         "CreationTime": "The date and time the workgroup was created, as a UNIX timestamp in seconds. For example: `1582761016` .",
         "Ref": "`Ref` returns the name of the WorkGroup. For example:\n\n`{ \"Ref\": \"myWorkGroup\" }`",
-        "WorkGroupConfiguration.EngineVersion.EffectiveEngineVersion": "",
-        "WorkGroupConfigurationUpdates.EngineVersion.EffectiveEngineVersion": ""
+        "WorkGroupConfiguration.EngineVersion.EffectiveEngineVersion": ""
       },
       "description": "The AWS::Athena::WorkGroup resource specifies an Amazon Athena workgroup, which contains a name, description, creation time, state, and other configuration, listed under `WorkGroupConfiguration` . Each workgroup enables you to isolate queries for you or your group from other queries in the same account. For more information, see [CreateWorkGroup](https://docs.aws.amazon.com/athena/latest/APIReference/API_CreateWorkGroup.html) in the *Amazon Athena API Reference* .",
       "properties": {
@@ -5045,8 +5044,7 @@
         "RecursiveDeleteOption": "The option to delete a workgroup and its contents even if the workgroup contains any named queries. The default is false.",
         "State": "The state of the workgroup: ENABLED or DISABLED.",
         "Tags": "The tags (key-value pairs) to associate with this resource.",
-        "WorkGroupConfiguration": "The configuration of the workgroup, which includes the location in Amazon S3 where query results are stored, the encryption option, if any, used for query results, whether Amazon CloudWatch Metrics are enabled for the workgroup, and the limit for the amount of bytes scanned (cutoff) per query, if it is specified. The `EnforceWorkGroupConfiguration` option determines whether workgroup settings override client-side query settings.",
-        "WorkGroupConfigurationUpdates": "> The `WorkGroupConfigurationUpdates` property has been deprecated. Use [WorkGroupConfiguration](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-workgroupconfiguration.html) instead. For more information, see [WorkGroupConfigurationUpdates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-workgroupconfigurationupdates.html) . \n\nThe configuration information that will be updated for this workgroup, which includes the location in Amazon S3 where query results are stored, the encryption option, if any, used for query results, whether the Amazon CloudWatch Metrics are enabled for the workgroup, whether the workgroup settings override the client-side settings, and the data usage limit for the amount of bytes scanned per query, if it is specified."
+        "WorkGroupConfiguration": "The configuration of the workgroup, which includes the location in Amazon S3 where query results are stored, the encryption option, if any, used for query results, whether Amazon CloudWatch Metrics are enabled for the workgroup, and the limit for the amount of bytes scanned (cutoff) per query, if it is specified. The `EnforceWorkGroupConfiguration` option determines whether workgroup settings override client-side query settings."
       }
     },
     "AWS::Athena::WorkGroup.EncryptionConfiguration": {
@@ -5073,16 +5071,6 @@
         "OutputLocation": "The location in Amazon S3 where your query results are stored, such as `s3://path/to/query/bucket/` . To run a query, you must specify the query results location using either a client-side setting for individual queries or a location specified by the workgroup. If workgroup settings override client-side settings, then the query uses the location specified for the workgroup. If no query location is set, Athena issues an error. For more information, see [Working with Query Results, Output Files, and Query History](https://docs.aws.amazon.com/athena/latest/ug/querying.html) and `EnforceWorkGroupConfiguration` ."
       }
     },
-    "AWS::Athena::WorkGroup.ResultConfigurationUpdates": {
-      "attributes": {},
-      "description": "The information about the updates in the query results, such as output location and encryption configuration for the query results.",
-      "properties": {
-        "EncryptionConfiguration": "The encryption configuration for the query results.",
-        "OutputLocation": "The location in Amazon S3 where your query results are stored, such as `s3://path/to/query/bucket/` . For more information, see [Query Results](https://docs.aws.amazon.com/athena/latest/ug/querying.html) If workgroup settings override client-side settings, then the query uses the location for the query results and the encryption configuration that are specified for the workgroup. The \"workgroup settings override\" is specified in EnforceWorkGroupConfiguration (true/false) in the WorkGroupConfiguration. See `EnforceWorkGroupConfiguration` .",
-        "RemoveEncryptionConfiguration": "If set to \"true\", indicates that the previously-specified encryption configuration (also known as the client-side setting) for queries in this workgroup should be ignored and set to null. If set to \"false\" or not set, and a value is present in the EncryptionConfiguration in ResultConfigurationUpdates (the client-side setting), the EncryptionConfiguration in the workgroup's ResultConfiguration will be updated with the new value. For more information, see [Workgroup Settings Override Client-Side Settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html) .",
-        "RemoveOutputLocation": "If set to \"true\", indicates that the previously-specified query results location (also known as a client-side setting) for queries in this workgroup should be ignored and set to null. If set to \"false\" or not set, and a value is present in the OutputLocation in ResultConfigurationUpdates (the client-side setting), the OutputLocation in the workgroup's ResultConfiguration will be updated with the new value. For more information, see [Workgroup Settings Override Client-Side Settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html) ."
-      }
-    },
     "AWS::Athena::WorkGroup.WorkGroupConfiguration": {
       "attributes": {},
       "description": "The configuration of the workgroup, which includes the location in Amazon S3 where query results are stored, the encryption option, if any, used for query results, whether Amazon CloudWatch Metrics are enabled for the workgroup, and the limit for the amount of bytes scanned (cutoff) per query, if it is specified. The `EnforceWorkGroupConfiguration` option determines whether workgroup settings override client-side query settings.",
@@ -5093,19 +5081,6 @@
         "PublishCloudWatchMetricsEnabled": "Indicates that the Amazon CloudWatch metrics are enabled for the workgroup.",
         "RequesterPaysEnabled": "If set to `true` , allows members assigned to a workgroup to reference Amazon S3 Requester Pays buckets in queries. If set to `false` , workgroup members cannot query data from Requester Pays buckets, and queries that retrieve data from Requester Pays buckets cause an error. The default is `false` . For more information about Requester Pays buckets, see [Requester Pays Buckets](https://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) in the *Amazon Simple Storage Service Developer Guide* .",
         "ResultConfiguration": "Specifies the location in Amazon S3 where query results are stored and the encryption option, if any, used for query results. For more information, see [Working with Query Results, Output Files, and Query History](https://docs.aws.amazon.com/athena/latest/ug/querying.html) ."
-      }
-    },
-    "AWS::Athena::WorkGroup.WorkGroupConfigurationUpdates": {
-      "attributes": {},
-      "description": "> The `WorkGroupConfigurationUpdates` property has been deprecated. Although `WorkGroupConfigurationUpdates` continues to function, it may not be supported for future updates. Because [WorkGroupConfiguration](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-workgroupconfiguration.html) can be used for both stack create and update operations, we recommend that you use only `WorkGroupConfiguration` going forward. \n\nThe configuration information that will be updated for this workgroup, which includes the location in Amazon S3 where query results are stored, the encryption option, if any, used for query results, whether the Amazon CloudWatch Metrics are enabled for the workgroup, whether the workgroup settings override the client-side settings, and the data usage limit for the amount of bytes scanned per query, if it is specified.",
-      "properties": {
-        "BytesScannedCutoffPerQuery": "The upper limit (cutoff) for the amount of bytes a single query in a workgroup is allowed to scan. No default is defined.\n\n> This property currently supports integer types. Support for long values is planned.",
-        "EnforceWorkGroupConfiguration": "If set to \"true\", the settings for the workgroup override client-side settings. If set to \"false\" client-side settings are used. For more information, see [Workgroup Settings Override Client-Side Settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html) .",
-        "EngineVersion": "The engine version requested when a workgroup is updated. After the update, all queries on the workgroup run on the requested engine version. If no value was previously set, the default is Auto. Queries on the `AmazonAthenaPreviewFunctionality` workgroup run on the preview engine regardless of this setting.",
-        "PublishCloudWatchMetricsEnabled": "Indicates whether this workgroup enables publishing metrics to Amazon CloudWatch.",
-        "RemoveBytesScannedCutoffPerQuery": "Indicates that the data usage control limit per query is removed. See `BytesScannedCutoffPerQuery` .",
-        "RequesterPaysEnabled": "If set to `true` , allows members assigned to a workgroup to specify Amazon S3 Requester Pays buckets in queries. If set to `false` , workgroup members cannot query data from Requester Pays buckets, and queries that retrieve data from Requester Pays buckets cause an error. The default is `false` . For more information about Requester Pays buckets, see [Requester Pays Buckets](https://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) in the *Amazon Simple Storage Service Developer Guide* .",
-        "ResultConfigurationUpdates": "The result configuration information about the queries in this workgroup that will be updated. Includes the updated results location and an updated option for encrypting query results."
       }
     },
     "AWS::AuditManager::Assessment": {
@@ -6114,7 +6089,16 @@
         "MonitorDimension": "The dimensions to evaluate.",
         "MonitorName": "The name of the monitor.",
         "MonitorSpecification": "The array of `MonitorSpecification` in JSON array format. For instance, you can use `MonitorSpecification` to specify a tag, Cost Category, or linked account for your custom anomaly monitor. For further information, see the [Examples](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalymonitor.html#aws-resource-ce-anomalymonitor--examples) section of this page.",
-        "MonitorType": "The possible type values."
+        "MonitorType": "The possible type values.",
+        "ResourceTags": ""
+      }
+    },
+    "AWS::CE::AnomalyMonitor.ResourceTag": {
+      "attributes": {},
+      "description": "The tag structure that contains a tag key and value.\n\n> Tagging is supported only for the following Cost Explorer resource types: [`AnomalyMonitor`](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_AnomalyMonitor.html) , [`AnomalySubscription`](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_AnomalySubscription.html) , [`CostCategory`](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_CostCategory.html) .",
+      "properties": {
+        "Key": "The key that is associated with the tag.",
+        "Value": "The value that is associated with the tag."
       }
     },
     "AWS::CE::AnomalySubscription": {
@@ -6127,9 +6111,18 @@
       "properties": {
         "Frequency": "The frequency that anomaly reports are sent over email.",
         "MonitorArnList": "A list of cost anomaly monitors.",
+        "ResourceTags": "",
         "Subscribers": "A list of subscribers to notify.",
         "SubscriptionName": "The name for the subscription.",
         "Threshold": "The dollar value that triggers a notification if the threshold is exceeded."
+      }
+    },
+    "AWS::CE::AnomalySubscription.ResourceTag": {
+      "attributes": {},
+      "description": "The tag structure that contains a tag key and value.\n\n> Tagging is supported only for the following Cost Explorer resource types: [`AnomalyMonitor`](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_AnomalyMonitor.html) , [`AnomalySubscription`](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_AnomalySubscription.html) , [`CostCategory`](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_CostCategory.html) .",
+      "properties": {
+        "Key": "The key that is associated with the tag.",
+        "Value": "The value that is associated with the tag."
       }
     },
     "AWS::CE::AnomalySubscription.Subscriber": {
@@ -13641,7 +13634,6 @@
       "description": "Specifies a target for your Traffic Mirror session.\n\nA Traffic Mirror target is the destination for mirrored traffic. The Traffic Mirror source and the Traffic Mirror target (monitoring appliances) can be in the same VPC, or in different VPCs connected via VPC peering or a transit gateway.\n\nA Traffic Mirror target can be a network interface, or a Network Load Balancer.\n\nTo use the target in a Traffic Mirror session, use [AWS::EC2::TrafficMirrorSession](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-trafficmirrorsession.html) .",
       "properties": {
         "Description": "The description of the Traffic Mirror target.",
-        "GatewayLoadBalancerEndpointId": "",
         "NetworkInterfaceId": "The network interface ID that is associated with the target.",
         "NetworkLoadBalancerArn": "The Amazon Resource Name (ARN) of the Network Load Balancer that is associated with the target.",
         "Tags": "The tags to assign to the Traffic Mirror target."
@@ -20911,6 +20903,27 @@
         "Tags": "The tags of this distribution configuration."
       }
     },
+    "AWS::ImageBuilder::DistributionConfiguration.AmiDistributionConfiguration": {
+      "attributes": {},
+      "description": "Define and configure the output AMIs of the pipeline.",
+      "properties": {
+        "AmiTags": "The tags to apply to AMIs distributed to this Region.",
+        "Description": "The description of the AMI distribution configuration. Minimum and maximum length are in characters.",
+        "KmsKeyId": "The KMS key identifier used to encrypt the distributed image.",
+        "LaunchPermissionConfiguration": "",
+        "Name": "The name of the output AMI.",
+        "TargetAccountIds": "The ID of an account to which you want to distribute an image."
+      }
+    },
+    "AWS::ImageBuilder::DistributionConfiguration.ContainerDistributionConfiguration": {
+      "attributes": {},
+      "description": "Container distribution settings for encryption, licensing, and sharing in a specific Region.",
+      "properties": {
+        "ContainerTags": "Tags that are attached to the container distribution configuration.",
+        "Description": "The description of the container distribution configuration.",
+        "TargetRepository": "The destination repository for the container distribution configuration."
+      }
+    },
     "AWS::ImageBuilder::DistributionConfiguration.Distribution": {
       "attributes": {},
       "description": "The distribution configuration distribution defines the settings for a specific Region in the Distribution Configuration. You must specify whether the distribution is for an AMI or a container image. To do so, include exactly one of the following data types for your distribution:\n\n- amiDistributionConfiguration\n- containerDistributionConfiguration",
@@ -20922,6 +20935,16 @@
         "Region": "The target Region for the Distribution Configuration. For example, `eu-west-1` ."
       }
     },
+    "AWS::ImageBuilder::DistributionConfiguration.LaunchPermissionConfiguration": {
+      "attributes": {},
+      "description": "Describes the configuration for a launch permission. The launch permission modification request is sent to the [Amazon EC2 ModifyImageAttribute](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_ModifyImageAttribute.html) API on behalf of the user for each Region they have selected to distribute the AMI. To make an AMI public, set the launch permission authorized accounts to `all` . See the examples for making an AMI public at [Amazon EC2 ModifyImageAttribute](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_ModifyImageAttribute.html) .",
+      "properties": {
+        "OrganizationArns": "The ARN for an AWS Organization that you want to share your AMI with. For more information, see [What is AWS Organizations ?](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html) .",
+        "OrganizationalUnitArns": "The ARN for an AWS Organizations organizational unit (OU) that you want to share your AMI with. For more information about key concepts for AWS Organizations , see [AWS Organizations terminology and concepts](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_getting-started_concepts.html) .",
+        "UserGroups": "The name of the group.",
+        "UserIds": "The AWS account ID."
+      }
+    },
     "AWS::ImageBuilder::DistributionConfiguration.LaunchTemplateConfiguration": {
       "attributes": {},
       "description": "Identifies an Amazon EC2 launch template to use for a specific account.",
@@ -20929,6 +20952,14 @@
         "AccountId": "The account ID that this configuration applies to.",
         "LaunchTemplateId": "Identifies the Amazon EC2 launch template to use.",
         "SetDefaultVersion": "Set the specified Amazon EC2 launch template as the default launch template for the specified account."
+      }
+    },
+    "AWS::ImageBuilder::DistributionConfiguration.TargetContainerRepository": {
+      "attributes": {},
+      "description": "The container repository where the output container image is stored.",
+      "properties": {
+        "RepositoryName": "The name of the container repository where the output container image is stored. This name is prefixed by the repository location.",
+        "Service": "Specifies the service in which this image was registered."
       }
     },
     "AWS::ImageBuilder::Image": {
@@ -33684,7 +33715,7 @@
         "AllowMajorVersionUpgrade": "A value that indicates whether major version upgrades are allowed. Changing this parameter doesn't result in an outage and the change is asynchronously applied as soon as possible.\n\nConstraints: Major version upgrades must be allowed when specifying a value for the `EngineVersion` parameter that is a different major version than the DB instance's current version.",
         "AssociatedRoles": "The AWS Identity and Access Management (IAM) roles associated with the DB instance.",
         "AutoMinorVersionUpgrade": "A value that indicates whether minor engine upgrades are applied automatically to the DB instance during the maintenance window. By default, minor engine upgrades are applied automatically.",
-        "AvailabilityZone": "The Availability Zone (AZ) where the database will be created. For information on AWS Regions and Availability Zones, see [Regions and Availability Zones](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) .\n\n*Amazon Aurora*\n\nNot applicable. Availability Zones are managed by the DB cluster.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's AWS Region .\n\nExample: `us-east-1d`\n\nConstraint: The `AvailabilityZone` parameter can't be specified if the DB instance is a Multi-AZ deployment. The specified Availability Zone must be in the same AWS Region as the current endpoint.\n\n> If you're creating a DB instance in an RDS on VMware environment, specify the identifier of the custom Availability Zone to create the DB instance in.\n> \n> For more information about RDS on VMware, see the [RDS on VMware User Guide.](https://docs.aws.amazon.com/AmazonRDS/latest/RDSonVMwareUserGuide/rds-on-vmware.html)",
+        "AvailabilityZone": "The Availability Zone (AZ) where the database will be created. For information on AWS Regions and Availability Zones, see [Regions and Availability Zones](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) .\n\n*Amazon Aurora*\n\nEach Aurora DB cluster hosts copies of its storage in three separate Availability Zones. Specify one of these Availability Zones. Aurora automatically chooses an appropriate Availability Zone if you don't specify one.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's AWS Region .\n\nExample: `us-east-1d`\n\nConstraint: The `AvailabilityZone` parameter can't be specified if the DB instance is a Multi-AZ deployment. The specified Availability Zone must be in the same AWS Region as the current endpoint.\n\n> If you're creating a DB instance in an RDS on VMware environment, specify the identifier of the custom Availability Zone to create the DB instance in.\n> \n> For more information about RDS on VMware, see the [RDS on VMware User Guide.](https://docs.aws.amazon.com/AmazonRDS/latest/RDSonVMwareUserGuide/rds-on-vmware.html)",
         "BackupRetentionPeriod": "The number of days for which automated backups are retained. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.\n\n*Amazon Aurora*\n\nNot applicable. The retention period for automated backups is managed by the DB cluster.\n\nDefault: 1\n\nConstraints:\n\n- Must be a value from 0 to 35\n- Can't be set to 0 if the DB instance is a source to read replicas",
         "CACertificateIdentifier": "The identifier of the CA certificate for this DB instance.\n\n> Specifying or updating this property triggers a reboot. \n\nFor more information about CA certificate identifiers for RDS DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon RDS User Guide* .\n\nFor more information about CA certificate identifiers for Aurora DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon Aurora User Guide* .",
         "CharacterSetName": "For supported engines, indicates that the DB instance should be associated with the specified character set.\n\n*Amazon Aurora*\n\nNot applicable. The character set is managed by the DB cluster. For more information, see [AWS::RDS::DBCluster](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html) .",
@@ -36406,6 +36437,7 @@
         "Requires": "A list of SSM documents required by a document. This parameter is used exclusively by AWS AppConfig . When a user creates an AWS AppConfig configuration in an SSM document, the user must also specify a required document for validation purposes. In this case, an `ApplicationConfiguration` document requires an `ApplicationConfigurationSchema` document for validation purposes. For more information, see [What is AWS AppConfig ?](https://docs.aws.amazon.com/appconfig/latest/userguide/what-is-appconfig.html) in the *AWS AppConfig User Guide* .",
         "Tags": "AWS CloudFormation resource tags to apply to the document. Use tags to help you identify and categorize resources.",
         "TargetType": "Specify a target type to define the kinds of resources the document can run on. For example, to run a document on EC2 instances, specify the following value: `/AWS::EC2::Instance` . If you specify a value of '/' the document can run on all types of resources. If you don't specify a value, the document can't run on any resources. For a list of valid resource types, see [AWS resource and property types reference](https://docs.aws.amazon.com//AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html) in the *AWS CloudFormation User Guide* .",
+        "UpdateMethod": "",
         "VersionName": "An optional field specifying the version of the artifact you are creating with the document. For example, \"Release 12, Update 6\". This value is unique across all versions of a document, and can't be changed."
       }
     },
@@ -36919,9 +36951,9 @@
       "description": "Creates a running app for the specified UserProfile. Supported apps are `JupyterServer` and `KernelGateway` . This operation is automatically invoked by Amazon SageMaker Studio upon access to the associated Domain, and when new kernel configurations are selected by the user. A user may have multiple Apps active simultaneously.",
       "properties": {
         "AppName": "The name of the app.",
-        "AppType": "The type of app.",
+        "AppType": "The type of app.\n\n*Allowed Values* : `JupyterServer | KernelGateway | RSessionGateway | RStudioServerPro | TensorBoard | Canvas`",
         "DomainId": "The domain ID.",
-        "ResourceSpec": "Specifies the ARN's of a SageMaker image and SageMaker image version, and the instance type that the version runs on.",
+        "ResourceSpec": "Specifies the ARNs of a SageMaker image and SageMaker image version, and the instance type that the version runs on.",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
         "UserProfileName": "The user profile name."
       }
