@@ -1,5 +1,6 @@
 import * as child_process from 'child_process';
 import * as path from 'path';
+import { FUTURE_FLAGS } from '@aws-cdk/cx-api';
 import { SynthFastOptions, DestroyOptions, ListOptions, SynthOptions, DeployOptions } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import { IntegTestRunner, IntegSnapshotRunner } from '../../lib/runner/runners';
@@ -167,6 +168,9 @@ describe('IntegTest runIntegTests', () => {
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
+      context: expect.objectContaining({
+        ...FUTURE_FLAGS,
+      }),
       versionReporting: false,
       lookups: false,
       stacks: ['stack1'],
@@ -177,6 +181,9 @@ describe('IntegTest runIntegTests', () => {
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
+      context: expect.objectContaining({
+        ...FUTURE_FLAGS,
+      }),
       versionReporting: false,
       lookups: false,
       stacks: ['stack1'],
@@ -186,6 +193,9 @@ describe('IntegTest runIntegTests', () => {
       app: 'node integ.test-with-snapshot.js',
       pathMetadata: false,
       assetMetadata: false,
+      context: expect.objectContaining({
+        ...FUTURE_FLAGS,
+      }),
       versionReporting: false,
       force: true,
       stacks: ['stack1'],
@@ -212,6 +222,11 @@ describe('IntegTest runIntegTests', () => {
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
+      context: expect.not.objectContaining({
+        'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
+          vpcId: 'vpc-60900905',
+        }),
+      }),
       lookups: false,
       stacks: ['stack1'],
       output: 'cdk-integ.out.integ-test1',
@@ -221,6 +236,9 @@ describe('IntegTest runIntegTests', () => {
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
+      context: expect.objectContaining({
+        ...FUTURE_FLAGS,
+      }),
       force: true,
       stacks: ['stack1'],
       output: 'cdk-integ.out.integ-test1',
@@ -245,6 +263,11 @@ describe('IntegTest runIntegTests', () => {
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
+      context: expect.objectContaining({
+        'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
+          vpcId: 'vpc-60900905',
+        }),
+      }),
       versionReporting: false,
       lookups: true,
       stacks: ['test-stack'],
@@ -255,6 +278,11 @@ describe('IntegTest runIntegTests', () => {
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
+      context: expect.objectContaining({
+        'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
+          vpcId: 'vpc-60900905',
+        }),
+      }),
       versionReporting: false,
       lookups: true,
       stacks: ['test-stack'],
@@ -273,6 +301,11 @@ describe('IntegTest runIntegTests', () => {
       app: 'node integ.test-with-snapshot-assets-diff.js',
       pathMetadata: false,
       assetMetadata: false,
+      context: expect.objectContaining({
+        'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
+          vpcId: 'vpc-60900905',
+        }),
+      }),
       versionReporting: false,
       force: true,
       stacks: ['test-stack'],
@@ -388,6 +421,9 @@ describe('IntegTest runIntegTests with profile', () => {
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
+      context: expect.objectContaining({
+        ...FUTURE_FLAGS,
+      }),
       profile: 'test-profile',
       lookups: false,
       stacks: ['stack1'],
@@ -398,6 +434,9 @@ describe('IntegTest runIntegTests with profile', () => {
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
+      context: expect.objectContaining({
+        ...FUTURE_FLAGS,
+      }),
       profile: 'test-profile',
       force: true,
       stacks: ['stack1'],

@@ -531,7 +531,7 @@
          {
           "Ref": "AWS::URLSuffix"
          },
-         "/aws-cdk/assets:aba53d5f05c76afcd7e420dc8cd283ddc31657866bb4ba4ce221e13d8128d92c"
+         "/aws-cdk/assets:0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
         ]
        ]
       },
@@ -607,8 +607,8 @@
       {
        "Action": [
         "ecr:BatchCheckLayerAvailability",
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:BatchGetImage"
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -671,7 +671,6 @@
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
-    "DesiredCount": 1,
     "EnableECSManagedTags": false,
     "HealthCheckGracePeriodSeconds": 60,
     "LaunchType": "FARGATE",

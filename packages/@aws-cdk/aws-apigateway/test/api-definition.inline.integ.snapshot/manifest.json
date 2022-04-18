@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "integtest-restapi-fromdefinition-inline": {
       "type": "aws:cloudformation:stack",

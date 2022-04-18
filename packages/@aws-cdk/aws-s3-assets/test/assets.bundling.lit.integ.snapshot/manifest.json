@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "cdk-integ-assets-bundling": {
       "type": "aws:cloudformation:stack",
