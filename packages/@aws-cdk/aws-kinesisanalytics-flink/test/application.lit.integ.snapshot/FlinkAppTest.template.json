@@ -29,8 +29,8 @@
       },
       {
        "Action": [
-        "s3:GetObject*",
         "s3:GetBucket*",
+        "s3:GetObject*",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -46,7 +46,8 @@
            ":s3:::",
            {
             "Ref": "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3BucketEBA17A67"
-           }
+           },
+           "/*"
           ]
          ]
         },
@@ -61,8 +62,7 @@
            ":s3:::",
            {
             "Ref": "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3BucketEBA17A67"
-           },
-           "/*"
+           }
           ]
          ]
         }

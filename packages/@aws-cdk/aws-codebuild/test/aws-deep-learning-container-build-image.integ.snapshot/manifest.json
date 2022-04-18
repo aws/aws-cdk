@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-deep-learning-container-build-image": {
       "type": "aws:cloudformation:stack",

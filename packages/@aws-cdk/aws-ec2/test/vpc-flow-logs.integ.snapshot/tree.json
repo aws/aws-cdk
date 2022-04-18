@@ -826,8 +826,8 @@
                                 {
                                   "Action": [
                                     "logs:CreateLogStream",
-                                    "logs:PutLogEvents",
-                                    "logs:DescribeLogStreams"
+                                    "logs:DescribeLogStreams",
+                                    "logs:PutLogEvents"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {
@@ -973,9 +973,9 @@
                           "Statement": [
                             {
                               "Action": [
+                                "s3:DeleteObject*",
                                 "s3:GetBucket*",
-                                "s3:List*",
-                                "s3:DeleteObject*"
+                                "s3:List*"
                               ],
                               "Effect": "Allow",
                               "Principal": {
