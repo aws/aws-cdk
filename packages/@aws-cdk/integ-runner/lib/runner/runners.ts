@@ -296,6 +296,7 @@ export abstract class IntegRunner {
       if (this.disableUpdateWorkflow) {
         this.removeAssetsFromSnapshot();
       }
+      this.removeAssetsCacheFromSnapshot();
       const assembly = AssemblyManifestReader.fromPath(this.snapshotDir);
       assembly.cleanManifest();
       assembly.recordTrace(this.renderTraceData());
@@ -410,7 +411,7 @@ export abstract class IntegRunner {
       ctxPragmaContext[key] = value;
     }
     return {
-      ...enableLookups ? [DEFAULT_SYNTH_OPTIONS.context] : [],
+      ...enableLookups ? DEFAULT_SYNTH_OPTIONS.context : {},
       // !!! keep these next two lines in v2-main !!!
       [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
       ...futureFlags,
@@ -558,6 +559,7 @@ export class IntegTestRunner extends IntegRunner {
             ...this.defaultArgs,
             stacks: options.testCase.stacks,
             requireApproval: RequireApproval.NEVER,
+            context: this.getContext(this.enableLookups),
             output: this.cdkOutDir,
             app: this.relativeSnapshotDir,
             lookups: this.enableLookups,
@@ -570,6 +572,7 @@ export class IntegTestRunner extends IntegRunner {
           stacks: options.testCase.stacks,
           requireApproval: RequireApproval.NEVER,
           output: this.cdkOutDir,
+          context: this.getContext(this.enableLookups),
           app: this.cdkApp,
           lookups: this.enableLookups,
           ...options.testCase.cdkCommandOptions?.deploy,
@@ -597,6 +600,7 @@ export class IntegTestRunner extends IntegRunner {
             ...this.defaultArgs,
             profile: this.profile,
             stacks: options.testCase.stacks,
+            context: this.getContext(this.enableLookups),
             force: true,
             app: this.cdkApp,
             output: this.cdkOutDir,
@@ -621,7 +625,7 @@ export class IntegTestRunner extends IntegRunner {
       execCmd: this.cdkApp.split(' '),
       env: {
         ...DEFAULT_SYNTH_OPTIONS.env,
-        CDK_CONTEXT_JSON: JSON.stringify(this.getContext()),
+        CDK_CONTEXT_JSON: JSON.stringify(this.getContext(true)),
       },
       output: this.cdkOutDir,
     });
@@ -860,10 +864,6 @@ const DEFAULT_SYNTH_OPTIONS = {
         },
       ],
     },
-    // Enable feature flags for all integ tests
-    // !!! keep this next line in v2-main !!!
-    ...futureFlags,
-    // !!! keep this previous line in v2-main !!!
 
     // Restricting to these target partitions makes most service principals synthesize to
     // `service.${URL_SUFFIX}`, which is technically *incorrect* (it's only `amazonaws.com`

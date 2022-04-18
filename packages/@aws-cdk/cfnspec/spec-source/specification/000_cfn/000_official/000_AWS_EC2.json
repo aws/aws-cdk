@@ -1,5 +1,5 @@
 {
-  "$version": "66.0.0",
+  "$version": "66.1.0",
   "PropertyTypes": {
     "AWS::EC2::CapacityReservation.TagSpecification": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-capacityreservation-tagspecification.html",
@@ -6909,12 +6909,6 @@
       "Properties": {
         "Description": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-trafficmirrortarget.html#cfn-ec2-trafficmirrortarget-description",
-          "PrimitiveType": "String",
-          "Required": false,
-          "UpdateType": "Immutable"
-        },
-        "GatewayLoadBalancerEndpointId": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-trafficmirrortarget.html#cfn-ec2-trafficmirrortarget-gatewayloadbalancerendpointid",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Immutable"

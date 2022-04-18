@@ -1025,6 +1025,113 @@
                   "fqn": "@aws-cdk/core.CfnResource",
                   "version": "0.0.0"
                 }
+              },
+              "ExecutionRole": {
+                "id": "ExecutionRole",
+                "path": "aws-ecs-integ/Publisher-task-definition/ExecutionRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-integ/Publisher-task-definition/ExecutionRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-ecs-integ/Publisher-task-definition/ExecutionRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-ecs-integ/Publisher-task-definition/ExecutionRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "PublisherlogsDF0C1067",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "PublishertaskdefinitionExecutionRoleDefaultPolicy681FD8E6",
+                            "roles": [
+                              {
+                                "Ref": "PublishertaskdefinitionExecutionRole5C00C542"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "Publisher-logs": {
+            "id": "Publisher-logs",
+            "path": "aws-ecs-integ/Publisher-logs",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecs-integ/Publisher-logs/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "Publisher-logs",
+                    "retentionInDays": 30
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -1644,6 +1751,113 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "Worker-logs": {
+            "id": "Worker-logs",
+            "path": "aws-ecs-integ/Worker-logs",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecs-integ/Worker-logs/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "Worker-logs",
+                    "retentionInDays": 30
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "ExecutionRole": {
+                "id": "ExecutionRole",
+                "path": "aws-ecs-integ/Worker-task-definition/ExecutionRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-integ/Worker-task-definition/ExecutionRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-ecs-integ/Worker-task-definition/ExecutionRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-ecs-integ/Worker-task-definition/ExecutionRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "Workerlogs2994AC4D",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "WorkertaskdefinitionExecutionRoleDefaultPolicy6E199B19",
+                            "roles": [
+                              {
+                                "Ref": "WorkertaskdefinitionExecutionRole3C1A1848"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
                 }
               }

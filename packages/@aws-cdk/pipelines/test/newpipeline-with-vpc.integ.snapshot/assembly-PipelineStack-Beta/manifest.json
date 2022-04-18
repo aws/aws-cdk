@@ -45,30 +45,6 @@
         "/PipelineStack/Beta/Stack1/AssetParameters/8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5S3VersionKey912A0BA1"
-          }
-        ],
-        "/PipelineStack/Beta/Stack1/AssetParameters/8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5ArtifactHash2D42D86C"
-          }
-        ],
-        "/PipelineStack/Beta/Stack1/AssetParameters/ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0eS3Bucket70307477"
-          }
-        ],
-        "/PipelineStack/Beta/Stack1/AssetParameters/ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0eS3VersionKey7ABAC4E1"
-          }
-        ],
-        "/PipelineStack/Beta/Stack1/AssetParameters/ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
             "data": "AssetParametersac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0eArtifactHashDD9B7BA5"
           }
         ],

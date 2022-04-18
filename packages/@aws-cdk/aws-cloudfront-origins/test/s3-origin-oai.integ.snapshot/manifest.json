@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "cloudfront-s3-origin-oai": {
       "type": "aws:cloudformation:stack",
