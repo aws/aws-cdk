@@ -1,4 +1,4 @@
-# integ-runner
+# integ-tests
 
 <!--BEGIN STABILITY BANNER-->
 
