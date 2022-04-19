@@ -21,7 +21,6 @@ async function main() {
     .option('dry-run', { type: 'boolean', default: false, desc: 'do not actually deploy the stack. just update the snapshot (not recommended!)' })
     .option('update-on-failed', { type: 'boolean', default: false, desc: 'rerun integration tests and update snapshots for failed tests.' })
     .option('force', { type: 'boolean', default: false, desc: 'Rerun all integration tests even if tests are passing' })
-    .option('parallel', { type: 'boolean', default: false, desc: 'run integration tests in parallel' })
     .option('parallel-regions', { type: 'array', desc: 'if --parallel is used then these regions are used to run tests in parallel', nargs: 1, default: [] })
     .options('directory', { type: 'string', default: 'test', desc: 'starting directory to discover integration tests' })
     .options('profiles', { type: 'array', desc: 'list of AWS profiles to use. Tests will be run in parallel across each profile+regions', nargs: 1, default: [] })
