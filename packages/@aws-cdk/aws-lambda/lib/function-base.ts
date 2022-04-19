@@ -345,8 +345,17 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       return;
     }
 
-    const principal = this.parsePermissionPrincipal(permission.principal);
-    const { sourceAccount, sourceArn } = this.parseConditions(permission.principal) ?? {};
+    let principal = this.parsePermissionPrincipal(permission.principal);
+
+    let { sourceArn, sourceAccount, principalOrgID } = this.validateConditionCombinations(permission.principal) ?? {};
+
+    // Lambda does not actually accept an organization principal here.
+    // so the principal becomes '*' and the organization ID will be sent to
+    // the 'principalOrgID' property.
+    if (permission.principal instanceof iam.OrganizationPrincipal) {
+      principalOrgID = permission.principal.organizationId;
+    }
+
     const action = permission.action ?? 'lambda:InvokeFunction';
     const scope = permission.scope ?? this;
 
@@ -359,6 +368,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       eventSourceToken: permission.eventSourceToken,
       sourceAccount: permission.sourceAccount ?? sourceAccount,
       sourceArn: permission.sourceArn ?? sourceArn,
+      principalOrgId: permission.principalOrg?.organizationId ?? principalOrgID,
       functionUrlAuthType: permission.functionUrlAuthType,
     });
   }
@@ -566,6 +576,15 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       return (principal as iam.ArnPrincipal).arn;
     }
 
+    if (principal instanceof iam.OrganizationPrincipal) {
+      // we will move the organization id to the `principalOrgId` property of `Permissions`.
+      return '*';
+    }
+
+    if (principal instanceof iam.StarPrincipal) {
+      return '*';
+    }
+
     // Try a best-effort approach to support simple principals that are not any of the predefined
     // classes, but are simple enough that they will fit into the Permission model. Main target
     // here: imported Roles, Users, Groups.
@@ -580,17 +599,61 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     }
 
     throw new Error(`Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
-      'Supported: AccountPrincipal, ArnPrincipal, ServicePrincipal');
+      'Supported: AccountPrincipal, ArnPrincipal, ServicePrincipal, OrganizationPrincipal');
   }
 
-  private parseConditions(principal: iam.IPrincipal): { sourceAccount: string, sourceArn: string } | null {
+  private validateConditionCombinations(principal: iam.IPrincipal): {
+    sourceArn: string | undefined,
+    sourceAccount: string | undefined,
+    principalOrgID: string | undefined,
+  } | undefined {
+    const conditions = this.validateConditions(principal);
+
+    if (!conditions) { return undefined; }
+
+    const sourceArn = conditions.ArnLike ? conditions.ArnLike['aws:SourceArn'] : undefined;
+    const sourceAccount = conditions.StringEquals ? conditions.StringEquals['aws:SourceAccount'] : undefined;
+    const principalOrgID = conditions.StringEquals ? conditions.StringEquals['aws:PrincipalOrgID'] : undefined;
+
+    // PrincipalOrgID cannot be combined with any other conditions
+    if (principalOrgID && (sourceArn || sourceAccount)) {
+      throw new Error('PrincipalWithConditions had unsupported condition combinations for Lambda permission statement: principalOrgID cannot be set with other conditions.');
+    }
+
+    // SourceArn and SourceAccount must be set together
+    if ((sourceArn && !sourceAccount) || (!sourceArn && sourceAccount)) {
+      throw new Error('PrincipalWithConditions had unsupported condition combinations for Lambda permission statement: you cannot set sourceAccount without sourceArn and vice versa');
+    }
+
+    return {
+      sourceArn,
+      sourceAccount,
+      principalOrgID,
+    };
+  }
+
+  private validateConditions(principal: iam.IPrincipal): iam.Conditions | undefined {
     if (this.isPrincipalWithConditions(principal)) {
       const conditions: iam.Conditions = principal.policyFragment.conditions;
       const conditionPairs = flatMap(
         Object.entries(conditions),
         ([operator, conditionObjs]) => Object.keys(conditionObjs as object).map(key => { return { operator, key }; }),
       );
-      const supportedPrincipalConditions = [{ operator: 'ArnLike', key: 'aws:SourceArn' }, { operator: 'StringEquals', key: 'aws:SourceAccount' }];
+
+      // These are all the supported conditions. Some combinations are not supported,
+      // like only 'aws:SourceArn' or 'aws:PrincipalOrgID' and 'aws:SourceAccount'.
+      // These will be validated through `this.validateConditionCombinations`.
+      const supportedPrincipalConditions = [{
+        operator: 'ArnLike',
+        key: 'aws:SourceArn',
+      },
+      {
+        operator: 'StringEquals',
+        key: 'aws:SourceAccount',
+      }, {
+        operator: 'StringEquals',
+        key: 'aws:PrincipalOrgID',
+      }];
 
       const unsupportedConditions = conditionPairs.filter(
         (condition) => !supportedPrincipalConditions.some(
@@ -599,17 +662,14 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       );
 
       if (unsupportedConditions.length == 0) {
-        return {
-          sourceAccount: conditions.StringEquals['aws:SourceAccount'],
-          sourceArn: conditions.ArnLike['aws:SourceArn'],
-        };
+        return conditions;
       } else {
         throw new Error(`PrincipalWithConditions had unsupported conditions for Lambda permission statement: ${JSON.stringify(unsupportedConditions)}. ` +
           `Supported operator/condition pairs: ${JSON.stringify(supportedPrincipalConditions)}`);
       }
-    } else {
-      return null;
     }
+
+    return undefined;
   }
 
   private isPrincipalWithConditions(principal: iam.IPrincipal): principal is iam.PrincipalWithConditions {
