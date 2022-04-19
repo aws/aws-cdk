@@ -197,7 +197,7 @@ fn.addPermission('grant to entire org', {
 
 // Equivalent to:
 fn.addPermission('grant to entire org', {
-  principal: '*',
+  principal: iam.StarPrincipal(),
   principalOrg: orgPrincipal,
 })
 ```

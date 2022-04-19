@@ -40,7 +40,8 @@ export interface Permission {
    *   Lambda by invoking your function.
    * - an AWS organization principal to grant permissions to an entire organization.
    *
-   * The principal can be an AccountPrincipal, a ServicePrincipal, or an OrganizationPrincipal.
+   * The principal can be an AccountPrincipal, an ArnPrincipal, a ServicePrincipal,
+   * or an OrganizationPrincipal.
    */
   readonly principal: iam.IPrincipal;
 
@@ -74,9 +75,12 @@ export interface Permission {
 
   /**
    * The organization you want to grant permissions to. Use this ONLY if you
-   * need to grant permissions to a subset of the organization. In most cases,
-   * sending the organization principal through the `principal` property will
-   * suffice.
+   * need to grant permissions to a subset of the organization. If you want to
+   * grant permissions to the entire organization, sending the organization principal
+   * through the `principal` property will suffice.
+   *
+   * You can use this property to ensure that all source principals are owned by
+   * a specific organization.
    *
    * @default - No principalOrg
    */
