@@ -151,7 +151,7 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
         // It's not clear whether users will hit this).
         setTimeout(() => {
           req.destroy(new Error('Request timed out. You should never see this message; if you do, please let us know at https://github.com/aws/aws-cdk/issues'));
-        }, timeout + 100);
+        }, timeout + 200);
       } catch (e) {
         reject(new Error(`HTTPS 'get' call threw an error: ${e.message}`));
       }
@@ -164,7 +164,8 @@ interface CachedNotices {
   notices: Notice[],
 }
 
-const TIME_TO_LIVE = 60 * 60 * 1000; // 1 hour
+const TIME_TO_LIVE_SUCCESS = 60 * 60 * 1000; // 1 hour
+const TIME_TO_LIVE_ERROR = 1 * 60 * 1000; // 1 minute
 
 export class CachedDataSource implements NoticeDataSource {
   constructor(
@@ -179,14 +180,27 @@ export class CachedDataSource implements NoticeDataSource {
     const expiration = cachedData.expiration ?? 0;
 
     if (Date.now() > expiration || this.skipCache) {
-      const freshData = {
-        expiration: Date.now() + TIME_TO_LIVE,
-        notices: await this.dataSource.fetch(),
-      };
+      const freshData = await this.fetchInner();
       await this.save(freshData);
       return freshData.notices;
     } else {
+      debug(`Reading cached notices from ${this.fileName}`);
       return data;
+    }
+  }
+
+  private async fetchInner(): Promise<CachedNotices> {
+    try {
+      return {
+        expiration: Date.now() + TIME_TO_LIVE_SUCCESS,
+        notices: await this.dataSource.fetch(),
+      };
+    } catch (e) {
+      debug(`Could not refresh notices: ${e}`);
+      return {
+        expiration: Date.now() + TIME_TO_LIVE_ERROR,
+        notices: [],
+      };
     }
   }
 

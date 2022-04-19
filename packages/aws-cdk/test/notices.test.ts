@@ -313,6 +313,8 @@ describe('cli notices', () => {
     test('retrieves data from the delegate when the file cannot be read', async () => {
       const debugSpy = jest.spyOn(logging, 'debug');
 
+      fs.unlinkSync('does-not-exist.json');
+
       const dataSource = dataSourceWithDelegateReturning(freshData, 'does-not-exist.json');
 
       const notices = await dataSource.fetch();
@@ -333,6 +335,20 @@ describe('cli notices', () => {
       const notices = await dataSource.fetch();
 
       expect(notices).toEqual(freshData);
+    });
+
+    test('error in delegate gets turned into empty result by cached source', async () => {
+      // GIVEN
+      const delegate = {
+        fetch: jest.fn().mockRejectedValue(new Error('fetching failed')),
+      };
+      const dataSource = new CachedDataSource(fileName, delegate, true);
+
+      // WHEN
+      const notices = await dataSource.fetch();
+
+      // THEN
+      expect(notices).toEqual([]);
     });
 
     function dataSourceWithDelegateReturning(notices: Notice[], file: string = fileName, ignoreCache: boolean = false) {
