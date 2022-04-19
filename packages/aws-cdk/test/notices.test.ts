@@ -313,7 +313,9 @@ describe('cli notices', () => {
     test('retrieves data from the delegate when the file cannot be read', async () => {
       const debugSpy = jest.spyOn(logging, 'debug');
 
-      fs.unlinkSync('does-not-exist.json');
+      if (fs.existsSync('does-not-exist.json')) {
+        fs.unlinkSync('does-not-exist.json');
+      }
 
       const dataSource = dataSourceWithDelegateReturning(freshData, 'does-not-exist.json');
 
