@@ -1,0 +1,96 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "Integ-SecretsManager-ParsedSecretName": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "Integ-SecretsManager-ParsedSecretName.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/Integ-SecretsManager-ParsedSecretName": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33.handler",
+              "id": "7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33",
+              "packaging": "zip",
+              "sourceHash": "7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33",
+              "s3BucketParameter": "AssetParameters7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33S3Bucket499DB3A2",
+              "s3KeyParameter": "AssetParameters7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33S3VersionKey8F35128C",
+              "artifactHashParameter": "AssetParameters7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33ArtifactHashD7AC58BE"
+            }
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/DefaultSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultSecret67034726"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/NamedSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NamedSecret7CD5422D"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/NamedSecretWithHyphen/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NamedSecretWithHyphen6DC9716A"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/AReallyLongLogicalIThatWillBeTrimmedBeforeItsUsedInTheName/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AReallyLongLogicalIThatWillBeTrimmedBeforeItsUsedInTheName83476586"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/Custom::IntegVerificationSecretNameMatchesCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomIntegVerificationSecretNameMatchesCustomResourceProviderRole4A6F8B2A"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/Custom::IntegVerificationSecretNameMatchesCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomIntegVerificationSecretNameMatchesCustomResourceProviderHandler2A57F6AE"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/AssetParameters/7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33S3Bucket499DB3A2"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/AssetParameters/7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33S3VersionKey8F35128C"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/AssetParameters/7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33ArtifactHashD7AC58BE"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/SecretNameVerification/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretNameVerification"
+          }
+        ]
+      },
+      "displayName": "Integ-SecretsManager-ParsedSecretName"
+    }
+  }
+}

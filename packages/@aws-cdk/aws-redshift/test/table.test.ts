@@ -93,7 +93,7 @@ describe('cluster table', () => {
     const user = redshift.User.fromUserAttributes(stack, 'User', {
       ...databaseOptions,
       username: 'username',
-      password: cdk.SecretValue.plainText('INSECURE_NOT_FOR_PRODUCTION'),
+      password: cdk.SecretValue.unsafePlainText('INSECURE_NOT_FOR_PRODUCTION'),
     });
     const table = redshift.Table.fromTableAttributes(stack, 'Table', {
       tableName,

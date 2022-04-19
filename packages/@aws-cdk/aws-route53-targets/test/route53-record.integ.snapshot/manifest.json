@@ -1,0 +1,40 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-r53-record-alias-target-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-r53-record-alias-target-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-r53-record-alias-target-integ/HostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneDB99F866"
+          }
+        ],
+        "/aws-cdk-r53-record-alias-target-integ/WWW/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WWW9F8609DA"
+          }
+        ],
+        "/aws-cdk-r53-record-alias-target-integ/Alias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alias325C5727"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-r53-record-alias-target-integ"
+    }
+  }
+}
