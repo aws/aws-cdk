@@ -191,50 +191,50 @@ describe('cli notices', () => {
       expect(result).toEqual([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
     });
 
-    test('returns empty array when the server returns an unexpected status code', async () => {
-      const result = await mockCall(500, {
+    test('returns appropriate error when the server returns an unexpected status code', async () => {
+      const result = mockCall(500, {
         notices: [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE],
       });
 
-      expect(result).toEqual([]);
+      await expect(result).rejects.toThrow(/500/);
     });
 
-    test('returns empty array when the server returns an unexpected structure', async () => {
-      const result = await mockCall(200, {
+    test('returns appropriate error when the server returns an unexpected structure', async () => {
+      const result = mockCall(200, {
         foo: [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE],
       });
 
-      expect(result).toEqual([]);
+      await expect(result).rejects.toThrow(/key is missing/);
     });
 
-    test('returns empty array when the server returns invalid json', async () => {
-      const result = await mockCall(200, '-09aiskjkj838');
+    test('returns appropriate error when the server returns invalid json', async () => {
+      const result = mockCall(200, '-09aiskjkj838');
 
-      expect(result).toEqual([]);
+      await expect(result).rejects.toThrow(/Failed to parse/);
     });
 
-    test('returns empty array when HTTPS call throws', async () => {
+    test('returns appropriate error when HTTPS call throws', async () => {
       const mockGet = jest.spyOn(https, 'get')
         .mockImplementation(() => { throw new Error('No connection'); });
 
-      const result = await dataSource.fetch();
+      const result = dataSource.fetch();
 
-      expect(result).toEqual([]);
+      await expect(result).rejects.toThrow(/No connection/);
 
       mockGet.mockRestore();
     });
 
-    test('returns empty array when the request has an error', async () => {
+    test('returns appropriate error when the request has an error', async () => {
       nock('https://cli.cdk.dev-tools.aws.dev')
         .get('/notices.json')
         .replyWithError('DNS resolution failed');
 
-      const result = await dataSource.fetch();
+      const result = dataSource.fetch();
 
-      expect(result).toEqual([]);
+      await expect(result).rejects.toThrow(/DNS resolution failed/);
     });
 
-    test('returns empty array when the connection stays idle for  too long', async () => {
+    test('returns appropriate error when the connection stays idle for too long', async () => {
       nock('https://cli.cdk.dev-tools.aws.dev')
         .get('/notices.json')
         .delayConnection(3500)
@@ -242,9 +242,9 @@ describe('cli notices', () => {
           notices: [BASIC_NOTICE],
         });
 
-      const result = await dataSource.fetch();
+      const result = dataSource.fetch();
 
-      expect(result).toEqual([]);
+      await expect(result).rejects.toThrow(/timed out/);
     });
 
     test('returns empty array when the request takes too long to finish', async () => {
@@ -255,9 +255,9 @@ describe('cli notices', () => {
           notices: [BASIC_NOTICE],
         });
 
-      const result = await dataSource.fetch();
+      const result = dataSource.fetch();
 
-      expect(result).toEqual([]);
+      await expect(result).rejects.toThrow(/timed out/);
     });
 
     function mockCall(statusCode: number, body: any): Promise<Notice[]> {
