@@ -203,6 +203,18 @@
       ],
       "Essential": true,
       "Image": "nathanpeck/name",
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "Servicelogs9F4E1F70"
+        },
+        "awslogs-stream-prefix": "Service",
+        "awslogs-region": {
+         "Ref": "AWS::Region"
+        }
+       }
+      },
       "Memory": 512,
       "Name": "app",
       "PortMappings": [
@@ -221,6 +233,12 @@
      }
     ],
     "Cpu": "256",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "ServicetaskdefinitionExecutionRoleD09F4578",
+      "Arn"
+     ]
+    },
     "Family": "importedenvironmentintegServicetaskdefinition63936B87",
     "Memory": "512",
     "NetworkMode": "awsvpc",
@@ -235,6 +253,61 @@
      ]
     }
    }
+  },
+  "ServicetaskdefinitionExecutionRoleD09F4578": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ServicetaskdefinitionExecutionRoleDefaultPolicy25CEAFC5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Servicelogs9F4E1F70",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ServicetaskdefinitionExecutionRoleDefaultPolicy25CEAFC5",
+    "Roles": [
+     {
+      "Ref": "ServicetaskdefinitionExecutionRoleD09F4578"
+     }
+    ]
+   }
+  },
+  "Servicelogs9F4E1F70": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "Service-logs",
+    "RetentionInDays": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ServiceserviceService6A153CB8": {
    "Type": "AWS::ECS::Service",
