@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-cdk-codepipeline-codebuild-batch": {
@@ -196,12 +196,16 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "s3:GetObject*",
-                                    "s3:GetBucket*",
-                                    "s3:List*",
+                                    "s3:Abort*",
                                     "s3:DeleteObject*",
-                                    "s3:PutObject*",
-                                    "s3:Abort*"
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*",
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": [
@@ -239,11 +243,11 @@
                                 },
                                 {
                                   "Action": [
+                                    "codecommit:CancelUploadArchive",
                                     "codecommit:GetBranch",
                                     "codecommit:GetCommit",
-                                    "codecommit:UploadArchive",
                                     "codecommit:GetUploadArchiveStatus",
-                                    "codecommit:CancelUploadArchive"
+                                    "codecommit:UploadArchive"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {
@@ -398,14 +402,14 @@
                     "id": "Source",
                     "path": "aws-cdk-codepipeline-codebuild-batch/Pipeline/Source/Source",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "EventsRole": {
@@ -512,14 +516,14 @@
                     "id": "Build",
                     "path": "aws-cdk-codepipeline-codebuild-batch/Pipeline/Build/Build",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
@@ -600,7 +604,8 @@
                                           ":log-group:/aws/codebuild/",
                                           {
                                             "Ref": "MyBuildProject30DB9D6E"
-                                          }
+                                          },
+                                          ":*"
                                         ]
                                       ]
                                     },
@@ -623,8 +628,7 @@
                                           ":log-group:/aws/codebuild/",
                                           {
                                             "Ref": "MyBuildProject30DB9D6E"
-                                          },
-                                          ":*"
+                                          }
                                         ]
                                       ]
                                     }
@@ -632,8 +636,8 @@
                                 },
                                 {
                                   "Action": [
-                                    "s3:GetObject*",
                                     "s3:GetBucket*",
+                                    "s3:GetObject*",
                                     "s3:List*"
                                   ],
                                   "Effect": "Allow",
@@ -775,9 +779,9 @@
                               "Statement": [
                                 {
                                   "Action": [
+                                    "codebuild:RetryBuild",
                                     "codebuild:StartBuild",
-                                    "codebuild:StopBuild",
-                                    "codebuild:RetryBuild"
+                                    "codebuild:StopBuild"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {

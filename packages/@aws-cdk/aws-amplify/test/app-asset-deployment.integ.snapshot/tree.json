@@ -148,13 +148,13 @@
                   "version": "0.0.0"
                 }
               },
-              "1c981b2ce427543a5eb4d7b55e29fbbbe6c598acde67d14c404d03106fc44d9e": {
-                "id": "1c981b2ce427543a5eb4d7b55e29fbbbe6c598acde67d14c404d03106fc44d9e",
-                "path": "cdk-amplify-app-asset-deployment/AssetParameters/1c981b2ce427543a5eb4d7b55e29fbbbe6c598acde67d14c404d03106fc44d9e",
+              "26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ce": {
+                "id": "26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ce",
+                "path": "cdk-amplify-app-asset-deployment/AssetParameters/26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ce",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "cdk-amplify-app-asset-deployment/AssetParameters/1c981b2ce427543a5eb4d7b55e29fbbbe6c598acde67d14c404d03106fc44d9e/S3Bucket",
+                    "path": "cdk-amplify-app-asset-deployment/AssetParameters/26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ce/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -162,7 +162,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "cdk-amplify-app-asset-deployment/AssetParameters/1c981b2ce427543a5eb4d7b55e29fbbbe6c598acde67d14c404d03106fc44d9e/S3VersionKey",
+                    "path": "cdk-amplify-app-asset-deployment/AssetParameters/26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ce/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -170,7 +170,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "cdk-amplify-app-asset-deployment/AssetParameters/1c981b2ce427543a5eb4d7b55e29fbbbe6c598acde67d14c404d03106fc44d9e/ArtifactHash",
+                    "path": "cdk-amplify-app-asset-deployment/AssetParameters/26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ce/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -371,10 +371,10 @@
                                   "Statement": [
                                     {
                                       "Action": [
-                                        "s3:GetObject",
-                                        "s3:GetSignedUrl",
                                         "amplify:ListJobs",
-                                        "amplify:StartDeployment"
+                                        "amplify:StartDeployment",
+                                        "s3:GetObject",
+                                        "s3:GetSignedUrl"
                                       ],
                                       "Effect": "Allow",
                                       "Resource": "*"
@@ -760,6 +760,12 @@
                                           "Resource": [
                                             {
                                               "Fn::GetAtt": [
+                                                "amplifyassetdeploymentiscomplete236D9453",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::GetAtt": [
                                                 "amplifyassetdeploymentonevent974704DA",
                                                 "Arn"
                                               ]
@@ -770,24 +776,12 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "amplifyassetdeploymentonevent974704DA",
+                                                      "amplifyassetdeploymentiscomplete236D9453",
                                                       "Arn"
                                                     ]
                                                   },
                                                   ":*"
                                                 ]
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Action": "lambda:InvokeFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "amplifyassetdeploymentiscomplete236D9453",
-                                                "Arn"
                                               ]
                                             },
                                             {
@@ -796,7 +790,7 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "amplifyassetdeploymentiscomplete236D9453",
+                                                      "amplifyassetdeploymentonevent974704DA",
                                                       "Arn"
                                                     ]
                                                   },
@@ -1018,6 +1012,12 @@
                                           "Resource": [
                                             {
                                               "Fn::GetAtt": [
+                                                "amplifyassetdeploymentiscomplete236D9453",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::GetAtt": [
                                                 "amplifyassetdeploymentonevent974704DA",
                                                 "Arn"
                                               ]
@@ -1028,24 +1028,12 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "amplifyassetdeploymentonevent974704DA",
+                                                      "amplifyassetdeploymentiscomplete236D9453",
                                                       "Arn"
                                                     ]
                                                   },
                                                   ":*"
                                                 ]
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Action": "lambda:InvokeFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "amplifyassetdeploymentiscomplete236D9453",
-                                                "Arn"
                                               ]
                                             },
                                             {
@@ -1054,7 +1042,7 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "amplifyassetdeploymentiscomplete236D9453",
+                                                      "amplifyassetdeploymentonevent974704DA",
                                                       "Arn"
                                                     ]
                                                   },
@@ -1266,6 +1254,12 @@
                                           "Resource": [
                                             {
                                               "Fn::GetAtt": [
+                                                "amplifyassetdeploymentiscomplete236D9453",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::GetAtt": [
                                                 "amplifyassetdeploymentonevent974704DA",
                                                 "Arn"
                                               ]
@@ -1276,24 +1270,12 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "amplifyassetdeploymentonevent974704DA",
+                                                      "amplifyassetdeploymentiscomplete236D9453",
                                                       "Arn"
                                                     ]
                                                   },
                                                   ":*"
                                                 ]
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Action": "lambda:InvokeFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "amplifyassetdeploymentiscomplete236D9453",
-                                                "Arn"
                                               ]
                                             },
                                             {
@@ -1302,7 +1284,7 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "amplifyassetdeploymentiscomplete236D9453",
+                                                      "amplifyassetdeploymentonevent974704DA",
                                                       "Arn"
                                                     ]
                                                   },
@@ -1513,6 +1495,12 @@
                                               ]
                                             },
                                             {
+                                              "Fn::GetAtt": [
+                                                "amplifyassetdeploymenthandlerproviderframeworkonTimeoutF14D3B70",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
                                               "Fn::Join": [
                                                 "",
                                                 [
@@ -1524,18 +1512,6 @@
                                                   },
                                                   ":*"
                                                 ]
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Action": "lambda:InvokeFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "amplifyassetdeploymenthandlerproviderframeworkonTimeoutF14D3B70",
-                                                "Arn"
                                               ]
                                             },
                                             {
@@ -1680,7 +1656,7 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParameters1c981b2ce427543a5eb4d7b55e29fbbbe6c598acde67d14c404d03106fc44d9eS3Bucket9D53F2EF"
+                            "Ref": "AssetParameters26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ceS3Bucket12F7FACF"
                           },
                           "/",
                           {
@@ -1690,7 +1666,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters1c981b2ce427543a5eb4d7b55e29fbbbe6c598acde67d14c404d03106fc44d9eS3VersionKey759CF977"
+                                    "Ref": "AssetParameters26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ceS3VersionKeyAF0C1844"
                                   }
                                 ]
                               }
@@ -1703,7 +1679,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters1c981b2ce427543a5eb4d7b55e29fbbbe6c598acde67d14c404d03106fc44d9eS3VersionKey759CF977"
+                                    "Ref": "AssetParameters26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ceS3VersionKeyAF0C1844"
                                   }
                                 ]
                               }

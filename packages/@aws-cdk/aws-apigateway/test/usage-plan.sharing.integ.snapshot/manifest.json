@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "test-apigateway-usageplan-create": {
       "type": "aws:cloudformation:stack",
@@ -42,16 +41,25 @@
         "test-apigateway-usageplan-create"
       ],
       "metadata": {
-        "/test-apigateway-usageplan-import/myusageplan/UsagePlanKeyResource": [
+        "/test-apigateway-usageplan-import/myusageplan/UsagePlanKeyResource:testapigatewayusageplanimportmyapikey14CF3166": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myusageplanUsagePlanKeyResource095B4EA9"
+            "data": "myusageplanUsagePlanKeyResourcetestapigatewayusageplanimportmyapikey14CF31667CCB4183"
           }
         ],
         "/test-apigateway-usageplan-import/myapikey/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myapikey5C116C09"
+          }
+        ],
+        "myusageplanUsagePlanKeyResource095B4EA9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myusageplanUsagePlanKeyResource095B4EA9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

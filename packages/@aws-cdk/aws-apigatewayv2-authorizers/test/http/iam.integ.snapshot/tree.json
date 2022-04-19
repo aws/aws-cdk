@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "IntegApiGatewayV2Iam": {
@@ -47,50 +47,48 @@
                             {
                               "Action": "execute-api:Invoke",
                               "Effect": "Allow",
-                              "Resource": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:aws:execute-api:",
-                                    {
-                                      "Ref": "AWS::Region"
-                                    },
-                                    ":",
-                                    {
-                                      "Ref": "AWS::AccountId"
-                                    },
-                                    ":",
-                                    {
-                                      "Ref": "HttpApiF5A9A8A7"
-                                    },
-                                    "/*/*/foo"
+                              "Resource": [
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:aws:execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "HttpApiF5A9A8A7"
+                                      },
+                                      "/*/*/books/*"
+                                    ]
                                   ]
-                                ]
-                              }
-                            },
-                            {
-                              "Action": "execute-api:Invoke",
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:aws:execute-api:",
-                                    {
-                                      "Ref": "AWS::Region"
-                                    },
-                                    ":",
-                                    {
-                                      "Ref": "AWS::AccountId"
-                                    },
-                                    ":",
-                                    {
-                                      "Ref": "HttpApiF5A9A8A7"
-                                    },
-                                    "/*/*/books/*"
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:aws:execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "HttpApiF5A9A8A7"
+                                      },
+                                      "/*/*/foo"
+                                    ]
                                   ]
-                                ]
-                              }
+                                }
+                              ]
                             }
                           ],
                           "Version": "2012-10-17"

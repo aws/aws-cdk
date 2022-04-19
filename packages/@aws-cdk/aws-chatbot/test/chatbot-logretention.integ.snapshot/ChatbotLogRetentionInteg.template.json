@@ -105,8 +105,8 @@
      "Statement": [
       {
        "Action": [
-        "logs:PutRetentionPolicy",
-        "logs:DeleteRetentionPolicy"
+        "logs:DeleteRetentionPolicy",
+        "logs:PutRetentionPolicy"
        ],
        "Effect": "Allow",
        "Resource": "*"

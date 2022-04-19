@@ -39,15 +39,15 @@
      "Statement": [
       {
        "Action": [
+        "kinesis:DescribeStream",
         "kinesis:DescribeStreamSummary",
         "kinesis:GetRecords",
         "kinesis:GetShardIterator",
         "kinesis:ListShards",
-        "kinesis:SubscribeToShard",
-        "kinesis:DescribeStream",
         "kinesis:ListStreams",
         "kinesis:PutRecord",
-        "kinesis:PutRecords"
+        "kinesis:PutRecords",
+        "kinesis:SubscribeToShard"
        ],
        "Effect": "Allow",
        "Resource": {

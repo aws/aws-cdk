@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-cdk-dynamodb": {
@@ -33,23 +33,7 @@
                         "keyPolicy": {
                           "Statement": [
                             {
-                              "Action": [
-                                "kms:Create*",
-                                "kms:Describe*",
-                                "kms:Enable*",
-                                "kms:List*",
-                                "kms:Put*",
-                                "kms:Update*",
-                                "kms:Revoke*",
-                                "kms:Disable*",
-                                "kms:Get*",
-                                "kms:Delete*",
-                                "kms:ScheduleKeyDeletion",
-                                "kms:CancelKeyDeletion",
-                                "kms:GenerateDataKey",
-                                "kms:TagResource",
-                                "kms:UntagResource"
-                              ],
+                              "Action": "kms:*",
                               "Effect": "Allow",
                               "Principal": {
                                 "AWS": {
@@ -66,22 +50,6 @@
                                       },
                                       ":root"
                                     ]
-                                  ]
-                                }
-                              },
-                              "Resource": "*"
-                            },
-                            {
-                              "Action": [
-                                "kms:Decrypt",
-                                "kms:DescribeKey"
-                              ],
-                              "Effect": "Allow",
-                              "Principal": {
-                                "AWS": {
-                                  "Fn::GetAtt": [
-                                    "Role1ABCC5F0",
-                                    "Arn"
                                   ]
                                 }
                               },
@@ -445,23 +413,7 @@
                     "keyPolicy": {
                       "Statement": [
                         {
-                          "Action": [
-                            "kms:Create*",
-                            "kms:Describe*",
-                            "kms:Enable*",
-                            "kms:List*",
-                            "kms:Put*",
-                            "kms:Update*",
-                            "kms:Revoke*",
-                            "kms:Disable*",
-                            "kms:Get*",
-                            "kms:Delete*",
-                            "kms:ScheduleKeyDeletion",
-                            "kms:CancelKeyDeletion",
-                            "kms:GenerateDataKey",
-                            "kms:TagResource",
-                            "kms:UntagResource"
-                          ],
+                          "Action": "kms:*",
                           "Effect": "Allow",
                           "Principal": {
                             "AWS": {
@@ -703,13 +655,13 @@
                             {
                               "Action": [
                                 "dynamodb:BatchGetItem",
+                                "dynamodb:ConditionCheckItem",
+                                "dynamodb:DescribeTable",
+                                "dynamodb:GetItem",
                                 "dynamodb:GetRecords",
                                 "dynamodb:GetShardIterator",
                                 "dynamodb:Query",
-                                "dynamodb:GetItem",
-                                "dynamodb:Scan",
-                                "dynamodb:ConditionCheckItem",
-                                "dynamodb:DescribeTable"
+                                "dynamodb:Scan"
                               ],
                               "Effect": "Allow",
                               "Resource": [
@@ -719,37 +671,6 @@
                                     "Arn"
                                   ]
                                 },
-                                {
-                                  "Ref": "AWS::NoValue"
-                                }
-                              ]
-                            },
-                            {
-                              "Action": [
-                                "kms:Decrypt",
-                                "kms:DescribeKey"
-                              ],
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Fn::GetAtt": [
-                                  "TableKey25666F95",
-                                  "Arn"
-                                ]
-                              }
-                            },
-                            {
-                              "Action": [
-                                "dynamodb:BatchGetItem",
-                                "dynamodb:GetRecords",
-                                "dynamodb:GetShardIterator",
-                                "dynamodb:Query",
-                                "dynamodb:GetItem",
-                                "dynamodb:Scan",
-                                "dynamodb:ConditionCheckItem",
-                                "dynamodb:DescribeTable"
-                              ],
-                              "Effect": "Allow",
-                              "Resource": [
                                 {
                                   "Fn::GetAtt": [
                                     "TableWithGlobalAndLocalSecondaryIndexBC540710",
@@ -769,8 +690,24 @@
                                       "/index/*"
                                     ]
                                   ]
+                                },
+                                {
+                                  "Ref": "AWS::NoValue"
                                 }
                               ]
+                            },
+                            {
+                              "Action": [
+                                "kms:Decrypt",
+                                "kms:DescribeKey"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "TableKey25666F95",
+                                  "Arn"
+                                ]
+                              }
                             }
                           ],
                           "Version": "2012-10-17"

@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "Default": {
@@ -282,14 +282,14 @@
                                   "Statement": [
                                     {
                                       "Action": [
-                                        "iam:CreateServiceLinkedRole",
                                         "application-autoscaling:DeleteScalingPolicy",
                                         "application-autoscaling:DeregisterScalableTarget",
                                         "dynamodb:CreateGlobalTable",
-                                        "dynamodb:DescribeLimits",
                                         "dynamodb:DeleteTable",
                                         "dynamodb:DescribeGlobalTable",
-                                        "dynamodb:UpdateGlobalTable"
+                                        "dynamodb:DescribeLimits",
+                                        "dynamodb:UpdateGlobalTable",
+                                        "iam:CreateServiceLinkedRole"
                                       ],
                                       "Effect": "Allow",
                                       "Resource": "*"
@@ -449,14 +449,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "CfnCustomResource": {

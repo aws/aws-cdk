@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-ecs-integ": {
@@ -66,9 +66,9 @@
                           "Statement": [
                             {
                               "Action": [
+                                "s3:DeleteObject*",
                                 "s3:GetBucket*",
-                                "s3:List*",
-                                "s3:DeleteObject*"
+                                "s3:List*"
                               ],
                               "Effect": "Allow",
                               "Principal": {
@@ -210,17 +210,17 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
-              "92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4": {
-                "id": "92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4",
-                "path": "aws-ecs-integ/AssetParameters/92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4",
+              "01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476": {
+                "id": "01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476",
+                "path": "aws-ecs-integ/AssetParameters/01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-ecs-integ/AssetParameters/92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4/S3Bucket",
+                    "path": "aws-ecs-integ/AssetParameters/01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -228,7 +228,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-ecs-integ/AssetParameters/92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4/S3VersionKey",
+                    "path": "aws-ecs-integ/AssetParameters/01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -236,7 +236,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-ecs-integ/AssetParameters/92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4/ArtifactHash",
+                    "path": "aws-ecs-integ/AssetParameters/01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -244,8 +244,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da": {
@@ -278,8 +278,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "972240f9dd6e036a93d5f081af9a24315b2053828ac049b3b19b2fa12d7ae64a": {
@@ -312,8 +312,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724d": {
@@ -346,14 +346,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "Vpc": {
@@ -1150,8 +1150,8 @@
                                     },
                                     {
                                       "Action": [
-                                        "ecs:DiscoverPollEndpoint",
                                         "ecr:GetAuthorizationToken",
+                                        "ecs:DiscoverPollEndpoint",
                                         "logs:CreateLogStream",
                                         "logs:PutLogEvents"
                                       ],
@@ -1350,10 +1350,10 @@
                                           "Statement": [
                                             {
                                               "Action": [
-                                                "ec2:DescribeInstances",
+                                                "ec2:DescribeHosts",
                                                 "ec2:DescribeInstanceAttribute",
                                                 "ec2:DescribeInstanceStatus",
-                                                "ec2:DescribeHosts"
+                                                "ec2:DescribeInstances"
                                               ],
                                               "Effect": "Allow",
                                               "Resource": "*"
@@ -1388,7 +1388,9 @@
                                             {
                                               "Action": [
                                                 "ecs:DescribeContainerInstances",
-                                                "ecs:DescribeTasks"
+                                                "ecs:DescribeTasks",
+                                                "ecs:ListTasks",
+                                                "ecs:UpdateContainerInstancesState"
                                               ],
                                               "Condition": {
                                                 "ArnEquals": {
@@ -1416,24 +1418,6 @@
                                                   "Arn"
                                                 ]
                                               }
-                                            },
-                                            {
-                                              "Action": [
-                                                "ecs:UpdateContainerInstancesState",
-                                                "ecs:ListTasks"
-                                              ],
-                                              "Condition": {
-                                                "ArnEquals": {
-                                                  "ecs:cluster": {
-                                                    "Fn::GetAtt": [
-                                                      "EcsCluster97242B84",
-                                                      "Arn"
-                                                    ]
-                                                  }
-                                                }
-                                              },
-                                              "Effect": "Allow",
-                                              "Resource": "*"
                                             }
                                           ],
                                           "Version": "2012-10-17"
@@ -1566,8 +1550,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   },
                   "LifecycleHookDrainHook": {
@@ -1991,7 +1975,7 @@
                       "aws:cdk:cloudformation:props": {
                         "content": {
                           "s3Bucket": {
-                            "Ref": "AssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3BucketC479E94B"
+                            "Ref": "AssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3BucketC0D91AC4"
                           },
                           "s3Key": {
                             "Fn::Join": [
@@ -2004,7 +1988,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "AssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3VersionKeyEF78B2AD"
+                                          "Ref": "AssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey26CFD1B0"
                                         }
                                       ]
                                     }
@@ -2017,7 +2001,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "AssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3VersionKeyEF78B2AD"
+                                          "Ref": "AssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey26CFD1B0"
                                         }
                                       ]
                                     }
@@ -2160,8 +2144,8 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "s3:GetObject*",
                                     "s3:GetBucket*",
+                                    "s3:GetObject*",
                                     "s3:List*"
                                   ],
                                   "Effect": "Allow",
@@ -2177,7 +2161,8 @@
                                           ":s3:::",
                                           {
                                             "Ref": "AssetParameters972240f9dd6e036a93d5f081af9a24315b2053828ac049b3b19b2fa12d7ae64aS3Bucket1F1A8472"
-                                          }
+                                          },
+                                          "/*"
                                         ]
                                       ]
                                     },
@@ -2192,8 +2177,7 @@
                                           ":s3:::",
                                           {
                                             "Ref": "AssetParameters972240f9dd6e036a93d5f081af9a24315b2053828ac049b3b19b2fa12d7ae64aS3Bucket1F1A8472"
-                                          },
-                                          "/*"
+                                          }
                                         ]
                                       ]
                                     }
@@ -2201,12 +2185,16 @@
                                 },
                                 {
                                   "Action": [
-                                    "s3:GetObject*",
-                                    "s3:GetBucket*",
-                                    "s3:List*",
+                                    "s3:Abort*",
                                     "s3:DeleteObject*",
-                                    "s3:PutObject*",
-                                    "s3:Abort*"
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*",
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": [

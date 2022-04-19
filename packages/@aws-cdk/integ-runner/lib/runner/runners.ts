@@ -3,7 +3,7 @@ import { Writable, WritableOptions } from 'stream';
 import { StringDecoder, NodeStringDecoder } from 'string_decoder';
 import { TestCase, RequireApproval, DefaultCdkOptions } from '@aws-cdk/cloud-assembly-schema';
 import { diffTemplate, formatDifferences, ResourceDifference, ResourceImpact } from '@aws-cdk/cloudformation-diff';
-import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS, TARGET_PARTITIONS } from '@aws-cdk/cx-api';
+import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, TARGET_PARTITIONS, NEW_STYLE_STACK_SYNTHESIS_CONTEXT, FUTURE_FLAGS, FUTURE_FLAGS_EXPIRED } from '@aws-cdk/cx-api';
 import { CdkCliWrapper, ICdk } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import * as logger from '../logger';
@@ -285,7 +285,7 @@ export abstract class IntegRunner {
         execCmd: this.cdkApp.split(' '),
         env: {
           ...DEFAULT_SYNTH_OPTIONS.env,
-          CDK_CONTEXT_JSON: JSON.stringify(this.getContext()),
+          CDK_CONTEXT_JSON: JSON.stringify(this.getContext(true)),
         },
         output: this.relativeSnapshotDir,
       });
@@ -296,6 +296,7 @@ export abstract class IntegRunner {
       if (this.disableUpdateWorkflow) {
         this.removeAssetsFromSnapshot();
       }
+      this.removeAssetsCacheFromSnapshot();
       const assembly = AssemblyManifestReader.fromPath(this.snapshotDir);
       assembly.cleanManifest();
       assembly.recordTrace(this.renderTraceData());
@@ -394,7 +395,7 @@ export abstract class IntegRunner {
     return (this.readIntegPragma()).filter(p => p.startsWith(PRAGMA_PREFIX));
   }
 
-  protected getContext(additionalContext?: Record<string, any>): Record<string, any> {
+  protected getContext(enableLookups?: boolean, additionalContext?: Record<string, any>): Record<string, any> {
     const ctxPragmaContext: Record<string, any> = {};
 
     // apply context from set-context pragma
@@ -410,7 +411,11 @@ export abstract class IntegRunner {
       ctxPragmaContext[key] = value;
     }
     return {
-      ...DEFAULT_SYNTH_OPTIONS.context,
+      ...enableLookups ? DEFAULT_SYNTH_OPTIONS.context : {},
+      // !!! keep these next two lines in v2-main !!!
+      [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      ...futureFlags,
+      // !!! keep these previous two lines in v2-main !!!
       ...ctxPragmaContext,
       ...additionalContext,
     };
@@ -554,6 +559,7 @@ export class IntegTestRunner extends IntegRunner {
             ...this.defaultArgs,
             stacks: options.testCase.stacks,
             requireApproval: RequireApproval.NEVER,
+            context: this.getContext(this.enableLookups),
             output: this.cdkOutDir,
             app: this.relativeSnapshotDir,
             lookups: this.enableLookups,
@@ -566,6 +572,7 @@ export class IntegTestRunner extends IntegRunner {
           stacks: options.testCase.stacks,
           requireApproval: RequireApproval.NEVER,
           output: this.cdkOutDir,
+          context: this.getContext(this.enableLookups),
           app: this.cdkApp,
           lookups: this.enableLookups,
           ...options.testCase.cdkCommandOptions?.deploy,
@@ -573,12 +580,10 @@ export class IntegTestRunner extends IntegRunner {
       } else {
         const env: Record<string, any> = {
           ...DEFAULT_SYNTH_OPTIONS.env,
+          CDK_CONTEXT_JSON: JSON.stringify(this.getContext(this.enableLookups)),
         };
         // if lookups are enabled then we need to synth
         // with the "dummy" context
-        if (this.enableLookups) {
-          env.CDK_CONTEXT_JSON = JSON.stringify(this.getContext());
-        }
         this.cdk.synthFast({
           execCmd: this.cdkApp.split(' '),
           env,
@@ -595,6 +600,7 @@ export class IntegTestRunner extends IntegRunner {
             ...this.defaultArgs,
             profile: this.profile,
             stacks: options.testCase.stacks,
+            context: this.getContext(this.enableLookups),
             force: true,
             app: this.cdkApp,
             output: this.cdkOutDir,
@@ -619,7 +625,7 @@ export class IntegTestRunner extends IntegRunner {
       execCmd: this.cdkApp.split(' '),
       env: {
         ...DEFAULT_SYNTH_OPTIONS.env,
-        CDK_CONTEXT_JSON: JSON.stringify(this.getContext()),
+        CDK_CONTEXT_JSON: JSON.stringify(this.getContext(true)),
       },
       output: this.cdkOutDir,
     });
@@ -647,13 +653,11 @@ export class IntegSnapshotRunner extends IntegRunner {
       // read the existing snapshot
       const expectedStacks = this.readAssembly(this.snapshotDir);
 
+      // if lookups are enabled then use "dummy" context
       const env: Record<string, any> = {
         ...DEFAULT_SYNTH_OPTIONS.env,
+        CDK_CONTEXT_JSON: JSON.stringify(this.getContext(this.enableLookups)),
       };
-      // if lookups are enabled then use "dummy" context
-      if (this.enableLookups) {
-        env.CDK_CONTEXT_JSON = JSON.stringify(this.getContext());
-      }
       // synth the integration test
       this.cdk.synthFast({
         execCmd: this.cdkApp.split(' '),
@@ -818,6 +822,11 @@ class StringWritable extends Writable {
   }
 }
 
+const futureFlags: {[key: string]: any} = {};
+Object.entries(FUTURE_FLAGS)
+  .filter(([k, _]) => !FUTURE_FLAGS_EXPIRED.includes(k))
+  .forEach(([k, v]) => futureFlags[k] = v);
+
 // Default context we run all integ tests with, so they don't depend on the
 // account of the exercising user.
 const DEFAULT_SYNTH_OPTIONS = {
@@ -855,8 +864,6 @@ const DEFAULT_SYNTH_OPTIONS = {
         },
       ],
     },
-    // Enable feature flags for all integ tests
-    ...FUTURE_FLAGS,
 
     // Restricting to these target partitions makes most service principals synthesize to
     // `service.${URL_SUFFIX}`, which is technically *incorrect* (it's only `amazonaws.com`
