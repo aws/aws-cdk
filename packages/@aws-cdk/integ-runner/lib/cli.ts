@@ -93,7 +93,7 @@ async function main() {
         clean: argv.clean,
         dryRun: argv['dry-run'],
         verbose: argv.verbose,
-        updateWorkflow: !argv['disable-update-workflow'],
+        updateWorkflow: !!argv['disable-update-workflow'],
       });
 
       if (argv.clean === false) {

@@ -137,7 +137,8 @@ export abstract class IntegRunner {
     if (parsed.dir === 'test') {
       this.testName = testName;
     } else {
-      this.testName = `${path.relative(options.directory, parsed.dir)}/${parsed.name}`;
+      const relativePath = path.relative(options.directory, parsed.dir);
+      this.testName = `${relativePath ? relativePath+'/' : ''}${parsed.name}`;
     }
     this.snapshotDir = path.join(this.directory, `${testName}.integ.snapshot`);
     this.relativeSnapshotDir = `${testName}.integ.snapshot`;
