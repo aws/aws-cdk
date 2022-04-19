@@ -316,7 +316,7 @@ Example:
 new logs.QueryDefinition(this, 'QueryDefinition', {
   queryDefinitionName: 'MyQuery',
   queryString: new logs.QueryString({
-    fields: '@timestamp, @message',
+    fields: ['@timestamp', '@message'],
     sort: '@timestamp desc',
     limit: 20,
   }),

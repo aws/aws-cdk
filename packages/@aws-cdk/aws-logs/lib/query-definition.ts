@@ -11,49 +11,49 @@ export interface QueryStringProps {
   /**
   * Retrieves the specified fields from log events for display.
   *
-  * @default undefined no fields in QueryString
+  * @default - no fields in QueryString
   */
   readonly fields?: string[];
 
   /**
   * Extracts data from a log field and creates one or more ephemeral fields that you can process further in the query.
   *
-  * @default undefined no parse in QueryString
+  * @default - no parse in QueryString
   */
   readonly parse?: string;
 
   /**
   * Filters the results of a query that's based on one or more conditions.
   *
-  * @default undefined no filter in QueryString
+  * @default - no filter in QueryString
   */
   readonly filter?: string;
 
   /**
   * Uses log field values to calculate aggregate statistics.
   *
-  * @default undefined no stats in QueryString
+  * @default - no stats in QueryString
   */
   readonly stats?: string;
 
   /**
   * Sorts the retrieved log events.
   *
-  * @default undefined no sort in QueryString
+  * @default - no sort in QueryString
   */
   readonly sort?: string;
 
   /**
   * Specifies the number of log events returned by the query.
   *
-  * @default undefined no limit in QueryString
+  * @default - no limit in QueryString
   */
   readonly limit?: Number;
 
   /**
   * Specifies which fields to display in the query results.
   *
-  * @default undefined no display in QueryString
+  * @default - no display in QueryString
   */
   readonly display?: string;
 }
@@ -73,17 +73,11 @@ interface QueryStringMap {
  */
 export class QueryString {
   private readonly fields?: string[];
-
   private readonly parse?: string;
-
   private readonly filter?: string;
-
   private readonly stats?: string;
-
   private readonly sort?: string;
-
   private readonly limit?: Number;
-
   private readonly display?: string;
 
   constructor(props: QueryStringProps = {}) {
