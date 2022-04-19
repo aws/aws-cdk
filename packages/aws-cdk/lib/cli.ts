@@ -340,7 +340,7 @@ async function initCommandLine() {
   try {
     return await main(cmd, argv);
   } finally {
-    // await version.displayVersionMessage();
+    await version.displayVersionMessage();
 
     if (shouldDisplayNotices()) {
       if (cmd === 'notices') {
