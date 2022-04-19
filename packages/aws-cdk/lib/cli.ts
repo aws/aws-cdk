@@ -283,8 +283,7 @@ async function initCommandLine() {
 
   if (shouldDisplayNotices()) {
     void refreshNotices()
-      .then(_ => debug('Notices refreshed'))
-      .catch(e => debug(`Notices refresh failed: ${e}`));
+      .catch(e => debug(`Could not refresh notices: ${e}`));
   }
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
