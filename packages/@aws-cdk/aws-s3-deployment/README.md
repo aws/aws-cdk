@@ -268,6 +268,16 @@ size of the AWS Lambda resource handler.
 > NOTE: a new AWS Lambda handler will be created in your stack for each memory
 > limit configuration.
 
+## Ephemeral Storage Size
+
+The default ephemeral storage size for the deployment resource is 512MiB. If you
+need to upload larger files, you may hit this limit. You can use the 
+`ephemeralStorageSize` configuration to specify the storage size of the AWS Lambda
+resource handler.
+
+> Note: a new AWS Lambda handler will be created in your stack for each ephemeral
+> storage size configuration.
+
 ## EFS Support
 
 If your workflow needs more disk space than default (512 MB) disk space, you may attach an EFS storage to underlying
