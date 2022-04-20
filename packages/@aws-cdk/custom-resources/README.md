@@ -398,7 +398,7 @@ the `installLatestAwsSdk` prop to `false`.
 
 ### Custom Resource Execution Policy
 
-You must provide the `policy` property defining the IAM Policy that will be applied to the API calls.
+You might provide the `policy` property defining the IAM Policy that will be applied to the API calls.
 The library provides two factory methods to quickly configure this:
 
 * **`AwsCustomResourcePolicy.fromSdkCalls`** - Use this to auto-generate IAM
