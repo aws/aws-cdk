@@ -26,3 +26,17 @@ export function exec(commandLine: string[], options: { cwd?: string, verbose?: b
 
   return output;
 }
+
+/**
+ * Flatten a list of lists into a list of elements
+ */
+export function flatten<T>(xs: T[][]): T[] {
+  return Array.prototype.concat.apply([], xs);
+}
+
+/**
+ * Chain commands
+ */
+export function chain(commands: string[]): string {
+  return commands.filter(c => !!c).join(' && ');
+}

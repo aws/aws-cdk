@@ -51,6 +51,53 @@ describe('cloud assembly manifest reader', () => {
             },
             displayName: 'test-stack',
           },
+          'test-stack2': {
+            type: 'aws:cloudformation:stack',
+            environment: 'aws://unknown-account/unknown-region',
+            properties: {
+              templateFile: 'test-stack.template.json',
+              validateOnSynth: false,
+            },
+            metadata: {
+              '/test-stack/asset1': [
+                {
+                  type: 'aws:cdk:asset',
+                  data: {
+                    path: 'asset.a820140ad8525b8ed56ad2a7bcd9da99d6afc2490e8c91e34620886c011bdc91',
+                  },
+                },
+              ],
+              '/test-stack/asset2': [
+                {
+                  type: 'aws:cdk:asset',
+                  data: {
+                    path: 'test-stack2.template.json',
+                  },
+                },
+              ],
+              '/test-stack/MyFunction1/ServiceRole/Resource': [
+                {
+                  type: 'aws:cdk:logicalId',
+                  data: 'MyFunction1ServiceRole9852B06B',
+                  trace: [
+                    'some trace',
+                    'some more trace',
+                  ],
+                },
+              ],
+              '/test-stack/MyFunction1/Resource': [
+                {
+                  type: 'aws:cdk:logicalId',
+                  data: 'MyFunction12A744C2E',
+                  trace: [
+                    'some trace',
+                    'some more trace',
+                  ],
+                },
+              ],
+            },
+            displayName: 'test-stack',
+          },
         },
       }),
     });
@@ -88,6 +135,7 @@ describe('cloud assembly manifest reader', () => {
 
     expect(manifest.stacks).toEqual({
       'test-stack': { data: 'data' },
+      'test-stack2': { data: 'data' },
     });
   });
 
@@ -99,8 +147,8 @@ describe('cloud assembly manifest reader', () => {
     // THEN
     const newManifest = Manifest.loadAssetManifest(manifestFile);
     expect(newManifest).toEqual({
-      version: '17.0.0',
-      artifacts: {
+      version: expect.any(String),
+      artifacts: expect.objectContaining({
         'Tree': {
           type: 'cdk:tree',
           properties: {
@@ -130,7 +178,7 @@ describe('cloud assembly manifest reader', () => {
           },
           displayName: 'test-stack',
         },
-      },
+      }),
     });
   });
 
@@ -146,8 +194,8 @@ describe('cloud assembly manifest reader', () => {
     // THEN
     const newManifest = Manifest.loadAssetManifest(manifestFile);
     expect(newManifest).toEqual({
-      version: '17.0.0',
-      artifacts: {
+      version: expect.any(String),
+      artifacts: expect.objectContaining({
         'Tree': {
           type: 'cdk:tree',
           properties: {
@@ -178,7 +226,7 @@ describe('cloud assembly manifest reader', () => {
           },
           displayName: 'test-stack',
         },
-      },
+      }),
     });
   });
 
@@ -194,8 +242,8 @@ describe('cloud assembly manifest reader', () => {
     // THEN
     const newManifest = Manifest.loadAssetManifest(manifestFile);
     expect(newManifest).toEqual({
-      version: '17.0.0',
-      artifacts: {
+      version: expect.any(String),
+      artifacts: expect.objectContaining({
         'Tree': {
           type: 'cdk:tree',
           properties: {
@@ -232,7 +280,18 @@ describe('cloud assembly manifest reader', () => {
           },
           displayName: 'test-stack',
         },
-      },
+      }),
     });
+  });
+
+  test('can get assets from assembly manifest', () => {
+    // WHEN
+    const manifest = AssemblyManifestReader.fromFile(manifestFile);
+    const assets = manifest.getAssetsForStack('test-stack2');
+
+    // THEN
+    expect(assets).toEqual([
+      'asset.a820140ad8525b8ed56ad2a7bcd9da99d6afc2490e8c91e34620886c011bdc91',
+    ]);
   });
 });

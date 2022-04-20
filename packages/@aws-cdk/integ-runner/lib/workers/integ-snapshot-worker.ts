@@ -1,7 +1,8 @@
 import * as workerpool from 'workerpool';
 import * as logger from '../logger';
-import { IntegTestConfig } from '../runner/integ-tests';
-import { printSummary, printResults, flatten, IntegTestWorkerConfig } from './common';
+import { IntegTestConfig } from '../runner/integration-tests';
+import { flatten } from '../utils';
+import { printSummary, printResults, IntegTestWorkerConfig } from './common';
 
 /**
  * Run Snapshot tests

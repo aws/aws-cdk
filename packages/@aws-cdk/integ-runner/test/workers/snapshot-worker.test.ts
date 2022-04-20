@@ -49,6 +49,7 @@ describe('Snapshot tests', () => {
     jest.spyOn(child_process, 'spawnSync').mockRejectedValue;
     const test = {
       fileName: path.join(directory, 'integ.test-with-snapshot-assets.js'),
+      directory,
       destructiveChanges: [],
     };
     const result = snapshotTestWorker(test);

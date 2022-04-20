@@ -11,6 +11,12 @@ export interface IntegTestConfig {
    * of integ.{test-name}.js
    */
   readonly fileName: string;
+
+  /**
+   * The base directory where the tests are
+   * discovered from
+   */
+  readonly directory: string;
 }
 
 /**
@@ -63,19 +69,20 @@ export class IntegrationTests {
     if (!requestedTests || requestedTests.length === 0) {
       return discoveredTests;
     }
-    const all = discoveredTests.map(x => x.fileName);
+    const all = discoveredTests.map(x => {
+      return path.relative(x.directory, x.fileName);
+    });
     let foundAll = true;
     // Pare down found tests to filter
     const allTests = discoveredTests.filter(t => {
-      const parts = path.parse(t.fileName);
       if (exclude) {
-        return (!requestedTests.includes(t.fileName) && !requestedTests.includes(parts.base));
+        return (!requestedTests.includes(path.relative(t.directory, t.fileName)));
       }
-      return (requestedTests.includes(t.fileName) || requestedTests.includes(parts.base));
+      return (requestedTests.includes(path.relative(t.directory, t.fileName)));
     });
 
     if (!exclude) {
-      const selectedNames = allTests.map(t => t.fileName);
+      const selectedNames = allTests.map(t => path.relative(t.directory, t.fileName));
       for (const unmatched of requestedTests.filter(t => !selectedNames.includes(t))) {
         process.stderr.write(`No such integ test: ${unmatched}\n`);
         foundAll = false;
