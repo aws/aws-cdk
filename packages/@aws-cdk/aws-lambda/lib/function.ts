@@ -96,7 +96,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly memorySize?: number;
 
   /**
-   * The size of the function’s /tmp directory in MB.
+   * The size of the function’s /tmp directory in MiB.
    *
    * @default 512 MiB
    */
