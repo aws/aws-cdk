@@ -264,10 +264,12 @@ export interface AwsCustomResourceProps {
    * to note the that function's role will eventually accumulate the
    * permissions/grants from all resources.
    *
+   * @default - no policy added to the role
+   *
    * @see Policy.fromStatements
    * @see Policy.fromSdkCalls
    */
-  readonly policy: AwsCustomResourcePolicy;
+  readonly policy?: AwsCustomResourcePolicy;
 
   /**
    * The execution role for the singleton Lambda function implementing this custom
@@ -383,26 +385,28 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
 
     // Create the policy statements for the custom resource function role, or use the user-provided ones
     const statements = [];
-    if (props.policy.statements.length !== 0) {
-      // Use custom statements provided by the user
-      for (const statement of props.policy.statements) {
-        statements.push(statement);
-      }
-    } else {
-      // Derive statements from AWS SDK calls
-      for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
-        if (call && call.assumedRoleArn == null) {
-          const statement = new iam.PolicyStatement({
-            actions: [awsSdkToIamAction(call.service, call.action)],
-            resources: props.policy.resources,
-          });
+    if (props.policy) {
+      if (props.policy.statements.length !== 0) {
+        // Use custom statements provided by the user
+        for (const statement of props.policy.statements) {
           statements.push(statement);
-        } else if (call && call.assumedRoleArn != null) {
-          const statement = new iam.PolicyStatement({
-            actions: ['sts:AssumeRole'],
-            resources: [call.assumedRoleArn],
-          });
-          statements.push(statement);
+        }
+      } else {
+        // Derive statements from AWS SDK calls
+        for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
+          if (call && call.assumedRoleArn == null) {
+            const statement = new iam.PolicyStatement({
+              actions: [awsSdkToIamAction(call.service, call.action)],
+              resources: props.policy.resources,
+            });
+            statements.push(statement);
+          } else if (call && call.assumedRoleArn != null) {
+            const statement = new iam.PolicyStatement({
+              actions: ['sts:AssumeRole'],
+              resources: [call.assumedRoleArn],
+            });
+            statements.push(statement);
+          }
         }
       }
     }
