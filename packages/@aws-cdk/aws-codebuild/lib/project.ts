@@ -862,7 +862,7 @@ export class Project extends ProjectBase {
             // If the parameter name starts with / the resource name is not separated with a double '/'
             // arn:aws:ssm:region:1111111111:parameter/PARAM_NAME
             resourceName: envVariableValue.startsWith('/')
-              ? envVariableValue.substr(1)
+              ? envVariableValue.slice(1)
               : envVariableValue,
           }));
         }
@@ -1790,11 +1790,11 @@ export class LinuxBuildImage implements IBuildImage {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-ecr.html
    *
    * @param repository The ECR repository
-   * @param tag Image tag (default "latest")
+   * @param tagOrDigest Image tag or digest (default "latest", digests must start with `sha256:`)
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): IBuildImage {
+  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): IBuildImage {
     return new LinuxBuildImage({
-      imageId: repository.repositoryUriForTag(tag),
+      imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
       repository,
     });
@@ -1951,15 +1951,15 @@ export class WindowsBuildImage implements IBuildImage {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-ecr.html
    *
    * @param repository The ECR repository
-   * @param tag Image tag (default "latest")
+   * @param tagOrDigest Image tag or digest (default "latest", digests must start with `sha256:`)
    */
   public static fromEcrRepository(
     repository: ecr.IRepository,
-    tag: string = 'latest',
+    tagOrDigest: string = 'latest',
     imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
 
     return new WindowsBuildImage({
-      imageId: repository.repositoryUriForTag(tag),
+      imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
       imageType,
       repository,

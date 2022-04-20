@@ -1,6 +1,6 @@
 import { IConstruct } from './construct-compat';
 
-const ASPECTS_SYMBOL = Symbol('cdk-aspects');
+const ASPECTS_SYMBOL = Symbol.for('cdk-aspects');
 
 /**
  * Represents an Aspect

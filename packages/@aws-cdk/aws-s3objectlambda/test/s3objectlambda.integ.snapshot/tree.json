@@ -1,0 +1,433 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "aws-s3-object-lambda": {
+        "id": "aws-s3-object-lambda",
+        "path": "aws-s3-object-lambda",
+        "children": {
+          "MyBucket": {
+            "id": "MyBucket",
+            "path": "aws-s3-object-lambda/MyBucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-s3-object-lambda/MyBucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
+          "MyFunction1": {
+            "id": "MyFunction1",
+            "path": "aws-s3-object-lambda/MyFunction1",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-s3-object-lambda/MyFunction1/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-s3-object-lambda/MyFunction1/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-s3-object-lambda/MyFunction1/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-s3-object-lambda/MyFunction1/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3-object-lambda:WriteGetObjectResponse",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyFunction1ServiceRoleDefaultPolicy39556460",
+                            "roles": [
+                              {
+                                "Ref": "MyFunction1ServiceRole9852B06B"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-s3-object-lambda/MyFunction1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "foo"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyFunction1ServiceRole9852B06B",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs14.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "MyFunction2": {
+            "id": "MyFunction2",
+            "path": "aws-s3-object-lambda/MyFunction2",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-s3-object-lambda/MyFunction2/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-s3-object-lambda/MyFunction2/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-s3-object-lambda/MyFunction2/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-s3-object-lambda/MyFunction2/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3-object-lambda:WriteGetObjectResponse",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyFunction2ServiceRoleDefaultPolicyA79C693E",
+                            "roles": [
+                              {
+                                "Ref": "MyFunction2ServiceRole07E5BE0E"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-s3-object-lambda/MyFunction2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "foo"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyFunction2ServiceRole07E5BE0E",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs14.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "MyObjectLambda1": {
+            "id": "MyObjectLambda1",
+            "path": "aws-s3-object-lambda/MyObjectLambda1",
+            "children": {
+              "SupportingAccessPoint": {
+                "id": "SupportingAccessPoint",
+                "path": "aws-s3-object-lambda/MyObjectLambda1/SupportingAccessPoint",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::AccessPoint",
+                  "aws:cdk:cloudformation:props": {
+                    "bucket": {
+                      "Ref": "MyBucketF68F3FF0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.CfnAccessPoint",
+                  "version": "0.0.0"
+                }
+              },
+              "MyObjectLambda1": {
+                "id": "MyObjectLambda1",
+                "path": "aws-s3-object-lambda/MyObjectLambda1/MyObjectLambda1",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3ObjectLambda::AccessPoint",
+                  "aws:cdk:cloudformation:props": {
+                    "objectLambdaConfiguration": {
+                      "allowedFeatures": [
+                        "GetObject-PartNumber"
+                      ],
+                      "cloudWatchMetricsEnabled": true,
+                      "supportingAccessPoint": {
+                        "Fn::GetAtt": [
+                          "MyObjectLambda1SupportingAccessPoint223B719B",
+                          "Arn"
+                        ]
+                      },
+                      "transformationConfigurations": [
+                        {
+                          "actions": [
+                            "GetObject"
+                          ],
+                          "contentTransformation": {
+                            "AwsLambda": {
+                              "FunctionArn": {
+                                "Fn::GetAtt": [
+                                  "MyFunction12A744C2E",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3objectlambda.CfnAccessPoint",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-s3objectlambda.AccessPoint",
+              "version": "0.0.0"
+            }
+          },
+          "MyObjectLambda2": {
+            "id": "MyObjectLambda2",
+            "path": "aws-s3-object-lambda/MyObjectLambda2",
+            "children": {
+              "SupportingAccessPoint": {
+                "id": "SupportingAccessPoint",
+                "path": "aws-s3-object-lambda/MyObjectLambda2/SupportingAccessPoint",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::AccessPoint",
+                  "aws:cdk:cloudformation:props": {
+                    "bucket": {
+                      "Ref": "MyBucketF68F3FF0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.CfnAccessPoint",
+                  "version": "0.0.0"
+                }
+              },
+              "MyObjectLambda2": {
+                "id": "MyObjectLambda2",
+                "path": "aws-s3-object-lambda/MyObjectLambda2/MyObjectLambda2",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3ObjectLambda::AccessPoint",
+                  "aws:cdk:cloudformation:props": {
+                    "objectLambdaConfiguration": {
+                      "allowedFeatures": [
+                        "GetObject-Range"
+                      ],
+                      "supportingAccessPoint": {
+                        "Fn::GetAtt": [
+                          "MyObjectLambda2SupportingAccessPoint6C54778F",
+                          "Arn"
+                        ]
+                      },
+                      "transformationConfigurations": [
+                        {
+                          "actions": [
+                            "GetObject"
+                          ],
+                          "contentTransformation": {
+                            "AwsLambda": {
+                              "FunctionArn": {
+                                "Fn::GetAtt": [
+                                  "MyFunction2F2A964CA",
+                                  "Arn"
+                                ]
+                              },
+                              "FunctionPayload": "{\"foo\":10}"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3objectlambda.CfnAccessPoint",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-s3objectlambda.AccessPoint",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

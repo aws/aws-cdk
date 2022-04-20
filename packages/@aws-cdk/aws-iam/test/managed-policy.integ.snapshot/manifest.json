@@ -1,0 +1,40 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-iam-managed-policy": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-iam-managed-policy.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-iam-managed-policy/MyUser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyUserDC45028B"
+          }
+        ],
+        "/aws-cdk-iam-managed-policy/OneManagedPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OneManagedPolicy77F9185F"
+          }
+        ],
+        "/aws-cdk-iam-managed-policy/TwoManagedPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TwoManagedPolicy7E701864"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-iam-managed-policy"
+    }
+  }
+}

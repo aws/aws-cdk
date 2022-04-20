@@ -1,0 +1,120 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-cloudtrail": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-cloudtrail.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-cloudtrail": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824",
+              "id": "be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824",
+              "packaging": "zip",
+              "sourceHash": "be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824",
+              "s3BucketParameter": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232",
+              "s3KeyParameter": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE",
+              "artifactHashParameter": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824ArtifactHash76F8FCF2"
+            }
+          }
+        ],
+        "/integ-cloudtrail/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77"
+          }
+        ],
+        "/integ-cloudtrail/Bucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketPolicyE9A3008A"
+          }
+        ],
+        "/integ-cloudtrail/Bucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
+          }
+        ],
+        "/integ-cloudtrail/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/integ-cloudtrail/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/integ-cloudtrail/AssetParameters/be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232"
+          }
+        ],
+        "/integ-cloudtrail/AssetParameters/be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE"
+          }
+        ],
+        "/integ-cloudtrail/AssetParameters/be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824ArtifactHash76F8FCF2"
+          }
+        ],
+        "/integ-cloudtrail/LambdaFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaFunctionServiceRoleC555A460"
+          }
+        ],
+        "/integ-cloudtrail/LambdaFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaFunctionBF21E41F"
+          }
+        ],
+        "/integ-cloudtrail/S3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S3486F821D"
+          }
+        ],
+        "/integ-cloudtrail/S3/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S3Policy2E4AA1D6"
+          }
+        ],
+        "/integ-cloudtrail/S3/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S3AutoDeleteObjectsCustomResource5A4102C9"
+          }
+        ],
+        "/integ-cloudtrail/Trail/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Trail022F0CF2"
+          }
+        ]
+      },
+      "displayName": "integ-cloudtrail"
+    }
+  }
+}

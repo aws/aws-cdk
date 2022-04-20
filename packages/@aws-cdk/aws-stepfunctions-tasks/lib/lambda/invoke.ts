@@ -45,6 +45,7 @@ export interface LambdaInvokeProps extends sfn.TaskStateBaseProps {
    * directly as the `lambdaFunction` argument.
    *
    * @default - Version or alias inherent to the `lambdaFunction` object.
+   * @deprecated pass a Version or Alias object as lambdaFunction instead
    */
   readonly qualifier?: string;
 
@@ -119,7 +120,7 @@ export class LambdaInvoke extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        resources: [this.props.lambdaFunction.functionArn],
+        resources: this.props.lambdaFunction.resourceArnsForGrantInvoke,
         actions: ['lambda:InvokeFunction'],
       }),
     ];
