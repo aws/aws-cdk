@@ -133,7 +133,7 @@ export interface QueryDefinitionProps {
   /**
   * Specify certain log groups for the query definition.
   *
-  * @default undefined no specified log groups
+  * @default - no specified log groups
   */
   readonly logGroups?: ILogGroup[];
 }
