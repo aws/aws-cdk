@@ -76,9 +76,7 @@ export class LambdaApplication extends Resource implements ILambdaApplication {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
-  }
 
-  protected validate(): string[] {
-    return validateName('Application', this.physicalName);
+    this.node.addValidation({ validate: () => validateName('Application', this.physicalName) });
   }
 }
