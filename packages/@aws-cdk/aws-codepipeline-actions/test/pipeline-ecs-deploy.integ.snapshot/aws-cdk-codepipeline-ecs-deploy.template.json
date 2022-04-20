@@ -215,11 +215,6 @@
   },
   "EcrRepoBB83A592": {
    "Type": "AWS::ECR::Repository",
-   "Properties": {
-    "ImageScanningConfiguration": {
-     "ScanOnPush": false
-    }
-   },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
