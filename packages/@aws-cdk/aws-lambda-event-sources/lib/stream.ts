@@ -2,8 +2,8 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration } from '@aws-cdk/core';
 
 /**
- * The set of properties for event sources that follow the streaming model,
- * such as, Dynamo, Kinesis and Kafka.
+ * The set of properties for streaming event sources shared by
+ * Dynamo, Kinesis and Kafka.
  */
 export interface BaseStreamEventSourceProps{
   /**
@@ -20,13 +20,6 @@ export interface BaseStreamEventSourceProps{
    * @default 100
    */
   readonly batchSize?: number;
-
-  /**
-   * An Amazon SQS queue or Amazon SNS topic destination for discarded records.
-   *
-   * @default discarded records are ignored
-   */
-  readonly onFailure?: lambda.IEventSourceDlq;
 
   /**
    * Where to begin consuming the stream.
@@ -50,8 +43,8 @@ export interface BaseStreamEventSourceProps{
 }
 
 /**
- * The set of properties for event sources that follow the streaming model,
- * such as, Dynamo, Kinesis.
+ * The set of properties for streaming event sources shared by
+ * Dynamo and Kinesis.
  */
 export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
   /**
@@ -107,6 +100,13 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    * @default - None
    */
   readonly tumblingWindow?: Duration;
+
+  /**
+   * An Amazon SQS queue or Amazon SNS topic destination for discarded records.
+   *
+   * @default - discarded records are ignored
+   */
+  readonly onFailure?: lambda.IEventSourceDlq;
 }
 
 /**
