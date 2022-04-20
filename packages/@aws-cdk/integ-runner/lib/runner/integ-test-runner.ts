@@ -2,9 +2,8 @@ import * as path from 'path';
 import { TestCase, RequireApproval } from '@aws-cdk/cloud-assembly-schema';
 import { DeployOptions, DestroyOptions } from 'cdk-cli-wrapper';
 import * as logger from '../logger';
-import { chain } from '../utils';
+import { chain, exec } from '../utils';
 import { DestructiveChange } from '../workers/common';
-import { exec } from './private/utils';
 import { IntegRunnerOptions, IntegRunner, DEFAULT_SYNTH_OPTIONS } from './runner-base';
 
 /**
