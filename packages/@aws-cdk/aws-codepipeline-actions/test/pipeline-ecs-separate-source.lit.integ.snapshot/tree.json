@@ -110,7 +110,8 @@
                                           ":log-group:/aws/codebuild/",
                                           {
                                             "Ref": "AppCodeDockerImageBuildAndPushProject00DD6671"
-                                          }
+                                          },
+                                          ":*"
                                         ]
                                       ]
                                     },
@@ -133,8 +134,7 @@
                                           ":log-group:/aws/codebuild/",
                                           {
                                             "Ref": "AppCodeDockerImageBuildAndPushProject00DD6671"
-                                          },
-                                          ":*"
+                                          }
                                         ]
                                       ]
                                     }
@@ -142,11 +142,11 @@
                                 },
                                 {
                                   "Action": [
-                                    "codebuild:CreateReportGroup",
-                                    "codebuild:CreateReport",
-                                    "codebuild:UpdateReport",
+                                    "codebuild:BatchPutCodeCoverages",
                                     "codebuild:BatchPutTestCases",
-                                    "codebuild:BatchPutCodeCoverages"
+                                    "codebuild:CreateReport",
+                                    "codebuild:CreateReportGroup",
+                                    "codebuild:UpdateReport"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {
@@ -177,8 +177,12 @@
                                 {
                                   "Action": [
                                     "ecr:BatchCheckLayerAvailability",
+                                    "ecr:BatchGetImage",
+                                    "ecr:CompleteLayerUpload",
                                     "ecr:GetDownloadUrlForLayer",
-                                    "ecr:BatchGetImage"
+                                    "ecr:InitiateLayerUpload",
+                                    "ecr:PutImage",
+                                    "ecr:UploadLayerPart"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {
@@ -195,23 +199,8 @@
                                 },
                                 {
                                   "Action": [
-                                    "ecr:PutImage",
-                                    "ecr:InitiateLayerUpload",
-                                    "ecr:UploadLayerPart",
-                                    "ecr:CompleteLayerUpload"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "EcsDeployRepositoryE7A569C0",
-                                      "Arn"
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": [
-                                    "s3:GetObject*",
                                     "s3:GetBucket*",
+                                    "s3:GetObject*",
                                     "s3:List*"
                                   ],
                                   "Effect": "Allow",
@@ -435,7 +424,8 @@
                                           ":log-group:/aws/codebuild/",
                                           {
                                             "Ref": "CdkCodeBuildProject98C8CAB8"
-                                          }
+                                          },
+                                          ":*"
                                         ]
                                       ]
                                     },
@@ -458,8 +448,7 @@
                                           ":log-group:/aws/codebuild/",
                                           {
                                             "Ref": "CdkCodeBuildProject98C8CAB8"
-                                          },
-                                          ":*"
+                                          }
                                         ]
                                       ]
                                     }
@@ -467,11 +456,11 @@
                                 },
                                 {
                                   "Action": [
-                                    "codebuild:CreateReportGroup",
-                                    "codebuild:CreateReport",
-                                    "codebuild:UpdateReport",
+                                    "codebuild:BatchPutCodeCoverages",
                                     "codebuild:BatchPutTestCases",
-                                    "codebuild:BatchPutCodeCoverages"
+                                    "codebuild:CreateReport",
+                                    "codebuild:CreateReportGroup",
+                                    "codebuild:UpdateReport"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {
@@ -501,12 +490,16 @@
                                 },
                                 {
                                   "Action": [
-                                    "s3:GetObject*",
-                                    "s3:GetBucket*",
-                                    "s3:List*",
+                                    "s3:Abort*",
                                     "s3:DeleteObject*",
-                                    "s3:PutObject*",
-                                    "s3:Abort*"
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*",
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": [
@@ -886,12 +879,16 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "s3:GetObject*",
-                                    "s3:GetBucket*",
-                                    "s3:List*",
+                                    "s3:Abort*",
                                     "s3:DeleteObject*",
-                                    "s3:PutObject*",
-                                    "s3:Abort*"
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*",
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": [
@@ -920,52 +917,38 @@
                                 {
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "CodePipelineDeployingEcsApplicationSourceAppCodeSourceCodePipelineActionRole6D88B36F",
-                                      "Arn"
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "CodePipelineDeployingEcsApplicationSourceCdkCodeSourceCodePipelineActionRoleA1E3A5E9",
-                                      "Arn"
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "CodePipelineDeployingEcsApplicationBuildAppCodeDockerImageBuildAndPushCodePipelineActionRole9B025737",
-                                      "Arn"
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "CodePipelineDeployingEcsApplicationBuildCdkCodeBuildAndSynthCodePipelineActionRole54094521",
-                                      "Arn"
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "CodePipelineDeployingEcsApplicationDeployCFNDeployCodePipelineActionRoleC97FFCE2",
-                                      "Arn"
-                                    ]
-                                  }
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "CodePipelineDeployingEcsApplicationBuildAppCodeDockerImageBuildAndPushCodePipelineActionRole9B025737",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "CodePipelineDeployingEcsApplicationBuildCdkCodeBuildAndSynthCodePipelineActionRole54094521",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "CodePipelineDeployingEcsApplicationDeployCFNDeployCodePipelineActionRoleC97FFCE2",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "CodePipelineDeployingEcsApplicationSourceAppCodeSourceCodePipelineActionRole6D88B36F",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "CodePipelineDeployingEcsApplicationSourceCdkCodeSourceCodePipelineActionRoleA1E3A5E9",
+                                        "Arn"
+                                      ]
+                                    }
+                                  ]
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -1257,12 +1240,16 @@
                                       "Statement": [
                                         {
                                           "Action": [
-                                            "s3:GetObject*",
-                                            "s3:GetBucket*",
-                                            "s3:List*",
+                                            "s3:Abort*",
                                             "s3:DeleteObject*",
-                                            "s3:PutObject*",
-                                            "s3:Abort*"
+                                            "s3:GetBucket*",
+                                            "s3:GetObject*",
+                                            "s3:List*",
+                                            "s3:PutObject",
+                                            "s3:PutObjectLegalHold",
+                                            "s3:PutObjectRetention",
+                                            "s3:PutObjectTagging",
+                                            "s3:PutObjectVersionTagging"
                                           ],
                                           "Effect": "Allow",
                                           "Resource": [
@@ -1290,11 +1277,11 @@
                                         },
                                         {
                                           "Action": [
+                                            "codecommit:CancelUploadArchive",
                                             "codecommit:GetBranch",
                                             "codecommit:GetCommit",
-                                            "codecommit:UploadArchive",
                                             "codecommit:GetUploadArchiveStatus",
-                                            "codecommit:CancelUploadArchive"
+                                            "codecommit:UploadArchive"
                                           ],
                                           "Effect": "Allow",
                                           "Resource": {
@@ -1400,12 +1387,16 @@
                                       "Statement": [
                                         {
                                           "Action": [
-                                            "s3:GetObject*",
-                                            "s3:GetBucket*",
-                                            "s3:List*",
+                                            "s3:Abort*",
                                             "s3:DeleteObject*",
-                                            "s3:PutObject*",
-                                            "s3:Abort*"
+                                            "s3:GetBucket*",
+                                            "s3:GetObject*",
+                                            "s3:List*",
+                                            "s3:PutObject",
+                                            "s3:PutObjectLegalHold",
+                                            "s3:PutObjectRetention",
+                                            "s3:PutObjectTagging",
+                                            "s3:PutObjectVersionTagging"
                                           ],
                                           "Effect": "Allow",
                                           "Resource": [
@@ -1433,11 +1424,11 @@
                                         },
                                         {
                                           "Action": [
+                                            "codecommit:CancelUploadArchive",
                                             "codecommit:GetBranch",
                                             "codecommit:GetCommit",
-                                            "codecommit:UploadArchive",
                                             "codecommit:GetUploadArchiveStatus",
-                                            "codecommit:CancelUploadArchive"
+                                            "codecommit:UploadArchive"
                                           ],
                                           "Effect": "Allow",
                                           "Resource": {
@@ -1893,8 +1884,8 @@
                                         },
                                         {
                                           "Action": [
-                                            "s3:GetObject*",
                                             "s3:GetBucket*",
+                                            "s3:GetObject*",
                                             "s3:List*"
                                           ],
                                           "Effect": "Allow",
@@ -2024,8 +2015,8 @@
                                       "Statement": [
                                         {
                                           "Action": [
-                                            "s3:GetObject*",
                                             "s3:GetBucket*",
+                                            "s3:GetObject*",
                                             "s3:List*"
                                           ],
                                           "Effect": "Allow",
@@ -2324,8 +2315,8 @@
                                 {
                                   "Action": [
                                     "ecr:BatchCheckLayerAvailability",
-                                    "ecr:GetDownloadUrlForLayer",
-                                    "ecr:BatchGetImage"
+                                    "ecr:BatchGetImage",
+                                    "ecr:GetDownloadUrlForLayer"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {

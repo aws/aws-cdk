@@ -55,88 +55,12 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "dynamodb:PutItem",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":dynamodb:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":table/",
-          {
-           "Ref": "Messages804FA4EB"
-          }
-         ]
-        ]
-       }
-      },
-      {
-       "Action": "dynamodb:GetItem",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":dynamodb:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":table/",
-          {
-           "Ref": "Messages804FA4EB"
-          }
-         ]
-        ]
-       }
-      },
-      {
-       "Action": "dynamodb:UpdateItem",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":dynamodb:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":table/",
-          {
-           "Ref": "Messages804FA4EB"
-          }
-         ]
-        ]
-       }
-      },
-      {
-       "Action": "dynamodb:DeleteItem",
+       "Action": [
+        "dynamodb:DeleteItem",
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem"
+       ],
        "Effect": "Allow",
        "Resource": {
         "Fn::Join": [
