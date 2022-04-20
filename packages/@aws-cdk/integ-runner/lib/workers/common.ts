@@ -1,7 +1,7 @@
 import { ResourceImpact } from '@aws-cdk/cloudformation-diff';
 import * as chalk from 'chalk';
 import * as logger from '../logger';
-import { IntegTestConfig } from '../runner/integ-tests';
+import { IntegTestConfig } from '../runner/integration-tests';
 
 /**
  * Config for an integration test
@@ -211,11 +211,4 @@ export function printResults(diagnostic: Diagnostic): void {
     case DiagnosticReason.TEST_FAILED:
       logger.error('  %s - Failed! %s\n%s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
   }
-}
-
-/**
- * Flatten a list of lists into a list of elements
- */
-export function flatten<T>(xs: T[][]): T[] {
-  return Array.prototype.concat.apply([], xs);
 }

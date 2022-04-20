@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 import * as workerpool from 'workerpool';
 import * as logger from './logger';
-import { IntegrationTests, IntegTestConfig } from './runner/integ-tests';
+import { IntegrationTests, IntegTestConfig } from './runner/integration-tests';
 import { runSnapshotTests, runIntegrationTests, IntegRunnerMetrics, IntegTestWorkerConfig, DestructiveChange } from './workers';
 
 // https://github.com/yargs/yargs/issues/1929
@@ -17,13 +17,12 @@ async function main() {
     .usage('Usage: integ-runner [TEST...]')
     .option('list', { type: 'boolean', default: false, desc: 'List tests instead of running them' })
     .option('clean', { type: 'boolean', default: true, desc: 'Skips stack clean up after test is completed (use --no-clean to negate)' })
-    .option('verbose', { type: 'boolean', default: false, alias: 'v', desc: 'Verbose logs' })
+    .option('verbose', { type: 'boolean', default: false, alias: 'v', desc: 'Verbose logs and metrics on integration tests durations' })
     .option('dry-run', { type: 'boolean', default: false, desc: 'do not actually deploy the stack. just update the snapshot (not recommended!)' })
     .option('update-on-failed', { type: 'boolean', default: false, desc: 'rerun integration tests and update snapshots for failed tests.' })
     .option('force', { type: 'boolean', default: false, desc: 'Rerun all integration tests even if tests are passing' })
-    .option('parallel', { type: 'boolean', default: false, desc: 'run integration tests in parallel' })
-    .option('parallel-regions', { type: 'array', desc: 'if --parallel is used then these regions are used to run tests in parallel', nargs: 1, default: [] })
-    .options('directory', { type: 'string', default: 'test', desc: 'starting directory to discover integration tests' })
+    .option('parallel-regions', { type: 'array', desc: 'Tests are run in parallel across these regions. To prevent tests from running in parallel, provide only a single region', nargs: 1, default: [] })
+    .options('directory', { type: 'string', default: 'test', desc: 'starting directory to discover integration tests. Tests will be discovered recursively from this directory' })
     .options('profiles', { type: 'array', desc: 'list of AWS profiles to use. Tests will be run in parallel across each profile+regions', nargs: 1, default: [] })
     .options('max-workers', { type: 'number', desc: 'The max number of workerpool workers to use when running integration tests in parallel', default: 16 })
     .options('exclude', { type: 'boolean', desc: 'All tests should be run, except for the list of tests provided', default: false })
@@ -61,11 +60,11 @@ async function main() {
     if (argv._.length > 0 && fromFile) {
       throw new Error('A list of tests cannot be provided if "--from-file" is provided');
     } else if (argv._.length === 0 && !fromFile) {
-      testsFromArgs.push(...(await new IntegrationTests(argv.directory).fromCliArgs()));
+      testsFromArgs.push(...(await new IntegrationTests(path.resolve(argv.directory)).fromCliArgs()));
     } else if (fromFile) {
-      testsFromArgs.push(...(await new IntegrationTests(argv.directory).fromFile(fromFile)));
+      testsFromArgs.push(...(await new IntegrationTests(path.resolve(argv.directory)).fromFile(path.resolve(fromFile))));
     } else {
-      testsFromArgs.push(...(await new IntegrationTests(argv.directory).fromCliArgs(argv._.map((x: any) => x.toString()), exclude)));
+      testsFromArgs.push(...(await new IntegrationTests(path.resolve(argv.directory)).fromCliArgs(argv._.map((x: any) => x.toString()), exclude)));
     }
 
     // always run snapshot tests, but if '--force' is passed then
@@ -93,7 +92,7 @@ async function main() {
         clean: argv.clean,
         dryRun: argv['dry-run'],
         verbose: argv.verbose,
-        updateWorkflow: !argv['disable-update-workflow'],
+        updateWorkflow: !!argv['disable-update-workflow'],
       });
 
       if (argv.clean === false) {
