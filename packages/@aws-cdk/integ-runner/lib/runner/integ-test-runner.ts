@@ -137,7 +137,7 @@ export class IntegTestRunner extends IntegRunner {
             stacks: options.testCase.stacks,
             requireApproval: RequireApproval.NEVER,
             output: this.cdkOutDir,
-            lookups: this._tests?.enableLookups,
+            lookups: this.testSuite?.enableLookups,
             ...options.testCase.cdkCommandOptions?.deploy?.args,
             context: this.getContext(options.testCase.cdkCommandOptions?.deploy?.args?.context),
           },

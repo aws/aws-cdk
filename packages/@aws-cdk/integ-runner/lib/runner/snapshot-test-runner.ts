@@ -108,7 +108,7 @@ export class IntegSnapshotRunner extends IntegRunner {
         // if we are not verifying asset hashes then remove the specific
         // asset hashes from the templates so they are not part of the diff
         // comparison
-        if (!this._tests?.getOptionsForStack(templateId)?.diffAssets) {
+        if (!this.testSuite?.getOptionsForStack(templateId)?.diffAssets) {
           actualTemplate = canonicalizeTemplate(actualTemplate);
           expectedTemplate = canonicalizeTemplate(expectedTemplate);
         }

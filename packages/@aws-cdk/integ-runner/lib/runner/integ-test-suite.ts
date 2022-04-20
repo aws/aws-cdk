@@ -13,21 +13,21 @@ const ENABLE_LOOKUPS_PRAGMA = 'pragma:enable-lookups';
 /**
  * Represents an integration test
  */
-export type TestCases = { [testName: string]: TestCase };
+export type TestSuite = { [testName: string]: TestCase };
 
 /**
  * Helper class for working with Integration tests
  * This requires an `integ.json` file in the snapshot
  * directory. For legacy test cases use LegacyIntegTestCases
  */
-export class IntegTestCases {
+export class IntegTestSuite {
 
   /**
    * Loads integ tests from a snapshot directory
    */
-  public static fromPath(path: string): IntegTestCases {
+  public static fromPath(path: string): IntegTestSuite {
     const reader = IntegManifestReader.fromPath(path);
-    return new IntegTestCases(
+    return new IntegTestSuite(
       reader.tests.enableLookups,
       reader.tests.testCases,
     );
@@ -35,28 +35,23 @@ export class IntegTestCases {
 
   constructor(
     public readonly enableLookups: boolean,
-    public readonly testCases: TestCases,
+    public readonly testSuite: TestSuite,
   ) {}
 
   /**
    * Returns a list of stacks that have stackUpdateWorkflow disabled
    */
   public getStacksWithoutUpdateWorkflow(): string[] {
-    const stacks: string[] = [];
-    for (const testCase of Object.values(this.testCases ?? {})) {
-      const update = testCase.stackUpdateWorkflow ?? true;
-      if (!update) {
-        stacks.push(...testCase.stacks);
-      }
-    }
-    return stacks;
+    return Object.values(this.testSuite)
+      .filter(testCase => !(testCase.stackUpdateWorkflow ?? true))
+      .flatMap((testCase: TestCase) => testCase.stacks);
   }
 
   /**
    * Returns test case options for a given stack
    */
   public getOptionsForStack(stackId: string): TestOptions | undefined {
-    for (const testCase of Object.values(this.testCases ?? {})) {
+    for (const testCase of Object.values(this.testSuite ?? {})) {
       if (testCase.stacks.includes(stackId)) {
         return {
           hooks: testCase.hooks,
@@ -104,7 +99,7 @@ export interface LegacyTestCaseConfig {
  * Helper class for creating an integ manifest for legacy
  * test cases, i.e. tests without a `integ.json`.
  */
-export class LegacyIntegTestCases extends IntegTestCases {
+export class LegacyIntegTestSuite extends IntegTestSuite {
 
   /**
    * Returns the single test stack to use.
@@ -117,7 +112,7 @@ export class LegacyIntegTestCases extends IntegTestCases {
    *    /// !cdk-integ <stack-name>
    *
    */
-  public static fromLegacy(config: LegacyTestCaseConfig): LegacyIntegTestCases {
+  public static fromLegacy(config: LegacyTestCaseConfig): LegacyIntegTestSuite {
     const pragmas = this.pragmas(config.integSourceFilePath);
     const tests: TestCase = {
       stacks: [],
@@ -143,7 +138,7 @@ export class LegacyIntegTestCases extends IntegTestCases {
       tests.stacks.push(...stacks);
     }
 
-    return new LegacyIntegTestCases(
+    return new LegacyIntegTestSuite(
       pragmas.includes(ENABLE_LOOKUPS_PRAGMA),
       {
         [config.testName]: tests,
@@ -223,8 +218,8 @@ export class LegacyIntegTestCases extends IntegTestCases {
 
   constructor(
     public readonly enableLookups: boolean,
-    public readonly testCases: TestCases,
+    public readonly testSuite: TestSuite,
   ) {
-    super(enableLookups, testCases);
+    super(enableLookups, testSuite);
   }
 }

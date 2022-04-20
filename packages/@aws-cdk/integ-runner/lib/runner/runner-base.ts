@@ -5,7 +5,7 @@ import { CdkCliWrapper, ICdk } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import { flatten } from '../utils';
 import { DestructiveChange } from '../workers/common';
-import { IntegTestCases, LegacyIntegTestCases } from './integ-test-case';
+import { IntegTestSuite, LegacyIntegTestSuite } from './integ-test-suite';
 import { AssemblyManifestReader, ManifestTrace } from './private/cloud-assembly';
 
 const CDK_OUTDIR_PREFIX = 'cdk-integ.out';
@@ -100,7 +100,7 @@ export abstract class IntegRunner {
   /**
    * The integration tests that this runner will execute
    */
-  protected _tests?: IntegTestCases;
+  protected testSuite?: IntegTestSuite;
 
   /**
    * The working directory that the integration tests will be
@@ -164,7 +164,7 @@ export abstract class IntegRunner {
    * Return this list of test cases for this integration test
    */
   public get tests(): { [testName: string]: TestCase } | undefined {
-    return this._tests?.testCases;
+    return this.testSuite?.testSuite;
   }
 
   /**
@@ -187,10 +187,10 @@ export abstract class IntegRunner {
    */
   protected loadManifest(dir?: string): void {
     try {
-      const testCases = IntegTestCases.fromPath(dir ?? this.snapshotDir);
-      this._tests = testCases;
+      const testSuite = IntegTestSuite.fromPath(dir ?? this.snapshotDir);
+      this.testSuite = testSuite;
     } catch (e) {
-      const testCases = LegacyIntegTestCases.fromLegacy({
+      const testCases = LegacyIntegTestSuite.fromLegacy({
         cdk: this.cdk,
         testName: this.testName,
         integSourceFilePath: this.sourceFilePath,
@@ -202,8 +202,8 @@ export abstract class IntegRunner {
           output: this.cdkOutDir,
         },
       });
-      this.legacyContext = LegacyIntegTestCases.getPragmaContext(this.sourceFilePath);
-      this._tests = testCases;
+      this.legacyContext = LegacyIntegTestSuite.getPragmaContext(this.sourceFilePath);
+      this.testSuite = testCases;
     }
   }
 
@@ -244,7 +244,7 @@ export abstract class IntegRunner {
    * by reading the asset manifest for the stack and deleting the asset source
    */
   protected removeAssetsFromSnapshot(): void {
-    const stacks = this._tests?.getStacksWithoutUpdateWorkflow() ?? [];
+    const stacks = this.testSuite?.getStacksWithoutUpdateWorkflow() ?? [];
     const manifest = AssemblyManifestReader.fromPath(this.snapshotDir);
     const assets = flatten(stacks.map(stack => {
       return manifest.getAssetsForStack(stack) ?? [];
@@ -287,7 +287,7 @@ export abstract class IntegRunner {
 
     // if lookups are enabled then we need to synth again
     // using dummy context and save that as the snapshot
-    if (this._tests?.enableLookups) {
+    if (this.testSuite?.enableLookups) {
       this.cdk.synthFast({
         execCmd: this.cdkApp.split(' '),
         env: {
@@ -317,7 +317,7 @@ export abstract class IntegRunner {
     return {
       // if lookups are enabled then we need to synth
       // with the "dummy" context
-      ...this._tests?.enableLookups ? DEFAULT_SYNTH_OPTIONS.context : {},
+      ...this.testSuite?.enableLookups ? DEFAULT_SYNTH_OPTIONS.context : {},
       // This is needed so that there are no differences between
       // running on v1 vs v2
       [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,

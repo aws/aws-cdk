@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { ListOptions } from 'cdk-cli-wrapper';
 import * as mockfs from 'mock-fs';
-import { IntegTestCases, LegacyIntegTestCases } from '../../lib/runner/integ-test-case';
+import { IntegTestSuite, LegacyIntegTestSuite } from '../../lib/runner/integ-test-suite';
 import { MockCdkProvider } from '../helpers';
 
 describe('Integration test cases', () => {
@@ -25,12 +25,12 @@ describe('Integration test cases', () => {
       }),
     });
     // WHEN
-    const testCases = IntegTestCases.fromPath(path.dirname(testsFile));
+    const testCases = IntegTestSuite.fromPath(path.dirname(testsFile));
 
     // THEN
     expect(testCases.enableLookups).toEqual(false);
     expect(testCases.getStacksWithoutUpdateWorkflow().length).toEqual(0);
-    expect(testCases.testCases).toEqual({
+    expect(testCases.testSuite).toEqual({
       test1: {
         stacks: [
           'test-stack',
@@ -58,12 +58,12 @@ describe('Integration test cases', () => {
       }),
     });
     // WHEN
-    const testCases = IntegTestCases.fromPath(path.dirname(testsFile));
+    const testCases = IntegTestSuite.fromPath(path.dirname(testsFile));
 
     // THEN
     expect(testCases.enableLookups).toEqual(true);
     expect(testCases.getStacksWithoutUpdateWorkflow().length).toEqual(1);
-    expect(testCases.testCases).toEqual({
+    expect(testCases.testSuite).toEqual({
       test1: {
         stackUpdateWorkflow: false,
         diffAssets: true,
@@ -100,7 +100,7 @@ describe('Integration test cases', () => {
       }),
     });
     // WHEN
-    const testCases = IntegTestCases.fromPath(path.dirname(testsFile));
+    const testCases = IntegTestSuite.fromPath(path.dirname(testsFile));
 
     // THEN
     expect(testCases.getOptionsForStack('test-stack1')).toEqual({
@@ -149,7 +149,7 @@ describe('Legacy Integration test cases', () => {
     cdkMock.mockList(listMock);
 
     // WHEN
-    const testCases = LegacyIntegTestCases.fromLegacy({
+    const testCases = LegacyIntegTestSuite.fromLegacy({
       cdk: cdkMock.cdk,
       testName: 'test',
       listOptions: {},
@@ -160,7 +160,7 @@ describe('Legacy Integration test cases', () => {
     expect(listMock).not.toHaveBeenCalled();
     expect(testCases.enableLookups).toEqual(false);
     expect(testCases.getStacksWithoutUpdateWorkflow().length).toEqual(0);
-    expect(testCases.testCases).toEqual({
+    expect(testCases.testSuite).toEqual({
       test: {
         stackUpdateWorkflow: true,
         diffAssets: false,
@@ -182,7 +182,7 @@ describe('Legacy Integration test cases', () => {
     cdkMock.mockList(listMock);
 
     // WHEN
-    const testCases = LegacyIntegTestCases.fromLegacy({
+    const testCases = LegacyIntegTestSuite.fromLegacy({
       cdk: cdkMock.cdk,
       testName: 'test',
       listOptions: {},
@@ -193,7 +193,7 @@ describe('Legacy Integration test cases', () => {
     expect(listMock).not.toHaveBeenCalled();
     expect(testCases.enableLookups).toEqual(true);
     expect(testCases.getStacksWithoutUpdateWorkflow().length).toEqual(1);
-    expect(testCases.testCases).toEqual({
+    expect(testCases.testSuite).toEqual({
       test: {
         stackUpdateWorkflow: false,
         diffAssets: true,
@@ -215,7 +215,7 @@ describe('Legacy Integration test cases', () => {
     cdkMock.mockList(listMock);
 
     // WHEN
-    const testCases = LegacyIntegTestCases.fromLegacy({
+    const testCases = LegacyIntegTestSuite.fromLegacy({
       cdk: cdkMock.cdk,
       testName: 'test',
       listOptions: {},
@@ -226,7 +226,7 @@ describe('Legacy Integration test cases', () => {
     expect(listMock).toHaveBeenCalled();
     expect(testCases.enableLookups).toEqual(false);
     expect(testCases.getStacksWithoutUpdateWorkflow().length).toEqual(0);
-    expect(testCases.testCases).toEqual({
+    expect(testCases.testSuite).toEqual({
       test: {
         stackUpdateWorkflow: true,
         diffAssets: false,
@@ -249,7 +249,7 @@ describe('Legacy Integration test cases', () => {
 
     // THEN
     expect(() => {
-      LegacyIntegTestCases.fromLegacy({
+      LegacyIntegTestSuite.fromLegacy({
         cdk: cdkMock.cdk,
         testName: 'test',
         listOptions: {},
@@ -265,7 +265,7 @@ describe('Legacy Integration test cases', () => {
     });
 
     // WHEN
-    const context = LegacyIntegTestCases.getPragmaContext(testsFile);
+    const context = LegacyIntegTestSuite.getPragmaContext(testsFile);
 
     //THEN
     expect(context).toEqual({
@@ -282,7 +282,7 @@ describe('Legacy Integration test cases', () => {
 
     // WHEN
     expect(() => {
-      LegacyIntegTestCases.getPragmaContext(testsFile);
+      LegacyIntegTestSuite.getPragmaContext(testsFile);
     }).toThrow();
   });
 });
