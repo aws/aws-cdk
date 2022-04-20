@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-apigatewayv2-integrations",
   "version": "0.0.0",
+  "private": true,
   "description": "Integrations for AWS APIGateway V2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -8,7 +9,7 @@
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.APIGatewayv2.Integrations",
+        "namespace": "Amazon.CDK.AWS.Apigatewayv2.Integrations",
         "packageId": "Amazon.CDK.AWS.APIGatewayv2.Integrations",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
@@ -24,7 +25,7 @@
         "module": "aws_cdk.aws_apigatewayv2_integrations",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -91,7 +92,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
@@ -101,10 +102,10 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "experimental",
   "maturity": "experimental",
