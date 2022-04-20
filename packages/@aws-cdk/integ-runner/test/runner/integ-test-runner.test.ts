@@ -1,10 +1,7 @@
 import * as child_process from 'child_process';
-import * as path from 'path';
-import { FUTURE_FLAGS } from '@aws-cdk/cx-api';
 import { SynthFastOptions, DestroyOptions, ListOptions, SynthOptions, DeployOptions } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
-import { IntegTestRunner, IntegSnapshotRunner } from '../../lib/runner/runners';
-import { DiagnosticReason } from '../../lib/workers/common';
+import { IntegTestRunner } from '../../lib/runner';
 import { MockCdkProvider } from '../helpers';
 
 let cdkMock: MockCdkProvider;
@@ -13,6 +10,8 @@ let synthFastMock: (options: SynthFastOptions) => void;
 let deployMock: (options: DeployOptions) => void;
 let listMock: (options: ListOptions) => string;
 let destroyMock: (options: DestroyOptions) => void;
+let spawnSyncMock: jest.SpyInstance;
+let removeSyncMock: jest.SpyInstance;
 beforeEach(() => {
   cdkMock = new MockCdkProvider({ directory: 'test/test-data' });
   listMock = jest.fn().mockImplementation(() => {
@@ -27,11 +26,19 @@ beforeEach(() => {
   cdkMock.mockDeploy(deployMock);
   cdkMock.mockSynthFast(synthFastMock);
   cdkMock.mockDestroy(destroyMock);
-  jest.spyOn(child_process, 'spawnSync').mockImplementation();
+  spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('stdout'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
   jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
   jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
+  removeSyncMock = jest.spyOn(fs, 'rmdirSync').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
 });
 
@@ -41,118 +48,14 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-describe('IntegTest runSnapshotTests', () => {
-  test('with defaults no diff', () => {
-    // WHEN
-    const integTest = new IntegSnapshotRunner({
-      cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.test-with-snapshot.js',
-      integOutDir: 'test-with-snapshot.integ.snapshot',
-    });
-    integTest.testSnapshot();
-
-    // THEN
-    expect(synthFastMock).toHaveBeenCalledTimes(1);
-    expect(synthFastMock).toHaveBeenCalledWith({
-      env: expect.objectContaining({
-        CDK_INTEG_ACCOUNT: '12345678',
-        CDK_INTEG_REGION: 'test-region',
-      }),
-      execCmd: ['node', 'integ.test-with-snapshot.js'],
-      output: 'test-with-snapshot.integ.snapshot',
-    });
-  });
-
-  test('with defaults and diff', () => {
-    // WHEN
-    const integTest = new IntegSnapshotRunner({
-      cdk: cdkMock.cdk,
-      fileName: path.join(__dirname, '../test-data/integ.test-with-snapshot.js'),
-      integOutDir: 'test-with-snapshot-diff.integ.snapshot',
-    });
-    const results = integTest.testSnapshot();
-
-    // THEN
-    expect(synthFastMock).toHaveBeenCalledTimes(1);
-    expect(synthFastMock).toHaveBeenCalledWith({
-      execCmd: ['node', 'integ.test-with-snapshot.js'],
-      env: expect.objectContaining({
-        CDK_INTEG_ACCOUNT: '12345678',
-        CDK_INTEG_REGION: 'test-region',
-      }),
-      output: 'test-with-snapshot-diff.integ.snapshot',
-    });
-    expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
-      reason: DiagnosticReason.SNAPSHOT_FAILED,
-      testName: integTest.testName,
-      message: expect.stringContaining('foobar'),
-    })]));
-    expect(results.destructiveChanges).not.toEqual([{
-      impact: 'WILL_DESTROY',
-      logicalId: 'MyFunction1ServiceRole9852B06B',
-      stackName: 'test-stack',
-    }]);
-    expect(results.destructiveChanges).toEqual([{
-      impact: 'WILL_DESTROY',
-      logicalId: 'MyLambdaFuncServiceRoleDefaultPolicyBEB0E748',
-      stackName: 'test-stack',
-    }]);
-  });
-
-  test('dont diff asset hashes', () => {
-    // WHEN
-    const integTest = new IntegSnapshotRunner({
-      cdk: cdkMock.cdk,
-      fileName: path.join(__dirname, '../test-data/integ.test-with-snapshot-assets-diff.js'),
-      integOutDir: 'test-with-snapshot-assets.integ.snapshot',
-    });
-    expect(() => {
-      integTest.testSnapshot();
-    }).not.toThrow();
-
-    // THEN
-    expect(synthFastMock).toHaveBeenCalledTimes(1);
-    expect(synthFastMock).toHaveBeenCalledWith({
-      execCmd: ['node', 'integ.test-with-snapshot-assets-diff.js'],
-      env: expect.objectContaining({
-        CDK_INTEG_ACCOUNT: '12345678',
-        CDK_INTEG_REGION: 'test-region',
-      }),
-      output: 'test-with-snapshot-assets.integ.snapshot',
-    });
-  });
-
-  test('diff asset hashes', () => {
-    // WHEN
-    const integTest = new IntegSnapshotRunner({
-      cdk: cdkMock.cdk,
-      fileName: path.join(__dirname, '../test-data/integ.test-with-snapshot-assets.js'),
-      integOutDir: 'test-with-snapshot-assets-diff.integ.snapshot',
-    });
-    const results = integTest.testSnapshot();
-
-    // THEN
-    expect(synthFastMock).toHaveBeenCalledTimes(1);
-    expect(synthFastMock).toHaveBeenCalledWith({
-      execCmd: ['node', 'integ.test-with-snapshot-assets.js'],
-      env: expect.objectContaining({
-        CDK_INTEG_ACCOUNT: '12345678',
-        CDK_INTEG_REGION: 'test-region',
-      }),
-      output: 'test-with-snapshot-assets-diff.integ.snapshot',
-    });
-    expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
-      reason: DiagnosticReason.SNAPSHOT_FAILED,
-      testName: integTest.testName,
-      message: expect.stringContaining('Parameters'),
-    })]));
-  });
-});
-
 describe('IntegTest runIntegTests', () => {
   test('with defaults', () => {
     // WHEN
-    const integTest = new IntegTestRunner({ cdk: cdkMock.cdk, fileName: 'test/test-data/integ.test-with-snapshot.js' });
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      fileName: 'test/test-data/integ.test-with-snapshot.js',
+      directory: 'test/test-data',
+    });
     integTest.runIntegTestCase({
       testCase: {
         stacks: ['stack1'],
@@ -168,9 +71,7 @@ describe('IntegTest runIntegTests', () => {
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
-      context: expect.objectContaining({
-        ...FUTURE_FLAGS,
-      }),
+      context: expect.any(Object),
       versionReporting: false,
       lookups: false,
       stacks: ['stack1'],
@@ -181,9 +82,7 @@ describe('IntegTest runIntegTests', () => {
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
-      context: expect.objectContaining({
-        ...FUTURE_FLAGS,
-      }),
+      context: expect.any(Object),
       versionReporting: false,
       lookups: false,
       stacks: ['stack1'],
@@ -193,9 +92,7 @@ describe('IntegTest runIntegTests', () => {
       app: 'node integ.test-with-snapshot.js',
       pathMetadata: false,
       assetMetadata: false,
-      context: expect.objectContaining({
-        ...FUTURE_FLAGS,
-      }),
+      context: expect.any(Object),
       versionReporting: false,
       force: true,
       stacks: ['stack1'],
@@ -203,9 +100,14 @@ describe('IntegTest runIntegTests', () => {
     });
   });
 
-  test('with profile', () => {
+  test('no snapshot', () => {
     // WHEN
-    const integTest = new IntegTestRunner({ cdk: cdkMock.cdk, fileName: 'test/test-data/integ.integ-test1.js' });
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      fileName: 'test/test-data/integ.integ-test1.js',
+      directory: 'test/test-data',
+    });
+    integTest.generateSnapshot();
     integTest.runIntegTestCase({
       testCase: {
         stacks: ['stack1'],
@@ -215,7 +117,7 @@ describe('IntegTest runIntegTests', () => {
     // THEN
     expect(deployMock).toHaveBeenCalledTimes(1);
     expect(destroyMock).toHaveBeenCalledTimes(1);
-    expect(synthFastMock).toHaveBeenCalledTimes(0);
+    expect(synthFastMock).toHaveBeenCalledTimes(1);
     expect(deployMock).toHaveBeenCalledWith({
       app: 'node integ.integ-test1.js',
       requireApproval: 'never',
@@ -236,9 +138,7 @@ describe('IntegTest runIntegTests', () => {
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
-      context: expect.objectContaining({
-        ...FUTURE_FLAGS,
-      }),
+      context: expect.any(Object),
       force: true,
       stacks: ['stack1'],
       output: 'cdk-integ.out.integ-test1',
@@ -247,7 +147,11 @@ describe('IntegTest runIntegTests', () => {
 
   test('with lookups', () => {
     // WHEN
-    const integTest = new IntegTestRunner({ cdk: cdkMock.cdk, fileName: 'test/test-data/integ.test-with-snapshot-assets-diff.js' });
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      fileName: 'test/test-data/integ.test-with-snapshot-assets-diff.js',
+      directory: 'test/test-data',
+    });
     integTest.runIntegTestCase({
       testCase: {
         stacks: ['test-stack'],
@@ -315,7 +219,12 @@ describe('IntegTest runIntegTests', () => {
 
   test('no clean', () => {
     // WHEN
-    const integTest = new IntegTestRunner({ cdk: cdkMock.cdk, fileName: 'test/test-data/integ.integ-test1.js' });
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      fileName: 'test/test-data/integ.integ-test1.js',
+      directory: 'test/test-data',
+    });
+    integTest.generateSnapshot();
     integTest.runIntegTestCase({
       clean: false,
       testCase: {
@@ -326,12 +235,17 @@ describe('IntegTest runIntegTests', () => {
     // THEN
     expect(deployMock).toHaveBeenCalledTimes(1);
     expect(destroyMock).toHaveBeenCalledTimes(0);
-    expect(synthFastMock).toHaveBeenCalledTimes(0);
+    expect(synthFastMock).toHaveBeenCalledTimes(1);
   });
 
   test('dryrun', () => {
     // WHEN
-    const integTest = new IntegTestRunner({ cdk: cdkMock.cdk, fileName: 'test/test-data/integ.integ-test1.js' });
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      fileName: 'test/test-data/integ.integ-test1.js',
+      directory: 'test/test-data',
+    });
+    integTest.generateSnapshot();
     integTest.runIntegTestCase({
       dryRun: true,
       testCase: {
@@ -342,17 +256,23 @@ describe('IntegTest runIntegTests', () => {
     // THEN
     expect(deployMock).toHaveBeenCalledTimes(0);
     expect(destroyMock).toHaveBeenCalledTimes(0);
-    expect(synthFastMock).toHaveBeenCalledTimes(1);
+    expect(synthFastMock).toHaveBeenCalledTimes(2);
   });
 
   test('determine test stack via pragma', () => {
     // WHEN
-    const integTest = new IntegTestRunner({ cdk: cdkMock.cdk, fileName: 'test/test-data/integ.integ-test1.js' });
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      fileName: 'test/test-data/integ.integ-test1.js',
+      directory: 'test',
+    });
     integTest.generateSnapshot();
 
     // THEN
     expect(integTest.tests).toEqual(expect.objectContaining({
-      'test/test-data/integ.integ-test1': {
+      'test-data/integ.integ-test1': {
+        diffAssets: false,
+        stackUpdateWorkflow: true,
         stacks: ['stack1'],
       },
     }));
@@ -361,7 +281,11 @@ describe('IntegTest runIntegTests', () => {
 
   test('generate snapshot', () => {
     // WHEN
-    const integTest = new IntegTestRunner({ cdk: cdkMock.cdk, fileName: 'test/test-data/integ.integ-test1.js' });
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      fileName: 'test/test-data/integ.integ-test1.js',
+      directory: 'test/test-data',
+    });
     integTest.generateSnapshot();
 
     // THEN
@@ -375,17 +299,20 @@ describe('IntegTest runIntegTests', () => {
       }),
     });
   });
-});
-
-describe('IntegTest no pragma', () => {
-  test('get stacks from list', async () => {
+  test('get stacks from list, no pragma', async () => {
     // WHEN
-    const integTest = new IntegTestRunner({ cdk: cdkMock.cdk, fileName: 'test/test-data/integ.integ-test2.js' });
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      fileName: 'test/test-data/integ.integ-test2.js',
+      directory: 'test',
+    });
     integTest.generateSnapshot();
 
     // THEN
     expect(integTest.tests).toEqual(expect.objectContaining({
-      'test/test-data/integ.integ-test2': {
+      'test-data/integ.integ-test2': {
+        diffAssets: false,
+        stackUpdateWorkflow: true,
         stacks: ['stackabc'],
       },
     }));
@@ -399,12 +326,16 @@ describe('IntegTest no pragma', () => {
       output: 'cdk-integ.out.integ-test2',
     });
   });
-});
 
-describe('IntegTest runIntegTests with profile', () => {
-  test('with defaults', () => {
+  test('with profile', () => {
     // WHEN
-    const integTest = new IntegTestRunner({ cdk: cdkMock.cdk, fileName: 'test/test-data/integ.integ-test1.js', profile: 'test-profile' });
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      fileName: 'test/test-data/integ.integ-test1.js',
+      profile: 'test-profile',
+      directory: 'test/test-data',
+    });
+    integTest.generateSnapshot();
     integTest.runIntegTestCase({
       testCase: {
         stacks: ['stack1'],
@@ -414,16 +345,14 @@ describe('IntegTest runIntegTests with profile', () => {
     // THEN
     expect(deployMock).toHaveBeenCalledTimes(1);
     expect(destroyMock).toHaveBeenCalledTimes(1);
-    expect(synthFastMock).toHaveBeenCalledTimes(0);
+    expect(synthFastMock).toHaveBeenCalledTimes(1);
     expect(deployMock).toHaveBeenCalledWith({
       app: 'node integ.integ-test1.js',
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
-      context: expect.objectContaining({
-        ...FUTURE_FLAGS,
-      }),
+      context: expect.any(Object),
       profile: 'test-profile',
       lookups: false,
       stacks: ['stack1'],
@@ -434,13 +363,197 @@ describe('IntegTest runIntegTests with profile', () => {
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
-      context: expect.objectContaining({
-        ...FUTURE_FLAGS,
-      }),
+      context: expect.any(Object),
       profile: 'test-profile',
       force: true,
       stacks: ['stack1'],
       output: 'cdk-integ.out.integ-test1',
     });
+  });
+
+  test('with hooks', () => {
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      fileName: 'test/test-data/integ.test-with-snapshot.js',
+      directory: 'test/test-data',
+    });
+    integTest.runIntegTestCase({
+      testCase: {
+        hooks: {
+          preDeploy: ['echo "preDeploy"'],
+          postDeploy: ['echo "postDeploy"'],
+          preDestroy: ['echo "preDestroy"'],
+          postDestroy: ['echo "postDestroy"'],
+        },
+        stacks: ['stack1'],
+      },
+    });
+
+    // THEN
+    expect(spawnSyncMock.mock.calls).toEqual(expect.arrayContaining([
+      expect.arrayContaining([
+        'echo "preDeploy"',
+      ]),
+      expect.arrayContaining([
+        'echo "postDeploy"',
+      ]),
+      expect.arrayContaining([
+        'echo "preDestroy"',
+      ]),
+      expect.arrayContaining([
+        'echo "postDestroy"',
+      ]),
+    ]));
+  });
+
+  test('git is used to checkout latest snapshot', () => {
+    // GIVEN
+    spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValueOnce({
+      status: 0,
+      stderr: Buffer.from('HEAD branch: main'),
+      stdout: Buffer.from('HEAD branch: main'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    }).mockReturnValueOnce({
+      status: 0,
+      stderr: Buffer.from('abc'),
+      stdout: Buffer.from('abc'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    // WHEN
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      fileName: 'test/test-data/integ.test-with-snapshot.js',
+      directory: 'test/test-data',
+    });
+    integTest.runIntegTestCase({
+      testCase: {
+        stacks: ['stack1'],
+      },
+    });
+
+    // THEN
+    expect(spawnSyncMock.mock.calls).toEqual(expect.arrayContaining([
+      expect.arrayContaining([
+        'git', ['remote', 'show', 'origin'],
+      ]),
+      expect.arrayContaining([
+        'git', ['merge-base', 'HEAD', 'main'],
+      ]),
+      expect.arrayContaining([
+        'git', ['checkout', 'abc', '--', 'test-with-snapshot.integ.snapshot'],
+      ]),
+    ]));
+  });
+
+  test('git is used and cannot determine origin', () => {
+    // GIVEN
+    spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValueOnce({
+      status: 1,
+      stderr: Buffer.from('HEAD branch: main'),
+      stdout: Buffer.from('HEAD branch: main'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+    const stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
+
+    // WHEN
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      fileName: 'test/test-data/integ.test-with-snapshot.js',
+      directory: 'test/test-data',
+    });
+    integTest.runIntegTestCase({
+      testCase: {
+        stacks: ['stack1'],
+      },
+    });
+
+    // THEN
+    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+      expect.arrayContaining([
+        expect.stringMatching(/Could not determine git origin branch/),
+      ]),
+    ]));
+  });
+
+  test('git is used and cannot checkout snapshot', () => {
+    // GIVEN
+    spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValueOnce({
+      status: 0,
+      stderr: Buffer.from('HEAD branch: main'),
+      stdout: Buffer.from('HEAD branch: main'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    }).mockReturnValueOnce({
+      status: 1,
+      stderr: Buffer.from('HEAD branch: main'),
+      stdout: Buffer.from('HEAD branch: main'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+    const stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
+
+    // WHEN
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      fileName: 'test/test-data/integ.test-with-snapshot.js',
+      directory: 'test/test-data',
+    });
+    integTest.runIntegTestCase({
+      testCase: {
+        stacks: ['stack1'],
+      },
+    });
+
+    // THEN
+    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+      expect.arrayContaining([
+        expect.stringMatching(/Could not checkout snapshot directory/),
+      ]),
+    ]));
+  });
+
+  test('with assets manifest, assets are removed if stackUpdateWorkflow is disabled', () => {
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      fileName: 'test/test-data/integ.test-with-snapshot-assets.js',
+      directory: 'test/test-data',
+    });
+    integTest.runIntegTestCase({
+      testCase: {
+        stackUpdateWorkflow: false,
+        stacks: ['test-stack'],
+      },
+    });
+
+    expect(removeSyncMock.mock.calls).toEqual([[
+      'test/test-data/test-with-snapshot-assets.integ.snapshot/asset.be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824',
+    ]]);
+  });
+
+  test('with assembly manifest, assets are removed if stackUpdateWorkflow is disabled', () => {
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      fileName: 'test/test-data/integ.test-with-snapshot-assets-diff.js',
+      directory: 'test/test-data',
+    });
+    integTest.runIntegTestCase({
+      testCase: {
+        stackUpdateWorkflow: false,
+        stacks: ['test-stack'],
+      },
+    });
+
+    expect(removeSyncMock.mock.calls).toEqual([[
+      'test/test-data/test-with-snapshot-assets-diff.integ.snapshot/asset.fec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509',
+    ]]);
   });
 });

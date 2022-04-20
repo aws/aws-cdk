@@ -1,6 +1,6 @@
 import * as workerpool from 'workerpool';
-import { IntegTestConfig } from '../../runner/integ-tests';
-import { IntegSnapshotRunner, IntegTestRunner } from '../../runner/runners';
+import { IntegSnapshotRunner, IntegTestRunner } from '../../runner';
+import { IntegTestConfig } from '../../runner/integration-tests';
 import { DiagnosticReason, IntegTestWorkerConfig } from '../common';
 import { IntegTestBatchRequest } from '../integ-test-worker';
 
@@ -16,6 +16,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
   const failures: IntegTestConfig[] = [];
   for (const test of request.tests) {
     const runner = new IntegTestRunner({
+      directory: test.directory,
       fileName: test.fileName,
       profile: request.profile,
       env: {
@@ -77,7 +78,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
  */
 export function snapshotTestWorker(test: IntegTestConfig): IntegTestWorkerConfig[] {
   const failedTests = new Array<IntegTestWorkerConfig>();
-  const runner = new IntegSnapshotRunner({ fileName: test.fileName });
+  const runner = new IntegSnapshotRunner({ fileName: test.fileName, directory: test.directory });
   const start = Date.now();
   try {
     if (!runner.hasSnapshot()) {
@@ -97,6 +98,7 @@ export function snapshotTestWorker(test: IntegTestConfig): IntegTestWorkerConfig
         }));
         failedTests.push({
           fileName: test.fileName,
+          directory: test.directory,
           destructiveChanges,
         });
       } else {
