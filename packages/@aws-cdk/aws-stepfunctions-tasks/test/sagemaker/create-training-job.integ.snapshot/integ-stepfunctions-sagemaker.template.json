@@ -6,23 +6,7 @@
     "KeyPolicy": {
      "Statement": [
       {
-       "Action": [
-        "kms:Create*",
-        "kms:Describe*",
-        "kms:Enable*",
-        "kms:List*",
-        "kms:Put*",
-        "kms:Update*",
-        "kms:Revoke*",
-        "kms:Disable*",
-        "kms:Get*",
-        "kms:Delete*",
-        "kms:ScheduleKeyDeletion",
-        "kms:CancelKeyDeletion",
-        "kms:GenerateDataKey",
-        "kms:TagResource",
-        "kms:UntagResource"
-       ],
+       "Action": "kms:*",
        "Effect": "Allow",
        "Principal": {
         "AWS": {
@@ -39,40 +23,6 @@
            },
            ":root"
           ]
-         ]
-        }
-       },
-       "Resource": "*"
-      },
-      {
-       "Action": [
-        "kms:Decrypt",
-        "kms:DescribeKey"
-       ],
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "TrainTaskSagemakerRole0A9B1CDD",
-          "Arn"
-         ]
-        }
-       },
-       "Resource": "*"
-      },
-      {
-       "Action": [
-        "kms:Encrypt",
-        "kms:ReEncrypt*",
-        "kms:GenerateDataKey*",
-        "kms:Decrypt"
-       ],
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "TrainTaskSagemakerRole0A9B1CDD",
-          "Arn"
          ]
         }
        },
@@ -129,11 +79,11 @@
         {
          "Action": [
           "cloudwatch:PutMetricData",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents",
+          "ecr:GetAuthorizationToken",
           "logs:CreateLogGroup",
+          "logs:CreateLogStream",
           "logs:DescribeLogStreams",
-          "ecr:GetAuthorizationToken"
+          "logs:PutLogEvents"
          ],
          "Effect": "Allow",
          "Resource": "*"
@@ -153,8 +103,8 @@
      "Statement": [
       {
        "Action": [
-        "s3:GetObject*",
         "s3:GetBucket*",
+        "s3:GetObject*",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -184,7 +134,10 @@
       {
        "Action": [
         "kms:Decrypt",
-        "kms:DescribeKey"
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -196,9 +149,13 @@
       },
       {
        "Action": [
+        "s3:Abort*",
         "s3:DeleteObject*",
-        "s3:PutObject*",
-        "s3:Abort*"
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
        ],
        "Effect": "Allow",
        "Resource": [
@@ -223,21 +180,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": [
-        "kms:Encrypt",
-        "kms:ReEncrypt*",
-        "kms:GenerateDataKey*",
-        "kms:Decrypt"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "EncryptionKey1B843E66",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"

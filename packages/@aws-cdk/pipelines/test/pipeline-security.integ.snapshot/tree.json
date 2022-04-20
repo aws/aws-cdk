@@ -56,9 +56,9 @@
                           "Statement": [
                             {
                               "Action": [
+                                "s3:DeleteObject*",
                                 "s3:GetBucket*",
-                                "s3:List*",
-                                "s3:DeleteObject*"
+                                "s3:List*"
                               ],
                               "Effect": "Allow",
                               "Principal": {
@@ -187,23 +187,7 @@
                             "keyPolicy": {
                               "Statement": [
                                 {
-                                  "Action": [
-                                    "kms:Create*",
-                                    "kms:Describe*",
-                                    "kms:Enable*",
-                                    "kms:List*",
-                                    "kms:Put*",
-                                    "kms:Update*",
-                                    "kms:Revoke*",
-                                    "kms:Disable*",
-                                    "kms:Get*",
-                                    "kms:Delete*",
-                                    "kms:ScheduleKeyDeletion",
-                                    "kms:CancelKeyDeletion",
-                                    "kms:GenerateDataKey",
-                                    "kms:TagResource",
-                                    "kms:UntagResource"
-                                  ],
+                                  "Action": "kms:*",
                                   "Effect": "Allow",
                                   "Principal": {
                                     "AWS": {
@@ -220,148 +204,6 @@
                                           },
                                           ":root"
                                         ]
-                                      ]
-                                    }
-                                  },
-                                  "Resource": "*"
-                                },
-                                {
-                                  "Action": [
-                                    "kms:Decrypt",
-                                    "kms:DescribeKey",
-                                    "kms:Encrypt",
-                                    "kms:ReEncrypt*",
-                                    "kms:GenerateDataKey*"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "AWS": {
-                                      "Fn::GetAtt": [
-                                        "TestPipelineRole63C35BBD",
-                                        "Arn"
-                                      ]
-                                    }
-                                  },
-                                  "Resource": "*"
-                                },
-                                {
-                                  "Action": [
-                                    "kms:Encrypt",
-                                    "kms:ReEncrypt*",
-                                    "kms:GenerateDataKey*",
-                                    "kms:Decrypt"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "AWS": {
-                                      "Fn::GetAtt": [
-                                        "TestPipelineSourceS3CodePipelineActionRoleEF21D3A0",
-                                        "Arn"
-                                      ]
-                                    }
-                                  },
-                                  "Resource": "*"
-                                },
-                                {
-                                  "Action": [
-                                    "kms:Decrypt",
-                                    "kms:DescribeKey",
-                                    "kms:Encrypt",
-                                    "kms:ReEncrypt*",
-                                    "kms:GenerateDataKey*"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "AWS": {
-                                      "Fn::GetAtt": [
-                                        "TestPipelineBuildSynthCdkBuildProjectRole4C6E5729",
-                                        "Arn"
-                                      ]
-                                    }
-                                  },
-                                  "Resource": "*"
-                                },
-                                {
-                                  "Action": [
-                                    "kms:Decrypt",
-                                    "kms:Encrypt",
-                                    "kms:ReEncrypt*",
-                                    "kms:GenerateDataKey*"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "AWS": {
-                                      "Fn::GetAtt": [
-                                        "TestPipelineBuildSynthCdkBuildProjectRole4C6E5729",
-                                        "Arn"
-                                      ]
-                                    }
-                                  },
-                                  "Resource": "*"
-                                },
-                                {
-                                  "Action": [
-                                    "kms:Decrypt",
-                                    "kms:DescribeKey"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "AWS": {
-                                      "Fn::GetAtt": [
-                                        "UnattachedStageStageApplicationSecurityCheckCDKSecurityCheckRoleD3505CF0",
-                                        "Arn"
-                                      ]
-                                    }
-                                  },
-                                  "Resource": "*"
-                                },
-                                {
-                                  "Action": [
-                                    "kms:Decrypt",
-                                    "kms:Encrypt",
-                                    "kms:ReEncrypt*",
-                                    "kms:GenerateDataKey*"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "AWS": {
-                                      "Fn::GetAtt": [
-                                        "UnattachedStageStageApplicationSecurityCheckCDKSecurityCheckRoleD3505CF0",
-                                        "Arn"
-                                      ]
-                                    }
-                                  },
-                                  "Resource": "*"
-                                },
-                                {
-                                  "Action": [
-                                    "kms:Decrypt",
-                                    "kms:DescribeKey"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "AWS": {
-                                      "Fn::GetAtt": [
-                                        "TestPipelinePipelineApplicationSecurityCheckCDKSecurityCheckRoleA54CF050",
-                                        "Arn"
-                                      ]
-                                    }
-                                  },
-                                  "Resource": "*"
-                                },
-                                {
-                                  "Action": [
-                                    "kms:Decrypt",
-                                    "kms:Encrypt",
-                                    "kms:ReEncrypt*",
-                                    "kms:GenerateDataKey*"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "AWS": {
-                                      "Fn::GetAtt": [
-                                        "TestPipelinePipelineApplicationSecurityCheckCDKSecurityCheckRoleA54CF050",
-                                        "Arn"
                                       ]
                                     }
                                   },
@@ -535,8 +377,8 @@
                                     },
                                     {
                                       "Action": [
-                                        "s3:GetObject*",
                                         "s3:GetBucket*",
+                                        "s3:GetObject*",
                                         "s3:List*"
                                       ],
                                       "Effect": "Allow",
@@ -653,12 +495,16 @@
                                   "Statement": [
                                     {
                                       "Action": [
-                                        "s3:GetObject*",
-                                        "s3:GetBucket*",
-                                        "s3:List*",
+                                        "s3:Abort*",
                                         "s3:DeleteObject*",
-                                        "s3:PutObject*",
-                                        "s3:Abort*"
+                                        "s3:GetBucket*",
+                                        "s3:GetObject*",
+                                        "s3:List*",
+                                        "s3:PutObject",
+                                        "s3:PutObjectLegalHold",
+                                        "s3:PutObjectRetention",
+                                        "s3:PutObjectTagging",
+                                        "s3:PutObjectVersionTagging"
                                       ],
                                       "Effect": "Allow",
                                       "Resource": [
@@ -689,8 +535,8 @@
                                         "kms:Decrypt",
                                         "kms:DescribeKey",
                                         "kms:Encrypt",
-                                        "kms:ReEncrypt*",
-                                        "kms:GenerateDataKey*"
+                                        "kms:GenerateDataKey*",
+                                        "kms:ReEncrypt*"
                                       ],
                                       "Effect": "Allow",
                                       "Resource": {
@@ -703,129 +549,91 @@
                                     {
                                       "Action": "sts:AssumeRole",
                                       "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "TestPipelineSourceS3CodePipelineActionRoleEF21D3A0",
-                                          "Arn"
-                                        ]
-                                      }
-                                    },
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "TestPipelineBuildSynthCodePipelineActionRoleF7BF5926",
-                                          "Arn"
-                                        ]
-                                      }
-                                    },
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "TestPipelineUnattachedStageSingleStageSecurityCheckCodePipelineActionRoleFF6E43E2",
-                                          "Arn"
-                                        ]
-                                      }
-                                    },
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "TestPipelineUnattachedStageSingleStageManualApprovalCodePipelineActionRoleF7A614C8",
-                                          "Arn"
-                                        ]
-                                      }
-                                    },
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "TestPipelinePreProductionPreProductionSecurityCheckCodePipelineActionRole4E54C194",
-                                          "Arn"
-                                        ]
-                                      }
-                                    },
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "TestPipelinePreProductionPreProductionManualApprovalCodePipelineActionRole81B9C4F9",
-                                          "Arn"
-                                        ]
-                                      }
-                                    },
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "TestPipelinePreProductionSafeProductionSecurityCheckCodePipelineActionRole399C68A6",
-                                          "Arn"
-                                        ]
-                                      }
-                                    },
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "TestPipelinePreProductionSafeProductionManualApprovalCodePipelineActionRole4F30C0D9",
-                                          "Arn"
-                                        ]
-                                      }
-                                    },
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "TestPipelineNoSecurityCheckEnableSecurityCheckSecurityCheckCodePipelineActionRole8D10AA6D",
-                                          "Arn"
-                                        ]
-                                      }
-                                    },
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "TestPipelineNoSecurityCheckEnableSecurityCheckManualApprovalCodePipelineActionRole27FC4015",
-                                          "Arn"
-                                        ]
-                                      }
-                                    },
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::Join": [
-                                          "",
-                                          [
-                                            "arn:",
-                                            {
-                                              "Ref": "AWS::Partition"
-                                            },
-                                            ":iam::",
-                                            {
-                                              "Ref": "AWS::AccountId"
-                                            },
-                                            ":role/cdk-hnb659fds-deploy-role-",
-                                            {
-                                              "Ref": "AWS::AccountId"
-                                            },
-                                            "-",
-                                            {
-                                              "Ref": "AWS::Region"
-                                            }
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "TestPipelineBuildSynthCodePipelineActionRoleF7BF5926",
+                                            "Arn"
                                           ]
-                                        ]
-                                      }
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "TestPipelineNoSecurityCheckEnableSecurityCheckManualApprovalCodePipelineActionRole27FC4015",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "TestPipelineNoSecurityCheckEnableSecurityCheckSecurityCheckCodePipelineActionRole8D10AA6D",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "TestPipelinePreProductionPreProductionManualApprovalCodePipelineActionRole81B9C4F9",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "TestPipelinePreProductionPreProductionSecurityCheckCodePipelineActionRole4E54C194",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "TestPipelinePreProductionSafeProductionManualApprovalCodePipelineActionRole4F30C0D9",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "TestPipelinePreProductionSafeProductionSecurityCheckCodePipelineActionRole399C68A6",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "TestPipelineSourceS3CodePipelineActionRoleEF21D3A0",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "TestPipelineUnattachedStageSingleStageManualApprovalCodePipelineActionRoleF7A614C8",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "TestPipelineUnattachedStageSingleStageSecurityCheckCodePipelineActionRoleFF6E43E2",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":iam::",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":role/cdk-hnb659fds-deploy-role-",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              "-",
+                                              {
+                                                "Ref": "AWS::Region"
+                                              }
+                                            ]
+                                          ]
+                                        }
+                                      ]
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -1910,8 +1718,8 @@
                                           "Statement": [
                                             {
                                               "Action": [
-                                                "s3:GetObject*",
                                                 "s3:GetBucket*",
+                                                "s3:GetObject*",
                                                 "s3:List*"
                                               ],
                                               "Effect": "Allow",
@@ -1940,9 +1748,13 @@
                                             },
                                             {
                                               "Action": [
+                                                "s3:Abort*",
                                                 "s3:DeleteObject*",
-                                                "s3:PutObject*",
-                                                "s3:Abort*"
+                                                "s3:PutObject",
+                                                "s3:PutObjectLegalHold",
+                                                "s3:PutObjectRetention",
+                                                "s3:PutObjectTagging",
+                                                "s3:PutObjectVersionTagging"
                                               ],
                                               "Effect": "Allow",
                                               "Resource": [
@@ -1970,10 +1782,10 @@
                                             },
                                             {
                                               "Action": [
+                                                "kms:Decrypt",
                                                 "kms:Encrypt",
-                                                "kms:ReEncrypt*",
                                                 "kms:GenerateDataKey*",
-                                                "kms:Decrypt"
+                                                "kms:ReEncrypt*"
                                               ],
                                               "Effect": "Allow",
                                               "Resource": {
@@ -2201,7 +2013,8 @@
                                                           ":log-group:/aws/codebuild/",
                                                           {
                                                             "Ref": "TestPipelineBuildSynthCdkBuildProject755D4B01"
-                                                          }
+                                                          },
+                                                          ":*"
                                                         ]
                                                       ]
                                                     },
@@ -2224,8 +2037,7 @@
                                                           ":log-group:/aws/codebuild/",
                                                           {
                                                             "Ref": "TestPipelineBuildSynthCdkBuildProject755D4B01"
-                                                          },
-                                                          ":*"
+                                                          }
                                                         ]
                                                       ]
                                                     }
@@ -2233,11 +2045,11 @@
                                                 },
                                                 {
                                                   "Action": [
-                                                    "codebuild:CreateReportGroup",
-                                                    "codebuild:CreateReport",
-                                                    "codebuild:UpdateReport",
+                                                    "codebuild:BatchPutCodeCoverages",
                                                     "codebuild:BatchPutTestCases",
-                                                    "codebuild:BatchPutCodeCoverages"
+                                                    "codebuild:CreateReport",
+                                                    "codebuild:CreateReportGroup",
+                                                    "codebuild:UpdateReport"
                                                   ],
                                                   "Effect": "Allow",
                                                   "Resource": {
@@ -2267,12 +2079,16 @@
                                                 },
                                                 {
                                                   "Action": [
-                                                    "s3:GetObject*",
-                                                    "s3:GetBucket*",
-                                                    "s3:List*",
+                                                    "s3:Abort*",
                                                     "s3:DeleteObject*",
-                                                    "s3:PutObject*",
-                                                    "s3:Abort*"
+                                                    "s3:GetBucket*",
+                                                    "s3:GetObject*",
+                                                    "s3:List*",
+                                                    "s3:PutObject",
+                                                    "s3:PutObjectLegalHold",
+                                                    "s3:PutObjectRetention",
+                                                    "s3:PutObjectTagging",
+                                                    "s3:PutObjectVersionTagging"
                                                   ],
                                                   "Effect": "Allow",
                                                   "Resource": [
@@ -2303,23 +2119,8 @@
                                                     "kms:Decrypt",
                                                     "kms:DescribeKey",
                                                     "kms:Encrypt",
-                                                    "kms:ReEncrypt*",
-                                                    "kms:GenerateDataKey*"
-                                                  ],
-                                                  "Effect": "Allow",
-                                                  "Resource": {
-                                                    "Fn::GetAtt": [
-                                                      "TestPipelineArtifactsBucketEncryptionKey13258842",
-                                                      "Arn"
-                                                    ]
-                                                  }
-                                                },
-                                                {
-                                                  "Action": [
-                                                    "kms:Decrypt",
-                                                    "kms:Encrypt",
-                                                    "kms:ReEncrypt*",
-                                                    "kms:GenerateDataKey*"
+                                                    "kms:GenerateDataKey*",
+                                                    "kms:ReEncrypt*"
                                                   ],
                                                   "Effect": "Allow",
                                                   "Resource": {
@@ -3524,7 +3325,8 @@
                                                   ":log-group:/aws/codebuild/",
                                                   {
                                                     "Ref": "TestPipelinePipelineApplicationSecurityCheckCDKSecurityCheckBEE4547C"
-                                                  }
+                                                  },
+                                                  ":*"
                                                 ]
                                               ]
                                             },
@@ -3547,8 +3349,7 @@
                                                   ":log-group:/aws/codebuild/",
                                                   {
                                                     "Ref": "TestPipelinePipelineApplicationSecurityCheckCDKSecurityCheckBEE4547C"
-                                                  },
-                                                  ":*"
+                                                  }
                                                 ]
                                               ]
                                             }
@@ -3556,11 +3357,11 @@
                                         },
                                         {
                                           "Action": [
-                                            "codebuild:CreateReportGroup",
-                                            "codebuild:CreateReport",
-                                            "codebuild:UpdateReport",
+                                            "codebuild:BatchPutCodeCoverages",
                                             "codebuild:BatchPutTestCases",
-                                            "codebuild:BatchPutCodeCoverages"
+                                            "codebuild:CreateReport",
+                                            "codebuild:CreateReportGroup",
+                                            "codebuild:UpdateReport"
                                           ],
                                           "Effect": "Allow",
                                           "Resource": {
@@ -3635,8 +3436,8 @@
                                         },
                                         {
                                           "Action": [
-                                            "s3:GetObject*",
                                             "s3:GetBucket*",
+                                            "s3:GetObject*",
                                             "s3:List*"
                                           ],
                                           "Effect": "Allow",
@@ -3666,22 +3467,10 @@
                                         {
                                           "Action": [
                                             "kms:Decrypt",
-                                            "kms:DescribeKey"
-                                          ],
-                                          "Effect": "Allow",
-                                          "Resource": {
-                                            "Fn::GetAtt": [
-                                              "TestPipelineArtifactsBucketEncryptionKey13258842",
-                                              "Arn"
-                                            ]
-                                          }
-                                        },
-                                        {
-                                          "Action": [
-                                            "kms:Decrypt",
+                                            "kms:DescribeKey",
                                             "kms:Encrypt",
-                                            "kms:ReEncrypt*",
-                                            "kms:GenerateDataKey*"
+                                            "kms:GenerateDataKey*",
+                                            "kms:ReEncrypt*"
                                           ],
                                           "Effect": "Allow",
                                           "Resource": {
@@ -4082,7 +3871,8 @@
                                                   ":log-group:/aws/codebuild/",
                                                   {
                                                     "Ref": "UnattachedStageStageApplicationSecurityCheckCDKSecurityCheckADCE795B"
-                                                  }
+                                                  },
+                                                  ":*"
                                                 ]
                                               ]
                                             },
@@ -4105,8 +3895,7 @@
                                                   ":log-group:/aws/codebuild/",
                                                   {
                                                     "Ref": "UnattachedStageStageApplicationSecurityCheckCDKSecurityCheckADCE795B"
-                                                  },
-                                                  ":*"
+                                                  }
                                                 ]
                                               ]
                                             }
@@ -4114,11 +3903,11 @@
                                         },
                                         {
                                           "Action": [
-                                            "codebuild:CreateReportGroup",
-                                            "codebuild:CreateReport",
-                                            "codebuild:UpdateReport",
+                                            "codebuild:BatchPutCodeCoverages",
                                             "codebuild:BatchPutTestCases",
-                                            "codebuild:BatchPutCodeCoverages"
+                                            "codebuild:CreateReport",
+                                            "codebuild:CreateReportGroup",
+                                            "codebuild:UpdateReport"
                                           ],
                                           "Effect": "Allow",
                                           "Resource": {
@@ -4193,8 +3982,8 @@
                                         },
                                         {
                                           "Action": [
-                                            "s3:GetObject*",
                                             "s3:GetBucket*",
+                                            "s3:GetObject*",
                                             "s3:List*"
                                           ],
                                           "Effect": "Allow",
@@ -4224,22 +4013,10 @@
                                         {
                                           "Action": [
                                             "kms:Decrypt",
-                                            "kms:DescribeKey"
-                                          ],
-                                          "Effect": "Allow",
-                                          "Resource": {
-                                            "Fn::GetAtt": [
-                                              "TestPipelineArtifactsBucketEncryptionKey13258842",
-                                              "Arn"
-                                            ]
-                                          }
-                                        },
-                                        {
-                                          "Action": [
-                                            "kms:Decrypt",
+                                            "kms:DescribeKey",
                                             "kms:Encrypt",
-                                            "kms:ReEncrypt*",
-                                            "kms:GenerateDataKey*"
+                                            "kms:GenerateDataKey*",
+                                            "kms:ReEncrypt*"
                                           ],
                                           "Effect": "Allow",
                                           "Resource": {
