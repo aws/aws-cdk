@@ -25,7 +25,7 @@ async function main() {
     infile: ver.changelogFile,
     prerelease: ver.prerelease,
     scripts: {
-      postchangelog: `${path.join(__dirname, 'changelog-experimental-fix.sh')} ${changelogPath}`
+      postchangelog: `node ${path.join(__dirname, 'changelog-experimental-fix.js')} ${changelogPath}`
     }
   };
 

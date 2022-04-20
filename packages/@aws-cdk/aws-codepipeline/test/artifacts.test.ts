@@ -1,5 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
@@ -106,7 +107,6 @@ describe('artifacts', () => {
       });
 
       const errors = validate(stack);
-
       expect(errors.length).toEqual(1);
       const error = errors[0];
       expect(error).toMatch(/Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once./);
@@ -265,7 +265,7 @@ describe('artifacts', () => {
 });
 
 /* eslint-disable @aws-cdk/no-core-construct */
-function validate(construct: cdk.IConstruct): string[] {
+function validate(construct: IConstruct): string[] {
   try {
     (construct.node.root as cdk.App).synth();
     return [];

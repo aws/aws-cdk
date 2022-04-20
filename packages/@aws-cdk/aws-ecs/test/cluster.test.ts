@@ -7,6 +7,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as ecs from '../lib';
 
 describe('cluster', () => {
@@ -175,8 +176,6 @@ describe('cluster', () => {
           Version: '2012-10-17',
         },
       });
-
-
     });
 
     testDeprecated('with only vpc set, it correctly sets default properties', () => {
@@ -810,7 +809,7 @@ describe('cluster', () => {
    */
   testDeprecated('allows specifying special HW AMI Type', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -864,7 +863,7 @@ describe('cluster', () => {
 
   testDeprecated('allows specifying windows image', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -1014,7 +1013,7 @@ describe('cluster', () => {
 
   testDeprecated('allows specifying special HW AMI Type v2', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -1045,7 +1044,7 @@ describe('cluster', () => {
 
   testDeprecated('allows specifying Amazon Linux v1 AMI', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -1076,7 +1075,7 @@ describe('cluster', () => {
 
   testDeprecated('allows specifying windows image v2', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -1669,7 +1668,6 @@ describe('cluster', () => {
         },
       ],
     });
-
   });
 
   testDeprecated('correct bottlerocket AMI for ARM64 architecture', () => {
@@ -1690,15 +1688,10 @@ describe('cluster', () => {
       },
     });
 
-    const assembly = app.synth();
-    const template = assembly.getStackByName(stack.stackName).template;
-    expect(template.Parameters).toEqual({
-      SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
-        Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
-        Default: '/aws/service/bottlerocket/aws-ecs-1/arm64/latest/image_id',
-      },
+    Template.fromStack(stack).hasParameter('SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter', {
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      Default: '/aws/service/bottlerocket/aws-ecs-1/arm64/latest/image_id',
     });
-
   });
 
   testDeprecated('throws when machineImage and machineImageType both specified', () => {
