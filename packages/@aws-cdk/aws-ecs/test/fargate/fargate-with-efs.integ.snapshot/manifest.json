@@ -156,7 +156,10 @@
         "/aws-ecs-fargate-efs/etcdata/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "etcdata80702D7D"
+            "data": "etcdata80702D7D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-fargate-efs/etcdata/EfsSecurityGroup/Resource": [
@@ -168,13 +171,19 @@
         "/aws-ecs-fargate-efs/etcdata/EfsMountTarget1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "etcdataEfsMountTarget1A2665990"
+            "data": "etcdataEfsMountTarget1A2665990",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-fargate-efs/etcdata/EfsMountTarget2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "etcdataEfsMountTarget280CEA26C"
+            "data": "etcdataEfsMountTarget280CEA26C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-fargate-efs/TaskDef/TaskRole/Resource": [
@@ -186,7 +195,10 @@
         "/aws-ecs-fargate-efs/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDef54694570"
+            "data": "TaskDef54694570",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ]
       },
