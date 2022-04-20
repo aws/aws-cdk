@@ -27,7 +27,6 @@
 @aws-cdk/core.DefaultStackSynthesizerProps#fileAssetKeyArnExportName
 @aws-cdk/core.DockerImageAssetSource#repositoryName
 @aws-cdk/core.Duration#toISOString
-@aws-cdk/core.FileAssetLocation#kmsKeyArn
 @aws-cdk/core.FileAssetLocation#s3Url
 @aws-cdk/core.ITemplateOptions#transform
 @aws-cdk/core.Lazy#anyValue
