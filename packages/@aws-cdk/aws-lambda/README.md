@@ -197,7 +197,7 @@ fn.addPermission('grant to entire org', {
 
 // Equivalent to:
 fn.addPermission('grant to entire org', {
-  principal: iam.StarPrincipal(),
+  principal: new iam.StarPrincipal(),
   principalOrg: orgPrincipal,
 })
 ```
@@ -213,8 +213,8 @@ AWS account or role as the `principal`:
 declare const fn: lambda.Function;
 
 fn.addPermission('grant to account in org', {
-  principal: iam.AccountPrincipal('123456789012');
-  principalOrg: iam.OrganizationPrincipal('o-xxxxxxxxxx'),
+  principal: new iam.AccountPrincipal('123456789012'),
+  principalOrg: new iam.OrganizationPrincipal('o-xxxxxxxxxx'),
 });
 ```
 
@@ -227,7 +227,7 @@ in the AWS Lambda Developer Guide.
 ```ts
 // Grant permission to other AWS account
 declare const fn: lambda.Function;
-const account = iam.AccountPrincipal('123456789012');
+const account = new iam.AccountPrincipal('123456789012');
 
 fn.grantInvoke(account);
 
