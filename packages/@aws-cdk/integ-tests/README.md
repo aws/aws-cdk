@@ -122,3 +122,89 @@ new IntegTest(app, 'integ-test', {
 });
 ```
 
+## Assertions
+
+When writing integration tests, you sometimes need to perform actions against the deployed integration test
+infrastructure to validate that certain functionality is working. This module contains assertion constructs
+that allow you to accomplish this.
+
+### Example
+
+The `aws-stepfunctions-tasks` module contains some good examples of when integration tests need to perform assertions
+on the deployed infrastructure. The `EventBridgePutEvents` construct creates a step function task to send and event
+to and EventBridge event bus. We are creating an integration between two different AWS services, so it is not enough
+to just assert that the infrastructure is successfully created, we also need to assert that the integration was configured
+correctly to allow the step function task to send the event to event bridge.
+
+Given an Integration Test that looks like this:
+```ts
+const app = new App();
+const stack = new Stack(app, 'aws-stepfunctions-tasks-eventbridge-put-events-integ');
+
+const eventBus = new events.EventBus(stack, 'EventBus', {
+  eventBusName: 'MyEventBus1',
+});
+
+const putEventsTask = new stepfunctions_tasks.EventBridgePutEvents(stack, 'Put Custom Events', {
+  entries: [{
+    // Entry with no event bus specified
+    detail: sfn.TaskInput.fromObject({
+      Message: 'Hello from Step Functions!',
+    }),
+    detailType: 'MessageFromStepFunctions',
+    source: 'step.functions',
+  }, {
+    // Entry with EventBus provided as object
+    detail: sfn.TaskInput.fromObject({
+      Message: 'Hello from Step Functions!',
+    }),
+    eventBus,
+    detailType: 'MessageFromStepFunctions',
+    source: 'step.functions',
+  }],
+});
+
+const sm = new sfn.StateMachine(stack, 'StateMachine', {
+  definition: putEventsTask,
+  timeout: cdk.Duration.seconds(30),
+});
+
+new IntegTest(app, 'IntegTest', {
+  testCases: [
+    new IntegTestCase(app, 'TestCase', {
+      stacks: [stack],
+    }),
+  ],
+});
+```
+
+We could then register assertions
+
+```ts
+const assert = new DeployAssert(
+  stack,
+);
+
+// Start an execution
+const start = assert.queryAws({
+  api: 'startExecution',
+  service: 'StepFunctions',
+  parameters: {
+    stateMachineArn: sm.stateMachineArn,
+  },
+});
+
+// describe the results of the execution
+const describe = assert.queryAws({
+  api: 'describeExecution',
+  service: 'StepFunctions',
+  parameters: {
+    executionArn: start.getAttString('executionArn'),
+  },
+});
+
+// assert the results
+assert.registerAssertion(describe.assertEqual({
+  status: 'SUCCEEDED',
+}, 'success'));
+```
