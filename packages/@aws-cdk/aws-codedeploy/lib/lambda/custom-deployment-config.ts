@@ -141,10 +141,8 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
     });
-  }
 
-  protected validate(): string[] {
-    return validateName('Deployment config', this.deploymentConfigName);
+    this.node.addValidation({ validate: () => validateName('Deployment config', this.deploymentConfigName) });
   }
 
   // Validate the inputs. The percentage/interval limits come from CodeDeploy

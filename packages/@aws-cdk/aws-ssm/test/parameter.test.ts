@@ -4,6 +4,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as ssm from '../lib';
 
 test('creating a String SSM Parameter', () => {
@@ -628,7 +629,7 @@ test('StringListParameter.fromName', () => {
 
 test('fromLookup will use the SSM context provider to read value during synthesis', () => {
   // GIVEN
-  const app = new cdk.App();
+  const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
   const stack = new cdk.Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' } });
 
   // WHEN
