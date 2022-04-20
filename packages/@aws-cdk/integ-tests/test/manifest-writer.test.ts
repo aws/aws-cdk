@@ -21,7 +21,7 @@ describe(IntegManifestWriter, () => {
   };
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(os.tmpdir());
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-test'));
   });
 
   afterEach(() => {
