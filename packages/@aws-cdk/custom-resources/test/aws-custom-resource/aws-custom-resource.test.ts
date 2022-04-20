@@ -162,6 +162,39 @@ test('with custom policyStatements', () => {
   });
 });
 
+test('with no policyStatements', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onUpdate: {
+      service: 'S3',
+      action: 'putObject',
+      parameters: {
+        Bucket: 'my-bucket',
+        Key: 'my-key',
+        Body: 'my-body',
+      },
+      physicalResourceId: PhysicalResourceId.fromResponse('ETag'),
+    },
+  });
+
+  // THEN
+  // Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+  //   'PolicyDocument': {
+  //     'Statement': [
+  //       {
+  //         'Action': 's3:PutObject',
+  //         'Effect': 'Allow',
+  //         'Resource': 'arn:aws:s3:::my-bucket/my-key',
+  //       },
+  //     ],
+  //     'Version': '2012-10-17',
+  //   },
+  // });
+});
+
 test('fails when no calls are specified', () => {
   const stack = new cdk.Stack();
   expect(() => new AwsCustomResource(stack, 'AwsSdk', {
