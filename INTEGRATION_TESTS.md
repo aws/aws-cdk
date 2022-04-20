@@ -10,6 +10,7 @@ on what type of changes require integrations tests and how you should write inte
   - [New L2 Constructs](#new-l2-constructs)
   - [Existing L2 Constructs](#existing-l2-constructs)
   - [Assertions](#assertions)
+- [Running Integration Tests](#running-integration-tests)
 
 ## What are CDK Integration Tests
 
@@ -223,3 +224,40 @@ to deploy the Lambda Function _and_ then rerun the assertions to ensure that the
 
 ### Assertions
 ...Coming soon...
+
+## Running Integration Tests
+
+Most of the time you will only need to run integration tests for an individual module (i.e. `aws-lambda`). Other times you may need to run tests across multiple modules.
+In this case I would recommend running from the root directory like below.
+
+_Run snapshot tests only_
+```bash
+yarn integ-runner --directory packages/@aws-cdk
+```
+
+_Run snapshot tests and then re-run integration tests for failed snapshots_
+```bash
+yarn integ-runner --directory packages/@aws-cdk --update-on-failed
+```
+
+One benefit of running from the root directory like this is that it will only collect tests from "built" modules. If you have built the entire
+repo it will run all integration tests, but if you have only built a couple modules it will only run tests from those.
+
+### Running large numbers of Tests
+
+If you need to re-run a large number of tests you can run them in parallel like this.
+
+```bash
+yarn integ-runner --directory packages/@aws-cdk --update-on-failed \
+  --parallel-regions us-east-1 \
+  --parallel-regions us-east-2 \
+  --parallel-regions us-west-2 \
+  --parallel-regions eu-west-1 \
+  --profiles profile1 \
+  --profiles profile2 \
+  --profiles profile3 \
+  --verbose
+```
+
+When using both `--parallel-regions` and `--profiles` it will execute (regions*profiles) tests in parallel (in this example 12)
+If you want to execute more than 16 tests in parallel you can pass a higher value to `--max-workers`.
