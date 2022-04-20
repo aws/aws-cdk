@@ -284,7 +284,7 @@ describe('cloud assembly manifest reader', () => {
     });
   });
 
-  test('can get assets from manifest', () => {
+  test('can get assets from assembly manifest', () => {
     // WHEN
     const manifest = AssemblyManifestReader.fromFile(manifestFile);
     const assets = manifest.getAssetsForStack('test-stack2');

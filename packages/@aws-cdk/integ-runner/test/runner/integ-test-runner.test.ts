@@ -521,7 +521,7 @@ describe('IntegTest runIntegTests', () => {
     ]));
   });
 
-  test('assets are removed if stackUpdateWorkflow is disabled', () => {
+  test('with assets manifest, assets are removed if stackUpdateWorkflow is disabled', () => {
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,
       fileName: 'test/test-data/integ.test-with-snapshot-assets.js',
@@ -536,6 +536,24 @@ describe('IntegTest runIntegTests', () => {
 
     expect(removeSyncMock.mock.calls).toEqual([[
       'test/test-data/test-with-snapshot-assets.integ.snapshot/asset.be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824',
+    ]]);
+  });
+
+  test('with assembly manifest, assets are removed if stackUpdateWorkflow is disabled', () => {
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      fileName: 'test/test-data/integ.test-with-snapshot-assets-diff.js',
+      directory: 'test/test-data',
+    });
+    integTest.runIntegTestCase({
+      testCase: {
+        stackUpdateWorkflow: false,
+        stacks: ['test-stack'],
+      },
+    });
+
+    expect(removeSyncMock.mock.calls).toEqual([[
+      'test/test-data/test-with-snapshot-assets-diff.integ.snapshot/asset.fec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509',
     ]]);
   });
 });
