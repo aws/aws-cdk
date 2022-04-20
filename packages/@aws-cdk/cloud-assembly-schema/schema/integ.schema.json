@@ -14,10 +14,6 @@
                     "default": false,
                     "type": "boolean"
                 },
-                "stackUpdateWorkflow": {
-                    "description": "Run update workflow on this integration test\nThis should only be set to false to test scenarios\nthat are not possible to test as part of the update workflow (Default true)",
-                    "type": "boolean"
-                },
                 "testCases": {
                     "description": "test cases",
                     "type": "object",
@@ -32,7 +28,7 @@
             ]
         },
         "TestCase": {
-            "description": "Represents an integration test case",
+            "description": "Represents an integration test test case",
             "type": "object",
             "properties": {
                 "stacks": {
@@ -42,12 +38,16 @@
                         "type": "string"
                     }
                 },
+                "stackUpdateWorkflow": {
+                    "description": "Run update workflow on this test case\nThis should only be set to false to test scenarios\nthat are not possible to test as part of the update workflow (Default true)",
+                    "type": "boolean"
+                },
                 "cdkCommandOptions": {
                     "description": "Additional options to use for each CDK command (Default - runner default options)",
                     "$ref": "#/definitions/CdkCommands"
                 },
                 "hooks": {
-                    "description": "Additional commands to run at predefined points in the test workflow\n\nThese commands will be run from the directory that contains\nthe integration test\n\ne.g. { postDeploy: 'yarn test' } (Default - no hooks)",
+                    "description": "Additional commands to run at predefined points in the test workflow\n\ne.g. { postDeploy: ['yarn', 'test'] } (Default - no hooks)",
                     "$ref": "#/definitions/Hooks"
                 },
                 "diffAssets": {
@@ -440,20 +440,32 @@
             "type": "object",
             "properties": {
                 "preDeploy": {
-                    "description": "Command to run prior to deploying the cdk stacks\nin the integration test (Default - no commands)",
-                    "type": "string"
+                    "description": "Commands to run prior to deploying the cdk stacks\nin the integration test (Default - no commands)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "postDeploy": {
-                    "description": "Command to run prior after deploying the cdk stacks\nin the integration test (Default - no commands)",
-                    "type": "string"
+                    "description": "Commands to run prior after deploying the cdk stacks\nin the integration test (Default - no commands)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "preDestroy": {
-                    "description": "Command to run prior to destroying the cdk stacks\nin the integration test (Default - no commands)",
-                    "type": "string"
+                    "description": "Commands to run prior to destroying the cdk stacks\nin the integration test (Default - no commands)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "postDestroy": {
-                    "description": "Command to run after destroying the cdk stacks\nin the integration test (Default - no commands)",
-                    "type": "string"
+                    "description": "Commands to run after destroying the cdk stacks\nin the integration test (Default - no commands)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         }
