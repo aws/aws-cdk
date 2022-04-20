@@ -2,6 +2,7 @@ import * as path from 'path';
 import { TestCase, RequireApproval } from '@aws-cdk/cloud-assembly-schema';
 import { DeployOptions, DestroyOptions } from 'cdk-cli-wrapper';
 import * as logger from '../logger';
+import { chain } from '../utils';
 import { DestructiveChange } from '../workers/common';
 import { exec } from './private/utils';
 import { IntegRunnerOptions, IntegRunner, DEFAULT_SYNTH_OPTIONS } from './runner-base';
@@ -127,7 +128,7 @@ export class IntegTestRunner extends IntegRunner {
    */
   public runIntegTestCase(options: RunOptions): void {
     const clean = options.clean ?? true;
-    const updateWorkflowEnabled = (options.updateWorkflow ?? true) && (this._tests?.stackUpdateWorkflow ?? true);
+    const updateWorkflowEnabled = (options.updateWorkflow ?? true) && (options.testCase.stackUpdateWorkflow ?? true);
     try {
       if (!options.dryRun && (options.testCase.cdkCommandOptions?.deploy?.enabled ?? true)) {
         this.deploy(
@@ -183,7 +184,7 @@ export class IntegTestRunner extends IntegRunner {
   private destroy(testCase: TestCase, destroyArgs: DestroyOptions) {
     try {
       if (testCase.hooks?.preDestroy) {
-        exec([testCase.hooks.preDestroy], {
+        exec([chain(testCase.hooks.preDestroy)], {
           cwd: path.dirname(this.snapshotDir),
         });
       }
@@ -192,7 +193,7 @@ export class IntegTestRunner extends IntegRunner {
       });
 
       if (testCase.hooks?.postDestroy) {
-        exec([testCase.hooks.postDestroy], {
+        exec([chain(testCase.hooks.postDestroy)], {
           cwd: path.dirname(this.snapshotDir),
         });
       }
@@ -215,7 +216,7 @@ export class IntegTestRunner extends IntegRunner {
   ): void {
     try {
       if (testCase.hooks?.preDeploy) {
-        exec([testCase.hooks?.preDeploy], {
+        exec([chain(testCase.hooks?.preDeploy)], {
           cwd: path.dirname(this.snapshotDir),
         });
       }
@@ -238,7 +239,7 @@ export class IntegTestRunner extends IntegRunner {
         app: this.cdkApp,
       });
       if (testCase.hooks?.postDeploy) {
-        exec([testCase.hooks?.postDeploy], {
+        exec([chain(testCase.hooks?.postDeploy)], {
           cwd: path.dirname(this.snapshotDir),
         });
       }

@@ -212,10 +212,3 @@ export function printResults(diagnostic: Diagnostic): void {
       logger.error('  %s - Failed! %s\n%s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
   }
 }
-
-/**
- * Flatten a list of lists into a list of elements
- */
-export function flatten<T>(xs: T[][]): T[] {
-  return Array.prototype.concat.apply([], xs);
-}

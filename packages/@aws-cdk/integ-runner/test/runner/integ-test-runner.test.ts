@@ -11,6 +11,7 @@ let deployMock: (options: DeployOptions) => void;
 let listMock: (options: ListOptions) => string;
 let destroyMock: (options: DestroyOptions) => void;
 let spawnSyncMock: jest.SpyInstance;
+let removeSyncMock: jest.SpyInstance;
 beforeEach(() => {
   cdkMock = new MockCdkProvider({ directory: 'test/test-data' });
   listMock = jest.fn().mockImplementation(() => {
@@ -37,6 +38,7 @@ beforeEach(() => {
   jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
+  removeSyncMock = jest.spyOn(fs, 'rmdirSync').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
 });
 
@@ -270,6 +272,7 @@ describe('IntegTest runIntegTests', () => {
     expect(integTest.tests).toEqual(expect.objectContaining({
       'test-data/integ.integ-test1': {
         diffAssets: false,
+        stackUpdateWorkflow: true,
         stacks: ['stack1'],
       },
     }));
@@ -309,6 +312,7 @@ describe('IntegTest runIntegTests', () => {
     expect(integTest.tests).toEqual(expect.objectContaining({
       'test-data/integ.integ-test2': {
         diffAssets: false,
+        stackUpdateWorkflow: true,
         stacks: ['stackabc'],
       },
     }));
@@ -376,10 +380,10 @@ describe('IntegTest runIntegTests', () => {
     integTest.runIntegTestCase({
       testCase: {
         hooks: {
-          preDeploy: 'echo "preDeploy"',
-          postDeploy: 'echo "postDeploy"',
-          preDestroy: 'echo "preDestroy"',
-          postDestroy: 'echo "postDestroy"',
+          preDeploy: ['echo "preDeploy"'],
+          postDeploy: ['echo "postDeploy"'],
+          preDestroy: ['echo "preDestroy"'],
+          postDestroy: ['echo "postDestroy"'],
         },
         stacks: ['stack1'],
       },
@@ -515,5 +519,23 @@ describe('IntegTest runIntegTests', () => {
         expect.stringMatching(/Could not checkout snapshot directory/),
       ]),
     ]));
+  });
+
+  test('assets are removed if stackUpdateWorkflow is disabled', () => {
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      fileName: 'test/test-data/integ.test-with-snapshot-assets.js',
+      directory: 'test/test-data',
+    });
+    integTest.runIntegTestCase({
+      testCase: {
+        stackUpdateWorkflow: false,
+        stacks: ['test-stack'],
+      },
+    });
+
+    expect(removeSyncMock.mock.calls).toEqual([[
+      'test/test-data/test-with-snapshot-assets.integ.snapshot/asset.be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824',
+    ]]);
   });
 });

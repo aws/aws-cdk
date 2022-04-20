@@ -32,6 +32,7 @@ beforeEach(() => {
   jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
+  jest.spyOn(fs, 'rmdirSync').mockImplementation(() => { return true; });
 });
 
 afterEach(() => {

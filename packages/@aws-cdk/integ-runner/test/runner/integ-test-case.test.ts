@@ -29,7 +29,7 @@ describe('Integration test cases', () => {
 
     // THEN
     expect(testCases.enableLookups).toEqual(false);
-    expect(testCases.stackUpdateWorkflow).toEqual(true);
+    expect(testCases.getStacksWithoutUpdateWorkflow().length).toEqual(0);
     expect(testCases.testCases).toEqual({
       test1: {
         stacks: [
@@ -45,9 +45,9 @@ describe('Integration test cases', () => {
       [testsFile]: JSON.stringify({
         version: 'v1.0.0',
         enableLookups: true,
-        stackUpdateWorkflow: false,
         testCases: {
           test1: {
+            stackUpdateWorkflow: false,
             diffAssets: true,
             allowDestroy: ['AWS::IAM::Role'],
             stacks: [
@@ -62,9 +62,10 @@ describe('Integration test cases', () => {
 
     // THEN
     expect(testCases.enableLookups).toEqual(true);
-    expect(testCases.stackUpdateWorkflow).toEqual(false);
+    expect(testCases.getStacksWithoutUpdateWorkflow().length).toEqual(1);
     expect(testCases.testCases).toEqual({
       test1: {
+        stackUpdateWorkflow: false,
         diffAssets: true,
         allowDestroy: ['AWS::IAM::Role'],
         stacks: [
@@ -80,9 +81,9 @@ describe('Integration test cases', () => {
       [testsFile]: JSON.stringify({
         version: 'v1.0.0',
         enableLookups: true,
-        stackUpdateWorkflow: false,
         testCases: {
           test1: {
+            stackUpdateWorkflow: false,
             diffAssets: true,
             allowDestroy: ['AWS::IAM::Role'],
             stacks: [
@@ -107,6 +108,7 @@ describe('Integration test cases', () => {
       regions: undefined,
       hooks: undefined,
       cdkCommandOptions: undefined,
+      stackUpdateWorkflow: false,
       allowDestroy: ['AWS::IAM::Role'],
     });
     expect(testCases.getOptionsForStack('test-stack2')).toEqual({
@@ -114,6 +116,7 @@ describe('Integration test cases', () => {
       allowDestroy: undefined,
       regions: undefined,
       hooks: undefined,
+      stackUpdateWorkflow: true,
       cdkCommandOptions: undefined,
     });
     expect(testCases.getOptionsForStack('test-stack-does-not-exist')).toBeUndefined();
@@ -156,9 +159,10 @@ describe('Legacy Integration test cases', () => {
     // THEN
     expect(listMock).not.toHaveBeenCalled();
     expect(testCases.enableLookups).toEqual(false);
-    expect(testCases.stackUpdateWorkflow).toEqual(true);
+    expect(testCases.getStacksWithoutUpdateWorkflow().length).toEqual(0);
     expect(testCases.testCases).toEqual({
       test: {
+        stackUpdateWorkflow: true,
         diffAssets: false,
         stacks: [
           'test-stack',
@@ -188,9 +192,10 @@ describe('Legacy Integration test cases', () => {
     // THEN
     expect(listMock).not.toHaveBeenCalled();
     expect(testCases.enableLookups).toEqual(true);
-    expect(testCases.stackUpdateWorkflow).toEqual(false);
+    expect(testCases.getStacksWithoutUpdateWorkflow().length).toEqual(1);
     expect(testCases.testCases).toEqual({
       test: {
+        stackUpdateWorkflow: false,
         diffAssets: true,
         stacks: [
           'test-stack',
@@ -220,9 +225,10 @@ describe('Legacy Integration test cases', () => {
     // THEN
     expect(listMock).toHaveBeenCalled();
     expect(testCases.enableLookups).toEqual(false);
-    expect(testCases.stackUpdateWorkflow).toEqual(true);
+    expect(testCases.getStacksWithoutUpdateWorkflow().length).toEqual(0);
     expect(testCases.testCases).toEqual({
       test: {
+        stackUpdateWorkflow: true,
         diffAssets: false,
         stacks: [
           'stackabc',

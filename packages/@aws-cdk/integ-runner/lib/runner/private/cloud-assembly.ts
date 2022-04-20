@@ -1,5 +1,6 @@
 import * as path from 'path';
-import { AssemblyManifest, Manifest, ArtifactType, AwsCloudFormationStackProperties, ArtifactManifest, MetadataEntry } from '@aws-cdk/cloud-assembly-schema';
+import { AssemblyManifest, Manifest, ArtifactType, AwsCloudFormationStackProperties, ArtifactManifest, MetadataEntry, AssetManifestProperties } from '@aws-cdk/cloud-assembly-schema';
+import { AssetManifest, FileManifestEntry, DockerImageManifestEntry } from 'cdk-assets';
 import * as fs from 'fs-extra';
 
 /**
@@ -86,6 +87,33 @@ export class AssemblyManifestReader {
       artifacts: this.renderArtifacts(trace),
     };
     Manifest.saveAssemblyManifest(newManifest, this.manifestFileName);
+  }
+
+  /**
+   * For a given stackId return a list of assets that belong to the stack
+   */
+  public getAssetsForStack(stackId: string): string[] {
+    const assets: string[] = [];
+    for (const artifact of Object.values(this.manifest.artifacts ?? {})) {
+      if (artifact.type === ArtifactType.ASSET_MANIFEST && (artifact.properties as AssetManifestProperties)?.file === `${stackId}.assets.json`) {
+        const fileName = (artifact.properties as AssetManifestProperties).file;
+        const assetManifest = AssetManifest.fromFile(path.join(this.directory, fileName));
+        assetManifest.entries.forEach(entry => {
+          if (entry.type === 'file') {
+            const source = (entry as FileManifestEntry).source;
+            if (source.path && source.path.startsWith('asset.')) {
+              assets.push((entry as FileManifestEntry).source.path!);
+            }
+          } else if (entry.type === 'docker-image') {
+            const source = (entry as DockerImageManifestEntry).source;
+            if (source.directory && source.directory.startsWith('asset.')) {
+              assets.push((entry as DockerImageManifestEntry).source.directory!);
+            }
+          }
+        });
+      }
+    }
+    return assets;
   }
 
   /**

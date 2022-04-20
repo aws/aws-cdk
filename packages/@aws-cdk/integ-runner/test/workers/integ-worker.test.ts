@@ -15,6 +15,7 @@ beforeEach(() => {
   jest.spyOn(fs, 'emptyDirSync').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'unlinkSync').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
+  jest.spyOn(fs, 'rmdirSync').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
   spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValueOnce({
     status: 0,

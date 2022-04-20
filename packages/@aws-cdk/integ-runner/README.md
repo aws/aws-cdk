@@ -64,7 +64,7 @@ to be a self contained CDK app. The runner will execute the following for each f
 Example:
 
 ```bash
-integ-runner --update --parallel --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-2 --directory ./
+integ-runner --update-on-failed --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-2 --directory ./
 ```
 
 This will search for integration tests recursively from the current directory and then execute them in parallel across `us-east-1`, `us-east-2`, & `us-west-2`.

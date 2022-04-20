@@ -3,6 +3,7 @@ import { TestCase, DefaultCdkOptions } from '@aws-cdk/cloud-assembly-schema';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS, TARGET_PARTITIONS, FUTURE_FLAGS_EXPIRED, NEW_STYLE_STACK_SYNTHESIS_CONTEXT } from '@aws-cdk/cx-api';
 import { CdkCliWrapper, ICdk } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
+import { flatten } from '../utils';
 import { DestructiveChange } from '../workers/common';
 import { IntegTestCases, LegacyIntegTestCases } from './integ-test-case';
 import { AssemblyManifestReader, ManifestTrace } from './private/cloud-assembly';
@@ -235,16 +236,27 @@ export abstract class IntegRunner {
 
   /**
    * In cases where we do not want to retain the assets,
-   * for example, if the assets are very large
+   * for example, if the assets are very large.
+   *
+   * Since it is possible to disable the update workflow for individual test
+   * cases, this needs to first get a list of stacks that have the update workflow
+   * disabled and then delete assets that relate to that stack. It does that
+   * by reading the asset manifest for the stack and deleting the asset source
    */
   protected removeAssetsFromSnapshot(): void {
-    const files = fs.readdirSync(this.snapshotDir);
-    files.forEach(file => {
-      const fileName = path.join(this.snapshotDir, file);
-      if (file.startsWith('asset.')) {
+    const stacks = this._tests?.getStacksWithoutUpdateWorkflow() ?? [];
+    const manifest = AssemblyManifestReader.fromPath(this.snapshotDir);
+    const assets = flatten(stacks.map(stack => {
+      return manifest.getAssetsForStack(stack) ?? [];
+    }));
+
+    assets.forEach(asset => {
+      const fileName = path.join(this.snapshotDir, asset);
+      if (fs.existsSync(fileName)) {
         if (fs.lstatSync(fileName).isDirectory()) {
           fs.emptyDirSync(fileName);
           fs.rmdirSync(fileName);
+
         } else {
           fs.unlinkSync(fileName);
         }
@@ -288,9 +300,7 @@ export abstract class IntegRunner {
       fs.moveSync(path.join(this.directory, this.cdkOutDir), this.snapshotDir, { overwrite: true });
     }
     if (fs.existsSync(this.snapshotDir)) {
-      if (!this._tests?.stackUpdateWorkflow) {
-        this.removeAssetsFromSnapshot();
-      }
+      this.removeAssetsFromSnapshot();
       this.removeAssetsCacheFromSnapshot();
       const assembly = AssemblyManifestReader.fromPath(this.snapshotDir);
       assembly.cleanManifest();

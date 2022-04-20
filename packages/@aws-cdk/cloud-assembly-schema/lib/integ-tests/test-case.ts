@@ -5,6 +5,15 @@ import { DeployOptions, DestroyOptions } from './commands';
  */
 export interface TestOptions {
   /**
+   * Run update workflow on this test case
+   * This should only be set to false to test scenarios
+   * that are not possible to test as part of the update workflow
+   *
+   * @default true
+   */
+  readonly stackUpdateWorkflow?: boolean;
+
+  /**
     * Additional options to use for each CDK command
     *
     * @default - runner default options
@@ -14,10 +23,7 @@ export interface TestOptions {
   /**
     * Additional commands to run at predefined points in the test workflow
     *
-    * These commands will be run from the directory that contains
-    * the integration test
-    *
-    * e.g. { postDeploy: 'yarn test' }
+    * e.g. { postDeploy: ['yarn', 'test'] }
     *
     * @default - no hooks
     */
@@ -75,36 +81,36 @@ export interface TestCase extends TestOptions {
  */
 export interface Hooks {
   /**
-   * Command to run prior to deploying the cdk stacks
+   * Commands to run prior to deploying the cdk stacks
    * in the integration test
    *
    * @default - no commands
    */
-  readonly preDeploy?: string;
+  readonly preDeploy?: string[];
 
   /**
-   * Command to run prior after deploying the cdk stacks
+   * Commands to run prior after deploying the cdk stacks
    * in the integration test
    *
    * @default - no commands
    */
-  readonly postDeploy?: string;
+  readonly postDeploy?: string[];
 
   /**
-   * Command to run prior to destroying the cdk stacks
+   * Commands to run prior to destroying the cdk stacks
    * in the integration test
    *
    * @default - no commands
    */
-  readonly preDestroy?: string;
+  readonly preDestroy?: string[];
 
   /**
-   * Command to run after destroying the cdk stacks
+   * Commands to run after destroying the cdk stacks
    * in the integration test
    *
    * @default - no commands
    */
-  readonly postDestroy?: string;
+  readonly postDestroy?: string[];
 }
 
 /**

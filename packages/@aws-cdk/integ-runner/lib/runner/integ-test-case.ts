@@ -29,16 +29,28 @@ export class IntegTestCases {
     const reader = IntegManifestReader.fromPath(path);
     return new IntegTestCases(
       reader.tests.enableLookups,
-      reader.tests.stackUpdateWorkflow,
       reader.tests.testCases,
     );
   }
 
   constructor(
     public readonly enableLookups: boolean,
-    public readonly stackUpdateWorkflow: boolean,
     public readonly testCases: TestCases,
   ) {}
+
+  /**
+   * Returns a list of stacks that have stackUpdateWorkflow disabled
+   */
+  public getStacksWithoutUpdateWorkflow(): string[] {
+    const stacks: string[] = [];
+    for (const testCase of Object.values(this.testCases ?? {})) {
+      const update = testCase.stackUpdateWorkflow ?? true;
+      if (!update) {
+        stacks.push(...testCase.stacks);
+      }
+    }
+    return stacks;
+  }
 
   /**
    * Returns test case options for a given stack
@@ -52,6 +64,7 @@ export class IntegTestCases {
           diffAssets: testCase.diffAssets ?? false,
           allowDestroy: testCase.allowDestroy,
           cdkCommandOptions: testCase.cdkCommandOptions,
+          stackUpdateWorkflow: testCase.stackUpdateWorkflow ?? true,
         };
       }
     }
@@ -109,6 +122,7 @@ export class LegacyIntegTestCases extends IntegTestCases {
     const tests: TestCase = {
       stacks: [],
       diffAssets: pragmas.includes(VERIFY_ASSET_HASHES),
+      stackUpdateWorkflow: !pragmas.includes(DISABLE_UPDATE_WORKFLOW),
     };
     const pragma = this.readStackPragma(config.integSourceFilePath);
     if (pragma.length > 0) {
@@ -131,7 +145,6 @@ export class LegacyIntegTestCases extends IntegTestCases {
 
     return new LegacyIntegTestCases(
       pragmas.includes(ENABLE_LOOKUPS_PRAGMA),
-      !pragmas.includes(DISABLE_UPDATE_WORKFLOW),
       {
         [config.testName]: tests,
       },
@@ -210,9 +223,8 @@ export class LegacyIntegTestCases extends IntegTestCases {
 
   constructor(
     public readonly enableLookups: boolean,
-    public readonly stackUpdateWorkflow: boolean,
     public readonly testCases: TestCases,
   ) {
-    super(enableLookups, stackUpdateWorkflow, testCases);
+    super(enableLookups, testCases);
   }
 }
