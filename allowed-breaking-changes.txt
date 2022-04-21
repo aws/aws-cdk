@@ -136,3 +136,6 @@ removed:@aws-cdk/aws-lambda-event-sources.BaseStreamEventSourceProps.onFailure
 removed:@aws-cdk/aws-lambda-event-sources.KafkaEventSourceProps.onFailure
 removed:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps.onFailure
 removed:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps.onFailure
+
+# removed kubernetes version from EKS
+removed:@aws-cdk/aws-eks.KubernetesVersion.V1_22
