@@ -89,6 +89,16 @@ export interface LogQueryWidgetProps {
    * @default 6
    */
   readonly height?: number;
+
+  /**
+   * The account which this log group metric comes from.
+   *
+   * For cross-account metrics, the deployment account must be allowed to view 
+   * logs and metrics in the account. https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html
+   * 
+   * @default Deployment account.
+   */
+  readonly account?: string;
 }
 
 /**
@@ -120,6 +130,7 @@ export class LogQueryWidget extends ConcreteWidget {
       view: this.props.view? this.props.view : LogQueryVisualizationType.TABLE,
       title: this.props.title,
       region: this.props.region || cdk.Aws.REGION,
+      accountId: this.props.account || cdk.Aws.ACCOUNT_ID,
       query: `${sources} | ${query}`,
     };
 
