@@ -108,7 +108,7 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
   logGroupNames: ['my-log-group'],
   queryString: `fields @message
                 | filter @message like /Error/`,
-  account: "123456789012",
+  account: '123456789012',
 }));
 
 app.synth();
