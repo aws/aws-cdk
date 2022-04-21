@@ -102,5 +102,13 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   metrics: [sentMessageSizeMetric],
   fullPrecision: true,
 }));
+dashboard.addWidgets(new cloudwatch.LogQueryWidget({
+  title: 'Errors in my log group - cross-account',
+  view: cloudwatch.LogQueryVisualizationType.STACKEDAREA,
+  logGroupNames: ['my-log-group'],
+  queryString: `fields @message
+                | filter @message like /Error/`,
+  account: "123456789012",
+}));
 
 app.synth();
