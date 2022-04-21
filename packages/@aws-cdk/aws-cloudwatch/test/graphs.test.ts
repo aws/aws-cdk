@@ -323,7 +323,7 @@ describe('Graphs', () => {
 
   test('query result widget - cross account', () => {
     // GIVEN
-    const stack = new Stack({});
+    const stack = new Stack();
     const logGroup = { logGroupName: 'my-log-group' };
 
     // WHEN
