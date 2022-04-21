@@ -93,9 +93,9 @@ export interface LogQueryWidgetProps {
   /**
    * The account which this log group metric comes from.
    *
-   * For cross-account metrics, the deployment account must be allowed to view 
+   * For cross-account metrics, the deployment account must be allowed to view
    * logs and metrics in the account. https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html
-   * 
+   *
    * @default Deployment account.
    */
   readonly account?: string;
