@@ -5,7 +5,7 @@ import { Annotations as _Annotations, Match } from '../lib';
 describe('Messages', () => {
   let stack: Stack;
   let annotations: _Annotations;
-  beforeAll(() => {
+  beforeAll(async () => {
     stack = new Stack();
     new CfnResource(stack, 'Foo', {
       type: 'Foo::Bar',
@@ -36,7 +36,7 @@ describe('Messages', () => {
     });
 
     Aspects.of(stack).add(new MyAspect());
-    annotations = _Annotations.fromStack(stack);
+    annotations = await _Annotations.fromStack(stack);
   });
 
   describe('hasError', () => {
@@ -159,7 +159,7 @@ describe('Messages', () => {
 describe('Multiple Messages on the Resource', () => {
   let stack: Stack;
   let annotations: _Annotations;
-  beforeAll(() => {
+  beforeAll(async () => {
     stack = new Stack();
     new CfnResource(stack, 'Foo', {
       type: 'Foo::Bar',
@@ -177,7 +177,7 @@ describe('Multiple Messages on the Resource', () => {
     bar.node.setContext('disable-stack-trace', false);
 
     Aspects.of(stack).add(new MultipleAspectsPerNode());
-    annotations = _Annotations.fromStack(stack);
+    annotations = await _Annotations.fromStack(stack);
   });
 
   test('succeeds on hasXxx APIs', () => {

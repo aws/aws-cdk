@@ -9,7 +9,7 @@ import { synthesize } from '../lib/private/synthesis';
 import { toCloudFormation } from './util';
 
 describe('resource', () => {
-  test('all resources derive from Resource, which derives from Entity', () => {
+  test('all resources derive from Resource, which derives from Entity', async () => {
     const stack = new Stack();
 
     new CfnResource(stack, 'MyResource', {
@@ -19,7 +19,7 @@ describe('resource', () => {
       },
     });
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         MyResource: {
           Type: 'MyResourceType',
@@ -54,13 +54,13 @@ describe('resource', () => {
 
   });
 
-  test('resource.props can only be accessed by derived classes', () => {
+  test('resource.props can only be accessed by derived classes', async () => {
     const stack = new Stack();
     const res = new Counter(stack, 'MyResource', { Count: 10 });
     res.increment();
     res.increment(2);
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         MyResource: { Type: 'My::Counter', Properties: { Count: 13 } },
       },
@@ -69,7 +69,7 @@ describe('resource', () => {
 
   });
 
-  test('resource attributes can be retrieved using getAtt(s) or attribute properties', () => {
+  test('resource attributes can be retrieved using getAtt(s) or attribute properties', async () => {
     const stack = new Stack();
     const res = new Counter(stack, 'MyResource', { Count: 10 });
 
@@ -82,7 +82,7 @@ describe('resource', () => {
       },
     });
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         MyResource: { Type: 'My::Counter', Properties: { Count: 10 } },
         YourResource: {
@@ -99,7 +99,7 @@ describe('resource', () => {
 
   });
 
-  test('ARN-type resource attributes have some common functionality', () => {
+  test('ARN-type resource attributes have some common functionality', async () => {
     const stack = new Stack();
     const res = new Counter(stack, 'MyResource', { Count: 1 });
     new CfnResource(stack, 'MyResource2', {
@@ -109,7 +109,7 @@ describe('resource', () => {
       },
     });
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         MyResource: { Type: 'My::Counter', Properties: { Count: 1 } },
         MyResource2: {
@@ -126,7 +126,7 @@ describe('resource', () => {
 
   });
 
-  test('resource.addDependency(e) can be used to add a DependsOn on another resource', () => {
+  test('resource.addDependency(e) can be used to add a DependsOn on another resource', async () => {
     const stack = new Stack();
     const r1 = new Counter(stack, 'Counter1', { Count: 1 });
     const r2 = new Counter(stack, 'Counter2', { Count: 1 });
@@ -134,9 +134,9 @@ describe('resource', () => {
     r2.node.addDependency(r1);
     r2.node.addDependency(r3);
 
-    synthesize(stack);
+    await synthesize(stack);
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         Counter1: {
           Type: 'My::Counter',
@@ -157,7 +157,7 @@ describe('resource', () => {
 
   });
 
-  test('if addDependency is called multiple times with the same resource, it will only appear once', () => {
+  test('if addDependency is called multiple times with the same resource, it will only appear once', async () => {
     // GIVEN
     const stack = new Stack();
     const r1 = new Counter(stack, 'Counter1', { Count: 1 });
@@ -171,7 +171,7 @@ describe('resource', () => {
     dependent.addDependsOn(r1);
 
     // THEN
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         Counter1: {
           Type: 'My::Counter',
@@ -190,13 +190,13 @@ describe('resource', () => {
 
   });
 
-  test('conditions can be attached to a resource', () => {
+  test('conditions can be attached to a resource', async () => {
     const stack = new Stack();
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
     const cond = new CfnCondition(stack, 'MyCondition', { expression: Fn.conditionNot(Fn.conditionEquals('a', 'b')) });
     r1.cfnOptions.condition = cond;
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: { Resource: { Type: 'Type', Condition: 'MyCondition' } },
       Conditions: { MyCondition: { 'Fn::Not': [{ 'Fn::Equals': ['a', 'b'] }] } },
     });
@@ -204,7 +204,7 @@ describe('resource', () => {
 
   });
 
-  test('creation/update/updateReplace/deletion policies can be set on a resource', () => {
+  test('creation/update/updateReplace/deletion policies can be set on a resource', async () => {
     const stack = new Stack();
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
@@ -222,7 +222,7 @@ describe('resource', () => {
     r1.cfnOptions.deletionPolicy = CfnDeletionPolicy.RETAIN;
     r1.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         Resource: {
           Type: 'Type',
@@ -245,13 +245,13 @@ describe('resource', () => {
 
   });
 
-  test('update policies UseOnlineResharding flag', () => {
+  test('update policies UseOnlineResharding flag', async () => {
     const stack = new Stack();
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
     r1.cfnOptions.updatePolicy = { useOnlineResharding: true };
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         Resource: {
           Type: 'Type',
@@ -265,7 +265,7 @@ describe('resource', () => {
 
   });
 
-  test('metadata can be set on a resource', () => {
+  test('metadata can be set on a resource', async () => {
     const stack = new Stack();
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
@@ -274,7 +274,7 @@ describe('resource', () => {
       MyValue: 99,
     };
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         Resource: {
           Type: 'Type',
@@ -295,7 +295,7 @@ describe('resource', () => {
 
   });
 
-  test('removal policy is a high level abstraction of deletion policy used by l2', () => {
+  test('removal policy is a high level abstraction of deletion policy used by l2', async () => {
     const stack = new Stack();
 
     const retain = new CfnResource(stack, 'Retain', { type: 'T1' });
@@ -308,7 +308,7 @@ describe('resource', () => {
     def.applyRemovalPolicy(undefined, { default: RemovalPolicy.DESTROY });
     def2.applyRemovalPolicy(undefined);
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         Retain: { Type: 'T1', DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain' },
         Destroy: { Type: 'T3', DeletionPolicy: 'Delete', UpdateReplacePolicy: 'Delete' },
@@ -319,7 +319,7 @@ describe('resource', () => {
 
   });
 
-  test('applyRemovalPolicy available for interface resources', () => {
+  test('applyRemovalPolicy available for interface resources', async () => {
     class Child extends Resource {
       constructor(scope: Construct, id: string) {
         super(scope, id);
@@ -335,7 +335,7 @@ describe('resource', () => {
 
     child.applyRemovalPolicy(RemovalPolicy.RETAIN);
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         ChildDAB30558: {
           DeletionPolicy: 'Retain',
@@ -346,7 +346,7 @@ describe('resource', () => {
     });
   });
 
-  test('addDependency adds all dependencyElements of dependent constructs', () => {
+  test('addDependency adds all dependencyElements of dependent constructs', async () => {
 
     class C1 extends Construct {
       public readonly r1: CfnResource;
@@ -389,9 +389,9 @@ describe('resource', () => {
     dependingResource.node.addDependency(c1, c2);
     dependingResource.node.addDependency(c3);
 
-    synthesize(stack);
+    await synthesize(stack);
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources:
       {
         MyC1R1FB2A562F: { Type: 'T1' },
@@ -421,7 +421,7 @@ describe('resource', () => {
   });
 
   describe('overrides', () => {
-    test('addOverride(p, v) allows assigning arbitrary values to synthesized resource definitions', () => {
+    test('addOverride(p, v) allows assigning arbitrary values to synthesized resource definitions', async () => {
       // GIVEN
       const stack = new Stack();
       const r = new CfnResource(stack, 'MyResource', { type: 'AWS::Resource::Type' });
@@ -432,7 +432,7 @@ describe('resource', () => {
       r.addOverride('Use.Dot.Notation', 'To create subtrees');
 
       // THEN
-      expect(toCloudFormation(stack)).toEqual({
+      expect(await toCloudFormation(stack)).toEqual({
         Resources:
         {
           MyResource:
@@ -447,7 +447,7 @@ describe('resource', () => {
 
     });
 
-    test('addPropertyOverride() allows assigning an attribute of a different resource', () => {
+    test('addPropertyOverride() allows assigning an attribute of a different resource', async () => {
       // GIVEN
       const stack = new Stack();
       const r1 = new CfnResource(stack, 'MyResource1', { type: 'AWS::Resource::Type' });
@@ -459,7 +459,7 @@ describe('resource', () => {
       });
 
       // THEN
-      expect(toCloudFormation(stack)).toEqual({
+      expect(await toCloudFormation(stack)).toEqual({
         Resources: {
           MyResource1: {
             Type: 'AWS::Resource::Type',
@@ -478,7 +478,7 @@ describe('resource', () => {
 
     });
 
-    test('addOverride(p, null) will assign an "null" value', () => {
+    test('addOverride(p, null) will assign an "null" value', async () => {
       // GIVEN
       const stack = new Stack();
 
@@ -498,7 +498,7 @@ describe('resource', () => {
       r.addOverride('Properties.Hello.World.Value2', null);
 
       // THEN
-      expect(toCloudFormation(stack)).toEqual({
+      expect(await toCloudFormation(stack)).toEqual({
         Resources:
         {
           MyResource:
@@ -512,7 +512,7 @@ describe('resource', () => {
 
     });
 
-    test('addOverride(p, undefined) can be used to delete a value', () => {
+    test('addOverride(p, undefined) can be used to delete a value', async () => {
       // GIVEN
       const stack = new Stack();
 
@@ -532,7 +532,7 @@ describe('resource', () => {
       r.addOverride('Properties.Hello.World.Value2', undefined);
 
       // THEN
-      expect(toCloudFormation(stack)).toEqual({
+      expect(await toCloudFormation(stack)).toEqual({
         Resources:
         {
           MyResource:
@@ -546,7 +546,7 @@ describe('resource', () => {
 
     });
 
-    test('addOverride(p, undefined) will not create empty trees', () => {
+    test('addOverride(p, undefined) will not create empty trees', async () => {
       // GIVEN
       const stack = new Stack();
 
@@ -557,7 +557,7 @@ describe('resource', () => {
       r.addPropertyOverride('Tree.Does.Not.Exist', undefined);
 
       // THEN
-      expect(toCloudFormation(stack)).toEqual({
+      expect(await toCloudFormation(stack)).toEqual({
         Resources:
         {
           MyResource:
@@ -571,7 +571,7 @@ describe('resource', () => {
 
     });
 
-    test('addDeletionOverride(p) and addPropertyDeletionOverride(pp) are sugar for `undefined`', () => {
+    test('addDeletionOverride(p) and addPropertyDeletionOverride(pp) are sugar for `undefined`', async () => {
       // GIVEN
       const stack = new Stack();
 
@@ -593,7 +593,7 @@ describe('resource', () => {
       r.addPropertyDeletionOverride('Hello.World.Value3');
 
       // THEN
-      expect(toCloudFormation(stack)).toEqual({
+      expect(await toCloudFormation(stack)).toEqual({
         Resources:
         {
           MyResource:
@@ -607,7 +607,7 @@ describe('resource', () => {
 
     });
 
-    test('addOverride(p, v) will overwrite any non-objects along the path', () => {
+    test('addOverride(p, v) will overwrite any non-objects along the path', async () => {
       // GIVEN
       const stack = new Stack();
       const r = new CfnResource(stack, 'MyResource', {
@@ -625,7 +625,7 @@ describe('resource', () => {
       r.addOverride('Properties.Hello.World.Foo.Bar', 42);
 
       // THEN
-      expect(toCloudFormation(stack)).toEqual({
+      expect(await toCloudFormation(stack)).toEqual({
         Resources:
         {
           MyResource:
@@ -644,7 +644,7 @@ describe('resource', () => {
 
     });
 
-    test('addOverride(p, v) will not split on escaped dots', () => {
+    test('addOverride(p, v) will not split on escaped dots', async () => {
       // GIVEN
       const stack = new Stack();
       const r = new CfnResource(stack, 'MyResource', { type: 'AWS::Resource::Type' });
@@ -657,7 +657,7 @@ describe('resource', () => {
       r.addOverride('Properties.EndWith\\', 42); // Raw string cannot end with a backslash
 
       // THEN
-      expect(toCloudFormation(stack)).toEqual({
+      expect(await toCloudFormation(stack)).toEqual({
         Resources:
         {
           MyResource:
@@ -677,7 +677,7 @@ describe('resource', () => {
 
     });
 
-    test('addPropertyOverride(pp, v) is a sugar for overriding properties', () => {
+    test('addPropertyOverride(pp, v) is a sugar for overriding properties', async () => {
       // GIVEN
       const stack = new Stack();
       const r = new CfnResource(stack, 'MyResource', {
@@ -689,7 +689,7 @@ describe('resource', () => {
       r.addPropertyOverride('Hello.World', { Hey: 'Jude' });
 
       // THEN
-      expect(toCloudFormation(stack)).toEqual({
+      expect(await toCloudFormation(stack)).toEqual({
         Resources:
         {
           MyResource:
@@ -702,7 +702,7 @@ describe('resource', () => {
 
     });
 
-    test('overrides are applied after render', () => {
+    test('overrides are applied after render', async () => {
       // GIVEN
       class MyResource extends CfnResource {
         public renderProperties() {
@@ -717,7 +717,7 @@ describe('resource', () => {
       cfn.addOverride('Properties.Foo.Bar', 'Bar');
 
       // THEN
-      expect(toCloudFormation(stack)).toEqual({
+      expect(await toCloudFormation(stack)).toEqual({
         Resources: {
           rr: {
             Type: 'AWS::Resource::Type',
@@ -736,7 +736,7 @@ describe('resource', () => {
 
     describe('using mutable properties', () => {
 
-      test('can be used by derived classes to specify overrides before render()', () => {
+      test('can be used by derived classes to specify overrides before render()', async () => {
         const stack = new Stack();
 
         const r = new CustomizableResource(stack, 'MyResource', {
@@ -745,7 +745,7 @@ describe('resource', () => {
 
         r.prop2 = 'bar';
 
-        expect(toCloudFormation(stack)).toEqual({
+        expect(await toCloudFormation(stack)).toEqual({
           Resources:
           {
             MyResource:
@@ -758,14 +758,14 @@ describe('resource', () => {
 
       });
 
-      test('"properties" is undefined', () => {
+      test('"properties" is undefined', async () => {
         const stack = new Stack();
 
         const r = new CustomizableResource(stack, 'MyResource');
 
         r.prop3 = 'zoo';
 
-        expect(toCloudFormation(stack)).toEqual({
+        expect(await toCloudFormation(stack)).toEqual({
           Resources:
           {
             MyResource:
@@ -778,7 +778,7 @@ describe('resource', () => {
 
       });
 
-      test('"properties" is empty', () => {
+      test('"properties" is empty', async () => {
         const stack = new Stack();
 
         const r = new CustomizableResource(stack, 'MyResource', { });
@@ -786,7 +786,7 @@ describe('resource', () => {
         r.prop3 = 'zoo';
         r.prop2 = 'hey';
 
-        expect(toCloudFormation(stack)).toEqual({
+        expect(await toCloudFormation(stack)).toEqual({
           Resources:
           {
             MyResource:
@@ -801,7 +801,7 @@ describe('resource', () => {
     });
   });
 
-  test('"aws:cdk:path" metadata is added if "aws:cdk:path-metadata" context is set to true', () => {
+  test('"aws:cdk:path" metadata is added if "aws:cdk:path-metadata" context is set to true', async () => {
     const stack = new Stack();
     stack.node.setContext(cxapi.PATH_METADATA_ENABLE_CONTEXT, true);
 
@@ -811,7 +811,7 @@ describe('resource', () => {
       type: 'MyResourceType',
     });
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources:
       {
         ParentMyResource4B1FDBCC:
@@ -825,7 +825,7 @@ describe('resource', () => {
 
   });
 
-  test('cross-stack construct dependencies are not rendered but turned into stack dependencies', () => {
+  test('cross-stack construct dependencies are not rendered but turned into stack dependencies', async () => {
     // GIVEN
     const app = new App();
     const stackA = new Stack(app, 'StackA');
@@ -837,7 +837,7 @@ describe('resource', () => {
     resB.node.addDependency(resA);
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
     const templateB = assembly.getStackByName(stackB.stackName).template;
 
     expect(templateB?.Resources?.Resource).toEqual({
@@ -849,7 +849,7 @@ describe('resource', () => {
 
   });
 
-  test('enableVersionUpgrade can be set on a resource', () => {
+  test('enableVersionUpgrade can be set on a resource', async () => {
     const stack = new Stack();
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
@@ -857,7 +857,7 @@ describe('resource', () => {
       enableVersionUpgrade: true,
     };
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         Resource: {
           Type: 'Type',

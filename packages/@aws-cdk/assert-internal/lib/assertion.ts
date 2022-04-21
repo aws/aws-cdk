@@ -3,7 +3,7 @@ import { Inspector } from './inspector';
 export abstract class Assertion<InspectorClass extends Inspector> {
   public abstract readonly description: string;
 
-  public abstract assertUsing(inspector: InspectorClass): boolean;
+  public abstract assertUsing(inspector: InspectorClass): Promise<boolean>;
 
   /**
    * Assert this thing and another thing
@@ -13,8 +13,8 @@ export abstract class Assertion<InspectorClass extends Inspector> {
     return and(this, assertion);
   }
 
-  public assertOrThrow(inspector: InspectorClass) {
-    if (!this.assertUsing(inspector)) {
+  public async assertOrThrow(inspector: InspectorClass): Promise<any> {
+    if (!await this.assertUsing(inspector)) {
       throw new Error(`${JSON.stringify(inspector.value, null, 2)} does not match ${this.description}`);
     }
   }

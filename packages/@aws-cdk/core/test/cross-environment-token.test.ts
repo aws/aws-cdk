@@ -6,7 +6,7 @@ import { toCloudFormation } from './util';
 
 describe('cross environment', () => {
   describe('CrossEnvironmentToken', () => {
-    test('can reference an ARN with a fixed physical name directly in a different account', () => {
+    test('can reference an ARN with a fixed physical name directly in a different account', async () => {
       // GIVEN
       const app = new App();
       const stack1 = new Stack(app, 'Stack1', {
@@ -30,7 +30,7 @@ describe('cross environment', () => {
       });
 
       // THEN
-      expect(toCloudFormation(stack2)).toEqual({
+      expect(await toCloudFormation(stack2)).toEqual({
         Outputs: {
           Output: {
             Value: {
@@ -52,7 +52,7 @@ describe('cross environment', () => {
 
     });
 
-    test('can reference a fixed physical name directly in a different account', () => {
+    test('can reference a fixed physical name directly in a different account', async () => {
       // GIVEN
       const app = new App();
       const stack1 = new Stack(app, 'Stack1', {
@@ -75,7 +75,7 @@ describe('cross environment', () => {
       });
 
       // THEN
-      expect(toCloudFormation(stack2)).toEqual({
+      expect(await toCloudFormation(stack2)).toEqual({
         Outputs: {
           Output: {
             Value: 'PhysicalName',
@@ -86,7 +86,7 @@ describe('cross environment', () => {
 
     });
 
-    test('can reference an ARN with an assigned physical name directly in a different account', () => {
+    test('can reference an ARN with an assigned physical name directly in a different account', async () => {
       // GIVEN
       const app = new App();
       const stack1 = new Stack(app, 'Stack1', {
@@ -110,7 +110,7 @@ describe('cross environment', () => {
       });
 
       // THEN
-      expect(toCloudFormation(stack2)).toEqual({
+      expect(await toCloudFormation(stack2)).toEqual({
         Outputs: {
           Output: {
             Value: {
@@ -132,7 +132,7 @@ describe('cross environment', () => {
 
     });
 
-    test('can reference an assigned physical name directly in a different account', () => {
+    test('can reference an assigned physical name directly in a different account', async () => {
       // GIVEN
       const app = new App();
       const stack1 = new Stack(app, 'Stack1', {
@@ -155,7 +155,7 @@ describe('cross environment', () => {
       });
 
       // THEN
-      expect(toCloudFormation(stack2)).toEqual({
+      expect(await toCloudFormation(stack2)).toEqual({
         Outputs: {
           Output: {
             Value: 'stack1stack1myresourcec54ced43683ebf9a3c4c',
@@ -167,7 +167,7 @@ describe('cross environment', () => {
     });
   });
 
-  test('cannot reference a deploy-time physical name across environments', () => {
+  test('cannot reference a deploy-time physical name across environments', async () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', {
@@ -190,13 +190,13 @@ describe('cross environment', () => {
     });
 
     // THEN
-    expect(() => toCloudFormation(stack2)).toThrow(
+    await expect(() => toCloudFormation(stack2)).rejects.toThrow(
       /Cannot use resource 'Stack1\/MyResource' in a cross-environment fashion/);
 
 
   });
 
-  test('cross environment when stack is a substack', () => {
+  test('cross environment when stack is a substack', async () => {
     const app = new App();
 
     const parentStack = new Stack(app, 'ParentStack', {
@@ -216,7 +216,7 @@ describe('cross environment', () => {
       },
     });
 
-    const assembly = app.synth();
+    const assembly = await app.synth();
 
     expect(assembly.getStackByName(parentStack.stackName).template?.Resources).toEqual({
       ParentResource: {
@@ -240,7 +240,7 @@ describe('cross environment', () => {
   });
 });
 
-test.each([undefined, 'SomeName'])('stack.exportValue() on name attributes with PhysicalName=%s', physicalName => {
+test.each([undefined, 'SomeName'])('stack.exportValue() on name attributes with PhysicalName=%s', async physicalName => {
   // Check that automatic exports and manual exports look the same
   // GIVEN - auto
   const appA = new App();
@@ -259,8 +259,8 @@ test.each([undefined, 'SomeName'])('stack.exportValue() on name attributes with 
   producerM.exportValue(resourceM.arn);
 
   // THEN - producers are the same
-  const templateA = appA.synth().getStackByName(producerA.stackName).template;
-  const templateM = appM.synth().getStackByName(producerM.stackName).template;
+  const templateA = (await appA.synth()).getStackByName(producerA.stackName).template;
+  const templateM = (await appM.synth()).getStackByName(producerM.stackName).template;
 
   expect(templateA).toEqual(templateM);
 });

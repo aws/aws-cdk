@@ -2,7 +2,7 @@ import { CfnCodeDeployBlueGreenHook, CfnTrafficRoutingType, Stack } from '../lib
 import { toCloudFormation } from './util';
 
 describe('CodeDeploy blue-green deployment Hook', () => {
-  test('only renders the provided properties', () => {
+  test('only renders the provided properties', async () => {
     const stack = new Stack();
     new CfnCodeDeployBlueGreenHook(stack, 'MyHook', {
       trafficRoutingConfig: {
@@ -37,7 +37,7 @@ describe('CodeDeploy blue-green deployment Hook', () => {
       serviceRole: 'my-service-role',
     });
 
-    const template = toCloudFormation(stack);
+    const template = await toCloudFormation(stack);
     expect(template).toStrictEqual({
       Hooks: {
         MyHook: {

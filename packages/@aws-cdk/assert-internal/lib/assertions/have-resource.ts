@@ -62,9 +62,10 @@ export class HaveResourceAssertion extends JestFriendlyAssertion<StackInspector>
     this.part = part ?? ResourcePart.Properties;
   }
 
-  public assertUsing(inspector: StackInspector): boolean {
-    for (const logicalId of Object.keys(inspector.value.Resources || {})) {
-      const resource = inspector.value.Resources[logicalId];
+  public async assertUsing(inspector: StackInspector): Promise<boolean> {
+    const val = await inspector.value;
+    for (const logicalId of Object.keys(val.Resources || {})) {
+      const resource = val.Resources[logicalId];
       if (resource.Type === this.resourceType) {
         const propsToCheck = this.part === ResourcePart.Properties ? (resource.Properties ?? {}) : resource;
 
@@ -95,8 +96,8 @@ export class HaveResourceAssertion extends JestFriendlyAssertion<StackInspector>
     return lines.join('\n');
   }
 
-  public assertOrThrow(inspector: StackInspector) {
-    if (!this.assertUsing(inspector)) {
+  public async assertOrThrow(inspector: StackInspector) {
+    if (!await this.assertUsing(inspector)) {
       throw new Error(this.generateErrorMessage());
     }
   }

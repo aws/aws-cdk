@@ -4,7 +4,7 @@ import { App, Aws, CfnMapping, CfnResource, Fn, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 describe('mappings', () => {
-  test('mappings can be added as another type of entity, and mapping.findInMap can be used to get a token', () => {
+  test('mappings can be added as another type of entity, and mapping.findInMap can be used to get a token', async () => {
     const stack = new Stack();
     const mapping = new CfnMapping(stack, 'MyMapping', {
       mapping: {
@@ -32,7 +32,7 @@ describe('mappings', () => {
     mapping.setValue('TopLevelKey2', 'SecondLevelKey2', 'Hi');
     mapping.setValue('TopLevelKey1', 'SecondLevelKey1', [1, 2, 3, 4]);
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Mappings:
       {
         MyMapping:
@@ -60,7 +60,7 @@ describe('mappings', () => {
     });
   });
 
-  test('allow using unresolved tokens in find-in-map', () => {
+  test('allow using unresolved tokens in find-in-map', async () => {
     const stack = new Stack();
 
     const mapping = new CfnMapping(stack, 'mapping', {
@@ -77,7 +77,7 @@ describe('mappings', () => {
     const expected = { 'Fn::FindInMap': ['mapping', { Ref: 'AWS::Region' }, 'instanceCount'] };
     expect(stack.resolve(v1)).toEqual(expected);
     expect(stack.resolve(v2)).toEqual(expected);
-    expect(toCloudFormation(stack).Mappings).toEqual({
+    expect((await toCloudFormation(stack)).Mappings).toEqual({
       mapping: {
         'us-east-1': {
           instanceCount: 12,
@@ -86,7 +86,7 @@ describe('mappings', () => {
     });
   });
 
-  test('no validation if first key is token and second is a static string', () => {
+  test('no validation if first key is token and second is a static string', async () => {
     // GIVEN
     const stack = new Stack();
     const mapping = new CfnMapping(stack, 'mapping', {
@@ -104,7 +104,7 @@ describe('mappings', () => {
     expect(stack.resolve(v)).toEqual({
       'Fn::FindInMap': ['mapping', { Ref: 'AWS::Region' }, 'size'],
     });
-    expect(toCloudFormation(stack).Mappings).toEqual({
+    expect((await toCloudFormation(stack)).Mappings).toEqual({
       mapping: {
         'us-east-1': {
           size: 12,
@@ -113,7 +113,7 @@ describe('mappings', () => {
     });
   });
 
-  test('validate first key if it is a string and second is a token', () => {
+  test('validate first key if it is a string and second is a token', async () => {
     // GIVEN
     const stack = new Stack();
     const mapping = new CfnMapping(stack, 'mapping', {
@@ -130,7 +130,7 @@ describe('mappings', () => {
     // THEN
     expect(() => mapping.findInMap('not-found', 'size')).toThrow(/Mapping doesn't contain top-level key 'not-found'/);
     expect(stack.resolve(v)).toEqual({ 'Fn::FindInMap': ['mapping', { Ref: 'AWS::Region' }, 'size'] });
-    expect(toCloudFormation(stack).Mappings).toEqual({
+    expect((await toCloudFormation(stack)).Mappings).toEqual({
       mapping: {
         'us-east-1': {
           size: 12,
@@ -169,33 +169,33 @@ describe('lazy mapping', () => {
     });
   });
 
-  it('does not create CfnMapping if findInMap keys can be resolved', () => {
+  it('does not create CfnMapping if findInMap keys can be resolved', async () => {
     const retrievedValue = mapping.findInMap('TopLevelKey1', 'SecondLevelKey1');
 
     expect(stack.resolve(retrievedValue)).toStrictEqual([1, 2, 3]);
-    expect(toCloudFormation(stack)).toStrictEqual({});
+    expect(await toCloudFormation(stack)).toStrictEqual({});
   });
 
-  it('does not create CfnMapping if findInMap is not called', () => {
-    expect(toCloudFormation(stack)).toStrictEqual({});
+  it('does not create CfnMapping if findInMap is not called', async () => {
+    expect(await toCloudFormation(stack)).toStrictEqual({});
   });
 
-  it('creates CfnMapping if top level key cannot be resolved', () => {
+  it('creates CfnMapping if top level key cannot be resolved', async () => {
     const retrievedValue = mapping.findInMap(Aws.REGION, 'SecondLevelKey1');
 
     expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', { Ref: 'AWS::Region' }, 'SecondLevelKey1'] });
-    expect(toCloudFormation(stack)).toStrictEqual({
+    expect(await toCloudFormation(stack)).toStrictEqual({
       Mappings: {
         LazyMapping: backing,
       },
     });
   });
 
-  it('creates CfnMapping if second level key cannot be resolved', () => {
+  it('creates CfnMapping if second level key cannot be resolved', async () => {
     const retrievedValue = mapping.findInMap('TopLevelKey1', Aws.REGION);
 
     expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', 'TopLevelKey1', { Ref: 'AWS::Region' }] });
-    expect(toCloudFormation(stack)).toStrictEqual({
+    expect(await toCloudFormation(stack)).toStrictEqual({
       Mappings: {
         LazyMapping: backing,
       },
@@ -230,8 +230,8 @@ describe('eager by default', () => {
     });
   });
 
-  it('emits warning if no findInMap called', () => {
-    const assembly = app.synth();
+  it('emits warning if no findInMap called', async () => {
+    const assembly = await app.synth();
 
     expect(getInfoAnnotations(assembly)).toStrictEqual([{
       path: '/Stack/Lazy Mapping',
@@ -239,10 +239,10 @@ describe('eager by default', () => {
     }]);
   });
 
-  it('emits warning if every findInMap resolves immediately', () => {
+  it('emits warning if every findInMap resolves immediately', async () => {
     mapping.findInMap('TopLevelKey1', 'SecondLevelKey1');
 
-    const assembly = app.synth();
+    const assembly = await app.synth();
 
     expect(getInfoAnnotations(assembly)).toStrictEqual([{
       path: '/Stack/Lazy Mapping',
@@ -250,10 +250,10 @@ describe('eager by default', () => {
     }]);
   });
 
-  it('does not emit warning if a findInMap could not resolve immediately', () => {
+  it('does not emit warning if a findInMap could not resolve immediately', async () => {
     mapping.findInMap('TopLevelKey1', Aws.REGION);
 
-    const assembly = app.synth();
+    const assembly = await app.synth();
 
     expect(getInfoAnnotations(assembly)).toStrictEqual([]);
   });

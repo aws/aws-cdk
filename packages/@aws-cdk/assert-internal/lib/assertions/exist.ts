@@ -8,8 +8,8 @@ class ExistingResourceAssertion extends Assertion<StackPathInspector> {
     super();
   }
 
-  public assertUsing(inspector: StackPathInspector): boolean {
-    return inspector.value !== undefined;
+  public async assertUsing(inspector: StackPathInspector): Promise<boolean> {
+    return await inspector.value !== undefined;
   }
 }
 

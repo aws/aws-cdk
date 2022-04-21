@@ -11,7 +11,7 @@ import {
 } from '../lib/index';
 import { mkResource, mkStack } from './cloud-artifact';
 
-test('support resource with no properties', () => {
+test('support resource with no properties', async () => {
   const synthStack = mkStack({
     Resources: {
       SomeResource: {
@@ -19,10 +19,10 @@ test('support resource with no properties', () => {
       },
     },
   });
-  expect(() => cdkExpect(synthStack).to(haveResource('Some::Resource'))).not.toThrowError();
+  await cdkExpect(synthStack).to(haveResource('Some::Resource'));
 });
 
-test('haveResource tells you about mismatched fields', () => {
+test('haveResource tells you about mismatched fields', async () => {
   const synthStack = mkStack({
     Resources: {
       SomeResource: {
@@ -34,14 +34,14 @@ test('haveResource tells you about mismatched fields', () => {
     },
   });
 
-  expect(() => {
-    cdkExpect(synthStack).to(haveResource('Some::Resource', {
+  await expect(async () => {
+    await cdkExpect(synthStack).to(haveResource('Some::Resource', {
       PropA: 'othervalue',
     }));
-  }).toThrowError(/PropA/);
+  }).rejects.toThrowError(/PropA/);
 });
 
-test('haveResource value matching is strict by default', () => {
+test('haveResource value matching is strict by default', async () => {
   const synthStack = mkStack({
     Resources: {
       SomeResource: {
@@ -57,16 +57,16 @@ test('haveResource value matching is strict by default', () => {
     },
   });
 
-  expect(() => {
-    cdkExpect(synthStack).to(haveResource('Some::Resource', {
+  await expect(async () => {
+    await cdkExpect(synthStack).to(haveResource('Some::Resource', {
       PropA: {
         foo: 'somevalue',
       },
     }));
-  }).toThrowError(/PropA/);
+  }).rejects.toThrowError(/PropA/);
 });
 
-test('haveResource allows to opt in value extension', () => {
+test('haveResource allows to opt in value extension', async () => {
   const synthStack = mkStack({
     Resources: {
       SomeResource: {
@@ -82,46 +82,44 @@ test('haveResource allows to opt in value extension', () => {
     },
   });
 
-  expect(() =>
-    cdkExpect(synthStack).to(haveResource('Some::Resource', {
-      PropA: {
-        foo: 'somevalue',
-      },
-    }, undefined, true)),
-  ).not.toThrowError();
+  await cdkExpect(synthStack).to(haveResource('Some::Resource', {
+    PropA: {
+      foo: 'somevalue',
+    },
+  }, undefined, true));
 });
 
 describe('property absence', () => {
-  test('pass on absence', () => {
+  test('pass on absence', async () => {
     const synthStack = mkResource({
       Prop: 'somevalue',
     });
 
-    cdkExpect(synthStack).to(haveResource('Some::Resource', {
+    await cdkExpect(synthStack).to(haveResource('Some::Resource', {
       PropA: ABSENT,
     }));
   });
 
-  test('fail on presence', () => {
+  test('fail on presence', async () => {
     const synthStack = mkResource({
       PropA: 3,
     });
 
-    expect(() => {
-      cdkExpect(synthStack).to(haveResource('Some::Resource', {
+    await expect(async () => {
+      await cdkExpect(synthStack).to(haveResource('Some::Resource', {
         PropA: ABSENT,
       }));
-    }).toThrowError(/PropA/);
+    }).rejects.toThrowError(/PropA/);
   });
 
-  test('pass on deep absence', () => {
+  test('pass on deep absence', async () => {
     const synthStack = mkResource({
       Deep: {
         Prop: 'somevalue',
       },
     });
 
-    cdkExpect(synthStack).to(haveResource('Some::Resource', {
+    await cdkExpect(synthStack).to(haveResource('Some::Resource', {
       Deep: {
         Prop: 'somevalue',
         PropA: ABSENT,
@@ -129,23 +127,23 @@ describe('property absence', () => {
     }));
   });
 
-  test('fail on deep presence', () => {
+  test('fail on deep presence', async () => {
     const synthStack = mkResource({
       Deep: {
         Prop: 'somevalue',
       },
     });
 
-    expect(() => {
-      cdkExpect(synthStack).to(haveResource('Some::Resource', {
+    await expect(async () => {
+      await cdkExpect(synthStack).to(haveResource('Some::Resource', {
         Deep: {
           Prop: ABSENT,
         },
       }));
-    }).toThrowError(/Prop/);
+    }).rejects.toThrowError(/Prop/);
   });
 
-  test('can use matcher to test for list element', () => {
+  test('can use matcher to test for list element', async () => {
     const synthStack = mkResource({
       List: [
         { Prop: 'distraction' },
@@ -153,62 +151,62 @@ describe('property absence', () => {
       ],
     });
 
-    expect(() => {
-      cdkExpect(synthStack).to(haveResource('Some::Resource', {
+    await expect(async () => {
+      await cdkExpect(synthStack).to(haveResource('Some::Resource', {
         List: arrayWith({ Prop: 'goal' }),
       }));
     }).not.toThrowError();
 
-    expect(() => {
-      cdkExpect(synthStack).to(haveResource('Some::Resource', {
+    await expect(async () => {
+      await cdkExpect(synthStack).to(haveResource('Some::Resource', {
         List: arrayWith({ Prop: 'missme' }),
       }));
-    }).toThrowError(/Array did not contain expected element/);
+    }).rejects.toThrowError(/Array did not contain expected element/);
   });
 
-  test('can use matcher to test stringLike on single-line strings', () => {
+  test('can use matcher to test stringLike on single-line strings', async () => {
     const synthStack = mkResource({
       Content: 'something required something',
     });
 
-    expect(() => {
-      cdkExpect(synthStack).to(haveResource('Some::Resource', {
+    await expect(async () => {
+      await cdkExpect(synthStack).to(haveResource('Some::Resource', {
         Content: stringLike('*required*'),
       }));
     }).not.toThrowError();
   });
 
-  test('can use matcher to test stringLike on multi-line strings', () => {
+  test('can use matcher to test stringLike on multi-line strings', async () => {
     const synthStack = mkResource({
       Content: 'something\nrequired\nsomething',
     });
 
-    expect(() => {
-      cdkExpect(synthStack).to(haveResource('Some::Resource', {
+    await expect(async () => {
+      await cdkExpect(synthStack).to(haveResource('Some::Resource', {
         Content: stringLike('*required*'),
       }));
     }).not.toThrowError();
   });
 
-  test('arrayContaining must match all elements in any order', () => {
+  test('arrayContaining must match all elements in any order', async () => {
     const synthStack = mkResource({
       List: ['a', 'b'],
     });
 
-    expect(() => {
-      cdkExpect(synthStack).to(haveResource('Some::Resource', {
+    await expect(async () => {
+      await cdkExpect(synthStack).to(haveResource('Some::Resource', {
         List: arrayWith('b', 'a'),
       }));
     }).not.toThrowError();
 
-    expect(() => {
-      cdkExpect(synthStack).to(haveResource('Some::Resource', {
+    await expect(async () => {
+      await cdkExpect(synthStack).to(haveResource('Some::Resource', {
         List: arrayWith('a', 'c'),
       }));
-    }).toThrowError(/Array did not contain expected element/);
+    }).rejects.toThrowError(/Array did not contain expected element/);
   });
 
-  test('exactValue escapes from deep fuzzy matching', () => {
+  test('exactValue escapes from deep fuzzy matching', async () => {
     const synthStack = mkResource({
       Deep: {
         PropA: 'A',
@@ -216,21 +214,21 @@ describe('property absence', () => {
       },
     });
 
-    expect(() => {
-      cdkExpect(synthStack).to(haveResourceLike('Some::Resource', {
+    await expect(async () => {
+      await cdkExpect(synthStack).to(haveResourceLike('Some::Resource', {
         Deep: {
           PropA: 'A',
         },
       }));
     }).not.toThrowError();
 
-    expect(() => {
-      cdkExpect(synthStack).to(haveResourceLike('Some::Resource', {
+    await expect(async () => {
+      await cdkExpect(synthStack).to(haveResourceLike('Some::Resource', {
         Deep: exactValue({
           PropA: 'A',
         }),
       }));
-    }).toThrowError(/Unexpected keys present in object/);
+    }).rejects.toThrowError(/Unexpected keys present in object/);
   });
 
   /**
@@ -246,7 +244,7 @@ describe('property absence', () => {
    * People will have written assertions depending on this behavior, so we have to maintain
    * it.
    */
-  test('objectContainingDeep has deep effect through lists', () => {
+  test('objectContainingDeep has deep effect through lists', async () => {
     const synthStack = mkResource({
       List: [
         {
@@ -260,8 +258,8 @@ describe('property absence', () => {
       ],
     });
 
-    expect(() => {
-      cdkExpect(synthStack).to(haveResourceLike('Some::Resource', {
+    await expect(async () => {
+      await cdkExpect(synthStack).to(haveResourceLike('Some::Resource', {
         List: [
           { PropA: 'A' },
           { PropB: 'B' },
@@ -270,13 +268,13 @@ describe('property absence', () => {
     }).not.toThrowError();
   });
 
-  test('test capturing', () => {
+  test('test capturing', async () => {
     const synthStack = mkResource({
       Prop: 'somevalue',
     });
 
     const propValue = Capture.aString();
-    cdkExpect(synthStack).to(haveResourceLike('Some::Resource', {
+    await cdkExpect(synthStack).to(haveResourceLike('Some::Resource', {
       Prop: propValue.capture(anything()),
     }));
 

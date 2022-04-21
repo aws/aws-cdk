@@ -28,10 +28,11 @@ class CountResourcesAssertion extends JestFriendlyAssertion<StackInspector> {
     this.props = props;
   }
 
-  public assertUsing(inspector: StackInspector): boolean {
+  public async assertUsing(inspector: StackInspector): Promise<boolean> {
     let counted = 0;
-    for (const logicalId of Object.keys(inspector.value.Resources || {})) {
-      const resource = inspector.value.Resources[logicalId];
+    const val = await inspector.value;
+    for (const logicalId of Object.keys(val.Resources || {})) {
+      const resource = val.Resources[logicalId];
       if (resource.Type === this.resourceType) {
         if (this.props) {
           if (isSuperObject(resource.Properties, this.props, [], true)) {

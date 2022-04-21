@@ -20,13 +20,13 @@ abstract class AbstractCfnResource extends CfnResource {
 }
 
 describe('tree metadata', () => {
-  test('tree metadata is generated as expected', () => {
+  test('tree metadata is generated as expected', async () => {
     const app = new App();
 
     const stack = new Stack(app, 'mystack');
     new Construct(stack, 'myconstruct');
 
-    const assembly = app.synth();
+    const assembly = await app.synth();
     const treeArtifact = assembly.tree();
     expect(treeArtifact).toBeDefined();
 
@@ -56,7 +56,7 @@ describe('tree metadata', () => {
 
   });
 
-  test('tree metadata for a Cfn resource', () => {
+  test('tree metadata for a Cfn resource', async () => {
     class MyCfnResource extends AbstractCfnResource {
       protected get cfnProperties(): { [key: string]: any } {
         return {
@@ -74,7 +74,7 @@ describe('tree metadata', () => {
     const stack = new Stack(app, 'mystack');
     new MyCfnResource(stack, 'mycfnresource');
 
-    const assembly = app.synth();
+    const assembly = await app.synth();
     const treeArtifact = assembly.tree();
     expect(treeArtifact).toBeDefined();
 
@@ -115,7 +115,7 @@ describe('tree metadata', () => {
 
   });
 
-  test('tree metadata has construct class & version in there', () => {
+  test('tree metadata has construct class & version in there', async () => {
     // The runtime metadata this test relies on is only available if the most
     // recent compile has happened using 'jsii', as the jsii compiler injects
     // this metadata.
@@ -141,7 +141,7 @@ describe('tree metadata', () => {
     const stack = new Stack(app, 'mystack');
     new CfnResource(stack, 'myconstruct', { type: 'Aws::Some::Resource' });
 
-    const assembly = app.synth();
+    const assembly = await app.synth();
     const treeArtifact = assembly.tree();
     expect(treeArtifact).toBeDefined();
 
@@ -172,7 +172,7 @@ describe('tree metadata', () => {
 
   });
 
-  test('token resolution & cfn parameter', () => {
+  test('token resolution & cfn parameter', async () => {
     const app = new App();
     const stack = new Stack(app, 'mystack');
     const cfnparam = new CfnParameter(stack, 'mycfnparam');
@@ -188,7 +188,7 @@ describe('tree metadata', () => {
 
     new MyCfnResource(stack, 'mycfnresource');
 
-    const assembly = app.synth();
+    const assembly = await app.synth();
     const treeArtifact = assembly.tree();
     expect(treeArtifact).toBeDefined();
 
@@ -229,7 +229,7 @@ describe('tree metadata', () => {
 
   });
 
-  test('cross-stack tokens', () => {
+  test('cross-stack tokens', async () => {
     class MyFirstResource extends AbstractCfnResource {
       public readonly lazykey: string;
 
@@ -266,7 +266,7 @@ describe('tree metadata', () => {
     const secondstack = new Stack(app, 'mysecondstack');
     new MySecondResource(secondstack, 'mysecondresource', firstres.lazykey);
 
-    const assembly = app.synth();
+    const assembly = await app.synth();
     const treeArtifact = assembly.tree();
     expect(treeArtifact).toBeDefined();
 
@@ -319,7 +319,7 @@ describe('tree metadata', () => {
 
   });
 
-  test('failing nodes', () => {
+  test('failing nodes', async () => {
     class MyCfnResource extends CfnResource {
       public inspect(_: TreeInspector) {
         throw new Error('Forcing an inspect error');
@@ -332,7 +332,7 @@ describe('tree metadata', () => {
       type: 'CDK::UnitTest::MyCfnResource',
     });
 
-    const assembly = app.synth();
+    const assembly = await app.synth();
     const treeArtifact = assembly.tree();
     expect(treeArtifact).toBeDefined();
 

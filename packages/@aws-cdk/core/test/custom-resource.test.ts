@@ -2,7 +2,7 @@ import { CustomResource, RemovalPolicy, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 describe('custom resource', () => {
-  test('simple case provider identified by service token', () => {
+  test('simple case provider identified by service token', async () => {
     // GIVEN
     const stack = new Stack();
 
@@ -16,7 +16,7 @@ describe('custom resource', () => {
     });
 
     // THEN
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         MyCustomResource: {
           Type: 'AWS::CloudFormation::CustomResource',
@@ -33,7 +33,7 @@ describe('custom resource', () => {
 
   });
 
-  test('resource type can be specified', () => {
+  test('resource type can be specified', async () => {
     // GIVEN
     const stack = new Stack();
 
@@ -44,7 +44,7 @@ describe('custom resource', () => {
     });
 
     // THEN
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         MyCustomResource: {
           Type: 'Custom::MyResourceType',
@@ -59,7 +59,7 @@ describe('custom resource', () => {
 
   });
 
-  test('removal policy', () => {
+  test('removal policy', async () => {
     // GIVEN
     const stack = new Stack();
 
@@ -70,7 +70,7 @@ describe('custom resource', () => {
     });
 
     // THEN
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         MyCustomResource: {
           Type: 'AWS::CloudFormation::CustomResource',
@@ -98,7 +98,7 @@ describe('custom resource', () => {
 
   });
 
-  test('properties can be pascal-cased', () => {
+  test('properties can be pascal-cased', async () => {
     // GIVEN
     const stack = new Stack();
 
@@ -115,7 +115,7 @@ describe('custom resource', () => {
     });
 
     // THEN
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         MyCustomResource: {
           Type: 'AWS::CloudFormation::CustomResource',
@@ -134,7 +134,7 @@ describe('custom resource', () => {
 
   });
 
-  test('pascal-casing of props is disabled by default', () => {
+  test('pascal-casing of props is disabled by default', async () => {
     // GIVEN
     const stack = new Stack();
 
@@ -150,7 +150,7 @@ describe('custom resource', () => {
     });
 
     // THEN
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         MyCustomResource: {
           Type: 'AWS::CloudFormation::CustomResource',

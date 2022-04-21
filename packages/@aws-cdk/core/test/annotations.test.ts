@@ -11,7 +11,7 @@ describe('annotations', () => {
 
   });
 
-  test('addDeprecation() annotates the usage of a deprecated API', () => {
+  test('addDeprecation() annotates the usage of a deprecated API', async () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'MyStack');
@@ -22,7 +22,7 @@ describe('annotations', () => {
     Annotations.of(c1).addDeprecation('@aws-cdk/core.Construct.node', 'use @aws-Construct.construct instead');
 
     // THEN
-    expect(getWarnings(app.synth())).toEqual([
+    expect(getWarnings(await app.synth())).toEqual([
       {
         path: '/MyStack/Hello',
         message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
@@ -31,7 +31,7 @@ describe('annotations', () => {
 
   });
 
-  test('deduplicated per node based on "api"', () => {
+  test('deduplicated per node based on "api"', async () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'MyStack1');
@@ -50,7 +50,7 @@ describe('annotations', () => {
     Annotations.of(c1).addDeprecation('@aws-cdk/core.Construct.node', 'use @aws-Construct.construct instead');
 
     // THEN
-    expect(getWarnings(app.synth())).toEqual([
+    expect(getWarnings(await app.synth())).toEqual([
       {
         path: '/MyStack1/Hello',
         message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',

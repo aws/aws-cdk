@@ -7,7 +7,7 @@ import { toCloudFormation } from '../util';
 const TEST_HANDLER = `${__dirname}/mock-provider`;
 
 describe('custom resource provider', () => {
-  test('minimal configuration', () => {
+  test('minimal configuration', async () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app);
@@ -20,7 +20,7 @@ describe('custom resource provider', () => {
 
     // THEN
     expect(fs.existsSync(path.join(TEST_HANDLER, '__entrypoint__.js'))).toEqual(true);
-    const cfn = toCloudFormation(stack);
+    const cfn = await toCloudFormation(stack);
 
     // The asset hash constantly changes, so in order to not have to chase it, just look
     // it up from the output.
@@ -124,7 +124,7 @@ describe('custom resource provider', () => {
 
   });
 
-  test('asset metadata added to custom resource that contains code definition', () => {
+  test('asset metadata added to custom resource that contains code definition', async () => {
     // GIVEN
     const stack = new Stack();
     stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
@@ -137,7 +137,7 @@ describe('custom resource provider', () => {
     });
 
     // Then
-    const lambda = toCloudFormation(stack).Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A;
+    const lambda = (await toCloudFormation(stack)).Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A;
     expect(lambda).toHaveProperty('Metadata');
     expect(lambda.Metadata).toEqual({
       'aws:asset:path': `${__dirname}/mock-provider`,
@@ -165,7 +165,7 @@ describe('custom resource provider', () => {
           return { imageUri: '', repositoryName: '' };
         },
 
-        synthesize(_session: ISynthesisSession): void { },
+        async synthesize(_session: ISynthesisSession): Promise<void> { },
       },
     });
 
@@ -183,7 +183,7 @@ describe('custom resource provider', () => {
 
   });
 
-  test('policyStatements can be used to add statements to the inline policy', () => {
+  test('policyStatements can be used to add statements to the inline policy', async () => {
     // GIVEN
     const stack = new Stack();
 
@@ -198,7 +198,7 @@ describe('custom resource provider', () => {
     });
 
     // THEN
-    const template = toCloudFormation(stack);
+    const template = await toCloudFormation(stack);
     const role = template.Resources.CustomMyResourceTypeCustomResourceProviderRoleBD5E655F;
     expect(role.Properties.Policies).toEqual([{
       PolicyName: 'Inline',
@@ -210,7 +210,7 @@ describe('custom resource provider', () => {
 
   });
 
-  test('memorySize, timeout and description', () => {
+  test('memorySize, timeout and description', async () => {
     // GIVEN
     const stack = new Stack();
 
@@ -224,7 +224,7 @@ describe('custom resource provider', () => {
     });
 
     // THEN
-    const template = toCloudFormation(stack);
+    const template = await toCloudFormation(stack);
     const lambda = template.Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A;
     expect(lambda.Properties.MemorySize).toEqual(2048);
     expect(lambda.Properties.Timeout).toEqual(300);
@@ -232,7 +232,7 @@ describe('custom resource provider', () => {
 
   });
 
-  test('environment variables', () => {
+  test('environment variables', async () => {
     // GIVEN
     const stack = new Stack();
 
@@ -247,7 +247,7 @@ describe('custom resource provider', () => {
     });
 
     // THEN
-    const template = toCloudFormation(stack);
+    const template = await toCloudFormation(stack);
     const lambda = template.Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A;
     expect(lambda.Properties.Environment).toEqual({
       Variables: {

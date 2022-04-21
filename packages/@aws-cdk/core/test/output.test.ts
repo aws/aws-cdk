@@ -9,7 +9,7 @@ beforeEach(() => {
 });
 
 describe('output', () => {
-  test('outputs can be added to the stack', () => {
+  test('outputs can be added to the stack', async () => {
     const res = new CfnResource(stack, 'MyResource', { type: 'R' });
     const ref = res.ref;
 
@@ -18,7 +18,7 @@ describe('output', () => {
       value: ref,
       description: 'CfnOutput properties',
     });
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: { MyResource: { Type: 'R' } },
       Outputs:
      {
@@ -33,12 +33,12 @@ describe('output', () => {
 
   });
 
-  test('No export is created by default', () => {
+  test('No export is created by default', async () => {
     // WHEN
     new CfnOutput(stack, 'SomeOutput', { value: 'x' });
 
     // THEN
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Outputs: {
         SomeOutput: {
           Value: 'x',
@@ -49,7 +49,7 @@ describe('output', () => {
 
   });
 
-  test('importValue can be used to obtain a Fn::ImportValue expression', () => {
+  test('importValue can be used to obtain a Fn::ImportValue expression', async () => {
     // GIVEN
     const stack2 = new Stack(app, 'Stack2');
 
@@ -63,7 +63,7 @@ describe('output', () => {
     });
 
     // THEN
-    expect(toCloudFormation(stack2)).toEqual({
+    expect(await toCloudFormation(stack2)).toEqual({
       Resources: {
         Resource: {
           Type: 'Some::Resource',
@@ -77,7 +77,7 @@ describe('output', () => {
 
   });
 
-  test('importValue used inside the same stack produces an error', () => {
+  test('importValue used inside the same stack produces an error', async () => {
     // WHEN
     const output = new CfnOutput(stack, 'SomeOutput', { value: 'x', exportName: 'asdf' });
     new CfnResource(stack, 'Resource', {
@@ -88,12 +88,12 @@ describe('output', () => {
     });
 
     // THEN
-    expect(() => toCloudFormation(stack)).toThrow(/should only be used in a different Stack/);
+    await expect(() => toCloudFormation(stack)).rejects.toThrow(/should only be used in a different Stack/);
 
 
   });
 
-  test('error message if importValue is used and Output is not exported', () => {
+  test('error message if importValue is used and Output is not exported', async () => {
     // GIVEN
     const stack2 = new Stack(app, 'Stack2');
 
@@ -106,9 +106,9 @@ describe('output', () => {
       },
     });
 
-    expect(() => {
-      toCloudFormation(stack2);
-    }).toThrow(/Add an exportName to the CfnOutput/);
+    await expect(async () => {
+      await toCloudFormation(stack2);
+    }).rejects.toThrow(/Add an exportName to the CfnOutput/);
 
 
   });

@@ -315,7 +315,7 @@ describe('arn', () => {
     });
   });
 
-  test('can use a fully specified ARN from a different stack without incurring an import', () => {
+  test('can use a fully specified ARN from a different stack without incurring an import', async () => {
     // GIVEN
     const stack1 = new Stack(undefined, 'Stack1', { env: { account: '12345678', region: 'us-turbo-5' } });
     const stack2 = new Stack(undefined, 'Stack2', { env: { account: '87654321', region: 'us-turbo-1' } });
@@ -330,7 +330,7 @@ describe('arn', () => {
     new CfnOutput(stack2, 'SomeValue', { value: arn });
 
     // THEN
-    expect(toCloudFormation(stack2)).toEqual({
+    expect(await toCloudFormation(stack2)).toEqual({
       Outputs: {
         SomeValue: {
           Value: {

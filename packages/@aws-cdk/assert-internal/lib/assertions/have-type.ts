@@ -10,8 +10,8 @@ class StackPathHasTypeAssertion extends Assertion<StackPathInspector> {
     super();
   }
 
-  public assertUsing(inspector: StackPathInspector): boolean {
-    const resource = inspector.value;
+  public async assertUsing(inspector: StackPathInspector): Promise<boolean> {
+    const resource = await inspector.value;
     return resource !== undefined && resource.Type === this.type;
   }
 

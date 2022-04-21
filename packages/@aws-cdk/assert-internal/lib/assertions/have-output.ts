@@ -27,12 +27,13 @@ class HaveOutputAssertion extends JestFriendlyAssertion<StackInspector> {
     return 'output with ' + descriptionPartsArray.join(', ');
   }
 
-  public assertUsing(inspector: StackInspector): boolean {
-    if (!('Outputs' in inspector.value)) {
+  public async assertUsing(inspector: StackInspector): Promise<boolean> {
+    const val = await inspector.value;
+    if (!('Outputs' in val)) {
       return false;
     }
 
-    for (const [name, props] of Object.entries(inspector.value.Outputs as Record<string, any>)) {
+    for (const [name, props] of Object.entries(val.Outputs as Record<string, any>)) {
       const mismatchedFields = new Array<string>();
 
       if (this.outputName && name !== this.outputName) {

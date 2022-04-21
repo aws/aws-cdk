@@ -20,14 +20,14 @@ describe('CLI creds synthesis', () => {
     });
   });
 
-  test('stack template is in asset manifest', () => {
+  test('stack template is in asset manifest', async () => {
     // GIVEN
     new CfnResource(stack, 'Resource', {
       type: 'Some::Resource',
     });
 
     // WHEN
-    const asm = app.synth();
+    const asm = await app.synth();
 
     // THEN -- the S3 url is advertised on the stack artifact
     const stackArtifact = asm.getStackArtifact('Stack');
@@ -84,7 +84,7 @@ describe('CLI creds synthesis', () => {
 
   });
 
-  test('synthesis', () => {
+  test('synthesis', async () => {
     // GIVEN
     stack.synthesizer.addFileAsset({
       fileName: __filename,
@@ -97,7 +97,7 @@ describe('CLI creds synthesis', () => {
     });
 
     // WHEN
-    const asm = app.synth();
+    const asm = await app.synth();
 
     // THEN - we have an asset manifest with both assets and the stack template in there
     const manifestArtifact = getAssetManifest(asm);
@@ -107,7 +107,7 @@ describe('CLI creds synthesis', () => {
     expect(Object.keys(manifest.dockerImages || {}).length).toEqual(1);
   });
 
-  test('customize publishing resources', () => {
+  test('customize publishing resources', async () => {
     // GIVEN
     const myapp = new App();
 
@@ -131,7 +131,7 @@ describe('CLI creds synthesis', () => {
     });
 
     // THEN
-    const asm = myapp.synth();
+    const asm = await myapp.synth();
     const manifest = readAssetManifest(getAssetManifest(asm));
 
     expect(manifest.files?.['file-asset-hash']?.destinations?.['current_account-current_region']).toEqual({
@@ -145,7 +145,7 @@ describe('CLI creds synthesis', () => {
     });
   });
 
-  test('synthesis with bucketPrefix', () => {
+  test('synthesis with bucketPrefix', async () => {
     // GIVEN
     const myapp = new App();
 
@@ -164,7 +164,7 @@ describe('CLI creds synthesis', () => {
     });
 
     // WHEN
-    const asm = myapp.synth();
+    const asm = await myapp.synth();
 
     // THEN -- the S3 url is advertised on the stack artifact
     const stackArtifact = asm.getStackArtifact('mystack-bucketPrefix');
@@ -183,7 +183,7 @@ describe('CLI creds synthesis', () => {
     expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://file-asset-bucket/000000000000/${templateHash}`);
   });
 
-  test('synthesis with dockerPrefix', () => {
+  test('synthesis with dockerPrefix', async () => {
     // GIVEN
     const myapp = new App();
 
@@ -199,7 +199,7 @@ describe('CLI creds synthesis', () => {
       sourceHash: 'docker-asset-hash',
     });
 
-    const asm = myapp.synth();
+    const asm = await myapp.synth();
 
     // THEN
     const manifest = readAssetManifest(getAssetManifest(asm));

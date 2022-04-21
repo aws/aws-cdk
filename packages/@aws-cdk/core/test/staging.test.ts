@@ -168,7 +168,7 @@ describe('staging', () => {
 
   });
 
-  test('files are copied to the output directory during synth', () => {
+  test('files are copied to the output directory during synth', async () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
@@ -178,7 +178,7 @@ describe('staging', () => {
     new AssetStaging(stack, 'file', { sourcePath: FIXTURE_TARBALL });
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
       `asset.${FIXTURE_TEST1_HASH}`,
       'asset.af10ac04b3b607b0f8659c8f0cee8c343025ee75baf0b146f10f0e5311d2c46b.gz',
@@ -190,7 +190,7 @@ describe('staging', () => {
 
   });
 
-  test('assets in nested assemblies get staged into assembly root directory', () => {
+  test('assets in nested assemblies get staged into assembly root directory', async () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(new Stage(app, 'Stage1'), 'Stack');
@@ -201,7 +201,7 @@ describe('staging', () => {
     new AssetStaging(stack2, 's1', { sourcePath: FIXTURE_TEST1_DIR });
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
 
     // One asset directory at the top
     expect(fs.readdirSync(assembly.directory)).toEqual([
@@ -232,7 +232,7 @@ describe('staging', () => {
 
   });
 
-  test('with bundling', () => {
+  test('with bundling', async () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
@@ -249,7 +249,7 @@ describe('staging', () => {
     });
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
     expect(
       readDockerStubInput()).toEqual(
       `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
@@ -268,7 +268,7 @@ describe('staging', () => {
 
   });
 
-  test('bundled resources have absolute path when staging is disabled', () => {
+  test('bundled resources have absolute path when staging is disabled', async () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
@@ -285,7 +285,7 @@ describe('staging', () => {
     });
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
 
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4',
@@ -306,7 +306,7 @@ describe('staging', () => {
 
   });
 
-  test('bundler reuses its output when it can', () => {
+  test('bundler reuses its output when it can', async () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
@@ -330,7 +330,7 @@ describe('staging', () => {
     });
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
 
     // We're testing that docker was run exactly once even though there are two bundling assets.
     expect(
@@ -349,7 +349,7 @@ describe('staging', () => {
 
   });
 
-  test('uses asset hash cache with AssetHashType.OUTPUT', () => {
+  test('uses asset hash cache with AssetHashType.OUTPUT', async () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
@@ -376,7 +376,7 @@ describe('staging', () => {
     });
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
 
     // We're testing that docker was run exactly once even though there are two bundling assets
     // and that the hash is based on the output
@@ -399,7 +399,7 @@ describe('staging', () => {
 
   });
 
-  test('bundler considers its options when reusing bundle output', () => {
+  test('bundler considers its options when reusing bundle output', async () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
@@ -426,7 +426,7 @@ describe('staging', () => {
     });
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
 
     // We're testing that docker was run twice - once for each set of bundler options
     // operating on the same source asset.
@@ -448,7 +448,7 @@ describe('staging', () => {
 
   });
 
-  test('bundler outputs to intermediate dir and renames to asset', () => {
+  test('bundler outputs to intermediate dir and renames to asset', async () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
@@ -468,7 +468,7 @@ describe('staging', () => {
     });
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
 
     expect(ensureDirSync.calledWith(sinon.match(path.join(assembly.directory, 'bundling-temp-')))).toEqual(true);
     expect(chmodSyncSpy.calledWith(sinon.match(path.join(assembly.directory, 'bundling-temp-')), 0o777)).toEqual(true);
@@ -485,7 +485,7 @@ describe('staging', () => {
 
   });
 
-  test('bundling failure preserves the bundleDir for diagnosability', () => {
+  test('bundling failure preserves the bundleDir for diagnosability', async () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
@@ -501,7 +501,7 @@ describe('staging', () => {
     })).toThrow(/Failed.*bundl.*asset.*-error/);
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
 
     const dir = fs.readdirSync(assembly.directory);
     expect(dir.some(entry => entry.match(/asset.*-error/))).toEqual(true);
@@ -509,7 +509,7 @@ describe('staging', () => {
 
   });
 
-  test('bundler re-uses assets from previous synths', () => {
+  test('bundler re-uses assets from previous synths', async () => {
     // GIVEN
     const TEST_OUTDIR = path.join(__dirname, 'cdk.out');
     if (fs.existsSync(TEST_OUTDIR)) {
@@ -547,8 +547,8 @@ describe('staging', () => {
     });
 
     // THEN
-    const appAssembly = app.synth();
-    const app2Assembly = app2.synth();
+    const appAssembly = await app.synth();
+    const app2Assembly = await app2.synth();
 
     expect(
       readDockerStubInputConcat()).toEqual(
@@ -949,7 +949,7 @@ describe('staging', () => {
 
   });
 
-  test('bundling that produces a single archive file is autodiscovered', () => {
+  test('bundling that produces a single archive file is autodiscovered', async () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
@@ -965,7 +965,7 @@ describe('staging', () => {
     });
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.f43148c61174f444925231b5849b468f21e93b5d1469cd07c53625ffd039ef48', // this is the bundle dir
       'asset.f43148c61174f444925231b5849b468f21e93b5d1469cd07c53625ffd039ef48.zip',
@@ -1031,7 +1031,7 @@ describe('staging', () => {
 
   });
 
-  test('bundling that produces a single archive file with NOT_ARCHIVED', () => {
+  test('bundling that produces a single archive file with NOT_ARCHIVED', async () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
@@ -1048,7 +1048,7 @@ describe('staging', () => {
     });
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.86ec07746e1d859290cfd8b9c648e581555649c75f51f741f11e22cab6775abc',
       'cdk.out',

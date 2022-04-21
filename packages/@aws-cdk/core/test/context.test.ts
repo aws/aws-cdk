@@ -13,12 +13,12 @@ describe('context', () => {
 
   });
 
-  test('AvailabilityZoneProvider will return context list if available', () => {
+  test('AvailabilityZoneProvider will return context list if available', async () => {
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     const before = stack.availabilityZones;
     expect(before).toEqual(['dummy1a', 'dummy1b', 'dummy1c']);
-    const key = expectedContextKey(stack);
+    const key = await expectedContextKey(stack);
 
     stack.node.setContext(key, ['us-east-1a', 'us-east-1b']);
 
@@ -28,12 +28,12 @@ describe('context', () => {
 
   });
 
-  test('AvailabilityZoneProvider will complain if not given a list', () => {
+  test('AvailabilityZoneProvider will complain if not given a list', async () => {
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     const before = stack.availabilityZones;
     expect(before).toEqual(['dummy1a', 'dummy1b', 'dummy1c']);
-    const key = expectedContextKey(stack);
+    const key = await expectedContextKey(stack);
 
     stack.node.setContext(key, 'not-a-list');
 
@@ -180,8 +180,8 @@ describe('context', () => {
 /**
  * Get the expected context key from a stack with missing parameters
  */
-function expectedContextKey(stack: Stack): string {
-  const missing = synthesize(stack).manifest.missing;
+async function expectedContextKey(stack: Stack): Promise<string> {
+  const missing = (await synthesize(stack)).manifest.missing;
   if (!missing || missing.length !== 1) {
     throw new Error('Expecting assembly to include a single missing context report');
   }

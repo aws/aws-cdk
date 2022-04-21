@@ -1,7 +1,7 @@
 import { App, Stack } from '@aws-cdk/core';
 import { SynthUtils } from '../lib';
 
-test('SynthUtils.synthesize() is always executed against the root of the tree', () => {
+test('SynthUtils.synthesize() is always executed against the root of the tree', async () => {
   // GIVEN
   const root = new App();
   const stack1 = new Stack(root, 'stack1');
@@ -10,5 +10,5 @@ test('SynthUtils.synthesize() is always executed against the root of the tree', 
 
   // THEN
   // this would have failed if we didn't synthesize at the root because 'stack1' would not be emitted
-  expect(() => SynthUtils.synthesize(stack2)).not.toThrowError();
+  await SynthUtils.synthesize(stack2);
 });

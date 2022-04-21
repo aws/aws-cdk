@@ -63,34 +63,34 @@ beforeEach(done => {
   done();
 });
 
-test('haveOutput should assert true when output with correct name is provided', () => {
-  expect(synthStack).toHaveOutput({
+test('haveOutput should assert true when output with correct name is provided', async () => {
+  await expect(synthStack).toHaveOutput({
     outputName: 'TestOutput',
   });
 });
 
-test('haveOutput should assert false when output with incorrect name is provided', () => {
-  expect(synthStack).not.toHaveOutput({
+test('haveOutput should assert false when output with incorrect name is provided', async () => {
+  await expect(synthStack).not.toHaveOutput({
     outputName: 'WrongOutput',
   });
 });
 
-test('haveOutput should assert true when output with correct name and export name is provided', () => {
-  expect(synthStack).toHaveOutput({
+test('haveOutput should assert true when output with correct name and export name is provided', async () => {
+  await expect(synthStack).toHaveOutput({
     outputName: 'TestOutput',
     exportName: 'TestOutputExportName',
   });
 });
 
-test('haveOutput should assert false when output with correct name and incorrect export name is provided', () => {
-  expect(synthStack).not.toHaveOutput({
+test('haveOutput should assert false when output with correct name and incorrect export name is provided', async () => {
+  await expect(synthStack).not.toHaveOutput({
     outputName: 'TestOutput',
     exportName: 'WrongTestOutputExportName',
   });
 });
 
-test('haveOutput should assert true when output with correct name, export name and value is provided', () => {
-  expect(synthStack).toHaveOutput({
+test('haveOutput should assert true when output with correct name, export name and value is provided', async () => {
+  await expect(synthStack).toHaveOutput({
     outputName: 'TestOutput',
     exportName: 'TestOutputExportName',
     outputValue: {
@@ -102,16 +102,16 @@ test('haveOutput should assert true when output with correct name, export name a
   });
 });
 
-test('haveOutput should assert false when output with correct name and export name and incorrect value is provided', () => {
-  expect(synthStack).not.toHaveOutput({
+test('haveOutput should assert false when output with correct name and export name and incorrect value is provided', async () => {
+  await expect(synthStack).not.toHaveOutput({
     outputName: 'TestOutput',
     exportName: 'TestOutputExportName',
     outputValue: 'SomeWrongValue',
   });
 });
 
-test('haveOutput should assert true when output with correct export name and value is provided', () => {
-  expect(synthStack).toHaveOutput({
+test('haveOutput should assert true when output with correct export name and value is provided', async () => {
+  await expect(synthStack).toHaveOutput({
     exportName: 'TestOutputExportName',
     outputValue: {
       'Fn::GetAtt': [
@@ -122,15 +122,15 @@ test('haveOutput should assert true when output with correct export name and val
   });
 });
 
-test('haveOutput should assert false when output with correct export name and incorrect value is provided', () => {
-  expect(synthStack).not.toHaveOutput({
+test('haveOutput should assert false when output with correct export name and incorrect value is provided', async () => {
+  await expect(synthStack).not.toHaveOutput({
     exportName: 'TestOutputExportName',
     outputValue: 'WrongValue',
   });
 });
 
-test('haveOutput should assert true when output with correct output name and value is provided', () => {
-  expect(synthStack).toHaveOutput({
+test('haveOutput should assert true when output with correct output name and value is provided', async () => {
+  await expect(synthStack).toHaveOutput({
     outputName: 'TestOutput',
     outputValue: {
       'Fn::GetAtt': [
@@ -141,28 +141,28 @@ test('haveOutput should assert true when output with correct output name and val
   });
 });
 
-test('haveOutput should assert false when output with correct output name and incorrect value is provided', () => {
-  expect(synthStack).not.toHaveOutput({
+test('haveOutput should assert false when output with correct output name and incorrect value is provided', async () => {
+  await expect(synthStack).not.toHaveOutput({
     outputName: 'TestOutput',
     outputValue: 'WrongValue',
   });
 });
 
-test('haveOutput should assert false when asserting against noOutputStack', () => {
-  expect(noOutputStack).not.toHaveOutput({
+test('haveOutput should assert false when asserting against noOutputStack', async () => {
+  await expect(noOutputStack).not.toHaveOutput({
     outputName: 'TestOutputName',
     exportName: 'TestExportName',
     outputValue: 'TestOutputValue',
   });
 });
 
-test('haveOutput should throw Error when none of outputName and exportName is provided', () => {
-  expect(() => expect(synthStack).toHaveOutput({ outputValue: 'SomeValue' }))
+test('haveOutput should throw Error when none of outputName and exportName is provided', async () => {
+  await expect(() => expect(synthStack).toHaveOutput({ outputValue: 'SomeValue' }))
     .toThrow('At least one of [outputName, exportName] should be provided');
 });
 
-test('haveOutput should be able to handle complex exportName values', () => {
-  expect(synthStack).toHaveOutput({
+test('haveOutput should be able to handle complex exportName values', async () => {
+  await expect(synthStack).toHaveOutput({
     exportName: { 'Fn::Sub': '${AWS::StackName}-ComplexExportNameOutput' },
     outputValue: {
       'Fn::GetAtt': [

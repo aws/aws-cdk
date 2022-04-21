@@ -26,7 +26,7 @@ describe('environment', () => {
   });
 
   describe('environment defaults', () => {
-    test('if "env" is not specified, it implies account/region agnostic', () => {
+    test('if "env" is not specified, it implies account/region agnostic', async () => {
       // GIVEN
       const app = new App();
 
@@ -36,7 +36,7 @@ describe('environment', () => {
       // THEN
       expect(stack.resolve(stack.account)).toEqual({ Ref: 'AWS::AccountId' });
       expect(stack.resolve(stack.region)).toEqual({ Ref: 'AWS::Region' });
-      expect(app.synth().getStackByName(stack.stackName).environment).toEqual({
+      expect((await app.synth()).getStackByName(stack.stackName).environment).toEqual({
         account: 'unknown-account',
         region: 'unknown-region',
         name: 'aws://unknown-account/unknown-region',
@@ -45,7 +45,7 @@ describe('environment', () => {
 
     });
 
-    test('only region is set', () => {
+    test('only region is set', async () => {
       // GIVEN
       const app = new App();
 
@@ -55,7 +55,7 @@ describe('environment', () => {
       // THEN
       expect(stack.resolve(stack.account)).toEqual({ Ref: 'AWS::AccountId' });
       expect(stack.resolve(stack.region)).toEqual('explicit-region');
-      expect(app.synth().getStackByName(stack.stackName).environment).toEqual({
+      expect((await app.synth()).getStackByName(stack.stackName).environment).toEqual({
         account: 'unknown-account',
         region: 'explicit-region',
         name: 'aws://unknown-account/explicit-region',
@@ -64,7 +64,7 @@ describe('environment', () => {
 
     });
 
-    test('both "region" and "account" are set', () => {
+    test('both "region" and "account" are set', async () => {
       // GIVEN
       const app = new App();
 
@@ -79,7 +79,7 @@ describe('environment', () => {
       // THEN
       expect(stack.resolve(stack.account)).toEqual('explicit-account');
       expect(stack.resolve(stack.region)).toEqual('explicit-region');
-      expect(app.synth().getStackByName(stack.stackName).environment).toEqual({
+      expect((await app.synth()).getStackByName(stack.stackName).environment).toEqual({
         account: 'explicit-account',
         region: 'explicit-region',
         name: 'aws://explicit-account/explicit-region',
@@ -88,7 +88,7 @@ describe('environment', () => {
 
     });
 
-    test('token-account and token-region', () => {
+    test('token-account and token-region', async () => {
       // GIVEN
       const app = new App();
 
@@ -103,7 +103,7 @@ describe('environment', () => {
       // THEN
       expect(stack.resolve(stack.account)).toEqual({ Ref: 'AWS::AccountId' });
       expect(stack.resolve(stack.region)).toEqual({ Ref: 'AWS::Region' });
-      expect(app.synth().getStackByName(stack.stackName).environment).toEqual({
+      expect((await app.synth()).getStackByName(stack.stackName).environment).toEqual({
         account: 'unknown-account',
         region: 'unknown-region',
         name: 'aws://unknown-account/unknown-region',
@@ -112,7 +112,7 @@ describe('environment', () => {
 
     });
 
-    test('token-account explicit region', () => {
+    test('token-account explicit region', async () => {
       // GIVEN
       const app = new App();
 
@@ -127,7 +127,7 @@ describe('environment', () => {
       // THEN
       expect(stack.resolve(stack.account)).toEqual({ Ref: 'AWS::AccountId' });
       expect(stack.resolve(stack.region)).toEqual('us-east-2');
-      expect(app.synth().getStackByName(stack.stackName).environment).toEqual({
+      expect((await app.synth()).getStackByName(stack.stackName).environment).toEqual({
         account: 'unknown-account',
         region: 'us-east-2',
         name: 'aws://unknown-account/us-east-2',

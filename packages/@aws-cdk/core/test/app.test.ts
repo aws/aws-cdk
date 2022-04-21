@@ -5,7 +5,7 @@ import { CfnResource, DefaultStackSynthesizer, Stack, StackProps } from '../lib'
 import { Annotations } from '../lib/annotations';
 import { App, AppProps } from '../lib/app';
 
-function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembly {
+function withApp(props: AppProps, block: (app: App) => void): Promise<cxapi.CloudAssembly> {
   const app = new App({
     stackTraces: false,
     ...props,
@@ -20,7 +20,7 @@ function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembl
   return app.synth();
 }
 
-function synth(context?: { [key: string]: any }): cxapi.CloudAssembly {
+function synth(context?: { [key: string]: any }): Promise<cxapi.CloudAssembly> {
   return withApp({ context }, app => {
     const stack1 = new Stack(app, 'stack1', { env: { account: '12345', region: 'us-east-1' } });
     new CfnResource(stack1, 's1c1', { type: 'DummyResource', properties: { Prop1: 'Prop1' } });
@@ -39,8 +39,8 @@ function synth(context?: { [key: string]: any }): cxapi.CloudAssembly {
   });
 }
 
-function synthStack(name: string, includeMetadata: boolean = false, context?: any): cxapi.CloudFormationStackArtifact {
-  const response = synth(context);
+async function synthStack(name: string, includeMetadata: boolean = false, context?: any): Promise<cxapi.CloudFormationStackArtifact> {
+  const response = await synth(context);
   const stack = response.getStackByName(name);
 
   if (!includeMetadata) {
@@ -51,8 +51,8 @@ function synthStack(name: string, includeMetadata: boolean = false, context?: an
 }
 
 describe('app', () => {
-  test('synthesizes all stacks and returns synthesis result', () => {
-    const response = synth();
+  test('synthesizes all stacks and returns synthesis result', async () => {
+    const response = await synth();
     delete (response as any).dir;
 
     expect(response.stacks.length).toEqual(2);
@@ -130,8 +130,8 @@ describe('app', () => {
 
   });
 
-  test('context from the command line can be used when creating the stack', () => {
-    const output = synthStack('stack2', false, { ctx1: 'HELLO' });
+  test('context from the command line can be used when creating the stack', async () => {
+    const output = await synthStack('stack2', false, { ctx1: 'HELLO' });
 
     expect(output.template).toEqual({
       Resources: {
@@ -172,7 +172,7 @@ describe('app', () => {
 
   });
 
-  test('app.synth() performs validation first and if there are errors, it returns the errors', () => {
+  test('app.synth() performs validation first and if there are errors, it returns the errors', async () => {
 
     class Child extends Construct {
       constructor(scope: Construct, id: string) {
@@ -192,12 +192,12 @@ describe('app', () => {
     new Child(parent, 'C1');
     new Child(parent, 'C2');
 
-    expect(() => app.synth()).toThrow(/Validation failed with the following errors/);
+    await expect(() => app.synth()).rejects.toThrow(/Validation failed with the following errors/);
 
 
   });
 
-  test('app.synthesizeStack(stack) will return a list of missing contextual information', () => {
+  test('app.synthesizeStack(stack) will return a list of missing contextual information', async () => {
     class MyStack extends Stack {
       constructor(scope: App, id: string, props?: StackProps) {
         super(scope, id, props);
@@ -224,7 +224,7 @@ describe('app', () => {
       }
     }
 
-    const assembly = withApp({}, app => {
+    const assembly = await withApp({}, app => {
       new MyStack(app, 'MyStack', { synthesizer: new DefaultStackSynthesizer() });
     });
 
@@ -257,8 +257,8 @@ describe('app', () => {
    *
    * The are not emitted into Cloud Assembly metadata anymore
    */
-  test('runtime library versions are not emitted in asm anymore', () => {
-    const assembly = withApp({ analyticsReporting: true }, app => {
+  test('runtime library versions are not emitted in asm anymore', async () => {
+    const assembly = await withApp({ analyticsReporting: true }, app => {
       const stack = new Stack(app, 'stack1');
       new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
     });
@@ -267,9 +267,9 @@ describe('app', () => {
 
   });
 
-  test('deep stack is shown and synthesized properly', () => {
+  test('deep stack is shown and synthesized properly', async () => {
   // WHEN
-    const response = withApp({}, (app) => {
+    const response = await withApp({}, (app) => {
       const topStack = new Stack(app, 'Stack');
       const topResource = new CfnResource(topStack, 'Res', { type: 'CDK::TopStack::Resource' });
 
@@ -292,9 +292,9 @@ describe('app', () => {
 
   });
 
-  test('stacks are written to the assembly file in a topological order', () => {
+  test('stacks are written to the assembly file in a topological order', async () => {
     // WHEN
-    const assembly = withApp({}, (app) => {
+    const assembly = await withApp({}, (app) => {
       const stackC = new Stack(app, 'StackC');
       const stackD = new Stack(app, 'StackD');
       const stackA = new Stack(app, 'StackA');

@@ -186,7 +186,7 @@ describe('fn', () => {
       });
 
       // THEN
-      const template = app.synth().getStackByName('Stack2').template;
+      const template = (await app.synth()).getStackByName('Stack2').template;
 
       expect(template?.Outputs).toEqual({
         Stack1Id: {

@@ -23,7 +23,10 @@ export class Template {
    * @param stack the CDK Stack to run assertions on
    */
   public static fromStack(stack: Stack): Template {
-    return new Template(toTemplate(stack));
+    return new Template(toTemplate(stack).then(template => {
+      checkTemplateForCyclicDependencies(template);
+      return template;
+    }));
   }
 
   /**
@@ -32,7 +35,8 @@ export class Template {
    * @param template the CloudFormation template formatted as a nested set of records
    */
   public static fromJSON(template: { [key: string] : any }): Template {
-    return new Template(template);
+    checkTemplateForCyclicDependencies(template);
+    return new Template(Promise.resolve(template));
   }
 
   /**
@@ -41,20 +45,19 @@ export class Template {
    * @param template the CloudFormation template in
    */
   public static fromString(template: string): Template {
-    return new Template(JSON.parse(template));
+    return Template.fromJSON(JSON.parse(template));
   }
 
-  private readonly template: TemplateType;
+  private readonly template: Promise<TemplateType>;
 
-  private constructor(template: { [key: string]: any }) {
-    this.template = template as TemplateType;
-    checkTemplateForCyclicDependencies(this.template);
+  private constructor(template: Promise<{ [key: string]: any }>) {
+    this.template = template;
   }
 
   /**
    * The CloudFormation template deserialized into an object.
    */
-  public toJSON(): { [key: string]: any } {
+  public async toJSON(): Promise<{ [key: string]: any }> {
     return this.template;
   }
 
@@ -64,8 +67,8 @@ export class Template {
    * @param type the resource type; ex: `AWS::S3::Bucket`
    * @param count number of expected instances
    */
-  public resourceCountIs(type: string, count: number): void {
-    const counted = countResources(this.template, type);
+  public async resourceCountIs(type: string, count: number): Promise<any> {
+    const counted = countResources(await this.template, type);
     if (counted !== count) {
       throw new Error(`Expected ${count} resources of type ${type} but found ${counted}`);
     }
@@ -79,8 +82,8 @@ export class Template {
    * @param type the resource type; ex: `AWS::S3::Bucket`
    * @param props the 'Properties' section of the resource as should be expected in the template.
    */
-  public hasResourceProperties(type: string, props: any): void {
-    const matchError = hasResourceProperties(this.template, type, props);
+  public async hasResourceProperties(type: string, props: any): Promise<any> {
+    const matchError = hasResourceProperties(await this.template, type, props);
     if (matchError) {
       throw new Error(matchError);
     }
@@ -94,8 +97,8 @@ export class Template {
    * @param type the resource type; ex: `AWS::S3::Bucket`
    * @param props the entire defintion of the resource as should be expected in the template.
    */
-  public hasResource(type: string, props: any): void {
-    const matchError = hasResource(this.template, type, props);
+  public async hasResource(type: string, props: any): Promise<any> {
+    const matchError = hasResource(await this.template, type, props);
     if (matchError) {
       throw new Error(matchError);
     }
@@ -108,8 +111,8 @@ export class Template {
    * When a literal is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findResources(type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
-    return findResources(this.template, type, props);
+  public async findResources(type: string, props: any = {}): Promise<{ [key: string]: { [key: string]: any; }; }> {
+    return findResources(await this.template, type, props);
   }
 
   /**
@@ -119,8 +122,8 @@ export class Template {
    * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
    * @param props the parameter as should be expected in the template.
    */
-  public hasParameter(logicalId: string, props: any): void {
-    const matchError = hasParameter(this.template, logicalId, props);
+  public async hasParameter(logicalId: string, props: any): Promise<any> {
+    const matchError = hasParameter(await this.template, logicalId, props);
     if (matchError) {
       throw new Error(matchError);
     }
@@ -133,8 +136,8 @@ export class Template {
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findParameters(logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
-    return findParameters(this.template, logicalId, props);
+  public async findParameters(logicalId: string, props: any = {}): Promise<{ [key: string]: { [key: string]: any; }; }> {
+    return findParameters(await this.template, logicalId, props);
   }
 
   /**
@@ -144,8 +147,8 @@ export class Template {
    * @param logicalId the name of the output. Provide `'*'` to match all outputs in the template.
    * @param props the output as should be expected in the template.
    */
-  public hasOutput(logicalId: string, props: any): void {
-    const matchError = hasOutput(this.template, logicalId, props);
+  public async hasOutput(logicalId: string, props: any): Promise<any> {
+    const matchError = hasOutput(await this.template, logicalId, props);
     if (matchError) {
       throw new Error(matchError);
     }
@@ -158,8 +161,8 @@ export class Template {
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findOutputs(logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
-    return findOutputs(this.template, logicalId, props);
+  public async findOutputs(logicalId: string, props: any = {}): Promise<{ [key: string]: { [key: string]: any; }; }> {
+    return findOutputs(await this.template, logicalId, props);
   }
 
   /**
@@ -169,8 +172,8 @@ export class Template {
    * @param logicalId the name of the mapping. Provide `'*'` to match all mappings in the template.
    * @param props the output as should be expected in the template.
    */
-  public hasMapping(logicalId: string, props: any): void {
-    const matchError = hasMapping(this.template, logicalId, props);
+  public async hasMapping(logicalId: string, props: any): Promise<any> {
+    const matchError = hasMapping(await this.template, logicalId, props);
     if (matchError) {
       throw new Error(matchError);
     }
@@ -183,8 +186,8 @@ export class Template {
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findMappings(logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
-    return findMappings(this.template, logicalId, props);
+  public async findMappings(logicalId: string, props: any = {}): Promise<{ [key: string]: { [key: string]: any; }; }> {
+    return findMappings(await this.template, logicalId, props);
   }
 
   /**
@@ -194,8 +197,8 @@ export class Template {
    * @param logicalId the name of the mapping. Provide `'*'` to match all conditions in the template.
    * @param props the output as should be expected in the template.
    */
-  public hasCondition(logicalId: string, props: any): void {
-    const matchError = hasCondition(this.template, logicalId, props);
+  public async hasCondition(logicalId: string, props: any): Promise<any> {
+    const matchError = hasCondition(await this.template, logicalId, props);
     if (matchError) {
       throw new Error(matchError);
     }
@@ -208,17 +211,17 @@ export class Template {
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findConditions(logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
-    return findConditions(this.template, logicalId, props);
+  public async findConditions(logicalId: string, props: any = {}): Promise<{ [key: string]: { [key: string]: any; }; }> {
+    return findConditions(await this.template, logicalId, props);
   }
 
   /**
    * Assert that the CloudFormation template matches the given value
    * @param expected the expected CloudFormation template as key-value pairs.
    */
-  public templateMatches(expected: any): void {
+  public async templateMatches(expected: any): Promise<any> {
     const matcher = Matcher.isMatcher(expected) ? expected : Match.objectLike(expected);
-    const result = matcher.test(this.template);
+    const result = matcher.test(await this.template);
 
     if (result.hasFailed()) {
       throw new Error([
@@ -229,16 +232,17 @@ export class Template {
   }
 }
 
-function toTemplate(stack: Stack): any {
+function toTemplate(stack: Stack): Promise<any> {
   const root = stack.node.root;
   if (!Stage.isStage(root)) {
     throw new Error('unexpected: all stacks must be part of a Stage or an App');
   }
 
-  const assembly = root.synth();
-  if (stack.nestedStackParent) {
-    // if this is a nested stack (it has a parent), then just read the template as a string
-    return JSON.parse(fs.readFileSync(path.join(assembly.directory, stack.templateFile)).toString('utf-8'));
-  }
-  return assembly.getStackArtifact(stack.artifactId).template;
+  return root.synth().then(assembly => {
+    if (stack.nestedStackParent) {
+      // if this is a nested stack (it has a parent), then just read the template as a string
+      return JSON.parse(fs.readFileSync(path.join(assembly.directory, stack.templateFile)).toString('utf-8'));
+    }
+    return assembly.getStackArtifact(stack.artifactId).template;
+  });
 }

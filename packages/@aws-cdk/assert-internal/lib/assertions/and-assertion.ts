@@ -8,12 +8,12 @@ export class AndAssertion<InspectorClass extends Inspector> extends Assertion<In
     super();
   }
 
-  public assertUsing(_inspector: InspectorClass): boolean {
+  public async assertUsing(_inspector: InspectorClass): Promise<boolean> {
     throw new Error('This is never called');
   }
 
-  public assertOrThrow(inspector: InspectorClass) {
-    this.first.assertOrThrow(inspector);
-    this.second.assertOrThrow(inspector);
+  public async assertOrThrow(inspector: InspectorClass): Promise<any> {
+    await this.first.assertOrThrow(inspector);
+    await this.second.assertOrThrow(inspector);
   }
 }

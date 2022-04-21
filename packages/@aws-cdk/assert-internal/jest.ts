@@ -13,34 +13,34 @@ declare global {
     interface Matchers<R, T> {
       toMatchTemplate(
         template: any,
-        matchStyle?: MatchStyle): R;
+        matchStyle?: MatchStyle): Promise<R>;
 
       toHaveResource(
         resourceType: string,
         properties?: any,
-        comparison?: ResourcePart): R;
+        comparison?: ResourcePart): Promise<R>;
 
       toHaveResourceLike(
         resourceType: string,
         properties?: any,
-        comparison?: ResourcePart): R;
+        comparison?: ResourcePart): Promise<R>;
 
-      toHaveOutput(props: HaveOutputProperties): R;
+      toHaveOutput(props: HaveOutputProperties): Promise<R>;
 
-      toCountResources(resourceType: string, count: number): R;
+      toCountResources(resourceType: string, count: number): Promise<R>;
     }
   }
 }
 
 expect.extend({
-  toMatchTemplate(
+  async toMatchTemplate(
     actual: cxapi.CloudFormationStackArtifact | core.Stack,
     template: any,
     matchStyle?: MatchStyle) {
 
     const assertion = matchTemplate(template, matchStyle);
     const inspector = ourExpect(actual);
-    const pass = assertion.assertUsing(inspector);
+    const pass = await assertion.assertUsing(inspector);
     if (pass) {
       return {
         pass,
@@ -54,7 +54,7 @@ expect.extend({
     }
   },
 
-  toHaveResource(
+  async toHaveResource(
     actual: cxapi.CloudFormationStackArtifact | core.Stack,
     resourceType: string,
     properties?: any,
@@ -90,9 +90,9 @@ expect.extend({
   },
 });
 
-function applyAssertion(assertion: JestFriendlyAssertion<StackInspector>, actual: cxapi.CloudFormationStackArtifact | core.Stack) {
+async function applyAssertion(assertion: JestFriendlyAssertion<StackInspector>, actual: cxapi.CloudFormationStackArtifact | core.Stack) {
   const inspector = ourExpect(actual);
-  const pass = assertion.assertUsing(inspector);
+  const pass = await assertion.assertUsing(inspector);
   if (pass) {
     return {
       pass,

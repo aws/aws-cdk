@@ -2,7 +2,7 @@ import * as cdk from '../lib';
 import { toCloudFormation } from './util';
 
 describe('condition', () => {
-  test('chain conditions', () => {
+  test('chain conditions', async () => {
     // GIVEN
     const stack = new cdk.Stack();
     const param = new cdk.CfnParameter(stack, 'Param1', { type: 'String' });
@@ -16,7 +16,7 @@ describe('condition', () => {
     });
 
     // THEN
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Parameters: { Param1: { Type: 'String' } },
       Conditions: {
         Condition1: { 'Fn::Equals': ['a', 'b'] },
@@ -35,7 +35,7 @@ describe('condition', () => {
 
   });
 
-  test('condition expressions can be embedded as strings', () => {
+  test('condition expressions can be embedded as strings', async () => {
     // GIVEN
     const stack = new cdk.Stack();
     const propValue: string = cdk.Fn.conditionIf('Cond', 'A', 'B').toString();
@@ -50,7 +50,7 @@ describe('condition', () => {
 
     // THEN
     expect(cdk.Token.isUnresolved(propValue)).toEqual(true);
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         MyResource: {
           Type: 'AWS::Foo::Bar',

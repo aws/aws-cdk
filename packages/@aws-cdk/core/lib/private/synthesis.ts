@@ -20,20 +20,20 @@ export interface SynthesisOptions extends StageSynthesisOptions {
   readonly outdir?: string;
 }
 
-export function synthesize(root: IConstruct, options: SynthesisOptions = { }): cxapi.CloudAssembly {
+export async function synthesize(root: IConstruct, options: SynthesisOptions = { }): Promise<cxapi.CloudAssembly> {
   // we start by calling "synth" on all nested assemblies (which will take care of all their children)
-  synthNestedAssemblies(root, options);
+  await synthNestedAssemblies(root, options);
 
   invokeAspects(root);
 
-  injectMetadataResources(root);
+  await injectMetadataResources(root);
 
   // resolve references
   prepareApp(root);
 
   // give all children an opportunity to validate now that we've finished prepare
   if (!options.skipValidation) {
-    validateTree(root);
+    await validateTree(root);
   }
 
   // in unit tests, we support creating free-standing stacks, so we create the
@@ -44,7 +44,7 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
 
   // next, we invoke "onSynthesize" on all of our children. this will allow
   // stacks to add themselves to the synthesized cloud assembly.
-  synthesizeTree(root, builder, options.validateOnSynthesis);
+  await synthesizeTree(root, builder, options.validateOnSynthesis);
 
   return builder.buildAssembly();
 }
@@ -80,12 +80,12 @@ function getCustomSynthesis(construct: IConstruct): ICustomSynthesis | undefined
  *
  * (They will in turn recurse again)
  */
-function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions) {
+async function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions) {
   for (const child of root.node.children) {
     if (Stage.isStage(child)) {
-      child.synth(options);
+      await child.synth(options);
     } else {
-      synthNestedAssemblies(child, options);
+      await synthNestedAssemblies(child, options);
     }
   }
 }
@@ -152,8 +152,8 @@ function invokeAspects(root: IConstruct) {
  *
  * Stop at Assembly boundaries.
  */
-function injectMetadataResources(root: IConstruct) {
-  visit(root, 'post', construct => {
+async function injectMetadataResources(root: IConstruct) {
+  await visit(root, 'post', async construct => {
     if (!Stack.isStack(construct) || !construct._versionReportingEnabled) { return; }
 
     // Because of https://github.com/aws/aws-cdk/blob/master/packages/assert-internal/lib/synth-utils.ts#L74
@@ -171,24 +171,29 @@ function injectMetadataResources(root: IConstruct) {
  *
  * Stop at Assembly boundaries.
  */
-function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder, validateOnSynth: boolean = false) {
-  visit(root, 'post', construct => {
+async function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder, validateOnSynth: boolean = false) {
+  await visit(root, 'post', async construct => {
     const session = {
       outdir: builder.outdir,
       assembly: builder,
       validateOnSynth,
     };
 
+    let maybePromise: void | Promise<any>;
     if (Stack.isStack(construct)) {
-      construct.synthesizer.synthesize(session);
+      maybePromise = construct.synthesizer.synthesize(session);
     } else if (construct instanceof TreeMetadata) {
       construct._synthesizeTree(session);
     } else {
       const custom = getCustomSynthesis(construct);
-      custom?.onSynthesize(session);
+      maybePromise = custom?.onSynthesize(session);
+    }
+    if (maybePromise) {
+      await maybePromise;
     }
   });
 }
+
 
 interface ValidationError {
   readonly message: string;
@@ -198,10 +203,10 @@ interface ValidationError {
 /**
  * Validate all constructs in the given construct tree
  */
-function validateTree(root: IConstruct) {
+async function validateTree(root: IConstruct) {
   const errors = new Array<ValidationError>();
 
-  visit(root, 'pre', construct => {
+  await visit(root, 'pre', async construct => {
     for (const message of construct.node.validate()) {
       errors.push({ message, source: construct });
     }
@@ -216,17 +221,17 @@ function validateTree(root: IConstruct) {
 /**
  * Visit the given construct tree in either pre or post order, stopping at Assemblies
  */
-function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => void) {
+async function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => Promise<void>) {
   if (order === 'pre') {
-    cb(root);
+    await cb(root);
   }
 
   for (const child of root.node.children) {
     if (Stage.isStage(child)) { continue; }
-    visit(child, order, cb);
+    await visit(child, order, cb);
   }
 
   if (order === 'post') {
-    cb(root);
+    await cb(root);
   }
 }

@@ -5,8 +5,8 @@ import { SynthUtils } from './synth-utils';
 
 export function expect(stack: api.CloudFormationStackArtifact | cdk.Stack | Record<string, any>, skipValidation = false): StackInspector {
   // if this is already a synthesized stack, then just inspect it.
-  const artifact = stack instanceof api.CloudFormationStackArtifact ? stack
+  const artifact = stack instanceof api.CloudFormationStackArtifact ? Promise.resolve(stack)
     : cdk.Stack.isStack(stack) ? SynthUtils._synthesizeWithNested(stack, { skipValidation })
-      : stack; // This is a template already
+      : Promise.resolve(stack); // This is a template already
   return new StackInspector(artifact);
 }

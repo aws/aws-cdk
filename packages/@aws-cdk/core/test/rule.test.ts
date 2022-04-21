@@ -2,14 +2,14 @@ import { CfnRule, Fn, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 describe('rule', () => {
-  test('Rule can be used to create rules', () => {
+  test('Rule can be used to create rules', async () => {
     const stack = new Stack();
 
     const rule = new CfnRule(stack, 'MyRule');
     rule.addAssertion(Fn.conditionEquals('lhs', 'rhs'), 'lhs equals rhs');
     rule.addAssertion(Fn.conditionNot(Fn.conditionAnd(Fn.conditionContains(['hello', 'world'], 'world'))), 'some assertion');
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Rules: {
         MyRule: {
           Assertions: [
@@ -29,13 +29,13 @@ describe('rule', () => {
 
   });
 
-  test('a template can contain multiple Rules', () => {
+  test('a template can contain multiple Rules', async () => {
     const stack = new Stack();
 
     new CfnRule(stack, 'Rule1');
     new CfnRule(stack, 'Rule2');
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Rules: {
         Rule1: {},
         Rule2: {},

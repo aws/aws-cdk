@@ -42,14 +42,14 @@ describe('stage', () => {
 
   });
 
-  test('The Stage Assembly is in the app Assembly\'s manifest', () => {
+  test('The Stage Assembly is in the app Assembly\'s manifest', async () => {
     // WHEN
     const app = new App();
     const stage = new Stage(app, 'Stage');
     new BogusStack(stage, 'Stack2');
 
     // THEN -- app manifest contains a nested cloud assembly
-    const appAsm = app.synth();
+    const appAsm = await app.synth();
 
     const artifact = appAsm.artifacts.find(x => x instanceof cxapi.NestedCloudAssemblyArtifact);
     expect(artifact).toBeDefined();
@@ -57,7 +57,7 @@ describe('stage', () => {
 
   });
 
-  test('Stacks in Stage are in a different cxasm than Stacks in App', () => {
+  test('Stacks in Stage are in a different cxasm than Stacks in App', async () => {
     // WHEN
     const app = new App();
     const stack1 = new BogusStack(app, 'Stack1');
@@ -65,16 +65,16 @@ describe('stage', () => {
     const stack2 = new BogusStack(stage, 'Stack2');
 
     // THEN
-    const stageAsm = stage.synth();
+    const stageAsm = await stage.synth();
     expect(stageAsm.stacks.map(s => s.stackName)).toEqual([stack2.stackName]);
 
-    const appAsm = app.synth();
+    const appAsm = await app.synth();
     expect(appAsm.stacks.map(s => s.stackName)).toEqual([stack1.stackName]);
 
 
   });
 
-  test('Can nest Stages inside other Stages', () => {
+  test('Can nest Stages inside other Stages', async () => {
     // WHEN
     const app = new App();
     const outer = new Stage(app, 'Outer');
@@ -82,7 +82,7 @@ describe('stage', () => {
     const stack = new BogusStack(inner, 'Stack');
 
     // WHEN
-    const appAsm = app.synth();
+    const appAsm = await app.synth();
     const outerAsm = appAsm.getNestedAssembly(outer.artifactId);
     const innerAsm = outerAsm.getNestedAssembly(inner.artifactId);
 
@@ -118,7 +118,7 @@ describe('stage', () => {
 
   });
 
-  test('When we synth() a stage, aspects inside it must have been applied', () => {
+  test('When we synth() a stage, aspects inside it must have been applied', async () => {
     // GIVEN
     const app = new App();
     const stage = new Stage(app, 'MyStage');
@@ -129,7 +129,7 @@ describe('stage', () => {
     Aspects.of(stack).add(aspect);
 
     // THEN
-    app.synth();
+    await app.synth();
     expect(aspect.visits.map(c => c.node.path)).toEqual([
       'MyStage/Stack',
       'MyStage/Stack/Resource',
@@ -138,7 +138,7 @@ describe('stage', () => {
 
   });
 
-  test('Aspects do not apply inside a Stage', () => {
+  test('Aspects do not apply inside a Stage', async () => {
     // GIVEN
     const app = new App();
     const stage = new Stage(app, 'MyStage');
@@ -149,7 +149,7 @@ describe('stage', () => {
     Aspects.of(app).add(aspect);
 
     // THEN
-    app.synth();
+    await app.synth();
     expect(aspect.visits.map(c => c.node.path)).toEqual([
       '',
       'Tree',
@@ -157,7 +157,7 @@ describe('stage', () => {
 
   });
 
-  test('Automatic dependencies inside a stage are available immediately after synth', () => {
+  test('Automatic dependencies inside a stage are available immediately after synth', async () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stage = new Stage(app, 'MyStage');
@@ -175,7 +175,7 @@ describe('stage', () => {
       },
     });
 
-    const asm = stage.synth();
+    const asm = await stage.synth();
 
     // THEN
     expect(
@@ -185,7 +185,7 @@ describe('stage', () => {
 
   });
 
-  test('Assemblies can be deeply nested', () => {
+  test('Assemblies can be deeply nested', async () => {
     // GIVEN
     const app = new App({ treeMetadata: false });
 
@@ -194,7 +194,7 @@ describe('stage', () => {
     new Stage(level2, 'StageLevel3');
 
     // WHEN
-    const rootAssembly = app.synth();
+    const rootAssembly = await app.synth();
 
     // THEN
     expect(rootAssembly.manifest.artifacts).toEqual({
@@ -289,7 +289,7 @@ describe('stage', () => {
   });
 });
 
-test('missing context in Stages is propagated up to root assembly', () => {
+test('missing context in Stages is propagated up to root assembly', async () => {
   // GIVEN
   const app = new App();
   const stage = new Stage(app, 'Stage', {
@@ -309,7 +309,7 @@ test('missing context in Stages is propagated up to root assembly', () => {
   });
 
   // THEN
-  const assembly = app.synth();
+  const assembly = await app.synth();
 
   expect(assembly.manifest.missing).toEqual([
     {

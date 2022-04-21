@@ -5,7 +5,7 @@ import { handler } from '../lib/private/cfn-utils-provider/index';
 
 describe('cfn json', () => {
 
-  test('resolves to a fn::getatt', () => {
+  test('resolves to a fn::getatt', async () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'test');
@@ -19,7 +19,7 @@ describe('cfn json', () => {
     });
 
     // THEN
-    const template = app.synth().getStackArtifact(stack.artifactId).template;
+    const template = (await app.synth()).getStackArtifact(stack.artifactId).template;
 
     // input is stringified
     expect(template.Resources.MyCfnJson248769BB.Properties.Value).toEqual('{"hello":1234,"world":{"bar":1234}}');
@@ -30,7 +30,7 @@ describe('cfn json', () => {
 
   });
 
-  test('tokens and intrinsics can be used freely in keys or values', () => {
+  test('tokens and intrinsics can be used freely in keys or values', async () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'test');
@@ -47,7 +47,7 @@ describe('cfn json', () => {
     });
 
     // THEN
-    const template = app.synth().getStackArtifact(stack.artifactId).template;
+    const template = (await app.synth()).getStackArtifact(stack.artifactId).template;
 
     expect(template.Resources.MyCfnJson248769BB.Properties.Value).toEqual({
       'Fn::Join': ['', ['{"', { Ref: 'Other' }, '":1234,"world":{"bar":"this is a I am lazy"}}']],

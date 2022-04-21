@@ -12,15 +12,15 @@ function createModernApp() {
 }
 
 describe('synthesis', () => {
-  test('synthesis with an empty app', () => {
+  test('synthesis with an empty app', async () => {
     // GIVEN
     const app = createModernApp();
 
     // WHEN
-    const session = app.synth();
+    const session = await app.synth();
 
     // THEN
-    expect(app.synth()).toEqual(session); // same session if we synth() again
+    expect(await app.synth()).toEqual(session); // same session if we synth() again
     expect(list(session.directory)).toEqual(['cdk.out', 'manifest.json', 'tree.json']);
     expect(readJson(session.directory, 'manifest.json').artifacts).toEqual({
       Tree: {
@@ -41,28 +41,28 @@ describe('synthesis', () => {
 
   });
 
-  test('synthesis respects disabling tree metadata', () => {
+  test('synthesis respects disabling tree metadata', async () => {
     const app = new cdk.App({
       treeMetadata: false,
     });
-    const assembly = app.synth();
+    const assembly = await app.synth();
     expect(list(assembly.directory)).toEqual(['cdk.out', 'manifest.json']);
 
   });
 
-  test('single empty stack', () => {
+  test('single empty stack', async () => {
     // GIVEN
     const app = createModernApp();
     new cdk.Stack(app, 'one-stack');
 
     // WHEN
-    const session = app.synth();
+    const session = await app.synth();
 
     // THEN
     expect(list(session.directory).includes('one-stack.template.json')).toEqual(true);
   });
 
-  test('random construct uses addCustomSynthesis', () => {
+  test('random construct uses addCustomSynthesis', async () => {
     // GIVEN
     const app = createModernApp();
     const stack = new cdk.Stack(app, 'one-stack');
@@ -89,7 +89,7 @@ describe('synthesis', () => {
     new MyConstruct(stack, 'MyConstruct');
 
     // WHEN
-    const session = app.synth();
+    const session = await app.synth();
 
     // THEN
     expect(list(session.directory).includes('one-stack.template.json')).toEqual(true);
@@ -122,7 +122,7 @@ describe('synthesis', () => {
 
   });
 
-  testDeprecated('it should be possible to synthesize without an app', () => {
+  testDeprecated('it should be possible to synthesize without an app', async () => {
     const calls = new Array<string>();
 
     class SynthesizeMe extends cdk.Stack {
@@ -158,7 +158,7 @@ describe('synthesis', () => {
     }
 
     const root = new SynthesizeMe();
-    const assembly = synthesize(root, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
+    const assembly = await synthesize(root, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
 
     expect(calls).toEqual(['validate', 'synthesize']);
     const stack = assembly.getStackByName('art');

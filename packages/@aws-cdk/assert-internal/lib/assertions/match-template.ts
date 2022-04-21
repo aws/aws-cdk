@@ -32,15 +32,15 @@ class StackMatchesTemplateAssertion extends Assertion<StackInspector> {
     super();
   }
 
-  public assertOrThrow(inspector: StackInspector) {
-    if (!this.assertUsing(inspector)) {
+  public async assertOrThrow(inspector: StackInspector) {
+    if (!await this.assertUsing(inspector)) {
       // The details have already been printed, so don't generate a huge error message
       throw new Error('Template comparison produced unacceptable match');
     }
   }
 
-  public assertUsing(inspector: StackInspector): boolean {
-    const diff = cfnDiff.diffTemplate(this.template, inspector.value);
+  public async assertUsing(inspector: StackInspector): Promise<boolean> {
+    const diff = cfnDiff.diffTemplate(this.template, await inspector.value);
     const acceptable = this.isDiffAcceptable(diff);
     if (!acceptable) {
       // Print the diff

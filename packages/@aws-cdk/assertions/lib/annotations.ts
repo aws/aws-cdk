@@ -12,8 +12,8 @@ export class Annotations {
    * Base your assertions on the messages returned by a synthesized CDK `Stack`.
    * @param stack the CDK Stack to run assertions on
    */
-  public static fromStack(stack: Stack): Annotations {
-    return new Annotations(toMessages(stack));
+  public static async fromStack(stack: Stack): Promise<Annotations> {
+    return new Annotations(await toMessages(stack));
   }
 
   private readonly _messages: Messages;
@@ -153,7 +153,7 @@ function convertMessagesTypeToArray(messages: Messages): SynthesisMessage[] {
   return Object.values(messages) as SynthesisMessage[];
 }
 
-function toMessages(stack: Stack): any {
+async function toMessages(stack: Stack): Promise<any> {
   const root = stack.node.root;
   if (!Stage.isStage(root)) {
     throw new Error('unexpected: all stacks must be part of a Stage or an App');
@@ -162,7 +162,7 @@ function toMessages(stack: Stack): any {
   // to support incremental assertions (i.e. "expect(stack).toNotContainSomething(); doSomething(); expect(stack).toContainSomthing()")
   const force = true;
 
-  const assembly = root.synth({ force });
+  const assembly = await root.synth({ force });
 
   return assembly.getStackArtifact(stack.artifactId).messages;
 }

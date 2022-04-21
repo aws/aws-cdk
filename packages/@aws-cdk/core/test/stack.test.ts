@@ -15,9 +15,9 @@ import { PostResolveToken } from '../lib/util';
 import { toCloudFormation } from './util';
 
 describe('stack', () => {
-  test('a stack can be serialized into a CloudFormation template, initially it\'s empty', () => {
+  test('a stack can be serialized into a CloudFormation template, initially it\'s empty', async () => {
     const stack = new Stack();
-    expect(toCloudFormation(stack)).toEqual({ });
+    expect(await toCloudFormation(stack)).toEqual({ });
   });
 
   test('stack name cannot exceed 128 characters', () => {
@@ -33,12 +33,12 @@ describe('stack', () => {
     }).toThrow(`Stack name must be <= 128 characters. Stack name: '${reallyLongStackName}'`);
   });
 
-  test('stack objects have some template-level propeties, such as Description, Version, Transform', () => {
+  test('stack objects have some template-level propeties, such as Description, Version, Transform', async () => {
     const stack = new Stack();
     stack.templateOptions.templateFormatVersion = 'MyTemplateVersion';
     stack.templateOptions.description = 'This is my description';
     stack.templateOptions.transforms = ['SAMy'];
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Description: 'This is my description',
       AWSTemplateFormatVersion: 'MyTemplateVersion',
       Transform: 'SAMy',
@@ -54,15 +54,15 @@ describe('stack', () => {
 
   });
 
-  test('stack.id is not included in the logical identities of resources within it', () => {
+  test('stack.id is not included in the logical identities of resources within it', async () => {
     const stack = new Stack(undefined, 'MyStack');
     new CfnResource(stack, 'MyResource', { type: 'MyResourceType' });
 
-    expect(toCloudFormation(stack)).toEqual({ Resources: { MyResource: { Type: 'MyResourceType' } } });
+    expect(await toCloudFormation(stack)).toEqual({ Resources: { MyResource: { Type: 'MyResourceType' } } });
 
   });
 
-  test('when stackResourceLimit is default, should give error', () => {
+  test('when stackResourceLimit is default, should give error', async () => {
     // GIVEN
     const app = new App({});
 
@@ -73,14 +73,14 @@ describe('stack', () => {
       new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
     }
 
-    expect(() => {
-      app.synth();
-    }).toThrow('Number of resources in stack \'MyStack\': 1000 is greater than allowed maximum of 500');
+    await expect(async () => {
+      await app.synth();
+    }).rejects.toThrow('Number of resources in stack \'MyStack\': 1000 is greater than allowed maximum of 500');
 
 
   });
 
-  test('when stackResourceLimit is defined, should give the proper error', () => {
+  test('when stackResourceLimit is defined, should give the proper error', async () => {
     // GIVEN
     const app = new App({
       context: {
@@ -95,14 +95,14 @@ describe('stack', () => {
       new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
     }
 
-    expect(() => {
-      app.synth();
-    }).toThrow('Number of resources in stack \'MyStack\': 200 is greater than allowed maximum of 100');
+    await expect(async () => {
+      await app.synth();
+    }).rejects.toThrow('Number of resources in stack \'MyStack\': 200 is greater than allowed maximum of 100');
 
 
   });
 
-  test('when stackResourceLimit is 0, should not give error', () => {
+  test('when stackResourceLimit is 0, should not give error', async () => {
     // GIVEN
     const app = new App({
       context: {
@@ -117,14 +117,10 @@ describe('stack', () => {
       new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
     }
 
-    expect(() => {
-      app.synth();
-    }).not.toThrow();
-
-
+    await app.synth();
   });
 
-  test('stack.templateOptions can be used to set template-level options', () => {
+  test('stack.templateOptions can be used to set template-level options', async () => {
     const stack = new Stack();
 
     stack.templateOptions.description = 'StackDescription';
@@ -135,7 +131,7 @@ describe('stack', () => {
       MetadataKey: 'MetadataValue',
     };
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Description: 'StackDescription',
       Transform: ['Transform', 'DeprecatedField'],
       AWSTemplateFormatVersion: 'TemplateVersion',
@@ -145,26 +141,26 @@ describe('stack', () => {
 
   });
 
-  test('stack.templateOptions.transforms removes duplicate values', () => {
+  test('stack.templateOptions.transforms removes duplicate values', async () => {
     const stack = new Stack();
 
     stack.templateOptions.transforms = ['A', 'B', 'C', 'A'];
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Transform: ['A', 'B', 'C'],
     });
 
 
   });
 
-  test('stack.addTransform() adds a transform', () => {
+  test('stack.addTransform() adds a transform', async () => {
     const stack = new Stack();
 
     stack.addTransform('A');
     stack.addTransform('B');
     stack.addTransform('C');
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Transform: ['A', 'B', 'C'],
     });
 
@@ -233,9 +229,9 @@ describe('stack', () => {
 
   });
 
-  test('Stacks can have a description given to them', () => {
+  test('Stacks can have a description given to them', async () => {
     const stack = new Stack(new App(), 'MyStack', { description: 'My stack, hands off!' });
-    const output = toCloudFormation(stack);
+    const output = await toCloudFormation(stack);
     expect(output.Description).toEqual('My stack, hands off!');
 
   });
@@ -257,7 +253,7 @@ describe('stack', () => {
 
   });
 
-  testDeprecated('Include should support non-hash top-level template elements like "Description"', () => {
+  testDeprecated('Include should support non-hash top-level template elements like "Description"', async () => {
     const stack = new Stack();
 
     const template = {
@@ -266,13 +262,13 @@ describe('stack', () => {
 
     new CfnInclude(stack, 'Include', { template });
 
-    const output = toCloudFormation(stack);
+    const output = await toCloudFormation(stack);
 
     expect(typeof output.Description).toEqual('string');
 
   });
 
-  test('Pseudo values attached to one stack can be referenced in another stack', () => {
+  test('Pseudo values attached to one stack can be referenced in another stack', async () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack1 = new Stack(app, 'Stack1');
@@ -283,7 +279,7 @@ describe('stack', () => {
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
     const template1 = assembly.getStackByName(stack1.stackName).template;
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
@@ -308,7 +304,7 @@ describe('stack', () => {
 
   });
 
-  test('Cross-stack references are detected in resource properties', () => {
+  test('Cross-stack references are detected in resource properties', async () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
@@ -324,7 +320,7 @@ describe('stack', () => {
     });
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
     expect(template2?.Resources).toEqual({
@@ -337,7 +333,7 @@ describe('stack', () => {
     });
   });
 
-  test('Cross-stack export names account for stack name lengths', () => {
+  test('Cross-stack export names account for stack name lengths', async () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', {
@@ -362,7 +358,7 @@ describe('stack', () => {
     });
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
     const template1 = assembly.getStackByName(stack1.stackName).template;
 
     const theOutput = template1.Outputs[Object.keys(template1.Outputs)[0]];
@@ -370,7 +366,7 @@ describe('stack', () => {
 
   });
 
-  test('Cross-stack reference export names are relative to the stack (when the flag is set)', () => {
+  test('Cross-stack reference export names are relative to the stack (when the flag is set)', async () => {
     // GIVEN
     const app = new App({
       context: {
@@ -394,7 +390,7 @@ describe('stack', () => {
     });
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
     expect(template2?.Resources).toEqual({
@@ -407,7 +403,7 @@ describe('stack', () => {
     });
   });
 
-  test('cross-stack references in lazy tokens work', () => {
+  test('cross-stack references in lazy tokens work', async () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack1 = new Stack(app, 'Stack1');
@@ -417,7 +413,7 @@ describe('stack', () => {
     // WHEN - used in another stack
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: Lazy.string({ produce: () => account1 }) });
 
-    const assembly = app.synth();
+    const assembly = await app.synth();
     const template1 = assembly.getStackByName(stack1.stackName).template;
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
@@ -443,7 +439,7 @@ describe('stack', () => {
 
   });
 
-  test('Cross-stack use of Region and account returns nonscoped intrinsic because the two stacks must be in the same region anyway', () => {
+  test('Cross-stack use of Region and account returns nonscoped intrinsic because the two stacks must be in the same region anyway', async () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
@@ -454,7 +450,7 @@ describe('stack', () => {
     new CfnOutput(stack2, 'DemAccount', { value: stack1.account });
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
     expect(template2?.Outputs).toEqual({
@@ -467,7 +463,7 @@ describe('stack', () => {
     });
   });
 
-  test('cross-stack references in strings work', () => {
+  test('cross-stack references in strings work', async () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack1 = new Stack(app, 'Stack1');
@@ -477,7 +473,7 @@ describe('stack', () => {
     // WHEN - used in another stack
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: `TheAccountIs${account1}` });
 
-    const assembly = app.synth();
+    const assembly = await app.synth();
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
     // THEN
@@ -491,7 +487,7 @@ describe('stack', () => {
     });
   });
 
-  test('cross stack references and dependencies work within child stacks (non-nested)', () => {
+  test('cross stack references and dependencies work within child stacks (non-nested)', async () => {
     // GIVEN
     const app = new App({
       context: {
@@ -515,7 +511,7 @@ describe('stack', () => {
     resource2.addDependsOn(resourceB);
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
     const parentTemplate = assembly.getStackArtifact(parent.artifactId).template;
     const child1Template = assembly.getStackArtifact(child1.artifactId).template;
     const child2Template = assembly.getStackArtifact(child2.artifactId).template;
@@ -548,7 +544,7 @@ describe('stack', () => {
     expect(assembly.getStackArtifact(child2.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
   });
 
-  test('automatic cross-stack references and manual exports look the same', () => {
+  test('automatic cross-stack references and manual exports look the same', async () => {
     // GIVEN: automatic
     const appA = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
     const producerA = new Stack(appA, 'Producer');
@@ -563,13 +559,13 @@ describe('stack', () => {
     producerM.exportValue(resourceM.getAtt('Att'));
 
     // THEN - producers are the same
-    const templateA = appA.synth().getStackByName(producerA.stackName).template;
-    const templateM = appM.synth().getStackByName(producerM.stackName).template;
+    const templateA = (await appA.synth()).getStackByName(producerA.stackName).template;
+    const templateM = (await appM.synth()).getStackByName(producerM.stackName).template;
 
     expect(templateA).toEqual(templateM);
   });
 
-  test('automatic cross-stack references and manual exports look the same: nested stack edition', () => {
+  test('automatic cross-stack references and manual exports look the same: nested stack edition', async () => {
     // GIVEN: automatic
     const appA = new App();
     const producerA = new Stack(appA, 'Producer');
@@ -587,13 +583,13 @@ describe('stack', () => {
     producerM.exportValue(resourceM.getAtt('Att'));
 
     // THEN - producers are the same
-    const templateA = appA.synth().getStackByName(producerA.stackName).template;
-    const templateM = appM.synth().getStackByName(producerM.stackName).template;
+    const templateA = (await appA.synth()).getStackByName(producerA.stackName).template;
+    const templateM = (await appM.synth()).getStackByName(producerM.stackName).template;
 
     expect(templateA).toEqual(templateM);
   });
 
-  test('manual exports require a name if not supplying a resource attribute', () => {
+  test('manual exports require a name if not supplying a resource attribute', async () => {
     const app = new App();
     const stack = new Stack(app, 'Stack');
 
@@ -635,7 +631,7 @@ describe('stack', () => {
 
   });
 
-  test('Stacks can be children of other stacks (substack) and they will be synthesized separately', () => {
+  test('Stacks can be children of other stacks (substack) and they will be synthesized separately', async () => {
     // GIVEN
     const app = new App();
 
@@ -646,12 +642,12 @@ describe('stack', () => {
     new CfnResource(childStack, 'MyChildResource', { type: 'Resource::Child' });
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
     expect(assembly.getStackByName(parentStack.stackName).template?.Resources).toEqual({ MyParentResource: { Type: 'Resource::Parent' } });
     expect(assembly.getStackByName(childStack.stackName).template?.Resources).toEqual({ MyChildResource: { Type: 'Resource::Child' } });
   });
 
-  test('Nested Stacks are synthesized with DESTROY policy', () => {
+  test('Nested Stacks are synthesized with DESTROY policy', async () => {
     const app = new App();
 
     // WHEN
@@ -659,7 +655,7 @@ describe('stack', () => {
     const childStack = new NestedStack(parentStack, 'child');
     new CfnResource(childStack, 'ChildResource', { type: 'Resource::Child' });
 
-    const assembly = app.synth();
+    const assembly = await app.synth();
     expect(assembly.getStackByName(parentStack.stackName).template).toEqual(expect.objectContaining({
       Resources: {
         childNestedStackchildNestedStackResource7408D03F: expect.objectContaining({
@@ -670,7 +666,7 @@ describe('stack', () => {
     }));
   });
 
-  test('asset metadata added to NestedStack resource that contains asset path and property', () => {
+  test('asset metadata added to NestedStack resource that contains asset path and property', async () => {
     const app = new App();
 
     // WHEN
@@ -679,7 +675,7 @@ describe('stack', () => {
     const childStack = new NestedStack(parentStack, 'child');
     new CfnResource(childStack, 'ChildResource', { type: 'Resource::Child' });
 
-    const assembly = app.synth();
+    const assembly = await app.synth();
     expect(assembly.getStackByName(parentStack.stackName).template).toEqual(expect.objectContaining({
       Resources: {
         childNestedStackchildNestedStackResource7408D03F: expect.objectContaining({
@@ -693,7 +689,7 @@ describe('stack', () => {
 
   });
 
-  test('cross-stack reference (substack references parent stack)', () => {
+  test('cross-stack reference (substack references parent stack)', async () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const parentStack = new Stack(app, 'parent');
@@ -709,7 +705,7 @@ describe('stack', () => {
     });
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
     expect(assembly.getStackByName(parentStack.stackName).template).toEqual({
       Resources: { MyParentResource: { Type: 'Resource::Parent' } },
       Outputs: {
@@ -734,7 +730,7 @@ describe('stack', () => {
 
   });
 
-  test('cross-stack reference (parent stack references substack)', () => {
+  test('cross-stack reference (parent stack references substack)', async () => {
     // GIVEN
     const app = new App({
       context: {
@@ -756,7 +752,7 @@ describe('stack', () => {
     });
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
     expect(assembly.getStackByName(parentStack.stackName).template).toEqual({
       Resources: {
         MyParentResource: {
@@ -779,7 +775,7 @@ describe('stack', () => {
     });
   });
 
-  test('cannot create cyclic reference between stacks', () => {
+  test('cannot create cyclic reference between stacks', async () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
@@ -791,15 +787,15 @@ describe('stack', () => {
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
     new CfnParameter(stack1, 'SomeParameter', { type: 'String', default: account2 });
 
-    expect(() => {
-      app.synth();
+    await expect(async () => {
+      await app.synth();
       // eslint-disable-next-line max-len
-    }).toThrow("'Stack1' depends on 'Stack2' (Stack1 -> Stack2.AWS::AccountId). Adding this dependency (Stack2 -> Stack1.AWS::AccountId) would create a cyclic reference.");
+    }).rejects.toThrow("'Stack1' depends on 'Stack2' (Stack1 -> Stack2.AWS::AccountId). Adding this dependency (Stack2 -> Stack1.AWS::AccountId) would create a cyclic reference.");
 
 
   });
 
-  test('stacks know about their dependencies', () => {
+  test('stacks know about their dependencies', async () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
@@ -809,7 +805,7 @@ describe('stack', () => {
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
-    app.synth();
+    await app.synth();
 
     // THEN
     expect(stack2.dependencies.map(s => s.node.id)).toEqual(['Stack1']);
@@ -817,7 +813,7 @@ describe('stack', () => {
 
   });
 
-  test('cannot create references to stacks in other regions/accounts', () => {
+  test('cannot create references to stacks in other regions/accounts', async () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' } });
@@ -827,14 +823,14 @@ describe('stack', () => {
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
-    expect(() => {
-      app.synth();
-    }).toThrow(/Stack "Stack2" cannot consume a cross reference from stack "Stack1"/);
+    await expect(async () => {
+      await app.synth();
+    }).rejects.toThrow(/Stack "Stack2" cannot consume a cross reference from stack "Stack1"/);
 
 
   });
 
-  test('urlSuffix does not imply a stack dependency', () => {
+  test('urlSuffix does not imply a stack dependency', async () => {
     // GIVEN
     const app = new App();
     const first = new Stack(app, 'First');
@@ -846,7 +842,7 @@ describe('stack', () => {
     });
 
     // THEN
-    app.synth();
+    await app.synth();
 
     expect(second.dependencies.length).toEqual(0);
 
@@ -864,7 +860,7 @@ describe('stack', () => {
 
   });
 
-  test('overrideLogicalId(id) can be used to override the logical ID of a resource', () => {
+  test('overrideLogicalId(id) can be used to override the logical ID of a resource', async () => {
     // GIVEN
     const stack = new Stack();
     const bonjour = new CfnResource(stack, 'BonjourResource', { type: 'Resource::Type' });
@@ -881,7 +877,7 @@ describe('stack', () => {
     bonjour.overrideLogicalId('BOOM');
 
     // THEN
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources:
       {
         BOOM: { Type: 'Resource::Type' },
@@ -921,7 +917,7 @@ describe('stack', () => {
 
   });
 
-  test('stack construct id does not go through stack name validation if there is an explicit stack name', () => {
+  test('stack construct id does not go through stack name validation if there is an explicit stack name', async () => {
     // GIVEN
     const app = new App();
 
@@ -931,7 +927,7 @@ describe('stack', () => {
     });
 
     // THEN
-    const session = app.synth();
+    const session = await app.synth();
     expect(stack.stackName).toEqual('valid-stack-name');
     expect(session.tryGetArtifact(stack.artifactId)).toBeDefined();
 
@@ -1015,10 +1011,10 @@ describe('stack', () => {
 
       });
 
-      testLegacyBehavior('artifactId and templateFile use the stack name', App, (app) => {
+      testLegacyBehavior('artifactId and templateFile use the stack name', App, async (app) => {
         // WHEN
         const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
-        const assembly = app.synth();
+        const assembly = await app.synth();
 
         // THEN
         expect(stack1.artifactId).toEqual('thestack');
@@ -1029,11 +1025,11 @@ describe('stack', () => {
 
     describe('enabled', () => {
       const flags = { [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true' };
-      testFutureBehavior('allows using the same stack name for two stacks (i.e. in different regions)', flags, App, (app) => {
+      testFutureBehavior('allows using the same stack name for two stacks (i.e. in different regions)', flags, App, async (app) => {
         // WHEN
         const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
         const stack2 = new Stack(app, 'MyStack2', { stackName: 'thestack' });
-        const assembly = app.synth();
+        const assembly = await app.synth();
 
         // THEN
         expect(assembly.getStackArtifact(stack1.artifactId).templateFile).toEqual('MyStack1.template.json');
@@ -1042,10 +1038,10 @@ describe('stack', () => {
         expect(stack2.templateFile).toEqual('MyStack2.template.json');
       });
 
-      testFutureBehavior('artifactId and templateFile use the unique id and not the stack name', flags, App, (app) => {
+      testFutureBehavior('artifactId and templateFile use the unique id and not the stack name', flags, App, async (app) => {
         // WHEN
         const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
-        const assembly = app.synth();
+        const assembly = await app.synth();
 
         // THEN
         expect(stack1.artifactId).toEqual('MyStack1');
@@ -1066,7 +1062,7 @@ describe('stack', () => {
 
   });
 
-  test('metadata is collected at the stack boundary', () => {
+  test('metadata is collected at the stack boundary', async () => {
     // GIVEN
     const app = new App({
       context: {
@@ -1080,7 +1076,7 @@ describe('stack', () => {
     child.node.addMetadata('foo', 'bar');
 
     // THEN
-    const asm = app.synth();
+    const asm = await app.synth();
     expect(asm.getStackByName(parent.stackName).findMetadataByType('foo')).toEqual([]);
     expect(asm.getStackByName(child.stackName).findMetadataByType('foo')).toEqual([
       { path: '/parent/child', type: 'foo', data: 'bar' },
@@ -1088,7 +1084,7 @@ describe('stack', () => {
 
   });
 
-  test('stack tags are reflected in the stack cloud assembly artifact metadata', () => {
+  test('stack tags are reflected in the stack cloud assembly artifact metadata', async () => {
     // GIVEN
     const app = new App({ stackTraces: false, context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
 
@@ -1099,7 +1095,7 @@ describe('stack', () => {
     Tags.of(app).add('foo', 'bar');
 
     // THEN
-    const asm = app.synth();
+    const asm = await app.synth();
     const expected = [
       {
         type: 'aws:cdk:stack-tags',
@@ -1112,7 +1108,7 @@ describe('stack', () => {
 
   });
 
-  test('stack tags are reflected in the stack artifact properties', () => {
+  test('stack tags are reflected in the stack artifact properties', async () => {
     // GIVEN
     const app = new App({ stackTraces: false });
     const stack1 = new Stack(app, 'stack1');
@@ -1122,7 +1118,7 @@ describe('stack', () => {
     Tags.of(app).add('foo', 'bar');
 
     // THEN
-    const asm = app.synth();
+    const asm = await app.synth();
     const expected = { foo: 'bar' };
 
     expect(asm.getStackArtifact(stack1.artifactId).tags).toEqual(expected);
@@ -1130,12 +1126,12 @@ describe('stack', () => {
 
   });
 
-  test('Termination Protection is reflected in Cloud Assembly artifact', () => {
+  test('Termination Protection is reflected in Cloud Assembly artifact', async () => {
     // if the root is an app, invoke "synth" to avoid double synthesis
     const app = new App();
     const stack = new Stack(app, 'Stack', { terminationProtection: true });
 
-    const assembly = app.synth();
+    const assembly = await app.synth();
     const artifact = assembly.getStackArtifact(stack.artifactId);
 
     expect(artifact.terminationProtection).toEqual(true);
@@ -1242,13 +1238,13 @@ describe('regionalFact', () => {
     expect(stack.regionalFact('MyFact')).toEqual('x.amazonaws.com');
   });
 
-  test('regional facts generate a mapping if necessary', () => {
+  test('regional facts generate a mapping if necessary', async () => {
     const stack = new Stack();
     new CfnOutput(stack, 'TheFact', {
       value: stack.regionalFact('WeirdFact'),
     });
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Mappings: {
         WeirdFactMap: {
           'eu-west-1': { value: 'otherformat' },

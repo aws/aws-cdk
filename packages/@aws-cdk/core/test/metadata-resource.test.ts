@@ -15,63 +15,63 @@ describe('MetadataResource', () => {
     stack = new Stack(app, 'Stack');
   });
 
-  test('is not included if the region is known and metadata is not available', () => {
+  test('is not included if the region is known and metadata is not available', async () => {
     new Stack(app, 'StackUnavailable', {
       env: { region: 'definitely-no-metadata-resource-available-here' },
     });
 
-    const stackTemplate = app.synth().getStackByName('StackUnavailable').template;
+    const stackTemplate = (await app.synth()).getStackByName('StackUnavailable').template;
 
     expect(stackTemplate.Resources?.CDKMetadata).toBeUndefined();
   });
 
-  test('is included if the region is known and metadata is available', () => {
+  test('is included if the region is known and metadata is available', async () => {
     new Stack(app, 'StackPresent', {
       env: { region: 'us-east-1' },
     });
 
-    const stackTemplate = app.synth().getStackByName('StackPresent').template;
+    const stackTemplate = (await app.synth()).getStackByName('StackPresent').template;
 
     expect(stackTemplate.Resources?.CDKMetadata).toBeDefined();
   });
 
-  test('is included if the region is unknown with conditions', () => {
+  test('is included if the region is unknown with conditions', async () => {
     new Stack(app, 'StackUnknown');
 
-    const stackTemplate = app.synth().getStackByName('StackUnknown').template;
+    const stackTemplate = (await app.synth()).getStackByName('StackUnknown').template;
 
     expect(stackTemplate.Resources?.CDKMetadata).toBeDefined();
     expect(stackTemplate.Resources?.CDKMetadata?.Condition).toBeDefined();
   });
 
-  test('includes the formatted Analytics property', () => {
+  test('includes the formatted Analytics property', async () => {
     // A very simple check that the jsii runtime psuedo-construct is present.
     // This check works whether we're running locally or on CodeBuild, on v1 or v2.
     // Other tests(in app.test.ts) will test version-specific results.
-    expect(stackAnalytics()).toMatch(/jsii-runtime.Runtime/);
+    expect(await stackAnalytics()).toMatch(/jsii-runtime.Runtime/);
   });
 
-  test('includes the current jsii runtime version', () => {
+  test('includes the current jsii runtime version', async () => {
     process.env.JSII_AGENT = 'Java/1.2.3.4';
 
-    expect(stackAnalytics()).toContain('Java/1.2.3.4!jsii-runtime.Runtime');
+    expect(await stackAnalytics()).toContain('Java/1.2.3.4!jsii-runtime.Runtime');
     delete process.env.JSII_AGENT;
   });
 
-  test('includes constructs added to the stack', () => {
+  test('includes constructs added to the stack', async () => {
     new TestConstruct(stack, 'Test');
 
-    expect(stackAnalytics()).toContain('FakeVersion.2.3!@amzn/core.TestConstruct');
+    expect(await stackAnalytics()).toContain('FakeVersion.2.3!@amzn/core.TestConstruct');
   });
 
-  test('only includes constructs in the allow list', () => {
+  test('only includes constructs in the allow list', async () => {
     new TestThirdPartyConstruct(stack, 'Test');
 
-    expect(stackAnalytics()).not.toContain('TestConstruct');
+    expect(await stackAnalytics()).not.toContain('TestConstruct');
   });
 
-  function stackAnalytics(stackName: string = 'Stack') {
-    const encodedAnalytics = app.synth().getStackByName(stackName).template.Resources?.CDKMetadata?.Properties?.Analytics as string;
+  async function stackAnalytics(stackName: string = 'Stack') {
+    const encodedAnalytics = (await app.synth()).getStackByName(stackName).template.Resources?.CDKMetadata?.Properties?.Analytics as string;
     return plaintextConstructsFromAnalytics(encodedAnalytics);
   }
 });

@@ -3,7 +3,7 @@ import * as core from '../lib';
 
 describe('cfn resource', () => {
   describe('._toCloudFormation', () => {
-    test('does not call renderProperties with an undefined value', () => {
+    test('does not call renderProperties with an undefined value', async () => {
       const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
       const resource = new core.CfnResource(stack, 'DefaultResource', { type: 'Test::Resource::Fake' });
@@ -14,7 +14,7 @@ describe('cfn resource', () => {
         expect(val).not.toBeNull();
       };
 
-      expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+      expect((await app.synth()).getStackByName(stack.stackName).template?.Resources).toEqual({
         DefaultResource: {
           Type: 'Test::Resource::Fake',
         },
@@ -24,7 +24,7 @@ describe('cfn resource', () => {
 
     });
 
-    test('renders "Properties" for a resource that has only properties set to "false"', () => {
+    test('renders "Properties" for a resource that has only properties set to "false"', async () => {
       const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
       new core.CfnResource(stack, 'Resource', {
@@ -34,7 +34,7 @@ describe('cfn resource', () => {
         },
       });
 
-      expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+      expect((await app.synth()).getStackByName(stack.stackName).template?.Resources).toEqual({
         Resource: {
           Type: 'Test::Resource::Fake',
           Properties: {
@@ -47,7 +47,7 @@ describe('cfn resource', () => {
     });
   });
 
-  test('applyRemovalPolicy default includes Update policy', () => {
+  test('applyRemovalPolicy default includes Update policy', async () => {
     // GIVEN
     const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
@@ -57,7 +57,7 @@ describe('cfn resource', () => {
     resource.applyRemovalPolicy(core.RemovalPolicy.RETAIN);
 
     // THEN
-    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+    expect((await app.synth()).getStackByName(stack.stackName).template?.Resources).toEqual({
       DefaultResource: {
         Type: 'Test::Resource::Fake',
         DeletionPolicy: 'Retain',
@@ -68,7 +68,7 @@ describe('cfn resource', () => {
 
   });
 
-  test('can switch off updating Update policy', () => {
+  test('can switch off updating Update policy', async () => {
     // GIVEN
     const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
@@ -80,7 +80,7 @@ describe('cfn resource', () => {
     });
 
     // THEN
-    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+    expect((await app.synth()).getStackByName(stack.stackName).template?.Resources).toEqual({
       DefaultResource: {
         Type: 'Test::Resource::Fake',
         DeletionPolicy: 'Retain',
@@ -90,7 +90,7 @@ describe('cfn resource', () => {
 
   });
 
-  test('can add metadata', () => {
+  test('can add metadata', async () => {
     // GIVEN
     const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
@@ -100,7 +100,7 @@ describe('cfn resource', () => {
     resource.addMetadata('Beep', 'Boop');
 
     // THEN
-    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+    expect((await app.synth()).getStackByName(stack.stackName).template?.Resources).toEqual({
       DefaultResource: {
         Type: 'Test::Resource::Fake',
         Metadata: {
@@ -125,7 +125,7 @@ describe('cfn resource', () => {
 
   });
 
-  test('subclasses can override "shouldSynthesize" to lazy-determine if the resource should be included', () => {
+  test('subclasses can override "shouldSynthesize" to lazy-determine if the resource should be included', async () => {
     // GIVEN
     class HiddenCfnResource extends core.CfnResource {
       protected shouldSynthesize() {
@@ -145,7 +145,7 @@ describe('cfn resource', () => {
     r2.node.addDependency(subtree);
 
     // THEN - only R2 is synthesized
-    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+    expect((await app.synth()).getStackByName(stack.stackName).template?.Resources).toEqual({
       R2: {
         Type: 'Foo::R2',
         // No DependsOn!

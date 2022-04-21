@@ -3,7 +3,7 @@ import { CfnParameter, CfnResource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 describe('parameter', () => {
-  test('parameters can be used and referenced using param.ref', () => {
+  test('parameters can be used and referenced using param.ref', async () => {
     const stack = new Stack();
 
     const child = new Construct(stack, 'Child');
@@ -15,7 +15,7 @@ describe('parameter', () => {
 
     new CfnResource(stack, 'Resource', { type: 'Type', properties: { ReferenceToParam: param.value } });
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Parameters: {
         ChildMyParam3161BF5D: {
           Default: 10,

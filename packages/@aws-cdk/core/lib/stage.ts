@@ -119,7 +119,7 @@ export class Stage extends Construct {
   /**
    * The cached assembly if it was already built
    */
-  private assembly?: cxapi.CloudAssembly;
+  private assembly?: Promise<cxapi.CloudAssembly>;
 
   constructor(scope: Construct, id: string, props: StageProps = {}) {
     super(scope, id);
@@ -171,7 +171,7 @@ export class Stage extends Construct {
    * Once an assembly has been synthesized, it cannot be modified. Subsequent
    * calls will return the same assembly.
    */
-  public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
+  public synth(options: StageSynthesisOptions = { }): Promise<cxapi.CloudAssembly> {
     if (!this.assembly || options.force) {
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,

@@ -25,18 +25,18 @@ class MyAspect implements IAspect {
 }
 
 describe('aspect', () => {
-  test('Aspects are invoked only once', () => {
+  test('Aspects are invoked only once', async () => {
     const app = new App();
     const root = new MyConstruct(app, 'MyConstruct');
     Aspects.of(root).add(new VisitOnce());
-    app.synth();
+    await app.synth();
     expect(root.visitCounter).toEqual(1);
-    app.synth();
+    await app.synth();
     expect(root.visitCounter).toEqual(1);
 
   });
 
-  test('Warn if an Aspect is added via another Aspect', () => {
+  test('Warn if an Aspect is added via another Aspect', async () => {
     const app = new App();
     const root = new MyConstruct(app, 'MyConstruct');
     const child = new MyConstruct(root, 'ChildConstruct');
@@ -49,7 +49,7 @@ describe('aspect', () => {
         });
       },
     });
-    app.synth();
+    await app.synth();
     expect(root.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
     expect(root.node.metadata[0].data).toEqual('We detected an Aspect was added via another Aspect, and will not be applied');
     // warning is not added to child construct
@@ -57,12 +57,12 @@ describe('aspect', () => {
 
   });
 
-  test('Do not warn if an Aspect is added directly (not by another aspect)', () => {
+  test('Do not warn if an Aspect is added directly (not by another aspect)', async () => {
     const app = new App();
     const root = new MyConstruct(app, 'Construct');
     const child = new MyConstruct(root, 'ChildConstruct');
     Aspects.of(root).add(new MyAspect());
-    app.synth();
+    await app.synth();
     expect(root.node.metadata[0].type).toEqual('foo');
     expect(root.node.metadata[0].data).toEqual('bar');
     expect(child.node.metadata[0].type).toEqual('foo');

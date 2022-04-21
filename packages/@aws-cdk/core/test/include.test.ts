@@ -3,12 +3,12 @@ import { CfnInclude, CfnOutput, CfnParameter, CfnResource, Stack } from '../lib'
 import { toCloudFormation } from './util';
 
 describeDeprecated('include', () => {
-  test('the Include construct can be used to embed an existing template as-is into a stack', () => {
+  test('the Include construct can be used to embed an existing template as-is into a stack', async () => {
     const stack = new Stack();
 
     new CfnInclude(stack, 'T1', { template: clone(template) });
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Parameters: { MyParam: { Type: 'String', Default: 'Hello' } },
       Resources: {
         MyResource1: { Type: 'ResourceType1', Properties: { P1: 1, P2: 2 } },
@@ -19,7 +19,7 @@ describeDeprecated('include', () => {
 
   });
 
-  test('included templates can co-exist with elements created programmatically', () => {
+  test('included templates can co-exist with elements created programmatically', async () => {
     const stack = new Stack();
 
     new CfnInclude(stack, 'T1', { template: clone(template) });
@@ -27,7 +27,7 @@ describeDeprecated('include', () => {
     new CfnOutput(stack, 'MyOutput', { description: 'Out!', value: 'hey' });
     new CfnParameter(stack, 'MyParam2', { type: 'Integer' });
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Parameters: {
         MyParam: { Type: 'String', Default: 'Hello' },
         MyParam2: { Type: 'Integer' },
@@ -43,7 +43,7 @@ describeDeprecated('include', () => {
 
   });
 
-  test('exception is thrown in construction if an entity from an included template has the same id as a programmatic entity', () => {
+  test('exception is thrown in construction if an entity from an included template has the same id as a programmatic entity', async () => {
     const stack = new Stack();
 
     new CfnInclude(stack, 'T1', { template });
@@ -51,11 +51,11 @@ describeDeprecated('include', () => {
     new CfnOutput(stack, 'MyOutput', { description: 'Out!', value: 'in' });
     new CfnParameter(stack, 'MyParam', { type: 'Integer' }); // duplicate!
 
-    expect(() => toCloudFormation(stack)).toThrow();
+    await expect(() => toCloudFormation(stack)).rejects.toThrow();
 
   });
 
-  test('correctly merges template sections that contain strings', () => {
+  test('correctly merges template sections that contain strings', async () => {
     const stack = new Stack();
 
     new CfnInclude(stack, 'T1', {
@@ -71,7 +71,7 @@ describeDeprecated('include', () => {
       },
     });
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       AWSTemplateFormatVersion: '2010-09-09',
       Description: 'Test 1\nTest 2',
     });

@@ -12,7 +12,7 @@ describe('assets', () => {
     stack = new Stack(app);
   });
 
-  test('addFileAsset correctly sets metadata and creates S3 parameters', () => {
+  test('addFileAsset correctly sets metadata and creates S3 parameters', async () => {
     // WHEN
     stack.synthesizer.addFileAsset({
       fileName: 'file-name',
@@ -33,7 +33,7 @@ describe('assets', () => {
       expect(data.sourceHash).toEqual('source-hash');
     }
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Parameters: {
         AssetParameterssourcehashS3BucketE6E91E3E: {
           Type: 'String',
@@ -73,7 +73,7 @@ describe('assets', () => {
 
   });
 
-  test('addDockerImageAsset correctly sets metadata', () => {
+  test('addDockerImageAsset correctly sets metadata', async () => {
     // WHEN
     stack.synthesizer.addDockerImageAsset({
       sourceHash: 'source-hash',
@@ -93,11 +93,11 @@ describe('assets', () => {
       expect(data.imageTag).toEqual('source-hash');
     }
 
-    expect(toCloudFormation(stack)).toEqual({ });
+    expect(await toCloudFormation(stack)).toEqual({ });
 
   });
 
-  test('addDockerImageAsset uses the default repository name', () => {
+  test('addDockerImageAsset uses the default repository name', async () => {
     // WHEN
     stack.synthesizer.addDockerImageAsset({
       sourceHash: 'source-hash',
@@ -117,11 +117,11 @@ describe('assets', () => {
       expect(data.imageTag).toEqual('source-hash');
     }
 
-    expect(toCloudFormation(stack)).toEqual({ });
+    expect(await toCloudFormation(stack)).toEqual({ });
 
   });
 
-  test('addDockerImageAsset supports overriding repository name through a context key as a workaround until we have API for that', () => {
+  test('addDockerImageAsset supports overriding repository name through a context key as a workaround until we have API for that', async () => {
     stack.node.setContext('assets-ecr-repository-name', 'my-custom-repo-name');
 
     // WHEN
@@ -144,7 +144,7 @@ describe('assets', () => {
       expect(data.imageTag).toEqual('source-hash');
     }
 
-    expect(toCloudFormation(stack)).toEqual({ });
+    expect(await toCloudFormation(stack)).toEqual({ });
 
   });
 });

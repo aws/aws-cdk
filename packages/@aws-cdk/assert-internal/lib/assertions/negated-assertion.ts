@@ -6,8 +6,8 @@ export class NegatedAssertion<I extends Inspector> extends Assertion<I> {
     super();
   }
 
-  public assertUsing(inspector: I): boolean {
-    return !this.negated.assertUsing(inspector);
+  public async assertUsing(inspector: I): Promise<boolean> {
+    return !await this.negated.assertUsing(inspector);
   }
 
   public get description(): string {

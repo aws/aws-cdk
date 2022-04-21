@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { App, CfnCondition, CfnMapping, CfnOutput, CfnParameter, CfnResource, Fn, LegacyStackSynthesizer, NestedStack, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Capture, Match, Template } from '../lib';
 
 describe('Template', () => {
-  test('fromString', () => {
+  test('fromString', async () => {
     const template = Template.fromString(`{
         "Resources": {
           "Foo": {
@@ -13,7 +14,7 @@ describe('Template', () => {
         }
       }`);
 
-    expect(template.toJSON()).toEqual({
+    expect(await template.toJSON()).toEqual({
       Resources: {
         Foo: {
           Type: 'Baz::Qux',
@@ -24,7 +25,7 @@ describe('Template', () => {
   });
 
   describe('fromStack', () => {
-    test('default', () => {
+    test('default', async () => {
       const app = new App({
         context: {
           '@aws-cdk/core:newStyleStackSynthesis': false,
@@ -39,7 +40,7 @@ describe('Template', () => {
       });
       const template = Template.fromStack(stack);
 
-      expect(template.toJSON()).toEqual({
+      expect(await template.toJSON()).toEqual({
         Resources: {
           Foo: {
             Type: 'Foo::Bar',
@@ -49,7 +50,7 @@ describe('Template', () => {
       });
     });
 
-    test('nested', () => {
+    test('nested', async () => {
       const app = new App({
         context: {
           '@aws-cdk/core:newStyleStackSynthesis': false,
@@ -65,7 +66,7 @@ describe('Template', () => {
       });
       const template = Template.fromStack(nested);
 
-      expect(template.toJSON()).toEqual({
+      expect(await template.toJSON()).toEqual({
         Resources: {
           Foo: {
             Type: 'Foo::Bar',
@@ -99,33 +100,33 @@ describe('Template', () => {
   });
 
   describe('resourceCountIs', () => {
-    test('resource exists', () => {
+    test('resource exists', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Resource', {
         type: 'Foo::Bar',
       });
 
       const inspect = Template.fromStack(stack);
-      inspect.resourceCountIs('Foo::Bar', 1);
+      await inspect.resourceCountIs('Foo::Bar', 1);
 
-      expect(() => inspect.resourceCountIs('Foo::Bar', 0)).toThrow('Expected 0 resources of type Foo::Bar but found 1');
-      expect(() => inspect.resourceCountIs('Foo::Bar', 2)).toThrow('Expected 2 resources of type Foo::Bar but found 1');
+      await expect(() => inspect.resourceCountIs('Foo::Bar', 0)).rejects.toThrow('Expected 0 resources of type Foo::Bar but found 1');
+      await expect(() => inspect.resourceCountIs('Foo::Bar', 2)).rejects.toThrow('Expected 2 resources of type Foo::Bar but found 1');
 
-      expect(() => inspect.resourceCountIs('Foo::Baz', 1)).toThrow('Expected 1 resources of type Foo::Baz but found 0');
+      await expect(() => inspect.resourceCountIs('Foo::Baz', 1)).rejects.toThrow('Expected 1 resources of type Foo::Baz but found 0');
     });
 
-    test('no resource', () => {
+    test('no resource', async () => {
       const stack = new Stack();
 
       const inspect = Template.fromStack(stack);
-      inspect.resourceCountIs('Foo::Bar', 0);
+      await inspect.resourceCountIs('Foo::Bar', 0);
 
-      expect(() => inspect.resourceCountIs('Foo::Bar', 1)).toThrow('Expected 1 resources of type Foo::Bar but found 0');
+      await expect(() => inspect.resourceCountIs('Foo::Bar', 1)).rejects.toThrow('Expected 1 resources of type Foo::Bar but found 0');
     });
   });
 
   describe('templateMatches', () => {
-    test('matches', () => {
+    test('matches', async () => {
       const app = new App();
       const stack = new Stack(app, 'Stack', {
         synthesizer: new LegacyStackSynthesizer(),
@@ -136,7 +137,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      inspect.templateMatches({
+      await inspect.templateMatches({
         Resources: {
           Foo: {
             Type: 'Foo::Bar',
@@ -146,7 +147,7 @@ describe('Template', () => {
       });
     });
 
-    test('fails', () => {
+    test('fails', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
@@ -154,19 +155,19 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      expect(() => inspect.templateMatches({
+      await expect(() => inspect.templateMatches({
         Resources: {
           Foo: {
             Type: 'Foo::Bar',
             Properties: { baz: 'waldo' },
           },
         },
-      })).toThrowError(/Expected waldo but received qux at \/Resources\/Foo\/Properties\/baz/);
+      })).rejects.toThrowError(/Expected waldo but received qux at \/Resources\/Foo\/Properties\/baz/);
     });
   });
 
   describe('hasResource', () => {
-    test('exact match', () => {
+    test('exact match', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
@@ -174,20 +175,20 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      inspect.hasResource('Foo::Bar', {
+      await inspect.hasResource('Foo::Bar', {
         Properties: { baz: 'qux' },
       });
 
-      expect(() => inspect.hasResource('Foo::Bar', {
+      await expect(() => inspect.hasResource('Foo::Bar', {
         Properties: { baz: 'waldo' },
-      })).toThrow(/Expected waldo but received qux at \/Properties\/baz/);
+      })).rejects.toThrow(/Expected waldo but received qux at \/Properties\/baz/);
 
-      expect(() => inspect.hasResource('Foo::Bar', {
+      await expect(() => inspect.hasResource('Foo::Bar', {
         Properties: { baz: 'qux', fred: 'waldo' },
-      })).toThrow(/Missing key at \/Properties\/fred/);
+      })).rejects.toThrow(/Missing key at \/Properties\/fred/);
     });
 
-    test('arrayWith', () => {
+    test('arrayWith', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
@@ -195,16 +196,16 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      inspect.hasResource('Foo::Bar', {
+      await inspect.hasResource('Foo::Bar', {
         Properties: { baz: Match.arrayWith(['qux']) },
       });
 
-      expect(() => inspect.hasResource('Foo::Bar', {
+      await expect(() => inspect.hasResource('Foo::Bar', {
         Properties: { baz: Match.arrayWith(['waldo']) },
-      })).toThrow(/Missing element \[waldo\] at pattern index 0 at \/Properties\/baz/);
+      })).rejects.toThrow(/Missing element \[waldo\] at pattern index 0 at \/Properties\/baz/);
     });
 
-    test('arrayWith - multiple resources', done => {
+    test('arrayWith - multiple resources', (done) => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo1', {
         type: 'Foo::Bar',
@@ -216,9 +217,8 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-
-      expectToThrow(() => {
-        inspect.hasResource('Foo::Bar', {
+      expectToThrow(async () => {
+        await await inspect.hasResource('Foo::Bar', {
           Properties: Match.arrayWith(['flob']),
         });
       }, [/The closest result/, /flob/, /qux/], done);
@@ -226,7 +226,7 @@ describe('Template', () => {
       done();
     });
 
-    test('objectLike', () => {
+    test('objectLike', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
@@ -234,16 +234,16 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      inspect.hasResource('Foo::Bar', {
+      await inspect.hasResource('Foo::Bar', {
         Properties: Match.objectLike({ baz: 'qux' }),
       });
-      inspect.hasResource('Foo::Bar', {
+      await inspect.hasResource('Foo::Bar', {
         Properties: Match.objectLike({ fred: 'waldo' }),
       });
 
-      expect(() => inspect.hasResource('Foo::Bar', {
+      await expect(() => inspect.hasResource('Foo::Bar', {
         Properties: Match.objectLike({ baz: 'waldo' }),
-      })).toThrow(/Expected waldo but received qux at \/Properties\/baz/);
+      })).rejects.toThrow(/Expected waldo but received qux at \/Properties\/baz/);
     });
 
     test('objectLike - multiple resources', done => {
@@ -258,9 +258,8 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-
-      expectToThrow(() => {
-        inspect.hasResource('Foo::Bar', {
+      expectToThrow(async () => {
+        await await inspect.hasResource('Foo::Bar', {
           Properties: Match.objectLike({ foo: { flob: 'foo' } }),
         });
       }, [/The closest result/, /"flob": "qux"/], done);
@@ -268,7 +267,7 @@ describe('Template', () => {
       done();
     });
 
-    test('absent', () => {
+    test('absent', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
@@ -276,15 +275,15 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      inspect.hasResource('Foo::Bar', {
+      await inspect.hasResource('Foo::Bar', {
         Properties: Match.objectLike({ foo: Match.absent() }),
       });
-      expect(() => inspect.hasResource('Foo::Bar', {
+      await expect(() => inspect.hasResource('Foo::Bar', {
         Properties: Match.objectLike({ baz: Match.absent() }),
-      })).toThrow(/key should be absent at \/Properties\/baz/);
+      })).rejects.toThrow(/key should be absent at \/Properties\/baz/);
     });
 
-    test('incorrect types', () => {
+    test('incorrect types', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
@@ -292,12 +291,12 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      expect(() => inspect.hasResource('Foo::Baz', {
+      await expect(() => inspect.hasResource('Foo::Baz', {
         Properties: Match.objectLike({ baz: 'qux' }),
-      })).toThrow(/No resource/);
+      })).rejects.toThrow(/No resource/);
     });
 
-    test('capture', () => {
+    test('capture', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Bar1', {
         type: 'Foo::Bar',
@@ -314,7 +313,7 @@ describe('Template', () => {
 
       const capture = new Capture();
       const inspect = Template.fromStack(stack);
-      inspect.hasResource('Foo::Bar', {
+      await inspect.hasResource('Foo::Bar', {
         Properties: Match.objectLike({ baz: capture, real: true }),
       });
 
@@ -326,7 +325,7 @@ describe('Template', () => {
   });
 
   describe('hasResourceProperties', () => {
-    test('exact match', () => {
+    test('exact match', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
@@ -334,16 +333,14 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      inspect.hasResourceProperties('Foo::Bar', { baz: 'qux' });
-
-      expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'waldo' }))
-        .toThrow(/Expected waldo but received qux at \/Properties\/baz/);
-
-      expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'qux', fred: 'waldo' }))
-        .toThrow(/Missing key at \/Properties\/fred/);
+      await inspect.hasResourceProperties('Foo::Bar', { baz: 'qux' });
+      await expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'waldo' }))
+        .rejects.toThrow(/Expected waldo but received qux at \/Properties\/baz/);
+      await expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'qux', fred: 'waldo' }))
+        .rejects.toThrow(/Missing key at \/Properties\/fred/);
     });
 
-    test('absent - with properties', () => {
+    test('absent - with properties', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
@@ -352,30 +349,29 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
 
-      inspect.hasResourceProperties('Foo::Bar', {
+      await inspect.hasResourceProperties('Foo::Bar', {
         bar: Match.absent(),
       });
 
-      expect(() => inspect.hasResourceProperties('Foo::Bar', {
+      await expect(() => inspect.hasResourceProperties('Foo::Bar', {
         baz: Match.absent(),
-      })).toThrow(/key should be absent at \/Properties\/baz/);
+      })).rejects.toThrow(/key should be absent at \/Properties\/baz/);
     });
 
-    test('absent - no properties', () => {
+    test('absent - no properties', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
       });
 
       const inspect = Template.fromStack(stack);
+      await expect(() => inspect.hasResourceProperties('Foo::Bar', { bar: Match.absent(), baz: 'qux' }))
+        .rejects.toThrow(/Missing key at \/Properties\/baz/);
 
-      expect(() => inspect.hasResourceProperties('Foo::Bar', { bar: Match.absent(), baz: 'qux' }))
-        .toThrow(/Missing key at \/Properties\/baz/);
-
-      inspect.hasResourceProperties('Foo::Bar', Match.absent());
+      await inspect.hasResourceProperties('Foo::Bar', Match.absent());
     });
 
-    test('not - with properties', () => {
+    test('not - with properties', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
@@ -383,24 +379,24 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      inspect.hasResourceProperties('Foo::Bar', Match.not({
+      await inspect.hasResourceProperties('Foo::Bar', Match.not({
         baz: 'boo',
       }));
     });
 
-    test('not - no properties', () => {
+    test('not - no properties', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
       });
 
       const inspect = Template.fromStack(stack);
-      inspect.hasResourceProperties('Foo::Bar', Match.not({ baz: 'qux' }));
+      await inspect.hasResourceProperties('Foo::Bar', Match.not({ baz: 'qux' }));
     });
   });
 
   describe('getResources', () => {
-    test('matching resource type', () => {
+    test('matching resource type', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
@@ -408,7 +404,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      expect(inspect.findResources('Foo::Bar')).toEqual({
+      expect(await inspect.findResources('Foo::Bar')).toEqual({
         Foo: {
           Type: 'Foo::Bar',
           Properties: { baz: 'qux', fred: 'waldo' },
@@ -416,7 +412,7 @@ describe('Template', () => {
       });
     });
 
-    test('no matching resource type', () => {
+    test('no matching resource type', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
@@ -424,10 +420,10 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      expect(inspect.findResources('Foo::Baz')).toEqual({});
+      expect(await inspect.findResources('Foo::Baz')).toEqual({});
     });
 
-    test('matching resource props', () => {
+    test('matching resource props', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
@@ -435,12 +431,12 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      expect(Object.keys(inspect.findResources('Foo::Bar', {
+      expect(Object.keys(await inspect.findResources('Foo::Bar', {
         Properties: { baz: 'qux' },
       })).length).toEqual(1);
     });
 
-    test('no matching resource props', () => {
+    test('no matching resource props', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
@@ -448,18 +444,18 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      expect(inspect.findResources('Foo::Bar', {
+      expect(await inspect.findResources('Foo::Bar', {
         Properties: { baz: 'waldo' },
       })).toEqual({});
     });
 
-    test('multiple matching resources', () => {
+    test('multiple matching resources', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', { type: 'Foo::Bar' });
       new CfnResource(stack, 'Bar', { type: 'Foo::Bar' });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findResources('Foo::Bar');
+      const result = await inspect.findResources('Foo::Bar');
       expect(Object.keys(result).length).toEqual(2);
       expect(result.Foo).toEqual({ Type: 'Foo::Bar' });
       expect(result.Bar).toEqual({ Type: 'Foo::Bar' });
@@ -551,7 +547,7 @@ describe('Template', () => {
   });
 
   describe('findOutputs', () => {
-    test('matching', () => {
+    test('matching', async () => {
       const stack = new Stack();
       new CfnOutput(stack, 'Foo', {
         value: 'Fred',
@@ -567,24 +563,24 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findOutputs('*', { Value: 'Fred' });
+      const result = await inspect.findOutputs('*', { Value: 'Fred' });
       expect(Object.keys(result).length).toEqual(2);
       expect(result.Foo).toEqual({ Value: 'Fred', Description: 'FooFred' });
       expect(result.Bar).toEqual({ Value: 'Fred', Description: 'BarFred' });
     });
 
-    test('not matching', () => {
+    test('not matching', async () => {
       const stack = new Stack();
       new CfnOutput(stack, 'Foo', {
         value: 'Fred',
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findOutputs('*', { Value: 'Waldo' });
+      const result = await inspect.findOutputs('*', { Value: 'Waldo' });
       expect(Object.keys(result).length).toEqual(0);
     });
 
-    test('matching specific output', () => {
+    test('matching specific output', async () => {
       const stack = new Stack();
       new CfnOutput(stack, 'Foo', {
         value: 'Fred',
@@ -594,7 +590,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findOutputs('Foo', { Value: 'Fred' });
+      const result = await inspect.findOutputs('Foo', { Value: 'Fred' });
       expect(result).toEqual({
         Foo: {
           Value: 'Fred',
@@ -602,7 +598,7 @@ describe('Template', () => {
       });
     });
 
-    test('not matching specific output', () => {
+    test('not matching specific output', async () => {
       const stack = new Stack();
       new CfnOutput(stack, 'Foo', {
         value: 'Fred',
@@ -612,7 +608,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findOutputs('Foo', { Value: 'Waldo' });
+      const result = await inspect.findOutputs('Foo', { Value: 'Waldo' });
       expect(Object.keys(result).length).toEqual(0);
     });
   });
@@ -712,7 +708,7 @@ describe('Template', () => {
   });
 
   describe('findParameters', () => {
-    test('matching', () => {
+    test('matching', async () => {
       const stack = new Stack();
       new CfnParameter(stack, 'p1', {
         type: 'String',
@@ -724,7 +720,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findParameters('*', { Type: 'String' });
+      const result = await inspect.findParameters('*', { Type: 'String' });
       expect(result).toEqual({
         p1: {
           Description: 'string parameter',
@@ -733,7 +729,7 @@ describe('Template', () => {
       });
     });
 
-    test('not matching', () => {
+    test('not matching', async () => {
       const stack = new Stack();
       new CfnParameter(stack, 'p1', {
         type: 'String',
@@ -741,11 +737,11 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findParameters('*', { Type: 'Number' });
+      const result = await inspect.findParameters('*', { Type: 'Number' });
       expect(Object.keys(result).length).toEqual(0);
     });
 
-    test('matching with specific parameter name', () => {
+    test('matching with specific parameter name', async () => {
       const stack = new Stack();
       new CfnParameter(stack, 'p1', {
         type: 'String',
@@ -757,7 +753,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findParameters('p1', { Type: 'String' });
+      const result = await inspect.findParameters('p1', { Type: 'String' });
       expect(result).toEqual({
         p1: {
           Description: 'string parameter',
@@ -766,7 +762,7 @@ describe('Template', () => {
       });
     });
 
-    test('not matching specific parameter name', () => {
+    test('not matching specific parameter name', async () => {
       const stack = new Stack();
       new CfnParameter(stack, 'p1', {
         type: 'String',
@@ -778,7 +774,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findParameters('p3', { Type: 'String' });
+      const result = await inspect.findParameters('p3', { Type: 'String' });
       expect(Object.keys(result).length).toEqual(0);
     });
   });
@@ -863,7 +859,7 @@ describe('Template', () => {
   });
 
   describe('findMappings', () => {
-    test('matching', () => {
+    test('matching', async () => {
       const stack = new Stack();
       new CfnMapping(stack, 'Foo', {
         mapping: {
@@ -878,7 +874,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findMappings('*', { Foo: { Bar: 'Lightning' } });
+      const result = await inspect.findMappings('*', { Foo: { Bar: 'Lightning' } });
       expect(result).toEqual({
         Foo: {
           Foo: { Bar: 'Lightning', Fred: 'Waldo' },
@@ -888,7 +884,7 @@ describe('Template', () => {
       });
     });
 
-    test('not matching', () => {
+    test('not matching', async () => {
       const stack = new Stack();
       new CfnMapping(stack, 'Foo', {
         mapping: {
@@ -897,11 +893,11 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findMappings('*', { Foo: { Bar: 'Waldo' } });
+      const result = await inspect.findMappings('*', { Foo: { Bar: 'Waldo' } });
       expect(Object.keys(result).length).toEqual(0);
     });
 
-    test('matching with specific outputName', () => {
+    test('matching with specific outputName', async () => {
       const stack = new Stack();
       new CfnMapping(stack, 'Foo', {
         mapping: {
@@ -916,7 +912,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findMappings('Foo', { Foo: { Bar: 'Lightning' } });
+      const result = await inspect.findMappings('Foo', { Foo: { Bar: 'Lightning' } });
       expect(result).toEqual({
         Foo: {
           Foo: { Bar: 'Lightning', Fred: 'Waldo' },
@@ -925,7 +921,7 @@ describe('Template', () => {
       });
     });
 
-    test('not matching specific output name', () => {
+    test('not matching specific output name', async () => {
       const stack = new Stack();
       new CfnMapping(stack, 'Foo', {
         mapping: {
@@ -940,7 +936,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findMappings('Fred', { Baz: { Bar: 'Qux' } });
+      const result = await inspect.findMappings('Fred', { Baz: { Bar: 'Qux' } });
       expect(Object.keys(result).length).toEqual(0);
     });
   });
@@ -1012,7 +1008,7 @@ describe('Template', () => {
   });
 
   describe('findConditions', () => {
-    test('matching', () => {
+    test('matching', async () => {
       const stack = new Stack();
       new CfnCondition(stack, 'Foo', {
         expression: Fn.conditionEquals('Bar', 'Baz'),
@@ -1023,7 +1019,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const firstCondition = inspect.findConditions('Foo');
+      const firstCondition = await inspect.findConditions('Foo');
       expect(firstCondition).toEqual({
         Foo: {
           'Fn::Equals': [
@@ -1033,7 +1029,7 @@ describe('Template', () => {
         },
       });
 
-      const secondCondition = inspect.findConditions('Qux');
+      const secondCondition = await inspect.findConditions('Qux');
       expect(secondCondition).toEqual({
         Qux: {
           'Fn::Not': [
@@ -1048,25 +1044,25 @@ describe('Template', () => {
       });
     });
 
-    test('not matching', () => {
+    test('not matching', async () => {
       const stack = new Stack();
       new CfnCondition(stack, 'Foo', {
         expression: Fn.conditionEquals('Bar', 'Baz'),
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findMappings('Bar');
+      const result = await inspect.findMappings('Bar');
       expect(Object.keys(result).length).toEqual(0);
     });
 
-    test('matching with specific outputName', () => {
+    test('matching with specific outputName', async () => {
       const stack = new Stack();
       new CfnCondition(stack, 'Foo', {
         expression: Fn.conditionEquals('Bar', 'Baz'),
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findConditions('Foo', { 'Fn::Equals': ['Bar', 'Baz'] });
+      const result = await inspect.findConditions('Foo', { 'Fn::Equals': ['Bar', 'Baz'] });
       expect(result).toEqual({
         Foo: {
           'Fn::Equals': [
@@ -1077,14 +1073,14 @@ describe('Template', () => {
       });
     });
 
-    test('not matching specific output name', () => {
+    test('not matching specific output name', async () => {
       const stack = new Stack();
       new CfnCondition(stack, 'Foo', {
         expression: Fn.conditionEquals('Bar', 'Baz'),
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findConditions('Foo', { 'Fn::Equals': ['Bar', 'Qux'] });
+      const result = await inspect.findConditions('Foo', { 'Fn::Equals': ['Bar', 'Qux'] });
       expect(Object.keys(result).length).toEqual(0);
     });
   });
@@ -1109,9 +1105,9 @@ describe('Template', () => {
   });
 });
 
-function expectToThrow(fn: () => void, msgs: (RegExp | string)[], done: jest.DoneCallback): void {
+async function expectToThrow(fn: () => Promise<void>, msgs: (RegExp | string)[], done: jest.DoneCallback): Promise<void> {
   try {
-    fn();
+    await fn();
     done.fail('Function expected to throw, did not throw');
   } catch (error) {
     const message = (error as Error).message;

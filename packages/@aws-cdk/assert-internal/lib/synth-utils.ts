@@ -7,9 +7,9 @@ export class SynthUtils {
   /**
    * Returns the cloud assembly template artifact for a stack.
    */
-  public static synthesize(stack: core.Stack, options: core.StageSynthesisOptions = { }): cxapi.CloudFormationStackArtifact {
+  public static async synthesize(stack: core.Stack, options: core.StageSynthesisOptions = { }): Promise<cxapi.CloudFormationStackArtifact> {
     // always synthesize against the root (be it an App or whatever) so all artifacts will be included
-    const assembly = synthesizeApp(stack, options);
+    const assembly = await synthesizeApp(stack, options);
     return stripNewStyleSynthCfnElements(assembly.getStackArtifact(stack.artifactId));
   }
 
@@ -48,9 +48,12 @@ export class SynthUtils {
    * @return CloudFormationStackArtifact for normal stacks or the actual template for nested stacks
    * @internal
    */
-  public static _synthesizeWithNested(stack: core.Stack, options: core.StageSynthesisOptions = { }): cxapi.CloudFormationStackArtifact | object {
+  public static async _synthesizeWithNested(
+    stack: core.Stack,
+    options: core.StageSynthesisOptions = { },
+  ): Promise<cxapi.CloudFormationStackArtifact | object> {
     // always synthesize against the root (be it an App or whatever) so all artifacts will be included
-    const assembly = synthesizeApp(stack, options);
+    const assembly = await synthesizeApp(stack, options);
 
     // if this is a nested stack (it has a parent), then just read the template as a string
     if (stack.nestedStackParent) {
@@ -64,7 +67,7 @@ export class SynthUtils {
 /**
  * Synthesizes the app in which a stack resides and returns the cloud assembly object.
  */
-function synthesizeApp(stack: core.Stack, options: core.StageSynthesisOptions): cxapi.CloudAssembly {
+function synthesizeApp(stack: core.Stack, options: core.StageSynthesisOptions): Promise<cxapi.CloudAssembly> {
   const root = stack.node.root;
   if (!core.Stage.isStage(root)) {
     throw new Error('unexpected: all stacks must be part of a Stage or an App');

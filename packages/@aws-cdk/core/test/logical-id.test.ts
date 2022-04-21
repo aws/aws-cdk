@@ -52,7 +52,7 @@ describe('logical id', () => {
 
   });
 
-  test('Logical IDs can be renamed at the stack level', () => {
+  test('Logical IDs can be renamed at the stack level', async () => {
     // GIVEN
     const stack = new Stack();
 
@@ -62,13 +62,13 @@ describe('logical id', () => {
     stack.renameLogicalId('ParentThingResource75D1D9CB', 'Renamed');
 
     // THEN
-    const template = toCloudFormation(stack);
+    const template = await toCloudFormation(stack);
     expect('Renamed' in template.Resources).toEqual(true);
 
 
   });
 
-  test('Renames for objects that don\'t exist fail', () => {
+  test('Renames for objects that don\'t exist fail', async () => {
     // GIVEN
     const stack = new Stack();
     new Construct(stack, 'Parent');
@@ -77,12 +77,12 @@ describe('logical id', () => {
     stack.renameLogicalId('DOESNOTEXIST', 'Renamed');
 
     // THEN
-    expect(() => toCloudFormation(stack)).toThrow();
+    await expect(() => toCloudFormation(stack)).rejects.toThrow();
 
 
   });
 
-  test('ID Renames that collide with existing IDs should fail', () => {
+  test('ID Renames that collide with existing IDs should fail', async () => {
     // GIVEN
     const stack = new Stack();
     stack.renameLogicalId('ParentThingResource1916E7808', 'ParentThingResource2F19948CB');
@@ -93,11 +93,11 @@ describe('logical id', () => {
     new CfnResource(parent, 'ThingResource2', { type: 'AWS::TAAS::Thing' });
 
     // THEN
-    expect(() => toCloudFormation(stack)).toThrow(/Two objects have been assigned the same Logical ID/);
+    await expect(() => toCloudFormation(stack)).rejects.toThrow(/Two objects have been assigned the same Logical ID/);
 
   });
 
-  test('hashed naming scheme filters constructs named "Resource" from the human portion', () => {
+  test('hashed naming scheme filters constructs named "Resource" from the human portion', async () => {
     // GIVEN
     const stack = new Stack();
 
@@ -109,7 +109,7 @@ describe('logical id', () => {
     new CfnResource(child2, 'HeyThere', { type: 'AWS::TAAS::Thing' });
 
     // THEN
-    const template = toCloudFormation(stack);
+    const template = await toCloudFormation(stack);
     expect(template).toEqual({
       Resources: {
         ParentChildHeyThere35220347: {
@@ -121,12 +121,12 @@ describe('logical id', () => {
 
   });
 
-  test('can transparently wrap constructs using "Default" id', () => {
+  test('can transparently wrap constructs using "Default" id', async () => {
     // GIVEN
     const stack1 = new Stack();
     const parent1 = new Construct(stack1, 'Parent');
     new CfnResource(parent1, 'HeyThere', { type: 'AWS::TAAS::Thing' });
-    const template1 = toCloudFormation(stack1);
+    const template1 = await toCloudFormation(stack1);
 
     // AND
     const theId1 = Object.keys(template1.Resources)[0];
@@ -137,7 +137,7 @@ describe('logical id', () => {
     const parent2 = new Construct(stack2, 'Parent');
     const invisibleWrapper = new Construct(parent2, 'Default');
     new CfnResource(invisibleWrapper, 'HeyThere', { type: 'AWS::TAAS::Thing' });
-    const template2 = toCloudFormation(stack1);
+    const template2 = await toCloudFormation(stack1);
 
     const theId2 = Object.keys(template2.Resources)[0];
     expect('AWS::TAAS::Thing').toEqual(template2.Resources[theId2].Type);
@@ -166,7 +166,7 @@ describe('logical id', () => {
 
   });
 
-  test('empty identifiers are not allowed', () => {
+  test('empty identifiers are not allowed', async () => {
     // GIVEN
     const stack = new Stack();
 
@@ -174,7 +174,7 @@ describe('logical id', () => {
     new CfnResource(stack, '.', { type: 'R' });
 
     // THEN
-    expect(() => toCloudFormation(stack)).toThrow(/Logical ID must adhere to the regular expression/);
+    await expect(() => toCloudFormation(stack)).rejects.toThrow(/Logical ID must adhere to the regular expression/);
 
   });
 
@@ -200,7 +200,7 @@ describe('logical id', () => {
 
   });
 
-  test('Refs and dependencies will correctly reflect renames done at the stack level', () => {
+  test('Refs and dependencies will correctly reflect renames done at the stack level', async () => {
     // GIVEN
     const stack = new Stack();
     stack.renameLogicalId('OriginalName', 'NewName');
@@ -213,7 +213,7 @@ describe('logical id', () => {
     c2.node.addDependency(c1);
 
     // THEN
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         NewName: { Type: 'R1' },
         Construct2: {
@@ -227,7 +227,7 @@ describe('logical id', () => {
 
   });
 
-  test('customize logical id allocation behavior by overriding `Stack.allocateLogicalId`', () => {
+  test('customize logical id allocation behavior by overriding `Stack.allocateLogicalId`', async () => {
     class MyStack extends Stack {
       protected allocateLogicalId(element: CfnElement): string {
         if (element.node.id === 'A') { return 'LogicalIdOfA'; }
@@ -252,7 +252,7 @@ describe('logical id', () => {
     const c = new CfnResource(stack, 'B', { type: 'Type::Of::C' });
     c.overrideLogicalId('TheC');
 
-    expect(toCloudFormation(stack)).toEqual({
+    expect(await toCloudFormation(stack)).toEqual({
       Resources: {
         LogicalIdOfA: { Type: 'Type::Of::A' },
         BoomBoomB: { Type: 'Type::Of::B' },
@@ -262,7 +262,7 @@ describe('logical id', () => {
 
   });
 
-  test('detects duplicate logical IDs in the same Stack caused by overrideLogicalId', () => {
+  test('detects duplicate logical IDs in the same Stack caused by overrideLogicalId', async () => {
     const stack = new Stack();
     const resource1 = new CfnResource(stack, 'A', { type: 'Type::Of::A' });
     const resource2 = new CfnResource(stack, 'B', { type: 'Type::Of::B' });
@@ -270,9 +270,9 @@ describe('logical id', () => {
     resource1.overrideLogicalId('C');
     resource2.overrideLogicalId('C');
 
-    expect(() => {
-      toCloudFormation(stack);
-    }).toThrow(/section 'Resources' already contains 'C'/);
+    await expect(async () => {
+      await toCloudFormation(stack);
+    }).rejects.toThrow(/section 'Resources' already contains 'C'/);
 
 
   });

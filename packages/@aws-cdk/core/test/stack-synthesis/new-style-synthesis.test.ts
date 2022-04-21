@@ -23,14 +23,14 @@ describe('new style synthesis', () => {
 
   });
 
-  test('stack template is in asset manifest', () => {
+  test('stack template is in asset manifest', async () => {
     // GIVEN
     new CfnResource(stack, 'Resource', {
       type: 'Some::Resource',
     });
 
     // WHEN
-    const asm = app.synth();
+    const asm = await app.synth();
 
     // THEN -- the S3 url is advertised on the stack artifact
     const stackArtifact = asm.getStackArtifact('Stack');
@@ -60,14 +60,14 @@ describe('new style synthesis', () => {
 
   });
 
-  test('version check is added to template', () => {
+  test('version check is added to template', async () => {
     // GIVEN
     new CfnResource(stack, 'Resource', {
       type: 'Some::Resource',
     });
 
     // THEN
-    const template = app.synth().getStackByName('Stack').template;
+    const template = (await app.synth()).getStackByName('Stack').template;
     expect(template?.Parameters?.BootstrapVersion?.Type).toEqual('AWS::SSM::Parameter::Value<String>');
     expect(template?.Parameters?.BootstrapVersion?.Default).toEqual('/cdk-bootstrap/hnb659fds/version');
     expect(template?.Parameters?.BootstrapVersion?.Description).toContain(cxapi.SSMPARAM_NO_INVALIDATE);
@@ -83,7 +83,7 @@ describe('new style synthesis', () => {
 
   });
 
-  test('version check is not added to template if disabled', () => {
+  test('version check is not added to template if disabled', async () => {
     // GIVEN
     stack = new Stack(app, 'Stack2', {
       synthesizer: new DefaultStackSynthesizer({
@@ -95,13 +95,13 @@ describe('new style synthesis', () => {
     });
 
     // THEN
-    const template = app.synth().getStackByName('Stack2').template;
+    const template = (await app.synth()).getStackByName('Stack2').template;
     expect(template?.Rules?.CheckBootstrapVersion).toEqual(undefined);
 
 
   });
 
-  test('customize version parameter', () => {
+  test('customize version parameter', async () => {
     // GIVEN
     const myapp = new App();
 
@@ -119,7 +119,7 @@ describe('new style synthesis', () => {
     });
 
     // THEN
-    const asm = myapp.synth();
+    const asm = await myapp.synth();
     const manifestArtifact = getAssetManifest(asm);
 
     // THEN - the asset manifest has an SSM parameter entry
@@ -128,7 +128,7 @@ describe('new style synthesis', () => {
 
   });
 
-  test('generates missing context with the lookup role ARN as one of the missing context properties', () => {
+  test('generates missing context with the lookup role ARN as one of the missing context properties', async () => {
     // GIVEN
     stack = new Stack(app, 'Stack2', {
       synthesizer: new DefaultStackSynthesizer({
@@ -145,7 +145,7 @@ describe('new style synthesis', () => {
     }).value;
 
     // THEN
-    const assembly = app.synth();
+    const assembly = await app.synth();
     expect(assembly.manifest.missing![0].props.lookupRoleArn).toEqual('arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-lookup-role-111111111111-us-east-1');
 
 
@@ -183,7 +183,7 @@ describe('new style synthesis', () => {
 
   });
 
-  test('synthesis', () => {
+  test('synthesis', async () => {
     // GIVEN
     stack.synthesizer.addFileAsset({
       fileName: __filename,
@@ -196,7 +196,7 @@ describe('new style synthesis', () => {
     });
 
     // WHEN
-    const asm = app.synth();
+    const asm = await app.synth();
 
     // THEN - we have an asset manifest with both assets and the stack template in there
     const manifestArtifact = getAssetManifest(asm);
@@ -224,7 +224,7 @@ describe('new style synthesis', () => {
 
   });
 
-  test('customize publishing resources', () => {
+  test('customize publishing resources', async () => {
     // GIVEN
     const myapp = new App();
 
@@ -253,7 +253,7 @@ describe('new style synthesis', () => {
     });
 
     // THEN
-    const asm = myapp.synth();
+    const asm = await myapp.synth();
     const manifest = readAssetManifest(getAssetManifest(asm));
 
     expect(manifest.files?.['file-asset-hash']?.destinations?.['current_account-current_region']).toEqual({
@@ -273,7 +273,7 @@ describe('new style synthesis', () => {
 
   });
 
-  test('customize deploy role externalId', () => {
+  test('customize deploy role externalId', async () => {
     // GIVEN
     const myapp = new App();
 
@@ -285,7 +285,7 @@ describe('new style synthesis', () => {
     });
 
     // THEN
-    const asm = myapp.synth();
+    const asm = await myapp.synth();
 
     const stackArtifact = asm.getStackByName(mystack.stackName);
     expect(stackArtifact.assumeRoleExternalId).toEqual('deploy-external-id');
@@ -293,7 +293,7 @@ describe('new style synthesis', () => {
 
   });
 
-  test('synthesis with bucketPrefix', () => {
+  test('synthesis with bucketPrefix', async () => {
     // GIVEN
     const myapp = new App();
 
@@ -314,7 +314,7 @@ describe('new style synthesis', () => {
     });
 
     // WHEN
-    const asm = myapp.synth();
+    const asm = await myapp.synth();
 
     // THEN -- the S3 url is advertised on the stack artifact
     const stackArtifact = asm.getStackArtifact('mystack-bucketPrefix');
@@ -337,7 +337,7 @@ describe('new style synthesis', () => {
 
   });
 
-  test('synthesis with dockerPrefix', () => {
+  test('synthesis with dockerPrefix', async () => {
     // GIVEN
     const myapp = new App();
 
@@ -353,7 +353,7 @@ describe('new style synthesis', () => {
       sourceHash: 'docker-asset-hash',
     });
 
-    const asm = myapp.synth();
+    const asm = await myapp.synth();
 
     // THEN
     const manifest = readAssetManifest(getAssetManifest(asm));

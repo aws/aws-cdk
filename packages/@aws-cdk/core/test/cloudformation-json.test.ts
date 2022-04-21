@@ -97,7 +97,7 @@ describe('tokens that return literals', () => {
     expect(evaluateCFN(stack.resolve(stack.toJsonString({ someList })))).toEqual('{"someList":[1,2,3]}');
   });
 
-  test('Intrinsic-resolving List Tokens do not have quotes applied', () => {
+  test('Intrinsic-resolving List Tokens do not have quotes applied', async () => {
     // GIVEN
     const someList = Token.asList(new Intrinsic({ Ref: 'Thing' }));
 
@@ -109,7 +109,7 @@ describe('tokens that return literals', () => {
       },
     });
 
-    const asm = app.synth();
+    const asm = await app.synth();
     const template = asm.getStackByName(stack.stackName).template;
     const stringifyLogicalId = Object.keys(template.Resources).filter(id => id.startsWith('CdkJsonStringify'))[0];
     expect(stringifyLogicalId).toBeDefined();
@@ -307,7 +307,7 @@ describe('tokens returning CloudFormation intrinsics', () => {
     expect(evaluateCFN(resolved)).toEqual('{"information":"Did you know that Fido says: \\"woof\\""}');
   });
 
-  test('cross-stack references are also properly converted by toJsonString()', () => {
+  test('cross-stack references are also properly converted by toJsonString()', async () => {
     // GIVEN
     const stack1 = new Stack(app, 'Stack1');
     const stack2 = new Stack(app, 'Stack2');
@@ -321,7 +321,7 @@ describe('tokens returning CloudFormation intrinsics', () => {
     });
 
     // THEN
-    const asm = app.synth();
+    const asm = await app.synth();
     expect(asm.getStackByName('Stack2').template?.Outputs).toEqual({
       Stack1Id: {
         Value: {
