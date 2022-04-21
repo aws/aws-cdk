@@ -314,6 +314,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       resourceName: `${this.application.applicationName}/${this.physicalName}`,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+
+    this.node.addValidation({ validate: () => validateName('Deployment group', this.physicalName) });
   }
 
   /**
@@ -339,10 +341,6 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
   public get autoScalingGroups(): autoscaling.IAutoScalingGroup[] | undefined {
     return this._autoScalingGroups.slice();
-  }
-
-  protected validate(): string[] {
-    return validateName('Deployment group', this.physicalName);
   }
 
   private addCodeDeployAgentInstallUserData(asg: autoscaling.IAutoScalingGroup): void {

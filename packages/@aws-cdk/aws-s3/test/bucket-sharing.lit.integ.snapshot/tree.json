@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "ProducerStack": {
@@ -52,8 +52,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           }
         },

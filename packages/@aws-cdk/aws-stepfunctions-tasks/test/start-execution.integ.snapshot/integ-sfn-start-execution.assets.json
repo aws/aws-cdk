@@ -1,0 +1,19 @@
+{
+  "version": "17.0.0",
+  "files": {
+    "64e31cf4bcac77e85b88ba9d761a53f56e10fb652265829a05f03316b5234177": {
+      "source": {
+        "path": "integ-sfn-start-execution.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "64e31cf4bcac77e85b88ba9d761a53f56e10fb652265829a05f03316b5234177.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
