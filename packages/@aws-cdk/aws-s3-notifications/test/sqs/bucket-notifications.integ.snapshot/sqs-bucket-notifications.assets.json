@@ -1,0 +1,19 @@
+{
+  "version": "17.0.0",
+  "files": {
+    "71e1fb20c0d3dc8f969e2ee5085e3b82785cef0b0b8c58d9d787726b6e4c0c42": {
+      "source": {
+        "path": "sqs-bucket-notifications.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "71e1fb20c0d3dc8f969e2ee5085e3b82785cef0b0b8c58d9d787726b6e4c0c42.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
