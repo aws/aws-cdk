@@ -6,7 +6,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Aws, CfnCapabilities, Duration, Fn, Lazy, PhysicalName, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
 import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
@@ -775,10 +775,10 @@ export class CodePipeline extends PipelineBase {
     const id = arn;
 
     // https://github.com/aws/aws-cdk/issues/7255
-    let existingRole = Node.of(scope).tryFindChild(`ImmutableRole${id}`) as iam.IRole;
+    let existingRole = scope.node.tryFindChild(`ImmutableRole${id}`) as iam.IRole;
     if (existingRole) { return existingRole; }
     // For when #7255 is fixed.
-    existingRole = Node.of(scope).tryFindChild(id) as iam.IRole;
+    existingRole = scope.node.tryFindChild(id) as iam.IRole;
     if (existingRole) { return existingRole; }
 
     const arnToImport = cxapi.EnvironmentPlaceholders.replace(arn, {
