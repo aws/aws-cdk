@@ -1,7 +1,7 @@
 import * as workerpool from 'workerpool';
-import { IntegTestConfig } from '../../runner/integ-tests';
-import { IntegSnapshotRunner, IntegTestRunner } from '../../runner/runners';
-import { DiagnosticReason } from '../common';
+import { IntegSnapshotRunner, IntegTestRunner } from '../../runner';
+import { IntegTestConfig } from '../../runner/integration-tests';
+import { DiagnosticReason, IntegTestWorkerConfig } from '../common';
 import { IntegTestBatchRequest } from '../integ-test-worker';
 
 /**
@@ -12,16 +12,17 @@ import { IntegTestBatchRequest } from '../integ-test-worker';
  *
  * If the tests succeed it will then save the snapshot
  */
-export function integTestWorker(request: IntegTestBatchRequest): IntegTestConfig[] {
+export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorkerConfig[] {
   const failures: IntegTestConfig[] = [];
   for (const test of request.tests) {
     const runner = new IntegTestRunner({
+      directory: test.directory,
       fileName: test.fileName,
       profile: request.profile,
       env: {
         AWS_REGION: request.region,
       },
-    });
+    }, test.destructiveChanges);
     const start = Date.now();
     try {
       if (!runner.hasSnapshot()) {
@@ -37,6 +38,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestConfig
             testCase: testCase,
             clean: request.clean,
             dryRun: request.dryRun,
+            updateWorkflow: request.updateWorkflow,
           });
           workerpool.workerEmit({
             reason: DiagnosticReason.TEST_SUCCESS,
@@ -74,9 +76,9 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestConfig
  * if there is an existing snapshot, and if there is will
  * check if there are any changes
  */
-export function snapshotTestWorker(test: IntegTestConfig): IntegTestConfig[] {
-  const failedTests = new Array<IntegTestConfig>();
-  const runner = new IntegSnapshotRunner({ fileName: test.fileName });
+export function snapshotTestWorker(test: IntegTestConfig): IntegTestWorkerConfig[] {
+  const failedTests = new Array<IntegTestWorkerConfig>();
+  const runner = new IntegSnapshotRunner({ fileName: test.fileName, directory: test.directory });
   const start = Date.now();
   try {
     if (!runner.hasSnapshot()) {
@@ -88,13 +90,17 @@ export function snapshotTestWorker(test: IntegTestConfig): IntegTestConfig[] {
       });
       failedTests.push(test);
     } else {
-      const snapshotDiagnostics = runner.testSnapshot();
-      if (snapshotDiagnostics.length > 0) {
-        snapshotDiagnostics.forEach(diagnostic => workerpool.workerEmit({
+      const { diagnostics, destructiveChanges } = runner.testSnapshot();
+      if (diagnostics.length > 0) {
+        diagnostics.forEach(diagnostic => workerpool.workerEmit({
           ...diagnostic,
           duration: (Date.now() - start) / 1000,
         }));
-        failedTests.push(test);
+        failedTests.push({
+          fileName: test.fileName,
+          directory: test.directory,
+          destructiveChanges,
+        });
       } else {
         workerpool.workerEmit({
           reason: DiagnosticReason.SNAPSHOT_SUCCESS,

@@ -139,7 +139,8 @@ new s3deploy.BucketDeployment(this, 'DeployMeWithoutDeletingFilesOnDestination',
 });
 ```
 
-This option also enables you to specify multiple bucket deployments for the same destination bucket & prefix,
+This option also enables you to 
+multiple bucket deployments for the same destination bucket & prefix,
 each with its own characteristics. For example, you can set different cache-control headers
 based on file extensions:
 
@@ -259,14 +260,19 @@ new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
 });
 ```
 
-## Memory Limit
+## Size Limits
 
 The default memory limit for the deployment resource is 128MiB. If you need to
-copy larger files, you can use the `memoryLimit` configuration to specify the
+copy larger files, you can use the `memoryLimit` configuration to increase the
 size of the AWS Lambda resource handler.
 
-> NOTE: a new AWS Lambda handler will be created in your stack for each memory
-> limit configuration.
+The default ephemeral storage size for the deployment resource is 512MiB. If you
+need to upload larger files, you may hit this limit. You can use the 
+`ephemeralStorageSize` configuration to increase the storage size of the AWS Lambda
+resource handler.
+
+> NOTE: a new AWS Lambda handler will be created in your stack for each combination
+> of memory and storage size.
 
 ## EFS Support
 
