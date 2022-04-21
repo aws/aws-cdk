@@ -2048,6 +2048,30 @@ describe('cluster', () => {
     });
   });
 
+  test('create a cluster from a snapshot with single user secret rotation', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+    });
+
+    // WHEN
+    cluster.addRotationSingleUser();
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      RotationRules: {
+        AutomaticallyAfterDays: 30,
+      },
+    });
+  });
+
   test('reuse an existing subnet group', () => {
     // GIVEN
     const stack = testStack();
