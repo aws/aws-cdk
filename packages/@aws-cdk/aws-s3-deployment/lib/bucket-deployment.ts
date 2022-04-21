@@ -122,6 +122,13 @@ export interface BucketDeploymentProps {
   readonly memoryLimit?: number;
 
   /**
+   * The size of the AWS Lambda function’s /tmp directory in MiB.
+   *
+   * @default 512 MiB
+   */
+  readonly ephemeralStorageSize?: cdk.Size;
+
+  /**
    *  Mount an EFS file system. Enable this if your assets are large and you encounter disk space errors.
    *  Enabling this option will require a VPC to be specified.
    *
@@ -292,7 +299,7 @@ export class BucketDeployment extends CoreConstruct {
 
     const mountPath = `/mnt${accessPointPath}`;
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
-      uuid: this.renderSingletonUuid(props.memoryLimit, props.vpc),
+      uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc),
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
       runtime: lambda.Runtime.PYTHON_3_7,
@@ -304,6 +311,7 @@ export class BucketDeployment extends CoreConstruct {
       timeout: cdk.Duration.minutes(15),
       role: props.role,
       memorySize: props.memoryLimit,
+      ephemeralStorageSize: props.ephemeralStorageSize,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
       filesystem: accessPoint ? lambda.FileSystem.fromEfsAccessPoint(
@@ -331,7 +339,7 @@ export class BucketDeployment extends CoreConstruct {
     // the sources actually has markers.
     const hasMarkers = sources.some(source => source.markers);
 
-    const crUniqueId = `CustomResource${this.renderUniqueId(props.memoryLimit, props.vpc)}`;
+    const crUniqueId = `CustomResource${this.renderUniqueId(props.memoryLimit, props.ephemeralStorageSize, props.vpc)}`;
     this.cr = new cdk.CustomResource(this, crUniqueId, {
       serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
@@ -426,21 +434,32 @@ export class BucketDeployment extends CoreConstruct {
     return this._deployedBucket;
   }
 
-  private renderUniqueId(memoryLimit?: number, vpc?: ec2.IVpc) {
+  private renderUniqueId(memoryLimit?: number, ephemeralStorageSize?: cdk.Size, vpc?: ec2.IVpc) {
     let uuid = '';
 
-    // if user specify a custom memory limit, define another singleton handler
+    // if the user specifes a custom memory limit, we define another singleton handler
     // with this configuration. otherwise, it won't be possible to use multiple
     // configurations since we have a singleton.
     if (memoryLimit) {
       if (cdk.Token.isUnresolved(memoryLimit)) {
-        throw new Error('Can\'t use tokens when specifying "memoryLimit" since we use it to identify the singleton custom resource handler');
+        throw new Error("Can't use tokens when specifying 'memoryLimit' since we use it to identify the singleton custom resource handler.");
       }
 
       uuid += `-${memoryLimit.toString()}MiB`;
     }
 
-    // if user specify to use VPC, define another singleton handler
+    // if the user specifies a custom ephemeral storage size, we define another singleton handler
+    // with this configuration. otherwise, it won't be possible to use multiple
+    // configurations since we have a singleton.
+    if (ephemeralStorageSize) {
+      if (ephemeralStorageSize.isUnresolved()) {
+        throw new Error("Can't use tokens when specifying 'ephemeralStorageSize' since we use it to identify the singleton custom resource handler.");
+      }
+
+      uuid += `-${ephemeralStorageSize.toMebibytes().toString()}MiB`;
+    }
+
+    // if the user specifies a VPC, we define another singleton handler
     // with this configuration. otherwise, it won't be possible to use multiple
     // configurations since we have a singleton.
     // A VPC is a must if EFS storage is used and that's why we are only using VPC in uuid.
@@ -451,10 +470,10 @@ export class BucketDeployment extends CoreConstruct {
     return uuid;
   }
 
-  private renderSingletonUuid(memoryLimit?: number, vpc?: ec2.IVpc) {
+  private renderSingletonUuid(memoryLimit?: number, ephemeralStorageSize?: cdk.Size, vpc?: ec2.IVpc) {
     let uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8756C';
 
-    uuid += this.renderUniqueId(memoryLimit, vpc);
+    uuid += this.renderUniqueId(memoryLimit, ephemeralStorageSize, vpc);
 
     return uuid;
   }

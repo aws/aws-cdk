@@ -120,9 +120,9 @@
       },
       {
        "Action": [
-        "events:PutTargets",
+        "events:DescribeRule",
         "events:PutRule",
-        "events:DescribeRule"
+        "events:PutTargets"
        ],
        "Effect": "Allow",
        "Resource": {
