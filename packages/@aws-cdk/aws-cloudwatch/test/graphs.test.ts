@@ -187,6 +187,7 @@ describe('Graphs', () => {
       properties: {
         view: 'table',
         region: { Ref: 'AWS::Region' },
+        accountId: { Ref: 'AWS::AccountId' },
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
@@ -217,6 +218,7 @@ describe('Graphs', () => {
       properties: {
         view: 'bar',
         region: { Ref: 'AWS::Region' },
+        accountId: { Ref: 'AWS::AccountId' },
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
@@ -247,6 +249,7 @@ describe('Graphs', () => {
       properties: {
         view: 'pie',
         region: { Ref: 'AWS::Region' },
+        accountId: { Ref: 'AWS::AccountId' },
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
@@ -278,6 +281,7 @@ describe('Graphs', () => {
         view: 'timeSeries',
         stacked: false,
         region: { Ref: 'AWS::Region' },
+        accountId: { Ref: 'AWS::AccountId' },
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
@@ -309,6 +313,7 @@ describe('Graphs', () => {
         view: 'timeSeries',
         stacked: true,
         region: { Ref: 'AWS::Region' },
+        accountId: { Ref: 'AWS::AccountId' },
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
@@ -316,6 +321,38 @@ describe('Graphs', () => {
 
   });
 
+  test('query result widget - cross account', () => {
+    // GIVEN
+    const stack = new Stack({});
+    const logGroup = { logGroupName: 'my-log-group' };
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      view: LogQueryVisualizationType.STACKEDAREA,
+      queryLines: [
+        'fields @message',
+        'filter @message like /Error/',
+      ],
+      account: '123456789012',
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        stacked: true,
+        region: { Ref: 'AWS::Region' },
+        accountId: '123456789012',
+        query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+      },
+    }]);
+
+
+  });
   test('alarm widget', () => {
     // GIVEN
     const stack = new Stack();
