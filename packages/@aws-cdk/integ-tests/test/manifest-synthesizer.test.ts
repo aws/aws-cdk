@@ -31,7 +31,7 @@ describe(IntegManifestSynthesizer, () => {
     });
 
     expect(write).toHaveBeenCalledWith({
-      version: '',
+      version: '17.0.0',
       testCases: {
         case1: {
           stacks: ['stack-under-test-1'],

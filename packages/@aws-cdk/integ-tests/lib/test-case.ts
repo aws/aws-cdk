@@ -1,4 +1,4 @@
-import { IntegManifest, TestCase, TestOptions } from '@aws-cdk/cloud-assembly-schema';
+import { IntegManifest, Manifest, TestCase, TestOptions } from '@aws-cdk/cloud-assembly-schema';
 import { attachCustomSynthesis, Stack, ISynthesisSession } from '@aws-cdk/core';
 import { IntegManifestSynthesizer } from './manifest-synthesizer';
 
@@ -31,7 +31,7 @@ export class IntegTestCase extends Construct {
    */
   get manifest(): IntegManifest {
     return {
-      version: '',
+      version: Manifest.version(),
       testCases: { [this.id]: toTestCase(this.props) },
     };
   }

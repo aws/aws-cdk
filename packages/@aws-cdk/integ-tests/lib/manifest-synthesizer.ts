@@ -1,4 +1,4 @@
-import { IntegManifest } from '@aws-cdk/cloud-assembly-schema';
+import { IntegManifest, Manifest } from '@aws-cdk/cloud-assembly-schema';
 import { ISynthesisSession } from '@aws-cdk/core';
 import { IntegManifestWriter } from './manifest-writer';
 import { IntegTestCase } from './test-case';
@@ -24,7 +24,7 @@ export class IntegManifestSynthesizer {
 
 function mergeManifests(m1: IntegManifest, m2: IntegManifest): IntegManifest {
   return {
-    version: '',
+    version: Manifest.version(),
     testCases: { ...m1.testCases, ...m2.testCases },
   };
 }
