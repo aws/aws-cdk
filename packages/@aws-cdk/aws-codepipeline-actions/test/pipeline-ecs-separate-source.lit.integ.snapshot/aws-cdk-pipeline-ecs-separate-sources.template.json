@@ -2,11 +2,6 @@
  "Resources": {
   "EcsDeployRepositoryE7A569C0": {
    "Type": "AWS::ECR::Repository",
-   "Properties": {
-    "ImageScanningConfiguration": {
-     "ScanOnPush": false
-    }
-   },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },

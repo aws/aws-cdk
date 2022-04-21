@@ -430,6 +430,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * @param scope Some scope within a stack
    * @param parameterName The name of the SSM parameter
    * @param version The parameter version (required for secure strings)
+   * @deprecated Use `SecretValue.ssmSecure()` instead, it will correctly type the imported value as a `SecretValue` and allow importing without version.
    */
   public static valueForSecureStringParameter(scope: Construct, parameterName: string, version: number): string {
     const stack = Stack.of(scope);
