@@ -1,8 +1,8 @@
 import * as workerpool from 'workerpool';
 import * as logger from '../logger';
-import { IntegTestConfig } from '../runner/integ-tests';
-import { IntegTestRunner } from '../runner/runners';
-import { printResults, printSummary, IntegBatchResponse, IntegTestOptions, DiagnosticReason } from './common';
+import { IntegTestConfig } from '../runner/integration-tests';
+import { flatten } from '../utils';
+import { printResults, printSummary, IntegBatchResponse, IntegTestOptions, IntegRunnerMetrics } from './common';
 
 /**
  * Options for an integration test batch
@@ -12,6 +12,11 @@ export interface IntegTestBatchRequest extends IntegTestOptions {
    * The AWS region to run this batch in
    */
   readonly region: string;
+
+  /**
+   * The AWS profile to use when running this test
+   */
+  readonly profile?: string;
 }
 
 /**
@@ -25,6 +30,12 @@ export interface IntegTestRunOptions extends IntegTestOptions {
   readonly regions: string[];
 
   /**
+   * List of AWS profiles. This will be used in conjunction with `regions`
+   * to run tests in parallel across accounts + regions
+   */
+  readonly profiles?: string[];
+
+  /**
    * The workerpool to use
    */
   readonly pool: workerpool.WorkerPool;
@@ -33,22 +44,63 @@ export interface IntegTestRunOptions extends IntegTestOptions {
 /**
  * Run Integration tests.
  */
-export async function runIntegrationTests(options: IntegTestRunOptions): Promise<boolean> {
+export async function runIntegrationTests(options: IntegTestRunOptions): Promise<{ success: boolean, metrics: IntegRunnerMetrics[] }> {
   logger.highlight('\nRunning integration tests for failed tests...\n');
-  logger.print('Running in parallel across: %s', options.regions.join(', '));
+  logger.print(
+    'Running in parallel across %sregions: %s',
+    options.profiles ? `profiles ${options.profiles.join(', ')} and `: '',
+    options.regions.join(', '));
   const totalTests = options.tests.length;
-  const failedTests: IntegTestConfig[] = [];
 
   const responses = await runIntegrationTestsInParallel(options);
-  for (const response of responses) {
-    failedTests.push(...response.failedTests);
-  }
   logger.highlight('\nTest Results: \n');
-  printSummary(totalTests, failedTests.length);
-  if (failedTests.length > 0) {
-    return false;
+  printSummary(totalTests, responses.failedTests.length);
+  return {
+    success: responses.failedTests.length === 0,
+    metrics: responses.metrics,
+  };
+}
+
+/**
+ * Represents a worker for a single account + region
+ */
+interface AccountWorker {
+  /**
+   * The region the worker should run in
+   */
+  readonly region: string;
+
+  /**
+   * The AWS profile that the worker should use
+   * This will be passed as the '--profile' option to the CDK CLI
+   *
+   * @default - default profile
+   */
+  readonly profile?: string;
+}
+
+/**
+ * Returns a list of AccountWorkers based on the list of regions and profiles
+ * given to the CLI.
+ */
+function getAccountWorkers(regions: string[], profiles?: string[]): AccountWorker[] {
+  const workers: AccountWorker[] = [];
+  function pushWorker(profile?: string) {
+    for (const region of regions) {
+      workers.push({
+        region,
+        profile,
+      });
+    }
   }
-  return true;
+  if (profiles && profiles.length > 0) {
+    for (const profile of profiles ?? []) {
+      pushWorker(profile);
+    }
+  } else {
+    pushWorker();
+  }
+  return workers;
 }
 
 /**
@@ -58,87 +110,50 @@ export async function runIntegrationTests(options: IntegTestRunOptions): Promise
  */
 export async function runIntegrationTestsInParallel(
   options: IntegTestRunOptions,
-): Promise<IntegBatchResponse[]> {
+): Promise<IntegBatchResponse> {
 
   const queue = options.tests;
-  const results: IntegBatchResponse[] = [];
+  const results: IntegBatchResponse = {
+    metrics: [],
+    failedTests: [],
+  };
+  const accountWorkers: AccountWorker[] = getAccountWorkers(options.regions, options.profiles);
 
-  async function runTest(region: string): Promise<void> {
+  async function runTest(worker: AccountWorker): Promise<void> {
+    const start = Date.now();
+    const tests: { [testName: string]: number } = {};
     do {
       const test = queue.pop();
       if (!test) break;
-      logger.highlight(`Running test ${test.fileName} in ${region}`);
-      const response: IntegBatchResponse = await options.pool.exec('integTestBatch', [{
-        region,
+      const testStart = Date.now();
+      logger.highlight(`Running test ${test.fileName} in ${worker.profile ? worker.profile + '/' : ''}${worker.region}`);
+      const response: IntegTestConfig[][] = await options.pool.exec('integTestWorker', [{
+        region: worker.region,
+        profile: worker.profile,
         tests: [test],
         clean: options.clean,
         dryRun: options.dryRun,
         verbose: options.verbose,
+        updateWorkflow: options.updateWorkflow,
       }], {
         on: printResults,
       });
 
-      results.push(response);
+      results.failedTests.push(...flatten(response));
+      tests[test.fileName] = (Date.now() - testStart) / 1000;
     } while (queue.length > 0);
-  }
-
-  const workers = options.regions.map((region) => runTest(region));
-  await Promise.all(workers);
-  return results;
-}
-
-/**
- * Runs a single integration test batch request.
- * If the test does not have an existing snapshot,
- * this will first generate a snapshot and then execute
- * the integration tests.
- *
- * If the tests succeed it will then save the snapshot
- */
-export function singleThreadedTestRunner(request: IntegTestBatchRequest): IntegBatchResponse {
-  const failures: IntegTestConfig[] = [];
-  for (const test of request.tests) {
-    const runner = new IntegTestRunner({
-      fileName: test.fileName,
-      env: {
-        AWS_REGION: request.region,
-      },
-    });
-    try {
-      if (!runner.hasSnapshot()) {
-        runner.generateSnapshot();
-      }
-
-      if (!runner.tests) {
-        throw new Error(`No tests defined for ${runner.testName}`);
-      }
-      for (const [testName, testCase] of Object.entries(runner.tests)) {
-        try {
-          runner.runIntegTestCase({
-            testCase: testCase,
-            clean: request.clean,
-            dryRun: request.dryRun,
-          });
-          workerpool.workerEmit({
-            reason: DiagnosticReason.TEST_SUCCESS,
-            testName: testName,
-            message: 'Success',
-          });
-        } catch (e) {
-          failures.push(test);
-          workerpool.workerEmit({
-            reason: DiagnosticReason.TEST_FAILED,
-            testName: testName,
-            message: `Integration test failed: ${e}`,
-          });
-        }
-      }
-    } catch (e) {
-      logger.error(`Errors running test cases: ${e}`);
+    const metrics: IntegRunnerMetrics = {
+      region: worker.region,
+      profile: worker.profile,
+      duration: (Date.now() - start) / 1000,
+      tests,
+    };
+    if (Object.keys(tests).length > 0) {
+      results.metrics.push(metrics);
     }
   }
 
-  return {
-    failedTests: failures,
-  };
+  const workers = accountWorkers.map((worker) => runTest(worker));
+  await Promise.all(workers);
+  return results;
 }
