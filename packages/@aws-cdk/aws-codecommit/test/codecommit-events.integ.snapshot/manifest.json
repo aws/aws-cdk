@@ -1,0 +1,40 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codecommit-events": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codecommit-events.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-codecommit-events/Repo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Repo02AC86CF"
+          }
+        ],
+        "/aws-cdk-codecommit-events/Repo/OnReferenceCreated/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RepoOnReferenceCreatedF1C66FF1"
+          }
+        ],
+        "/aws-cdk-codecommit-events/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codecommit-events"
+    }
+  }
+}

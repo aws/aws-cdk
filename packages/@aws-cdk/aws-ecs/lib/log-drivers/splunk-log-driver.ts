@@ -152,7 +152,7 @@ export class SplunkLogDriver extends LogDriver {
    */
   public bind(_scope: CoreConstruct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     const options = stringifyOptions({
-      'splunk-token': this.props.token,
+      'splunk-token': this.props.token?.unsafeUnwrap(), // Safe usage
       'splunk-url': this.props.url,
       'splunk-source': this.props.source,
       'splunk-sourcetype': this.props.sourceType,

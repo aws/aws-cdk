@@ -1,0 +1,70 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-user-pool-custom-sender": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-user-pool-custom-sender.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-user-pool-custom-sender/emailLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "emailLambdaServiceRole7569D9F6"
+          }
+        ],
+        "/integ-user-pool-custom-sender/emailLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "emailLambda61F82360"
+          }
+        ],
+        "/integ-user-pool-custom-sender/emailLambda/CustomEmailSenderCognito": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "emailLambdaCustomEmailSenderCognito5E15D907"
+          }
+        ],
+        "/integ-user-pool-custom-sender/key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "keyFEDD6EC0"
+          }
+        ],
+        "/integ-user-pool-custom-sender/pool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pool056F3F7E"
+          }
+        ],
+        "/integ-user-pool-custom-sender/pool/client/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "poolclient2623294C"
+          }
+        ],
+        "/integ-user-pool-custom-sender/UserPoolId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolId"
+          }
+        ],
+        "/integ-user-pool-custom-sender/ClientId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientId"
+          }
+        ]
+      },
+      "displayName": "integ-user-pool-custom-sender"
+    }
+  }
+}

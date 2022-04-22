@@ -225,7 +225,7 @@ describe('code', () => {
         code: lambda.Code.fromEcrImage(repo, {
           cmd: ['cmd', 'param1'],
           entrypoint: ['entrypoint', 'param2'],
-          tag: 'mytag',
+          tagOrDigest: 'mytag',
           workingDirectory: '/some/path',
         }),
         handler: lambda.Handler.FROM_IMAGE,
@@ -242,6 +242,29 @@ describe('code', () => {
           EntryPoint: ['entrypoint', 'param2'],
           WorkingDirectory: '/some/path',
         },
+      });
+    });
+
+    test('digests are interpreted correctly', () => {
+      // given
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromEcrImage(repo, {
+          tagOrDigest: 'sha256:afc607424cc02c92d4d6af5184a4fef46a69548e465a320808c6ff358b6a3a8d',
+        }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        Code: {
+          ImageUri: stack.resolve(repo.repositoryUriForDigest('sha256:afc607424cc02c92d4d6af5184a4fef46a69548e465a320808c6ff358b6a3a8d')),
+        },
+        ImageConfig: Match.absent(),
       });
     });
 

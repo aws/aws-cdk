@@ -1,0 +1,124 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-parameter-arns": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-parameter-arns.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-parameter-arns/ParameterNameParameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParameterNameParameter"
+          }
+        ],
+        "/integ-parameter-arns/StringAutogen/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StringAutogenE7E896E4"
+          }
+        ],
+        "/integ-parameter-arns/StringSimple/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StringSimpleA681514D"
+          }
+        ],
+        "/integ-parameter-arns/StringPath/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StringPathD8120137"
+          }
+        ],
+        "/integ-parameter-arns/ListAutogen/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListAutogenC5DA1CAE"
+          }
+        ],
+        "/integ-parameter-arns/ListSimple/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListSimple9DB641CB"
+          }
+        ],
+        "/integ-parameter-arns/ListPath/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListPath120D6FAB"
+          }
+        ],
+        "/integ-parameter-arns/ParameterizedSimple/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParameterizedSimpleB6311859"
+          }
+        ],
+        "/integ-parameter-arns/ParameterizedNonSimple/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParameterizedNonSimple23C44BF6"
+          }
+        ],
+        "/integ-parameter-arns/StringAutogenArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StringAutogenArn"
+          }
+        ],
+        "/integ-parameter-arns/StringSimpleArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StringSimpleArn"
+          }
+        ],
+        "/integ-parameter-arns/StringPathArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StringPathArn"
+          }
+        ],
+        "/integ-parameter-arns/ListAutogenArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListAutogenArn"
+          }
+        ],
+        "/integ-parameter-arns/ListSimpleArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListSimpleArn"
+          }
+        ],
+        "/integ-parameter-arns/ListPathArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListPathArn"
+          }
+        ],
+        "/integ-parameter-arns/ParameterizedSimpleArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParameterizedSimpleArn"
+          }
+        ],
+        "/integ-parameter-arns/ParameterizedNonSimpleArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParameterizedNonSimpleArn"
+          }
+        ]
+      },
+      "displayName": "integ-parameter-arns"
+    }
+  }
+}

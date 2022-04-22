@@ -1,0 +1,154 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "restapi-multiuse-example": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "restapi-multiuse-example.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/restapi-multiuse-example/Hello/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HelloServiceRole1E55EA16"
+          }
+        ],
+        "/restapi-multiuse-example/Hello/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Hello4A628BD4"
+          }
+        ],
+        "/restapi-multiuse-example/hello-api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloapi4446A35B"
+          }
+        ],
+        "/restapi-multiuse-example/hello-api/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloapiCloudWatchRoleD13E913E"
+          }
+        ],
+        "/restapi-multiuse-example/hello-api/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloapiAccountD8C38BCE"
+          }
+        ],
+        "/restapi-multiuse-example/hello-api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloapiDeploymentFA89AEEC3622d8c965f356a33fd95586d24bf138"
+          }
+        ],
+        "/restapi-multiuse-example/hello-api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloapiDeploymentStageprod677E2C4F"
+          }
+        ],
+        "/restapi-multiuse-example/hello-api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloapiEndpoint0E4D8D32"
+          }
+        ],
+        "/restapi-multiuse-example/hello-api/Default/hello/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloapihello4AA00177"
+          }
+        ],
+        "/restapi-multiuse-example/hello-api/Default/hello/GET/ApiPermission.restapimultiuseexamplehelloapi9FD0148D.GET..hello": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloapihelloGETApiPermissionrestapimultiuseexamplehelloapi9FD0148DGEThello2FD34BC2"
+          }
+        ],
+        "/restapi-multiuse-example/hello-api/Default/hello/GET/ApiPermission.Test.restapimultiuseexamplehelloapi9FD0148D.GET..hello": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloapihelloGETApiPermissionTestrestapimultiuseexamplehelloapi9FD0148DGEThelloA58B2FAE"
+          }
+        ],
+        "/restapi-multiuse-example/hello-api/Default/hello/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloapihelloGETE6A58337"
+          }
+        ],
+        "/restapi-multiuse-example/second-api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "secondapi730EF3C7"
+          }
+        ],
+        "/restapi-multiuse-example/second-api/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "secondapiCloudWatchRole7FEC1028"
+          }
+        ],
+        "/restapi-multiuse-example/second-api/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "secondapiAccountDF729874"
+          }
+        ],
+        "/restapi-multiuse-example/second-api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "secondapiDeployment20F2C70088fa5a027620045bea3e5043c6d31f5a"
+          }
+        ],
+        "/restapi-multiuse-example/second-api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "secondapiDeploymentStageprod40491DF0"
+          }
+        ],
+        "/restapi-multiuse-example/second-api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "secondapiEndpoint89D0E02C"
+          }
+        ],
+        "/restapi-multiuse-example/second-api/Default/hello/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "secondapihello7264EB69"
+          }
+        ],
+        "/restapi-multiuse-example/second-api/Default/hello/GET/ApiPermission.restapimultiuseexamplesecondapi5CB05B89.GET..hello": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "secondapihelloGETApiPermissionrestapimultiuseexamplesecondapi5CB05B89GEThello2D6C1879"
+          }
+        ],
+        "/restapi-multiuse-example/second-api/Default/hello/GET/ApiPermission.Test.restapimultiuseexamplesecondapi5CB05B89.GET..hello": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "secondapihelloGETApiPermissionTestrestapimultiuseexamplesecondapi5CB05B89GEThelloB0B3B749"
+          }
+        ],
+        "/restapi-multiuse-example/second-api/Default/hello/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "secondapihelloGETDC5BBB18"
+          }
+        ]
+      },
+      "displayName": "restapi-multiuse-example"
+    }
+  }
+}

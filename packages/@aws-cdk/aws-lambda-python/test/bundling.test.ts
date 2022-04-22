@@ -159,7 +159,7 @@ test('Bundling a function with pipenv dependencies', () => {
   expect(files).toContain('Pipfile');
   expect(files).toContain('Pipfile.lock');
   // Contains hidden files.
-  expect(files).toContain('.gitignore');
+  expect(files).toContain('.ignorefile');
 });
 
 test('Bundling a function with poetry dependencies', () => {
@@ -186,7 +186,7 @@ test('Bundling a function with poetry dependencies', () => {
   expect(files).toContain('pyproject.toml');
   expect(files).toContain('poetry.lock');
   // Contains hidden files.
-  expect(files).toContain('.gitignore');
+  expect(files).toContain('.ignorefile');
 });
 
 test('Bundling a function with custom bundling image', () => {

@@ -1,0 +1,88 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-stepfunctions-tasks-databrew-start-job-run-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-stepfunctions-tasks-databrew-start-job-run-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/JobOutputBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JobOutputBucketACE3BC7B"
+          }
+        ],
+        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/DataBrew Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataBrewRole7E60F80D"
+          }
+        ],
+        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/DataBrew Recipe": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataBrewRecipe"
+          }
+        ],
+        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/DataBrew Dataset": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataBrewDataset"
+          }
+        ],
+        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/DataBrew Project": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataBrewProject"
+          }
+        ],
+        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/DataBrew Job": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataBrewJob"
+          }
+        ],
+        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/StateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+          }
+        ],
+        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/stateMachineArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "stateMachineArn"
+          }
+        ],
+        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/Service-principalMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceprincipalMap"
+          }
+        ]
+      },
+      "displayName": "aws-stepfunctions-tasks-databrew-start-job-run-integ"
+    }
+  }
+}

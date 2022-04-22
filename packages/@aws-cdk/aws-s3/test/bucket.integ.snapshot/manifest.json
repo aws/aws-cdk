@@ -1,0 +1,52 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-s3": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-s3.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-s3/MyBucket/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucketKeyC17130CF"
+          }
+        ],
+        "/aws-cdk-s3/MyBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucketF68F3FF0"
+          }
+        ],
+        "/aws-cdk-s3/MyOtherBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyOtherBucket543F3540"
+          }
+        ],
+        "/aws-cdk-s3/MyUser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyUserDC45028B"
+          }
+        ],
+        "/aws-cdk-s3/MyUser/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyUserDefaultPolicy7B897426"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-s3"
+    }
+  }
+}

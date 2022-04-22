@@ -1,0 +1,216 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "nested-stacks-multi-refs": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "nested-stacks-multi-refs.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/nested-stacks-multi-refs": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "nestedstacksmultirefsNested1Nested2Nested34EDB63C2.nested.template.json",
+              "id": "495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3a",
+              "packaging": "file",
+              "sourceHash": "495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3a",
+              "s3BucketParameter": "AssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3Bucket58724FCA",
+              "s3KeyParameter": "AssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3VersionKey2CCE0573",
+              "artifactHashParameter": "AssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aArtifactHashAE1436B7"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "nestedstacksmultirefsNested1Nested2B1544EC7.nested.template.json",
+              "id": "c2fbfb6df004b51bb870bd1f5cabda73830a59765a6c766aca0e906ec1e22441",
+              "packaging": "file",
+              "sourceHash": "c2fbfb6df004b51bb870bd1f5cabda73830a59765a6c766aca0e906ec1e22441",
+              "s3BucketParameter": "AssetParametersc2fbfb6df004b51bb870bd1f5cabda73830a59765a6c766aca0e906ec1e22441S3BucketAF9A3A0F",
+              "s3KeyParameter": "AssetParametersc2fbfb6df004b51bb870bd1f5cabda73830a59765a6c766aca0e906ec1e22441S3VersionKey2F85340C",
+              "artifactHashParameter": "AssetParametersc2fbfb6df004b51bb870bd1f5cabda73830a59765a6c766aca0e906ec1e22441ArtifactHash5D93ED07"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "nestedstacksmultirefsNested146CE1F9F.nested.template.json",
+              "id": "2fa66e9dea71b1e05ebeed281df124cbaca34247ae93c767a533b6346cc17703",
+              "packaging": "file",
+              "sourceHash": "2fa66e9dea71b1e05ebeed281df124cbaca34247ae93c767a533b6346cc17703",
+              "s3BucketParameter": "AssetParameters2fa66e9dea71b1e05ebeed281df124cbaca34247ae93c767a533b6346cc17703S3BucketD17502DC",
+              "s3KeyParameter": "AssetParameters2fa66e9dea71b1e05ebeed281df124cbaca34247ae93c767a533b6346cc17703S3VersionKeyA042251F",
+              "artifactHashParameter": "AssetParameters2fa66e9dea71b1e05ebeed281df124cbaca34247ae93c767a533b6346cc17703ArtifactHash8853E261"
+            }
+          }
+        ],
+        "/nested-stacks-multi-refs/Level1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Level1ABBD39B3"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/Nested2/Nested3/Level3ReferencesLevel1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Level3ReferencesLevel13289AD09"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/Nested2/Nested3/Level3ReferencesLevel2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Level3ReferencesLevel2717B87DB"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/Nested2/Nested3/reference-to-nestedstacksmultirefsLevel19FB2466DTopicName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetonestedstacksmultirefsLevel19FB2466DTopicName"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/Nested2/Nested3/reference-to-nestedstacksmultirefsNested1Nested2Level2ReferencesLevel1B9551936TopicName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetonestedstacksmultirefsNested1Nested2Level2ReferencesLevel1B9551936TopicName"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/Nested2/Nested3.NestedStack/Nested3.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Nested3NestedStackNested3NestedStackResource4CFC9F55"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/Nested2/Level2ReferencesLevel1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Level2ReferencesLevel124228B1A"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/Nested2/reference-to-nestedstacksmultirefsLevel19FB2466DTopicName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetonestedstacksmultirefsLevel19FB2466DTopicName"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/Nested2/reference-to-nestedstacksmultirefsAssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3Bucket03F0C3B1Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetonestedstacksmultirefsAssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3Bucket03F0C3B1Ref"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/Nested2/reference-to-nestedstacksmultirefsAssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3VersionKey5F9CF809Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetonestedstacksmultirefsAssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3VersionKey5F9CF809Ref"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/Nested2.NestedStack/Nested2.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Nested2NestedStackNested2NestedStackResource877A1112"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/reference-to-nestedstacksmultirefsLevel19FB2466DTopicName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetonestedstacksmultirefsLevel19FB2466DTopicName"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/reference-to-nestedstacksmultirefsAssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3Bucket03F0C3B1Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetonestedstacksmultirefsAssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3Bucket03F0C3B1Ref"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/reference-to-nestedstacksmultirefsAssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3VersionKey5F9CF809Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetonestedstacksmultirefsAssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3VersionKey5F9CF809Ref"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/reference-to-nestedstacksmultirefsAssetParametersc2fbfb6df004b51bb870bd1f5cabda73830a59765a6c766aca0e906ec1e22441S3Bucket119ED767Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetonestedstacksmultirefsAssetParametersc2fbfb6df004b51bb870bd1f5cabda73830a59765a6c766aca0e906ec1e22441S3Bucket119ED767Ref"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/reference-to-nestedstacksmultirefsAssetParametersc2fbfb6df004b51bb870bd1f5cabda73830a59765a6c766aca0e906ec1e22441S3VersionKeyDCF85FE2Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetonestedstacksmultirefsAssetParametersc2fbfb6df004b51bb870bd1f5cabda73830a59765a6c766aca0e906ec1e22441S3VersionKeyDCF85FE2Ref"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1.NestedStack/Nested1.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Nested1NestedStackNested1NestedStackResourceCD0AD36B"
+          }
+        ],
+        "/nested-stacks-multi-refs/AssetParameters/495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3a/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3Bucket58724FCA"
+          }
+        ],
+        "/nested-stacks-multi-refs/AssetParameters/495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3a/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3VersionKey2CCE0573"
+          }
+        ],
+        "/nested-stacks-multi-refs/AssetParameters/495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3a/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aArtifactHashAE1436B7"
+          }
+        ],
+        "/nested-stacks-multi-refs/AssetParameters/c2fbfb6df004b51bb870bd1f5cabda73830a59765a6c766aca0e906ec1e22441/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc2fbfb6df004b51bb870bd1f5cabda73830a59765a6c766aca0e906ec1e22441S3BucketAF9A3A0F"
+          }
+        ],
+        "/nested-stacks-multi-refs/AssetParameters/c2fbfb6df004b51bb870bd1f5cabda73830a59765a6c766aca0e906ec1e22441/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc2fbfb6df004b51bb870bd1f5cabda73830a59765a6c766aca0e906ec1e22441S3VersionKey2F85340C"
+          }
+        ],
+        "/nested-stacks-multi-refs/AssetParameters/c2fbfb6df004b51bb870bd1f5cabda73830a59765a6c766aca0e906ec1e22441/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc2fbfb6df004b51bb870bd1f5cabda73830a59765a6c766aca0e906ec1e22441ArtifactHash5D93ED07"
+          }
+        ],
+        "/nested-stacks-multi-refs/AssetParameters/2fa66e9dea71b1e05ebeed281df124cbaca34247ae93c767a533b6346cc17703/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters2fa66e9dea71b1e05ebeed281df124cbaca34247ae93c767a533b6346cc17703S3BucketD17502DC"
+          }
+        ],
+        "/nested-stacks-multi-refs/AssetParameters/2fa66e9dea71b1e05ebeed281df124cbaca34247ae93c767a533b6346cc17703/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters2fa66e9dea71b1e05ebeed281df124cbaca34247ae93c767a533b6346cc17703S3VersionKeyA042251F"
+          }
+        ],
+        "/nested-stacks-multi-refs/AssetParameters/2fa66e9dea71b1e05ebeed281df124cbaca34247ae93c767a533b6346cc17703/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters2fa66e9dea71b1e05ebeed281df124cbaca34247ae93c767a533b6346cc17703ArtifactHash8853E261"
+          }
+        ]
+      },
+      "displayName": "nested-stacks-multi-refs"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-kinesis-stream-dashboard": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-kinesis-stream-dashboard.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-kinesis-stream-dashboard/myStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myStream547FAD7F"
+          }
+        ],
+        "/integ-kinesis-stream-dashboard/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+          }
+        ],
+        "/integ-kinesis-stream-dashboard/StreamDashboard/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StreamDashboardAAF4FCF8"
+          }
+        ]
+      },
+      "displayName": "integ-kinesis-stream-dashboard"
+    }
+  }
+}

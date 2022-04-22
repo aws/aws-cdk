@@ -1,0 +1,58 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-sns-sqs": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-sns-sqs.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-sns-sqs/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434"
+          }
+        ],
+        "/aws-cdk-sns-sqs/MyQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueueE6CA6235"
+          }
+        ],
+        "/aws-cdk-sns-sqs/MyQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueuePolicy6BBEDDAC"
+          }
+        ],
+        "/aws-cdk-sns-sqs/MyQueue/awscdksnssqsMyTopic9361DEA2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueueawscdksnssqsMyTopic9361DEA223429051"
+          }
+        ],
+        "/aws-cdk-sns-sqs/DeadLetterQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeadLetterQueue9F481546"
+          }
+        ],
+        "/aws-cdk-sns-sqs/DeadLetterQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeadLetterQueuePolicyB1FB890C"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-sns-sqs"
+    }
+  }
+}

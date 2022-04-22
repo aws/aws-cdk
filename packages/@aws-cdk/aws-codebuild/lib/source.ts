@@ -499,6 +499,18 @@ interface ThirdPartyGitSourceProps extends GitSourceProps {
    * @default every push and every Pull Request (create or update) triggers a build
    */
   readonly webhookFilters?: FilterGroup[];
+
+  /**
+   * The URL that the build will report back to the source provider.
+   * Can use built-in CodeBuild variables, like $AWS_REGION.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/create-project-cli.html#cli.source.buildstatusconfig.targeturl
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
+   *
+   * @example "$CODEBUILD_PUBLIC_BUILD_URL"
+   * @default - link to the AWS Console for CodeBuild to a particular build execution
+   */
+  readonly buildStatusUrl?: string;
 }
 
 /**
@@ -510,6 +522,7 @@ abstract class ThirdPartyGitSource extends GitSource {
   private readonly reportBuildStatus: boolean;
   private readonly webhook?: boolean;
   private readonly webhookTriggersBatchBuild?: boolean;
+  protected readonly buildStatusUrl?: string;
 
   protected constructor(props: ThirdPartyGitSourceProps) {
     super(props);
@@ -518,6 +531,7 @@ abstract class ThirdPartyGitSource extends GitSource {
     this.reportBuildStatus = props.reportBuildStatus ?? true;
     this.webhookFilters = props.webhookFilters || [];
     this.webhookTriggersBatchBuild = props.webhookTriggersBatchBuild;
+    this.buildStatusUrl = props.buildStatusUrl;
   }
 
   public bind(_scope: CoreConstruct, project: IProject): SourceConfig {
@@ -637,9 +651,52 @@ class S3Source extends Source {
 }
 
 /**
+ * Common properties between {@link GitHubSource} and {@link GitHubEnterpriseSource}.
+ */
+interface CommonGithubSourceProps extends ThirdPartyGitSourceProps {
+  /**
+   * This parameter is used for the `context` parameter in the GitHub commit status.
+   * Can use built-in CodeBuild variables, like $AWS_REGION.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/create-project-cli.html#cli.source.buildstatusconfig.context
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
+   *
+   * @example "My build #$CODEBUILD_BUILD_NUMBER"
+   * @default "AWS CodeBuild $AWS_REGION ($PROJECT_NAME)"
+   */
+  readonly buildStatusContext?: string
+}
+
+abstract class CommonGithubSource extends ThirdPartyGitSource {
+  private readonly buildStatusContext?: string;
+
+  constructor(props: CommonGithubSourceProps) {
+    super(props);
+    this.buildStatusContext = props.buildStatusContext;
+  }
+
+  public bind(scope: CoreConstruct, project: IProject): SourceConfig {
+    const superConfig = super.bind(scope, project);
+    return {
+      sourceProperty: {
+        ...superConfig.sourceProperty,
+        buildStatusConfig: this.buildStatusContext !== undefined || this.buildStatusUrl !== undefined
+          ? {
+            context: this.buildStatusContext,
+            targetUrl: this.buildStatusUrl,
+          }
+          : undefined,
+      },
+      sourceVersion: superConfig.sourceVersion,
+      buildTriggers: superConfig.buildTriggers,
+    };
+  }
+}
+
+/**
  * Construction properties for {@link GitHubSource} and {@link GitHubEnterpriseSource}.
  */
-export interface GitHubSourceProps extends ThirdPartyGitSourceProps {
+export interface GitHubSourceProps extends CommonGithubSourceProps {
   /**
    * The GitHub account/user that owns the repo.
    *
@@ -658,7 +715,7 @@ export interface GitHubSourceProps extends ThirdPartyGitSourceProps {
 /**
  * GitHub Source definition for a CodeBuild project.
  */
-class GitHubSource extends ThirdPartyGitSource {
+class GitHubSource extends CommonGithubSource {
   public readonly type = GITHUB_SOURCE_TYPE;
   private readonly httpsCloneUrl: string;
 
@@ -683,7 +740,7 @@ class GitHubSource extends ThirdPartyGitSource {
 /**
  * Construction properties for {@link GitHubEnterpriseSource}.
  */
-export interface GitHubEnterpriseSourceProps extends ThirdPartyGitSourceProps {
+export interface GitHubEnterpriseSourceProps extends CommonGithubSourceProps {
   /**
    * The HTTPS URL of the repository in your GitHub Enterprise installation.
    */
@@ -700,7 +757,7 @@ export interface GitHubEnterpriseSourceProps extends ThirdPartyGitSourceProps {
 /**
  * GitHub Enterprise Source definition for a CodeBuild project.
  */
-class GitHubEnterpriseSource extends ThirdPartyGitSource {
+class GitHubEnterpriseSource extends CommonGithubSource {
   public readonly type = GITHUB_ENTERPRISE_SOURCE_TYPE;
   private readonly httpsCloneUrl: string;
   private readonly ignoreSslErrors?: boolean;
@@ -768,6 +825,18 @@ export interface BitBucketSourceProps extends ThirdPartyGitSourceProps {
    * @example 'aws-cdk'
    */
   readonly repo: string;
+
+  /**
+   * This parameter is used for the `name` parameter in the Bitbucket commit status.
+   * Can use built-in CodeBuild variables, like $AWS_REGION.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/create-project-cli.html#cli.source.buildstatusconfig.context
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
+   *
+   * @example "My build #$CODEBUILD_BUILD_NUMBER"
+   * @default "AWS CodeBuild $AWS_REGION ($PROJECT_NAME)"
+   */
+  readonly buildStatusName?: string;
 }
 
 /**
@@ -776,10 +845,12 @@ export interface BitBucketSourceProps extends ThirdPartyGitSourceProps {
 class BitBucketSource extends ThirdPartyGitSource {
   public readonly type = BITBUCKET_SOURCE_TYPE;
   private readonly httpsCloneUrl: any;
+  private readonly buildStatusName?: string;
 
   constructor(props: BitBucketSourceProps) {
     super(props);
     this.httpsCloneUrl = `https://bitbucket.org/${props.owner}/${props.repo}.git`;
+    this.buildStatusName = props.buildStatusName;
   }
 
   public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
@@ -793,6 +864,12 @@ class BitBucketSource extends ThirdPartyGitSource {
       sourceProperty: {
         ...superConfig.sourceProperty,
         location: this.httpsCloneUrl,
+        buildStatusConfig: this.buildStatusName !== undefined || this.buildStatusUrl !== undefined
+          ? {
+            context: this.buildStatusName,
+            targetUrl: this.buildStatusUrl,
+          }
+          : undefined,
       },
       sourceVersion: superConfig.sourceVersion,
       buildTriggers: superConfig.buildTriggers,

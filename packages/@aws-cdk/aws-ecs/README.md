@@ -393,8 +393,8 @@ obtained from either DockerHub or from ECR repositories, built directly from a l
 
 - `ecs.ContainerImage.fromRegistry(imageName)`: use a public image.
 - `ecs.ContainerImage.fromRegistry(imageName, { credentials: mySecret })`: use a private image that requires credentials.
-- `ecs.ContainerImage.fromEcrRepository(repo, tag)`: use the given ECR repository as the image
-  to start. If no tag is provided, "latest" is assumed.
+- `ecs.ContainerImage.fromEcrRepository(repo, tagOrDigest)`: use the given ECR repository as the image
+  to start. If no tag or digest is provided, "latest" is assumed.
 - `ecs.ContainerImage.fromAsset('./image')`: build and upload an
   image directly from a `Dockerfile` in your source directory.
 - `ecs.ContainerImage.fromDockerImageAsset(asset)`: uses an existing

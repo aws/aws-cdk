@@ -1,0 +1,120 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "aws-cdk-cloudfront-custom": {
+        "id": "aws-cdk-cloudfront-custom",
+        "path": "aws-cdk-cloudfront-custom",
+        "children": {
+          "AnAmazingWebsiteProbably": {
+            "id": "AnAmazingWebsiteProbably",
+            "path": "aws-cdk-cloudfront-custom/AnAmazingWebsiteProbably",
+            "children": {
+              "AliasConfigurationCert": {
+                "id": "AliasConfigurationCert",
+                "path": "aws-cdk-cloudfront-custom/AnAmazingWebsiteProbably/AliasConfigurationCert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "CFDistribution": {
+                "id": "CFDistribution",
+                "path": "aws-cdk-cloudfront-custom/AnAmazingWebsiteProbably/CFDistribution",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                  "aws:cdk:cloudformation:props": {
+                    "distributionConfig": {
+                      "enabled": true,
+                      "defaultRootObject": "index.html",
+                      "httpVersion": "http2",
+                      "priceClass": "PriceClass_100",
+                      "ipv6Enabled": true,
+                      "origins": [
+                        {
+                          "id": "origin1",
+                          "domainName": "brelandm.a2z.com",
+                          "originCustomHeaders": [
+                            {
+                              "headerName": "X-Custom-Header",
+                              "headerValue": "somevalue"
+                            }
+                          ],
+                          "customOriginConfig": {
+                            "httpPort": 80,
+                            "httpsPort": 443,
+                            "originKeepaliveTimeout": 5,
+                            "originReadTimeout": 30,
+                            "originProtocolPolicy": "https-only",
+                            "originSslProtocols": [
+                              "TLSv1.2"
+                            ]
+                          },
+                          "connectionAttempts": 3,
+                          "connectionTimeout": 10
+                        }
+                      ],
+                      "defaultCacheBehavior": {
+                        "allowedMethods": [
+                          "GET",
+                          "HEAD"
+                        ],
+                        "cachedMethods": [
+                          "GET",
+                          "HEAD"
+                        ],
+                        "compress": true,
+                        "forwardedValues": {
+                          "queryString": false,
+                          "cookies": {
+                            "forward": "none"
+                          }
+                        },
+                        "targetOriginId": "origin1",
+                        "viewerProtocolPolicy": "redirect-to-https"
+                      },
+                      "aliases": [
+                        "test.test.com"
+                      ],
+                      "viewerCertificate": {
+                        "acmCertificateArn": "arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d",
+                        "sslSupportMethod": "sni-only",
+                        "minimumProtocolVersion": "TLSv1"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CfnDistribution",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.CloudFrontWebDistribution",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

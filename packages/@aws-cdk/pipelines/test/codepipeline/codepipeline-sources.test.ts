@@ -135,7 +135,7 @@ test('GitHub source honors all valid properties', () => {
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
     input: cdkp.CodePipelineSource.gitHub('owner/repo', 'main', {
       trigger: GitHubTrigger.POLL,
-      authentication: SecretValue.plainText('super-secret'),
+      authentication: SecretValue.unsafePlainText('super-secret'),
     }),
   });
 

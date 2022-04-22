@@ -12,6 +12,6 @@
 ### New Features
 
 * [ ] Have you added the new feature to an [integration test](https://github.com/aws/aws-cdk/blob/master/INTEGRATION_TESTS.md)?
-	* [ ] Did you use `cdk-integ` to deploy the infrastructure and generate the snapshot (i.e. `cdk-integ` without `--dry-run`)?
+	* [ ] Did you use `yarn integ` to deploy the infrastructure and generate the snapshot (i.e. `yarn integ` without `--dry-run`)?
 
 *By submitting this pull request, I confirm that my contribution is made under the terms of the Apache-2.0 license*

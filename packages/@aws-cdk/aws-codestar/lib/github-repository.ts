@@ -94,7 +94,7 @@ export class GitHubRepository extends cdk.Resource implements IGitHubRepository 
     const resource = new codestar.CfnGitHubRepository(this, 'Resource', {
       repositoryOwner: props.owner,
       repositoryName: props.repositoryName,
-      repositoryAccessToken: props.accessToken.toString(),
+      repositoryAccessToken: props.accessToken.unsafeUnwrap(), // Safe usage
       code: {
         s3: {
           bucket: props.contentsBucket.bucketName,

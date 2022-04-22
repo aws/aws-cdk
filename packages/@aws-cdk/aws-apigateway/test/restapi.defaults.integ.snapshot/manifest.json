@@ -1,0 +1,64 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "test-apigateway-restapi-defaults": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "test-apigateway-restapi-defaults.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/test-apigateway-restapi-defaults/my-api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapi4C7BF186"
+          }
+        ],
+        "/test-apigateway-restapi-defaults/my-api/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiCloudWatchRole095452E5"
+          }
+        ],
+        "/test-apigateway-restapi-defaults/my-api/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiAccountEC421A0A"
+          }
+        ],
+        "/test-apigateway-restapi-defaults/my-api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a"
+          }
+        ],
+        "/test-apigateway-restapi-defaults/my-api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeploymentStageprod298F01AF"
+          }
+        ],
+        "/test-apigateway-restapi-defaults/my-api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiEndpoint3628AFE3"
+          }
+        ],
+        "/test-apigateway-restapi-defaults/my-api/Default/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiGETF990CE3C"
+          }
+        ]
+      },
+      "displayName": "test-apigateway-restapi-defaults"
+    }
+  }
+}

@@ -30,7 +30,6 @@ async function main(matchRange) {
 
       // 60 requests/hour, so we need to sleep for a full minute to get any kind of response
       const sleepTime = Math.floor(Math.random() * 60 * Math.pow(2, attempt));
-      console.log('Sleeping for', sleepTime, 'seconds');
       await sleep(sleepTime * 1000);
       continue;
     }

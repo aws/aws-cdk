@@ -1,0 +1,52 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-glue-security-configuration": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-glue-security-configuration.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-glue-security-configuration/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Key961B73FD"
+          }
+        ],
+        "/aws-glue-security-configuration/KeyedSC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KeyedSC862A23F3"
+          }
+        ],
+        "/aws-glue-security-configuration/KeylessSC/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KeylessSCKey4D3DE803"
+          }
+        ],
+        "/aws-glue-security-configuration/KeylessSC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KeylessSC42E312EC"
+          }
+        ],
+        "/aws-glue-security-configuration/S3SC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S3SCE31C83BE"
+          }
+        ]
+      },
+      "displayName": "aws-glue-security-configuration"
+    }
+  }
+}

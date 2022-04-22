@@ -1,0 +1,66 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "TopicStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://12345678/us-east-1",
+      "properties": {
+        "templateFile": "TopicStack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/TopicStack/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434"
+          }
+        ]
+      },
+      "displayName": "TopicStack"
+    },
+    "FunctionStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-2",
+      "properties": {
+        "templateFile": "FunctionStack.template.json",
+        "validateOnSynth": false
+      },
+      "dependencies": [
+        "TopicStack"
+      ],
+      "metadata": {
+        "/FunctionStack/Echo/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EchoServiceRoleBE28060B"
+          }
+        ],
+        "/FunctionStack/Echo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Echo11F3FB29"
+          }
+        ],
+        "/FunctionStack/Echo/AllowInvoke:TopicStackMyTopicC43E67AF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EchoAllowInvokeTopicStackMyTopicC43E67AF32CF6EFA"
+          }
+        ],
+        "/FunctionStack/Echo/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EchoMyTopic4CB8819E"
+          }
+        ]
+      },
+      "displayName": "FunctionStack"
+    }
+  }
+}

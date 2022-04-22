@@ -1,0 +1,310 @@
+{
+ "Resources": {
+  "TopicRule40A4EA44": {
+   "Type": "AWS::IoT::TopicRule",
+   "Properties": {
+    "TopicRulePayload": {
+     "Actions": [
+      {
+       "Firehose": {
+        "BatchMode": true,
+        "DeliveryStreamName": {
+         "Ref": "MyStream5C050E93"
+        },
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "TopicRuleTopicRuleActionRole246C4F77",
+          "Arn"
+         ]
+        },
+        "Separator": "\n"
+       }
+      }
+     ],
+     "AwsIotSqlVersion": "2016-03-23",
+     "Sql": "SELECT * FROM 'device/+/data'"
+    }
+   }
+  },
+  "TopicRuleTopicRuleActionRole246C4F77": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "iot.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "firehose:PutRecord",
+        "firehose:PutRecordBatch"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyStream5C050E93",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687",
+    "Roles": [
+     {
+      "Ref": "TopicRuleTopicRuleActionRole246C4F77"
+     }
+    ]
+   }
+  },
+  "MyBucketF68F3FF0": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyStreamServiceRole8C50608A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "firehose.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyStreamS3DestinationRole5E0BA960": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "firehose.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyStreamS3DestinationRoleDefaultPolicy401EF6F2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyBucketF68F3FF0",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyBucketF68F3FF0",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyStreamLogGroupAB67AB09",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyStreamS3DestinationRoleDefaultPolicy401EF6F2",
+    "Roles": [
+     {
+      "Ref": "MyStreamS3DestinationRole5E0BA960"
+     }
+    ]
+   }
+  },
+  "MyStreamLogGroupAB67AB09": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MyStreamLogGroupS3Destination423E82A8": {
+   "Type": "AWS::Logs::LogStream",
+   "Properties": {
+    "LogGroupName": {
+     "Ref": "MyStreamLogGroupAB67AB09"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MyStream5C050E93": {
+   "Type": "AWS::KinesisFirehose::DeliveryStream",
+   "Properties": {
+    "DeliveryStreamType": "DirectPut",
+    "ExtendedS3DestinationConfiguration": {
+     "BucketARN": {
+      "Fn::GetAtt": [
+       "MyBucketF68F3FF0",
+       "Arn"
+      ]
+     },
+     "CloudWatchLoggingOptions": {
+      "Enabled": true,
+      "LogGroupName": {
+       "Ref": "MyStreamLogGroupAB67AB09"
+      },
+      "LogStreamName": {
+       "Ref": "MyStreamLogGroupS3Destination423E82A8"
+      }
+     },
+     "RoleARN": {
+      "Fn::GetAtt": [
+       "MyStreamS3DestinationRole5E0BA960",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "DependsOn": [
+    "MyStreamS3DestinationRoleDefaultPolicy401EF6F2"
+   ]
+  }
+ },
+ "Mappings": {
+  "awscdkawskinesisfirehoseCidrBlocks": {
+   "af-south-1": {
+    "FirehoseCidrBlock": "13.244.121.224/27"
+   },
+   "ap-east-1": {
+    "FirehoseCidrBlock": "18.162.221.32/27"
+   },
+   "ap-northeast-1": {
+    "FirehoseCidrBlock": "13.113.196.224/27"
+   },
+   "ap-northeast-2": {
+    "FirehoseCidrBlock": "13.209.1.64/27"
+   },
+   "ap-northeast-3": {
+    "FirehoseCidrBlock": "13.208.177.192/27"
+   },
+   "ap-south-1": {
+    "FirehoseCidrBlock": "13.232.67.32/27"
+   },
+   "ap-southeast-1": {
+    "FirehoseCidrBlock": "13.228.64.192/27"
+   },
+   "ap-southeast-2": {
+    "FirehoseCidrBlock": "13.210.67.224/27"
+   },
+   "ca-central-1": {
+    "FirehoseCidrBlock": "35.183.92.128/27"
+   },
+   "cn-north-1": {
+    "FirehoseCidrBlock": "52.81.151.32/27"
+   },
+   "cn-northwest-1": {
+    "FirehoseCidrBlock": "161.189.23.64/27"
+   },
+   "eu-central-1": {
+    "FirehoseCidrBlock": "35.158.127.160/27"
+   },
+   "eu-north-1": {
+    "FirehoseCidrBlock": "13.53.63.224/27"
+   },
+   "eu-south-1": {
+    "FirehoseCidrBlock": "15.161.135.128/27"
+   },
+   "eu-west-1": {
+    "FirehoseCidrBlock": "52.19.239.192/27"
+   },
+   "eu-west-2": {
+    "FirehoseCidrBlock": "18.130.1.96/27"
+   },
+   "eu-west-3": {
+    "FirehoseCidrBlock": "35.180.1.96/27"
+   },
+   "me-south-1": {
+    "FirehoseCidrBlock": "15.185.91.0/27"
+   },
+   "sa-east-1": {
+    "FirehoseCidrBlock": "18.228.1.128/27"
+   },
+   "us-east-1": {
+    "FirehoseCidrBlock": "52.70.63.192/27"
+   },
+   "us-east-2": {
+    "FirehoseCidrBlock": "13.58.135.96/27"
+   },
+   "us-gov-east-1": {
+    "FirehoseCidrBlock": "18.253.138.96/27"
+   },
+   "us-gov-west-1": {
+    "FirehoseCidrBlock": "52.61.204.160/27"
+   },
+   "us-west-1": {
+    "FirehoseCidrBlock": "13.57.135.192/27"
+   },
+   "us-west-2": {
+    "FirehoseCidrBlock": "52.89.255.224/27"
+   }
+  }
+ }
+}

@@ -1,0 +1,148 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-lambda-chain": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-lambda-chain.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-lambda-chain/First/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstServiceRole097DB3A5"
+          }
+        ],
+        "/aws-cdk-lambda-chain/First/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstServiceRoleDefaultPolicyB5EF41C4"
+          }
+        ],
+        "/aws-cdk-lambda-chain/First/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "First8D4707F1"
+          }
+        ],
+        "/aws-cdk-lambda-chain/First/EventInvokeConfig/Failure/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstEventInvokeConfigFailureA1E005BC"
+          }
+        ],
+        "/aws-cdk-lambda-chain/First/EventInvokeConfig/Failure/AllowEventRuleawscdklambdachainErrorC073CD8D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstEventInvokeConfigFailureAllowEventRuleawscdklambdachainErrorC073CD8DCAD68018"
+          }
+        ],
+        "/aws-cdk-lambda-chain/First/EventInvokeConfig/Success/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstEventInvokeConfigSuccess865FF6FF"
+          }
+        ],
+        "/aws-cdk-lambda-chain/First/EventInvokeConfig/Success/AllowEventRuleawscdklambdachainSecond178F48F8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstEventInvokeConfigSuccessAllowEventRuleawscdklambdachainSecond178F48F8A8DE2790"
+          }
+        ],
+        "/aws-cdk-lambda-chain/First/EventInvokeConfig/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstEventInvokeConfig7DE6209E"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Second/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondServiceRole55940A31"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Second/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondServiceRoleDefaultPolicyB593E14A"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Second/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Second394350F9"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Second/EventInvokeConfig/Success/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondEventInvokeConfigSuccess53614893"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Second/EventInvokeConfig/Success/AllowEventRuleawscdklambdachainThird031C7FF6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondEventInvokeConfigSuccessAllowEventRuleawscdklambdachainThird031C7FF6ABA1C15A"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Second/EventInvokeConfig/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondEventInvokeConfig3F9DE36C"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Third/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ThirdServiceRole42701801"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Third/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Third1125870F"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Error/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ErrorServiceRoleCE484966"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Error/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ErrorD9F0B79D"
+          }
+        ],
+        "/aws-cdk-lambda-chain/FirstFunctionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstFunctionName"
+          }
+        ],
+        "/aws-cdk-lambda-chain/ThirdFunctionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ThirdFunctionName"
+          }
+        ],
+        "/aws-cdk-lambda-chain/ErrorFunctionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ErrorFunctionName"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-lambda-chain"
+    }
+  }
+}

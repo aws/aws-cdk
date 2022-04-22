@@ -1,0 +1,52 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "lambda-event-source-dynamodb": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-event-source-dynamodb.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/lambda-event-source-dynamodb/F/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRole3AC82EE1"
+          }
+        ],
+        "/lambda-event-source-dynamodb/F/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRoleDefaultPolicy17A19BFA"
+          }
+        ],
+        "/lambda-event-source-dynamodb/F/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FC4345940"
+          }
+        ],
+        "/lambda-event-source-dynamodb/F/DynamoDBEventSource:lambdaeventsourcedynamodbT7967476A/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FDynamoDBEventSourcelambdaeventsourcedynamodbT7967476AE652DA48"
+          }
+        ],
+        "/lambda-event-source-dynamodb/T/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TD925BC7E"
+          }
+        ]
+      },
+      "displayName": "lambda-event-source-dynamodb"
+    }
+  }
+}

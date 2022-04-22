@@ -1,0 +1,64 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-mock-websocket-integration": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-mock-websocket-integration.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-mock-websocket-integration/mywsapi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapi32E6CE11"
+          }
+        ],
+        "/integ-mock-websocket-integration/mywsapi/$default-Route/DefaultIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapidefaultRouteDefaultIntegrationFFCB3BA9"
+          }
+        ],
+        "/integ-mock-websocket-integration/mywsapi/$default-Route/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapidefaultRouteE9382DF8"
+          }
+        ],
+        "/integ-mock-websocket-integration/mywsapi/sendmessage-Route/SendMessageIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapisendmessageRouteSendMessageIntegrationD29E12F9"
+          }
+        ],
+        "/integ-mock-websocket-integration/mywsapi/sendmessage-Route/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapisendmessageRouteAE873328"
+          }
+        ],
+        "/integ-mock-websocket-integration/mystage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mystage114C35EC"
+          }
+        ],
+        "/integ-mock-websocket-integration/ApiEndpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiEndpoint"
+          }
+        ]
+      },
+      "displayName": "integ-mock-websocket-integration"
+    }
+  }
+}

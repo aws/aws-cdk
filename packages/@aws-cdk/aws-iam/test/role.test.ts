@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Duration, Stack, App } from '@aws-cdk/core';
+import { Duration, Stack, App, CfnResource } from '@aws-cdk/core';
 import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument } from '../lib';
 
 describe('IAM role', () => {
@@ -568,5 +568,35 @@ test('managed policy ARNs are deduplicated', () => {
         ],
       },
     ],
+  });
+});
+
+test('cross-env role ARNs include path', () => {
+  const app = new App();
+  const roleStack = new Stack(app, 'role-stack', { env: { account: '123456789012', region: 'us-east-1' } });
+  const referencerStack = new Stack(app, 'referencer-stack', { env: { region: 'us-east-2' } });
+  const role = new Role(roleStack, 'Role', {
+    assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+    path: '/sample/path/',
+    roleName: 'sample-name',
+  });
+  new CfnResource(referencerStack, 'Referencer', {
+    type: 'Custom::RoleReferencer',
+    properties: { RoleArn: role.roleArn },
+  });
+
+  Template.fromStack(referencerStack).hasResourceProperties('Custom::RoleReferencer', {
+    RoleArn: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':iam::123456789012:role/sample/path/sample-name',
+        ],
+      ],
+    },
   });
 });

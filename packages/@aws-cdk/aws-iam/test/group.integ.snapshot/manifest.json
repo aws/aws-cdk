@@ -1,0 +1,28 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-iam-role-1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-iam-role-1.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-iam-role-1/MyGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyGroupCBA54B1B"
+          }
+        ]
+      },
+      "displayName": "integ-iam-role-1"
+    }
+  }
+}

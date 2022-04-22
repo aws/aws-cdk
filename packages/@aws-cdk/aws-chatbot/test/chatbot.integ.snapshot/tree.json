@@ -1,0 +1,138 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "ChatbotInteg": {
+        "id": "ChatbotInteg",
+        "path": "ChatbotInteg",
+        "children": {
+          "MySlackChannel": {
+            "id": "MySlackChannel",
+            "path": "ChatbotInteg/MySlackChannel",
+            "children": {
+              "ConfigurationRole": {
+                "id": "ConfigurationRole",
+                "path": "ChatbotInteg/MySlackChannel/ConfigurationRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "ChatbotInteg/MySlackChannel/ConfigurationRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "chatbot.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "ChatbotInteg/MySlackChannel/ConfigurationRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "ChatbotInteg/MySlackChannel/ConfigurationRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3:GetObject",
+                                  "Effect": "Allow",
+                                  "Resource": "arn:aws:s3:::abc/xyz/123.txt"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MySlackChannelConfigurationRoleDefaultPolicyE4C1FA62",
+                            "roles": [
+                              {
+                                "Ref": "MySlackChannelConfigurationRole1D3F23AE"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "ChatbotInteg/MySlackChannel/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Chatbot::SlackChannelConfiguration",
+                  "aws:cdk:cloudformation:props": {
+                    "configurationName": "test-channel",
+                    "iamRoleArn": {
+                      "Fn::GetAtt": [
+                        "MySlackChannelConfigurationRole1D3F23AE",
+                        "Arn"
+                      ]
+                    },
+                    "slackChannelId": "C0187JABUE9",
+                    "slackWorkspaceId": "T49239U4W",
+                    "loggingLevel": "NONE"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-chatbot.CfnSlackChannelConfiguration",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-chatbot.SlackChannelConfiguration",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

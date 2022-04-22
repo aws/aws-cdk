@@ -447,7 +447,7 @@ export interface AdvancedSecurityOptions {
   /**
    * Password for the master user.
    *
-   * You can use `SecretValue.plainText` to specify a password in plain text or
+   * You can use `SecretValue.unsafePlainText` to specify a password in plain text or
    * use `secretsmanager.Secret.fromSecretAttributes` to reference a secret in
    * Secrets Manager.
    *
@@ -1870,7 +1870,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           masterUserOptions: {
             masterUserArn: masterUserArn,
             masterUserName: masterUserName,
-            masterUserPassword: this.masterUserPassword?.toString(),
+            masterUserPassword: this.masterUserPassword?.unsafeUnwrap(), // Safe usage
           },
         }
         : undefined,

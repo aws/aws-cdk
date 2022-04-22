@@ -1,0 +1,46 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-config-rule-scoped-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-config-rule-scoped-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-config-rule-scoped-integ/CustomFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomFunctionServiceRoleD3F73B79"
+          }
+        ],
+        "/aws-cdk-config-rule-scoped-integ/CustomFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomFunctionBADD59E7"
+          }
+        ],
+        "/aws-cdk-config-rule-scoped-integ/CustomFunction/Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomFunctionPermission41887A5E"
+          }
+        ],
+        "/aws-cdk-config-rule-scoped-integ/Custom/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Custom8166710A"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-config-rule-scoped-integ"
+    }
+  }
+}

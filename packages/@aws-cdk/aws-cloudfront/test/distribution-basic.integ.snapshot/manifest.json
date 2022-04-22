@@ -1,0 +1,28 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-distribution-basic": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-distribution-basic.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-distribution-basic/Dist/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DistB3B78991"
+          }
+        ]
+      },
+      "displayName": "integ-distribution-basic"
+    }
+  }
+}

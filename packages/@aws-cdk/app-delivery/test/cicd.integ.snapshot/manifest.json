@@ -1,0 +1,82 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "CICD": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "CICD.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/CICD/ArtifactBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ArtifactBucket7410C9EF"
+          }
+        ],
+        "/CICD/CodePipeline/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodePipelineRoleB3A660B4"
+          }
+        ],
+        "/CICD/CodePipeline/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodePipelineRoleDefaultPolicy8D520A8D"
+          }
+        ],
+        "/CICD/CodePipeline/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodePipelineB74E5936"
+          }
+        ],
+        "/CICD/CodePipeline/Deploy/Execute/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodePipelineDeployExecuteCodePipelineActionRoleAE36AF49"
+          }
+        ],
+        "/CICD/CodePipeline/Deploy/Execute/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodePipelineDeployExecuteCodePipelineActionRoleDefaultPolicy2B66E78C"
+          }
+        ],
+        "/CICD/CodePipeline/Deploy/ChangeSet/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodePipelineDeployChangeSetCodePipelineActionRoleB3BCDD8A"
+          }
+        ],
+        "/CICD/CodePipeline/Deploy/ChangeSet/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodePipelineDeployChangeSetCodePipelineActionRoleDefaultPolicy87FA0C1E"
+          }
+        ],
+        "/CICD/CodePipeline/Deploy/ChangeSet/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodePipelineDeployChangeSetRoleF9F2B343"
+          }
+        ],
+        "/CICD/CodePipeline/Deploy/ChangeSet/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodePipelineDeployChangeSetRoleDefaultPolicy289820BE"
+          }
+        ]
+      },
+      "displayName": "CICD"
+    }
+  }
+}

@@ -509,7 +509,7 @@ export class TaskDefinition extends TaskDefinitionBase {
           scope: spec.dockerVolumeConfiguration.scope,
         },
         efsVolumeConfiguration: spec.efsVolumeConfiguration && {
-          fileSystemId: spec.efsVolumeConfiguration.fileSystemId,
+          filesystemId: spec.efsVolumeConfiguration.fileSystemId,
           authorizationConfig: spec.efsVolumeConfiguration.authorizationConfig,
           rootDirectory: spec.efsVolumeConfiguration.rootDirectory,
           transitEncryption: spec.efsVolumeConfiguration.transitEncryption,

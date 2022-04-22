@@ -1,0 +1,250 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-role-target-hook": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-role-target-hook.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-role-target-hook/myVpcAuto/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAuto1A4B61E2"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet1Subnet3516098F"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet1RouteTable3D618310"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet1RouteTableAssociationB3A6EFAC"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet1DefaultRoute2791173D"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet1EIP15D99CAF"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet1NATGatewayF3EA78A2"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet2Subnet297C7839"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet2RouteTable17ECF2AC"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet2RouteTableAssociationE21B7B6C"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet2DefaultRouteE9454F16"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet2EIPA484FACE"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet2NATGatewayF670624F"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPrivateSubnet1SubnetCF0D49B2"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPrivateSubnet1RouteTableDC61148B"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPrivateSubnet1RouteTableAssociation9848EFFB"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPrivateSubnet1DefaultRouteF007F5E7"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPrivateSubnet2Subnet592674AC"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPrivateSubnet2RouteTableE10F6006"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPrivateSubnet2RouteTableAssociation05CC4CEB"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPrivateSubnet2DefaultRouteDA295DF0"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoIGW08055396"
+          }
+        ],
+        "/integ-role-target-hook/myVpcAuto/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoVPCGWEC42CD12"
+          }
+        ],
+        "/integ-role-target-hook/MyRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRoleF48FFE04"
+          }
+        ],
+        "/integ-role-target-hook/MyRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRoleDefaultPolicyA36BE1DD"
+          }
+        ],
+        "/integ-role-target-hook/topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "topic69831491"
+          }
+        ],
+        "/integ-role-target-hook/topic2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "topic2A4FB547F"
+          }
+        ],
+        "/integ-role-target-hook/ASG/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGInstanceSecurityGroup0525485D"
+          }
+        ],
+        "/integ-role-target-hook/ASG/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGInstanceRoleE263A41B"
+          }
+        ],
+        "/integ-role-target-hook/ASG/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGInstanceProfile0A2834D7"
+          }
+        ],
+        "/integ-role-target-hook/ASG/LaunchConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGLaunchConfigC00AF12B"
+          }
+        ],
+        "/integ-role-target-hook/ASG/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASG46ED3070"
+          }
+        ],
+        "/integ-role-target-hook/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/integ-role-target-hook/LCHookNoRoleNoTarget/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LCHookNoRoleNoTarget1144AD75"
+          }
+        ],
+        "/integ-role-target-hook/LCHookNoRoleTarget/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LCHookNoRoleTargetRole35B4344D"
+          }
+        ],
+        "/integ-role-target-hook/LCHookNoRoleTarget/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LCHookNoRoleTargetRoleDefaultPolicyFE681941"
+          }
+        ],
+        "/integ-role-target-hook/LCHookNoRoleTarget/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LCHookNoRoleTarget4EF682CF"
+          }
+        ],
+        "/integ-role-target-hook/LCHookRoleTarget/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LCHookRoleTarget0ADB20B8"
+          }
+        ]
+      },
+      "displayName": "integ-role-target-hook"
+    }
+  }
+}

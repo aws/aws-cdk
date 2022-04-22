@@ -1,0 +1,76 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "appsync-opensearch": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "appsync-opensearch.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/appsync-opensearch/User/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "User00B015A1"
+          }
+        ],
+        "/appsync-opensearch/Domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Domain66AC69E0"
+          }
+        ],
+        "/appsync-opensearch/api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiC8550315"
+          }
+        ],
+        "/appsync-opensearch/api/Schema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiSchema0EA92056"
+          }
+        ],
+        "/appsync-opensearch/api/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiDefaultApiKey6AB8D7C4"
+          }
+        ],
+        "/appsync-opensearch/api/ds/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apidsServiceRoleBDB08107"
+          }
+        ],
+        "/appsync-opensearch/api/ds/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apidsServiceRoleDefaultPolicy5634EFD0"
+          }
+        ],
+        "/appsync-opensearch/api/ds/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apids4328272F"
+          }
+        ],
+        "/appsync-opensearch/api/ds/QuerygetTestsResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apidsQuerygetTestsResolver5C6FBB59"
+          }
+        ]
+      },
+      "displayName": "appsync-opensearch"
+    }
+  }
+}

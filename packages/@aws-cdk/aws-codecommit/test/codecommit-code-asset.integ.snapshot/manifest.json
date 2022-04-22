@@ -1,0 +1,60 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codecommit-repo-contents-assets": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codecommit-repo-contents-assets.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-codecommit-repo-contents-assets": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3",
+              "id": "32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3",
+              "packaging": "zip",
+              "sourceHash": "32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3",
+              "s3BucketParameter": "AssetParameters32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3S3BucketD4E005C8",
+              "s3KeyParameter": "AssetParameters32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3S3VersionKey52BCEABD",
+              "artifactHashParameter": "AssetParameters32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3ArtifactHash1A78403B"
+            }
+          }
+        ],
+        "/aws-cdk-codecommit-repo-contents-assets/Repo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Repo02AC86CF"
+          }
+        ],
+        "/aws-cdk-codecommit-repo-contents-assets/AssetParameters/32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3S3BucketD4E005C8"
+          }
+        ],
+        "/aws-cdk-codecommit-repo-contents-assets/AssetParameters/32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3S3VersionKey52BCEABD"
+          }
+        ],
+        "/aws-cdk-codecommit-repo-contents-assets/AssetParameters/32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3ArtifactHash1A78403B"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codecommit-repo-contents-assets"
+    }
+  }
+}

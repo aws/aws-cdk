@@ -1,0 +1,40 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "iotevents-set-variable-action-test-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "iotevents-set-variable-action-test-stack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/iotevents-set-variable-action-test-stack/MyInput/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyInput08947B23"
+          }
+        ],
+        "/iotevents-set-variable-action-test-stack/MyDetectorModel/DetectorModelRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDetectorModelDetectorModelRoleF2FB4D88"
+          }
+        ],
+        "/iotevents-set-variable-action-test-stack/MyDetectorModel/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDetectorModel559C0B0E"
+          }
+        ]
+      },
+      "displayName": "iotevents-set-variable-action-test-stack"
+    }
+  }
+}

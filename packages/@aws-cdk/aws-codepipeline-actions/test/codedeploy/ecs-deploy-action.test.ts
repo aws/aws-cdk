@@ -218,14 +218,14 @@ function addCodeDeployECSCodePipeline(stack: cdk.Stack, props: cpactions.CodeDep
           new cpactions.GitHubSourceAction({
             actionName: 'GitHub',
             output: props.taskDefinitionTemplateInput || props.taskDefinitionTemplateFile!.artifact,
-            oauthToken: cdk.SecretValue.plainText('secret'),
+            oauthToken: cdk.SecretValue.unsafePlainText('secret'),
             owner: 'awslabs',
             repo: 'aws-cdk',
           }),
           new cpactions.GitHubSourceAction({
             actionName: 'GitHub2',
             output: props.appSpecTemplateInput || props.appSpecTemplateFile!.artifact,
-            oauthToken: cdk.SecretValue.plainText('secret'),
+            oauthToken: cdk.SecretValue.unsafePlainText('secret'),
             owner: 'awslabs',
             repo: 'aws-cdk-2',
           }),

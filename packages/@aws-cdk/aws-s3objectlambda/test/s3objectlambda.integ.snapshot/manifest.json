@@ -1,0 +1,88 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-s3-object-lambda": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-s3-object-lambda.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-s3-object-lambda/MyBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucketF68F3FF0"
+          }
+        ],
+        "/aws-s3-object-lambda/MyFunction1/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction1ServiceRole9852B06B"
+          }
+        ],
+        "/aws-s3-object-lambda/MyFunction1/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction1ServiceRoleDefaultPolicy39556460"
+          }
+        ],
+        "/aws-s3-object-lambda/MyFunction1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction12A744C2E"
+          }
+        ],
+        "/aws-s3-object-lambda/MyFunction2/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction2ServiceRole07E5BE0E"
+          }
+        ],
+        "/aws-s3-object-lambda/MyFunction2/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction2ServiceRoleDefaultPolicyA79C693E"
+          }
+        ],
+        "/aws-s3-object-lambda/MyFunction2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction2F2A964CA"
+          }
+        ],
+        "/aws-s3-object-lambda/MyObjectLambda1/SupportingAccessPoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyObjectLambda1SupportingAccessPoint223B719B"
+          }
+        ],
+        "/aws-s3-object-lambda/MyObjectLambda1/MyObjectLambda1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyObjectLambda17554FEF4"
+          }
+        ],
+        "/aws-s3-object-lambda/MyObjectLambda2/SupportingAccessPoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyObjectLambda2SupportingAccessPoint6C54778F"
+          }
+        ],
+        "/aws-s3-object-lambda/MyObjectLambda2/MyObjectLambda2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyObjectLambda2CCBCAAF7"
+          }
+        ]
+      },
+      "displayName": "aws-s3-object-lambda"
+    }
+  }
+}
