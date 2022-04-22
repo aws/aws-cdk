@@ -139,6 +139,60 @@
                 }
             }
         },
+        "AWS::Serverless::Api.DomainConfiguration": {
+            "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-domainconfiguration.html",
+            "Properties": {
+                "BasePath": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-domainconfiguration.html#sam-api-domainconfiguration-basepath",
+                    "ItemType": "String",
+                    "Required": false,
+                    "Type": "List",
+                    "UpdateType": "Immutable"
+                },
+                "CertificateArn": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-domainconfiguration.html#sam-api-domainconfiguration-certificatearn",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "DomainName": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-domainconfiguration.html#sam-api-domainconfiguration-domainname",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "EndpointConfiguration": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-domainconfiguration.html#sam-api-domainconfiguration-endpointconfiguration",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "MutualTlsAuthentication": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-domainconfiguration.html#sam-api-domainconfiguration-mutualtlsauthentication",
+                    "Required": false,
+                    "Type": "MutualTlsAuthentication",
+                    "UpdateType": "Immutable"
+                },
+                "OwnershipVerificationCertificateArn": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-domainconfiguration.html#sam-api-domainconfiguration-ownershipverificationcertificatearn",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Route53": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-domainconfiguration.html#sam-api-domainconfiguration-route53",
+                    "Required": false,
+                    "Type": "Route53Configuration",
+                    "UpdateType": "Immutable"
+                },
+                "SecurityPolicy": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-domainconfiguration.html#sam-api-domainconfiguration-securitypolicy",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Api.EndpointConfiguration": {
             "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-endpointconfiguration.html",
             "Properties": {
@@ -153,6 +207,58 @@
                     "PrimitiveItemType": "String",
                     "Required": false,
                     "Type": "List",
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Api.MutualTlsAuthentication": {
+            "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-domainname-mutualtlsauthentication.html",
+            "Properties": {
+                "TruststoreUri": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-domainname-mutualtlsauthentication.html#cfn-apigateway-domainname-mutualtlsauthentication-truststoreuri",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "TruststoreVersion": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-domainname-mutualtlsauthentication.html#cfn-apigateway-domainname-mutualtlsauthentication-truststoreversion",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Api.Route53Configuration": {
+            "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-route53configuration.html",
+            "Properties": {
+                "DistributedDomainName": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-route53configuration.html#sam-api-route53configuration-distributiondomainname",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "EvaluateTargetHealth": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-route53configuration.html#sam-api-route53configuration-evaluatetargethealth",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "HostedZoneId": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-route53configuration.html#sam-api-route53configuration-hostedzoneid",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "HostedZoneName": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-route53configuration.html#sam-api-route53configuration-hostedzonename",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "IpV6": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-route53configuration.html#sam-api-route53configuration-ipv6",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
                     "UpdateType": "Immutable"
                 }
             }
@@ -1851,6 +1957,12 @@
                     "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-api.html#sam-api-description",
                     "PrimitiveType": "String",
                     "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Domain": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-api.html#sam-api-domain",
+                    "Required": false,
+                    "Type": "DomainConfiguration",
                     "UpdateType": "Immutable"
                 },
                 "EndpointConfiguration": {

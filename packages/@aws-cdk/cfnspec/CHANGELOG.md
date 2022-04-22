@@ -1,3 +1,182 @@
+# CloudFormation Resource Specification v68.0.0
+
+## New Resource Types
+
+* AWS::Connect::PhoneNumber
+* AWS::IoTTwinMaker::ComponentType
+* AWS::IoTTwinMaker::Entity
+* AWS::IoTTwinMaker::Scene
+* AWS::IoTTwinMaker::Workspace
+
+## Attribute Changes
+
+* AWS::CloudWatch::Alarm Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html
+
+## Property Changes
+
+* AWS::Batch::ComputeEnvironment ReplaceComputeEnvironment (__added__)
+* AWS::Batch::ComputeEnvironment UpdatePolicy (__added__)
+* AWS::BillingConductor::BillingGroup Tags (__added__)
+* AWS::BillingConductor::CustomLineItem Tags (__added__)
+* AWS::BillingConductor::PricingPlan Tags (__added__)
+* AWS::BillingConductor::PricingRule Tags (__added__)
+* AWS::CloudWatch::Alarm ActionsEnabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-actionsenabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-actionsenabled
+* AWS::CloudWatch::Alarm AlarmActions.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-alarmactions
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-alarmactions
+* AWS::CloudWatch::Alarm AlarmDescription.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-alarmdescription
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-alarmdescription
+* AWS::CloudWatch::Alarm AlarmName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-alarmname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-alarmname
+* AWS::CloudWatch::Alarm ComparisonOperator.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-comparisonoperator
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-comparisonoperator
+* AWS::CloudWatch::Alarm DatapointsToAlarm.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarm-datapointstoalarm
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-datapointstoalarm
+* AWS::CloudWatch::Alarm Dimensions.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-dimension
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-dimensions
+* AWS::CloudWatch::Alarm EvaluateLowSampleCountPercentile.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-evaluatelowsamplecountpercentile
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-evaluatelowsamplecountpercentile
+* AWS::CloudWatch::Alarm EvaluationPeriods.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-evaluationperiods
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-evaluationperiods
+* AWS::CloudWatch::Alarm ExtendedStatistic.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-extendedstatistic
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-extendedstatistic
+* AWS::CloudWatch::Alarm InsufficientDataActions.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-insufficientdataactions
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-insufficientdataactions
+* AWS::CloudWatch::Alarm MetricName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-metricname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-metricname
+* AWS::CloudWatch::Alarm Metrics.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarm-metrics
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-metrics
+* AWS::CloudWatch::Alarm Namespace.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-namespace
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-namespace
+* AWS::CloudWatch::Alarm OKActions.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-okactions
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-okactions
+* AWS::CloudWatch::Alarm Period.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-period
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-period
+* AWS::CloudWatch::Alarm Statistic.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-statistic
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-statistic
+* AWS::CloudWatch::Alarm Threshold.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-threshold
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-threshold
+* AWS::CloudWatch::Alarm ThresholdMetricId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-dynamic-threshold
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-thresholdmetricid
+* AWS::CloudWatch::Alarm TreatMissingData.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-treatmissingdata
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-treatmissingdata
+* AWS::CloudWatch::Alarm Unit.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-unit
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-unit
+* AWS::Evidently::Experiment RunningStatus (__added__)
+* AWS::Evidently::Launch ExecutionStatus (__added__)
+* AWS::MSK::Configuration Name.Required (__changed__)
+  * Old: false
+  * New: true
+
+## Property Type Changes
+
+* AWS::Batch::ComputeEnvironment.UpdatePolicy (__added__)
+* AWS::Evidently::Experiment.RunningStatusObject (__added__)
+* AWS::Evidently::Launch.ExecutionStatusObject (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources UpdateToLatestImageVersion (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources AllocationStrategy.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources BidPercentage.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2Configuration.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2KeyPair.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources ImageId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceRole.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceTypes.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources LaunchTemplate.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources PlacementGroup.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Type.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.Ec2ConfigurationObject ImageIdOverride.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.Ec2ConfigurationObject ImageType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification LaunchTemplateId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification LaunchTemplateName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification Version.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::CloudWatch::Alarm.Dimension Name.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html#cfn-cloudwatch-alarm-dimension-name
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudwatch-alarm-dimension.html#cfn-cloudwatch-alarm-dimension-name
+* AWS::CloudWatch::Alarm.Dimension Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html#cfn-cloudwatch-alarm-dimension-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudwatch-alarm-dimension.html#cfn-cloudwatch-alarm-dimension-value
+* AWS::GuardDuty::Filter.Condition Equals (__added__)
+* AWS::GuardDuty::Filter.Condition GreaterThan (__added__)
+* AWS::GuardDuty::Filter.Condition GreaterThanOrEqual (__added__)
+* AWS::GuardDuty::Filter.Condition Gt (__added__)
+* AWS::GuardDuty::Filter.Condition LessThan (__added__)
+* AWS::GuardDuty::Filter.Condition LessThanOrEqual (__added__)
+* AWS::GuardDuty::Filter.Condition NotEquals (__added__)
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api Domain (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Api.DomainConfiguration (__added__)
+* AWS::Serverless::Api.MutualTlsAuthentication (__added__)
+* AWS::Serverless::Api.Route53Configuration (__added__)
+
 # CloudFormation Resource Specification v66.1.0
 
 ## New Resource Types
