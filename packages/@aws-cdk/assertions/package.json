@@ -41,7 +41,8 @@
         "distName": "aws-cdk.assertions",
         "module": "aws_cdk.assertions",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

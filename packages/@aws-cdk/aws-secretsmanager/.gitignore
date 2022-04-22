@@ -15,3 +15,8 @@ tsconfig.json
 !jest.config.js
 
 junit.xml
+
+!**/*.integ.snapshot/**/asset.*/*.js
+!**/*.integ.snapshot/**/asset.*/*.d.ts
+
+!**/*.integ.snapshot/**/asset.*/**

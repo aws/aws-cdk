@@ -43,7 +43,8 @@
         "distName": "aws-cdk.yaml-cfn",
         "module": "aws_cdk.yaml_cfn",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
