@@ -5,7 +5,7 @@ import * as fs from 'fs-extra';
 const bundled = require('npm-bundled');
 
 // do not descend into these directories when searching for `package.json` files.
-export const PKGLINT_IGNORES = ['node_modules', 'cdk.out', '.cdk.staging'];
+export const PKGLINT_IGNORES = ['node_modules', 'cdk.out', '.cdk.staging', 'test'];
 
 /**
  * Return all package JSONs in the root directory
