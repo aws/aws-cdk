@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.153.1](https://github.com/aws/aws-cdk/compare/v1.153.0...v1.153.1) (2022-04-22)
+
+
+### Bug Fixes
+
+* **imagebuilder:** revert property field typings ([b2e0eb5](https://github.com/aws/aws-cdk/commit/b2e0eb501e87bb954e985081d28ceecaf42a1ddd))
+
 ## [1.153.0](https://github.com/aws/aws-cdk/compare/v1.152.0...v1.153.0) (2022-04-21)
 
 
