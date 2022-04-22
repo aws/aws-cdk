@@ -1,0 +1,52 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "lambda-event-source-sqs": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-event-source-sqs.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/lambda-event-source-sqs/F/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRole3AC82EE1"
+          }
+        ],
+        "/lambda-event-source-sqs/F/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRoleDefaultPolicy17A19BFA"
+          }
+        ],
+        "/lambda-event-source-sqs/F/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FC4345940"
+          }
+        ],
+        "/lambda-event-source-sqs/F/SqsEventSource:lambdaeventsourcesqsQ67DE9201/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FSqsEventSourcelambdaeventsourcesqsQ67DE9201754EC819"
+          }
+        ],
+        "/lambda-event-source-sqs/Q/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Q63C6E3AB"
+          }
+        ]
+      },
+      "displayName": "lambda-event-source-sqs"
+    }
+  }
+}

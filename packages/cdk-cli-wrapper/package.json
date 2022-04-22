@@ -10,7 +10,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -40,7 +40,8 @@
         "distName": "aws-cdk.cdk-cli-wrapper",
         "module": "aws_cdk.cdk_cli_wrapper",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

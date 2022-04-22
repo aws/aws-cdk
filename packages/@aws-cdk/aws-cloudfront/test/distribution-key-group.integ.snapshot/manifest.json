@@ -1,0 +1,40 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-distribution-key-group": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-distribution-key-group.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-distribution-key-group/MyPublicKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPublicKey78071F3D"
+          }
+        ],
+        "/integ-distribution-key-group/MyKeyGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyKeyGroupAF22FD35"
+          }
+        ],
+        "/integ-distribution-key-group/Dist/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DistB3B78991"
+          }
+        ]
+      },
+      "displayName": "integ-distribution-key-group"
+    }
+  }
+}

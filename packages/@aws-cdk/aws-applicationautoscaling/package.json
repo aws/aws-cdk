@@ -24,7 +24,8 @@
         "distName": "aws-cdk.aws-applicationautoscaling",
         "module": "aws_cdk.aws_applicationautoscaling",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -47,7 +48,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -84,7 +85,7 @@
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.4.1",
-    "fast-check": "^2.23.2",
+    "fast-check": "^2.24.0",
     "jest": "^27.5.1"
   },
   "dependencies": {

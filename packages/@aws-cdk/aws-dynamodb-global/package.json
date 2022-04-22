@@ -30,7 +30,8 @@
         "distName": "aws-cdk.aws-dynamodb-global",
         "module": "aws_cdk.aws_dynamodb_global",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       },
       "dotnet": {
@@ -65,7 +66,7 @@
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.4.1",
     "jest": "^27.5.1"
@@ -82,7 +83,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
