@@ -257,17 +257,55 @@ export class DatabaseCluster extends DatabaseClusterBase {
    */
   public static fromDatabaseClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
     class Import extends DatabaseClusterBase implements IDatabaseCluster {
-      public readonly defaultPort = ec2.Port.tcp(attrs.port);
+      public readonly defaultPort = typeof attrs.port !== 'undefined' ? ec2.Port.tcp(attrs.port) : undefined;
       public readonly connections = new ec2.Connections({
-        securityGroups: [attrs.securityGroup],
+        securityGroups: attrs.securityGroup ? [attrs.securityGroup] : undefined,
         defaultPort: this.defaultPort,
       });
       public readonly clusterIdentifier = attrs.clusterIdentifier;
-      public readonly instanceIdentifiers = attrs.instanceIdentifiers;
-      public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.port);
-      public readonly clusterReadEndpoint = new Endpoint(attrs.readerEndpointAddress, attrs.port);
-      public readonly instanceEndpoints = attrs.instanceEndpointAddresses.map(a => new Endpoint(a, attrs.port));
-      public readonly securityGroupId = attrs.securityGroup.securityGroupId;
+      private readonly _instanceIdentifiers = attrs.instanceIdentifiers;
+      private readonly _clusterEndpoint = attrs.clusterEndpointAddress && typeof attrs.port !== 'undefined' ?
+        new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
+      private readonly _clusterReadEndpoint = attrs.readerEndpointAddress && typeof attrs.port !== 'undefined' ?
+        new Endpoint(attrs.readerEndpointAddress, attrs.port) : undefined;
+      private readonly _instanceEndpoints = attrs.instanceEndpointAddresses && typeof attrs.port !== 'undefined' ?
+        attrs.instanceEndpointAddresses.map(addr => new Endpoint(addr, attrs.port!)) : undefined;
+      private readonly _securityGroupId = attrs.securityGroup?.securityGroupId;
+
+      public get instanceIdentifiers(): string[] {
+        if (!this._instanceIdentifiers) {
+          throw new Error('Cannot access `instanceIdentifiers` of an imported cluster without provided instanceIdentifiers');
+        }
+        return this._instanceIdentifiers;
+      }
+
+      public get clusterEndpoint(): Endpoint {
+        if (!this._clusterEndpoint) {
+          throw new Error('Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port');
+        }
+        return this._clusterEndpoint;
+      }
+
+      public get clusterReadEndpoint(): Endpoint {
+        if (!this._clusterReadEndpoint) {
+          throw new Error('Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port');
+        }
+        return this._clusterReadEndpoint;
+      }
+
+      public get instanceEndpoints(): Endpoint[] {
+        if (!this._instanceEndpoints) {
+          throw new Error('Cannot access `instanceEndpoints` of an imported cluster without instanceEndpointAddresses and port');
+        }
+        return this._instanceEndpoints;
+      }
+
+      public get securityGroupId(): string {
+        if (!this._securityGroupId) {
+          throw new Error('Cannot access `securityGroupId` of an imported cluster without securityGroupId');
+        }
+        return this._securityGroupId;
+      }
     }
 
     return new Import(scope, id);
@@ -421,10 +459,10 @@ export class DatabaseCluster extends DatabaseClusterBase {
       dbClusterParameterGroupName: props.parameterGroup?.parameterGroupName,
       deletionProtection: props.deletionProtection,
       // Admin
-      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
+      masterUsername: secret ? secret.secretValueFromJson('username').unsafeUnwrap() : props.masterUser.username,
       masterUserPassword: secret
-        ? secret.secretValueFromJson('password').toString()
-        : props.masterUser.password!.toString(),
+        ? secret.secretValueFromJson('password').unsafeUnwrap()
+        : props.masterUser.password!.unsafeUnwrap(), // Safe usage
       // Backup
       backupRetentionPeriod: props.backup?.retention?.toDays(),
       preferredBackupWindow: props.backup?.preferredWindow,

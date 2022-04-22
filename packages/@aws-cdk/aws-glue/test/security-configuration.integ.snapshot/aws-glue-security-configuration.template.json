@@ -1,0 +1,161 @@
+{
+ "Resources": {
+  "Key961B73FD": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "KeyedSC862A23F3": {
+   "Type": "AWS::Glue::SecurityConfiguration",
+   "Properties": {
+    "EncryptionConfiguration": {
+     "CloudWatchEncryption": {
+      "CloudWatchEncryptionMode": "SSE-KMS",
+      "KmsKeyArn": {
+       "Fn::GetAtt": [
+        "Key961B73FD",
+        "Arn"
+       ]
+      }
+     },
+     "JobBookmarksEncryption": {
+      "JobBookmarksEncryptionMode": "CSE-KMS",
+      "KmsKeyArn": {
+       "Fn::GetAtt": [
+        "Key961B73FD",
+        "Arn"
+       ]
+      }
+     },
+     "S3Encryptions": [
+      {
+       "KmsKeyArn": {
+        "Fn::GetAtt": [
+         "Key961B73FD",
+         "Arn"
+        ]
+       },
+       "S3EncryptionMode": "SSE-KMS"
+      }
+     ]
+    },
+    "Name": "KeyedSC"
+   }
+  },
+  "KeylessSCKey4D3DE803": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "KeylessSC42E312EC": {
+   "Type": "AWS::Glue::SecurityConfiguration",
+   "Properties": {
+    "EncryptionConfiguration": {
+     "CloudWatchEncryption": {
+      "CloudWatchEncryptionMode": "SSE-KMS",
+      "KmsKeyArn": {
+       "Fn::GetAtt": [
+        "KeylessSCKey4D3DE803",
+        "Arn"
+       ]
+      }
+     },
+     "JobBookmarksEncryption": {
+      "JobBookmarksEncryptionMode": "CSE-KMS",
+      "KmsKeyArn": {
+       "Fn::GetAtt": [
+        "KeylessSCKey4D3DE803",
+        "Arn"
+       ]
+      }
+     },
+     "S3Encryptions": [
+      {
+       "KmsKeyArn": {
+        "Fn::GetAtt": [
+         "KeylessSCKey4D3DE803",
+         "Arn"
+        ]
+       },
+       "S3EncryptionMode": "SSE-KMS"
+      }
+     ]
+    },
+    "Name": "KeylessSC"
+   }
+  },
+  "S3SCE31C83BE": {
+   "Type": "AWS::Glue::SecurityConfiguration",
+   "Properties": {
+    "EncryptionConfiguration": {
+     "S3Encryptions": [
+      {
+       "S3EncryptionMode": "SSE-S3"
+      }
+     ]
+    },
+    "Name": "S3SC"
+   }
+  }
+ }
+}

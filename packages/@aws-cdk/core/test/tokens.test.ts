@@ -523,6 +523,21 @@ describe('tokens', () => {
       expect(resolved).toEqual({ value: 123 });
     });
 
+    test('Tokens are still reversible after having been encoded multiple times', () => {
+      // GIVEN
+      const original = new Intrinsic(123);
+
+      // WHEN
+      let x: any = original;
+      x = Token.asString(x);
+      x = Token.asNumber(x);
+      x = Token.asList(x);
+      x = Token.asString(x);
+
+      // THEN
+      expect(Tokenization.reverse(x)).toBe(original);
+    });
+
     test('regex detects all stringifications of encoded tokens', () => {
       expect(stringContainsNumberTokens(`${createTokenDouble(0)}`)).toBeTruthy();
       expect(stringContainsNumberTokens(`${createTokenDouble(Math.pow(2, 48) - 1)}`)).toBeTruthy(); // MAX_ENCODABLE_INTEGER

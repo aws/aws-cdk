@@ -87,7 +87,6 @@ export class AccessKey extends Resource implements IAccessKey {
 
     this.accessKeyId = accessKey.ref;
 
-    // Not actually 'plainText', but until we have a more apt constructor
-    this.secretAccessKey = SecretValue.plainText(accessKey.attrSecretAccessKey);
+    this.secretAccessKey = SecretValue.resourceAttribute(accessKey.attrSecretAccessKey);
   }
 }

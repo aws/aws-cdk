@@ -1,0 +1,46 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-globalaccelerator-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-globalaccelerator-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-globalaccelerator-integ/Accelerator/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Accelerator8EB0B6B1"
+          }
+        ],
+        "/aws-cdk-globalaccelerator-integ/HostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneDB99F866"
+          }
+        ],
+        "/aws-cdk-globalaccelerator-integ/LocalGlobalAcceleratorAlias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LocalGlobalAcceleratorAlias18B4A87A"
+          }
+        ],
+        "/aws-cdk-globalaccelerator-integ/ExistingGlobalAcceleratorAlias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExistingGlobalAcceleratorAlias7ACF888C"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-globalaccelerator-integ"
+    }
+  }
+}

@@ -219,8 +219,14 @@ export interface EcrProps {
   /**
    * Image tag.
    * @default - 'latest'
+   * @deprecated use `tagOrDigest`
    */
   readonly tag?: string;
+  /**
+   * Image tag or digest (digests must start with `sha256:`).
+   * @default - 'latest'
+   */
+  readonly tagOrDigest?: string;
 }
 
 /**
@@ -313,7 +319,9 @@ export class EcrSource extends Source {
     return {
       imageRepository: {
         imageConfiguration: this.props.imageConfiguration,
-        imageIdentifier: this.props.repository.repositoryUriForTag(this.props.tag || 'latest'),
+        imageIdentifier: this.props.repository.repositoryUriForTagOrDigest(
+          this.props.tagOrDigest || this.props.tag || 'latest',
+        ),
         imageRepositoryType: ImageRepositoryType.ECR,
       },
       ecrRepository: this.props.repository,

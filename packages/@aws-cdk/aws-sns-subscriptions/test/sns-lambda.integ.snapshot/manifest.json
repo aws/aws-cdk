@@ -1,0 +1,88 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-sns-lambda": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-sns-lambda.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-sns-lambda/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434"
+          }
+        ],
+        "/aws-cdk-sns-lambda/Echo/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EchoServiceRoleBE28060B"
+          }
+        ],
+        "/aws-cdk-sns-lambda/Echo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Echo11F3FB29"
+          }
+        ],
+        "/aws-cdk-sns-lambda/Echo/AllowInvoke:awscdksnslambdaMyTopic6C62AB90": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EchoAllowInvokeawscdksnslambdaMyTopic6C62AB907F727CDA"
+          }
+        ],
+        "/aws-cdk-sns-lambda/Echo/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EchoMyTopic4CB8819E"
+          }
+        ],
+        "/aws-cdk-sns-lambda/DeadLetterQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeadLetterQueue9F481546"
+          }
+        ],
+        "/aws-cdk-sns-lambda/DeadLetterQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeadLetterQueuePolicyB1FB890C"
+          }
+        ],
+        "/aws-cdk-sns-lambda/Filtered/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FilteredServiceRole16D9DDC1"
+          }
+        ],
+        "/aws-cdk-sns-lambda/Filtered/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Filtered186C0D0A"
+          }
+        ],
+        "/aws-cdk-sns-lambda/Filtered/AllowInvoke:awscdksnslambdaMyTopic6C62AB90": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FilteredAllowInvokeawscdksnslambdaMyTopic6C62AB90A2EA1666"
+          }
+        ],
+        "/aws-cdk-sns-lambda/Filtered/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FilteredMyTopicC8395C27"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-sns-lambda"
+    }
+  }
+}

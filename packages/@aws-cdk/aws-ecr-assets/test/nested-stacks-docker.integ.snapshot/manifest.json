@@ -1,0 +1,89 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "nested-stacks-docker": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "nested-stacks-docker.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/nested-stacks-docker": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "repositoryName": "aws-cdk/assets",
+              "imageTag": "0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14",
+              "id": "0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14",
+              "packaging": "container-image",
+              "path": "asset.0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14",
+              "sourceHash": "0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "nestedstacksdockernestedstackwithimage2999F8C8.nested.template.json",
+              "id": "bd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297",
+              "packaging": "file",
+              "sourceHash": "bd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297",
+              "s3BucketParameter": "AssetParametersbd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297S3BucketAF5C36E5",
+              "s3KeyParameter": "AssetParametersbd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297S3VersionKeyEB2E48FF",
+              "artifactHashParameter": "AssetParametersbd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297ArtifactHashA3886DE7"
+            }
+          }
+        ],
+        "/nested-stacks-docker/nested-stack-with-image/User/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "User00B015A1"
+          }
+        ],
+        "/nested-stacks-docker/nested-stack-with-image/User/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserDefaultPolicy1F97781E"
+          }
+        ],
+        "/nested-stacks-docker/nested-stack-with-image/output": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "output"
+          }
+        ],
+        "/nested-stacks-docker/nested-stack-with-image.NestedStack/nested-stack-with-image.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "nestedstackwithimageNestedStacknestedstackwithimageNestedStackResourceDF784FD5"
+          }
+        ],
+        "/nested-stacks-docker/AssetParameters/bd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersbd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297S3BucketAF5C36E5"
+          }
+        ],
+        "/nested-stacks-docker/AssetParameters/bd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersbd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297S3VersionKeyEB2E48FF"
+          }
+        ],
+        "/nested-stacks-docker/AssetParameters/bd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersbd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297ArtifactHashA3886DE7"
+          }
+        ]
+      },
+      "displayName": "nested-stacks-docker"
+    }
+  }
+}

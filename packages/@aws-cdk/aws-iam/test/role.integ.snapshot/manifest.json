@@ -1,0 +1,52 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-iam-role-1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-iam-role-1.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-iam-role-1/TestRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRole6C9272DF"
+          }
+        ],
+        "/integ-iam-role-1/TestRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRoleDefaultPolicyD1C92014"
+          }
+        ],
+        "/integ-iam-role-1/HelloPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HelloPolicyD59007DF"
+          }
+        ],
+        "/integ-iam-role-1/TestRole2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRole25D98AB21"
+          }
+        ],
+        "/integ-iam-role-1/TestRole3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRole3C1F30727"
+          }
+        ]
+      },
+      "displayName": "integ-iam-role-1"
+    }
+  }
+}

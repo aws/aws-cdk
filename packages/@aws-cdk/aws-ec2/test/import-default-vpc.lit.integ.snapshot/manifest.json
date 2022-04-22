@@ -1,0 +1,49 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-ec2-import": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://12345678/test-region",
+      "properties": {
+        "templateFile": "aws-cdk-ec2-import.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-ec2-import/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityGroupDD263621",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-import/PublicSubnets": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicSubnets"
+          }
+        ],
+        "/aws-cdk-ec2-import/PrivateSubnets": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateSubnets"
+          }
+        ],
+        "/aws-cdk-ec2-import/PublicRouteTables": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicRouteTables"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-ec2-import"
+    }
+  }
+}

@@ -1,0 +1,246 @@
+{
+ "Resources": {
+  "ComputeEnvironmentResourceServiceInstanceRoleDC6D4445": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "batch.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSBatchServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ComputeEnvironmentC570994D": {
+   "Type": "AWS::Batch::ComputeEnvironment",
+   "Properties": {
+    "Type": "UNMANAGED",
+    "ServiceRole": {
+     "Fn::GetAtt": [
+      "ComputeEnvironmentResourceServiceInstanceRoleDC6D4445",
+      "Arn"
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MyQueueE6CA6235": {
+   "Type": "AWS::Batch::JobQueue",
+   "Properties": {
+    "ComputeEnvironmentOrder": [
+     {
+      "ComputeEnvironment": {
+       "Ref": "ComputeEnvironmentC570994D"
+      },
+      "Order": 1
+     }
+    ],
+    "Priority": 1,
+    "State": "ENABLED"
+   }
+  },
+  "MyJob8719E923": {
+   "Type": "AWS::Batch::JobDefinition",
+   "Properties": {
+    "Type": "container",
+    "ContainerProperties": {
+     "Image": "test-repo",
+     "Privileged": false,
+     "ReadonlyRootFilesystem": false,
+     "ResourceRequirements": [
+      {
+       "Type": "VCPU",
+       "Value": "1"
+      },
+      {
+       "Type": "MEMORY",
+       "Value": "4"
+      }
+     ]
+    },
+    "PlatformCapabilities": [
+     "EC2"
+    ],
+    "RetryStrategy": {
+     "Attempts": 1
+    },
+    "Timeout": {}
+   }
+  },
+  "MyJobEventsRoleCF43C336": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyJobEventsRoleDefaultPolicy7266D3A7": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "batch:SubmitJob",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Ref": "MyJob8719E923"
+        },
+        {
+         "Ref": "MyQueueE6CA6235"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyJobEventsRoleDefaultPolicy7266D3A7",
+    "Roles": [
+     {
+      "Ref": "MyJobEventsRoleCF43C336"
+     }
+    ]
+   }
+  },
+  "TimerBF6F831F": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "ScheduleExpression": "rate(1 minute)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Ref": "MyQueueE6CA6235"
+      },
+      "BatchParameters": {
+       "JobDefinition": {
+        "Ref": "MyJob8719E923"
+       },
+       "JobName": "batcheventsTimer32212B30"
+      },
+      "Id": "Target0",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "MyJobEventsRoleCF43C336",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "Timer2B6F162E9": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "ScheduleExpression": "rate(2 minutes)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Ref": "MyQueueE6CA6235"
+      },
+      "BatchParameters": {
+       "JobDefinition": {
+        "Ref": "MyJob8719E923"
+       },
+       "JobName": "batcheventsTimer232549135"
+      },
+      "DeadLetterConfig": {
+       "Arn": {
+        "Fn::GetAtt": [
+         "Queue4A7E3555",
+         "Arn"
+        ]
+       }
+      },
+      "Id": "Target0",
+      "RetryPolicy": {
+       "MaximumEventAgeInSeconds": 7200,
+       "MaximumRetryAttempts": 2
+      },
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "MyJobEventsRoleCF43C336",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "Queue4A7E3555": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "QueuePolicy25439813": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Condition": {
+        "ArnEquals": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "Timer2B6F162E9",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "Queue4A7E3555",
+         "Arn"
+        ]
+       },
+       "Sid": "AllowEventRulebatcheventsTimer232549135"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "Queue4A7E3555"
+     }
+    ]
+   }
+  }
+ }
+}

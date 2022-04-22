@@ -1,0 +1,54 @@
+{
+ "Resources": {
+  "RestApibooksA2500ABD": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRootResourceId"
+    },
+    "PathPart": "books",
+    "RestApiId": {
+     "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
+    }
+   }
+  },
+  "RestApibooksGET46F66C0A": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "HttpMethod": "GET",
+    "ResourceId": {
+     "Ref": "RestApibooksA2500ABD"
+    },
+    "RestApiId": {
+     "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
+    },
+    "AuthorizationType": "NONE",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "StatusCode": "200"
+      }
+     ],
+     "PassthroughBehavior": "NEVER",
+     "RequestTemplates": {
+      "application/json": "{ \"statusCode\": 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "StatusCode": "200"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "referencetointegrestapiimportRootStackRestApi2647DA4CRootResourceId": {
+   "Type": "String"
+  },
+  "referencetointegrestapiimportRootStackRestApi2647DA4CRef": {
+   "Type": "String"
+  }
+ }
+}

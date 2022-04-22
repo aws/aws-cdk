@@ -1,0 +1,52 @@
+{
+ "Resources": {
+  "Namespace9B63B8C8": {
+   "Type": "AWS::ServiceDiscovery::PublicDnsNamespace",
+   "Properties": {
+    "Name": "foobar.com"
+   }
+  },
+  "NamespaceServiceCABDF534": {
+   "Type": "AWS::ServiceDiscovery::Service",
+   "Properties": {
+    "DnsConfig": {
+     "DnsRecords": [
+      {
+       "TTL": 30,
+       "Type": "CNAME"
+      }
+     ],
+     "NamespaceId": {
+      "Fn::GetAtt": [
+       "Namespace9B63B8C8",
+       "Id"
+      ]
+     },
+     "RoutingPolicy": "WEIGHTED"
+    },
+    "Name": "foo",
+    "NamespaceId": {
+     "Fn::GetAtt": [
+      "Namespace9B63B8C8",
+      "Id"
+     ]
+    }
+   }
+  },
+  "NamespaceServiceCnameInstance5863ED3A": {
+   "Type": "AWS::ServiceDiscovery::Instance",
+   "Properties": {
+    "InstanceAttributes": {
+     "AWS_INSTANCE_CNAME": "service.pizza"
+    },
+    "ServiceId": {
+     "Fn::GetAtt": [
+      "NamespaceServiceCABDF534",
+      "Id"
+     ]
+    },
+    "InstanceId": "awsservicediscoveryintegNamespaceServiceCnameInstance0F7DE989"
+   }
+  }
+ }
+}

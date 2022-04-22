@@ -1,0 +1,66 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-integ-lambda-golang": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-lambda-golang.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-integ-lambda-golang": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bb",
+              "id": "9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bb",
+              "packaging": "zip",
+              "sourceHash": "9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bb",
+              "s3BucketParameter": "AssetParameters9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bbS3Bucket408A3301",
+              "s3KeyParameter": "AssetParameters9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bbS3VersionKeyB036EE40",
+              "artifactHashParameter": "AssetParameters9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bbArtifactHash7E5C4DB4"
+            }
+          }
+        ],
+        "/cdk-integ-lambda-golang/go-handler-docker/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gohandlerdockerServiceRole70394790"
+          }
+        ],
+        "/cdk-integ-lambda-golang/go-handler-docker/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gohandlerdockerAE04F1B8"
+          }
+        ],
+        "/cdk-integ-lambda-golang/AssetParameters/9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bb/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bbS3Bucket408A3301"
+          }
+        ],
+        "/cdk-integ-lambda-golang/AssetParameters/9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bb/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bbS3VersionKeyB036EE40"
+          }
+        ],
+        "/cdk-integ-lambda-golang/AssetParameters/9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bb/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bbArtifactHash7E5C4DB4"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-lambda-golang"
+    }
+  }
+}

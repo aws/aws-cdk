@@ -115,6 +115,10 @@ export class StackActivityMonitor {
     return new StackActivityMonitor(cfn, stackName, printer, stackArtifact, options.changeSetCreationTime);
   }
 
+  /**
+   * Resource errors found while monitoring the deployment
+   */
+  public readonly errors = new Array<string>();
 
   private active = false;
   private activity: { [eventId: string]: StackActivity } = { };
@@ -262,6 +266,7 @@ export class StackActivityMonitor {
 
     events.reverse();
     for (const event of events) {
+      this.checkForErrors(event);
       this.printer.addActivity(event);
     }
   }
@@ -282,6 +287,18 @@ export class StackActivityMonitor {
     }
 
     await this.readNewEvents();
+  }
+
+  private checkForErrors(activity: StackActivity) {
+    if (hasErrorMessage(activity.event.ResourceStatus ?? '')) {
+      const isCancelled = (activity.event.ResourceStatusReason ?? '').indexOf('cancelled') > -1;
+
+      // Cancelled is not an interesting failure reason, nor is the stack message (stack
+      // message will just say something like "stack failed to update")
+      if (!isCancelled && activity.event.StackName !== activity.event.LogicalResourceId) {
+        this.errors.push(activity.event.ResourceStatusReason ?? '');
+      }
+    }
   }
 
   private simplifyConstructPath(path: string) {
@@ -665,7 +682,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
 
     // Display in the same block space, otherwise we're going to have silly empty lines.
     this.block.displayLines(lines);
-    this.block.removeEmptyLines(lines);
+    this.block.removeEmptyLines();
   }
 
   private progressBar(width: number) {
@@ -728,7 +745,7 @@ function colorFromStatusActivity(status?: string) {
     return chalk.red;
   }
 
-  if (status.startsWith('CREATE_') || status.startsWith('UPDATE_')) {
+  if (status.startsWith('CREATE_') || status.startsWith('UPDATE_') || status.startsWith('IMPORT_')) {
     return chalk.green;
   }
   // For stacks, it may also be 'UPDDATE_ROLLBACK_IN_PROGRESS'

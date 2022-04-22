@@ -26,14 +26,16 @@ class SecretsManagerStack extends cdk.Stack {
     });
 
     new iam.User(this, 'OtherUser', {
-      userName: templatedSecret.secretValueFromJson('username').toString(),
+      // 'userName' is not actually a secret, so it's okay to use `unsafeUnwrap` to convert
+      // the `SecretValue` into a 'string'.
+      userName: templatedSecret.secretValueFromJson('username').unsafeUnwrap(),
       password: templatedSecret.secretValueFromJson('password'),
     });
 
     // Secret with predefined value
     const accessKey = new iam.AccessKey(this, 'AccessKey', { user });
     new secretsmanager.Secret(this, 'PredefinedSecret', {
-      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString()),
+      secretStringValue: accessKey.secretAccessKey,
     });
     /// !hide
   }

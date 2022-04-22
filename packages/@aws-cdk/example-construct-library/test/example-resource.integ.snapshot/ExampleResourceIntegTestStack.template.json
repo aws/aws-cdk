@@ -1,0 +1,36 @@
+{
+ "Resources": {
+  "ExampleResourceWaitConditionHandle9C53A8D3": {
+   "Type": "AWS::CloudFormation::WaitConditionHandle"
+  },
+  "ExampleResourceAC53F4AE": {
+   "Type": "AWS::CloudFormation::WaitCondition",
+   "Properties": {
+    "Count": 0,
+    "Handle": {
+     "Ref": "ExampleResourceWaitConditionHandle9C53A8D3"
+    },
+    "Timeout": "10"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ExampleResourceRole0533653E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cloudformation.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  }
+ }
+}

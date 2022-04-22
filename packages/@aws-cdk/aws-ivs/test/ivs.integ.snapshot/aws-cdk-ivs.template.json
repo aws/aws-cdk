@@ -1,0 +1,57 @@
+{
+ "Resources": {
+  "PlaybackKeyPairBE17315B": {
+   "Type": "AWS::IVS::PlaybackKeyPair",
+   "Properties": {
+    "PublicKeyMaterial": "-----BEGIN PUBLIC KEY-----\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEs6k8Xf6WyFq3yZXoup8G/gH6DntSATqD\nYfo83eX0GJCKxJ8fr09h9LP9HDGof8/bo66P+SGHeAARGF/O9WPAQVUgSlm/KMFX\nEPtPtOm1s0GR9k1ydU5hkI++f9CoZ5lM\n-----END PUBLIC KEY-----",
+    "Name": "IVSIntegrationTestPlaybackKeyPair"
+   }
+  },
+  "Channel4048F119": {
+   "Type": "AWS::IVS::Channel",
+   "Properties": {
+    "Authorized": true,
+    "LatencyMode": "NORMAL",
+    "Name": "IVSIntegrationTestChannel",
+    "Type": "BASIC"
+   }
+  },
+  "StreamKey9F296F4F": {
+   "Type": "AWS::IVS::StreamKey",
+   "Properties": {
+    "ChannelArn": {
+     "Fn::GetAtt": [
+      "Channel4048F119",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "PlaybackKeyPairArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "PlaybackKeyPairBE17315B",
+     "Arn"
+    ]
+   }
+  },
+  "ChannelArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Channel4048F119",
+     "Arn"
+    ]
+   }
+  },
+  "StreamKeyArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "StreamKey9F296F4F",
+     "Arn"
+    ]
+   }
+  }
+ }
+}

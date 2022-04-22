@@ -1,0 +1,76 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "appsync-elasticsearch": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "appsync-elasticsearch.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/appsync-elasticsearch/User/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "User00B015A1"
+          }
+        ],
+        "/appsync-elasticsearch/Domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Domain66AC69E0"
+          }
+        ],
+        "/appsync-elasticsearch/api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiC8550315"
+          }
+        ],
+        "/appsync-elasticsearch/api/Schema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiSchema0EA92056"
+          }
+        ],
+        "/appsync-elasticsearch/api/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiDefaultApiKey6AB8D7C4"
+          }
+        ],
+        "/appsync-elasticsearch/api/ds/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apidsServiceRoleBDB08107"
+          }
+        ],
+        "/appsync-elasticsearch/api/ds/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apidsServiceRoleDefaultPolicy5634EFD0"
+          }
+        ],
+        "/appsync-elasticsearch/api/ds/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apids4328272F"
+          }
+        ],
+        "/appsync-elasticsearch/api/ds/QuerygetTestsResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apidsQuerygetTestsResolver5C6FBB59"
+          }
+        ]
+      },
+      "displayName": "appsync-elasticsearch"
+    }
+  }
+}

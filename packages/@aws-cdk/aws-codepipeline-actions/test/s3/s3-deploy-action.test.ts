@@ -208,7 +208,7 @@ function minimalPipeline(stack: Stack, options: MinimalPipelineOptions = {}): co
     owner: 'aws',
     repo: 'aws-cdk',
     output: sourceOutput,
-    oauthToken: SecretValue.plainText('secret'),
+    oauthToken: SecretValue.unsafePlainText('secret'),
   });
 
   const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {

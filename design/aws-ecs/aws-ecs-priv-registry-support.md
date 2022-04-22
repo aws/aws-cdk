@@ -16,7 +16,7 @@ DockerHub images are assumed public, however DockerHub also provides private rep
 
 There's also no explicit way to specify images hosted outside of DockerHub, AWS, or your local machine. Customers hosting their own registries or using another registry host, like Quay.io or JFrog Artifactory, would need to be able to specify both the image URI and the registry credentials in order to pull their images down for ECS tasks.
 
-Fundamentally, specifying images hosted in DockerHub or elsewhere works the same, because when passed an image URI vs. a plain (or namespaced) image name + tag, the Docker daemon does the right thing and tries to pull the image from the specified registery.
+Fundamentally, specifying images hosted in DockerHub or elsewhere works the same, because when passed an image URI vs. a plain (or namespaced) image name + tag, the Docker daemon does the right thing and tries to pull the image from the specified registry.
 
 Therefore, we should rename the existing `DockerHubImage` type be more generic and add the ability to optionally specify credentials.
 

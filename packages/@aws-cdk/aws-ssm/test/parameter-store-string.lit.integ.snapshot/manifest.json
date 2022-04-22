@@ -1,0 +1,72 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "sspms-creating": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "sspms-creating.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/sspms-creating/String/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "String0BA8456E"
+          }
+        ]
+      },
+      "displayName": "sspms-creating"
+    },
+    "sspms-using": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "sspms-using.template.json",
+        "validateOnSynth": false
+      },
+      "dependencies": [
+        "sspms-creating"
+      ],
+      "metadata": {
+        "/sspms-using/MyParameterVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyParameterVersion"
+          }
+        ],
+        "/sspms-using/MyValue.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyValueParameter"
+          }
+        ],
+        "/sspms-using/Dummy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Dummy"
+          }
+        ],
+        "/sspms-using/TheValue": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheValue"
+          }
+        ],
+        "/sspms-using/TheValueVersionFromToken": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheValueVersionFromToken"
+          }
+        ]
+      },
+      "displayName": "sspms-using"
+    }
+  }
+}

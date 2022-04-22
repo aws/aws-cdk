@@ -470,10 +470,10 @@ export class Cluster extends ClusterBase {
       vpcSecurityGroupIds: securityGroupIds,
       port: props.port,
       clusterParameterGroupName: props.parameterGroup && props.parameterGroup.clusterParameterGroupName,
-      // Admin
-      masterUsername: secret?.secretValueFromJson('username').toString() ?? props.masterUser.masterUsername,
-      masterUserPassword: secret?.secretValueFromJson('password').toString()
-        ?? props.masterUser.masterPassword?.toString()
+      // Admin (unsafeUnwrap here is safe)
+      masterUsername: secret?.secretValueFromJson('username').unsafeUnwrap() ?? props.masterUser.masterUsername,
+      masterUserPassword: secret?.secretValueFromJson('password').unsafeUnwrap()
+        ?? props.masterUser.masterPassword?.unsafeUnwrap()
         ?? 'default',
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       nodeType: props.nodeType || NodeType.DC2_LARGE,

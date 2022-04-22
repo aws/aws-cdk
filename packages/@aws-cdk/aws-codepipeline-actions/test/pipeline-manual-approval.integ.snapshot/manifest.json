@@ -1,0 +1,82 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codepipeline-manual-approval": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codepipeline-manual-approval.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-codepipeline-manual-approval/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77"
+          }
+        ],
+        "/aws-cdk-codepipeline-manual-approval/Pipeline/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineRoleD68726F7"
+          }
+        ],
+        "/aws-cdk-codepipeline-manual-approval/Pipeline/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineRoleDefaultPolicyC7A05455"
+          }
+        ],
+        "/aws-cdk-codepipeline-manual-approval/Pipeline/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineC660917D"
+          }
+        ],
+        "/aws-cdk-codepipeline-manual-approval/Pipeline/Source/S3/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineSourceS3CodePipelineActionRole3CAFD08F"
+          }
+        ],
+        "/aws-cdk-codepipeline-manual-approval/Pipeline/Source/S3/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineSourceS3CodePipelineActionRoleDefaultPolicy8B9DCBCF"
+          }
+        ],
+        "/aws-cdk-codepipeline-manual-approval/Pipeline/Approve/ManualApproval/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineApproveManualApprovalCodePipelineActionRole51D669A5"
+          }
+        ],
+        "/aws-cdk-codepipeline-manual-approval/Pipeline/Approve/ManualApproval/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineApproveManualApprovalCodePipelineActionRoleDefaultPolicyB6418282"
+          }
+        ],
+        "/aws-cdk-codepipeline-manual-approval/Pipeline/Approve/ManualApproval/TopicResource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineApproveManualApprovalTopicResourceF5A35B20"
+          }
+        ],
+        "/aws-cdk-codepipeline-manual-approval/Pipeline/Approve/ManualApproval/TopicResource/adamruka85@gmail.com/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineApproveManualApprovalTopicResourceadamruka85gmailcom202874CD"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codepipeline-manual-approval"
+    }
+  }
+}

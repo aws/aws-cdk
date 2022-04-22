@@ -1,0 +1,88 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codepipeline-ecr-source": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codepipeline-ecr-source.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-codepipeline-ecr-source/MyBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucketF68F3FF0"
+          }
+        ],
+        "/aws-cdk-codepipeline-ecr-source/MyPipeline/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineRoleC0D47CA4"
+          }
+        ],
+        "/aws-cdk-codepipeline-ecr-source/MyPipeline/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineRoleDefaultPolicy34F09EFA"
+          }
+        ],
+        "/aws-cdk-codepipeline-ecr-source/MyPipeline/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineAED38ECF"
+          }
+        ],
+        "/aws-cdk-codepipeline-ecr-source/MyPipeline/Source/ECR_Source/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineSourceECRSourceCodePipelineActionRole4C6714EE"
+          }
+        ],
+        "/aws-cdk-codepipeline-ecr-source/MyPipeline/Source/ECR_Source/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineSourceECRSourceCodePipelineActionRoleDefaultPolicy7646B7FE"
+          }
+        ],
+        "/aws-cdk-codepipeline-ecr-source/MyPipeline/EventsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineEventsRoleFAB99F32"
+          }
+        ],
+        "/aws-cdk-codepipeline-ecr-source/MyPipeline/EventsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineEventsRoleDefaultPolicyF045F033"
+          }
+        ],
+        "/aws-cdk-codepipeline-ecr-source/MyPipeline/Approve/ManualApproval/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineApproveManualApprovalCodePipelineActionRole9E338F01"
+          }
+        ],
+        "/aws-cdk-codepipeline-ecr-source/MyEcrRepo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyEcrRepo767466D0"
+          }
+        ],
+        "/aws-cdk-codepipeline-ecr-source/MyEcrRepo/awscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyEcrRepoawscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRule911FDB6D"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codepipeline-ecr-source"
+    }
+  }
+}
