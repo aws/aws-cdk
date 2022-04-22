@@ -1,0 +1,162 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-route53-resolver-firewall": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-route53-resolver-firewall.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-route53-resolver-firewall": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a.txt",
+              "id": "e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a",
+              "packaging": "file",
+              "sourceHash": "e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a",
+              "s3BucketParameter": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3BucketD6778673",
+              "s3KeyParameter": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3VersionKey1A69D23D",
+              "artifactHashParameter": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aArtifactHashFF61A347"
+            }
+          }
+        ],
+        "/cdk-route53-resolver-firewall/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/BlockList/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BlockListC03D0423"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/OverrideList/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OverrideListF573FB0F"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/OtherList/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OtherListBA4427B5"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/AssetParameters/e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3BucketD6778673"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/AssetParameters/e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3VersionKey1A69D23D"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/AssetParameters/e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aArtifactHashFF61A347"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/RuleGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RuleGroup06BA8844"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/RuleGroup/Association/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RuleGroupAssociation5494BFB1"
+          }
+        ]
+      },
+      "displayName": "cdk-route53-resolver-firewall"
+    }
+  }
+}

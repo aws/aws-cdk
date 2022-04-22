@@ -1,6 +1,6 @@
 ## Welcome to your CDK F# project!
 
-This is a blank project for F# development with CDK.
+This is a blank project for CDK development with F#.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 

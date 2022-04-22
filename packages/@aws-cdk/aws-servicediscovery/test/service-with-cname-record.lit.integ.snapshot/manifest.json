@@ -1,0 +1,40 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-servicediscovery-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-servicediscovery-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-servicediscovery-integ/Namespace/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Namespace9B63B8C8"
+          }
+        ],
+        "/aws-servicediscovery-integ/Namespace/Service/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NamespaceServiceCABDF534"
+          }
+        ],
+        "/aws-servicediscovery-integ/Namespace/Service/CnameInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NamespaceServiceCnameInstance5863ED3A"
+          }
+        ]
+      },
+      "displayName": "aws-servicediscovery-integ"
+    }
+  }
+}

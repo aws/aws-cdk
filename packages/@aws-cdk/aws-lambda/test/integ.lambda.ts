@@ -16,6 +16,7 @@ fn.addToRolePolicy(new iam.PolicyStatement({
   resources: ['*'],
   actions: ['*'],
 }));
+fn.addFunctionUrl();
 
 const version = fn.currentVersion;
 
@@ -25,6 +26,9 @@ const alias = new lambda.Alias(stack, 'Alias', {
 });
 alias.addPermission('AliasPermission', {
   principal: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
+});
+alias.addFunctionUrl({
+  authType: lambda.FunctionUrlAuthType.NONE,
 });
 
 app.synth();
