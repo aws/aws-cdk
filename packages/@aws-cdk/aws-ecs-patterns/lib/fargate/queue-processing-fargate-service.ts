@@ -98,6 +98,13 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    * @default false
    */
   readonly assignPublicIp?: boolean;
+
+  /**
+   * Whether to enable the ability to execute into a container.
+   *
+   * @default true
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
@@ -112,12 +119,18 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
    * The Fargate task definition in this construct.
    */
   public readonly taskDefinition: FargateTaskDefinition;
+  /**
+   * Whether enableExecuteCommand is enabled.
+   */
+  public readonly enableExecuteCommand: boolean;
 
   /**
    * Constructs a new instance of the QueueProcessingFargateService class.
    */
   constructor(scope: Construct, id: string, props: QueueProcessingFargateServiceProps) {
     super(scope, id, props);
+
+    this.enableExecuteCommand = props.enableExecuteCommand ?? true;
 
     // Create a Task Definition for the container to start
     this.taskDefinition = new FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
@@ -146,6 +159,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       cluster: this.cluster,
       desiredCount: desiredCount,
       taskDefinition: this.taskDefinition,
+      enableExecuteCommand: this.enableExecuteCommand,
       serviceName: props.serviceName,
       minHealthyPercent: props.minHealthyPercent,
       maxHealthyPercent: props.maxHealthyPercent,

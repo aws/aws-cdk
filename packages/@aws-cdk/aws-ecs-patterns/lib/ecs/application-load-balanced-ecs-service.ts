@@ -79,6 +79,13 @@ export interface ApplicationLoadBalancedEc2ServiceProps extends ApplicationLoadB
    * @default - No strategies.
   */
   readonly placementStrategies?: PlacementStrategy[];
+
+  /**
+   * Whether to enable the ability to execute into a container.
+   *
+   * @default true
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
@@ -94,12 +101,18 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
    * The EC2 Task Definition in this construct.
    */
   public readonly taskDefinition: Ec2TaskDefinition;
+  /**
+   * Whether enableExecuteCommand is enabled.
+   */
+  public readonly enableExecuteCommand: boolean;
 
   /**
    * Constructs a new instance of the ApplicationLoadBalancedEc2Service class.
    */
   constructor(scope: Construct, id: string, props: ApplicationLoadBalancedEc2ServiceProps = {}) {
     super(scope, id, props);
+
+    this.enableExecuteCommand = props.enableExecuteCommand ?? true;
 
     if (props.taskDefinition && props.taskImageOptions) {
       throw new Error('You must specify either a taskDefinition or taskImageOptions, not both.');
@@ -141,6 +154,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       cluster: this.cluster,
       desiredCount: desiredCount,
       taskDefinition: this.taskDefinition,
+      enableExecuteCommand: this.enableExecuteCommand,
       assignPublicIp: false,
       serviceName: props.serviceName,
       healthCheckGracePeriod: props.healthCheckGracePeriod,

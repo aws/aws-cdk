@@ -73,6 +73,13 @@ export interface NetworkMultipleTargetGroupsEc2ServiceProps extends NetworkMulti
    * @default - No strategies.
   */
   readonly placementStrategies?: PlacementStrategy[];
+
+  /**
+   * Whether to enable the ability to execute into a container.
+   *
+   * @default true
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
@@ -92,12 +99,18 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
    * The default target group for the service.
    */
   public readonly targetGroup: NetworkTargetGroup;
+  /**
+   * Whether enableExecuteCommand is enabled.
+   */
+  public readonly enableExecuteCommand: boolean;
 
   /**
    * Constructs a new instance of the NetworkMultipleTargetGroupsEc2Service class.
    */
   constructor(scope: Construct, id: string, props: NetworkMultipleTargetGroupsEc2ServiceProps = {}) {
     super(scope, id, props);
+
+    this.enableExecuteCommand = props.enableExecuteCommand ?? true;
 
     if (props.taskDefinition && props.taskImageOptions) {
       throw new Error('You must specify only one of TaskDefinition or TaskImageOptions.');
@@ -160,6 +173,7 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
       cluster: this.cluster,
       desiredCount: desiredCount,
       taskDefinition: this.taskDefinition,
+      enableExecuteCommand: this.enableExecuteCommand,
       assignPublicIp: false,
       serviceName: props.serviceName,
       healthCheckGracePeriod: props.healthCheckGracePeriod,

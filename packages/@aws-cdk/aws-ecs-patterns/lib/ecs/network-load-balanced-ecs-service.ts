@@ -77,6 +77,13 @@ export interface NetworkLoadBalancedEc2ServiceProps extends NetworkLoadBalancedS
    * @default - No strategies.
   */
   readonly placementStrategies?: PlacementStrategy[];
+
+  /**
+   * Whether to enable the ability to execute into a container.
+   *
+   * @default true
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
@@ -92,12 +99,18 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
    * The EC2 Task Definition in this construct.
    */
   public readonly taskDefinition: Ec2TaskDefinition;
+  /**
+   * Whether enableExecuteCommand is enabled.
+   */
+  public readonly enableExecuteCommand: boolean;
 
   /**
    * Constructs a new instance of the NetworkLoadBalancedEc2Service class.
    */
   constructor(scope: Construct, id: string, props: NetworkLoadBalancedEc2ServiceProps = {}) {
     super(scope, id, props);
+
+    this.enableExecuteCommand = props.enableExecuteCommand ?? true;
 
     if (props.taskDefinition && props.taskImageOptions) {
       throw new Error('You must specify either a taskDefinition or an image, not both.');
@@ -139,6 +152,7 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
       cluster: this.cluster,
       desiredCount: desiredCount,
       taskDefinition: this.taskDefinition,
+      enableExecuteCommand: this.enableExecuteCommand,
       assignPublicIp: false,
       serviceName: props.serviceName,
       healthCheckGracePeriod: props.healthCheckGracePeriod,

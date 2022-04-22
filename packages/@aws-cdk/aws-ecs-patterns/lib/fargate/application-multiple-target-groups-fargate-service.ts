@@ -81,6 +81,13 @@ export interface ApplicationMultipleTargetGroupsFargateServiceProps extends Appl
    * @default Latest
    */
   readonly platformVersion?: FargatePlatformVersion;
+
+  /**
+   * Whether to enable the ability to execute into a container.
+   *
+   * @default true
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
@@ -107,6 +114,10 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
    * The default target group for the service.
    */
   public readonly targetGroup: ApplicationTargetGroup;
+  /**
+   * Whether enableExecuteCommand is enabled.
+   */
+  public readonly enableExecuteCommand: boolean;
 
   /**
    * Constructs a new instance of the ApplicationMultipleTargetGroupsFargateService class.
@@ -115,6 +126,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
     super(scope, id, props);
 
     this.assignPublicIp = props.assignPublicIp ?? false;
+    this.enableExecuteCommand = props.enableExecuteCommand ?? true;
 
     if (props.taskDefinition && props.taskImageOptions) {
       throw new Error('You must specify only one of TaskDefinition or TaskImageOptions.');
@@ -177,6 +189,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
       desiredCount: desiredCount,
       taskDefinition: this.taskDefinition,
       assignPublicIp: this.assignPublicIp,
+      enableExecuteCommand: this.enableExecuteCommand,
       serviceName: props.serviceName,
       healthCheckGracePeriod: props.healthCheckGracePeriod,
       propagateTags: props.propagateTags,

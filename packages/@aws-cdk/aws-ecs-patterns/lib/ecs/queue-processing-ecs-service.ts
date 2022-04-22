@@ -83,6 +83,13 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
    * @default - No strategies.
   */
   readonly placementStrategies?: PlacementStrategy[];
+
+  /**
+   * Whether to enable the ability to execute into a container.
+   *
+   * @default true
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
@@ -98,6 +105,10 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
    * The EC2 task definition in this construct
    */
   public readonly taskDefinition: Ec2TaskDefinition;
+  /**
+   * Whether enableExecuteCommand is enabled.
+   */
+  public readonly enableExecuteCommand: boolean;
 
   /**
    * Constructs a new instance of the QueueProcessingEc2Service class.
@@ -106,6 +117,7 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
     super(scope, id, props);
 
     const containerName = props.containerName ?? 'QueueProcessingContainer';
+    this.enableExecuteCommand = props.enableExecuteCommand ?? true;
 
     // Create a Task Definition for the container to start
     this.taskDefinition = new Ec2TaskDefinition(this, 'QueueProcessingTaskDef', {
@@ -132,6 +144,7 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
       cluster: this.cluster,
       desiredCount: desiredCount,
       taskDefinition: this.taskDefinition,
+      enableExecuteCommand: this.enableExecuteCommand,
       serviceName: props.serviceName,
       minHealthyPercent: props.minHealthyPercent,
       maxHealthyPercent: props.maxHealthyPercent,
