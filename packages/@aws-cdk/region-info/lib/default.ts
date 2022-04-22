@@ -106,6 +106,11 @@ export class Default {
         case 'ec2':
           return partitional;
 
+        case 'elasticmapreduce':
+          return region.startsWith('cn-')
+            ? partitional
+            : universal;
+
         // Services with a universal principal across all regions/partitions (the default case)
         default:
           return universal;
