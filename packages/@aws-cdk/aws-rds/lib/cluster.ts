@@ -259,17 +259,18 @@ interface DatabaseClusterBaseProps {
   readonly storageEncrypted?: boolean
 
   /**
-  * The KMS key for storage encryption.
-  * If specified, {@link storageEncrypted} will be set to `true`.
-  *
-  * @default - if storageEncrypted is true then the default master key, no key otherwise
-  */
+   * The KMS key for storage encryption.
+   * If specified, {@link storageEncrypted} will be set to `true`.
+   *
+   * @default - if storageEncrypted is true then the default master key, no key otherwise
+   */
   readonly storageEncryptionKey?: kms.IKey;
+
   /**
-  * Whether to copy tags to the snapshot when a snapshot is created.
-  *
-  * @default: true
-  */
+   * Whether to copy tags to the snapshot when a snapshot is created.
+   *
+   * @default - true
+   */
   readonly copyTagsToSnapshot?: boolean;
 }
 
@@ -431,7 +432,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       // Encryption
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
-      //Tag
+      // Tags
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
     };
   }
