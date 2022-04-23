@@ -1729,6 +1729,75 @@ describe('User Pool', () => {
 
   });
 
+  test('email withSES with verified domain', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        region: 'us-east-2',
+        account: '11111111111',
+      },
+    });
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      email: UserPoolEmail.withSES({
+        fromEmail: 'mycustomemail@example.com',
+        fromName: 'My Custom Email',
+        sesRegion: 'us-east-1',
+        replyTo: 'reply@example.com',
+        configurationSetName: 'default',
+        sesVerifiedDomain: 'example.com',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      EmailConfiguration: {
+        EmailSendingAccount: 'DEVELOPER',
+        From: 'My Custom Email <mycustomemail@example.com>',
+        ReplyToEmailAddress: 'reply@example.com',
+        ConfigurationSet: 'default',
+        SourceArn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':ses:us-east-1:11111111111:identity/example.com',
+            ],
+          ],
+        },
+      },
+    });
+  });
+
+  test('email withSES throws, when "fromEmail" contains the different domain', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        region: 'us-east-2',
+        account: '11111111111',
+      },
+    });
+
+    expect(() => new UserPool(stack, 'Pool1', {
+      mfaMessage: '{####',
+    })).toThrow(/MFA message must contain the template string/);
+
+    // WHEN
+    expect(() => new UserPool(stack, 'Pool', {
+      email: UserPoolEmail.withSES({
+        fromEmail: 'mycustomemail@some.com',
+        fromName: 'My Custom Email',
+        sesRegion: 'us-east-1',
+        replyTo: 'reply@example.com',
+        configurationSetName: 'default',
+        sesVerifiedDomain: 'example.com',
+      }),
+    })).toThrow(/"fromEmail" contains a different domain than the "sesVerifiedDomain"/);
+  });
 });
 
 test('device tracking is configured correctly', () => {

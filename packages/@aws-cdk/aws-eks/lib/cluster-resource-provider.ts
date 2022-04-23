@@ -80,7 +80,10 @@ export class ClusterResourceProvider extends NestedStack {
       code: lambda.Code.fromAsset(HANDLER_DIR),
       description: 'onEvent handler for EKS cluster resource provider',
       runtime: HANDLER_RUNTIME,
-      environment: props.environment,
+      environment: {
+        AWS_STS_REGIONAL_ENDPOINTS: 'regional',
+        ...props.environment,
+      },
       handler: 'index.onEvent',
       timeout: Duration.minutes(1),
       vpc: props.subnets ? props.vpc : undefined,
@@ -94,7 +97,10 @@ export class ClusterResourceProvider extends NestedStack {
       code: lambda.Code.fromAsset(HANDLER_DIR),
       description: 'isComplete handler for EKS cluster resource provider',
       runtime: HANDLER_RUNTIME,
-      environment: props.environment,
+      environment: {
+        AWS_STS_REGIONAL_ENDPOINTS: 'regional',
+        ...props.environment,
+      },
       handler: 'index.isComplete',
       timeout: Duration.minutes(1),
       vpc: props.subnets ? props.vpc : undefined,
