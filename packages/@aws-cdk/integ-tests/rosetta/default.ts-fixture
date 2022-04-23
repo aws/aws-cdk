@@ -1,5 +1,5 @@
 import * as lambda from '@aws-cdk/aws-lambda';
-import { IntegTestCase } from '@aws-cdk/integ-tests';
+import { IntegTestCase, IntegTest } from '@aws-cdk/integ-tests';
 import {
   App,
   Construct,
