@@ -21,14 +21,28 @@ export interface S3EventSourceProps {
  * Use S3 bucket notifications as an event source for AWS Lambda.
  */
 export class S3EventSource implements lambda.IEventSource {
-  constructor(readonly bucket: s3.Bucket, private readonly props: S3EventSourceProps) {
+
+  /**
+   * @deprecated The type returned by this getter will change to s3.IBucket,
+   * pls migrate to the s3.IBucket interface if you can, if you can not
+   * open an issue in github repo https://github.com/aws/aws-cdk to kickstart
+   * a design discussion to accommodate you're use-case.
+   */
+  get bucket(): s3.Bucket {
+    if (this._bucket instanceof s3.Bucket) {
+      return this._bucket;
+    }
+    throw Error(`This event actually references an ${typeof this._bucket}`);
+  }
+
+  constructor(private readonly _bucket: s3.IBucket, private readonly props: S3EventSourceProps) {
 
   }
 
   public bind(target: lambda.IFunction) {
     const filters = this.props.filters || [];
     for (const event of this.props.events) {
-      this.bucket.addEventNotification(event, new notifs.LambdaDestination(target), ...filters);
+      this._bucket.addEventNotification(event, new notifs.LambdaDestination(target), ...filters);
     }
   }
 }

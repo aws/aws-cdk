@@ -97,6 +97,13 @@ fn.addEventSource(new S3EventSource(bucket, {
   events: [ s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED ],
   filters: [ { prefix: 'subdir/' } ], // optional
 }));
+
+const importedBucket = s3.Bucket.fromBucketArn(this, 'mybucket', 'arn:aws:s3:::sample-bucket');
+
+fn.addEventSource(new S3EventSource(importedBucket, {
+  events: [ s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED ],
+  filters: [ { prefix: 'subdir/' } ], // optional
+}));
 ```
 
 ## SNS
