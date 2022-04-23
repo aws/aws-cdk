@@ -1,4 +1,4 @@
-import { UnknownPrincipal } from '@aws-cdk/aws-iam';
+import { UnknownPrincipal, IGrantable, Grant } from '@aws-cdk/aws-iam';
 import { ArnFormat, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDatabase } from './database';
@@ -27,6 +27,21 @@ export interface ITable extends IResource {
    * Database Name
    */
   readonly databaseName: string
+
+
+  /**
+   * Grant Permissions to read from the Table
+   * @param identity
+   */
+  grantRead(identity: IGrantable): Grant
+
+  /**
+    * Grant Permissions to read & write to the Table
+    * @param identity
+    */
+  grantReadWrite(identity: IGrantable): Grant
+
+
 }
 
 /**
@@ -132,6 +147,7 @@ export interface TableProps {
 }
 
 abstract class TableBase extends Resource implements ITable {
+
   /**
    * References a table object via its ARN
    *
@@ -161,6 +177,25 @@ abstract class TableBase extends Resource implements ITable {
   public abstract readonly tableArn: string;
   public abstract readonly tableName: string;
   public abstract readonly databaseName: string;
+
+  grantReadWrite(grantee: IGrantable) {
+    return Grant.addToPrincipal({
+      grantee,
+      actions: ['timestream:Select', 'timestream:ListMeasures', 'timestream:DescribeTable', 'timestream:WriteRecords'],
+      resourceArns: [this.tableArn],
+    });
+  }
+
+
+  grantRead(grantee: IGrantable) {
+    return Grant.addToPrincipal({
+      grantee,
+      actions: ['timestream:Select', 'timestream:ListMeasures', 'timestream:DescribeTable'],
+      resourceArns: [this.tableArn],
+    });
+  }
+
+
 }
 
 /**

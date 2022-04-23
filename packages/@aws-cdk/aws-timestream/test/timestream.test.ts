@@ -32,6 +32,159 @@ describe('Timestream Database', () => {
 
     expect(database.databaseName).toBe('database');
   });
+
+  test('permission grant readWrite for database', () => {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack', {
+      env: { account: '012345678901', region: 'us-east-1' },
+    });
+
+    const key = new Key(stack, 'TestKey');
+
+    const database = new Database(stack, 'TestDatabase', {
+      databaseName: 'Database_1',
+      kmsKey: key,
+    });
+
+
+    const role = new Role(stack, 'testrole', {
+      assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
+    });
+
+    database.grantReadWrite(role);
+
+    const expected: any = {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'timestream:Select',
+              'timestream:ListMeasures',
+              'timestream:DescribeTable',
+              'timestream:WriteRecords',
+              'timestream:ListTables',
+              'timestream:DescribeDatabase',
+              'timestream:CreateTable',
+              'timestream:DeleteTable',
+              'timestream:UpdateTable',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'TestDatabase7A4A91C2',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':timestream:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':database/',
+                    {
+                      Ref: 'TestDatabase7A4A91C2',
+                    },
+                    '/table/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    };
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', expected);
+
+  });
+
+
+  test('permission grant read for database', () => {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack', {
+      env: { account: '012345678901', region: 'us-east-1' },
+    });
+
+    const key = new Key(stack, 'TestKey');
+
+    const database = new Database(stack, 'TestDatabase', {
+      databaseName: 'Database_1',
+      kmsKey: key,
+    });
+
+    const role = new Role(stack, 'testrole', {
+      assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
+    });
+
+    database.grantRead(role);
+
+    const expected: any = {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'timestream:Select',
+              'timestream:ListMeasures',
+              'timestream:DescribeTable',
+              'timestream:WriteRecords',
+              'timestream:ListTables',
+              'timestream:DescribeDatabase',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'TestDatabase7A4A91C2',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':timestream:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':database/',
+                    {
+                      Ref: 'TestDatabase7A4A91C2',
+                    },
+                    '/table/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    };
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', expected);
+
+  });
 });
 
 describe('Timestream Table', () => {
@@ -94,6 +247,103 @@ describe('Timestream Table', () => {
     });
   });
 
+  test('permission grant readWrite for table', () => {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    const key = new Key(stack, 'TestKey');
+
+    const database = new Database(stack, 'TestDatabase', {
+      databaseName: 'Database_1',
+      kmsKey: key,
+    });
+
+    const table = new Table(stack, 'TestTable', {
+      database,
+      tableName: 'testTable',
+    });
+
+    const role = new Role(stack, 'testrole', {
+      assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
+    });
+
+    table.grantReadWrite(role);
+
+    const expected: any = {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'timestream:Select',
+              'timestream:ListMeasures',
+              'timestream:DescribeTable',
+              'timestream:WriteRecords',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'TestTable5769773A',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    };
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', expected);
+
+  });
+
+  test('permission grant read for table', () => {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    const key = new Key(stack, 'TestKey');
+
+    const database = new Database(stack, 'TestDatabase', {
+      databaseName: 'Database_1',
+      kmsKey: key,
+    });
+
+    const table = new Table(stack, 'TestTable', {
+      database,
+      tableName: 'testTable',
+    });
+
+    const role = new Role(stack, 'testrole', {
+      assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
+    });
+
+    table.grantRead(role);
+
+    const expected: any = {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'timestream:Select',
+              'timestream:ListMeasures',
+              'timestream:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'TestTable5769773A',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    };
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', expected);
+
+  });
+
   test('table from arn', () => {
     const app = new App();
     const stack = new Stack(app, 'TestStack');
@@ -122,7 +372,7 @@ describe('Timestream Scheduled Query', () => {
       queryString: 'SELECT * FROM DATABASE',
       errorReportConfiguration: {
         s3Configuration: {
-          bucketName: bucket.bucketName,
+          bucket: bucket,
           encryptionOption: EncryptionOptions.SSE_S3,
           objectKeyPrefix: 'prefix/',
         },
@@ -130,16 +380,15 @@ describe('Timestream Scheduled Query', () => {
       scheduledQueryName: 'Test Query',
       notificationConfiguration: {
         snsConfiguration: {
-          topicArn: topic.topicArn,
+          topic: topic,
         },
       },
       targetConfiguration: {
         timestreamConfiguration: {
-          databaseName: database.databaseName,
           dimensionMappings: [
             { dimensionValueType: 'VARCHAR', name: 'region' },
           ],
-          tableName: table.tableName,
+          table,
           timeColumn: 'hour',
         },
       },

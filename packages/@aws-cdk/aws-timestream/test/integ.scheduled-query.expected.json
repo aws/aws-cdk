@@ -305,7 +305,7 @@
         ]
       }
     },
-    "ScheduledQuery4B8B5094": {
+    "ScheduledQuery1CF5592F": {
       "Type": "AWS::Timestream::ScheduledQuery",
       "Properties": {
         "ErrorReportConfiguration": {

@@ -110,12 +110,11 @@ new ScheduledQuery(scope, "ScheduledQuery", {
   scheduledQueryName: "Test_Query",
   notificationConfiguration: {
     snsConfiguration: {
-      topicArn: topic.topicArn,
+      topic: topic,
     },
   },
   targetConfiguration: {
     timestreamConfiguration: {
-      databaseName: table.databaseName,
       dimensionMappings: [
         {
           name: "name",
@@ -131,7 +130,7 @@ new ScheduledQuery(scope, "ScheduledQuery", {
           },
         ],
       },
-      tableName: Fn.select(1, Fn.split("|", table.tableName)),
+      table: table),
       timeColumn: "time",
     },
   },

@@ -2,7 +2,7 @@ import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Key } from '@aws-cdk/aws-kms';
 import { Bucket } from '@aws-cdk/aws-s3';
 import { Topic } from '@aws-cdk/aws-sns';
-import { App, Fn, RemovalPolicy, Stack } from '@aws-cdk/core';
+import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { Database, EncryptionOptions, ScheduledQuery, Table } from '../lib';
 
 const env = {
@@ -32,7 +32,7 @@ new ScheduledQuery(stack, 'ScheduledQuery', {
   queryString: 'SELECT time, measure_name as name, measure_name as amount FROM "ATestDB"."Test"',
   errorReportConfiguration: {
     s3Configuration: {
-      bucketName: bucket.bucketName,
+      bucket: bucket,
       encryptionOption: EncryptionOptions.SSE_S3,
       objectKeyPrefix: 'prefix/',
     },
@@ -40,12 +40,11 @@ new ScheduledQuery(stack, 'ScheduledQuery', {
   scheduledQueryName: 'Test_Query',
   notificationConfiguration: {
     snsConfiguration: {
-      topicArn: topic.topicArn,
+      topic,
     },
   },
   targetConfiguration: {
     timestreamConfiguration: {
-      databaseName: database.databaseName,
       dimensionMappings: [{
         name: 'name',
         dimensionValueType: 'VARCHAR',
@@ -57,7 +56,7 @@ new ScheduledQuery(stack, 'ScheduledQuery', {
           sourceColumn: 'amount',
         }],
       },
-      tableName: Fn.select(1, Fn.split('|', table.tableName)),
+      table,
       timeColumn: 'time',
     },
   },
