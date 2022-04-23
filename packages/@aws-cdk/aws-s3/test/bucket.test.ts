@@ -778,6 +778,21 @@ describe('bucket', () => {
         },
       });
     });
+
+    test("sets the isWebsite property to 'false' if 'websiteConfiguration' is 'undefined'", () => {
+      expect(bucket.isWebsite).toBeFalsy();
+    });
+
+    test("sets the isWebsite property to 'true' if 'websiteConfiguration' is not 'undefined'", () => {
+      cfnBucket = new s3.CfnBucket(stack, 'WebsiteCfnBucket', {
+        websiteConfiguration: {
+          indexDocument: 'index.html',
+        },
+      });
+      bucket = s3.Bucket.fromCfnBucket(cfnBucket);
+
+      expect(bucket.isWebsite).toBeTruthy();
+    });
   });
 
   test('grantRead', () => {

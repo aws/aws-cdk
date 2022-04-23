@@ -1615,7 +1615,7 @@ export class Bucket extends BucketBase {
       public readonly bucketWebsiteDomainName = Fn.select(2, Fn.split('/', cfnBucket.attrWebsiteUrl));
 
       public readonly encryptionKey = undefined; // ToDo this should be handled
-      public readonly isWebsite = false; // ToDo determine this from the properties of the L1
+      public readonly isWebsite = cfnBucket.websiteConfiguration !== undefined;
       public policy = undefined; // ToDo handle policies
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = cfnBucket.publicAccessBlockConfiguration &&
