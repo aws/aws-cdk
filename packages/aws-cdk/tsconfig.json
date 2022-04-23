@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
-        "target": "ES2018",
+        "target": "ES2019",
         "module": "commonjs",
-        "lib": ["es2018", "dom"],
+        "lib": ["es2019", "dom"],
         "strict": true,
         "alwaysStrict": true,
         "declaration": true,
@@ -22,7 +22,8 @@
         "lib/init-templates/**/add-project.hook.ts"
     ],
     "exclude": [
-        "lib/init-templates/**/typescript/**/*.ts"
+        "lib/init-templates/**/typescript/**/*.ts",
+        "test/integ/cli/sam_cdk_integ_app/**/*"
     ],
     "references": [
         {
@@ -43,5 +44,5 @@
         {
             "path": "../cdk-assets"
         },
-    ],
+    ]
 }

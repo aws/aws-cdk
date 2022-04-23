@@ -47,6 +47,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public readonly role?: iam.IRole;
   public readonly version: string;
   public readonly architecture: lambda.Architecture;
+  public readonly resourceArnsForGrantInvoke: string[];
 
   private readonly _edgeFunction: lambda.Function;
 
@@ -68,6 +69,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     this.permissionsNode = this._edgeFunction.permissionsNode;
     this.version = lambda.extractQualifierFromArn(this.functionArn);
     this.architecture = this._edgeFunction.architecture;
+    this.resourceArnsForGrantInvoke = this._edgeFunction.resourceArnsForGrantInvoke;
 
     this.node.defaultChild = this._edgeFunction;
   }
@@ -113,6 +115,9 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public grantInvoke(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvoke(identity);
   }
+  public grantInvokeUrl(identity: iam.IGrantable): iam.Grant {
+    return this.lambda.grantInvokeUrl(identity);
+  }
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.lambda.metric(metricName, { ...props, region: EdgeFunction.EDGE_REGION });
   }
@@ -134,6 +139,9 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   }
   public configureAsyncInvoke(options: lambda.EventInvokeConfigOptions): void {
     return this.lambda.configureAsyncInvoke(options);
+  }
+  public addFunctionUrl(options?: lambda.FunctionUrlOptions): lambda.FunctionUrl {
+    return this.lambda.addFunctionUrl(options);
   }
 
   /** Create a function in-region */

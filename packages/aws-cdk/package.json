@@ -46,7 +46,7 @@
         "BSD-2-Clause",
         "0BSD"
       ],
-      "dontAttribute": "^@aws-cdk/|^cdk-assets$",
+      "dontAttribute": "^@aws-cdk/|^cdk-assets$|^cdk-cli-wrapper$",
       "test": "bin/cdk --version"
     }
   },
@@ -83,18 +83,19 @@
     "nock": "^13.2.4",
     "@aws-cdk/pkglint": "0.0.0",
     "sinon": "^9.2.4",
-    "ts-jest": "^27.1.3",
+    "ts-jest": "^27.1.4",
     "ts-mock-imports": "^1.3.8",
-    "xml-js": "^1.6.11"
+    "xml-js": "^1.6.11",
+    "axios": "^0.26.1"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@jsii/check-node": "1.54.0",
+    "@jsii/check-node": "1.56.0",
     "archiver": "^5.3.0",
-    "aws-sdk": "^2.979.0",
+    "aws-sdk": "^2.1093.0",
     "camelcase": "^6.3.0",
     "cdk-assets": "0.0.0",
     "chokidar": "^3.5.3",
@@ -106,7 +107,7 @@
     "minimatch": ">=3.1",
     "promptly": "^3.2.0",
     "proxy-agent": "^5.0.0",
-    "semver": "^7.3.5",
+    "semver": "^7.3.6",
     "source-map-support": "^0.5.21",
     "strip-ansi": "^6.0.1",
     "table": "^6.8.0",

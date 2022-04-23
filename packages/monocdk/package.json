@@ -109,7 +109,7 @@
     "jsonschema": "^1.4.0",
     "minimatch": "^3.1.2",
     "punycode": "^2.1.1",
-    "semver": "^7.3.5",
+    "semver": "^7.3.6",
     "yaml": "1.10.2"
   },
   "devDependencies": {
@@ -144,6 +144,7 @@
     "@aws-cdk/aws-autoscalingplans": "0.0.0",
     "@aws-cdk/aws-backup": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
+    "@aws-cdk/aws-billingconductor": "0.0.0",
     "@aws-cdk/aws-budgets": "0.0.0",
     "@aws-cdk/aws-cassandra": "0.0.0",
     "@aws-cdk/aws-ce": "0.0.0",
@@ -269,6 +270,7 @@
     "@aws-cdk/aws-medialive": "0.0.0",
     "@aws-cdk/aws-mediapackage": "0.0.0",
     "@aws-cdk/aws-mediastore": "0.0.0",
+    "@aws-cdk/aws-mediatailor": "0.0.0",
     "@aws-cdk/aws-memorydb": "0.0.0",
     "@aws-cdk/aws-msk": "0.0.0",
     "@aws-cdk/aws-mwaa": "0.0.0",
@@ -341,6 +343,7 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
     "@aws-cdk/lambda-layer-node-proxy-agent": "0.0.0",

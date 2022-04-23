@@ -1,3 +1,478 @@
+# CloudFormation Resource Specification v66.1.0
+
+## New Resource Types
+
+* AWS::AppRunner::ObservabilityConfiguration
+
+## Attribute Changes
+
+* AWS::Athena::WorkGroup WorkGroupConfigurationUpdates.EngineVersion.EffectiveEngineVersion (__deleted__)
+
+## Property Changes
+
+* AWS::AppRunner::Service ObservabilityConfiguration (__added__)
+* AWS::AppStream::Fleet SessionScriptS3Location (__added__)
+* AWS::Athena::WorkGroup WorkGroupConfigurationUpdates (__deleted__)
+* AWS::Batch::ComputeEnvironment ReplaceComputeEnvironment (__deleted__)
+* AWS::Batch::ComputeEnvironment UpdatePolicy (__deleted__)
+* AWS::CE::AnomalyMonitor ResourceTags (__added__)
+* AWS::CE::AnomalySubscription ResourceTags (__added__)
+* AWS::CloudWatch::MetricStream StatisticsConfigurations (__added__)
+* AWS::EC2::TrafficMirrorTarget GatewayLoadBalancerEndpointId (__deleted__)
+* AWS::SSM::Document UpdateMethod (__added__)
+* AWS::SSM::Document Attachments.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document Content.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document DocumentFormat.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document Requires.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document TargetType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document VersionName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::Athena::WorkGroup.ResultConfigurationUpdates (__removed__)
+* AWS::Athena::WorkGroup.WorkGroupConfigurationUpdates (__removed__)
+* AWS::Batch::ComputeEnvironment.UpdatePolicy (__removed__)
+* AWS::AppRunner::Service.ServiceObservabilityConfiguration (__added__)
+* AWS::AppStream::Fleet.S3Location (__added__)
+* AWS::CE::AnomalyMonitor.ResourceTag (__added__)
+* AWS::CE::AnomalySubscription.ResourceTag (__added__)
+* AWS::CloudWatch::MetricStream.MetricStreamStatisticsConfiguration (__added__)
+* AWS::CloudWatch::MetricStream.MetricStreamStatisticsMetric (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.AmiDistributionConfiguration (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.ContainerDistributionConfiguration (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.LaunchPermissionConfiguration (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.TargetContainerRepository (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources UpdateToLatestImageVersion (__deleted__)
+* AWS::Batch::ComputeEnvironment.ComputeResources AllocationStrategy.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources BidPercentage.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2Configuration.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2KeyPair.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources ImageId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceRole.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceTypes.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources LaunchTemplate.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources PlacementGroup.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Tags.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Type.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.Ec2ConfigurationObject ImageIdOverride.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.Ec2ConfigurationObject ImageType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification LaunchTemplateId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification LaunchTemplateName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification Version.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ImageBuilder::DistributionConfiguration.Distribution AmiDistributionConfiguration.PrimitiveType (__deleted__)
+* AWS::ImageBuilder::DistributionConfiguration.Distribution AmiDistributionConfiguration.Type (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.Distribution ContainerDistributionConfiguration.PrimitiveType (__deleted__)
+* AWS::ImageBuilder::DistributionConfiguration.Distribution ContainerDistributionConfiguration.Type (__added__)
+* AWS::SSM::Document.AttachmentsSource Key.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document.AttachmentsSource Name.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document.AttachmentsSource Values.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document.DocumentRequires Name.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document.DocumentRequires Version.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
+# CloudFormation Resource Specification v66.0.0
+
+## New Resource Types
+
+* AWS::DataSync::LocationFSxOpenZFS
+* AWS::Events::Endpoint
+* AWS::Lambda::Url
+* AWS::MediaTailor::PlaybackConfiguration
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Batch::ComputeEnvironment ReplaceComputeEnvironment (__added__)
+* AWS::Batch::ComputeEnvironment UpdatePolicy (__added__)
+* AWS::EC2::TrafficMirrorTarget GatewayLoadBalancerEndpointId (__added__)
+* AWS::Lambda::Permission FunctionUrlAuthType (__added__)
+
+## Property Type Changes
+
+* AWS::Batch::ComputeEnvironment.UpdatePolicy (__added__)
+* AWS::EC2::LaunchTemplate.MaintenanceOptions (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources UpdateToLatestImageVersion (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources AllocationStrategy.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources BidPercentage.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2Configuration.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2KeyPair.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources ImageId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceRole.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceTypes.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources LaunchTemplate.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources PlacementGroup.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Type.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.Ec2ConfigurationObject ImageIdOverride.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.Ec2ConfigurationObject ImageType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification LaunchTemplateId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification LaunchTemplateName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification Version.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DMS::Endpoint.DocDbSettings DocsToInvestigate (__added__)
+* AWS::DMS::Endpoint.DocDbSettings ExtractDocId (__added__)
+* AWS::DMS::Endpoint.DocDbSettings NestingLevel (__added__)
+* AWS::DMS::Endpoint.IbmDb2Settings CurrentLsn (__added__)
+* AWS::DMS::Endpoint.IbmDb2Settings MaxKBytesPerRead (__added__)
+* AWS::DMS::Endpoint.IbmDb2Settings SetDataCaptureChanges (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings BcpPacketSize (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings ControlTablesFileGroup (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings QuerySingleAlwaysOnNode (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings ReadBackupOnly (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings SafeguardPolicy (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings UseBcpFullLoad (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings UseThirdPartyBackupDevice (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings AcceptAnyDate (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings AfterConnectScript (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings BucketFolder (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings BucketName (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings CaseSensitiveNames (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings CompUpdate (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings ConnectionTimeout (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings DateFormat (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings EmptyAsNull (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings EncryptionMode (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings ExplicitIds (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings FileTransferUploadStreams (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings LoadTimeout (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings MaxFileSize (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings RemoveQuotes (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings ReplaceChars (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings ReplaceInvalidChars (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings ServerSideEncryptionKmsKeyId (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings ServiceAccessRoleArn (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings TimeFormat (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings TrimBlanks (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings TruncateColumns (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings WriteBufferSize (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData MaintenanceOptions (__added__)
+
+
+# CloudFormation Resource Specification v65.0.0
+
+## New Resource Types
+
+
+## Removed Resource Types
+
+* AWS::Events::Endpoint
+
+## Attribute Changes
+
+* AWS::SQS::QueuePolicy Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queuepolicy.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html
+* AWS::SQS::QueuePolicy Id (__deleted__)
+* AWS::SageMaker::Domain SecurityGroupIdForDomainBoundary (__added__)
+
+## Property Changes
+
+* AWS::ECS::Service PlacementConstraints.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service PlacementStrategies.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SQS::QueuePolicy PolicyDocument.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queuepolicy.html#cfn-sqs-queuepolicy-policydocument
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html#cfn-sqs-queuepolicy-policydoc
+* AWS::SQS::QueuePolicy Queues.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queuepolicy.html#cfn-sqs-queuepolicy-queues
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html#cfn-sqs-queuepolicy-queues
+* AWS::SageMaker::Domain AppSecurityGroupManagement (__added__)
+* AWS::SageMaker::Domain DomainSettings (__added__)
+
+## Property Type Changes
+
+* AWS::SageMaker::Domain.DomainSettings (__added__)
+* AWS::SageMaker::Domain.RStudioServerProAppSettings (__added__)
+* AWS::SageMaker::Domain.RStudioServerProDomainSettings (__added__)
+* AWS::SageMaker::UserProfile.RStudioServerProAppSettings (__added__)
+* AWS::DMS::Endpoint.KafkaSettings IncludePartitionValue (__added__)
+* AWS::DMS::Endpoint.KafkaSettings MessageFormat (__added__)
+* AWS::DMS::Endpoint.KafkaSettings MessageMaxBytes (__added__)
+* AWS::DMS::Endpoint.KinesisSettings IncludePartitionValue (__added__)
+* AWS::DMS::Endpoint.MySqlSettings AfterConnectScript (__added__)
+* AWS::DMS::Endpoint.MySqlSettings CleanSourceMetadataOnMismatch (__added__)
+* AWS::DMS::Endpoint.MySqlSettings EventsPollInterval (__added__)
+* AWS::DMS::Endpoint.MySqlSettings MaxFileSize (__added__)
+* AWS::DMS::Endpoint.MySqlSettings ParallelLoadThreads (__added__)
+* AWS::DMS::Endpoint.MySqlSettings ServerTimezone (__added__)
+* AWS::DMS::Endpoint.MySqlSettings TargetDbType (__added__)
+* AWS::ECS::Service.PlacementConstraint Expression.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.PlacementConstraint Type.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.PlacementStrategy Field.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.PlacementStrategy Type.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SageMaker::Domain.UserSettings RStudioServerProAppSettings (__added__)
+* AWS::SageMaker::UserProfile.UserSettings RStudioServerProAppSettings (__added__)
+
+
+# CloudFormation Resource Specification v63.0.0
+
+## New Resource Types
+
+* AWS::Events::Endpoint
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::EKS::Cluster.Provider (__added__)
+* AWS::DMS::Endpoint.OracleSettings AccessAlternateDirectly (__added__)
+* AWS::DMS::Endpoint.OracleSettings AddSupplementalLogging (__added__)
+* AWS::DMS::Endpoint.OracleSettings AdditionalArchivedLogDestId (__added__)
+* AWS::DMS::Endpoint.OracleSettings AllowSelectNestedTables (__added__)
+* AWS::DMS::Endpoint.OracleSettings ArchivedLogDestId (__added__)
+* AWS::DMS::Endpoint.OracleSettings ArchivedLogsOnly (__added__)
+* AWS::DMS::Endpoint.OracleSettings AsmPassword (__added__)
+* AWS::DMS::Endpoint.OracleSettings AsmServer (__added__)
+* AWS::DMS::Endpoint.OracleSettings AsmUser (__added__)
+* AWS::DMS::Endpoint.OracleSettings CharLengthSemantics (__added__)
+* AWS::DMS::Endpoint.OracleSettings DirectPathNoLog (__added__)
+* AWS::DMS::Endpoint.OracleSettings DirectPathParallelLoad (__added__)
+* AWS::DMS::Endpoint.OracleSettings EnableHomogenousTablespace (__added__)
+* AWS::DMS::Endpoint.OracleSettings ExtraArchivedLogDestIds (__added__)
+* AWS::DMS::Endpoint.OracleSettings FailTasksOnLobTruncation (__added__)
+* AWS::DMS::Endpoint.OracleSettings NumberDatatypeScale (__added__)
+* AWS::DMS::Endpoint.OracleSettings OraclePathPrefix (__added__)
+* AWS::DMS::Endpoint.OracleSettings ParallelAsmReadThreads (__added__)
+* AWS::DMS::Endpoint.OracleSettings ReadAheadBlocks (__added__)
+* AWS::DMS::Endpoint.OracleSettings ReadTableSpaceName (__added__)
+* AWS::DMS::Endpoint.OracleSettings ReplacePathPrefix (__added__)
+* AWS::DMS::Endpoint.OracleSettings RetryInterval (__added__)
+* AWS::DMS::Endpoint.OracleSettings SecurityDbEncryption (__added__)
+* AWS::DMS::Endpoint.OracleSettings SecurityDbEncryptionName (__added__)
+* AWS::DMS::Endpoint.OracleSettings SpatialDataOptionToGeoJsonFunctionName (__added__)
+* AWS::DMS::Endpoint.OracleSettings StandbyDelayTime (__added__)
+* AWS::DMS::Endpoint.OracleSettings UseAlternateFolderForOnline (__added__)
+* AWS::DMS::Endpoint.OracleSettings UseBFile (__added__)
+* AWS::DMS::Endpoint.OracleSettings UseDirectPathFullLoad (__added__)
+* AWS::DMS::Endpoint.OracleSettings UseLogminerReader (__added__)
+* AWS::DMS::Endpoint.OracleSettings UsePathPrefix (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings AfterConnectScript (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings CaptureDdls (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings DdlArtifactsSchema (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings ExecuteTimeout (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings FailTasksOnLobTruncation (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings HeartbeatEnable (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings HeartbeatFrequency (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings HeartbeatSchema (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings MaxFileSize (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings PluginName (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings SlotName (__added__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.PrimitiveType (__deleted__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.Type (__added__)
+* AWS::FSx::FileSystem.OntapConfiguration ThroughputCapacity.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
+# CloudFormation Resource Specification v62.0.0
+
+## New Resource Types
+
+* AWS::FSx::Snapshot
+* AWS::FSx::StorageVirtualMachine
+* AWS::FSx::Volume
+* AWS::IoTEvents::AlarmModel
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::DocDB::DBInstance EnablePerformanceInsights (__added__)
+* AWS::Lambda::Function EphemeralStorage (__added__)
+* AWS::Lambda::Permission PrincipalOrgID (__added__)
+* AWS::Lex::Bot TestBotAliasSettings (__added__)
+
+## Property Type Changes
+
+* AWS::DevOpsGuru::ResourceCollection.TagCollection (__added__)
+* AWS::EC2::LaunchTemplate.Ipv4PrefixSpecification (__added__)
+* AWS::EC2::LaunchTemplate.Ipv6PrefixSpecification (__added__)
+* AWS::Lambda::Function.EphemeralStorage (__added__)
+* AWS::Lex::Bot.AdvancedRecognitionSetting (__added__)
+* AWS::Lex::Bot.AudioLogDestination (__added__)
+* AWS::Lex::Bot.AudioLogSetting (__added__)
+* AWS::Lex::Bot.BotAliasLocaleSettings (__added__)
+* AWS::Lex::Bot.BotAliasLocaleSettingsItem (__added__)
+* AWS::Lex::Bot.CloudWatchLogGroupLogDestination (__added__)
+* AWS::Lex::Bot.CodeHookSpecification (__added__)
+* AWS::Lex::Bot.ConversationLogSettings (__added__)
+* AWS::Lex::Bot.CustomVocabulary (__added__)
+* AWS::Lex::Bot.CustomVocabularyItem (__added__)
+* AWS::Lex::Bot.LambdaCodeHook (__added__)
+* AWS::Lex::Bot.S3BucketLogDestination (__added__)
+* AWS::Lex::Bot.TestBotAliasSettings (__added__)
+* AWS::Lex::Bot.TextLogDestination (__added__)
+* AWS::Lex::Bot.TextLogSetting (__added__)
+* AWS::MediaPackage::OriginEndpoint.EncryptionContractConfiguration (__added__)
+* AWS::DevOpsGuru::ResourceCollection.ResourceCollectionFilter Tags (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv4PrefixCount (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv4Prefixes (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv6PrefixCount (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv6Prefixes (__added__)
+* AWS::Lex::Bot.BotLocale CustomVocabulary (__added__)
+* AWS::Lex::Bot.SlotValueSelectionSetting AdvancedRecognitionSetting (__added__)
+* AWS::MediaPackage::OriginEndpoint.SpekeKeyProvider EncryptionContractConfiguration (__added__)
+
+
+# CloudFormation Resource Specification v61.0.0
+
+## New Resource Types
+
+* AWS::BillingConductor::BillingGroup
+* AWS::BillingConductor::CustomLineItem
+* AWS::BillingConductor::PricingPlan
+* AWS::BillingConductor::PricingRule
+
+## Attribute Changes
+
+* AWS::DMS::ReplicationInstance ReplicationInstancePrivateIpAddresses.PrimitiveItemType (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePrivateIpAddresses.Type (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePrivateIpAddresses.PrimitiveType (__added__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePublicIpAddresses.PrimitiveItemType (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePublicIpAddresses.Type (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePublicIpAddresses.PrimitiveType (__added__)
+* AWS::EC2::Subnet Id (__deleted__)
+* AWS::EC2::Subnet SubnetId (__added__)
+
+## Property Changes
+
+* AWS::CodeDeploy::DeploymentGroup OutdatedInstancesStrategy (__added__)
+* AWS::CodeDeploy::DeploymentGroup Tags (__added__)
+* AWS::DMS::Endpoint Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DMS::ReplicationSubnetGroup Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::Subnet AvailabilityZoneId (__added__)
+* AWS::EC2::Subnet EnableDns64 (__added__)
+* AWS::EC2::Subnet Ipv6Native (__added__)
+* AWS::EC2::Subnet PrivateDnsNameOptionsOnLaunch (__added__)
+* AWS::EC2::Subnet CidrBlock.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Inspector::AssessmentTemplate RulesPackageArns.DuplicatesAllowed (__added__)
+* AWS::Inspector::AssessmentTemplate UserAttributesForFindings.DuplicatesAllowed (__added__)
+* AWS::Inspector::ResourceGroup ResourceGroupTags.DuplicatesAllowed (__added__)
+
+## Property Type Changes
+
+* AWS::ACMPCA::Certificate.CustomAttribute (__added__)
+* AWS::ACMPCA::Certificate.CustomExtension (__added__)
+* AWS::ACMPCA::CertificateAuthority.CustomAttribute (__added__)
+* AWS::CodeDeploy::DeploymentGroup.TargetGroupPairInfo (__added__)
+* AWS::CodeDeploy::DeploymentGroup.TrafficRoute (__added__)
+* AWS::ACMPCA::Certificate.Extensions CustomExtensions (__added__)
+* AWS::ACMPCA::Certificate.Subject CustomAttributes (__added__)
+* AWS::ACMPCA::CertificateAuthority.Subject CustomAttributes (__added__)
+* AWS::CodeDeploy::DeploymentGroup.LoadBalancerInfo TargetGroupPairInfoList (__added__)
+* AWS::FSx::FileSystem.OpenZFSConfiguration Options (__added__)
+* AWS::FSx::FileSystem.RootVolumeConfiguration RecordSizeKiB (__added__)
+
+
 # CloudFormation Resource Specification v60.0.0
 
 ## New Resource Types

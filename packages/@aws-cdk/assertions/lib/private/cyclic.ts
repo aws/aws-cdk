@@ -139,7 +139,7 @@ function analyzeSubPattern(pattern: string): SubFragment[] {
   }
 
   if (start < pattern.length - 1) {
-    ret.push({ type: 'literal', content: pattern.substr(start) });
+    ret.push({ type: 'literal', content: pattern.slice(start) });
   }
 
   return ret;
