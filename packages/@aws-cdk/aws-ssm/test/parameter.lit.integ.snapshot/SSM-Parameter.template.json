@@ -40,9 +40,9 @@
       {
        "Action": [
         "ssm:DescribeParameters",
-        "ssm:GetParameters",
         "ssm:GetParameter",
-        "ssm:GetParameterHistory"
+        "ssm:GetParameterHistory",
+        "ssm:GetParameters"
        ],
        "Effect": "Allow",
        "Resource": {
