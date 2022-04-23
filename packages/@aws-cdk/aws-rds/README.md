@@ -63,9 +63,36 @@ new rds.DatabaseClusterFromSnapshot(this, 'Database', {
 });
 ```
 
+### Updating the database instances in a cluster
+
+An update of the instances in a database cluster sometimes implies some interruptions.
+E.g., if you change the instance class, the corresponding instance must be restarted and is not available during that time.
+If you change all instances in a cluster, all instances might get restarted at the same time and basically making your database unavailable for some time.
+You can adapt that update behaviour with the `instanceUpdateBehaviour` property.
+
+The default option, `rds.InstanceUpdateBehaviour.BULK`, does not impose any restrictions on the instance update behaviour.
+Thus, a change of instances can lead to downtime of your database cluster.
+Alternatively, you can set `instanceUpdateBehaviour` to `rds.InstanceUpdateBehaviour.ROLLING`.
+Then CDK makes sure that at most one instance at a time is being updated.
+This increases the overall update time but allows to change, e.g., the instance type of the database instances without a downtime caused by restarts of all database instances at the same time.
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  instances: 2,
+  instanceProps: {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+    vpc,
+  },
+  // optional, defaults to rds.InstanceUpdateBehaviour.BULK
+  instanceUpdateBehaviour: rds.InstanceUpdateBehaviour.ROLLING,
+});
+```
+
 ## Starting an instance database
 
-To set up a instance database, define a `DatabaseInstance`. You must
+To set up an instance database, define a `DatabaseInstance`. You must
 always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
 your instances will be launched privately or publicly:
 
