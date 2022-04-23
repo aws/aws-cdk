@@ -63,37 +63,6 @@ new rds.DatabaseClusterFromSnapshot(this, 'Database', {
 });
 ```
 
-By default, `copyTagsToSnaphot` attribute is set to `true` for both `DatabaseCluster` and `DatabaseClusterFromSnapshot` and all tags will be copied to the snapshots of clusters, to disable this, `copyTagsToSnapshot` attribute can be set to `false` as shown below.
-
-```ts
-declare const vpc: ec2.Vpc;
-new rds.DatabaseClusterFromSnapshot(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.aurora({ version: rds.AuroraEngineVersion.VER_1_22_2 }),
-  instanceProps: {
-    vpc,
-  },
-  snapshotIdentifier: 'mySnapshot',
-  copyTagsToSnapshot: false
-});
-```
-
-```ts
-declare const vpc: ec2.Vpc;
-const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
-  credentials: rds.Credentials.fromGeneratedSecret('clusteradmin'), // Optional - will default to 'admin' username and generated password
-  instanceProps: {
-    // optional , defaults to t3.medium
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-    vpcSubnets: {
-      subnetType: ec2.SubnetType.PRIVATE,
-    },
-    vpc,
-  },
-  copyTagsToSnapshot: false
-});
-```
-
 ## Starting an instance database
 
 To set up a instance database, define a `DatabaseInstance`. You must
