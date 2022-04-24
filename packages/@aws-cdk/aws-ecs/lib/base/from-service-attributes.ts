@@ -1,11 +1,8 @@
 import { ArnFormat, FeatureFlags, Fn, Resource, Stack, Token } from '@aws-cdk/core';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { IBaseService } from '../base/base-service';
 import { ICluster } from '../cluster';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * The properties to import from the service.
