@@ -154,6 +154,15 @@
   },
   "awslint": {
     "exclude": [
+      "construct-ctor:@aws-cdk/aws-ecs.Ec2Service.<initializer>.params[0]",
+      "construct-ctor:@aws-cdk/aws-ecs.ExternalService.<initializer>.params[0]",
+      "construct-ctor:@aws-cdk/aws-ecs.FargateService.<initializer>.params[0]",
+      "from-signature:@aws-cdk/aws-ecs.Ec2Service.fromEc2ServiceArn.params[0]",
+      "from-attributes:@aws-cdk/aws-ecs.Ec2Service.fromEc2ServiceAttributes.params[0]",
+      "from-signature:@aws-cdk/aws-ecs.ExternalService.fromExternalServiceArn.params[0]",
+      "from-attributes:@aws-cdk/aws-ecs.ExternalService.fromExternalServiceAttributes.params[0]",
+      "from-signature:@aws-cdk/aws-ecs.FargateService.fromFargateServiceArn.params[0]",
+      "from-attributes:@aws-cdk/aws-ecs.FargateService.fromFargateServiceAttributes.params[0]",
       "props-physical-name:@aws-cdk/aws-ecs.TaskDefinitionProps",
       "props-physical-name:@aws-cdk/aws-ecs.Ec2TaskDefinitionProps",
       "props-physical-name:@aws-cdk/aws-ecs.FargateTaskDefinitionProps",
