@@ -3,16 +3,12 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { ArnFormat, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AssociateCloudMapServiceOptions, BaseService, BaseServiceOptions, CloudMapOptions, DeploymentControllerType, EcsTarget, IBaseService, IEcsLoadBalancerTarget, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { fromServiceAtrributes } from '../base/from-service-attributes';
 import { ScalableTaskCount } from '../base/scalable-task-count';
 import { Compatibility, LoadBalancerTargetOptions, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
-
 /**
  * The properties for defining a service using the External launch type.
  */
