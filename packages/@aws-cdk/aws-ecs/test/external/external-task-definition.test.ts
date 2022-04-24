@@ -350,9 +350,6 @@ describe('external task definition', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
-        ImageScanningConfiguration: {
-          ScanOnPush: false,
-        },
         LifecyclePolicy: {
           // eslint-disable-next-line max-len
           LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
@@ -578,11 +575,7 @@ describe('external task definition', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
-      ImageScanningConfiguration: {
-        ScanOnPush: false,
-      },
-    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {});
   });
 
   test('warns when setting containers from ECR repository using fromRegistry method', () => {
@@ -601,17 +594,30 @@ describe('external task definition', () => {
     Annotations.fromStack(stack).hasWarning('/Default/ExternalTaskDef/web', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
   });
 
-  test('correctly sets volumes from', () => {
+  test('correctly sets volumes', () => {
+    // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef', {});
 
-    // THEN
-    expect(() => taskDefinition.addVolume({
+    // WHEN
+    taskDefinition.addVolume({
       host: {
         sourcePath: '/tmp/cache',
       },
       name: 'scratch',
-    })).toThrow('External task definitions doesnt support volumes' );
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      Volumes: [
+        {
+          Host: {
+            SourcePath: '/tmp/cache',
+          },
+          Name: 'scratch',
+        },
+      ],
+    });
   });
 
   test('error when interferenceAccelerators set', () => {

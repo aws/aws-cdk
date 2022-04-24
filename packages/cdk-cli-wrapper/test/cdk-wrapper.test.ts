@@ -437,7 +437,7 @@ test('can synth fast', () => {
     },
   });
   cdk.synthFast({
-    execCmd: 'node bin/my-app.js',
+    execCmd: ['node', 'bin/my-app.js'],
     output: 'cdk.output',
     env: {
       OTHERKEY: 'othervalue',
@@ -449,8 +449,8 @@ test('can synth fast', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    'node bin/my-app.js',
-    [],
+    'node',
+    ['bin/my-app.js'],
     expect.objectContaining({
       env: expect.objectContaining({
         KEY: 'value',
@@ -461,13 +461,4 @@ test('can synth fast', () => {
       cwd: '/project',
     }),
   );
-});
-
-test('cannot resolve executable', () => {
-  expect(() => {
-    new CdkCliWrapper({
-      directory: '/project',
-      cdkExecutable: 'invalid',
-    });
-  }).toThrow(/could not resolve path to cdk executable: "invalid"/);
 });

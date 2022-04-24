@@ -97,6 +97,11 @@ interface PackageJson {
      * @default true
      */
     readonly explicitExports?: boolean;
+
+    /**
+     * An exports section that should be ignored for v1 but included for ubergen
+     */
+    readonly exports?: Record<string, string>;
   };
   exports?: Record<string, string>;
 }
@@ -149,7 +154,7 @@ async function findLibrariesToPackage(uberPackageJson: PackageJson): Promise<rea
     result.push({
       packageJson,
       root: path.join(librariesRoot, dir),
-      shortName: packageJson.name.substr('@aws-cdk/'.length),
+      shortName: packageJson.name.slice('@aws-cdk/'.length),
     });
   }
 
@@ -305,8 +310,11 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
 function copySubmoduleExports(targetExports: Record<string, string>, library: LibraryReference, subdirectory: string) {
   const visibleName = library.shortName;
 
-  for (const [relPath, relSource] of Object.entries(library.packageJson.exports ?? {})) {
-    targetExports[`./${unixPath(path.join(visibleName, relPath))}`] = `./${unixPath(path.join(subdirectory, relSource))}`;
+  // Do both REAL "exports" section, as well as virtual, ubergen-only "exports" section
+  for (const exportSet of [library.packageJson.exports, library.packageJson.ubergen?.exports]) {
+    for (const [relPath, relSource] of Object.entries(exportSet ?? {})) {
+      targetExports[`./${unixPath(path.join(visibleName, relPath))}`] = `./${unixPath(path.join(subdirectory, relSource))}`;
+    }
   }
 
   // If there was an export for '.' in the original submodule, this assignment will overwrite it,
@@ -577,7 +585,7 @@ async function rewriteLibraryImports(fromFile: string, targetDir: string, libRoo
 
     const importedFile = modulePath === sourceLibrary.packageJson.name
       ? path.join(libRoot, sourceLibrary.shortName)
-      : path.join(libRoot, sourceLibrary.shortName, modulePath.substr(sourceLibrary.packageJson.name.length + 1));
+      : path.join(libRoot, sourceLibrary.shortName, modulePath.slice(sourceLibrary.packageJson.name.length + 1));
 
     return path.relative(targetDir, importedFile);
   }

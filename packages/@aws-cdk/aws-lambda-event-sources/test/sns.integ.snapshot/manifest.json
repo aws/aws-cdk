@@ -1,0 +1,52 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "lambda-event-source-sns": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-event-source-sns.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/lambda-event-source-sns/F/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRole3AC82EE1"
+          }
+        ],
+        "/lambda-event-source-sns/F/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FC4345940"
+          }
+        ],
+        "/lambda-event-source-sns/F/AllowInvoke:lambdaeventsourcesnsT85539BB1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FAllowInvokelambdaeventsourcesnsT85539BB11B51A88E"
+          }
+        ],
+        "/lambda-event-source-sns/F/T/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FTA788EE87"
+          }
+        ],
+        "/lambda-event-source-sns/T/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TD925BC7E"
+          }
+        ]
+      },
+      "displayName": "lambda-event-source-sns"
+    }
+  }
+}

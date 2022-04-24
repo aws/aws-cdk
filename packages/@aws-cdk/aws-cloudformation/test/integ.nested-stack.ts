@@ -41,7 +41,7 @@ class MyNestedStack extends NestedStack {
 
     if (props.subscriber) {
       new lambda.Function(this, 'fn', {
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromInline('console.error("hi")'),
         handler: 'index.handler',
         environment: {
