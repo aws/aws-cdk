@@ -155,6 +155,8 @@ export class CdkToolkit {
 
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
+    const stacksFile = options.stacksFile;
+    const deployedStacks: Array<{ name: string, id: string }> = [];
 
     for (const stack of stacks.stackArtifacts) {
       if (stacks.stackCount !== 1) { highlight(stack.displayName); }
@@ -244,8 +246,8 @@ export class CdkToolkit {
           print('%s.%s = %s', chalk.cyan(stack.id), chalk.cyan(name), chalk.underline(chalk.cyan(value)));
         }
 
+        deployedStacks.push({ name: stack.stackName, id: result.stackArn });
         print('Stack ARN:');
-
         data(result.stackArn);
       } catch (e) {
         error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e);
@@ -261,6 +263,13 @@ export class CdkToolkit {
         if (outputsFile) {
           fs.ensureFileSync(outputsFile);
           await fs.writeJson(outputsFile, stackOutputs, {
+            spaces: 2,
+            encoding: 'utf8',
+          });
+        }
+        if (stacksFile) {
+          fs.ensureFileSync(stacksFile);
+          await fs.writeJson(stacksFile, deployedStacks, {
             spaces: 2,
             encoding: 'utf8',
           });
@@ -818,6 +827,12 @@ export interface DeployOptions extends WatchOptions {
    * @default - Outputs are not written to any file
    */
   outputsFile?: string;
+
+  /**
+   * Path to file where stack names and arns will be written after a successful deploy as JSON
+   * @default - Stacks are not written to any file
+   */
+  stacksFile?: string;
 
   /**
    * Whether we are on a CI system

@@ -283,6 +283,7 @@ export class Settings {
       staging: argv.staging,
       output: argv.output,
       outputsFile: argv.outputsFile,
+      stacksFile: argv.stacksFile,
       progress: argv.progress,
       bundlingStacks,
       lookups: argv.lookups,
