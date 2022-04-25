@@ -1,8 +1,12 @@
-import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import { ArnFormat, IResource, Names, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CloudFormationTemplate } from './cloudformation-template';
-import { MessageLanguage } from './common';
+import { MessageLanguage, PRODUCT_STACK_CONTEXT_DIRECTORY, TemplateType, VersioningStrategy } from './common';
 import { AssociationManager } from './private/association-manager';
+import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
 import { CfnCloudFormationProduct } from './servicecatalog.generated';
 import { TagOptions } from './tag-options';
@@ -67,6 +71,12 @@ export interface CloudFormationProductVersion {
    * @default - No product version name provided
    */
   readonly productVersionName?: string;
+
+  /**
+   * Versioning Strategy to use for deployment
+   * @default DEFAULT
+   */
+  readonly versioningStrategy?: VersioningStrategy
 }
 
 /**
@@ -171,10 +181,12 @@ export abstract class Product extends ProductBase {
 export class CloudFormationProduct extends Product {
   public readonly productArn: string;
   public readonly productId: string;
+  public readonly productPathUniqueId: string;
 
   constructor(scope: Construct, id: string, props: CloudFormationProductProps) {
     super(scope, id);
 
+    this.productPathUniqueId = Names.uniqueId(this);
     this.validateProductProps(props);
 
     const product = new CfnCloudFormationProduct(this, 'Resource', {
@@ -202,20 +214,44 @@ export class CloudFormationProduct extends Product {
     }
   }
 
-  private renderProvisioningArtifacts(
-    props: CloudFormationProductProps): CfnCloudFormationProduct.ProvisioningArtifactPropertiesProperty[] {
-    return props.productVersions.map(productVersion => {
+  private renderProvisioningArtifacts(props: CloudFormationProductProps): CfnCloudFormationProduct.ProvisioningArtifactPropertiesProperty[] {
+    let productVersions: CfnCloudFormationProduct.ProvisioningArtifactPropertiesProperty[] = [];
+    for (const productVersion of props.productVersions) {
       const template = productVersion.cloudFormationTemplate.bind(this);
-      InputValidator.validateUrl(this.node.path, 'provisioning template url', template.httpUrl);
-      return {
-        name: productVersion.productVersionName,
-        description: productVersion.description,
-        disableTemplateValidation: productVersion.validateTemplate === false ? true : false,
-        info: {
-          LoadTemplateFromURL: template.httpUrl,
+      let httpUrl = template.httpUrl;
+      switch (template.templateType) {
+        case TemplateType.PRODUCT_STACK:
+          template.productVersionDetails?.setProductPathUniqueId(this.productPathUniqueId);
+          template.productVersionDetails?.setProductVersionName(productVersion.productVersionName);
+          template.productVersionDetails?.setVersioningStrategy(productVersion.versioningStrategy);
+          break;
+        case TemplateType.PRODUCT_STACK_CONTEXT:
+          const templateFileKey = `${this.productPathUniqueId}.${template.productVersionDetails?.productStackId}.${productVersion.productVersionName}.product.template.json`;
+          const templateFilePath = path.join(PRODUCT_STACK_CONTEXT_DIRECTORY, templateFileKey);
+          if (!fs.existsSync(templateFilePath)) {
+            throw new Error(`Template ${templateFileKey} cannot be found in product stack context`);
+          }
+          httpUrl = new s3_assets.Asset(this, `Template${hashValues(templateFileKey)}`, {
+            path: templateFilePath,
+          }).httpUrl;
+          break;
+        default:
+          break;
+      }
+
+      InputValidator.validateUrl(this.node.path, 'provisioning template url', httpUrl);
+      productVersions.push(
+        {
+          name: productVersion.productVersionName,
+          description: productVersion.description,
+          disableTemplateValidation: productVersion.validateTemplate === false ? true : false,
+          info: {
+            LoadTemplateFromURL: httpUrl,
+          },
         },
-      };
-    });
+      );
+    }
+    return productVersions;
   };
 
   private validateProductProps(props: CloudFormationProductProps) {
