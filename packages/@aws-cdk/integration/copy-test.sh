@@ -15,14 +15,13 @@ rewrite_import() {
 rewrite_imports() {
   module=$1
   shopt -s nullglob
-  for test in $module/integ.*.ts ; do
-    rewrite_import $module $test
+  for file in $module/*.ts ; do
+    rewrite_import $module $file
   done
-  for test in $module/**/integ.*.ts ; do
-    rewrite_import $module $test
+  for file in $module/**/*.ts ; do
+    rewrite_import $module $file
   done
-  rm -f "$module/**/*.bak"
-  rm -f "$module/*.bak"
+  find $module -name "*.bak" -type f -delete
 }
 
 for module in $INPUT ; do
@@ -31,13 +30,9 @@ for module in $INPUT ; do
   then
     mkdir -p $DESTINATION/test/$name
     cp -r $module/test/* $DESTINATION/test/$name 2>/dev/null || :
-    rm $DESTINATION/test/$name/**/*.d.ts 2>/dev/null || :
-    rm $DESTINATION/test/$name/**/*.js 2>/dev/null || :
-    rm $DESTINATION/test/$name/**/*.test.ts 2>/dev/null || :
-    rm $DESTINATION/test/$name/*.d.ts 2>/dev/null || :
-    rm $DESTINATION/test/$name/*.js 2>/dev/null || :
-    rm $DESTINATION/test/$name/*.test.ts 2>/dev/null || :
-
+    find $DESTINATION/test/$name -name "*.d.ts" -type f -delete
+    find $DESTINATION/test/$name -name "*.js" -type f -delete
+    find $DESTINATION/test/$name -name "*.test.ts" -type f -delete
     echo
     echo "Processing module: $DESTINATION/test/$name"
     rewrite_imports $DESTINATION/test/$name
