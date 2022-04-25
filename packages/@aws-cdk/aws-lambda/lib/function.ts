@@ -974,7 +974,7 @@ export class Function extends FunctionBase {
    *
    * // Is equivalent to
    *
-   * new Alias(this, 'AliasLive', {
+   * new lambda.Alias(this, 'AliasLive', {
    *   aliasName: 'Live',
    *   version: fn.currentVersion,
    * });
