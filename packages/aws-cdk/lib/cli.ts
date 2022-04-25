@@ -117,6 +117,7 @@ async function parseCommandLineArguments() {
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
       .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
+      .option('stacks-file', { type: 'string', alias: 'O', desc: 'Path to file where stack names and arns be written as JSON', requiresArg: true })
       .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' })
       .option('toolkit-stack-name', { type: 'string', desc: 'The name of the existing CDK toolkit stack (only used for app using legacy synthesis)', requiresArg: true })
       .option('progress', { type: 'string', choices: [StackActivityProgress.BAR, StackActivityProgress.EVENTS], desc: 'Display mode for stack activity events' })
@@ -466,6 +467,7 @@ async function initCommandLine() {
           parameters: parameterMap,
           usePreviousParameters: args['previous-parameters'],
           outputsFile: configuration.settings.get(['outputsFile']),
+          stacksFile: configuration.settings.get(['stacksFile']),
           progress: configuration.settings.get(['progress']),
           ci: args.ci,
           rollback: configuration.settings.get(['rollback']),

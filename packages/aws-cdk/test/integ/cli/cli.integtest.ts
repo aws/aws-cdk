@@ -224,6 +224,21 @@ integTest('deploy wildcard with outputs', withDefaultFixture(async (fixture) => 
   });
 }));
 
+integTest('stacks file', withDefaultFixture(async (fixture) => {
+  const stacksFile = path.join(fixture.integTestDir, 'stacks', 'stacks.json');
+  await fs.mkdir(path.dirname(stacksFile), { recursive: true });
+
+  await fixture.cdkDeploy(['outputs-test-*'], {
+    options: ['--stacks-file', stacksFile],
+  });
+
+  const stacks = JSON.parse((await fs.readFile(stacksFile, { encoding: 'utf-8' })).toString());
+  expect(stacks[0].name).toEqual(`${fixture.stackNamePrefix}-outputs-test-1`);
+  expect(stacks[1].name).toEqual(`${fixture.stackNamePrefix}-outputs-test-2`);
+  expect(stacks[0].id).toContain(`arn:aws:cloudformation:${fixture.aws.region}:${await fixture.aws.account()}:stack/${fixture.stackNamePrefix}-outputs-test-1/`);
+  expect(stacks[1].id).toContain(`arn:aws:cloudformation:${fixture.aws.region}:${await fixture.aws.account()}:stack/${fixture.stackNamePrefix}-outputs-test-2/`);
+}));
+
 integTest('deploy with parameters', withDefaultFixture(async (fixture) => {
   const stackArn = await fixture.cdkDeploy('param-test-1', {
     options: [
@@ -555,7 +570,7 @@ integTest('cdk ls', withDefaultFixture(async (fixture) => {
     'lambda',
     'missing-ssm-parameter',
     'order-providing',
-    'outputs-test-1',
+    'bo-1',
     'outputs-test-2',
     'param-test-1',
     'param-test-2',
