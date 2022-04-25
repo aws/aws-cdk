@@ -68,8 +68,7 @@
                             {
                               "Action": [
                                 "states:ListExecutions",
-                                "states:ListStateMachines",
-                                "states:SendTaskSuccess"
+                                "states:ListStateMachines"
                               ],
                               "Effect": "Allow",
                               "Resource": {
@@ -120,12 +119,19 @@
                             },
                             {
                               "Action": [
-                                "states:DescribeActivity",
+                                "states:ListActivities",
                                 "states:DescribeStateMachine",
-                                "states:ListActivities"
+                                "states:DescribeActivity"
                               ],
                               "Effect": "Allow",
                               "Resource": "*"
+                            },
+                            {
+                              "Action": "states:SendTaskSuccess",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Ref": "StateMachine2E01A3A5"
+                              }
                             }
                           ],
                           "Version": "2012-10-17"
