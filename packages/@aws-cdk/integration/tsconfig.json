@@ -1,0 +1,754 @@
+{
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "charset": "utf8",
+    "declaration": true,
+    "experimentalDecorators": true,
+    "incremental": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "lib": [
+      "es2019"
+    ],
+    "module": "CommonJS",
+    "newLine": "lf",
+    "noEmitOnError": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "stripInternal": false,
+    "target": "ES2019",
+    "composite": true,
+    "tsBuildInfoFile": "tsconfig.tsbuildinfo"
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "references": [
+    {
+      "path": "../cloud-assembly-schema"
+    },
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../cx-api"
+    },
+    {
+      "path": "../../../tools/@aws-cdk/cdk-build-tools"
+    },
+    {
+      "path": "../../../tools/@aws-cdk/pkglint"
+    },
+    {
+      "path": "../alexa-ask"
+    },
+    {
+      "path": "../app-delivery"
+    },
+    {
+      "path": "../assertions"
+    },
+    {
+      "path": "../assets"
+    },
+    {
+      "path": "../aws-accessanalyzer"
+    },
+    {
+      "path": "../aws-acmpca"
+    },
+    {
+      "path": "../aws-amazonmq"
+    },
+    {
+      "path": "../aws-amplify"
+    },
+    {
+      "path": "../aws-amplifyuibuilder"
+    },
+    {
+      "path": "../aws-apigateway"
+    },
+    {
+      "path": "../aws-apigatewayv2"
+    },
+    {
+      "path": "../aws-apigatewayv2-authorizers"
+    },
+    {
+      "path": "../aws-apigatewayv2-integrations"
+    },
+    {
+      "path": "../aws-appconfig"
+    },
+    {
+      "path": "../aws-appflow"
+    },
+    {
+      "path": "../aws-appintegrations"
+    },
+    {
+      "path": "../aws-applicationautoscaling"
+    },
+    {
+      "path": "../aws-applicationinsights"
+    },
+    {
+      "path": "../aws-appmesh"
+    },
+    {
+      "path": "../aws-apprunner"
+    },
+    {
+      "path": "../aws-appstream"
+    },
+    {
+      "path": "../aws-appsync"
+    },
+    {
+      "path": "../aws-aps"
+    },
+    {
+      "path": "../aws-athena"
+    },
+    {
+      "path": "../aws-auditmanager"
+    },
+    {
+      "path": "../aws-autoscaling"
+    },
+    {
+      "path": "../aws-autoscaling-common"
+    },
+    {
+      "path": "../aws-autoscaling-hooktargets"
+    },
+    {
+      "path": "../aws-autoscalingplans"
+    },
+    {
+      "path": "../aws-backup"
+    },
+    {
+      "path": "../aws-batch"
+    },
+    {
+      "path": "../aws-billingconductor"
+    },
+    {
+      "path": "../aws-budgets"
+    },
+    {
+      "path": "../aws-cassandra"
+    },
+    {
+      "path": "../aws-ce"
+    },
+    {
+      "path": "../aws-certificatemanager"
+    },
+    {
+      "path": "../aws-chatbot"
+    },
+    {
+      "path": "../aws-cloud9"
+    },
+    {
+      "path": "../aws-cloudformation"
+    },
+    {
+      "path": "../aws-cloudfront"
+    },
+    {
+      "path": "../aws-cloudfront-origins"
+    },
+    {
+      "path": "../aws-cloudtrail"
+    },
+    {
+      "path": "../aws-cloudwatch"
+    },
+    {
+      "path": "../aws-cloudwatch-actions"
+    },
+    {
+      "path": "../aws-codeartifact"
+    },
+    {
+      "path": "../aws-codebuild"
+    },
+    {
+      "path": "../aws-codecommit"
+    },
+    {
+      "path": "../aws-codedeploy"
+    },
+    {
+      "path": "../aws-codeguruprofiler"
+    },
+    {
+      "path": "../aws-codegurureviewer"
+    },
+    {
+      "path": "../aws-codepipeline"
+    },
+    {
+      "path": "../aws-codepipeline-actions"
+    },
+    {
+      "path": "../aws-codestar"
+    },
+    {
+      "path": "../aws-codestarconnections"
+    },
+    {
+      "path": "../aws-codestarnotifications"
+    },
+    {
+      "path": "../aws-cognito"
+    },
+    {
+      "path": "../aws-cognito-identitypool"
+    },
+    {
+      "path": "../aws-config"
+    },
+    {
+      "path": "../aws-connect"
+    },
+    {
+      "path": "../aws-cur"
+    },
+    {
+      "path": "../aws-customerprofiles"
+    },
+    {
+      "path": "../aws-databrew"
+    },
+    {
+      "path": "../aws-datapipeline"
+    },
+    {
+      "path": "../aws-datasync"
+    },
+    {
+      "path": "../aws-dax"
+    },
+    {
+      "path": "../aws-detective"
+    },
+    {
+      "path": "../aws-devopsguru"
+    },
+    {
+      "path": "../aws-directoryservice"
+    },
+    {
+      "path": "../aws-dlm"
+    },
+    {
+      "path": "../aws-dms"
+    },
+    {
+      "path": "../aws-docdb"
+    },
+    {
+      "path": "../aws-dynamodb"
+    },
+    {
+      "path": "../aws-ec2"
+    },
+    {
+      "path": "../aws-ecr"
+    },
+    {
+      "path": "../aws-ecr-assets"
+    },
+    {
+      "path": "../aws-ecs"
+    },
+    {
+      "path": "../aws-ecs-patterns"
+    },
+    {
+      "path": "../aws-efs"
+    },
+    {
+      "path": "../aws-eks"
+    },
+    {
+      "path": "../aws-eks-legacy"
+    },
+    {
+      "path": "../aws-elasticache"
+    },
+    {
+      "path": "../aws-elasticbeanstalk"
+    },
+    {
+      "path": "../aws-elasticloadbalancing"
+    },
+    {
+      "path": "../aws-elasticloadbalancingv2"
+    },
+    {
+      "path": "../aws-elasticloadbalancingv2-actions"
+    },
+    {
+      "path": "../aws-elasticloadbalancingv2-targets"
+    },
+    {
+      "path": "../aws-elasticsearch"
+    },
+    {
+      "path": "../aws-emr"
+    },
+    {
+      "path": "../aws-emrcontainers"
+    },
+    {
+      "path": "../aws-events"
+    },
+    {
+      "path": "../aws-events-targets"
+    },
+    {
+      "path": "../aws-eventschemas"
+    },
+    {
+      "path": "../aws-evidently"
+    },
+    {
+      "path": "../aws-finspace"
+    },
+    {
+      "path": "../aws-fis"
+    },
+    {
+      "path": "../aws-fms"
+    },
+    {
+      "path": "../aws-forecast"
+    },
+    {
+      "path": "../aws-frauddetector"
+    },
+    {
+      "path": "../aws-fsx"
+    },
+    {
+      "path": "../aws-gamelift"
+    },
+    {
+      "path": "../aws-globalaccelerator"
+    },
+    {
+      "path": "../aws-globalaccelerator-endpoints"
+    },
+    {
+      "path": "../aws-glue"
+    },
+    {
+      "path": "../aws-greengrass"
+    },
+    {
+      "path": "../aws-greengrassv2"
+    },
+    {
+      "path": "../aws-groundstation"
+    },
+    {
+      "path": "../aws-guardduty"
+    },
+    {
+      "path": "../aws-healthlake"
+    },
+    {
+      "path": "../aws-iam"
+    },
+    {
+      "path": "../aws-imagebuilder"
+    },
+    {
+      "path": "../aws-inspector"
+    },
+    {
+      "path": "../aws-inspectorv2"
+    },
+    {
+      "path": "../aws-iot"
+    },
+    {
+      "path": "../aws-iot-actions"
+    },
+    {
+      "path": "../aws-iot1click"
+    },
+    {
+      "path": "../aws-iotanalytics"
+    },
+    {
+      "path": "../aws-iotcoredeviceadvisor"
+    },
+    {
+      "path": "../aws-iotevents"
+    },
+    {
+      "path": "../aws-iotevents-actions"
+    },
+    {
+      "path": "../aws-iotfleethub"
+    },
+    {
+      "path": "../aws-iotsitewise"
+    },
+    {
+      "path": "../aws-iotthingsgraph"
+    },
+    {
+      "path": "../aws-iotwireless"
+    },
+    {
+      "path": "../aws-ivs"
+    },
+    {
+      "path": "../aws-kafkaconnect"
+    },
+    {
+      "path": "../aws-kendra"
+    },
+    {
+      "path": "../aws-kinesis"
+    },
+    {
+      "path": "../aws-kinesisanalytics"
+    },
+    {
+      "path": "../aws-kinesisanalytics-flink"
+    },
+    {
+      "path": "../aws-kinesisanalyticsv2"
+    },
+    {
+      "path": "../aws-kinesisfirehose"
+    },
+    {
+      "path": "../aws-kinesisfirehose-destinations"
+    },
+    {
+      "path": "../aws-kinesisvideo"
+    },
+    {
+      "path": "../aws-kms"
+    },
+    {
+      "path": "../aws-lakeformation"
+    },
+    {
+      "path": "../aws-lambda"
+    },
+    {
+      "path": "../aws-lambda-destinations"
+    },
+    {
+      "path": "../aws-lambda-event-sources"
+    },
+    {
+      "path": "../aws-lambda-go"
+    },
+    {
+      "path": "../aws-lambda-nodejs"
+    },
+    {
+      "path": "../aws-lambda-python"
+    },
+    {
+      "path": "../aws-lex"
+    },
+    {
+      "path": "../aws-licensemanager"
+    },
+    {
+      "path": "../aws-lightsail"
+    },
+    {
+      "path": "../aws-location"
+    },
+    {
+      "path": "../aws-logs"
+    },
+    {
+      "path": "../aws-logs-destinations"
+    },
+    {
+      "path": "../aws-lookoutequipment"
+    },
+    {
+      "path": "../aws-lookoutmetrics"
+    },
+    {
+      "path": "../aws-lookoutvision"
+    },
+    {
+      "path": "../aws-macie"
+    },
+    {
+      "path": "../aws-managedblockchain"
+    },
+    {
+      "path": "../aws-mediaconnect"
+    },
+    {
+      "path": "../aws-mediaconvert"
+    },
+    {
+      "path": "../aws-medialive"
+    },
+    {
+      "path": "../aws-mediapackage"
+    },
+    {
+      "path": "../aws-mediastore"
+    },
+    {
+      "path": "../aws-mediatailor"
+    },
+    {
+      "path": "../aws-memorydb"
+    },
+    {
+      "path": "../aws-msk"
+    },
+    {
+      "path": "../aws-mwaa"
+    },
+    {
+      "path": "../aws-neptune"
+    },
+    {
+      "path": "../aws-networkfirewall"
+    },
+    {
+      "path": "../aws-networkmanager"
+    },
+    {
+      "path": "../aws-nimblestudio"
+    },
+    {
+      "path": "../aws-opensearchservice"
+    },
+    {
+      "path": "../aws-opsworks"
+    },
+    {
+      "path": "../aws-opsworkscm"
+    },
+    {
+      "path": "../aws-panorama"
+    },
+    {
+      "path": "../aws-personalize"
+    },
+    {
+      "path": "../aws-pinpoint"
+    },
+    {
+      "path": "../aws-pinpointemail"
+    },
+    {
+      "path": "../aws-qldb"
+    },
+    {
+      "path": "../aws-quicksight"
+    },
+    {
+      "path": "../aws-ram"
+    },
+    {
+      "path": "../aws-rds"
+    },
+    {
+      "path": "../aws-redshift"
+    },
+    {
+      "path": "../aws-refactorspaces"
+    },
+    {
+      "path": "../aws-rekognition"
+    },
+    {
+      "path": "../aws-resiliencehub"
+    },
+    {
+      "path": "../aws-resourcegroups"
+    },
+    {
+      "path": "../aws-robomaker"
+    },
+    {
+      "path": "../aws-route53"
+    },
+    {
+      "path": "../aws-route53-patterns"
+    },
+    {
+      "path": "../aws-route53-targets"
+    },
+    {
+      "path": "../aws-route53recoverycontrol"
+    },
+    {
+      "path": "../aws-route53recoveryreadiness"
+    },
+    {
+      "path": "../aws-route53resolver"
+    },
+    {
+      "path": "../aws-rum"
+    },
+    {
+      "path": "../aws-s3"
+    },
+    {
+      "path": "../aws-s3-assets"
+    },
+    {
+      "path": "../aws-s3-deployment"
+    },
+    {
+      "path": "../aws-s3-notifications"
+    },
+    {
+      "path": "../aws-s3objectlambda"
+    },
+    {
+      "path": "../aws-s3outposts"
+    },
+    {
+      "path": "../aws-sagemaker"
+    },
+    {
+      "path": "../aws-sam"
+    },
+    {
+      "path": "../aws-sdb"
+    },
+    {
+      "path": "../aws-secretsmanager"
+    },
+    {
+      "path": "../aws-securityhub"
+    },
+    {
+      "path": "../aws-servicecatalog"
+    },
+    {
+      "path": "../aws-servicecatalogappregistry"
+    },
+    {
+      "path": "../aws-servicediscovery"
+    },
+    {
+      "path": "../aws-ses"
+    },
+    {
+      "path": "../aws-ses-actions"
+    },
+    {
+      "path": "../aws-signer"
+    },
+    {
+      "path": "../aws-sns"
+    },
+    {
+      "path": "../aws-sns-subscriptions"
+    },
+    {
+      "path": "../aws-sqs"
+    },
+    {
+      "path": "../aws-ssm"
+    },
+    {
+      "path": "../aws-ssmcontacts"
+    },
+    {
+      "path": "../aws-ssmincidents"
+    },
+    {
+      "path": "../aws-sso"
+    },
+    {
+      "path": "../aws-stepfunctions"
+    },
+    {
+      "path": "../aws-stepfunctions-tasks"
+    },
+    {
+      "path": "../aws-synthetics"
+    },
+    {
+      "path": "../aws-timestream"
+    },
+    {
+      "path": "../aws-transfer"
+    },
+    {
+      "path": "../aws-waf"
+    },
+    {
+      "path": "../aws-wafregional"
+    },
+    {
+      "path": "../aws-wafv2"
+    },
+    {
+      "path": "../aws-wisdom"
+    },
+    {
+      "path": "../aws-workspaces"
+    },
+    {
+      "path": "../aws-xray"
+    },
+    {
+      "path": "../cloudformation-include"
+    },
+    {
+      "path": "../custom-resources"
+    },
+    {
+      "path": "../integ-tests"
+    },
+    {
+      "path": "../lambda-layer-awscli"
+    },
+    {
+      "path": "../lambda-layer-kubectl"
+    },
+    {
+      "path": "../lambda-layer-node-proxy-agent"
+    },
+    {
+      "path": "../pipelines"
+    },
+    {
+      "path": "../region-info"
+    },
+    {
+      "path": "../triggers"
+    }
+  ],
+  "_generated_by_jsii_": "Generated by jsii - safe to delete, and ideally should be in .gitignore"
+}
