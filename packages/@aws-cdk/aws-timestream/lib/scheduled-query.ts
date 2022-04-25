@@ -2,7 +2,7 @@ import { IRole, UnknownPrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-ia
 import { IKey } from '@aws-cdk/aws-kms';
 import { IBucket } from '@aws-cdk/aws-s3';
 import { ITopic } from '@aws-cdk/aws-sns';
-import { Fn, IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { EncryptionOptions } from './enums';
 import { ITable } from './table';
@@ -169,8 +169,9 @@ export interface S3Configuration {
 
   /**
    * Prefix for the error report key. Timestream by default adds the following prefix to the error report path.
+   * @default "timestream-errors/"
    */
-  readonly objectKeyPrefix: string
+  readonly objectKeyPrefix?: string
 }
 
 /**
@@ -515,7 +516,7 @@ export class ScheduledQuery extends ScheduledQueryBase {
 
     const targetConfig: CfnScheduledQuery.TimestreamConfigurationProperty= {
       databaseName: props.targetConfiguration!.timestreamConfiguration.table.databaseName,
-      tableName: Fn.select(1, Fn.split('|', props.targetConfiguration!.timestreamConfiguration.table.tableName)),
+      tableName: props.targetConfiguration!.timestreamConfiguration.table.tableName,
       dimensionMappings: props.targetConfiguration!.timestreamConfiguration.dimensionMappings,
       measureNameColumn: props.targetConfiguration!.timestreamConfiguration?.measureNameColumn,
       mixedMeasureMappings: props.targetConfiguration!.timestreamConfiguration?.mixedMeasureMappings,
@@ -527,7 +528,7 @@ export class ScheduledQuery extends ScheduledQueryBase {
       s3Configuration: {
         bucketName: props.errorReportConfiguration.s3Configuration.bucket.bucketName,
         encryptionOption: props.errorReportConfiguration.s3Configuration?.encryptionOption,
-        objectKeyPrefix: props.errorReportConfiguration.s3Configuration?.objectKeyPrefix,
+        objectKeyPrefix: props.errorReportConfiguration.s3Configuration?.objectKeyPrefix || 'timestream-errors/',
       },
     };
 
