@@ -1636,8 +1636,8 @@ export class Bucket extends BucketBase {
 
       public readonly encryptionKey = encryptionKey;
       public readonly isWebsite = cfnBucket.websiteConfiguration !== undefined;
-      public policy = undefined; // ToDo handle policies
-      protected autoCreatePolicy = false;
+      public policy = undefined;
+      protected autoCreatePolicy = true;
       protected disallowPublicAccess = cfnBucket.publicAccessBlockConfiguration &&
         (cfnBucket.publicAccessBlockConfiguration as any).blockPublicPolicy;
 

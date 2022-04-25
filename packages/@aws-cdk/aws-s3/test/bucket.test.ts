@@ -855,6 +855,32 @@ describe('bucket', () => {
 
       expect(bucket.encryptionKey).not.toBeUndefined();
     });
+
+    test('allows importing a BucketPolicy that references a Bucket', () => {
+      new s3.CfnBucketPolicy(stack, 'CfnBucketPolicy', {
+        policyDocument: {
+          'Statement': [
+            {
+              'Action': 's3:*',
+              'Effect': 'Allow',
+              'Principal': {
+                'AWS': '*',
+              },
+              'Resource': ['*'],
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+        bucket: cfnBucket.ref,
+      });
+      bucket.addToResourcePolicy(new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['s3:*'],
+        principals: [new iam.AccountRootPrincipal()],
+      }));
+
+      Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 2);
+    });
   });
 
   test('grantRead', () => {

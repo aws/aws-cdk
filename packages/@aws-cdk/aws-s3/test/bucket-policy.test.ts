@@ -150,4 +150,42 @@ describe('bucket policy', () => {
 
     expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
   });
+
+  describe('fromCfnBucketPolicy()', () => {
+    let stack: Stack;
+    let cfnBucket: s3.CfnBucket;
+    let cfnBucketPolicy: s3.CfnBucketPolicy;
+
+    beforeEach(() => {
+      stack = new Stack();
+      cfnBucket = new s3.CfnBucket(stack, 'CfnBucket');
+      cfnBucketPolicy = new s3.CfnBucketPolicy(stack, 'CfnBucketPolicy', {
+        policyDocument: {
+          'Statement': [
+            {
+              'Action': 's3:*',
+              'Effect': 'Deny',
+              'Principal': {
+                'AWS': '*',
+              },
+              'Resource': [cfnBucket.attrArn],
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+        bucket: cfnBucket.ref,
+      });
+    });
+
+    test('correctly extracts the Document and Bucket from the L1', () => {
+      const bucketPolicy = s3.BucketPolicy.fromCfnBucketPolicy(cfnBucketPolicy);
+
+      expect(bucketPolicy.document).not.toBeUndefined();
+      expect(bucketPolicy.document.isEmpty).toBeFalsy();
+
+      expect(bucketPolicy.bucket).not.toBeUndefined();
+      expect(bucketPolicy.bucket.policy).not.toBeUndefined();
+      expect(bucketPolicy.bucket.policy?.document.isEmpty).toBeFalsy();
+    });
+  });
 });
