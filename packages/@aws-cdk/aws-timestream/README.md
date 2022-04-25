@@ -93,6 +93,7 @@ new Table(scope, "TimestreamTable", {
 Create a scheduled query that will be run on your behalf at the configured schedule. Timestream assumes the execution role provided as part of the ScheduledQueryExecutionRoleArn parameter to run the query. You can use the NotificationConfiguration parameter to configure notification for your scheduled query operations.
 
 ```ts
+import * as events from '@aws-cdk/aws-events';
 declare const table: Table;
 declare const topic: sns.Topic;
 declare const bucket: s3.Bucket;
@@ -134,9 +135,7 @@ new ScheduledQuery(scope, "ScheduledQuery", {
       timeColumn: "time",
     },
   },
-  scheduleConfiguration: {
-    scheduleExpression: "cron(0/30 * * * ? *)",
-  },
+  schedule: events.Schedule.rate(Duration.days(1)),
   scheduledQueryExecutionRole: role,
 });
 ```
