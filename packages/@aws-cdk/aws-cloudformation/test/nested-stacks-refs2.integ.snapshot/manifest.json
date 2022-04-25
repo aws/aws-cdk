@@ -1,0 +1,98 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "nested-stacks-refs2-parent-with-producer": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "nested-stacks-refs2-parent-with-producer.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/nested-stacks-refs2-parent-with-producer": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "nestedstacksrefs2parentwithproducerNested1BBFBB3D5.nested.template.json",
+              "id": "89ace718d1ec985253be4d688a4632c5f15e28247cedbf99a756c83096315883",
+              "packaging": "file",
+              "sourceHash": "89ace718d1ec985253be4d688a4632c5f15e28247cedbf99a756c83096315883",
+              "s3BucketParameter": "AssetParameters89ace718d1ec985253be4d688a4632c5f15e28247cedbf99a756c83096315883S3Bucket88569758",
+              "s3KeyParameter": "AssetParameters89ace718d1ec985253be4d688a4632c5f15e28247cedbf99a756c83096315883S3VersionKey2661E5B6",
+              "artifactHashParameter": "AssetParameters89ace718d1ec985253be4d688a4632c5f15e28247cedbf99a756c83096315883ArtifactHashF75589EB"
+            }
+          }
+        ],
+        "/nested-stacks-refs2-parent-with-producer/Nested1/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434"
+          }
+        ],
+        "/nested-stacks-refs2-parent-with-producer/Nested1/nestedstacksrefs2parentwithproducerNested1MyTopic9E26C363TopicName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "nestedstacksrefs2parentwithproducerNested1MyTopic9E26C363TopicName"
+          }
+        ],
+        "/nested-stacks-refs2-parent-with-producer/Nested1.NestedStack/Nested1.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Nested1NestedStackNested1NestedStackResourceCD0AD36B"
+          }
+        ],
+        "/nested-stacks-refs2-parent-with-producer/Exports/Output{\"Fn::GetAtt\":[\"Nested1NestedStackNested1NestedStackResourceCD0AD36B\",\"Outputs.nestedstacksrefs2parentwithproducerNested1MyTopic9E26C363TopicName\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsnestedstacksrefs2parentwithproducerNested1MyTopic9E26C363TopicNameF4BCEDAF"
+          }
+        ],
+        "/nested-stacks-refs2-parent-with-producer/AssetParameters/89ace718d1ec985253be4d688a4632c5f15e28247cedbf99a756c83096315883/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters89ace718d1ec985253be4d688a4632c5f15e28247cedbf99a756c83096315883S3Bucket88569758"
+          }
+        ],
+        "/nested-stacks-refs2-parent-with-producer/AssetParameters/89ace718d1ec985253be4d688a4632c5f15e28247cedbf99a756c83096315883/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters89ace718d1ec985253be4d688a4632c5f15e28247cedbf99a756c83096315883S3VersionKey2661E5B6"
+          }
+        ],
+        "/nested-stacks-refs2-parent-with-producer/AssetParameters/89ace718d1ec985253be4d688a4632c5f15e28247cedbf99a756c83096315883/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters89ace718d1ec985253be4d688a4632c5f15e28247cedbf99a756c83096315883ArtifactHashF75589EB"
+          }
+        ]
+      },
+      "displayName": "nested-stacks-refs2-parent-with-producer"
+    },
+    "nested-stacks-refs2-consumer": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "nested-stacks-refs2-consumer.template.json",
+        "validateOnSynth": false
+      },
+      "dependencies": [
+        "nested-stacks-refs2-parent-with-producer"
+      ],
+      "metadata": {
+        "/nested-stacks-refs2-consumer/ConsumerTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConsumerTopic6F402371"
+          }
+        ]
+      },
+      "displayName": "nested-stacks-refs2-consumer"
+    }
+  }
+}
