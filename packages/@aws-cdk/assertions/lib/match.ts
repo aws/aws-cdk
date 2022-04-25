@@ -300,7 +300,7 @@ class ObjectMatch extends Matcher {
         result.recordFailure({
           matcher: this,
           path: [`/${patternKey}`],
-          message: `Missing key '${patternKey}' among ${Object.keys(actual).map(k => `'${k}'`).join(', ') || '(none)'}`,
+          message: `Missing key '${patternKey}' among {${Object.keys(actual).join(',')}}`,
         });
         continue;
       }
