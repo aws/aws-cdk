@@ -1,3 +1,4 @@
+import { Schedule } from '@aws-cdk/aws-events';
 import { IRole, UnknownPrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IKey } from '@aws-cdk/aws-kms';
 import { IBucket } from '@aws-cdk/aws-s3';
@@ -6,7 +7,7 @@ import { IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { EncryptionOptions } from './enums';
 import { ITable } from './table';
-import { CfnScheduledQuery } from './timestream.generated';
+import { CfnScheduledQuery, CfnScheduledQueryProps } from './timestream.generated';
 
 /**
  * Scheduled Query Interface
@@ -59,7 +60,7 @@ export interface IScheduledQuery extends IResource {
    *
    * @attribute
    */
-  readonly scheduleConfiguration: ScheduleConfiguration
+  readonly schedule: Schedule
 
   /**
    * The ARN of the IAM role that will be used by Timestream to run the query.
@@ -96,7 +97,7 @@ abstract class ScheduledQueryBase extends Resource implements IScheduledQuery {
       public readonly kmsKey: IKey = this.kmsKey
       public readonly notificationConfiguration: NotificationConfiguration = this.notificationConfiguration
       public readonly queryString: string = this.queryString
-      public readonly scheduleConfiguration: ScheduleConfiguration = this.scheduleConfiguration
+      public readonly schedule: Schedule = this.schedule
       public readonly targetConfiguration: TargetConfiguration = this.targetConfiguration
       public readonly grantPrincipal = new UnknownPrincipal({ resource: this });
     }
@@ -136,9 +137,9 @@ abstract class ScheduledQueryBase extends Resource implements IScheduledQuery {
   abstract readonly queryString: string
 
   /**
-   * The scheduled query schedule configuration.
+   * The  query schedule
    */
-  abstract readonly scheduleConfiguration: ScheduleConfiguration
+  abstract readonly schedule: Schedule
 
   /**
    * The ARN of the IAM role that will be used by Timestream to run the query.
@@ -202,16 +203,6 @@ export interface NotificationConfiguration {
    * Details on SNS configuration.
    */
   readonly snsConfiguration: SnsConfiguration
-}
-
-/**
- * Configuration of the schedule of the query.
- */
-export interface ScheduleConfiguration {
-  /**
-    * Configuration of the schedule of the query.
-    */
-  readonly scheduleExpression: string
 }
 
 /**
@@ -393,7 +384,7 @@ export interface ScheduledQueryProps {
   /**
    * Schedule configuration.
    */
-  readonly scheduleConfiguration: ScheduleConfiguration
+  readonly schedule: Schedule
 
   /**
    * The ARN for the IAM role that Timestream will assume when running the scheduled query.
@@ -472,7 +463,7 @@ export class ScheduledQuery extends ScheduledQueryBase {
    *
    * @attribute
    */
-  readonly scheduleConfiguration: ScheduleConfiguration
+  readonly schedule: Schedule
 
   /**
    * The ARN of the IAM role that will be used by Timestream to run the query.
@@ -502,10 +493,8 @@ export class ScheduledQuery extends ScheduledQueryBase {
       props.notificationConfiguration.snsConfiguration.topic.grantPublish(role);
       props.targetConfiguration?.timestreamConfiguration.table.grantReadWrite(role);
       props.errorReportConfiguration.s3Configuration.bucket.grantReadWrite(role);
+      props.sourceTable?.grantRead(role);
 
-      if (props.sourceTable) {
-        props.sourceTable.grantReadWrite(role);
-      }
 
       if (!props.sourceTable && !props.targetConfiguration?.timestreamConfiguration.table) {
         throw new Error('Neither sourceTable nor TargetConfiguration are set, cannot determine correct permissions, please supply scheduledQueryExecutionRole');
@@ -514,40 +503,53 @@ export class ScheduledQuery extends ScheduledQueryBase {
       scheduledQueryExecutionRoleArn = role;
     }
 
-    const targetConfig: CfnScheduledQuery.TimestreamConfigurationProperty= {
-      databaseName: props.targetConfiguration!.timestreamConfiguration.table.databaseName,
-      tableName: props.targetConfiguration!.timestreamConfiguration.table.tableName,
-      dimensionMappings: props.targetConfiguration!.timestreamConfiguration.dimensionMappings,
-      measureNameColumn: props.targetConfiguration!.timestreamConfiguration?.measureNameColumn,
-      mixedMeasureMappings: props.targetConfiguration!.timestreamConfiguration?.mixedMeasureMappings,
-      multiMeasureMappings: props.targetConfiguration!.timestreamConfiguration?.multiMeasureMappings,
-      timeColumn: props.targetConfiguration!.timestreamConfiguration.timeColumn,
-    };
-
-    const errorReportConfig: CfnScheduledQuery.ErrorReportConfigurationProperty = {
-      s3Configuration: {
-        bucketName: props.errorReportConfiguration.s3Configuration.bucket.bucketName,
-        encryptionOption: props.errorReportConfiguration.s3Configuration?.encryptionOption,
-        objectKeyPrefix: props.errorReportConfiguration.s3Configuration?.objectKeyPrefix || 'timestream-errors/',
+    let cfnScheduledQueryProps: CfnScheduledQueryProps = {
+      errorReportConfiguration: {
+        s3Configuration: {
+          bucketName: props.errorReportConfiguration.s3Configuration.bucket.bucketName,
+        },
       },
-    };
-
-    const resource = new CfnScheduledQuery(this, 'ScheduledQuery', {
       clientToken: props.clientToken,
-      errorReportConfiguration: errorReportConfig,
       kmsKeyId: props.kmsKey?.keyId,
       notificationConfiguration: { snsConfiguration: { topicArn: props.notificationConfiguration.snsConfiguration.topic.topicArn } },
       queryString: props.queryString,
-      scheduleConfiguration: props.scheduleConfiguration,
+      scheduleConfiguration: { scheduleExpression: props.schedule.expressionString },
       scheduledQueryExecutionRoleArn: scheduledQueryExecutionRoleArn.roleArn,
       scheduledQueryName: props.scheduledQueryName,
-      targetConfiguration: props.targetConfiguration ? { timestreamConfiguration: targetConfig } : undefined,
-    });
+    };
+
+    if (props.errorReportConfiguration) {
+      (cfnScheduledQueryProps.errorReportConfiguration as any) = {
+        s3Configuration: {
+          bucketName: props.errorReportConfiguration.s3Configuration.bucket.bucketName,
+          encryptionOption: props.errorReportConfiguration.s3Configuration?.encryptionOption,
+          objectKeyPrefix: props.errorReportConfiguration.s3Configuration?.objectKeyPrefix || 'timestream-errors/',
+        },
+      };
+    }
+
+
+    if (props.targetConfiguration) {
+      (cfnScheduledQueryProps.targetConfiguration as any) = {
+        timestreamConfiguration: {
+          databaseName: props.targetConfiguration!.timestreamConfiguration.table.databaseName,
+          tableName: props.targetConfiguration!.timestreamConfiguration.table.tableName,
+          dimensionMappings: props.targetConfiguration!.timestreamConfiguration.dimensionMappings,
+          measureNameColumn: props.targetConfiguration!.timestreamConfiguration?.measureNameColumn,
+          mixedMeasureMappings: props.targetConfiguration!.timestreamConfiguration?.mixedMeasureMappings,
+          multiMeasureMappings: props.targetConfiguration!.timestreamConfiguration?.multiMeasureMappings,
+          timeColumn: props.targetConfiguration!.timestreamConfiguration.timeColumn,
+        },
+      };
+    }
+
+
+    const resource = new CfnScheduledQuery(this, 'ScheduledQuery', cfnScheduledQueryProps);
 
     this.scheduledQueryArn = resource.attrArn;
     this.kmsKey = props.kmsKey;
     this.name = resource.attrSqName;
-    this.scheduleConfiguration = props.scheduleConfiguration;
+    this.schedule = props.schedule;
     this.executionRole = scheduledQueryExecutionRoleArn;
     this.errorReportConfiguration = props.errorReportConfiguration;
     this.notificationConfiguration = props.notificationConfiguration;
