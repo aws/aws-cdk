@@ -64,7 +64,7 @@ new Table(scope, "TimestreamTable", {
     enableMagneticStoreWrites: true,
     magneticStoreRejectedDataLocation: {
       s3Configuration: {
-        bucketName: bucket.bucketName,
+        bucket: bucket,
         encryptionOption: EncryptionOptions.SSE_S3,
       },
     },
@@ -102,7 +102,7 @@ new ScheduledQuery(scope, "ScheduledQuery", {
     'SELECT time, measure_name as name, measure_name as amount FROM "ATestDB"."Test"',
   errorReportConfiguration: {
     s3Configuration: {
-      bucketName: bucket.bucketName,
+      bucket: bucket,
       encryptionOption: EncryptionOptions.SSE_S3,
       objectKeyPrefix: "prefix/",
     },
@@ -130,7 +130,7 @@ new ScheduledQuery(scope, "ScheduledQuery", {
           },
         ],
       },
-      table: table),
+      table: table,
       timeColumn: "time",
     },
   },
