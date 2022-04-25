@@ -793,6 +793,25 @@ describe('bucket', () => {
 
       expect(bucket.isWebsite).toBeTruthy();
     });
+
+    test('allows granting public access by default', () => {
+      expect(() => {
+        bucket.grantPublicAccess();
+      }).not.toThrow();
+    });
+
+    test('does not allow granting public access for a Bucket that blocks it', () => {
+      cfnBucket = new s3.CfnBucket(stack, 'BlockedPublicAccessCfnBucket', {
+        publicAccessBlockConfiguration: {
+          blockPublicPolicy: true,
+        },
+      });
+      bucket = s3.Bucket.fromCfnBucket(cfnBucket);
+
+      expect(() => {
+        bucket.grantPublicAccess();
+      }).toThrow(/Cannot grant public access when 'blockPublicPolicy' is enabled/);
+    });
   });
 
   test('grantRead', () => {

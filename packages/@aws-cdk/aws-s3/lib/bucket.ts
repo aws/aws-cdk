@@ -1619,7 +1619,7 @@ export class Bucket extends BucketBase {
       public policy = undefined; // ToDo handle policies
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = cfnBucket.publicAccessBlockConfiguration &&
-        (cfnBucket.publicAccessBlockConfiguration as any).blockPublicPolicy; // ToDo this should probably be more robust
+        (cfnBucket.publicAccessBlockConfiguration as any).blockPublicPolicy;
 
       constructor() {
         super(cfnBucket, id);
