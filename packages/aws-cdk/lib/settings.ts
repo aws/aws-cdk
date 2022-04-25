@@ -1,5 +1,6 @@
 import * as os from 'os';
 import * as fs_path from 'path';
+import { ALL_FUTURE_FLAGS } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { Tag } from './cdk-toolkit';
 import { debug, warning } from './logging';
@@ -300,6 +301,29 @@ export class Settings {
     return ret;
   }
 
+  /**
+   * Future flags can either be enabled (true) or disabled (false). When future flags
+   * are provided as context cli arguments all values are interpreted as strings. This
+   * means that:
+   *
+   * --context @aws-cdk/core:newStyleStackSynthesis=false
+   * --context @aws-cdk/core:newStyleStackSynthesis=0
+   *
+   * Will be evaluated as 'false' & '0' which are truthy (not what we want).
+   *
+   * For any context argument that is a future flag, convert the value to a boolean
+   */
+  private static parseContextFutureFlags(contextKey: string, contextValue: string): boolean | string {
+    if (ALL_FUTURE_FLAGS.includes(contextKey)) {
+      if (['false', '0'].includes(contextValue)) {
+        return false;
+      } else {
+        return Boolean(contextKey);
+      }
+    }
+    return contextValue;
+  }
+
   private static parseStringContextListToObject(argv: Arguments): any {
     const context: any = {};
 
@@ -310,13 +334,14 @@ export class Settings {
         if (parts[0].match(/^aws:.+/)) {
           throw new Error(`User-provided context cannot use keys prefixed with 'aws:', but ${parts[0]} was provided.`);
         }
-        context[parts[0]] = parts[1];
+        context[parts[0]] = this.parseContextFutureFlags(parts[0], parts[1]);
       } else {
         warning('Context argument is not an assignment (key=value): %s', assignment);
       }
     }
     return context;
   }
+
 
   /**
    * Parse tags out of arguments

@@ -80,6 +80,18 @@ test('can parse string context from command line arguments with equals sign in v
   expect(settings2.get(['context']).foo).toEqual( 'bar=');
 });
 
+test('can parse string future flag context from command line arguments with boolean in value', () => {
+  // GIVEN
+  const settings1 = Settings.fromCommandLineArguments({ context: ['@aws-cdk/core:newStyleStackSynthesis=false'], _: [Command.DEPLOY] });
+  const settings2 = Settings.fromCommandLineArguments({ context: ['@aws-cdk/aws-iam:minimizePolicies=0'], _: [Command.DEPLOY] });
+  const settings3 = Settings.fromCommandLineArguments({ context: ['@aws-cdk/core:checkSecretUsage=true'], _: [Command.DEPLOY] });
+
+  // THEN
+  expect(settings1.get(['context'])['@aws-cdk/core:newStyleStackSynthesis']).toEqual(false);
+  expect(settings2.get(['context'])['@aws-cdk/aws-iam:minimizePolicies']).toEqual(false);
+  expect(settings3.get(['context'])['@aws-cdk/core:checkSecretUsage']).toEqual(true);
+});
+
 test('bundling stacks defaults to an empty list', () => {
   // GIVEN
   const settings = Settings.fromCommandLineArguments({
