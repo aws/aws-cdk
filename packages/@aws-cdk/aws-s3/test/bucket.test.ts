@@ -812,6 +812,49 @@ describe('bucket', () => {
         bucket.grantPublicAccess();
       }).toThrow(/Cannot grant public access when 'blockPublicPolicy' is enabled/);
     });
+
+    test('correctly fills the encryption key if the L1 references one', () => {
+      const cfnKey = new kms.CfnKey(stack, 'CfnKey', {
+        keyPolicy: {
+          'Statement': [
+            {
+              'Action': [
+                'kms:*',
+              ],
+              'Effect': 'Allow',
+              'Principal': {
+                'AWS': {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { 'Ref': 'AWS::Partition' },
+                    ':iam::',
+                    { 'Ref': 'AWS::AccountId' },
+                    ':root',
+                  ]],
+                },
+              },
+              'Resource': '*',
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+      });
+      cfnBucket = new s3.CfnBucket(stack, 'KmsEncryptedCfnBucket', {
+        bucketEncryption: {
+          serverSideEncryptionConfiguration: [
+            {
+              serverSideEncryptionByDefault: {
+                kmsMasterKeyId: cfnKey.attrArn,
+                sseAlgorithm: 'aws:kms',
+              },
+            },
+          ],
+        },
+      });
+      bucket = s3.Bucket.fromCfnBucket(cfnBucket);
+
+      expect(bucket.encryptionKey).not.toBeUndefined();
+    });
   });
 
   test('grantRead', () => {

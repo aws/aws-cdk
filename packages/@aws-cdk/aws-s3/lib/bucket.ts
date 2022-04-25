@@ -5,8 +5,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
   Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Token,
-  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags, Tags, Duration,
+  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags, Tags, Duration, Tokenization,
 } from '@aws-cdk/core';
+import { CfnReference } from '@aws-cdk/core/lib/private/cfn-reference';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
@@ -1605,6 +1606,25 @@ export class Bucket extends BucketBase {
       return <IBucket>existing;
     }
 
+    // handle the KMS Key if the Bucket references one
+    let encryptionKey: kms.IKey | undefined;
+    if (cfnBucket.bucketEncryption) {
+      const serverSideEncryptionConfiguration = (cfnBucket.bucketEncryption as any).serverSideEncryptionConfiguration;
+      if (Array.isArray(serverSideEncryptionConfiguration) && serverSideEncryptionConfiguration.length === 1) {
+        const serverSideEncryptionRuleProperty = serverSideEncryptionConfiguration[0];
+        const serverSideEncryptionByDefault = serverSideEncryptionRuleProperty.serverSideEncryptionByDefault;
+        if (serverSideEncryptionByDefault && Token.isUnresolved(serverSideEncryptionByDefault.kmsMasterKeyId)) {
+          const kmsIResolvable = Tokenization.reverse(serverSideEncryptionByDefault.kmsMasterKeyId);
+          if (kmsIResolvable instanceof CfnReference) {
+            const cfnElement = kmsIResolvable.target;
+            if (cfnElement instanceof kms.CfnKey) {
+              encryptionKey = kms.Key.fromCfnKey(cfnElement);
+            }
+          }
+        }
+      }
+    }
+
     return new class extends BucketBase {
       public readonly bucketArn = cfnBucket.attrArn;
       public readonly bucketName = cfnBucket.ref;
@@ -1614,7 +1634,7 @@ export class Bucket extends BucketBase {
       public readonly bucketWebsiteUrl = cfnBucket.attrWebsiteUrl;
       public readonly bucketWebsiteDomainName = Fn.select(2, Fn.split('/', cfnBucket.attrWebsiteUrl));
 
-      public readonly encryptionKey = undefined; // ToDo this should be handled
+      public readonly encryptionKey = encryptionKey;
       public readonly isWebsite = cfnBucket.websiteConfiguration !== undefined;
       public policy = undefined; // ToDo handle policies
       protected autoCreatePolicy = false;
