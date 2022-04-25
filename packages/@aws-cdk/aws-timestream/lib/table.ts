@@ -1,4 +1,6 @@
-import { UnknownPrincipal } from '@aws-cdk/aws-iam';
+import { UnknownPrincipal, IGrantable, Grant } from '@aws-cdk/aws-iam';
+import { IKey } from '@aws-cdk/aws-kms';
+import { IBucket } from '@aws-cdk/aws-s3';
 import { ArnFormat, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDatabase } from './database';
@@ -27,6 +29,21 @@ export interface ITable extends IResource {
    * Database Name
    */
   readonly databaseName: string
+
+
+  /**
+   * Grant Permissions to read from the Table
+   * @param identity
+   */
+  grantRead(identity: IGrantable): Grant
+
+  /**
+    * Grant Permissions to read & write to the Table
+    * @param identity
+    */
+  grantReadWrite(identity: IGrantable): Grant
+
+
 }
 
 /**
@@ -36,7 +53,7 @@ export interface MagneticS3Configuration {
   /**
    * The name of the S3 bucket.
    */
-  readonly bucketName: string,
+  readonly bucket: IBucket,
 
   /**
    * The encryption option for the S3 location. Valid values are S3 server-side encryption with an S3 managed key (SSE_S3) or AWS managed key (SSE_KMS).
@@ -44,11 +61,11 @@ export interface MagneticS3Configuration {
   readonly encryptionOption: EncryptionOptions,
 
   /**
-   * The AWS KMS key ID to use when encrypting with an AWS managed key.
+   * The AWS KMS key  to use when encrypting with an AWS managed key.
    *
    * @default None
    */
-  readonly kmsKeyId?: string,
+  readonly key?: IKey,
 
   /**
    * The prefix to use option for the objects stored in S3.
@@ -132,6 +149,7 @@ export interface TableProps {
 }
 
 abstract class TableBase extends Resource implements ITable {
+
   /**
    * References a table object via its ARN
    *
@@ -161,6 +179,25 @@ abstract class TableBase extends Resource implements ITable {
   public abstract readonly tableArn: string;
   public abstract readonly tableName: string;
   public abstract readonly databaseName: string;
+
+  grantReadWrite(grantee: IGrantable) {
+    return Grant.addToPrincipal({
+      grantee,
+      actions: ['timestream:Select', 'timestream:ListMeasures', 'timestream:DescribeTable', 'timestream:WriteRecords'],
+      resourceArns: [this.tableArn],
+    });
+  }
+
+
+  grantRead(grantee: IGrantable) {
+    return Grant.addToPrincipal({
+      grantee,
+      actions: ['timestream:Select', 'timestream:ListMeasures', 'timestream:DescribeTable'],
+      resourceArns: [this.tableArn],
+    });
+  }
+
+
 }
 
 /**
@@ -197,18 +234,33 @@ export class Table extends TableBase {
       throw Error('If enableMagneticStoreWrites is true magneticStoreRejectedDataLocation must be defined.');
     }
 
-    const cfnTableProps: CfnTableProps = {
+    let cfnTableProps: CfnTableProps = {
       databaseName: props.database.databaseName,
-      magneticStoreWriteProperties: props.magneticStoreWriteProperties,
       tableName: props.tableName,
     };
 
     if (props.retentionProperties !== undefined) {
-      cfnTableProps.retentionProperties.memoryStoreRetentionPeriodInHours =
-        props.retentionProperties.memoryStoreRetentionPeriod.toHours().toString();
-      cfnTableProps.retentionProperties.magneticStoreRetentionPeriodInDays =
-        props.retentionProperties.magneticStoreRetentionPeriod.toDays().toString();
+      (cfnTableProps.retentionProperties as any) = {
+        memoryStoreRetentionPeriodInHours: props.retentionProperties.memoryStoreRetentionPeriod.toHours().toString(),
+        magneticStoreRetentionPeriodInDays: props.retentionProperties.magneticStoreRetentionPeriod.toDays().toString(),
+      };
     }
+
+    if (props.magneticStoreWriteProperties && props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration) {
+
+      (cfnTableProps.magneticStoreWriteProperties as any) = {
+        enableMagneticStoreWrites: props.magneticStoreWriteProperties?.enableMagneticStoreWrites,
+        magneticStoreRejectedDataLocation: {
+          s3Configuration: {
+            bucketName: props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.bucket.bucketName,
+            encryptionOption: props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.encryptionOption,
+            kmsKeyId: props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.key?.keyId,
+            objectKeyPrefix: props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.objectKeyPrefix,
+          },
+        },
+      };
+    }
+
 
     const resource = new CfnTable(this, 'Resource', cfnTableProps);
     // resource.node.addDependency(props.database);
@@ -217,7 +269,9 @@ export class Table extends TableBase {
       service: 'timestream',
       resource: this.physicalName,
     });
-    this.tableName = this.getResourceNameAttribute(resource.ref);
+    // does not use the ref, because of the ref behaving strange:
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-table.html#aws-resource-timestream-table-return-values
+    this.tableName = this.getResourceNameAttribute(resource.attrName);
     this.databaseName = resource.databaseName;
   }
 }

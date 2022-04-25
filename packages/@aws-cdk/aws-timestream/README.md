@@ -64,7 +64,7 @@ new Table(scope, "TimestreamTable", {
     enableMagneticStoreWrites: true,
     magneticStoreRejectedDataLocation: {
       s3Configuration: {
-        bucketName: bucket.bucketName,
+        bucket: bucket,
         encryptionOption: EncryptionOptions.SSE_S3,
       },
     },
@@ -93,6 +93,7 @@ new Table(scope, "TimestreamTable", {
 Create a scheduled query that will be run on your behalf at the configured schedule. Timestream assumes the execution role provided as part of the ScheduledQueryExecutionRoleArn parameter to run the query. You can use the NotificationConfiguration parameter to configure notification for your scheduled query operations.
 
 ```ts
+import * as events from '@aws-cdk/aws-events';
 declare const table: Table;
 declare const topic: sns.Topic;
 declare const bucket: s3.Bucket;
@@ -102,7 +103,7 @@ new ScheduledQuery(scope, "ScheduledQuery", {
     'SELECT time, measure_name as name, measure_name as amount FROM "ATestDB"."Test"',
   errorReportConfiguration: {
     s3Configuration: {
-      bucketName: bucket.bucketName,
+      bucket: bucket,
       encryptionOption: EncryptionOptions.SSE_S3,
       objectKeyPrefix: "prefix/",
     },
@@ -110,12 +111,11 @@ new ScheduledQuery(scope, "ScheduledQuery", {
   scheduledQueryName: "Test_Query",
   notificationConfiguration: {
     snsConfiguration: {
-      topicArn: topic.topicArn,
+      topic: topic,
     },
   },
   targetConfiguration: {
     timestreamConfiguration: {
-      databaseName: table.databaseName,
       dimensionMappings: [
         {
           name: "name",
@@ -131,13 +131,11 @@ new ScheduledQuery(scope, "ScheduledQuery", {
           },
         ],
       },
-      tableName: Fn.select(1, Fn.split("|", table.tableName)),
+      table: table,
       timeColumn: "time",
     },
   },
-  scheduleConfiguration: {
-    scheduleExpression: "cron(0/30 * * * ? *)",
-  },
+  schedule: events.Schedule.rate(Duration.days(1)),
   scheduledQueryExecutionRole: role,
 });
 ```
