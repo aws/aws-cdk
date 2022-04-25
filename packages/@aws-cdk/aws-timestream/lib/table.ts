@@ -1,4 +1,5 @@
 import { UnknownPrincipal, IGrantable, Grant } from '@aws-cdk/aws-iam';
+import { IKey } from '@aws-cdk/aws-kms';
 import { IBucket } from '@aws-cdk/aws-s3';
 import { ArnFormat, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -60,11 +61,11 @@ export interface MagneticS3Configuration {
   readonly encryptionOption: EncryptionOptions,
 
   /**
-   * The AWS KMS key ID to use when encrypting with an AWS managed key.
+   * The AWS KMS key  to use when encrypting with an AWS managed key.
    *
    * @default None
    */
-  readonly kmsKeyId?: string,
+  readonly key?: IKey,
 
   /**
    * The prefix to use option for the objects stored in S3.
@@ -233,30 +234,31 @@ export class Table extends TableBase {
       throw Error('If enableMagneticStoreWrites is true magneticStoreRejectedDataLocation must be defined.');
     }
 
-    const cfnTableProps: CfnTableProps = {
+    let cfnTableProps: CfnTableProps = {
       databaseName: props.database.databaseName,
       tableName: props.tableName,
     };
 
     if (props.retentionProperties !== undefined) {
-      cfnTableProps.retentionProperties.memoryStoreRetentionPeriodInHours =
-        props.retentionProperties.memoryStoreRetentionPeriod.toHours().toString();
-      cfnTableProps.retentionProperties.magneticStoreRetentionPeriodInDays =
-        props.retentionProperties.magneticStoreRetentionPeriod.toDays().toString();
+      (cfnTableProps.retentionProperties as any) = {
+        memoryStoreRetentionPeriodInHours: props.retentionProperties.memoryStoreRetentionPeriod.toHours().toString(),
+        magneticStoreRetentionPeriodInDays: props.retentionProperties.magneticStoreRetentionPeriod.toDays().toString(),
+      };
     }
 
-    if (cfnTableProps.magneticStoreWriteProperties) {
-      cfnTableProps.magneticStoreWriteProperties.magneticStoreRejectedDataLocation.s3Configuration.bucketName =
-      props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.bucket.bucketName;
+    if (props.magneticStoreWriteProperties && props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration) {
 
-      cfnTableProps.magneticStoreWriteProperties.magneticStoreRejectedDataLocation.s3Configuration.encryptionOption =
-      props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.encryptionOption;
-
-      cfnTableProps.magneticStoreWriteProperties.magneticStoreRejectedDataLocation.s3Configuration.kmsKeyId =
-      props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.kmsKeyId;
-
-      cfnTableProps.magneticStoreWriteProperties.magneticStoreRejectedDataLocation.s3Configuration.objectKeyPrefix =
-      props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.objectKeyPrefix;
+      (cfnTableProps.magneticStoreWriteProperties as any) = {
+        enableMagneticStoreWrites: props.magneticStoreWriteProperties?.enableMagneticStoreWrites,
+        magneticStoreRejectedDataLocation: {
+          s3Configuration: {
+            bucketName: props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.bucket.bucketName,
+            encryptionOption: props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.encryptionOption,
+            kmsKeyId: props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.key?.keyId,
+            objectKeyPrefix: props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.objectKeyPrefix,
+          },
+        },
+      };
     }
 
 
