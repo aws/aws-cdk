@@ -534,6 +534,7 @@
     "./aws-medialive": "./aws-medialive/index.js",
     "./aws-mediapackage": "./aws-mediapackage/index.js",
     "./aws-mediastore": "./aws-mediastore/index.js",
+    "./aws-mediatailor": "./aws-mediatailor/index.js",
     "./aws-memorydb": "./aws-memorydb/index.js",
     "./aws-msk": "./aws-msk/index.js",
     "./aws-mwaa": "./aws-mwaa/index.js",
