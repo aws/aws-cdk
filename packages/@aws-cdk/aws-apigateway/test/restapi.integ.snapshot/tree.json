@@ -952,9 +952,9 @@
                       "version": "0.0.0"
                     }
                   },
-                  "UsagePlanKeyResource": {
-                    "id": "UsagePlanKeyResource",
-                    "path": "test-apigateway-restapi/my-api/UsagePlan/UsagePlanKeyResource",
+                  "UsagePlanKeyResource:testapigatewayrestapimyapiApiKeyC43601CB": {
+                    "id": "UsagePlanKeyResource:testapigatewayrestapimyapiApiKeyC43601CB",
+                    "path": "test-apigateway-restapi/my-api/UsagePlan/UsagePlanKeyResource:testapigatewayrestapimyapiApiKeyC43601CB",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::UsagePlanKey",
                       "aws:cdk:cloudformation:props": {

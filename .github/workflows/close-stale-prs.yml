@@ -3,7 +3,7 @@ on:
     # Cron format: min hr day month dow
     - cron: "0 0 * * *"
 jobs:
-  rix0rrr/close-stale-prs:
+  close-stale-prs:
     permissions:
       pull-requests: write
     runs-on: ubuntu-latest

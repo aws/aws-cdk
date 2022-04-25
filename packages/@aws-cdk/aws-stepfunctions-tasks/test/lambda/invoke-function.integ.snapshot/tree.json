@@ -447,6 +447,12 @@
                                   "Resource": [
                                     {
                                       "Fn::GetAtt": [
+                                        "CallbackHandler4434C38D",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
                                         "Handler886CB40B",
                                         "Arn"
                                       ]
@@ -457,24 +463,12 @@
                                         [
                                           {
                                             "Fn::GetAtt": [
-                                              "Handler886CB40B",
+                                              "CallbackHandler4434C38D",
                                               "Arn"
                                             ]
                                           },
                                           ":*"
                                         ]
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "Action": "lambda:InvokeFunction",
-                                  "Effect": "Allow",
-                                  "Resource": [
-                                    {
-                                      "Fn::GetAtt": [
-                                        "CallbackHandler4434C38D",
-                                        "Arn"
                                       ]
                                     },
                                     {
@@ -483,7 +477,7 @@
                                         [
                                           {
                                             "Fn::GetAtt": [
-                                              "CallbackHandler4434C38D",
+                                              "Handler886CB40B",
                                               "Arn"
                                             ]
                                           },

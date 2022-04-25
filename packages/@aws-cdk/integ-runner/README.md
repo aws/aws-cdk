@@ -44,9 +44,7 @@ to be a self contained CDK app. The runner will execute the following for each f
 - `--clean` (default=`true`)
   Destroy stacks after deploy (use `--no-clean` for debugging)
 - `--verbose` (default=`false`)
-  verbose logging
-- `--parallel` (default=`true`)
-  Run tests in parallel across default regions
+  verbose logging, including integration test metrics
 - `--parallel-regions` (default=`us-east-1`,`us-east-2`, `us-west-2`)
   List of regions to run tests in. If this is provided then all tests will
   be run in parallel across these regions
@@ -66,10 +64,17 @@ to be a self contained CDK app. The runner will execute the following for each f
 Example:
 
 ```bash
-integ-runner --update --parallel --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-2 --directory ./
+integ-runner --update-on-failed --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-2 --directory ./
 ```
 
 This will search for integration tests recursively from the current directory and then execute them in parallel across `us-east-1`, `us-east-2`, & `us-west-2`.
+
+If you are providing a list of tests to execute, either as CLI arguments or from a file, the name of the test needs to be relative to the `directory`.
+For example, if there is a test `aws-iam/test/integ.policy.js` and the current working directory is `aws-iam` you would provide `integ.policy.js`
+
+```bash
+yarn integ integ.policy.js
+```
 
 ### Common Workflow
 

@@ -70,6 +70,7 @@
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^3.3.69"
   },
   "repository": {
