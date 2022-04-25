@@ -1,4 +1,5 @@
 import { UnknownPrincipal, IGrantable, Grant } from '@aws-cdk/aws-iam';
+import { IBucket } from '@aws-cdk/aws-s3';
 import { ArnFormat, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDatabase } from './database';
@@ -51,7 +52,7 @@ export interface MagneticS3Configuration {
   /**
    * The name of the S3 bucket.
    */
-  readonly bucketName: string,
+  readonly bucket: IBucket,
 
   /**
    * The encryption option for the S3 location. Valid values are S3 server-side encryption with an S3 managed key (SSE_S3) or AWS managed key (SSE_KMS).
@@ -234,7 +235,6 @@ export class Table extends TableBase {
 
     const cfnTableProps: CfnTableProps = {
       databaseName: props.database.databaseName,
-      magneticStoreWriteProperties: props.magneticStoreWriteProperties,
       tableName: props.tableName,
     };
 
@@ -245,6 +245,21 @@ export class Table extends TableBase {
         props.retentionProperties.magneticStoreRetentionPeriod.toDays().toString();
     }
 
+    if (cfnTableProps.magneticStoreWriteProperties) {
+      cfnTableProps.magneticStoreWriteProperties.magneticStoreRejectedDataLocation.s3Configuration.bucketName =
+      props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.bucket.bucketName;
+
+      cfnTableProps.magneticStoreWriteProperties.magneticStoreRejectedDataLocation.s3Configuration.encryptionOption =
+      props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.encryptionOption;
+
+      cfnTableProps.magneticStoreWriteProperties.magneticStoreRejectedDataLocation.s3Configuration.kmsKeyId =
+      props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.kmsKeyId;
+
+      cfnTableProps.magneticStoreWriteProperties.magneticStoreRejectedDataLocation.s3Configuration.objectKeyPrefix =
+      props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.objectKeyPrefix;
+    }
+
+
     const resource = new CfnTable(this, 'Resource', cfnTableProps);
     // resource.node.addDependency(props.database);
 
@@ -252,7 +267,9 @@ export class Table extends TableBase {
       service: 'timestream',
       resource: this.physicalName,
     });
-    this.tableName = this.getResourceNameAttribute(resource.ref);
+    // does not use the ref, because of the ref behaving strange:
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-table.html#aws-resource-timestream-table-return-values
+    this.tableName = this.getResourceNameAttribute(resource.attrName);
     this.databaseName = resource.databaseName;
   }
 }

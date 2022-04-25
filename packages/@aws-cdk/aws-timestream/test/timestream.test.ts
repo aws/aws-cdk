@@ -231,7 +231,7 @@ describe('Timestream Table', () => {
         enableMagneticStoreWrites: true,
         magneticStoreRejectedDataLocation: {
           s3Configuration: {
-            bucketName: bucket.bucketName,
+            bucket: bucket,
             encryptionOption: EncryptionOptions.SSE_S3,
             kmsKeyId: key.keyId,
           },
@@ -438,7 +438,10 @@ describe('Timestream Scheduled Query', () => {
             },
           ],
           TableName: {
-            Ref: 'TestTable5769773A',
+            'Fn::GetAtt': [
+              'TestTable5769773A',
+              'Name',
+            ],
           },
           TimeColumn: 'hour',
         },
