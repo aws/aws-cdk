@@ -139,7 +139,7 @@ export class User extends UserBase {
   protected databaseProps: DatabaseOptions;
 
   /**
-   * the Secrets Manager secret of the user.
+   * The Secrets Manager secret of the user.
    * @attribute
    */
   public readonly secret: secretsmanager.ISecret;
