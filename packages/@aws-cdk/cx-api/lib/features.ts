@@ -263,14 +263,6 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
 };
 
 /**
- * A list of all available future flags
- */
-export const ALL_FUTURE_FLAGS = [
-  ...Object.keys(FUTURE_FLAGS),
-  NEW_STYLE_STACK_SYNTHESIS_CONTEXT,
-];
-
-/**
  * Values that will be set by default in a new project, which are not necessarily booleans (and don't expire)
  */
 export const NEW_PROJECT_DEFAULT_CONTEXT: { [key: string]: any} = {

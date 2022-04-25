@@ -1,6 +1,5 @@
 import * as os from 'os';
 import * as fs_path from 'path';
-import { ALL_FUTURE_FLAGS } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { Tag } from './cdk-toolkit';
 import { debug, warning } from './logging';
@@ -302,24 +301,30 @@ export class Settings {
   }
 
   /**
-   * Future flags can either be enabled (true) or disabled (false). When future flags
-   * are provided as context cli arguments all values are interpreted as strings. This
-   * means that:
+   * Context can be passed as CLI arguments in the format
+   * --context foo=bar
    *
-   * --context @aws-cdk/core:newStyleStackSynthesis=false
-   * --context @aws-cdk/core:newStyleStackSynthesis=0
-   *
-   * Will be evaluated as 'false' & '0' which are truthy (not what we want).
-   *
-   * For any context argument that is a future flag, convert the value to a boolean
+   * The context value can be of any type, but when it is parsed
+   * it is always a string. Here we attempt to determine the actual
+   * type of the value.
    */
-  private static parseContextFutureFlags(contextKey: string, contextValue: string): boolean | string {
-    if (ALL_FUTURE_FLAGS.includes(contextKey)) {
-      if (['false', '0'].includes(contextValue)) {
-        return false;
-      } else {
-        return Boolean(contextKey);
-      }
+  private static parseContextValue(contextValue: string): any {
+    // If the value is a JSON object, then we try and parse it and return
+    // the object.
+    try {
+      return JSON.parse(contextValue);
+    } catch {}
+    const num = parseFloat(contextValue);
+    // parseFloat tries to convert any string to a number, but
+    // if the string begins with a number it will convert that and
+    // ignore the rest so only return a number if the number and the
+    // string are the same
+    if (!isNaN(num) && num.toString() === contextValue) {
+      return num;
+    }
+    // The string value 'false' is truthy so explicitely check for 'false'
+    if (contextValue === 'false') {
+      return false;
     }
     return contextValue;
   }
@@ -334,7 +339,7 @@ export class Settings {
         if (parts[0].match(/^aws:.+/)) {
           throw new Error(`User-provided context cannot use keys prefixed with 'aws:', but ${parts[0]} was provided.`);
         }
-        context[parts[0]] = this.parseContextFutureFlags(parts[0], parts[1]);
+        context[parts[0]] = this.parseContextValue(parts[1]);
       } else {
         warning('Context argument is not an assignment (key=value): %s', assignment);
       }
