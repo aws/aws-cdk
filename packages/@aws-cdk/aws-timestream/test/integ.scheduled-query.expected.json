@@ -326,7 +326,7 @@
         },
         "QueryString": "SELECT time, measure_name as name, measure_name as amount FROM \"ATestDB\".\"Test\"",
         "ScheduleConfiguration": {
-          "ScheduleExpression": "cron(0/30 * * * ? *)"
+          "ScheduleExpression": "cron(30 * * * ? *)"
         },
         "ScheduledQueryExecutionRoleArn": {
           "Fn::GetAtt": [
@@ -356,16 +356,9 @@
               "TargetMultiMeasureName": "test"
             },
             "TableName": {
-              "Fn::Select": [
-                1,
-                {
-                  "Fn::Split": [
-                    "|",
-                    {
-                      "Ref": "TestTable5769773A"
-                    }
-                  ]
-                }
+              "Fn::GetAtt": [
+                "TestTable5769773A",
+                "Name"
               ]
             },
             "TimeColumn": "time"

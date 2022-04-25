@@ -1,3 +1,4 @@
+import { Schedule } from '@aws-cdk/aws-events';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Key } from '@aws-cdk/aws-kms';
 import { Bucket } from '@aws-cdk/aws-s3';
@@ -60,9 +61,7 @@ new ScheduledQuery(stack, 'ScheduledQuery', {
       timeColumn: 'time',
     },
   },
-  scheduleConfiguration: {
-    scheduleExpression: 'cron(0/30 * * * ? *)',
-  },
+  schedule: Schedule.cron({ minute: '30' }),
   scheduledQueryExecutionRole: role,
 });
 
