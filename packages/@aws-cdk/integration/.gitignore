@@ -8,3 +8,4 @@ junit.xml
 coverage
 nyc.config.js
 !.eslintrc.js
+.jsii
