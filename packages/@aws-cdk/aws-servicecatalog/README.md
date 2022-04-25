@@ -184,6 +184,48 @@ const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
 });
 ```
 
+We can also define a `versioningStrategy` for your `ProductStack` deployment. 
+With the `Default` strategy, a new `ProductStack` is needed for each `productVersion`
+and each `productVersion` will get overwritten with the latest changes to your `ProductStack`.
+With the `RetainPreviousVersions` strategy, a local template will be retained for each `ProductStack` deployed.
+Subsequently, any `ProductStack` changes will not overwrite the current version.
+A new `productVersionName` must be specified in order for `ProductStack` changes to be deployed.
+When the `ProductStack` is updated with a new version, the previous version can still be deployed.
+The template of previously deployed `ProductStack` can be referenced using `fromProductStackContext`
+and passing the corresponding `ProductStack` id.
+
+After using the `RetainPreviousVersions` strategy to deploy version `v1` of your `ProductStack`,
+the `ProductStack` is updated to version `v2` and version `v1` can be deployed from context:
+
+```ts
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+
+class S3BucketProduct extends servicecatalog.ProductStack {
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
+
+    new s3.Bucket(this, 'BucketProductV2');
+  }
+}
+
+const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
+  productName: "My Product",
+  owner: "Product Owner",
+  productVersions: [
+    {
+      productVersionName: "v2",
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new S3BucketProduct(this, 'S3BucketProduct')),
+      versioningStrategy: servicecatalog.VersioningStrategy.RETAIN_PREVIOUS_VERSIONS
+    },
+    {
+      productVersionName: "v1",
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStackContext('S3BucketProduct'),
+    },
+  ],
+});
+```
+
 ### Adding a product to a portfolio
 
 You add products to a portfolio to organize and distribute your catalog at scale.  Adding a product to a portfolio creates an association,

@@ -35,6 +35,10 @@ const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
     {
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'SNSTopicProduct2')),
     },
+    {
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'SNSTopicProduct3')),
+      versioningStrategy: servicecatalog.VersioningStrategy.RETAIN_PREVIOUS_VERSIONS,
+    },
   ],
 });
 

@@ -1,4 +1,5 @@
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import { ProductVersionDetails, TemplateType } from './common';
 import { hashValues } from './private/util';
 import { ProductStack } from './product-stack';
 
@@ -35,6 +36,14 @@ export abstract class CloudFormationTemplate {
   }
 
   /**
+   * Creates a product from a previously deployed productStack template.
+   * The previous template must have been retained using VersioningStrategy.RETAIN_PREVIOUS_VERSIONS
+   */
+  public static fromProductStackContext(baseProductStackId: string): CloudFormationTemplate {
+    return new CloudFormationProductStackContextTemplate(baseProductStackId);
+  }
+
+  /**
    * Called when the product is initialized to allow this object to bind
    * to the stack, add resources and have fun.
    *
@@ -52,6 +61,15 @@ export interface CloudFormationTemplateConfig {
     * The http url of the template in S3.
     */
   readonly httpUrl: string;
+  /**
+   * Additional metadata about the product version.
+   * @default - No additional details provided
+   */
+  readonly productVersionDetails?: ProductVersionDetails;
+  /**
+   * The type of the template source.
+   */
+  readonly templateType: TemplateType;
 }
 
 /**
@@ -65,6 +83,7 @@ class CloudFormationUrlTemplate extends CloudFormationTemplate {
   public bind(_scope: Construct): CloudFormationTemplateConfig {
     return {
       httpUrl: this.url,
+      templateType: TemplateType.URL,
     };
   }
 }
@@ -93,6 +112,7 @@ class CloudFormationAssetTemplate extends CloudFormationTemplate {
 
     return {
       httpUrl: this.asset.httpUrl,
+      templateType: TemplateType.ASSET,
     };
   }
 }
@@ -110,7 +130,32 @@ class CloudFormationProductStackTemplate extends CloudFormationTemplate {
 
   public bind(_scope: Construct): CloudFormationTemplateConfig {
     return {
+      productVersionDetails: this.productStack._getProductVersionDetails(),
       httpUrl: this.productStack._getTemplateUrl(),
+      templateType: TemplateType.PRODUCT_STACK,
+    };
+  }
+}
+
+/**
+ * Template from a previously deployed product stack.
+ */
+class CloudFormationProductStackContextTemplate extends CloudFormationTemplate {
+  private readonly productVersionDetails: ProductVersionDetails;
+  /**
+   * @param baseProductStackId The id of the product stack where the version was deployed from.
+   */
+  constructor(public readonly baseProductStackId: string) {
+    super();
+    this.productVersionDetails = new ProductVersionDetails();
+    this.productVersionDetails.productStackId = this.baseProductStackId;
+  }
+
+  public bind(_scope: Construct): CloudFormationTemplateConfig {
+    return {
+      httpUrl: '',
+      productVersionDetails: this.productVersionDetails,
+      templateType: TemplateType.PRODUCT_STACK_CONTEXT,
     };
   }
 }

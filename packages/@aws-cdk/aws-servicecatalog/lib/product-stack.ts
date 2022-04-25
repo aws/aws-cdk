@@ -2,6 +2,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cdk from '@aws-cdk/core';
+import { PRODUCT_STACK_CONTEXT_DIRECTORY, ProductVersionDetails, VersioningStrategy } from './common';
 import { ProductStackSynthesizer } from './private/product-stack-synthesizer';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -19,6 +20,7 @@ import { Construct } from 'constructs';
  */
 export class ProductStack extends cdk.Stack {
   public readonly templateFile: string;
+  private readonly _productVersionDetails: ProductVersionDetails;
   private _templateUrl?: string;
   private _parentStack: cdk.Stack;
 
@@ -28,9 +30,20 @@ export class ProductStack extends cdk.Stack {
     });
 
     this._parentStack = findParentStack(scope);
+    this._productVersionDetails = new ProductVersionDetails();
+    this._productVersionDetails.productStackId = id;
 
     // this is the file name of the synthesized template file within the cloud assembly
     this.templateFile = `${cdk.Names.uniqueId(this)}.product.template.json`;
+  }
+
+  /**
+   * Fetch the product version details.
+   *
+   * @internal
+   */
+  public _getProductVersionDetails(): ProductVersionDetails | undefined {
+    return this._productVersionDetails;
   }
 
   /**
@@ -60,7 +73,35 @@ export class ProductStack extends cdk.Stack {
       fileName: this.templateFile,
     }).httpUrl;
 
+    if (this._productVersionDetails.versioningStrategy == VersioningStrategy.RETAIN_PREVIOUS_VERSIONS) {
+      this.writeTemplateToContext(cfn, templateHash);
+    }
+
     fs.writeFileSync(path.join(session.assembly.outdir, this.templateFile), cfn);
+  }
+
+  /**
+   * Writes current template generated from Product Stack to a context directory.
+   *
+   * @internal
+   */
+  private writeTemplateToContext(cfn: string, templateHash: string) {
+    if (!fs.existsSync(PRODUCT_STACK_CONTEXT_DIRECTORY)) {
+      fs.mkdirSync(PRODUCT_STACK_CONTEXT_DIRECTORY);
+    }
+    const templateFileKey = `${this._productVersionDetails.productPathUniqueId}.${this._productVersionDetails.productStackId}.${this._productVersionDetails.productVersionName}.product.template.json`;
+    const templateFilePath = path.join(PRODUCT_STACK_CONTEXT_DIRECTORY, templateFileKey);
+    if (fs.existsSync(templateFilePath)) {
+      const previousTemplateHash = crypto.createHash('sha256').update(fs.readFileSync(templateFilePath)).digest('hex');
+      if (templateHash !== previousTemplateHash) {
+        throw new Error(`Template has changed for ProductStack Version ${this._productVersionDetails.productVersionName}.
+        ${this._productVersionDetails.productVersionName} already exist in product stack context.
+        Either update the productVersionName to deploy a new version or deploy existing ProductStack from context using:
+        CloudFormationTemplate.fromProductStackContext("${this._productVersionDetails.productStackId}");`);
+      }
+    } else {
+      fs.writeFileSync(templateFilePath, cfn);
+    }
   }
 }
 
