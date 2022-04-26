@@ -31,38 +31,29 @@ topic.grantPublish(role);
 
 new ScheduledQuery(stack, 'ScheduledQuery', {
   queryString: 'SELECT time, measure_name as name, measure_name as amount FROM "ATestDB"."Test"',
-  errorReportConfiguration: {
-    s3Configuration: {
-      bucket: bucket,
-      encryptionOption: EncryptionOptions.SSE_S3,
-      objectKeyPrefix: 'prefix/',
-    },
-  },
+  errorReportBucket: bucket,
+  errorReportEncryptionOption: EncryptionOptions.SSE_S3,
+  errorReportObjectKeyPrefix: 'prefix/',
   scheduledQueryName: 'Test_Query',
-  notificationConfiguration: {
-    snsConfiguration: {
-      topic,
-    },
-  },
+  notificationTopic: topic,
   targetConfiguration: {
-    timestreamConfiguration: {
-      dimensionMappings: [{
-        name: 'name',
-        dimensionValueType: 'VARCHAR',
+
+    dimensionMappings: [{
+      name: 'name',
+      dimensionValueType: 'VARCHAR',
+    }],
+    multiMeasureMappings: {
+      targetMultiMeasureName: 'test',
+      multiMeasureAttributeMappings: [{
+        measureValueType: 'VARCHAR',
+        sourceColumn: 'amount',
       }],
-      multiMeasureMappings: {
-        targetMultiMeasureName: 'test',
-        multiMeasureAttributeMappings: [{
-          measureValueType: 'VARCHAR',
-          sourceColumn: 'amount',
-        }],
-      },
-      table,
-      timeColumn: 'time',
     },
+    table,
+    timeColumn: 'time',
   },
   schedule: Schedule.cron({ minute: '30' }),
-  scheduledQueryExecutionRole: role,
+  executionRole: role,
 });
 
 app.synth();

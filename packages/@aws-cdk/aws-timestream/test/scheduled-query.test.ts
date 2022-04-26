@@ -22,30 +22,20 @@ describe('Timestream Scheduled Query', () => {
 
     new ScheduledQuery(stack, 'SQ_1', {
       queryString: 'SELECT * FROM DATABASE',
-      errorReportConfiguration: {
-        s3Configuration: {
-          bucket: bucket,
-          encryptionOption: EncryptionOptions.SSE_S3,
-          objectKeyPrefix: 'prefix/',
-        },
-      },
+      errorReportBucket: bucket,
+      errorReportEncryptionOption: EncryptionOptions.SSE_S3,
+      errorReportObjectKeyPrefix: 'prefix/',
       scheduledQueryName: 'Test Query',
-      notificationConfiguration: {
-        snsConfiguration: {
-          topic: topic,
-        },
-      },
+      notificationTopic: topic,
       targetConfiguration: {
-        timestreamConfiguration: {
-          dimensionMappings: [
-            { dimensionValueType: 'VARCHAR', name: 'region' },
-          ],
-          table,
-          timeColumn: 'hour',
-        },
+        dimensionMappings: [
+          { dimensionValueType: 'VARCHAR', name: 'region' },
+        ],
+        table,
+        timeColumn: 'hour',
       },
       schedule: Schedule.rate(Duration.days(1)),
-      scheduledQueryExecutionRole: role,
+      executionRole: role,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Timestream::ScheduledQuery', {
@@ -110,19 +100,11 @@ describe('Timestream Scheduled Query', () => {
 
     new ScheduledQuery(stack, 'SQ_1', {
       queryString: 'SELECT * FROM DATABASE',
-      errorReportConfiguration: {
-        s3Configuration: {
-          bucket: bucket,
-          encryptionOption: EncryptionOptions.SSE_S3,
-          objectKeyPrefix: 'prefix/',
-        },
-      },
+      errorReportBucket: bucket,
+      errorReportEncryptionOption: EncryptionOptions.SSE_S3,
+      errorReportObjectKeyPrefix: 'prefix/',
       scheduledQueryName: 'Test Query',
-      notificationConfiguration: {
-        snsConfiguration: {
-          topic: topic,
-        },
-      },
+      notificationTopic: topic,
       schedule: Schedule.rate(Duration.days(1)),
       sourceTable: table,
     });
@@ -208,28 +190,17 @@ describe('Timestream Scheduled Query', () => {
 
     new ScheduledQuery(stack, 'SQ_1', {
       queryString: 'SELECT * FROM DATABASE',
-      errorReportConfiguration: {
-        s3Configuration: {
-          bucket: bucket,
-          encryptionOption: EncryptionOptions.SSE_S3,
-          objectKeyPrefix: 'prefix/',
-        },
-      },
+      errorReportBucket: bucket,
+      errorReportObjectKeyPrefix: 'prefix/',
       targetConfiguration: {
-        timestreamConfiguration: {
-          dimensionMappings: [
-            { dimensionValueType: 'VARCHAR', name: 'region' },
-          ],
-          table: table2,
-          timeColumn: 'hour',
-        },
+        dimensionMappings: [
+          { dimensionValueType: 'VARCHAR', name: 'region' },
+        ],
+        table: table2,
+        timeColumn: 'hour',
       },
       scheduledQueryName: 'Test Query',
-      notificationConfiguration: {
-        snsConfiguration: {
-          topic: topic,
-        },
-      },
+      notificationTopic: topic,
       schedule: Schedule.rate(Duration.days(1)),
       sourceTable: table,
     });
@@ -327,23 +298,51 @@ describe('Timestream Scheduled Query', () => {
 
     expect(() => new ScheduledQuery(stack, 'SQ_1', {
       queryString: 'SELECT * FROM DATABASE',
-      errorReportConfiguration: {
-        s3Configuration: {
-          bucket: bucket,
-          encryptionOption: EncryptionOptions.SSE_S3,
-          objectKeyPrefix: 'prefix/',
-        },
-      },
+      errorReportBucket: bucket,
       scheduledQueryName: 'Test Query',
-      notificationConfiguration: {
-        snsConfiguration: {
-          topic: topic,
-        },
-      },
+      notificationTopic: topic,
       schedule: Schedule.rate(Duration.days(1)),
     })).toThrow('Neither sourceTable nor TargetConfiguration are set, cannot determine correct permissions, please supply scheduledQueryExecutionRole');
 
 
+  });
+
+  test('Scheduled Query autocreates error Bucket', () => {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    const topic = new Topic(stack, 'TestTopic');
+    const database = new Database(stack, 'TestDatabase');
+    const table = new Table(stack, 'TestTable', { database });
+
+    new ScheduledQuery(stack, 'SQ_1', {
+      queryString: 'SELECT * FROM DATABASE',
+      scheduledQueryName: 'Test Query',
+      notificationTopic: topic,
+      schedule: Schedule.rate(Duration.days(1)),
+      sourceTable: table,
+    });
+
+    const expectedBucket = {
+      Type: 'AWS::S3::Bucket',
+      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: 'Retain',
+    };
+
+    const expectedQuery = {
+      ErrorReportConfiguration: {
+        S3Configuration: {
+          BucketName: {
+            Ref: 'ErrorReportBucketDC5998BE',
+          },
+          EncryptionOption: 'SSE_S3',
+          ObjectKeyPrefix: 'timestream-errors/',
+        },
+      },
+    };
+
+    Template.fromStack(stack).hasResource('AWS::S3::Bucket', expectedBucket);
+    Template.fromStack(stack).hasResourceProperties('AWS::Timestream::ScheduledQuery', expectedQuery);
   });
 });
 

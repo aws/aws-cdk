@@ -47,9 +47,7 @@ describe('Timestream Database', () => {
 
   test('permission grant readWrite for database', () => {
     const app = new App();
-    const stack = new Stack(app, 'TestStack', {
-      env: { account: '012345678901', region: 'us-east-1' },
-    });
+    const stack = new Stack(app, 'TestStack');
 
     const key = new Key(stack, 'TestKey');
 
@@ -126,9 +124,7 @@ describe('Timestream Database', () => {
 
   test('permission grant read for database', () => {
     const app = new App();
-    const stack = new Stack(app, 'TestStack', {
-      env: { account: '012345678901', region: 'us-east-1' },
-    });
+    const stack = new Stack(app, 'TestStack');
 
     const key = new Key(stack, 'TestKey');
 
