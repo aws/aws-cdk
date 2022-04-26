@@ -37,13 +37,6 @@
         "distName": "aws-cdk.aws-panorama",
         "module": "aws_cdk.aws_panorama"
       }
-    },
-    "metadata": {
-      "jsii": {
-        "rosetta": {
-          "strict": true
-        }
-      }
     }
   },
   "repository": {

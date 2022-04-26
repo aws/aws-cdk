@@ -77,8 +77,8 @@
                                 {
                                   "Action": [
                                     "ecr:BatchCheckLayerAvailability",
-                                    "ecr:GetDownloadUrlForLayer",
-                                    "ecr:BatchGetImage"
+                                    "ecr:BatchGetImage",
+                                    "ecr:GetDownloadUrlForLayer"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {
@@ -173,7 +173,7 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParametersc70edfade4427327312f65059a8f5145e9f3304f6d3b65729048ae50762900c4S3Bucket16959373"
+                            "Ref": "AssetParametersbd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297S3BucketAF5C36E5"
                           },
                           "/",
                           {
@@ -183,7 +183,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParametersc70edfade4427327312f65059a8f5145e9f3304f6d3b65729048ae50762900c4S3VersionKey8D303747"
+                                    "Ref": "AssetParametersbd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297S3VersionKeyEB2E48FF"
                                   }
                                 ]
                               }
@@ -196,7 +196,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParametersc70edfade4427327312f65059a8f5145e9f3304f6d3b65729048ae50762900c4S3VersionKey8D303747"
+                                    "Ref": "AssetParametersbd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297S3VersionKeyEB2E48FF"
                                   }
                                 ]
                               }
@@ -222,13 +222,13 @@
             "id": "AssetParameters",
             "path": "nested-stacks-docker/AssetParameters",
             "children": {
-              "c70edfade4427327312f65059a8f5145e9f3304f6d3b65729048ae50762900c4": {
-                "id": "c70edfade4427327312f65059a8f5145e9f3304f6d3b65729048ae50762900c4",
-                "path": "nested-stacks-docker/AssetParameters/c70edfade4427327312f65059a8f5145e9f3304f6d3b65729048ae50762900c4",
+              "bd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297": {
+                "id": "bd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297",
+                "path": "nested-stacks-docker/AssetParameters/bd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "nested-stacks-docker/AssetParameters/c70edfade4427327312f65059a8f5145e9f3304f6d3b65729048ae50762900c4/S3Bucket",
+                    "path": "nested-stacks-docker/AssetParameters/bd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -236,7 +236,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "nested-stacks-docker/AssetParameters/c70edfade4427327312f65059a8f5145e9f3304f6d3b65729048ae50762900c4/S3VersionKey",
+                    "path": "nested-stacks-docker/AssetParameters/bd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -244,7 +244,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "nested-stacks-docker/AssetParameters/c70edfade4427327312f65059a8f5145e9f3304f6d3b65729048ae50762900c4/ArtifactHash",
+                    "path": "nested-stacks-docker/AssetParameters/bd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"

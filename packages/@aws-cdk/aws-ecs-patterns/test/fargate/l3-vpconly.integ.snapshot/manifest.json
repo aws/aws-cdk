@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-ecs-integ-l3-vpconly": {
       "type": "aws:cloudformation:stack",
