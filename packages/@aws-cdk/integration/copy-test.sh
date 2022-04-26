@@ -44,8 +44,12 @@ done
 find test -name "asset.*" -exec rm -rf "{}" \; 2>/dev/null || :
 rm -rf $DESTINATION/test/pipelines/blueprint
 rm $DESTINATION/test/aws-eks/cluster-resource-handler-mocks.ts
+rm $DESTINATION/test/custom-resources/provider-framework/mocks.ts
 rm $DESTINATION/test/pipelines/testhelpers/test-app.ts
 sed -i ".bak" -E "s/export \* from '.\/test-app';//" $DESTINATION/test/pipelines/testhelpers/index.ts
+
+# must install with npm i -g organize-imports-cli
+organize-imports-cli tsconfig.json
 
 # Restoring some state
 sed -i ".bak" -E "s/import \* as consts from .*/import * as consts from '@aws-cdk\/custom-resources\/provider-framework\/runtime\/consts';/" $DESTINATION/test/custom-resources/provider-framework/mocks.ts

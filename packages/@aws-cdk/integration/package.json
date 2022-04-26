@@ -306,7 +306,12 @@
     "@aws-cdk/region-info": "0.0.0",
     "@aws-cdk/triggers": "0.0.0",
     "@aws-cdk/ubergen": "0.0.0",
-    "@aws-cdk/integ-runner": "0.0.0"
+    "@aws-cdk/integ-runner": "0.0.0",
+    "fast-check": "2.25.0",
+    "delay": "5.0.0",
+    "cdk8s": "^1.5.65",
+    "cdk8s-plus-21": "^1.0.0-beta.132",
+    "aws-sdk": "2.1121.0"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
