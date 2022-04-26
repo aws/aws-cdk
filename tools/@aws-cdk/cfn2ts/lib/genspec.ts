@@ -234,6 +234,12 @@ export function cloudFormationToScriptName(name: string): string {
     name = 'objectAccess';
   }
 
+  // GuardDuty contains a property named "Equals", which isn't a jsii-compliant name as it
+  // conflicts with standard Java/C# object methods.
+  if (name === 'Equals') {
+    name = 'equalTo';
+  }
+
   const ret = codemaker.toCamelCase(name);
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
