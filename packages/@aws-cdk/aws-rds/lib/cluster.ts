@@ -265,6 +265,13 @@ interface DatabaseClusterBaseProps {
   * @default - if storageEncrypted is true then the default master key, no key otherwise
   */
   readonly storageEncryptionKey?: kms.IKey;
+
+  /**
+   * Credentials for the administrative user
+   *
+   * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
+   */
+  readonly credentials?: Credentials;
 }
 
 /**
@@ -338,8 +345,25 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   protected readonly securityGroups: ec2.ISecurityGroup[];
   protected readonly subnetGroup: ISubnetGroup;
 
+  public readonly secret?: secretsmanager.ISecret;
+
+  public readonly vpc: ec2.IVpc;
+  public readonly vpcSubnets?: ec2.SubnetSelection;
+
+  public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
+  public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
+
   constructor(scope: Construct, id: string, props: DatabaseClusterBaseProps) {
     super(scope, id);
+
+    this.vpc = props.instanceProps.vpc;
+    this.vpcSubnets = props.instanceProps.vpcSubnets;
+
+    this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
+    this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
+
+    const credentials = renderCredentials(this, props.engine, props.credentials);
+    const secret = credentials.secret;
 
     const { subnetIds } = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets);
 
@@ -403,6 +427,10 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       ? props.clusterIdentifier?.toLowerCase()
       : props.clusterIdentifier;
 
+    if (secret) {
+      this.secret = secret.attach(this);
+    }
+
     this.newCfnProps = {
       // Basic
       engine: props.engine.engineType,
@@ -426,6 +454,47 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     };
+  }
+
+  /**
+   * Adds the single user rotation of the master password to this cluster.
+   */
+  public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
+    if (!this.secret) {
+      throw new Error('Cannot add single user rotation for a cluster without secret.');
+    }
+
+    const id = 'RotationSingleUser';
+    const existing = this.node.tryFindChild(id);
+    if (existing) {
+      throw new Error('A single user rotation was already added to this cluster.');
+    }
+
+    return new secretsmanager.SecretRotation(this, id, {
+      ...applyDefaultRotationOptions(options, this.vpcSubnets),
+      secret: this.secret,
+      application: this.singleUserRotationApplication,
+      vpc: this.vpc,
+      target: this,
+    });
+  }
+
+  /**
+   * Adds the multi user rotation to this cluster.
+   */
+  public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
+    if (!this.secret) {
+      throw new Error('Cannot add multi user rotation for a cluster without secret.');
+    }
+
+    return new secretsmanager.SecretRotation(this, id, {
+      ...applyDefaultRotationOptions(options, this.vpcSubnets),
+      secret: options.secret,
+      masterSecret: this.secret,
+      application: this.multiUserRotationApplication,
+      vpc: this.vpc,
+      target: this,
+    });
   }
 }
 
@@ -496,13 +565,6 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
  */
 export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
   /**
-   * Credentials for the administrative user
-   *
-   * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
-   */
-  readonly credentials?: Credentials;
-
-  /**
    * Whether to copy tags to the snapshot when a snapshot is created.
    *
    * @default: true
@@ -530,28 +592,10 @@ export class DatabaseCluster extends DatabaseClusterNew {
   public readonly instanceIdentifiers: string[];
   public readonly instanceEndpoints: Endpoint[];
 
-  /**
-   * The secret attached to this cluster
-   */
-  public readonly secret?: secretsmanager.ISecret;
-
-  private readonly vpc: ec2.IVpc;
-  private readonly vpcSubnets?: ec2.SubnetSelection;
-
-  private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
-  private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
-
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id, props);
 
-    this.vpc = props.instanceProps.vpc;
-    this.vpcSubnets = props.instanceProps.vpcSubnets;
-
-    this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
-    this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
-
     const credentials = renderCredentials(this, props.engine, props.credentials);
-    const secret = credentials.secret;
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
@@ -575,55 +619,10 @@ export class DatabaseCluster extends DatabaseClusterNew {
 
     cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
-    if (secret) {
-      this.secret = secret.attach(this);
-    }
-
     setLogRetention(this, props);
     const createdInstances = createInstances(this, props, this.subnetGroup);
     this.instanceIdentifiers = createdInstances.instanceIdentifiers;
     this.instanceEndpoints = createdInstances.instanceEndpoints;
-  }
-
-  /**
-   * Adds the single user rotation of the master password to this cluster.
-   */
-  public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
-    if (!this.secret) {
-      throw new Error('Cannot add single user rotation for a cluster without secret.');
-    }
-
-    const id = 'RotationSingleUser';
-    const existing = this.node.tryFindChild(id);
-    if (existing) {
-      throw new Error('A single user rotation was already added to this cluster.');
-    }
-
-    return new secretsmanager.SecretRotation(this, id, {
-      ...applyDefaultRotationOptions(options, this.vpcSubnets),
-      secret: this.secret,
-      application: this.singleUserRotationApplication,
-      vpc: this.vpc,
-      target: this,
-    });
-  }
-
-  /**
-   * Adds the multi user rotation to this cluster.
-   */
-  public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
-    if (!this.secret) {
-      throw new Error('Cannot add multi user rotation for a cluster without secret.');
-    }
-
-    return new secretsmanager.SecretRotation(this, id, {
-      ...applyDefaultRotationOptions(options, this.vpcSubnets),
-      secret: options.secret,
-      masterSecret: this.secret,
-      application: this.multiUserRotationApplication,
-      vpc: this.vpc,
-      target: this,
-    });
   }
 }
 
@@ -631,13 +630,6 @@ export class DatabaseCluster extends DatabaseClusterNew {
  * Properties for ``DatabaseClusterFromSnapshot``
  */
 export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBaseProps {
-  /**
-   * Credentials for the administrative user
-   *
-   * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
-   */
-  readonly credentials?: Credentials;
-
   /**
    * The identifier for the DB instance snapshot or DB cluster snapshot to restore from.
    * You can use either the name or the Amazon Resource Name (ARN) to specify a DB cluster snapshot.
@@ -659,28 +651,8 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
   public readonly instanceIdentifiers: string[];
   public readonly instanceEndpoints: Endpoint[];
 
-  /**
-   * The secret attached to this cluster
-   */
-  public readonly secret?: secretsmanager.ISecret;
-
-  private readonly vpc: ec2.IVpc;
-  private readonly vpcSubnets?: ec2.SubnetSelection;
-
-  private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
-  private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
-
   constructor(scope: Construct, id: string, props: DatabaseClusterFromSnapshotProps) {
     super(scope, id, props);
-
-    this.vpc = props.instanceProps.vpc;
-    this.vpcSubnets = props.instanceProps.vpcSubnets;
-
-    this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
-    this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
-
-    const credentials = renderCredentials(this, props.engine, props.credentials);
-    const secret = credentials.secret;
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
@@ -699,10 +671,6 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     });
 
     cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
-
-    if (secret) {
-      this.secret = secret.attach(this);
-    }
 
     setLogRetention(this, props);
     const createdInstances = createInstances(this, props, this.subnetGroup);
@@ -728,24 +696,6 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
       ...applyDefaultRotationOptions(options, this.vpcSubnets),
       secret: this.secret,
       application: this.singleUserRotationApplication,
-      vpc: this.vpc,
-      target: this,
-    });
-  }
-
-  /**
-   * Adds the multi user rotation to this cluster.
-   */
-  public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
-    if (!this.secret) {
-      throw new Error('Cannot add multi user rotation for a cluster without secret.');
-    }
-
-    return new secretsmanager.SecretRotation(this, id, {
-      ...applyDefaultRotationOptions(options, this.vpcSubnets),
-      secret: options.secret,
-      masterSecret: this.secret,
-      application: this.multiUserRotationApplication,
       vpc: this.vpc,
       target: this,
     });
