@@ -79,13 +79,8 @@
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/triggers": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.3.69",
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0"
+    "constructs": "^10.0.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -111,11 +106,6 @@
   "maturity": "experimental",
   "publishConfig": {
     "tag": "latest"
-  },
-  "peerDependencies": {
-    "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
-    "constructs": "^10.0.0"
   },
   "awscdkio": {
     "announce": false
