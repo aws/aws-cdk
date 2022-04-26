@@ -3,7 +3,7 @@ import { IRole, UnknownPrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-ia
 import { IKey } from '@aws-cdk/aws-kms';
 import { Bucket, IBucket } from '@aws-cdk/aws-s3';
 import { ITopic } from '@aws-cdk/aws-sns';
-import { IResource, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResolvable, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { EncryptionOptions } from './enums';
 import { ITable } from './table';
@@ -49,7 +49,7 @@ export interface IScheduledQuery extends IResource {
    *
    * @attribute
    */
-  readonly name: string
+  readonly name: string|IResolvable
 
   /**
    * SNS topic that the scheduled query status notifications will be sent to.
@@ -95,14 +95,14 @@ abstract class ScheduledQueryBase extends Resource implements IScheduledQuery {
    *
    * @param scope CDK construct
    * @param id The ID of the construct
-   * @param scheduledQueryArn The table ARN to reference
-   * @returns Table construct
+   * @param scheduledQueryArn The scheduledQuery ARN to reference
+   * @returns ScheduledQuery construct
    */
   public static fromScheduledQueryArn(scope: Construct, id: string, scheduledQueryArn: string): IScheduledQuery {
     class Import extends ScheduledQueryBase {
       public readonly scheduledQueryArn = scheduledQueryArn;
-      public readonly name = this.physicalName
-      public readonly executionRole: IRole = this.executionRole
+      public readonly name = Stack.of(scope).splitArn(scheduledQueryArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName || this.physicalName
+      public readonly executionRole: IRole = this.executionRole|| 'dummy-value'
       public readonly errorReportBucket?: IBucket = this.errorReportBucket
       public readonly errorReportEncryptionOption?: EncryptionOptions = this.errorReportEncryptionOption
       public readonly errorReportObjectKeyPrefix?: string = this.errorReportObjectKeyPrefix
@@ -148,7 +148,7 @@ abstract class ScheduledQueryBase extends Resource implements IScheduledQuery {
   /**
    * The scheduled query name.
    */
-  abstract readonly name: string
+  abstract readonly name: string|IResolvable
 
   /**
    * SNS topic that the scheduled query status notifications will be sent to.
@@ -430,7 +430,7 @@ export class ScheduledQuery extends ScheduledQueryBase {
    *
    * @attribute
    */
-  readonly name: string
+  readonly name: string|IResolvable
 
   /**
    * The scheduled query notification configuration.
@@ -503,7 +503,7 @@ export class ScheduledQuery extends ScheduledQueryBase {
       queryString: props.queryString,
       scheduleConfiguration: { scheduleExpression: props.schedule.expressionString },
       scheduledQueryExecutionRoleArn: scheduledQueryExecutionRole.roleArn,
-      scheduledQueryName: props.scheduledQueryName,
+      scheduledQueryName: props.scheduledQueryName || `SQ-${Stack.of(scope).region}-${scope.node.id}`,
     };
 
     if (!props.errorReportBucket && (props.errorReportEncryptionOption || props.errorReportObjectKeyPrefix)) {
@@ -554,7 +554,7 @@ export class ScheduledQuery extends ScheduledQueryBase {
 
     this.scheduledQueryArn = resource.attrArn;
     this.kmsKey = props.kmsKey;
-    this.name = resource.attrSqName;
+    this.name = this.physicalName;
     this.schedule = props.schedule;
     this.executionRole = scheduledQueryExecutionRole;
 
