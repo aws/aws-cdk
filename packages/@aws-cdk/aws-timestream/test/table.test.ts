@@ -210,5 +210,42 @@ describe('Timestream Table', () => {
     expect(table.tableName).toBe('table');
     expect(table.databaseName).toBe('database');
   });
+
+  test('table default encryption', () => {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    const bucket = new Bucket(stack, 'Bucket');
+    const key = new Key(stack, 'TestKey');
+
+    const database = new Database(stack, 'TestDatabase', {
+      databaseName: 'Database_1',
+      kmsKey: key,
+    });
+
+    new Table(stack, 'TestTable', {
+      database,
+      tableName: 'testTable',
+
+      magneticWriteEnable: true,
+      magneticWriteBucket: bucket,
+      magneticWriteKey: key,
+      magneticStoreRetentionPeriod: Duration.days(20),
+      memoryStoreRetentionPeriod: Duration.days(1),
+
+    });
+
+    const expected: any = {
+      MagneticStoreWriteProperties: {
+        magneticStoreRejectedDataLocation: {
+          s3Configuration: {
+            encryptionOption: 'SSE_S3',
+          },
+        },
+      },
+    };
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Timestream::Table', expected);
+  });
 });
 

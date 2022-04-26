@@ -22,6 +22,18 @@ describe('Timestream Database', () => {
     });
   });
 
+  test('database errors when name below 3 chars', () => {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    const key = new Key(stack, 'TestKey');
+
+    expect(() => new Database(stack, 'TestDatabase', {
+      databaseName: 'Da',
+      kmsKey: key,
+    })).toThrow('Database name must have between 3 and 256 characters or omitted. Received: Da');
+  });
+
   test('database is created with default key', () => {
     const app = new App();
     const stack = new Stack(app, 'TestStack');

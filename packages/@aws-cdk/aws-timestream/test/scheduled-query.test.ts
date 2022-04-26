@@ -24,7 +24,6 @@ describe('Timestream Scheduled Query', () => {
       queryString: 'SELECT * FROM DATABASE',
       errorReportBucket: bucket,
       errorReportEncryptionOption: EncryptionOptions.SSE_S3,
-      errorReportObjectKeyPrefix: 'prefix/',
       scheduledQueryName: 'Test Query',
       notificationTopic: topic,
       targetConfiguration: {
@@ -45,7 +44,7 @@ describe('Timestream Scheduled Query', () => {
             Ref: 'TestBucket560B80BC',
           },
           EncryptionOption: 'SSE_S3',
-          ObjectKeyPrefix: 'prefix/',
+          ObjectKeyPrefix: 'timestream-errors/',
         },
       },
       NotificationConfiguration: {
@@ -289,7 +288,7 @@ describe('Timestream Scheduled Query', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', expected);
   });
 
-  test('Scheduled Query role errors', () => {
+  test('Scheduled Query role errors when permissions cant be guessed', () => {
     const app = new App();
     const stack = new Stack(app, 'TestStack');
 
@@ -303,6 +302,25 @@ describe('Timestream Scheduled Query', () => {
       notificationTopic: topic,
       schedule: Schedule.rate(Duration.days(1)),
     })).toThrow('Neither sourceTable nor TargetConfiguration are set, cannot determine correct permissions, please supply scheduledQueryExecutionRole');
+
+
+  });
+
+  test('Scheduled Query errors when Bucket is not set, but options are', () => {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const topic = new Topic(stack, 'TestTopic');
+    const database = new Database(stack, 'TestDatabase');
+    const table = new Table(stack, 'TestTable', { database });
+
+    expect(() => new ScheduledQuery(stack, 'SQ_1', {
+      queryString: 'SELECT * FROM DATABASE',
+      scheduledQueryName: 'Test Query',
+      notificationTopic: topic,
+      schedule: Schedule.rate(Duration.days(1)),
+      sourceTable: table,
+      errorReportObjectKeyPrefix: 'a/',
+    })).toThrow('errorReportBucket not set.');
 
 
   });
@@ -344,5 +362,34 @@ describe('Timestream Scheduled Query', () => {
     Template.fromStack(stack).hasResource('AWS::S3::Bucket', expectedBucket);
     Template.fromStack(stack).hasResourceProperties('AWS::Timestream::ScheduledQuery', expectedQuery);
   });
+
+  test('Scheduled Query autocreates name', () => {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    const topic = new Topic(stack, 'TestTopic');
+    const database = new Database(stack, 'TestDatabase');
+    const table = new Table(stack, 'TestTable', { database });
+
+    const query = new ScheduledQuery(stack, 'SQ_1', {
+      queryString: 'SELECT * FROM DATABASE',
+      notificationTopic: topic,
+      schedule: Schedule.rate(Duration.days(1)),
+      sourceTable: table,
+    });
+
+    expect(stack.resolve(query.name)).toStrictEqual({ 'Fn::Join': ['', ['SQ-', { Ref: 'AWS::Region' }, '-TestStack']] });
+  });
+
+  test('ScheduledQuery from arn', () => {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    const query = ScheduledQuery.fromScheduledQueryArn(stack, 'SQ-Import', 'arn:aws:timestream:us-east-1:457234467265:scheduled-query/name');
+
+    expect(stack.resolve(query.name)).toBe('name');
+    expect(query.scheduledQueryArn).toBe('arn:aws:timestream:us-east-1:457234467265:scheduled-query/name');
+  });
+
 });
 

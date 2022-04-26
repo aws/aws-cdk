@@ -230,7 +230,7 @@ export class Table extends TableBase {
       service: 'timestream',
       resource: this.physicalName,
     });
-    // does not use the ref, because of the ref behaving strange:
+    // does not use the ref, because of ref behaving strange:
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-table.html#aws-resource-timestream-table-return-values
     this.tableName = this.getResourceNameAttribute(resource.attrName);
     this.databaseName = resource.databaseName;
