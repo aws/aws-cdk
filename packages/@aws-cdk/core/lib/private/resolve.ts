@@ -115,6 +115,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
     const context: IResolveContext = {
       preparing: options.preparing,
       scope: options.scope as ICoreConstruct,
+      documentPath: newPrefix ?? [],
       registerPostProcessor(pp) { postProcessor = pp; },
       resolve(x: any, changeOptions?: ResolveChangeContextOptions) { return resolve(x, { ...options, ...changeOptions, prefix: newPrefix }); },
     };

@@ -33,5 +33,7 @@ export class ManualApprovalStep extends Step {
     super(id);
 
     this.comment = props.comment;
+
+    this.discoverReferencedOutputs(props.comment);
   }
 }

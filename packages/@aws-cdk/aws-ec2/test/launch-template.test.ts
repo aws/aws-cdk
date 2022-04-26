@@ -1,9 +1,10 @@
-import { Template } from '@aws-cdk/assertions';
+import { Annotations, Template, Match } from '@aws-cdk/assertions';
 import {
   CfnInstanceProfile,
   Role,
   ServicePrincipal,
 } from '@aws-cdk/aws-iam';
+import { Key } from '@aws-cdk/aws-kms';
 import {
   App,
   Duration,
@@ -254,6 +255,7 @@ describe('LaunchTemplate', () => {
 
   test('Given blockDeviceMapping', () => {
     // GIVEN
+    const kmsKey = new Key(stack, 'EbsKey');
     const blockDevices: BlockDevice[] = [
       {
         deviceName: 'ebs',
@@ -261,6 +263,16 @@ describe('LaunchTemplate', () => {
         volume: BlockDeviceVolume.ebs(15, {
           deleteOnTermination: true,
           encrypted: true,
+          volumeType: EbsDeviceVolumeType.IO1,
+          iops: 5000,
+        }),
+      }, {
+        deviceName: 'ebs-cmk',
+        mappingEnabled: true,
+        volume: BlockDeviceVolume.ebs(15, {
+          deleteOnTermination: true,
+          encrypted: true,
+          kmsKey: kmsKey,
           volumeType: EbsDeviceVolumeType.IO1,
           iops: 5000,
         }),
@@ -292,6 +304,22 @@ describe('LaunchTemplate', () => {
             Ebs: {
               DeleteOnTermination: true,
               Encrypted: true,
+              Iops: 5000,
+              VolumeSize: 15,
+              VolumeType: 'io1',
+            },
+          },
+          {
+            DeviceName: 'ebs-cmk',
+            Ebs: {
+              DeleteOnTermination: true,
+              Encrypted: true,
+              KmsKeyId: {
+                'Fn::GetAtt': [
+                  'EbsKeyD3FEE551',
+                  'Arn',
+                ],
+              },
               Iops: 5000,
               VolumeSize: 15,
               VolumeType: 'io1',
@@ -557,14 +585,15 @@ describe('LaunchTemplate marketOptions', () => {
     [7, 1],
   ])('for range duration errors: %p', (duration: number, expectedErrors: number) => {
     // WHEN
-    const template = new LaunchTemplate(stack, 'Template', {
+    new LaunchTemplate(stack, 'Template', {
       spotOptions: {
         blockDuration: Duration.hours(duration),
       },
     });
 
     // THEN
-    expect(template.node.metadataEntry).toHaveLength(expectedErrors);
+    const errors = Annotations.fromStack(stack).findError('/Default/Template', Match.anyValue());
+    expect(errors).toHaveLength(expectedErrors);
   });
 
   test('for bad duration', () => {

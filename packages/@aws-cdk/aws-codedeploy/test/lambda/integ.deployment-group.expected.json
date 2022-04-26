@@ -72,20 +72,20 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "HandlerServiceRoleFCDC14AE",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "HandlerServiceRoleFCDC14AE"
       ]
     },
-    "HandlerCurrentVersion93FB80BFb2de9794fd0f0df5e5c01c16ba4b05cf": {
+    "HandlerCurrentVersion93FB80BFb2a9ce598bf2730613c07e406cddb6b6": {
       "Type": "AWS::Lambda::Version",
       "Properties": {
         "FunctionName": {
@@ -101,7 +101,7 @@
         },
         "FunctionVersion": {
           "Fn::GetAtt": [
-            "HandlerCurrentVersion93FB80BFb2de9794fd0f0df5e5c01c16ba4b05cf",
+            "HandlerCurrentVersion93FB80BFb2a9ce598bf2730613c07e406cddb6b6",
             "Version"
           ]
         },
@@ -243,14 +243,14 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "PreHookServiceRoleC724B9BA",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "PreHookServiceRoleDefaultPolicy65358F76",
@@ -376,14 +376,14 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "PostHookServiceRoleE8A6AAC2",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "PostHookServiceRoleDefaultPolicy82AEE758",
@@ -483,22 +483,48 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PreHook8B53F672",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PostHookF2E49B30",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PostHookF2E49B30",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "PreHook8B53F672",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PostHookF2E49B30",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PreHook8B53F672",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"

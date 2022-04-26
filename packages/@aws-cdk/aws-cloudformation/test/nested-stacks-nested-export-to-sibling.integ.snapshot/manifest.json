@@ -1,0 +1,98 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "Stack1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "Stack1.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/Stack1": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "Stack1NestedUnderStack15F1F8640.nested.template.json",
+              "id": "5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219",
+              "packaging": "file",
+              "sourceHash": "5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219",
+              "s3BucketParameter": "AssetParameters5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219S3BucketF628ECFB",
+              "s3KeyParameter": "AssetParameters5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219S3VersionKey0E649F42",
+              "artifactHashParameter": "AssetParameters5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219ArtifactHash37AA0C4D"
+            }
+          }
+        ],
+        "/Stack1/NestedUnderStack1/TopicInNestedUnderStack1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicInNestedUnderStack115E329C4"
+          }
+        ],
+        "/Stack1/NestedUnderStack1/Stack1NestedUnderStack1TopicInNestedUnderStack136BDF841TopicName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Stack1NestedUnderStack1TopicInNestedUnderStack136BDF841TopicName"
+          }
+        ],
+        "/Stack1/NestedUnderStack1.NestedStack/NestedUnderStack1.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305B"
+          }
+        ],
+        "/Stack1/Exports/Output{\"Fn::GetAtt\":[\"NestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305B\",\"Outputs.Stack1NestedUnderStack1TopicInNestedUnderStack136BDF841TopicName\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1TopicInNestedUnderStack136BDF841TopicNameD753D416"
+          }
+        ],
+        "/Stack1/AssetParameters/5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219S3BucketF628ECFB"
+          }
+        ],
+        "/Stack1/AssetParameters/5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219S3VersionKey0E649F42"
+          }
+        ],
+        "/Stack1/AssetParameters/5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219ArtifactHash37AA0C4D"
+          }
+        ]
+      },
+      "displayName": "Stack1"
+    },
+    "Stack2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "Stack2.template.json",
+        "validateOnSynth": false
+      },
+      "dependencies": [
+        "Stack1"
+      ],
+      "metadata": {
+        "/Stack2/TopicInStack2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicInStack27FD9238C"
+          }
+        ]
+      },
+      "displayName": "Stack2"
+    }
+  }
+}

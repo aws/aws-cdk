@@ -31,6 +31,7 @@ export interface MockSdkProviderOptions {
  */
 export class MockSdkProvider extends SdkProvider {
   public readonly sdk: ISDK;
+  private readonly _mockSdk?: MockSdk;
 
   constructor(options: MockSdkProviderOptions = {}) {
     super(FAKE_CREDENTIAL_CHAIN, 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
@@ -40,8 +41,15 @@ export class MockSdkProvider extends SdkProvider {
     if (options.realSdk ?? true) {
       this.sdk = new SDK(FAKE_CREDENTIALS, this.defaultRegion, { customUserAgent: 'aws-cdk/jest' });
     } else {
-      this.sdk = new MockSdk();
+      this.sdk = this._mockSdk = new MockSdk();
     }
+  }
+
+  public get mockSdk(): MockSdk {
+    if (!this._mockSdk) {
+      throw new Error('MockSdkProvider was not created with \'realSdk: false\'');
+    }
+    return this._mockSdk;
   }
 
   async baseCredentialsPartition(_environment: cxapi.Environment, _mode: Mode): Promise<string | undefined> {
@@ -118,6 +126,10 @@ export class MockSdkProvider extends SdkProvider {
     (this.sdk as any).cloudWatchLogs = jest.fn().mockReturnValue(partialAwsService<AWS.CloudWatchLogs>(stubs));
   }
 
+  public stubAppSync(stubs: SyncHandlerSubsetOf<AWS.AppSync>) {
+    (this.sdk as any).appsync = jest.fn().mockReturnValue(partialAwsService<AWS.AppSync>(stubs));
+  }
+
   public stubGetEndpointSuffix(stub: () => string) {
     this.sdk.getEndpointSuffix = stub;
   }
@@ -139,6 +151,7 @@ export class MockSdk implements ISDK {
   public readonly stepFunctions = jest.fn();
   public readonly codeBuild = jest.fn();
   public readonly cloudWatchLogs = jest.fn();
+  public readonly appsync = jest.fn();
   public readonly getEndpointSuffix = jest.fn();
   public readonly appendCustomUserAgent = jest.fn();
   public readonly removeCustomUserAgent = jest.fn();
@@ -159,6 +172,13 @@ export class MockSdk implements ISDK {
    */
   public stubCloudWatchLogs(stubs: SyncHandlerSubsetOf<AWS.CloudWatchLogs>) {
     this.cloudWatchLogs.mockReturnValue(partialAwsService<AWS.CloudWatchLogs>(stubs));
+  }
+
+  /**
+   * Replace the AppSync client with the given object
+   */
+  public stubAppSync(stubs: SyncHandlerSubsetOf<AWS.AppSync>) {
+    this.appsync.mockReturnValue(partialAwsService<AWS.AppSync>(stubs));
   }
 
   /**

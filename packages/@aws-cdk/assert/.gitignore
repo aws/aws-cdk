@@ -25,3 +25,8 @@ junit.xml
 ./test
 README.md
 jest.ts
+
+!**/*.integ.snapshot/**/asset.*/*.js
+!**/*.integ.snapshot/**/asset.*/*.d.ts
+
+!**/*.integ.snapshot/**/asset.*/**

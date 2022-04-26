@@ -1,5 +1,7 @@
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { PolicyStatement } from './policy-statement';
+import { PostProcessPolicyDocument } from './private/postprocess-policy-document';
 
 /**
  * Properties for a new PolicyDocument
@@ -18,6 +20,24 @@ export interface PolicyDocumentProps {
    * @default - No statements
    */
   readonly statements?: PolicyStatement[];
+
+  /**
+   * Try to minimize the policy by merging statements
+   *
+   * To avoid overrunning the maximum policy size, combine statements if they produce
+   * the same result. Merging happens according to the following rules:
+   *
+   * - The Effect of both statements is the same
+   * - Neither of the statements have a 'Sid'
+   * - Combine Principals if the rest of the statement is exactly the same.
+   * - Combine Resources if the rest of the statement is exactly the same.
+   * - Combine Actions if the rest of the statement is exactly the same.
+   * - We will never combine NotPrincipals, NotResources or NotActions, because doing
+   *   so would change the meaning of the policy document.
+   *
+   * @default - false, unless the feature flag `@aws-cdk/aws-iam:minimizePolicies` is set
+   */
+  readonly minimize?: boolean;
 }
 
 /**
@@ -43,16 +63,21 @@ export class PolicyDocument implements cdk.IResolvable {
   public readonly creationStack: string[];
   private readonly statements = new Array<PolicyStatement>();
   private readonly autoAssignSids: boolean;
+  private readonly minimize?: boolean;
 
   constructor(props: PolicyDocumentProps = {}) {
     this.creationStack = cdk.captureStackTrace();
     this.autoAssignSids = !!props.assignSids;
+    this.minimize = props.minimize;
 
     this.addStatements(...props.statements || []);
   }
 
   public resolve(context: cdk.IResolveContext): any {
-    context.registerPostProcessor(new RemoveDuplicateStatements(this.autoAssignSids));
+    context.registerPostProcessor(new PostProcessPolicyDocument(
+      this.autoAssignSids,
+      this.minimize ?? cdk.FeatureFlags.of(context.scope).isEnabled(cxapi.IAM_MINIMIZE_POLICIES) ?? false,
+    ));
     return this.render();
   }
 
@@ -151,44 +176,5 @@ export class PolicyDocument implements cdk.IResolvable {
     };
 
     return doc;
-  }
-}
-
-/**
- * Removes duplicate statements and assign Sids if necessary
- */
-class RemoveDuplicateStatements implements cdk.IPostProcessor {
-  constructor(private readonly autoAssignSids: boolean) {
-  }
-
-  public postProcess(input: any, _context: cdk.IResolveContext): any {
-    if (!input || !input.Statement) {
-      return input;
-    }
-
-    const jsonStatements = new Set<string>();
-    const uniqueStatements: any[] = [];
-
-    for (const statement of input.Statement) {
-      const jsonStatement = JSON.stringify(statement);
-      if (!jsonStatements.has(jsonStatement)) {
-        uniqueStatements.push(statement);
-        jsonStatements.add(jsonStatement);
-      }
-    }
-
-    // assign unique SIDs (the statement index) if `autoAssignSids` is enabled
-    const statements = uniqueStatements.map((s, i) => {
-      if (this.autoAssignSids && !s.Sid) {
-        s.Sid = i.toString();
-      }
-
-      return s;
-    });
-
-    return {
-      ...input,
-      Statement: statements,
-    };
   }
 }

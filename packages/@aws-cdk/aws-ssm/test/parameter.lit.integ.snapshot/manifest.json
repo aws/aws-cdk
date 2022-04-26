@@ -1,0 +1,58 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "SSM-Parameter": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SSM-Parameter.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/SSM-Parameter/UserRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserRoleB7C3739B"
+          }
+        ],
+        "/SSM-Parameter/UserRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserRoleDefaultPolicyBC5E062B"
+          }
+        ],
+        "/SSM-Parameter/StringParameter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StringParameter472EED0E"
+          }
+        ],
+        "/SSM-Parameter/StringListParameter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StringListParameterFAC8EDDC"
+          }
+        ],
+        "/SSM-Parameter/StringListOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StringListOutput"
+          }
+        ],
+        "/SSM-Parameter/ParamArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParamArn"
+          }
+        ]
+      },
+      "displayName": "SSM-Parameter"
+    }
+  }
+}

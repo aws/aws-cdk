@@ -1,0 +1,82 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codepipeline-cloudformation-cross-region": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-west-2",
+      "properties": {
+        "templateFile": "aws-cdk-codepipeline-cloudformation-cross-region.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-codepipeline-cloudformation-cross-region/MyBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucketF68F3FF0"
+          }
+        ],
+        "/aws-cdk-codepipeline-cloudformation-cross-region/MyPipeline/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineRoleC0D47CA4"
+          }
+        ],
+        "/aws-cdk-codepipeline-cloudformation-cross-region/MyPipeline/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineRoleDefaultPolicy34F09EFA"
+          }
+        ],
+        "/aws-cdk-codepipeline-cloudformation-cross-region/MyPipeline/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineAED38ECF"
+          }
+        ],
+        "/aws-cdk-codepipeline-cloudformation-cross-region/MyPipeline/Source/S3/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineSourceS3CodePipelineActionRole9F003087"
+          }
+        ],
+        "/aws-cdk-codepipeline-cloudformation-cross-region/MyPipeline/Source/S3/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineSourceS3CodePipelineActionRoleDefaultPolicyF838EE0B"
+          }
+        ],
+        "/aws-cdk-codepipeline-cloudformation-cross-region/MyPipeline/CFN/CFN_Deploy/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineCFNCFNDeployCodePipelineActionRole31B1904C"
+          }
+        ],
+        "/aws-cdk-codepipeline-cloudformation-cross-region/MyPipeline/CFN/CFN_Deploy/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineCFNCFNDeployCodePipelineActionRoleDefaultPolicyD67537CB"
+          }
+        ],
+        "/aws-cdk-codepipeline-cloudformation-cross-region/MyPipeline/CFN/CFN_Deploy/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineCFNCFNDeployRole9CC99B3F"
+          }
+        ],
+        "/aws-cdk-codepipeline-cloudformation-cross-region/MyPipeline/CFN/CFN_Deploy/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineCFNCFNDeployRoleDefaultPolicy65876BA0"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codepipeline-cloudformation-cross-region"
+    }
+  }
+}

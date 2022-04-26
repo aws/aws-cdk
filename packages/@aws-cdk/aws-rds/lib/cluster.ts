@@ -10,8 +10,8 @@ import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { Endpoint } from './endpoint';
-import { IParameterGroup } from './parameter-group';
-import { DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
+import { IParameterGroup, ParameterGroup } from './parameter-group';
+import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
 import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
@@ -115,6 +115,16 @@ interface DatabaseClusterBaseProps {
    * @default - No parameter group.
    */
   readonly parameterGroup?: IParameterGroup;
+
+  /**
+   * The parameters in the DBClusterParameterGroup to create automatically
+   *
+   * You can only specify parameterGroup or parameters but not both.
+   * You need to use a versioned engine to auto-generate a DBClusterParameterGroup.
+   *
+   * @default - None
+   */
+  readonly parameters?: { [key: string]: string };
 
   /**
    * The removal policy to apply when the cluster and its instances are removed
@@ -240,6 +250,28 @@ interface DatabaseClusterBaseProps {
    * @default false
    */
   readonly iamAuthentication?: boolean;
+
+  /**
+   * Whether to enable storage encryption.
+   *
+   * @default - true if storageEncryptionKey is provided, false otherwise
+   */
+  readonly storageEncrypted?: boolean
+
+  /**
+   * The KMS key for storage encryption.
+   * If specified, {@link storageEncrypted} will be set to `true`.
+   *
+   * @default - if storageEncrypted is true then the default master key, no key otherwise
+   */
+  readonly storageEncryptionKey?: kms.IKey;
+
+  /**
+   * Whether to copy tags to the snapshot when a snapshot is created.
+   *
+   * @default - true
+   */
+  readonly copyTagsToSnapshot?: boolean;
 }
 
 /**
@@ -337,19 +369,36 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       }),
     ];
 
-    let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props, /* combineRoles */ false);
+    const combineRoles = props.engine.combineImportAndExportRoles ?? false;
+    let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props, combineRoles);
+
+    if (props.parameterGroup && props.parameters) {
+      throw new Error('You cannot specify both parameterGroup and parameters');
+    }
+    const parameterGroup = props.parameterGroup ?? (
+      props.parameters
+        ? new ParameterGroup(this, 'ParameterGroup', {
+          engine: props.engine,
+          parameters: props.parameters,
+        })
+        : undefined
+    );
     // bind the engine to the Cluster
     const clusterEngineBindConfig = props.engine.bindToCluster(this, {
       s3ImportRole,
       s3ExportRole,
-      parameterGroup: props.parameterGroup,
+      parameterGroup,
     });
 
     const clusterAssociatedRoles: CfnDBCluster.DBClusterRoleProperty[] = [];
     if (s3ImportRole) {
       clusterAssociatedRoles.push({ roleArn: s3ImportRole.roleArn, featureName: clusterEngineBindConfig.features?.s3Import });
     }
-    if (s3ExportRole) {
+    if (s3ExportRole &&
+        // only add the second associated Role if it's different than the first
+        // (duplicates in the associated Roles array are not allowed by the RDS service)
+        (s3ExportRole !== s3ImportRole ||
+        clusterEngineBindConfig.features?.s3Import !== clusterEngineBindConfig.features?.s3Export)) {
       clusterAssociatedRoles.push({ roleArn: s3ExportRole.roleArn, featureName: clusterEngineBindConfig.features?.s3Export });
     }
 
@@ -380,6 +429,11 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       databaseName: props.defaultDatabaseName,
       enableCloudwatchLogsExports: props.cloudwatchLogsExports,
+      // Encryption
+      kmsKeyId: props.storageEncryptionKey?.keyArn,
+      storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
+      // Tags
+      copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
     };
   }
 }
@@ -456,28 +510,6 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
    * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
    */
   readonly credentials?: Credentials;
-
-  /**
-   * Whether to enable storage encryption.
-   *
-   * @default - true if storageEncryptionKey is provided, false otherwise
-   */
-  readonly storageEncrypted?: boolean
-
-  /**
-   * The KMS key for storage encryption.
-   * If specified, {@link storageEncrypted} will be set to `true`.
-   *
-   * @default - if storageEncrypted is true then the default master key, no key otherwise
-   */
-  readonly storageEncryptionKey?: kms.IKey;
-
-  /**
-   * Whether to copy tags to the snapshot when a snapshot is created.
-   *
-   * @default: true
-   */
-  readonly copyTagsToSnapshot?: boolean;
 }
 
 /**
@@ -527,11 +559,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       ...this.newCfnProps,
       // Admin
       masterUsername: credentials.username,
-      masterUserPassword: credentials.password?.toString(),
-      // Encryption
-      kmsKeyId: props.storageEncryptionKey?.keyArn,
-      storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
-      copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
+      masterUserPassword: credentials.password?.unsafeUnwrap(),
     });
 
     this.clusterIdentifier = cluster.ref;
@@ -572,13 +600,11 @@ export class DatabaseCluster extends DatabaseClusterNew {
     }
 
     return new secretsmanager.SecretRotation(this, id, {
+      ...applyDefaultRotationOptions(options, this.vpcSubnets),
       secret: this.secret,
       application: this.singleUserRotationApplication,
       vpc: this.vpc,
-      vpcSubnets: this.vpcSubnets,
       target: this,
-      ...options,
-      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
     });
   }
 
@@ -589,13 +615,13 @@ export class DatabaseCluster extends DatabaseClusterNew {
     if (!this.secret) {
       throw new Error('Cannot add multi user rotation for a cluster without secret.');
     }
+
     return new secretsmanager.SecretRotation(this, id, {
-      ...options,
-      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
+      ...applyDefaultRotationOptions(options, this.vpcSubnets),
+      secret: options.secret,
       masterSecret: this.secret,
       application: this.multiUserRotationApplication,
       vpc: this.vpc,
-      vpcSubnets: this.vpcSubnets,
       target: this,
     });
   }
@@ -722,7 +748,21 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
   }
 
   const instanceType = instanceProps.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM);
-  const instanceParameterGroupConfig = instanceProps.parameterGroup?.bindToInstance({});
+
+  if (instanceProps.parameterGroup && instanceProps.parameters) {
+    throw new Error('You cannot specify both parameterGroup and parameters');
+  }
+
+  const instanceParameterGroup = instanceProps.parameterGroup ?? (
+    instanceProps.parameters
+      ? new ParameterGroup(cluster, 'InstanceParameterGroup', {
+        engine: props.engine,
+        parameters: instanceProps.parameters,
+      })
+      : undefined
+  );
+  const instanceParameterGroupConfig = instanceParameterGroup?.bindToInstance({});
+
   for (let i = 0; i < instanceCount; i++) {
     const instanceIndex = i + 1;
     const instanceIdentifier = props.instanceIdentifierBase != null ? `${props.instanceIdentifierBase}${instanceIndex}` :

@@ -79,7 +79,7 @@ new lambda.DockerImageFunction(this, 'ECRFunction', {
 ```
 
 The props for these docker image resources allow overriding the image's `CMD`, `ENTRYPOINT`, and `WORKDIR`
-configurations. See their docs for more information.
+configurations as well as choosing a specific tag or digest. See their docs for more information.
 
 ## Execution Role
 
@@ -339,6 +339,73 @@ const fn = new lambda.Function(this, 'MyFunction', {
 fn.currentVersion.addAlias('live');
 ```
 
+## Function URL
+
+A function URL is a dedicated HTTP(S) endpoint for your Lambda function. When you create a function URL, Lambda automatically generates a unique URL endpoint for you. Function URLs can be created for the latest version Lambda Functions, or Function Aliases (but not for Versions).
+
+Function URLs are dual stack-enabled, supporting IPv4 and IPv6, and cross-origin resource sharing (CORS) configuration. After you configure a function URL for your function, you can invoke your function through its HTTP(S) endpoint via a web browser, curl, Postman, or any HTTP client. To invoke a function using IAM authentication your HTTP client must support SigV4 signing.
+
+See the [Invoking Function URLs](https://docs.aws.amazon.com/lambda/latest/dg/urls-invocation.html) section of the AWS Lambda Developer Guide
+for more information on the input and output payloads of Functions invoked in this way.
+
+### IAM-authenticated Function URLs
+
+To create a Function URL which can be called by an IAM identity, call `addFunctionUrl()`, followed by `grantInvokeFunctionUrl()`:
+
+```ts
+// Can be a Function or an Alias
+declare const fn: lambda.Function;
+declare const myRole: iam.Role;
+
+const fnUrl = fn.addFunctionUrl();
+fnUrl.grantInvokeUrl(myRole);
+
+new CfnOutput(this, 'TheUrl', {
+  // The .url attributes will return the unique Function URL
+  value: fnUrl.url,
+});
+```
+
+Calls to this URL need to be signed with SigV4.
+
+### Anonymous Function URLs
+
+To create a Function URL which can be called anonymously, pass `authType: FunctionUrlAuthType.NONE` to `addFunctionUrl()`:
+
+```ts
+// Can be a Function or an Alias
+declare const fn: lambda.Function;
+
+const fnUrl = fn.addFunctionUrl({
+  authType: lambda.FunctionUrlAuthType.NONE,
+});
+
+new CfnOutput(this, 'TheUrl', {
+  value: fnUrl.url,
+});
+```
+
+### CORS configuration for Function URLs
+
+If you want your Function URLs to be invokable from a web page in browser, you
+will need to configure cross-origin resource sharing to allow the call (if you do
+not do this, your browser will refuse to make the call):
+
+```ts
+declare const fn: lambda.Function;
+
+fn.addFunctionUrl({
+  authType: lambda.FunctionUrlAuthType.NONE,
+  cors: {
+    // Allow this to be called from websites on https://example.com.
+    // Can also be ['*'] to allow all domain.
+    allowedOrigins: ['https://example.com'],
+
+    // More options are possible here, see the documentation for FunctionUrlCorsOptions
+  },
+});
+```
+
 ## Layers
 
 The `lambda.LayerVersion` class can be used to define Lambda layers and manage
@@ -480,10 +547,48 @@ fn.addEventSource(new eventsources.S3EventSource(bucket, {
 
 See the documentation for the __@aws-cdk/aws-lambda-event-sources__ module for more details.
 
+## Imported Lambdas
+
+When referencing an imported lambda in the CDK, use `fromFunctionArn()` for most use cases:
+
+```ts
+const fn = lambda.Function.fromFunctionArn(
+  this,
+  'Function',
+  'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+);
+```
+
+The `fromFunctionAttributes()` API is available for more specific use cases:
+
+```ts
+const fn = lambda.Function.fromFunctionAttributes(this, 'Function', {
+  functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+  // The following are optional properties for specific use cases and should be used with caution:
+
+  // Use Case: imported function is in the same account as the stack. This tells the CDK that it
+  // can modify the function's permissions.
+  sameEnvironment: true,
+
+  // Use Case: imported function is in a different account and user commits to ensuring that the
+  // imported function has the correct permissions outside the CDK.
+  skipPermissions: true,
+});
+```
+
+If `fromFunctionArn()` causes an error related to having to provide an account and/or region in a different construct,
+and the lambda is in the same account and region as the stack you're importing it into,
+you can use `Function.fromFunctionName()` instead:
+
+```ts
+const fn = lambda.Function.fromFunctionName(this, 'Function', 'MyFn');
+```
+
 ## Lambda with DLQ
 
 A dead-letter queue can be automatically created for a Lambda function by
-setting the `deadLetterQueueEnabled: true` configuration.
+setting the `deadLetterQueueEnabled: true` configuration. In such case CDK creates
+a `sqs.Queue` as `deadLetterQueue`.
 
 ```ts
 const fn = new lambda.Function(this, 'MyFunction', {
@@ -505,6 +610,20 @@ const fn = new lambda.Function(this, 'MyFunction', {
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
   deadLetterQueue: dlq,
+});
+```
+
+You can also use a `sns.Topic` instead of an `sqs.Queue` as dead-letter queue:
+
+```ts
+import * as sns from '@aws-cdk/aws-sns';
+
+const dlt = new sns.Topic(this, 'DLQ');
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('// your code here'),
+  deadLetterTopic: dlt,
 });
 ```
 
@@ -658,6 +777,24 @@ const fn = new lambda.Function(this, 'MyLambda', {
 });
 ```
 
+## Ephemeral Storage
+
+You can configure ephemeral storage on a function to control the amount of storage it gets for reading
+or writing data, allowing you to use AWS Lambda for ETL jobs, ML inference, or other data-intensive workloads.
+The ephemeral storage will be accessible in the functions' `/tmp` directory.
+
+```ts
+import { Size } from '@aws-cdk/core';
+
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_14_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  ephemeralStorageSize: Size.mebibytes(1024),
+});
+```
+
+Read more about using this feature in [this AWS blog post](https://aws.amazon.com/blogs/aws/aws-lambda-now-supports-up-to-10-gb-ephemeral-storage/).
 
 ## Singleton Function
 

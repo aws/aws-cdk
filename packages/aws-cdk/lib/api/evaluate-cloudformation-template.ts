@@ -1,4 +1,3 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { ISDK } from './aws-auth';
 
@@ -7,30 +6,30 @@ export interface ListStackResources {
 }
 
 export class LazyListStackResources implements ListStackResources {
-  private stackResources: AWS.CloudFormation.StackResourceSummary[] | undefined;
+  private stackResources: Promise<AWS.CloudFormation.StackResourceSummary[]> | undefined;
 
   constructor(private readonly sdk: ISDK, private readonly stackName: string) {
   }
 
   public async listStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]> {
     if (this.stackResources === undefined) {
-      this.stackResources = await this.getStackResources();
+      this.stackResources = this.getStackResources(undefined);
     }
     return this.stackResources;
   }
 
-  private async getStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]> {
+  private async getStackResources(nextToken: string | undefined): Promise<AWS.CloudFormation.StackResourceSummary[]> {
     const ret = new Array<AWS.CloudFormation.StackResourceSummary>();
-    let nextToken: string | undefined;
-    do {
-      const stackResourcesResponse = await this.sdk.cloudFormation().listStackResources({
-        StackName: this.stackName,
-        NextToken: nextToken,
-      }).promise();
+    return this.sdk.cloudFormation().listStackResources({
+      StackName: this.stackName,
+      NextToken: nextToken,
+    }).promise().then(async stackResourcesResponse => {
       ret.push(...(stackResourcesResponse.StackResourceSummaries ?? []));
-      nextToken = stackResourcesResponse.NextToken;
-    } while (nextToken);
-    return ret;
+      if (stackResourcesResponse.NextToken) {
+        ret.push(...await this.getStackResources(stackResourcesResponse.NextToken));
+      }
+      return ret;
+    });
   }
 }
 
@@ -43,7 +42,7 @@ export interface ResourceDefinition {
 }
 
 export interface EvaluateCloudFormationTemplateProps {
-  readonly stackArtifact: cxapi.CloudFormationStackArtifact;
+  readonly template: Template;
   readonly parameters: { [parameterName: string]: string };
   readonly account: string;
   readonly region: string;
@@ -54,8 +53,8 @@ export interface EvaluateCloudFormationTemplateProps {
 
 export class EvaluateCloudFormationTemplate {
   private readonly stackResources: ListStackResources;
-  private readonly template: { [section: string]: { [headings: string]: any } };
-  private readonly context: { [k: string]: string };
+  private readonly template: Template;
+  private readonly context: { [k: string]: any };
   private readonly account: string;
   private readonly region: string;
   private readonly partition: string;
@@ -64,7 +63,7 @@ export class EvaluateCloudFormationTemplate {
 
   constructor(props: EvaluateCloudFormationTemplateProps) {
     this.stackResources = props.listStackResources;
-    this.template = props.stackArtifact.template;
+    this.template = props.template;
     this.context = {
       'AWS::AccountId': props.account,
       'AWS::Region': props.region,
@@ -75,6 +74,23 @@ export class EvaluateCloudFormationTemplate {
     this.region = props.region;
     this.partition = props.partition;
     this.urlSuffix = props.urlSuffix;
+  }
+
+  // clones current EvaluateCloudFormationTemplate object, but updates the stack name
+  public createNestedEvaluateCloudFormationTemplate(
+    listNestedStackResources: ListStackResources,
+    nestedTemplate: Template,
+    nestedStackParameters: { [parameterName: string]: any },
+  ) {
+    return new EvaluateCloudFormationTemplate({
+      template: nestedTemplate,
+      parameters: nestedStackParameters,
+      account: this.account,
+      region: this.region,
+      partition: this.partition,
+      urlSuffix: this.urlSuffix,
+      listStackResources: listNestedStackResources,
+    });
   }
 
   public async establishResourcePhysicalName(logicalId: string, physicalNameInCfnTemplate: any): Promise<string | undefined> {
@@ -300,9 +316,16 @@ export class EvaluateCloudFormationTemplate {
   }
 
   private getResourceTypeArnPartOfResource(resource: AWS.CloudFormation.StackResourceSummary): string {
-    return resource.ResourceType.split('::')[2].toLowerCase();
+    const resourceType = resource.ResourceType;
+    const specialCaseResourceType = RESOURCE_TYPE_SPECIAL_NAMES[resourceType]?.resourceType;
+    return specialCaseResourceType
+      ? specialCaseResourceType
+      // this is the default case
+      : resourceType.split('::')[2].toLowerCase();
   }
 }
+
+export type Template = { [section: string]: { [headings: string]: any } };
 
 interface ArnParts {
   readonly partition: string;
@@ -313,12 +336,32 @@ interface ArnParts {
   readonly resourceName: string;
 }
 
+/**
+ * Usually, we deduce the names of the service and the resource type used to format the ARN from the CloudFormation resource type.
+ * For a CFN type like AWS::Service::ResourceType, the second segment becomes the service name, and the third the resource type
+ * (after converting both of them to lowercase).
+ * However, some resource types break this simple convention, and we need to special-case them.
+ * This map is for storing those cases.
+ */
+const RESOURCE_TYPE_SPECIAL_NAMES: { [type: string]: { resourceType: string } } = {
+  'AWS::Events::EventBus': {
+    resourceType: 'event-bus',
+  },
+};
+
 const RESOURCE_TYPE_ATTRIBUTES_FORMATS: { [type: string]: { [attribute: string]: (parts: ArnParts) => string } } = {
   'AWS::IAM::Role': { Arn: iamArnFmt },
   'AWS::IAM::User': { Arn: iamArnFmt },
   'AWS::IAM::Group': { Arn: iamArnFmt },
   'AWS::S3::Bucket': { Arn: s3ArnFmt },
   'AWS::Lambda::Function': { Arn: stdColonResourceArnFmt },
+  'AWS::Events::EventBus': {
+    Arn: stdSlashResourceArnFmt,
+    // the name attribute of the EventBus is the same as the Ref
+    Name: parts => parts.resourceName,
+  },
+  'AWS::DynamoDB::Table': { Arn: stdSlashResourceArnFmt },
+  'AWS::AppSync::GraphQLApi': { ApiId: appsyncGraphQlApiApiIdFmt },
 };
 
 function iamArnFmt(parts: ArnParts): string {
@@ -334,6 +377,16 @@ function s3ArnFmt(parts: ArnParts): string {
 function stdColonResourceArnFmt(parts: ArnParts): string {
   // this is a standard format for ARNs like: arn:aws:service:region:account:resourceType:resourceName
   return `arn:${parts.partition}:${parts.service}:${parts.region}:${parts.account}:${parts.resourceType}:${parts.resourceName}`;
+}
+
+function stdSlashResourceArnFmt(parts: ArnParts): string {
+  // this is a standard format for ARNs like: arn:aws:service:region:account:resourceType/resourceName
+  return `arn:${parts.partition}:${parts.service}:${parts.region}:${parts.account}:${parts.resourceType}/${parts.resourceName}`;
+}
+
+function appsyncGraphQlApiApiIdFmt(parts: ArnParts): string {
+  // arn:aws:appsync:us-east-1:111111111111:apis/<apiId>
+  return parts.resourceName.split('/')[1];
 }
 
 interface Intrinsic {
@@ -355,7 +408,7 @@ async function asyncGlobalReplace(str: string, regex: RegExp, cb: (x: string) =>
 
     start = regex.lastIndex;
   }
-  ret.push(str.substr(start));
+  ret.push(str.slice(start));
 
   return ret.join('');
 }

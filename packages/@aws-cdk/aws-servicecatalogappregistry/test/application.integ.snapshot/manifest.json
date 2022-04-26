@@ -1,0 +1,46 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-servicecatalogappregistry-application": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-servicecatalogappregistry-application.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-servicecatalogappregistry-application/TestApplication/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestApplication2FBC585F"
+          }
+        ],
+        "/integ-servicecatalogappregistry-application/TestApplication/ResourceAssociationd232b63e52a8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestApplicationResourceAssociationd232b63e52a8414E905D"
+          }
+        ],
+        "/integ-servicecatalogappregistry-application/TestApplication/AttributeGroupAssociation4ba7f5842818": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestApplicationAttributeGroupAssociation4ba7f5842818B8EE1C6F"
+          }
+        ],
+        "/integ-servicecatalogappregistry-application/TestAttributeGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAttributeGroupB1CB284F"
+          }
+        ]
+      },
+      "displayName": "integ-servicecatalogappregistry-application"
+    }
+  }
+}

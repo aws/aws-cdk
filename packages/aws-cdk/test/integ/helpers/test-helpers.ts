@@ -15,8 +15,14 @@ export function integTest(
   timeoutMillis?: number,
 ) {
 
-  // Integ tests can run concurrently, and are responsible for blocking themselves if they cannot.
-  const runner = shouldSkip(name) ? test.skip : test.concurrent;
+  // Integ tests can run concurrently, and are responsible for blocking
+  // themselves if they cannot.  Because `test.concurrent` executes the test
+  // code immediately, regardles of any `--testNamePattern`, this cannot be the
+  // default: test filtering simply does not work with `test.concurrent`.
+  // Instead, we make it opt-in only for the pipeline where we don't do any
+  // selection, but execute all tests unconditionally.
+  const testKind = process.env.JEST_TEST_CONCURRENT === 'true' ? test.concurrent : test;
+  const runner = shouldSkip(name) ? testKind.skip : testKind;
 
   runner(name, async () => {
     const output = new MemoryStream();

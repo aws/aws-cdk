@@ -1,18 +1,9 @@
 import * as process from 'process';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
-import * as yargs from 'yargs';
 import { print } from '../../lib/logging';
 import * as version from '../../lib/version';
 import { CommandOptions } from '../command-api';
-
-export const command = 'doctor';
-export const describe = 'Check your set-up for potential problems';
-export const builder = {};
-
-export function handler(args: yargs.Arguments) {
-  args.commandHandler = realHandler;
-}
 
 export async function realHandler(_options: CommandOptions): Promise<number> {
   let exitStatus: number = 0;
@@ -71,7 +62,7 @@ function displayCdkEnvironmentVariables() {
 }
 
 function anonymizeAwsVariable(name: string, value: string) {
-  if (name === 'AWS_ACCESS_KEY_ID') { return value.substr(0, 4) + '<redacted>'; } // Show ASIA/AKIA key type, but hide identifier
+  if (name === 'AWS_ACCESS_KEY_ID') { return value.slice(0, 4) + '<redacted>'; } // Show ASIA/AKIA key type, but hide identifier
   if (name === 'AWS_SECRET_ACCESS_KEY' || name === 'AWS_SESSION_TOKEN' || name === 'AWS_SECURITY_TOKEN') { return '<redacted>'; }
   return value;
 }

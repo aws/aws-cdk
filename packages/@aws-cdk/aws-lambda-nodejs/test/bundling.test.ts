@@ -209,6 +209,13 @@ test('esbuild bundling with esbuild options', () => {
       'process.env.STRING': JSON.stringify('this is a "test"'),
     },
     format: OutputFormat.ESM,
+    inject: ['./my-shim.js'],
+    esbuildArgs: {
+      '--log-limit': '0',
+      '--resolve-extensions': '.ts,.js',
+      '--splitting': true,
+      '--keep-names': '',
+    },
   });
 
   // Correctly bundles with esbuild
@@ -217,7 +224,8 @@ test('esbuild bundling with esbuild options', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         [
           'esbuild --bundle "/asset-input/lib/handler.ts"',
           '--target=es2020 --platform=node --format=esm --outfile="/asset-output/index.mjs"',
@@ -225,7 +233,8 @@ test('esbuild bundling with esbuild options', () => {
           defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
-          '--charset=utf8 --main-fields=module,main',
+          '--charset=utf8 --main-fields=module,main --inject:./my-shim.js',
+          '--log-limit="0" --resolve-extensions=".ts,.js" --splitting --keep-names',
         ].join(' '),
       ],
     }),
@@ -423,6 +432,7 @@ test('Local bundling', () => {
     environment: {
       KEY: 'value',
     },
+    logLevel: LogLevel.ERROR,
   });
 
   expect(bundler.local).toBeDefined();
@@ -574,61 +584,6 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
 });
 
 test('esbuild bundling with pre compilations', () => {
-  Bundling.bundle({
-    entry,
-    projectRoot,
-    depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
-    forceDockerBundling: true,
-    tsconfig,
-    preCompilation: true,
-    architecture: Architecture.X86_64,
-  });
-
-  // Correctly bundles with esbuild
-  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
-    assetHashType: AssetHashType.OUTPUT,
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        [
-          'tsc --project /asset-input/lib/custom-tsconfig.ts --rootDir ./ --outDir ./ &&',
-          'esbuild --bundle \"/asset-input/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
-          '--external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
-        ].join(' '),
-      ],
-    }),
-  });
-
-  Bundling.bundle({
-    entry,
-    projectRoot,
-    depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
-    forceDockerBundling: true,
-    tsconfig,
-    preCompilation: true,
-    architecture: Architecture.X86_64,
-  });
-
-  // Correctly bundles with esbuild
-  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
-    assetHashType: AssetHashType.OUTPUT,
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        [
-          'esbuild --bundle \"/asset-input/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
-          '--external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
-        ].join(' '),
-      ],
-    }),
-  });
-
-});
-
-test('esbuild bundling with pre compilations with undefined tsconfig ( Should find in root directory )', () => {
-  Bundling.clearTscCompilationCache();
   const packageLock = path.join(__dirname, '..', 'package-lock.json');
 
   Bundling.bundle({
@@ -636,10 +591,12 @@ test('esbuild bundling with pre compilations with undefined tsconfig ( Should fi
     projectRoot: path.dirname(packageLock),
     depsLockFilePath: packageLock,
     runtime: Runtime.NODEJS_14_X,
-    forceDockerBundling: true,
     preCompilation: true,
+    forceDockerBundling: true,
     architecture: Architecture.X86_64,
   });
+
+  const compilerOptions = util.getTsconfigCompilerOptions(path.join(__dirname, '..', 'tsconfig.json'));
 
   // Correctly bundles with esbuild
   expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(packageLock), {
@@ -648,16 +605,17 @@ test('esbuild bundling with pre compilations with undefined tsconfig ( Should fi
       command: [
         'bash', '-c',
         [
-          'tsc --project /asset-input/tsconfig.json --rootDir ./ --outDir ./ &&',
-          'esbuild --bundle \"/asset-input/test/bundling.test.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
-          '--external:aws-sdk',
+          `tsc \"/asset-input/test/bundling.test.ts\" ${compilerOptions} &&`,
+          'esbuild --bundle \"/asset-input/test/bundling.test.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\" --external:aws-sdk',
         ].join(' '),
       ],
     }),
   });
+
+  expect(detectPackageInstallationMock).toHaveBeenCalledWith('typescript');
 });
 
-test('esbuild bundling with pre compilations and undefined tsconfig ( Should throw) ', () => {
+test('throws with pre compilation and not found tsconfig', () => {
   expect(() => {
     Bundling.bundle({
       entry,
@@ -668,7 +626,7 @@ test('esbuild bundling with pre compilations and undefined tsconfig ( Should thr
       preCompilation: true,
       architecture: Architecture.X86_64,
     });
-  }).toThrow('Cannot find a tsconfig.json, please specify the prop: tsconfig');
+  }).toThrow('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`');
 
 });
 

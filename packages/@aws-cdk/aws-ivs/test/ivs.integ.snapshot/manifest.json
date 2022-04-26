@@ -1,0 +1,58 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-ivs": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-ivs.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-ivs/PlaybackKeyPair/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PlaybackKeyPairBE17315B"
+          }
+        ],
+        "/aws-cdk-ivs/Channel/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Channel4048F119"
+          }
+        ],
+        "/aws-cdk-ivs/StreamKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StreamKey9F296F4F"
+          }
+        ],
+        "/aws-cdk-ivs/PlaybackKeyPairArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PlaybackKeyPairArn"
+          }
+        ],
+        "/aws-cdk-ivs/ChannelArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChannelArn"
+          }
+        ],
+        "/aws-cdk-ivs/StreamKeyArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StreamKeyArn"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-ivs"
+    }
+  }
+}
