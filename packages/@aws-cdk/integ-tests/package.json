@@ -2,7 +2,7 @@
   "name": "@aws-cdk/integ-tests",
   "description": "CDK Integration Testing Constructs",
   "version": "0.0.0",
-  "private": false,
+  "private": true,
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -25,7 +25,7 @@
         "module": "aws_cdk.integ_tests",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -75,12 +75,7 @@
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/triggers": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
@@ -103,7 +98,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "nozem": {
     "ostools": [
@@ -116,6 +111,11 @@
   "maturity": "experimental",
   "publishConfig": {
     "tag": "latest"
+  },
+  "peerDependencies": {
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
   },
   "awscdkio": {
     "announce": false

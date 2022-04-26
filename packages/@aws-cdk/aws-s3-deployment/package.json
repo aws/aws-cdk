@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-s3-deployment",
   "version": "0.0.0",
+  "private": true,
   "description": "Constructs for deploying contents to S3 buckets",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -24,7 +25,7 @@
         "module": "aws_cdk.aws_s3_deployment",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -105,7 +106,7 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "case": "1.6.3",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -119,13 +120,13 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "bundledDependencies": [
     "case"
   ],
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "stable",
   "maturity": "stable",
@@ -142,6 +143,6 @@
     ]
   },
   "publishConfig": {
-    "tag": "latest"
+    "tag": "next"
   }
 }
