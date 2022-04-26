@@ -1,19 +1,21 @@
-## Amazon EKS Construct Library
-
+# Amazon EKS Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---
 
-![Stability: Deprecated](https://img.shields.io/badge/stability-Deprecated-critical.svg?style=for-the-badge)
+![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
 
 > This API may emit warnings. Backward compatibility is not guaranteed.
 
 ---
+
 <!--END STABILITY BANNER-->
+
 
 **This module is available for backwards compatibility purposes only ([details](https://github.com/aws/aws-cdk/pull/5540)). It will
 no longer be released with the CDK starting March 1st, 2020. See [issue
-#5544](https://github.com/aws/aws-cdk/issues/5544) for upgrade instructions.**
+
+## 5544](https://github.com/aws/aws-cdk/issues/5544) for upgrade instructions.**
 
 ---
 
@@ -40,14 +42,14 @@ cluster.addResource('mypod', {
       {
         name: 'hello',
         image: 'paulbouwer/hello-kubernetes:1.5',
-        ports: [ { containerPort: 8080 } ]
-      }
-    ]
-  }
+        ports: [ { containerPort: 8080 } ],
+      },
+    ],
+  },
 });
 ```
 
-Here is a [complete sample](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-eks/test/integ.eks-kubectl.lit.ts).
+Here is a [complete sample](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-kubectl.lit.ts).
 
 ### Capacity
 
@@ -63,7 +65,7 @@ the `defaultCapacity` and `defaultCapacityInstance` props:
 ```ts
 new eks.Cluster(this, 'cluster', {
   defaultCapacity: 10,
-  defaultCapacityInstance: new ec2.InstanceType('m2.xlarge')
+  defaultCapacityInstance: new ec2.InstanceType('m2.xlarge'),
 });
 ```
 
@@ -80,7 +82,7 @@ is set to `0`:
 ```ts
 const cluster = new eks.Cluster(this, 'my-cluster');
 cluster.defaultCapacity!.scaleOnCpuUtilization('up', {
-  targetUtilizationPercent: 80
+  targetUtilizationPercent: 80,
 });
 ```
 
@@ -88,10 +90,11 @@ You can add customized capacity through `cluster.addCapacity()` or
 `cluster.addAutoScalingGroup()`:
 
 ```ts
+declare const cluster: eks.Cluster;
 cluster.addCapacity('frontend-nodes', {
   instanceType: new ec2.InstanceType('t2.medium'),
   desiredCapacity: 3,
-  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
 });
 ```
 
@@ -100,10 +103,11 @@ cluster.addCapacity('frontend-nodes', {
 If `spotPrice` is specified, the capacity will be purchased from spot instances:
 
 ```ts
+declare const cluster: eks.Cluster;
 cluster.addCapacity('spot', {
   spotPrice: '0.1094',
   instanceType: new ec2.InstanceType('t3.large'),
-  maxCapacity: 10
+  maxCapacity: 10,
 });
 ```
 
@@ -122,16 +126,16 @@ When adding capacity, you can specify options for
 which is responsible for associating the node to the EKS cluster. For example,
 you can use `kubeletExtraArgs` to add custom node labels or taints.
 
-
 ```ts
 // up to ten spot instances
+declare const cluster: eks.Cluster;
 cluster.addCapacity('spot', {
   instanceType: new ec2.InstanceType('t3.large'),
   desiredCapacity: 2,
   bootstrapOptions: {
     kubeletExtraArgs: '--node-labels foo=bar,goo=far',
-    awsApiRetryAttempts: 5
-  }
+    awsApiRetryAttempts: 5,
+  },
 });
 ```
 
@@ -153,12 +157,12 @@ role to the Kubernetes `system:masters` group:
 ```ts
 // first define the role
 const clusterAdmin = new iam.Role(this, 'AdminRole', {
-  assumedBy: new iam.AccountRootPrincipal()
+  assumedBy: new iam.AccountRootPrincipal(),
 });
 
 // now define the cluster and map role to "masters" RBAC group
 new eks.Cluster(this, 'Cluster', {
-  mastersRole: clusterAdmin
+  mastersRole: clusterAdmin,
 });
 ```
 
@@ -167,7 +171,7 @@ with the `update-kubeconfig` command.
 
 Something like this:
 
-```
+```plaintext
 Outputs:
 eks-integ-defaults.ClusterConfigCommand43AAE40F = aws eks update-kubeconfig --name cluster-ba7c166b-c4f3-421c-bf8a-6812e4036a33 --role-arn arn:aws:iam::112233445566:role/eks-integ-defaults-Role1ABCC5F0-1EFK2W5ZJD98Y
 ```
@@ -246,12 +250,12 @@ const deployment = {
           {
             name: "hello-kubernetes",
             image: "paulbouwer/hello-kubernetes:1.5",
-            ports: [ { containerPort: 8080 } ]
-          }
-        ]
-      }
-    }
-  }
+            ports: [ { containerPort: 8080 } ],
+          },
+        ],
+      },
+    },
+  },
 };
 
 const service = {
@@ -261,14 +265,15 @@ const service = {
   spec: {
     type: "LoadBalancer",
     ports: [ { port: 80, targetPort: 8080 } ],
-    selector: appLabel
-  }
+    selector: appLabel,
+  },
 };
 
+declare const cluster: eks.Cluster;
 // option 1: use a construct
-new KubernetesResource(this, 'hello-kub', {
+new eks.KubernetesResource(this, 'hello-kub', {
   cluster,
-  manifest: [ deployment, service ]
+  manifest: [ deployment, service ],
 });
 
 // or, option2: use `addResource`
@@ -300,6 +305,7 @@ For example, let's say you want to grant an IAM user administrative privileges
 on your cluster:
 
 ```ts
+declare const cluster: eks.Cluster;
 const adminUser = new iam.User(this, 'Admin');
 cluster.awsAuth.addUserMapping(adminUser, { groups: [ 'system:masters' ]});
 ```
@@ -307,7 +313,9 @@ cluster.awsAuth.addUserMapping(adminUser, { groups: [ 'system:masters' ]});
 A convenience method for mapping a role to the `system:masters` group is also available:
 
 ```ts
-cluster.awsAuth.addMastersRole(role)
+declare const cluster: eks.Cluster;
+declare const role: iam.Role;
+cluster.awsAuth.addMastersRole(role);
 ```
 
 ### Node ssh Access
@@ -368,7 +376,7 @@ the cluster:
 
 ```ts
 new eks.Cluster(this, 'cluster', {
-  kubectlEnabled: false
+  kubectlEnabled: false,
 });
 ```
 
@@ -394,19 +402,20 @@ The following example will install the [NGINX Ingress Controller](https://kubern
 to you cluster using Helm.
 
 ```ts
+declare const cluster: eks.Cluster;
 // option 1: use a construct
-new HelmChart(this, 'NginxIngress', {
+new eks.HelmChart(this, 'NginxIngress', {
   cluster,
   chart: 'nginx-ingress',
   repository: 'https://helm.nginx.com/stable',
-  namespace: 'kube-system'
+  namespace: 'kube-system',
 });
 
 // or, option2: use `addChart`
 cluster.addChart('NginxIngress', {
   chart: 'nginx-ingress',
   repository: 'https://helm.nginx.com/stable',
-  namespace: 'kube-system'
+  namespace: 'kube-system',
 });
 ```
 
@@ -419,8 +428,8 @@ This means that if the chart is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `helm uninstall` command and the
 Helm chart will be deleted.
 
-When there is no `release` defined, the chart will be installed using the `node.uniqueId`,
-which will be lower cassed and truncated to the last 63 characters.
+When there is no `release` defined, the chart will be installed with a unique name allocated
+based on the construct path.
 
 ### Roadmap
 

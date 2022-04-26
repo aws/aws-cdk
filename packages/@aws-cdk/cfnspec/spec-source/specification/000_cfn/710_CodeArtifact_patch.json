@@ -1,0 +1,49 @@
+{
+  "ResourceTypes": {
+    "AWS::CodeArtifact::Domain": {
+      "patch": {
+        "description": "Adds missing properties for AWS::CodeArtifact::Domain",
+        "operations": [
+          {
+            "op": "add",
+            "path": "/Properties/EncryptionKey",
+            "value": {
+              "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codeartifact-domain.html#cfn-codeartifact-domain-encryptionkey",
+              "PrimitiveType": "String",
+              "UpdateType": "Immutable",
+              "Required": false
+            }
+          }
+        ]
+      }
+    },
+    "AWS::CodeArtifact::Repository": {
+      "patch": {
+        "description": "Adds missing properties for AWS::CodeArtifact::Repository",
+        "operations": [
+          {
+            "op": "add",
+            "path": "/Properties/DomainName",
+            "value": {
+              "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codeartifact-repository.html#cfn-codeartifact-repository-domainname",
+              "PrimitiveType": "String",
+              "UpdateType": "Immutable",
+              "Required": true
+            }
+          },
+          {
+            "op": "add",
+            "path": "/Properties/DomainOwner",
+            "value": {
+              "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codeartifact-repository.html#cfn-codeartifact-repository-domainowner",
+              "PrimitiveType": "String",
+              "UpdateType": "Immutable",
+              "Required": false
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+

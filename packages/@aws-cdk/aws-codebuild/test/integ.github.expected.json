@@ -49,7 +49,8 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "MyProject39F7B0AE"
-                      }
+                      },
+                      ":*"
                     ]
                   ]
                 },
@@ -72,8 +73,7 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "MyProject39F7B0AE"
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 }
@@ -99,6 +99,7 @@
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",
           "Image": "aws/codebuild/standard:1.0",
+          "ImagePullCredentialsType": "CODEBUILD",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER"
         },
@@ -112,7 +113,11 @@
           "Location": "https://github.com/aws/aws-cdk.git",
           "ReportBuildStatus": false,
           "Type": "GITHUB"
-        }
+        },
+        "Cache": {
+          "Type": "NO_CACHE"
+        },
+        "EncryptionKey": "alias/aws/s3"
       }
     }
   }

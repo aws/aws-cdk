@@ -1,7 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct, ConstructNode } from './construct';
-import { collectRuntimeInformation } from './private/runtime-info';
+import { Construct } from 'constructs';
+import { addCustomSynthesis, ICustomSynthesis } from './private/synthesis';
 import { TreeMetadata } from './private/tree-metadata';
+import { Stage } from './stage';
 
 const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
 
@@ -24,6 +25,12 @@ export interface AppProps {
   /**
    * The output directory into which to emit synthesized artifacts.
    *
+   * You should never need to set this value. By default, the value you pass to
+   * the CLI's `--output` flag will be used, and if you change it to a different
+   * directory the CLI will fail to pick up the generated Cloud Assembly.
+   *
+   * This property is intended for internal and testing use.
+   *
    * @default - If this value is _not_ set, considers the environment variable `CDK_OUTDIR`.
    *            If `CDK_OUTDIR` is not defined, uses a temp directory.
    */
@@ -36,10 +43,19 @@ export interface AppProps {
   readonly stackTraces?: boolean;
 
   /**
-   * Include runtime versioning information in cloud assembly manifest
-   * @default true runtime info is included unless `aws:cdk:disable-runtime-info` is set in the context.
+   * Include runtime versioning information in the Stacks of this app
+   *
+   * @deprecated use `versionReporting` instead
+   * @default Value of 'aws:cdk:version-reporting' context key
    */
   readonly runtimeInfo?: boolean;
+
+  /**
+   * Include runtime versioning information in the Stacks of this app
+   *
+   * @default Value of 'aws:cdk:version-reporting' context key
+   */
+  readonly analyticsReporting?: boolean;
 
   /**
    * Additional context values for the application.
@@ -50,7 +66,7 @@ export interface AppProps {
    *
    * @default - no additional context
    */
-  readonly context?: { [key: string]: string };
+  readonly context?: { [key: string]: any };
 
   /**
    * Include construct tree metadata as part of the Cloud Assembly.
@@ -75,8 +91,7 @@ export interface AppProps {
  *
  * @see https://docs.aws.amazon.com/cdk/latest/guide/apps.html
  */
-export class App extends Construct {
-
+export class App extends Stage {
   /**
    * Checks if an object is an instance of the `App` class.
    * @returns `true` if `obj` is an `App`.
@@ -86,16 +101,14 @@ export class App extends Construct {
     return APP_SYMBOL in obj;
   }
 
-  private _assembly?: cxapi.CloudAssembly;
-  private readonly runtimeInfo: boolean;
-  private readonly outdir?: string;
-
   /**
    * Initializes a CDK application.
    * @param props initialization properties
    */
   constructor(props: AppProps = {}) {
-    super(undefined as any, '');
+    super(undefined as any, '', {
+      outdir: props.outdir ?? process.env[cxapi.OUTDIR_ENV],
+    });
 
     Object.defineProperty(this, APP_SYMBOL, { value: true });
 
@@ -105,15 +118,13 @@ export class App extends Construct {
       this.node.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
     }
 
-    if (props.runtimeInfo === false) {
-      this.node.setContext(cxapi.DISABLE_VERSION_REPORTING, true);
+    const analyticsReporting = props.analyticsReporting ?? props.runtimeInfo;
+
+    if (analyticsReporting !== undefined) {
+      this.node.setContext(cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT, analyticsReporting);
     }
 
-    // both are reverse logic
-    this.runtimeInfo = this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? false : true;
-    this.outdir = props.outdir || process.env[cxapi.OUTDIR_ENV];
-
-    const autoSynth = props.autoSynth !== undefined ? props.autoSynth : cxapi.OUTDIR_ENV in process.env;
+    const autoSynth = props.autoSynth ?? cxapi.OUTDIR_ENV in process.env;
     if (autoSynth) {
       // synth() guarantuees it will only execute once, so a default of 'true'
       // doesn't bite manual calling of the function.
@@ -125,31 +136,9 @@ export class App extends Construct {
     }
   }
 
-  /**
-   * Synthesizes a cloud assembly for this app. Emits it to the directory
-   * specified by `outdir`.
-   *
-   * @returns a `CloudAssembly` which can be used to inspect synthesized
-   * artifacts such as CloudFormation templates and assets.
-   */
-  public synth(): cxapi.CloudAssembly {
-    // we already have a cloud assembly, no-op for you
-    if (this._assembly) {
-      return this._assembly;
-    }
-
-    const assembly = ConstructNode.synth(this.node, {
-      outdir: this.outdir,
-      runtimeInfo: this.runtimeInfo ? collectRuntimeInformation() : undefined
-    });
-
-    this._assembly = assembly;
-    return assembly;
-  }
-
   private loadContext(defaults: { [key: string]: string } = { }) {
     // prime with defaults passed through constructor
-    for (const [ k, v ] of Object.entries(defaults)) {
+    for (const [k, v] of Object.entries(defaults)) {
       this.node.setContext(k, v);
     }
 
@@ -159,8 +148,24 @@ export class App extends Construct {
       ? JSON.parse(contextJson)
       : { };
 
-    for (const [ k, v ] of Object.entries(contextFromEnvironment)) {
+    for (const [k, v] of Object.entries(contextFromEnvironment)) {
       this.node.setContext(k, v);
     }
   }
+}
+
+/**
+ * Add a custom synthesis for the given construct
+ *
+ * When the construct is being synthesized, this allows it to add additional items
+ * into the Cloud Assembly output.
+ *
+ * This feature is intended for use by official AWS CDK libraries only; 3rd party
+ * library authors and CDK users should not use this function. That's why it's not
+ * exposed via jsii.
+ */
+export function attachCustomSynthesis(construct: Construct, synthesis: ICustomSynthesis): void {
+  // synthesis.ts where the implementation lives is not exported. So
+  // this function is just a re-export of that function.
+  addCustomSynthesis(construct, synthesis);
 }

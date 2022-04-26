@@ -1,6 +1,7 @@
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as lambda from '@aws-cdk/aws-lambda';
-import {StreamEventSource, StreamEventSourceProps} from './stream';
+import { Names, Token } from '@aws-cdk/core';
+import { StreamEventSource, StreamEventSourceProps } from './stream';
 
 export interface DynamoEventSourceProps extends StreamEventSourceProps {
 }
@@ -14,8 +15,10 @@ export class DynamoEventSource extends StreamEventSource {
   constructor(private readonly table: dynamodb.ITable, props: DynamoEventSourceProps) {
     super(props);
 
-    if (this.props.batchSize !== undefined && (this.props.batchSize < 1 || this.props.batchSize > 1000)) {
-      throw new Error(`Maximum batch size must be between 1 and 1000 inclusive (given ${this.props.batchSize})`);
+    if (this.props.batchSize !== undefined
+      && !Token.isUnresolved(this.props.batchSize)
+      && (this.props.batchSize < 1 || this.props.batchSize > 10000)) {
+      throw new Error(`Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize})`);
     }
   }
 
@@ -24,8 +27,8 @@ export class DynamoEventSource extends StreamEventSource {
       throw new Error(`DynamoDB Streams must be enabled on the table ${this.table.node.path}`);
     }
 
-    const eventSourceMapping = target.addEventSourceMapping(`DynamoDBEventSource:${this.table.node.uniqueId}`,
-      this.enrichMappingOptions({eventSourceArn: this.table.tableStreamArn})
+    const eventSourceMapping = target.addEventSourceMapping(`DynamoDBEventSource:${Names.nodeUniqueId(this.table.node)}`,
+      this.enrichMappingOptions({ eventSourceArn: this.table.tableStreamArn }),
     );
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
 
@@ -37,7 +40,7 @@ export class DynamoEventSource extends StreamEventSource {
    */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
-      throw new Error("DynamoEventSource is not yet bound to an event source mapping");
+      throw new Error('DynamoEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingId;
   }

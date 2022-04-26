@@ -1,9 +1,9 @@
 import * as cdk from '@aws-cdk/core';
-
+import { Construct } from 'constructs';
 import { CfnMesh } from './appmesh.generated';
+import { VirtualGateway, VirtualGatewayBaseProps } from './virtual-gateway';
 import { VirtualNode, VirtualNodeBaseProps } from './virtual-node';
 import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
-import { VirtualService, VirtualServiceBaseProps } from './virtual-service';
 
 /**
  * A utility enum defined for the egressFilter type property, the default of DROP_ALL,
@@ -23,7 +23,7 @@ export enum MeshFilterType {
 }
 
 /**
- * Interface wich all Mesh based classes MUST implement
+ * Interface which all Mesh based classes MUST implement
  */
 export interface IMesh extends cdk.IResource {
   /**
@@ -41,19 +41,25 @@ export interface IMesh extends cdk.IResource {
   readonly meshArn: string;
 
   /**
-   * Adds a VirtualRouter to the Mesh with the given id and props
+   * Creates a new VirtualRouter in this Mesh.
+   * Note that the Router is created in the same Stack that this Mesh belongs to,
+   * which might be different than the current stack.
    */
   addVirtualRouter(id: string, props?: VirtualRouterBaseProps): VirtualRouter;
 
   /**
-   * Adds a VirtualService with the given id
-   */
-  addVirtualService(id: string, props?: VirtualServiceBaseProps): VirtualService;
-
-  /**
-   * Adds a VirtualNode to the Mesh
+   * Creates a new VirtualNode in this Mesh.
+   * Note that the Node is created in the same Stack that this Mesh belongs to,
+   * which might be different than the current stack.
    */
   addVirtualNode(id: string, props?: VirtualNodeBaseProps): VirtualNode;
+
+  /**
+   * Creates a new VirtualGateway in this Mesh.
+   * Note that the Gateway is created in the same Stack that this Mesh belongs to,
+   * which might be different than the current stack.
+   */
+  addVirtualGateway(id: string, props?: VirtualGatewayBaseProps): VirtualGateway;
 }
 
 /**
@@ -81,20 +87,20 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
   }
 
   /**
-   * Adds a VirtualService with the given id
+   * Adds a VirtualNode to the Mesh
    */
-  public addVirtualService(id: string, props: VirtualServiceBaseProps = {}): VirtualService {
-    return new VirtualService(this, id, {
+  public addVirtualNode(id: string, props: VirtualNodeBaseProps = {}): VirtualNode {
+    return new VirtualNode(this, id, {
       ...props,
       mesh: this,
     });
   }
 
   /**
-   * Adds a VirtualNode to the Mesh
+   * Adds a VirtualGateway to the Mesh
    */
-  public addVirtualNode(id: string, props: VirtualNodeBaseProps = {}): VirtualNode {
-    return new VirtualNode(this, id, {
+  addVirtualGateway(id: string, props?: VirtualGatewayBaseProps): VirtualGateway {
+    return new VirtualGateway(this, id, {
       ...props,
       mesh: this,
     });
@@ -108,7 +114,7 @@ export interface MeshProps {
   /**
    * The name of the Mesh being defined
    *
-   * @default - A name is autmoatically generated
+   * @default - A name is automatically generated
    */
   readonly meshName?: string;
 
@@ -129,21 +135,23 @@ export class Mesh extends MeshBase {
   /**
    * Import an existing mesh by arn
    */
-  public static fromMeshArn(scope: cdk.Construct, id: string, meshArn: string): IMesh {
-    const parts = cdk.Stack.of(scope).parseArn(meshArn);
+  public static fromMeshArn(scope: Construct, id: string, meshArn: string): IMesh {
+    const parts = cdk.Stack.of(scope).splitArn(meshArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
 
     class Import extends MeshBase {
       public meshName = parts.resourceName || '';
       public meshArn = meshArn;
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: meshArn,
+    });
   }
 
   /**
    * Import an existing mesh by name
    */
-  public static fromMeshName(scope: cdk.Construct, id: string, meshName: string): IMesh {
+  public static fromMeshName(scope: Construct, id: string, meshName: string): IMesh {
     const arn = cdk.Stack.of(scope).formatArn({
       service: 'appmesh',
       resource: 'mesh',
@@ -168,9 +176,9 @@ export class Mesh extends MeshBase {
    */
   public readonly meshArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: MeshProps = {}) {
+  constructor(scope: Construct, id: string, props: MeshProps = {}) {
     super(scope, id, {
-      physicalName: props.meshName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId })
+      physicalName: props.meshName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     const mesh = new CfnMesh(this, 'Resource', {

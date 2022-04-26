@@ -1,7 +1,6 @@
 *.js
 *.d.ts
 tsconfig.json
-tslint.json
 *.js.map
 *.generated.ts
 dist
@@ -13,3 +12,15 @@ coverage
 nyc.config.js
 .LAST_PACKAGE
 *.snk
+!.eslintrc.js
+!jest.config.js
+
+!lib/experimental/edge-function/index.js
+!test/function-code.js
+
+junit.xml
+
+!**/*.integ.snapshot/**/asset.*/*.js
+!**/*.integ.snapshot/**/asset.*/*.d.ts
+
+!**/*.integ.snapshot/**/asset.*/**

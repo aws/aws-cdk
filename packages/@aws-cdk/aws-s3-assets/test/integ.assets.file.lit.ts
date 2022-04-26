@@ -1,6 +1,6 @@
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import * as path from 'path';
 import * as assets from '../lib';
 
 class TestStack extends cdk.Stack {
@@ -9,7 +9,7 @@ class TestStack extends cdk.Stack {
 
     /// !show
     const asset = new assets.Asset(this, 'SampleAsset', {
-      path: path.join(__dirname, 'file-asset.txt')
+      path: path.join(__dirname, 'file-asset.txt'),
     });
     /// !hide
 

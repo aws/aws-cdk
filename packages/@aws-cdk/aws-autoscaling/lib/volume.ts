@@ -9,7 +9,7 @@ export interface BlockDevice {
   /**
    * The device name exposed to the EC2 instance
    *
-   * @example '/dev/sdh', 'xvdh'
+   * Supply a value like `/dev/sdh`, `xvdh`.
    *
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/device_naming.html
    */
@@ -18,8 +18,7 @@ export interface BlockDevice {
   /**
    * Defines the block device volume, to be either an Amazon EBS volume or an ephemeral instance store volume
    *
-   * @example BlockDeviceVolume.ebs(15), BlockDeviceVolume.ephemeral(0)
-   *
+   * Supply a value like `BlockDeviceVolume.ebs(15)`, `BlockDeviceVolume.ephemeral(0)`.
    */
   readonly volume: BlockDeviceVolume;
 
@@ -29,6 +28,8 @@ export interface BlockDevice {
    * Amazon EC2 Auto Scaling launches a replacement instance if the instance fails the health check.
    *
    * @default true - device mapping is left untouched
+   * @deprecated use `BlockDeviceVolume.noDevice()` as the volume to supress a mapping.
+   *
    */
   readonly mappingEnabled?: boolean;
 }
@@ -113,6 +114,11 @@ export interface EbsDeviceProps extends EbsDeviceSnapshotOptions {
  */
 export class BlockDeviceVolume {
   /**
+   * @internal
+   */
+  public static _NO_DEVICE = new BlockDeviceVolume();
+
+  /**
    * Creates a new Elastic Block Storage device
    *
    * @param volumeSize The volume size, in Gibibytes (GiB)
@@ -147,6 +153,13 @@ export class BlockDeviceVolume {
   }
 
   /**
+   * Supresses a volume mapping
+   */
+  public static noDevice() {
+    return this._NO_DEVICE;
+  }
+
+  /**
    * @param ebsDevice EBS device info
    * @param virtualName Virtual device name
    */
@@ -164,14 +177,19 @@ export enum EbsDeviceVolumeType {
   STANDARD = 'standard',
 
   /**
-   *  Provisioned IOPS SSD
+   *  Provisioned IOPS SSD - IO1
    */
   IO1 = 'io1',
 
   /**
-   * General Purpose SSD
+   * General Purpose SSD - GP2
    */
   GP2 = 'gp2',
+
+  /**
+   * General Purpose SSD - GP3
+   */
+  GP3 = 'gp3',
 
   /**
    * Throughput Optimized HDD

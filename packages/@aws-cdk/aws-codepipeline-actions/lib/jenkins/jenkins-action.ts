@@ -1,7 +1,11 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { Construct } from '@aws-cdk/core';
+
 import { Action } from '../action';
-import { IJenkinsProvider, jenkinsArtifactsBounds } from "./jenkins-provider";
+import { IJenkinsProvider, jenkinsArtifactsBounds } from './jenkins-provider';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * The type of the Jenkins Action that determines its CodePipeline Category -
@@ -78,7 +82,7 @@ export class JenkinsAction extends Action {
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     if (this.actionProperties.category === codepipeline.ActionCategory.BUILD) {
       this.props.jenkinsProvider._registerBuildProvider();
     } else {

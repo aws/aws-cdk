@@ -3,15 +3,15 @@
 
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
-
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 ## Provider Framework
 
-AWS CloudFormation [custom resources] are extension points to the provisioning
+AWS CloudFormation [custom resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html) are extension points to the provisioning
 engine. When CloudFormation needs to create, update or delete a custom resource,
 it sends a lifecycle event notification to a **custom resource provider**. The provider
 handles the event (e.g. creates a resource) and sends back a response to CloudFormation.
@@ -27,22 +27,23 @@ and powerful custom resources and includes the following capabilities:
 * Implements default behavior for physical resource IDs.
 
 The following code shows how the `Provider` construct is used in conjunction
-with `cfn.CustomResource` and a user-provided AWS Lambda function which
-implements the actual handler.
+with a `CustomResource` and a user-provided AWS Lambda function which implements
+the actual handler.
 
 ```ts
-import cr = require('@aws-cdk/custom-resources');
-import cfn = require('@aws-cdk/aws-cloudformation');
-
-const onEvent = new lambda.Function(this, 'MyHandler', { /* ... */ });
+declare const onEvent: lambda.Function;
+declare const isComplete: lambda.Function;
+declare const myRole: iam.Role;
 
 const myProvider = new cr.Provider(this, 'MyProvider', {
   onEventHandler: onEvent,
-  isCompleteHandler: isComplete // optional async "waiter"
+  isCompleteHandler: isComplete,        // optional async "waiter"
+  logRetention: logs.RetentionDays.ONE_DAY,   // default is INFINITE
+  role: myRole, // must be assumable by the `lambda.amazonaws.com` service principal
 });
 
-new cfn.CustomResource(this, 'Resource1', { provider: myProvider });
-new cfn.CustomResource(this, 'Resource2', { provider: myProvider });
+new CustomResource(this, 'Resource1', { serviceToken: myProvider.serviceToken });
+new CustomResource(this, 'Resource2', { serviceToken: myProvider.serviceToken });
 ```
 
 Providers are implemented through AWS Lambda functions that are triggered by the
@@ -102,8 +103,6 @@ def is_complete(event, context):
   return { 'IsComplete': is_ready }
 ```
 
-[custom resources]: (https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html).
-
 ### Handling Lifecycle Events: onEvent
 
 The user-defined `onEvent` AWS Lambda function is invoked whenever a resource
@@ -139,6 +138,8 @@ The return value from `onEvent` must be a JSON object with the following fields:
 |-----|----|--------|-----------
 |`PhysicalResourceId`|String|No|The allocated/assigned physical ID of the resource. If omitted for `Create` events, the event's `RequestId` will be used. For `Update`, the current physical ID will be used. If a different value is returned, CloudFormation will follow with a subsequent `Delete` for the previous ID (resource replacement). For `Delete`, it will always return the current physical resource ID, and if the user returns a different one, an error will occur.
 |`Data`|JSON|No|Resource attributes, which can later be retrieved through `Fn::GetAtt` on the custom resource object.
+|`NoEcho`|Boolean|No|Whether to mask the output of the custom resource when retrieved by using the `Fn::GetAtt` function.
+|*any*|*any*|No|Any other field included in the response will be passed through to `isComplete`. This can sometimes be useful to pass state between the handlers.
 
 [Custom Resource Provider Request]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-requests.html#crpg-ref-request-fields
 
@@ -160,10 +161,10 @@ with the message "Operation timed out".
 If an error is thrown, the framework will submit a "FAILED" response to AWS
 CloudFormation.
 
-The input event to `isComplete` is similar to
-[`onEvent`](#handling-lifecycle-events-onevent), with an additional guarantee
-that `PhysicalResourceId` is defines and contains the value returned from
-`onEvent` or the described default. At any case, it is guaranteed to exist.
+The input event to `isComplete` includes all request fields, combined with all
+fields returned from `onEvent`. If `PhysicalResourceId` has not been explicitly
+returned from `onEvent`, it's value will be calculated based on the heuristics
+described above.
 
 The return value must be a JSON object with the following fields:
 
@@ -196,7 +197,7 @@ must return this name in `PhysicalResourceId` and make sure to handle
 replacement properly. The `S3File` example demonstrates this
 through the `objectKey` property.
 
-### Error Handling
+### When there are errors
 
 As mentioned above, if any of the user handlers fail (i.e. throws an exception)
 or times out (due to their AWS Lambda timing out), the framework will trap these
@@ -212,15 +213,48 @@ When AWS CloudFormation receives a "FAILED" response, it will attempt to roll
 back the stack to it's last state. This has different meanings for different
 lifecycle events:
 
-- If a `Create` event fails, the resource provider framework will automatically
+* If a `Create` event fails, the resource provider framework will automatically
   ignore the subsequent `Delete` operation issued by AWS CloudFormation. The
   framework currently does not support customizing this behavior (see
   https://github.com/aws/aws-cdk/issues/5524).
-- If an `Update` event fails, CloudFormation will issue an additional `Update`
+* If an `Update` event fails, CloudFormation will issue an additional `Update`
   with the previous properties.
-- If a `Delete` event fails, CloudFormation will abandon this resource.
+* If a `Delete` event fails, CloudFormation will abandon this resource.
 
-### Execution Policy
+### Important cases to handle
+
+You should keep the following list in mind when writing custom resources to
+make sure your custom resource behaves correctly in all cases:
+
+* During `Create`:
+  * If the create fails, the *provider framework* will make sure you
+    don't get a subsequent `Delete` event. If your create involves multiple distinct
+    operations, it is your responsibility to catch and rethrow and clean up
+    any partial updates that have already been performed. Make sure your
+    API call timeouts and Lambda timeouts allow for this.
+* During `Update`:
+  * If the update fails, you will get a subsequent `Update` event
+    to roll back to the previous state (with `ResourceProperties` and
+    `OldResourceProperties` reversed).
+  * If you return a different `PhysicalResourceId`, you will subsequently
+    receive a `Delete` event to clean up the previous state of the resource.
+* During `Delete`:
+  * If the behavior of your custom resource is tied to another AWS resource
+    (for example, it exists to clean the contents of a stateful resource), keep
+    in mind that your custom resource may be deleted independently of the other
+    resource and you must confirm that it is appropriate to perform the action.
+  * (only if you are *not* using the provider framework) a `Delete` event
+    may be caused by a failed `Create`. You must be able to handle the case
+    where the resource you are trying to delete hasn't even been created yet.
+* If you update the code of your custom resource and change the format of the
+  resource properties, be aware that there may still be already-deployed
+  instances of your custom resource out there, and you may still receive
+  the *old* property format in `ResourceProperties` (during `Delete` and
+  rollback `Updates`) or in `OldResourceProperties` (during rollforward
+  `Update`). You must continue to handle all possible sets of properties
+  your custom resource could have ever been created with in the past.
+
+### Provider Framework Execution Policy
 
 Similarly to any AWS Lambda function, if the user-defined handlers require
 access to AWS resources, you will have to define these permissions
@@ -236,10 +270,12 @@ to all buckets:
 
 ```ts
 new lambda.Function(this, 'OnEventHandler', {
-  // ...
+  runtime: lambda.Runtime.NODEJS_14_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('my code'),
   initialPolicy: [
-    new iam.PolicyStatement({ actions: [ 's3:GetObject*' ], resources: [ '*' ] })
-  ]
+    new iam.PolicyStatement({ actions: [ 's3:GetObject*' ], resources: [ '*' ] }),
+  ],
 });
 ```
 
@@ -255,7 +291,7 @@ implement an [asynchronous provider](#asynchronous-providers-iscomplete), and
 then configure the timeouts for the asynchronous retries through the
 `queryInterval` and the `totalTimeout` options.
 
-### Examples
+### Provider Framework Examples
 
 This module includes a few examples for custom resource implementations:
 
@@ -263,30 +299,33 @@ This module includes a few examples for custom resource implementations:
 
 Provisions an object in an S3 bucket with textual contents. See the source code
 for the
-[construct](test/provider-framework/integration-test-fixtures/s3-file.ts) and
-[handler](test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
+[construct](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.ts) and
+[handler](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
 
 The following example will create the file `folder/file1.txt` inside `myBucket`
 with the contents `hello!`.
 
 
-```ts
-new S3File(this, 'MyFile', {
+```plaintext
+// This example exists only for TypeScript
+
+declare const myBucket: s3.Bucket;
+new cr.S3File(this, 'MyFile', {
   bucket: myBucket,
   objectKey: 'folder/file1.txt', // optional
   content: 'hello!',
-  public: true // optional
+  public: true, // optional
 });
 ```
 
 This sample demonstrates the following concepts:
 
-- Synchronous implementation (`isComplete` is not defined)
-- Automatically generates the physical name if `objectKey` is not defined
-- Handles physical name changes
-- Returns resource attributes
-- Handles deletions
-- Implemented in TypeScript
+* Synchronous implementation (`isComplete` is not defined)
+* Automatically generates the physical name if `objectKey` is not defined
+* Handles physical name changes
+* Returns resource attributes
+* Handles deletions
+* Implemented in TypeScript
 
 #### S3Assert
 
@@ -295,19 +334,43 @@ Checks that the textual contents of an S3 object matches a certain value. The ch
 The following example defines an `S3Assert` resource which waits until
 `myfile.txt` in `myBucket` exists and includes the contents `foo bar`:
 
-```ts
-new S3Assert(this, 'AssertMyFile', {
+```plaintext
+// This example exists only for TypeScript
+
+declare const myBucket: s3.Bucket;
+new cr.S3Assert(this, 'AssertMyFile', {
   bucket: myBucket,
   objectKey: 'myfile.txt',
-  expectedContent: 'foo bar'
+  expectedContent: 'foo bar',
 });
 ```
 
 This sample demonstrates the following concepts:
 
-- Asynchronous implementation
-- Non-intrinsic physical IDs
-- Implemented in Python
+* Asynchronous implementation
+* Non-intrinsic physical IDs
+* Implemented in Python
+
+
+### Customizing Provider Function name
+
+In multi-account environments or when the custom resource may be re-utilized across several
+stacks it may be useful to manually set a name for the Provider Function Lambda and therefore
+have a predefined service token ARN.
+
+```ts
+declare const onEvent: lambda.Function;
+declare const isComplete: lambda.Function;
+declare const myRole: iam.Role;
+const myProvider = new cr.Provider(this, 'MyProvider', {
+  onEventHandler: onEvent,
+  isCompleteHandler: isComplete,
+  logRetention: logs.RetentionDays.ONE_DAY,
+  role: myRole,
+  providerFunctionName: 'the-lambda-name',   // Optional
+});
+
+```
 
 ## Custom Resources for AWS APIs
 
@@ -328,14 +391,29 @@ Path to data must be specified using a dot notation, e.g. to get the string valu
 of the `Title` attribute for the first item returned by `dynamodb.query` it should
 be `Items.0.Title.S`.
 
-### Execution Policy
+To make sure that the newest API calls are available the latest AWS SDK v2 is installed
+in the Lambda function implementing the custom resource. The installation takes around 60
+seconds. If you prefer to optimize for speed, you can disable the installation by setting
+the `installLatestAwsSdk` prop to `false`.
+
+### Custom Resource Execution Policy
 
 You must provide the `policy` property defining the IAM Policy that will be applied to the API calls.
 The library provides two factory methods to quickly configure this:
 
-- **`AwsCustomResourcePolicy.fromSdkCalls`** - Use this to auto-generate IAM Policy statements based on the configured SDK calls.
-Note that you will have to either provide specific ARN's, or explicitly use `AwsCustomResourcePolicy.ANY_RESOURCE` to allow access to any resource.
-- **`AwsCustomResourcePolicy.fromStatements`** - Use this to specify your own custom statements.
+* **`AwsCustomResourcePolicy.fromSdkCalls`** - Use this to auto-generate IAM
+  Policy statements based on the configured SDK calls. Keep two things in mind
+  when using this policy:
+  * This policy variant assumes the IAM policy name has the same name as the API
+    call. This is true in 99% of cases, but there are exceptions (for example,
+    S3's `PutBucketLifecycleConfiguration` requires
+    `s3:PutLifecycleConfiguration` permissions, Lambda's `Invoke` requires
+    `lambda:InvokeFunction` permissions). Use `fromStatements` if you want to
+    do a call that requires different IAM action names.
+  * You will have to either provide specific ARNs, or explicitly use
+    `AwsCustomResourcePolicy.ANY_RESOURCE` to allow access to any resource.
+* **`AwsCustomResourcePolicy.fromStatements`** - Use this to specify your own
+  custom statements.
 
 The custom resource also implements `iam.IGrantable`, making it possible to use the `grantXxx()` methods.
 
@@ -344,30 +422,63 @@ that the function's role will eventually accumulate the permissions/grants from 
 resources.
 
 Chained API calls can be achieved by creating dependencies:
+
 ```ts
-const awsCustom1 = new AwsCustomResource(this, 'API1', {
+const awsCustom1 = new cr.AwsCustomResource(this, 'API1', {
   onCreate: {
     service: '...',
     action: '...',
-    physicalResourceId: PhysicalResourceId.of('...')
+    physicalResourceId: cr.PhysicalResourceId.of('...'),
   },
-  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
+  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+  }),
 });
 
-const awsCustom2 = new AwsCustomResource(this, 'API2', {
+const awsCustom2 = new cr.AwsCustomResource(this, 'API2', {
   onCreate: {
     service: '...',
-    action: '...'
+    action: '...',
     parameters: {
-      text: awsCustom1.getResponseField('Items.0.text')
+      text: awsCustom1.getResponseField('Items.0.text'),
     },
-    physicalResourceId: PhysicalResourceId.of('...')
+    physicalResourceId: cr.PhysicalResourceId.of('...'),
   },
-  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
+  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+  }),
+});
+```
+
+### Physical Resource Id Parameter
+
+Some AWS APIs may require passing the physical resource id in as a parameter for doing updates and deletes. You can pass it by using `PhysicalResourceIdReference`.
+
+```ts
+const awsCustom = new cr.AwsCustomResource(this, 'aws-custom', {
+  onCreate: {
+    service: '...',
+    action: '...',
+    parameters: {
+      text: '...',
+    },
+    physicalResourceId: cr.PhysicalResourceId.of('...'),
+  },
+  onUpdate: {
+    service: '...',
+    action: '...',
+    parameters: {
+      text: '...',
+      resourceId: new cr.PhysicalResourceIdReference(),
+    },
+  },
+  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+  }),
 })
 ```
 
-### Error Handling
+### Handling Custom Resource Errors
 
 Every error produced by the API call is treated as is and will cause a "FAILED" response to be submitted to CloudFormation.
 You can ignore some errors by specifying the `ignoreErrorCodesMatching` property, which accepts a regular expression that is
@@ -375,71 +486,130 @@ tested against the `code` property of the response. If matched, a "SUCCESS" resp
 Note that in such a case, the call response data and the `Data` key submitted to CloudFormation would both be an empty JSON object.
 Since a successful resource provisioning might or might not produce outputs, this presents us with some limitations:
 
-- `PhysicalResourceId.fromResponse` - Since the call response data might be empty, we cannot use it to extract the physical id.
-- `getResponseField` and `getResponseFieldReference` - Since the `Data` key is empty, the resource will not have any attributes, and therefore, invoking these functions will result in an error.
+* `PhysicalResourceId.fromResponse` - Since the call response data might be empty, we cannot use it to extract the physical id.
+* `getResponseField` and `getResponseFieldReference` - Since the `Data` key is empty, the resource will not have any attributes, and therefore, invoking these functions will result in an error.
 
 In both the cases, you will get a synth time error if you attempt to use it in conjunction with `ignoreErrorCodesMatching`.
 
 ### Customizing the Lambda function implementing the custom resource
-Use the `role`, `timeout` and `logRetention` properties to customize the Lambda function implementing the custom
-resource:
+
+Use the `role`, `timeout`, `logRetention` and `functionName` properties to customize
+the Lambda function implementing the custom resource:
 
 ```ts
-new AwsCustomResource(this, 'Customized', {
-  // other props here
+declare const myRole: iam.Role;
+new cr.AwsCustomResource(this, 'Customized', {
   role: myRole, // must be assumable by the `lambda.amazonaws.com` service principal
-  timeout: cdk.Duration.minutes(10) // defaults to 2 minutes
-  logRetention: logs.RetentionDays.ONE_WEEK // defaults to never delete logs
-})
+  timeout: Duration.minutes(10), // defaults to 2 minutes
+  logRetention: logs.RetentionDays.ONE_WEEK, // defaults to never delete logs
+  functionName: 'my-custom-name', // defaults to a CloudFormation generated name
+  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+  }),
+});
 ```
 
-### Examples
+### Restricting the output of the Custom Resource
+
+CloudFormation imposes a hard limit of 4096 bytes for custom resources response
+objects. If your API call returns an object that exceeds this limit, you can restrict
+the data returned by the custom resource to specific paths in the API response:
+
+```ts
+new cr.AwsCustomResource(this, 'ListObjects', {
+  onCreate: {
+    service: 's3',
+    action: 'listObjectsV2',
+    parameters: {
+      Bucket: 'my-bucket',
+    },
+    physicalResourceId: cr.PhysicalResourceId.of('id'),
+    outputPaths: ['Contents.0.Key', 'Contents.1.Key'], // Output only the two first keys
+  },
+  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+  }),
+});
+```
+
+Note that even if you restrict the output of your custom resource you can still use any
+path in `PhysicalResourceId.fromResponse()`.
+
+### Custom Resource Examples
 
 #### Verify a domain with SES
 
 ```ts
-const verifyDomainIdentity = new AwsCustomResource(this, 'VerifyDomainIdentity', {
+import * as route53 from '@aws-cdk/aws-route53';
+
+const verifyDomainIdentity = new cr.AwsCustomResource(this, 'VerifyDomainIdentity', {
   onCreate: {
     service: 'SES',
     action: 'verifyDomainIdentity',
     parameters: {
-      Domain: 'example.com'
+      Domain: 'example.com',
     },
-    physicalResourceId: PhysicalResourceId.fromResponse('VerificationToken') // Use the token returned by the call as physical id
+    physicalResourceId: cr.PhysicalResourceId.fromResponse('VerificationToken'), // Use the token returned by the call as physical id
   },
-  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
+  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+  }),
 });
 
+declare const zone: route53.HostedZone;
 new route53.TxtRecord(this, 'SESVerificationRecord', {
   zone,
   recordName: `_amazonses.example.com`,
-  values: [verifyDomainIdentity.getResponseField('VerificationToken')]
+  values: [verifyDomainIdentity.getResponseField('VerificationToken')],
 });
 ```
 
 #### Get the latest version of a secure SSM parameter
 
 ```ts
-const getParameter = new AwsCustomResource(this, 'GetParameter', {
+const getParameter = new cr.AwsCustomResource(this, 'GetParameter', {
   onUpdate: { // will also be called for a CREATE event
     service: 'SSM',
     action: 'getParameter',
     parameters: {
       Name: 'my-parameter',
-      WithDecryption: true
+      WithDecryption: true,
     },
-    physicalResourceId: PhysicalResourceId.of(Date.now().toString()) // Update physical id to always fetch the latest version
+    physicalResourceId: cr.PhysicalResourceId.of(Date.now().toString()), // Update physical id to always fetch the latest version
   },
-  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
+  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+  }),
 });
 
 // Use the value in another construct with
-getParameter.getResponseField('Parameter.Value')
+getParameter.getResponseField('Parameter.Value');
 ```
 
+#### Associate a PrivateHostedZone with VPC shared from another account
 
+```ts
+const getParameter = new cr.AwsCustomResource(this, 'AssociateVPCWithHostedZone', {
+  onCreate: {
+    assumedRoleArn: 'arn:aws:iam::OTHERACCOUNT:role/CrossAccount/ManageHostedZoneConnections',
+    service: 'Route53',
+    action: 'associateVPCWithHostedZone',
+    parameters: {
+      HostedZoneId: 'hz-123',
+      VPC: {
+		    VPCId: 'vpc-123',
+		    VPCRegion: 'region-for-vpc',
+      },
+    },
+    physicalResourceId: cr.PhysicalResourceId.of('${vpcStack.SharedVpc.VpcId}-${vpcStack.Region}-${PrivateHostedZone.HostedZoneId}'),
+  },
+  //Will ignore any resource and use the assumedRoleArn as resource and 'sts:AssumeRole' for service:action
+  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+  }),
+});
+```
 
 ---
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
-

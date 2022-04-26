@@ -1,5 +1,7 @@
-import { captureStackTrace, DefaultTokenResolver, IResolvable,
-  IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization } from '@aws-cdk/core';
+import {
+  captureStackTrace, DefaultTokenResolver, IResolvable,
+  IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization,
+} from '@aws-cdk/core';
 import { IRule } from './rule-ref';
 
 /**
@@ -9,8 +11,12 @@ export abstract class RuleTargetInput {
   /**
    * Pass text to the event target
    *
-   * May contain strings returned by EventField.from() to substitute in parts of the
+   * May contain strings returned by `EventField.from()` to substitute in parts of the
    * matched event.
+   *
+   * The Rule Target input value will be a single string: the string you pass
+   * here.  Do not use this method to pass a complex value like a JSON object to
+   * a Rule Target.  Use `RuleTargetInput.fromObject()` instead.
    */
   public static fromText(text: string): RuleTargetInput {
     return new FieldAwareEventInput(text, InputType.Text);
@@ -22,7 +28,7 @@ export abstract class RuleTargetInput {
    * This is only useful when passing to a target that does not
    * take a single argument.
    *
-   * May contain strings returned by EventField.from() to substitute in parts
+   * May contain strings returned by `EventField.from()` to substitute in parts
    * of the matched event.
    */
   public static fromMultilineText(text: string): RuleTargetInput {
@@ -32,7 +38,7 @@ export abstract class RuleTargetInput {
   /**
    * Pass a JSON object to the event target
    *
-   * May contain strings returned by EventField.from() to substitute in parts of the
+   * May contain strings returned by `EventField.from()` to substitute in parts of the
    * matched event.
    */
   public static fromObject(obj: any): RuleTargetInput {
@@ -61,23 +67,32 @@ export abstract class RuleTargetInput {
 export interface RuleTargetInputProperties {
   /**
    * Literal input to the target service (must be valid JSON)
+   *
+   * @default - input for the event target. If the input contains a paths map
+   *   values wil be extracted from event and inserted into the `inputTemplate`.
    */
   readonly input?: string;
 
   /**
    * JsonPath to take input from the input event
+   *
+   * @default - None. The entire matched event is passed as input
    */
   readonly inputPath?: string;
 
   /**
    * Input template to insert paths map into
+   *
+   * @default - None.
    */
   readonly inputTemplate?: string;
 
   /**
    * Paths map to extract values from event and insert into `inputTemplate`
+   *
+   * @default - No values extracted from event.
    */
-  readonly inputPathsMap?: {[key: string]: string};
+  readonly inputPathsMap?: { [key: string]: string };
 }
 
 /**
@@ -107,7 +122,7 @@ class LiteralEventInput extends RuleTargetInput {
  *
  * One weird exception: if we're in object context, we MUST skip the quotes
  * around the placeholder. I assume this is so once a trivial string replace is
- * done later on by CWE, numbers are still numbers.
+ * done later on by EventBridge, numbers are still numbers.
  *
  * So in string context:
  *
@@ -140,8 +155,6 @@ class FieldAwareEventInput extends RuleTargetInput {
       return key;
     }
 
-    const self = this;
-
     class EventFieldReplacer extends DefaultTokenResolver {
       constructor() {
         super(new StringConcat());
@@ -156,7 +169,7 @@ class FieldAwareEventInput extends RuleTargetInput {
         }
         inputPathsMap[key] = t.path;
 
-        return self.keyPlaceholder(key);
+        return `<${key}>`;
       }
     }
 
@@ -167,48 +180,45 @@ class FieldAwareEventInput extends RuleTargetInput {
       // JSONify individual lines
       resolved = Tokenization.resolve(this.input, {
         scope: rule,
-        resolver: new EventFieldReplacer()
+        resolver: new EventFieldReplacer(),
       });
       resolved = resolved.split('\n').map(stack.toJsonString).join('\n');
     } else {
       resolved = stack.toJsonString(Tokenization.resolve(this.input, {
         scope: rule,
-        resolver: new EventFieldReplacer()
+        resolver: new EventFieldReplacer(),
       }));
     }
 
-    if (Object.keys(inputPathsMap).length === 0) {
+    const keys = Object.keys(inputPathsMap);
+
+    if (keys.length === 0) {
       // Nothing special, just return 'input'
       return { input: resolved };
     }
 
     return {
-      inputTemplate: this.unquoteKeyPlaceholders(resolved),
-      inputPathsMap
+      inputTemplate: this.unquoteKeyPlaceholders(resolved, keys),
+      inputPathsMap,
     };
   }
 
   /**
-   * Return a template placeholder for the given key
-   *
-   * In object scope we'll need to get rid of surrounding quotes later on, so
-   * return a bracing that's unlikely to occur naturally (like tokens).
-   */
-  private keyPlaceholder(key: string) {
-    if (this.inputType !== InputType.Object) { return `<${key}>`; }
-    return UNLIKELY_OPENING_STRING + key + UNLIKELY_CLOSING_STRING;
-  }
-
-  /**
    * Removing surrounding quotes from any object placeholders
+   * when key is the lone value.
    *
    * Those have been put there by JSON.stringify(), but we need to
    * remove them.
+   *
+   * Do not remove quotes when the key is part of a larger string.
+   *
+   * Valid: { "data": "Some string with \"quotes\"<key>" } // key will be string
+   * Valid: { "data": <key> } // Key could be number, bool, obj, or string
    */
-  private unquoteKeyPlaceholders(sub: string) {
+  private unquoteKeyPlaceholders(sub: string, keys: string[]) {
     if (this.inputType !== InputType.Object) { return sub; }
 
-    return Lazy.stringValue({ produce: (ctx: IResolveContext) => Token.asString(deepUnquote(ctx.resolve(sub))) });
+    return Lazy.uncachedString({ produce: (ctx: IResolveContext) => Token.asString(deepUnquote(ctx.resolve(sub))) });
 
     function deepUnquote(resolved: any): any {
       if (Array.isArray(resolved)) {
@@ -219,18 +229,12 @@ class FieldAwareEventInput extends RuleTargetInput {
         }
         return resolved;
       } else if (typeof(resolved) === 'string') {
-        return resolved.replace(OPENING_STRING_REGEX, '<').replace(CLOSING_STRING_REGEX, '>');
+        return keys.reduce((r, key) => r.replace(new RegExp(`(?<!\\\\)\"\<${key}\>\"`, 'g'), `<${key}>`), resolved);
       }
       return resolved;
     }
   }
 }
-
-const UNLIKELY_OPENING_STRING = '<<${';
-const UNLIKELY_CLOSING_STRING = '}>>';
-
-const OPENING_STRING_REGEX = new RegExp(regexQuote('"' + UNLIKELY_OPENING_STRING), 'g');
-const CLOSING_STRING_REGEX = new RegExp(regexQuote(UNLIKELY_CLOSING_STRING + '"'), 'g');
 
 /**
  * Represents a field in the event pattern
@@ -285,9 +289,16 @@ export class EventField implements IResolvable {
     return new EventField(path).toString();
   }
 
+  /**
+   * Human readable display hint about the event pattern
+   */
   public readonly displayHint: string;
   public readonly creationStack: string[];
 
+  /**
+   *
+   * @param path the path to a field in the event pattern
+   */
   private constructor(public readonly path: string) {
     this.displayHint = this.path.replace(/^[^a-zA-Z0-9_-]+/, '').replace(/[^a-zA-Z0-9_-]/g, '-');
     Object.defineProperty(this, EVENT_FIELD_SYMBOL, { value: true });
@@ -302,6 +313,9 @@ export class EventField implements IResolvable {
     return Token.asString(this, { displayHint: this.displayHint });
   }
 
+  /**
+   * Convert the path to the field in the event pattern to JSON
+   */
   public toJSON() {
     return `<path:${this.path}>`;
   }
@@ -318,10 +332,3 @@ function isEventField(x: any): x is EventField {
 }
 
 const EVENT_FIELD_SYMBOL = Symbol.for('@aws-cdk/aws-events.EventField');
-
-/**
- * Quote a string for use in a regex
- */
-function regexQuote(s: string) {
-  return s.replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
-}

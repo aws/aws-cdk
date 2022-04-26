@@ -1,4 +1,5 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnModel, CfnModelProps } from './apigateway.generated';
 import * as jsonSchema from './json-schema';
 import { IRestApi, RestApi } from './restapi';
@@ -29,7 +30,7 @@ export interface IModel {
  * }
  *
  * @see https://docs.amazonaws.cn/en_us/apigateway/latest/developerguide/models-mappings.html#models-mappings-models
- * @deprecated You should use @see Model.EMPTY_MODEL
+ * @deprecated You should use Model.EMPTY_MODEL
  */
 export class EmptyModel implements IModel {
   public readonly modelId = 'Empty';
@@ -50,7 +51,7 @@ export class EmptyModel implements IModel {
  *     "message" : { "type" : "string" }
  *   }
  * }
- * @deprecated You should use @see Model.ERROR_MODEL
+ * @deprecated You should use Model.ERROR_MODEL
  */
 export class ErrorModel implements IModel {
   public readonly modelId = 'Error';
@@ -169,7 +170,7 @@ export class Model extends Resource implements IModel {
       restApiId: props.restApi.restApiId,
       contentType: props.contentType ?? 'application/json',
       description: props.description,
-      schema: util.JsonSchemaMapper.toCfnJsonSchema(props.schema)
+      schema: util.JsonSchemaMapper.toCfnJsonSchema(props.schema),
     };
 
     const resource = new CfnModel(this, 'Resource', modelProps);

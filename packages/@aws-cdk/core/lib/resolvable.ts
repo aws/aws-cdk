@@ -1,7 +1,7 @@
-import { IConstruct } from "./construct";
-import { TokenString } from "./private/encoding";
-import { TokenMap } from "./private/token-map";
-import { TokenizedStringFragments } from "./string-fragments";
+import { IConstruct } from './construct-compat';
+import { TokenString } from './private/encoding';
+import { TokenMap } from './private/token-map';
+import { TokenizedStringFragments } from './string-fragments';
 
 /**
  * Current resolution context for tokens
@@ -18,14 +18,31 @@ export interface IResolveContext {
   readonly preparing: boolean;
 
   /**
+   * Path in the JSON document that is being constructed
+   */
+  readonly documentPath: string[];
+
+  /**
    * Resolve an inner object
    */
-  resolve(x: any): any;
+  resolve(x: any, options?: ResolveChangeContextOptions): any;
 
   /**
    * Use this postprocessor after the entire token structure has been resolved
    */
   registerPostProcessor(postProcessor: IPostProcessor): void;
+}
+
+/**
+ * Options that can be changed while doing a recursive resolve
+ */
+export interface ResolveChangeContextOptions {
+  /**
+   * Change the 'allowIntrinsicKeys' option
+   *
+   * @default - Unchanged
+   */
+  readonly allowIntrinsicKeys?: boolean;
 }
 
 /**
@@ -38,7 +55,8 @@ export interface IResolvable {
    * The creation stack of this resolvable which will be appended to errors
    * thrown during resolution.
    *
-   * If this returns an empty array the stack will not be attached.
+   * This may return an array with a single informational element indicating how
+   * to get this property populated, if it was skipped for performance reasons.
    */
   readonly creationStack: string[];
 
@@ -58,7 +76,7 @@ export interface IResolvable {
 /**
  * A Token that can post-process the complete resolved value, after resolve() has recursed over it
  */
-export interface IPostProcessor  {
+export interface IPostProcessor {
   /**
    * Process the completely resolved value, after full recursion/resolution has happened
    */
@@ -92,7 +110,6 @@ export interface ITokenResolver {
  *
  * Interface so it could potentially be exposed over jsii.
  *
- * @experimental
  */
 export interface IFragmentConcatenator {
   /**
@@ -117,7 +134,6 @@ export class StringConcat implements IFragmentConcatenator {
 /**
  * Default resolver implementation
  *
- * @experimental
  */
 export class DefaultTokenResolver implements ITokenResolver {
   constructor(private readonly concat: IFragmentConcatenator) {

@@ -1,5 +1,7 @@
+/// !cdk-integ pragma:enable-lookups
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { App, Construct } from '@aws-cdk/core';
+import { App } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as eks from '../lib';
 import { TestStack } from './util';
 
@@ -22,8 +24,8 @@ class MyStack extends TestStack {
       maxCapacity: 10,
       bootstrapOptions: {
         kubeletExtraArgs: '--node-labels foo=bar,goo=far',
-        awsApiRetryAttempts: 5
-      }
+        awsApiRetryAttempts: 5,
+      },
     });
   }
 }

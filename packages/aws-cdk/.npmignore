@@ -11,13 +11,26 @@ dist
 .LAST_BUILD
 *.snk
 
-!lib/init-templates/*/*/tsconfig.json
 !test/integ/cli/**/*.js
 !test/integ/run-wrappers/dist
 
 *.tsbuildinfo
 
+jest.config.js
 tsconfig.json
+.eslintrc.js
 
 # init templates include default tsconfig.json files which we need
 !lib/init-templates/**/tsconfig.json
+!lib/init-templates/**/jest.config.js
+
+!test/integ/cli/jest.config.js
+!test/integ/uberpackage/jest.config.js
+!test/integ/cli-regression-patches/**/*
+!test/integ/cli/sam_cdk_integ_app/**/*.ts
+
+.DS_Store
+
+# exclude cdk artifacts
+**/cdk.out
+junit.xml

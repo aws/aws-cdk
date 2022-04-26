@@ -1,0 +1,13 @@
+# Ignore everything (because we're going to be generating into this
+# directory) except certain source files.
+
+*
+!LICENSE
+!NOTICE
+!README.md
+!scripts/
+
+.LAST_BUILD
+*.snk
+junit.xml
+!.eslintrc.js

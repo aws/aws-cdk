@@ -1,7 +1,10 @@
-import { Construct } from '@aws-cdk/core';
 import { TaskDefinition } from '../base/task-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { ProxyConfiguration } from './proxy-configuration';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Interface for setting the properties of proxy configuration.
@@ -79,7 +82,7 @@ export class AppMeshProxyConfiguration extends ProxyConfiguration {
     super();
     if (props.properties) {
       if (!props.properties.ignoredUID && !props.properties.ignoredGID) {
-        throw new Error("At least one of ignoredUID or ignoredGID should be specified.");
+        throw new Error('At least one of ignoredUID or ignoredGID should be specified.');
       }
     }
   }
@@ -87,13 +90,13 @@ export class AppMeshProxyConfiguration extends ProxyConfiguration {
   /**
    * Called when the proxy configuration is configured on a task definition.
    */
-  public bind(_scope: Construct, _taskDefinition: TaskDefinition): CfnTaskDefinition.ProxyConfigurationProperty {
+  public bind(_scope: CoreConstruct, _taskDefinition: TaskDefinition): CfnTaskDefinition.ProxyConfigurationProperty {
     const configProps = this.props.properties;
-    const configType = "APPMESH";
+    const configType = 'APPMESH';
     return {
       containerName: this.props.containerName,
       proxyConfigurationProperties: renderProperties(configProps),
-      type: configType
+      type: configType,
     };
   }
 }
@@ -103,9 +106,9 @@ function renderProperties(props: AppMeshProxyConfigurationProps): CfnTaskDefinit
   for (const [k, v] of Object.entries(props)) {
     const key = String(k);
     const value = String(v);
-    if (value !== "undefined" && value !== "") {
+    if (value !== 'undefined' && value !== '') {
       const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
-      ret.push({ ["name"]: capitalizedKey, ["value"]: value });
+      ret.push({ ['name']: capitalizedKey, ['value']: value });
     }
   }
   return ret;

@@ -1,13 +1,12 @@
-import {expect, haveResource, haveResourceLike, ResourcePart} from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { throws } from 'assert';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import {throws} from 'assert';
-import * as batch from "../lib";
+import * as batch from '../lib';
 
-describe('Batch Compute Evironment', () => {
+describe('Batch Compute Environment', () => {
   let expectedManagedDefaultComputeProps: any;
   let defaultServiceRole: any;
 
@@ -23,7 +22,7 @@ describe('Batch Compute Evironment', () => {
       ServiceRole: {
         'Fn::GetAtt': [
           'testcomputeenvResourceServiceInstanceRole105069A5',
-          'Arn'
+          'Arn',
         ],
       },
     };
@@ -35,25 +34,25 @@ describe('Batch Compute Evironment', () => {
           InstanceRole: {
             'Fn::GetAtt': [
               'testcomputeenvInstanceProfileCBD87EAB',
-              'Arn'
-            ]
+              'Arn',
+            ],
           },
           InstanceTypes: [
-            'optimal'
+            'optimal',
           ],
           MaxvCpus: 256,
           MinvCpus: 0,
           Subnets: [
             {
-              Ref: 'testvpcPrivateSubnet1Subnet865FB50A'
+              Ref: 'testvpcPrivateSubnet1Subnet865FB50A',
             },
             {
-              Ref: 'testvpcPrivateSubnet2Subnet23D3396F'
-            }
+              Ref: 'testvpcPrivateSubnet2Subnet23D3396F',
+            },
           ],
           Type: batch.ComputeResourceType.ON_DEMAND,
           ...overrides,
-        }
+        },
       };
     };
   });
@@ -66,7 +65,7 @@ describe('Batch Compute Evironment', () => {
         new batch.ComputeEnvironment(stack, 'test-compute-env', {
           managed: false,
           computeResources: {
-            vpc
+            vpc,
           },
         });
       });
@@ -82,6 +81,164 @@ describe('Batch Compute Evironment', () => {
       });
     });
   });
+  describe('using fargate resources', () => {
+    test('should deny setting bid percentage', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            bidPercentage: -1,
+          },
+        });
+      });
+    });
+    test('should deny setting allocation strategy', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            allocationStrategy: batch.AllocationStrategy.BEST_FIT,
+          },
+        });
+      });
+    });
+    test('should deny setting desired vCPUs', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            desiredvCpus: 1,
+          },
+        });
+      });
+    });
+    test('should deny setting min vCPUs', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            minvCpus: 1,
+          },
+        });
+      });
+    });
+    test('should deny setting image', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            image: ec2.MachineImage.latestAmazonLinux(),
+          },
+        });
+      });
+    });
+    test('should deny setting instance types', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            instanceTypes: [],
+          },
+        });
+      });
+    });
+    test('should deny setting EC2 key pair', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            ec2KeyPair: 'test',
+          },
+        });
+      });
+    });
+    test('should deny setting instance role', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            instanceRole: 'test',
+          },
+        });
+      });
+    });
+    test('should deny setting launch template', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            launchTemplate: {
+              launchTemplateName: 'test-template',
+            },
+          },
+        });
+      });
+    });
+    test('should deny setting placement group', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            placementGroup: 'test',
+          },
+        });
+      });
+    });
+    test('should deny setting spot fleet role', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            spotFleetRole: iam.Role.fromRoleArn(stack, 'test-role-arn', 'test-role'),
+          },
+        });
+      });
+    });
+  });
 
   describe('using spot resources', () => {
     test('should provide a spot fleet role if one is not given and allocationStrategy is BEST_FIT', () => {
@@ -91,12 +248,12 @@ describe('Batch Compute Evironment', () => {
         computeResources: {
           type: batch.ComputeResourceType.SPOT,
           allocationStrategy: batch.AllocationStrategy.BEST_FIT,
-          vpc
+          vpc,
         },
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
         Type: 'MANAGED',
         ...expectedManagedDefaultComputeProps({
           Type: batch.ComputeResourceType.SPOT,
@@ -104,20 +261,20 @@ describe('Batch Compute Evironment', () => {
             'Fn::Join': [
               '',
               [
-                'arn',
+                'arn:',
                 {
-                  Ref: 'AWS::Partition'
+                  Ref: 'AWS::Partition',
                 },
-                'iam::',
+                ':iam::',
                 {
-                  Ref: 'AWS::AccountId'
+                  Ref: 'AWS::AccountId',
                 },
                 ':role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet',
               ],
             ],
           },
         }),
-      }, ResourcePart.Properties));
+      });
     });
 
     describe('with a bid percentage', () => {
@@ -161,26 +318,27 @@ describe('Batch Compute Evironment', () => {
         computeResources: {
           allocationStrategy: batch.AllocationStrategy.BEST_FIT,
           vpc,
-          computeResourcesTags: new cdk.Tag('foo', 'bar'),
+          computeResourcesTags: {
+            'Name': 'AWS Batch Instance - C4OnDemand',
+            'Tag Other': 'Has other value',
+          },
           desiredvCpus: 1,
           ec2KeyPair: 'my-key-pair',
-          image: new ecs.EcsOptimizedAmi({
-            generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-            hardwareType: ecs.AmiHardwareType.STANDARD,
-          }),
-          instanceRole:  new iam.CfnInstanceProfile(stack, 'Instance-Profile', {
-            roles: [ new iam.Role(stack, 'Ecs-Instance-Role', {
+          image: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.STANDARD),
+          instanceRole: new iam.CfnInstanceProfile(stack, 'Instance-Profile', {
+            roles: [new iam.Role(stack, 'Ecs-Instance-Role', {
               assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
               managedPolicies: [
-                iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role')
-              ]
-            }).roleName]
+                iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'),
+              ],
+            }).roleName],
           }).attrArn,
           instanceTypes: [
             ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
           ],
           maxvCpus: 4,
           minvCpus: 1,
+          placementGroup: 'example-cluster-group',
           securityGroups: [
             new ec2.SecurityGroup(stack, 'test-sg', {
               vpc,
@@ -199,14 +357,14 @@ describe('Batch Compute Evironment', () => {
       new batch.ComputeEnvironment(stack, 'test-compute-env', props);
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
         ComputeEnvironmentName: 'my-test-compute-env',
         Type: 'MANAGED',
         State: 'DISABLED',
         ServiceRole: {
           'Fn::GetAtt': [
             'testcomputeenvResourceServiceInstanceRole105069A5',
-            'Arn'
+            'Arn',
           ],
         },
         ComputeResources: {
@@ -214,44 +372,43 @@ describe('Batch Compute Evironment', () => {
           DesiredvCpus: props.computeResources.desiredvCpus,
           Ec2KeyPair: props.computeResources.ec2KeyPair,
           ImageId: {
-            Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter'
+            Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
           },
           InstanceRole: {
             'Fn::GetAtt': [
-              props.computeResources.instanceRole ? "InstanceProfile" : '',
-              'Arn'
-            ]
+              props.computeResources.instanceRole ? 'InstanceProfile' : '',
+              'Arn',
+            ],
           },
           InstanceTypes: [
             props.computeResources.instanceTypes ? props.computeResources.instanceTypes[0].toString() : '',
           ],
           MaxvCpus: props.computeResources.maxvCpus,
           MinvCpus: props.computeResources.minvCpus,
+          PlacementGroup: props.computeResources.placementGroup,
           SecurityGroupIds: [
             {
               'Fn::GetAtt': [
                 'testsg872EB48A',
-                'GroupId'
-              ]
-            }
+                'GroupId',
+              ],
+            },
           ],
           Subnets: [
             {
-              Ref: `${vpc.node.uniqueId}PrivateSubnet1Subnet865FB50A`
+              Ref: `${cdk.Names.uniqueId(vpc)}PrivateSubnet1Subnet865FB50A`,
             },
             {
-              Ref: `${vpc.node.uniqueId}PrivateSubnet2Subnet23D3396F`
-            }
+              Ref: `${cdk.Names.uniqueId(vpc)}PrivateSubnet2Subnet23D3396F`,
+            },
           ],
           Tags: {
-            key: 'foo',
-            props: {},
-            defaultPriority: 100,
-            value: 'bar'
+            'Name': 'AWS Batch Instance - C4OnDemand',
+            'Tag Other': 'Has other value',
           },
-          Type: 'EC2'
+          Type: 'EC2',
         },
-      }, ResourcePart.Properties));
+      });
     });
 
     describe('with no allocation strategy specified', () => {
@@ -265,15 +422,15 @@ describe('Batch Compute Evironment', () => {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
           Type: 'MANAGED',
           ServiceRole: {
             'Fn::GetAtt': [
               'testcomputeenvResourceServiceInstanceRole105069A5',
-              'Arn'
+              'Arn',
             ],
           },
-        }, ResourcePart.Properties));
+        });
       });
     });
 
@@ -317,12 +474,12 @@ describe('Batch Compute Evironment', () => {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
           ...defaultServiceRole,
           ...expectedManagedDefaultComputeProps({
             MinvCpus: 0,
           }),
-        }, ResourcePart.Properties));
+        });
       });
     });
 
@@ -337,11 +494,11 @@ describe('Batch Compute Evironment', () => {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
           ...expectedManagedDefaultComputeProps({
             MaxvCpus: 256,
           }),
-        }, ResourcePart.Properties));
+        });
       });
     });
 
@@ -356,8 +513,8 @@ describe('Batch Compute Evironment', () => {
         });
 
         // THEN
-        expect(stack).to(haveResource('AWS::Batch::ComputeEnvironment'));
-        expect(stack).to(haveResource('AWS::IAM::Role'));
+        Template.fromStack(stack).resourceCountIs('AWS::Batch::ComputeEnvironment', 1);
+        Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 2);
       });
     });
 
@@ -372,11 +529,11 @@ describe('Batch Compute Evironment', () => {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
           ...expectedManagedDefaultComputeProps({
-            InstanceTypes: [ 'optimal' ],
+            InstanceTypes: ['optimal'],
           }),
-        }, ResourcePart.Properties));
+        });
       });
     });
 
@@ -391,11 +548,11 @@ describe('Batch Compute Evironment', () => {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
           ...expectedManagedDefaultComputeProps({
             Type: batch.ComputeResourceType.ON_DEMAND,
           }),
-        }, ResourcePart.Properties));
+        });
       });
     });
   });

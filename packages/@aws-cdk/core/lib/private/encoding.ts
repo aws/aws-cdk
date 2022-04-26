@@ -1,6 +1,6 @@
-import { IFragmentConcatenator, IResolvable } from "../resolvable";
-import { TokenizedStringFragments } from "../string-fragments";
-import { isResolvableObject } from "../token";
+import { IFragmentConcatenator, IResolvable } from '../resolvable';
+import { TokenizedStringFragments } from '../string-fragments';
+import { isResolvableObject } from '../token';
 
 // Details for encoding and decoding Tokens into native types; should not be exported
 
@@ -14,7 +14,10 @@ const QUOTED_BEGIN_STRING_TOKEN_MARKER = regexQuote(BEGIN_STRING_TOKEN_MARKER);
 const QUOTED_BEGIN_LIST_TOKEN_MARKER = regexQuote(BEGIN_LIST_TOKEN_MARKER);
 const QUOTED_END_TOKEN_MARKER = regexQuote(END_TOKEN_MARKER);
 
-const STRING_TOKEN_REGEX = new RegExp(`${QUOTED_BEGIN_STRING_TOKEN_MARKER}([${VALID_KEY_CHARS}]+)${QUOTED_END_TOKEN_MARKER}`, 'g');
+// Sometimes the number of digits is different
+export const STRINGIFIED_NUMBER_PATTERN = '-1\\.\\d{10,16}e\\+289';
+
+const STRING_TOKEN_REGEX = new RegExp(`${QUOTED_BEGIN_STRING_TOKEN_MARKER}([${VALID_KEY_CHARS}]+)${QUOTED_END_TOKEN_MARKER}|(${STRINGIFIED_NUMBER_PATTERN})`, 'g');
 const LIST_TOKEN_REGEX = new RegExp(`${QUOTED_BEGIN_LIST_TOKEN_MARKER}([${VALID_KEY_CHARS}]+)${QUOTED_END_TOKEN_MARKER}`, 'g');
 
 /**
@@ -52,7 +55,7 @@ export class TokenString {
         ret.addLiteral(this.str.substring(rest, m.index));
       }
 
-      ret.addToken(lookup(m[1]));
+      ret.addToken(lookup(m[1] ?? m[2]));
 
       rest = this.re.lastIndex;
       m = this.re.exec(this.str);
@@ -78,7 +81,7 @@ export class TokenString {
  * Quote a string for use in a regex
  */
 export function regexQuote(s: string) {
-  return s.replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
+  return s.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
 }
 
 /**
@@ -138,7 +141,7 @@ export function unresolved(obj: any): boolean {
  *
  * Currently not supporting BE architectures.
  */
-// tslint:disable-next-line:no-bitwise
+// eslint-disable-next-line no-bitwise
 const DOUBLE_TOKEN_MARKER_BITS = 0xFBFF << 16;
 
 /**
@@ -172,13 +175,13 @@ export function createTokenDouble(x: number) {
   const buf = new ArrayBuffer(8);
   const ints = new Uint32Array(buf);
 
-  // tslint:disable:no-bitwise
-  ints[0] =  x & 0x0000FFFFFFFF; // Bottom 32 bits of number
+  /* eslint-disable no-bitwise */
+  ints[0] = x & 0x0000FFFFFFFF; // Bottom 32 bits of number
 
   // This needs an "x >> 32" but that will make it a 32-bit number instead
   // of a 64-bit number.
   ints[1] = (shr32(x) & 0xFFFF) | DOUBLE_TOKEN_MARKER_BITS; // Top 16 bits of number and the mask
-  // tslint:enable:no-bitwise
+  /* eslint-enable no-bitwise */
 
   return (new Float64Array(buf))[0];
 }
@@ -208,7 +211,7 @@ export function extractTokenDouble(encoded: number): number | undefined {
 
   const ints = new Uint32Array(buf);
 
-  // tslint:disable:no-bitwise
+  /* eslint-disable no-bitwise */
   if ((ints[1] & 0xFFFF0000) !== DOUBLE_TOKEN_MARKER_BITS) {
     return undefined;
   }
@@ -216,5 +219,14 @@ export function extractTokenDouble(encoded: number): number | undefined {
   // Must use + instead of | here (bitwise operations
   // will force 32-bits integer arithmetic, + will not).
   return ints[0] + shl32(ints[1] & 0xFFFF);
-  // tslint:enable:no-bitwise
+  /* eslint-enable no-bitwise */
+}
+
+const STRINGIFIED_NUMBER_REGEX = new RegExp(STRINGIFIED_NUMBER_PATTERN);
+
+/**
+ * Return whether the given string contains accidentally stringified number tokens
+ */
+export function stringContainsNumberTokens(x: string) {
+  return !!x.match(STRINGIFIED_NUMBER_REGEX);
 }

@@ -1,19 +1,39 @@
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
+import { IResource, Resource, Token } from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import { TopicPolicy } from './policy';
 import { ITopicSubscription } from './subscriber';
 import { Subscription } from './subscription';
 
-export interface ITopic extends IResource {
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
+/**
+ * Represents an SNS topic
+ */
+export interface ITopic extends IResource, notifications.INotificationRuleTarget {
   /**
+   * The ARN of the topic
+   *
    * @attribute
    */
   readonly topicArn: string;
 
   /**
+   * The name of the topic
+   *
    * @attribute
    */
   readonly topicName: string;
+
+  /**
+   * Whether this topic is an Amazon SNS FIFO queue. If false, this is a standard topic.
+   *
+   * @attribute
+   */
+  readonly fifo: boolean;
 
   /**
    * Subscribe some endpoint to this topic
@@ -25,9 +45,9 @@ export interface ITopic extends IResource {
    *
    * If this topic was created in this stack (`new Topic`), a topic policy
    * will be automatically created upon the first call to `addToPolicy`. If
-   * the topic is improted (`Topic.import`), then this is a no-op.
+   * the topic is imported (`Topic.import`), then this is a no-op.
    */
-  addToResourcePolicy(statement: iam.PolicyStatement): void;
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * Grant topic publishing permissions to the given identity
@@ -42,6 +62,8 @@ export abstract class TopicBase extends Resource implements ITopic {
   public abstract readonly topicArn: string;
 
   public abstract readonly topicName: string;
+
+  public abstract readonly fifo: boolean;
 
   /**
    * Controls automatic creation of policy objects.
@@ -81,16 +103,24 @@ export abstract class TopicBase extends Resource implements ITopic {
    *
    * If this topic was created in this stack (`new Topic`), a topic policy
    * will be automatically created upon the first call to `addToPolicy`. If
-   * the topic is improted (`Topic.import`), then this is a no-op.
+   * the topic is imported (`Topic.import`), then this is a no-op.
    */
-  public addToResourcePolicy(statement: iam.PolicyStatement) {
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
-      this.policy = new TopicPolicy(this, 'Policy', { topics: [ this ] });
+      this.policy = new TopicPolicy(this, 'Policy', { topics: [this] });
     }
 
     if (this.policy) {
       this.policy.document.addStatements(statement);
+      return { statementAdded: true, policyDependable: this.policy };
     }
+    return { statementAdded: false };
+  }
+
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
+    return errors;
   }
 
   /**
@@ -103,6 +133,20 @@ export abstract class TopicBase extends Resource implements ITopic {
       resourceArns: [this.topicArn],
       resource: this,
     });
+  }
+
+  /**
+   * Represents a notification target
+   * That allows SNS topic to associate with this rule target.
+   */
+  public bindAsNotificationRuleTarget(_scope: constructs.Construct): notifications.NotificationRuleTargetConfig {
+    // SNS topic need to grant codestar-notifications service to publish
+    // @see https://docs.aws.amazon.com/dtconsole/latest/userguide/set-up-sns.html
+    this.grantPublish(new iam.ServicePrincipal('codestar-notifications.amazonaws.com'));
+    return {
+      targetType: 'SNS',
+      targetAddress: this.topicArn,
+    };
   }
 
   private nextTokenId(scope: Construct) {

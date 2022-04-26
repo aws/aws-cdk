@@ -38,15 +38,15 @@
           "Code": {
             "ZipFile": "exports.handler = async function(event) {\n          return  {\n            'headers': { 'Content-Type': 'text/plain' },\n            'statusCode': 200\n          }\n        }"
           },
-          "Handler": "index.handler",
           "Role": {
             "Fn::GetAtt": [
               "firstLambdaServiceRoleB6408C31",
               "Arn"
             ]
           },
-          "Runtime": "nodejs10.x",
-          "FunctionName": "FirstLambda"
+          "FunctionName": "FirstLambda",
+          "Handler": "index.handler",
+          "Runtime": "nodejs14.x"
         },
         "DependsOn": [
           "firstLambdaServiceRoleB6408C31"
@@ -73,32 +73,6 @@
         "Type": "AWS::ApiGateway::RestApi",
         "Properties": {
           "Name": "SecondRestAPI"
-        }
-      },
-      "BooksApiDeployment86CA39AFc929a0f95f673e230c62e2c9754726f6": {
-        "Type": "AWS::ApiGateway::Deployment",
-        "Properties": {
-          "RestApiId": {
-            "Ref": "BooksApi60AC975F"
-          },
-          "Description": "Automatically created by the RestApi construct"
-        },
-        "DependsOn": [
-          "BooksApiANY0C4EABE3",
-          "BooksApibooksGET6066BF7E",
-          "BooksApibooks1F745538"
-        ]
-      },
-      "BooksApiDeploymentStageprod0693B760": {
-        "Type": "AWS::ApiGateway::Stage",
-        "Properties": {
-          "RestApiId": {
-            "Ref": "BooksApi60AC975F"
-          },
-          "DeploymentId": {
-            "Ref": "BooksApiDeployment86CA39AFc929a0f95f673e230c62e2c9754726f6"
-          },
-          "StageName": "prod"
         }
       },
       "BooksApiCloudWatchRoleB120ADBA": {
@@ -144,6 +118,35 @@
         },
         "DependsOn": [
           "BooksApi60AC975F"
+        ]
+      },
+      "BooksApiDeployment86CA39AF4ff82f86c127f53c9de94d266b1906be": {
+        "Type": "AWS::ApiGateway::Deployment",
+        "Properties": {
+          "RestApiId": {
+            "Ref": "BooksApi60AC975F"
+          },
+          "Description": "Automatically created by the RestApi construct"
+        },
+        "DependsOn": [
+          "BooksApiANY0C4EABE3",
+          "BooksApibooksGET6066BF7E",
+          "BooksApibooks1F745538"
+        ]
+      },
+      "BooksApiDeploymentStageprod0693B760": {
+        "Type": "AWS::ApiGateway::Stage",
+        "Properties": {
+          "RestApiId": {
+            "Ref": "BooksApi60AC975F"
+          },
+          "DeploymentId": {
+            "Ref": "BooksApiDeployment86CA39AF4ff82f86c127f53c9de94d266b1906be"
+          },
+          "StageName": "prod"
+        },
+        "DependsOn": [
+          "BooksApiAccount9C44AF8E"
         ]
       },
       "BooksApiANY0C4EABE3": {

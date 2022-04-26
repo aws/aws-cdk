@@ -1,11 +1,11 @@
 // tests for the L1 escape hatches (overrides). those are in the IAM module
 // because we want to verify them end-to-end, as a complement to the unit
 // tests in the @aws-cdk/core module
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 describe('IAM escape hatches', () => {
   test('addPropertyOverride should allow overriding supported properties', () => {
@@ -17,15 +17,15 @@ describe('IAM escape hatches', () => {
     const cfn = user.node.findChild('Resource') as iam.CfnUser;
     cfn.addPropertyOverride('UserName', 'OverriddenUserName');
 
-    expect(stack).toMatchTemplate({
-      "Resources": {
-        "user2C2B57AE": {
-          "Type": "AWS::IAM::User",
-          "Properties": {
-            "UserName": "OverriddenUserName"
-          }
-        }
-      }
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'user2C2B57AE': {
+          'Type': 'AWS::IAM::User',
+          'Properties': {
+            'UserName': 'OverriddenUserName',
+          },
+        },
+      },
     });
   });
 
@@ -39,18 +39,18 @@ describe('IAM escape hatches', () => {
     cfn.addPropertyOverride('Hello.World', 'Boom');
 
     // THEN
-    expect(stack).toMatchTemplate({
-      "Resources": {
-        "user2C2B57AE": {
-          "Type": "AWS::IAM::User",
-          "Properties": {
-            "UserName": "MyUserName",
-            "Hello": {
-              "World": "Boom"
-            }
-          }
-        }
-      }
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'user2C2B57AE': {
+          'Type': 'AWS::IAM::User',
+          'Properties': {
+            'UserName': 'MyUserName',
+            'Hello': {
+              'World': 'Boom',
+            },
+          },
+        },
+      },
     });
   });
 
@@ -69,26 +69,26 @@ describe('IAM escape hatches', () => {
     cfn.addOverride('UpdatePolicy.UseOnlineResharding.Type', 'None');
 
     // THEN
-    expect(stack).toMatchTemplate({
-      "Resources": {
-        "user2C2B57AE": {
-          "Type": "AWS::IAM::User",
-          "Properties": {
-            "UserName": "HA!",
-            "Hello": {
-              "World": "Bam"
-            }
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'user2C2B57AE': {
+          'Type': 'AWS::IAM::User',
+          'Properties': {
+            'UserName': 'HA!',
+            'Hello': {
+              'World': 'Bam',
+            },
           },
-          "Joob": {
-            "Jab": "Jib"
+          'Joob': {
+            'Jab': 'Jib',
           },
-          "UpdatePolicy": {
-            "UseOnlineResharding": {
-              "Type": "None"
-            }
-          }
-        }
-      }
+          'UpdatePolicy': {
+            'UseOnlineResharding': {
+              'Type': 'None',
+            },
+          },
+        },
+      },
     });
   });
 });

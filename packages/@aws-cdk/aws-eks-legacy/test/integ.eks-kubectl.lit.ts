@@ -1,25 +1,30 @@
-/// !cdk-integ *
+/// !cdk-integ * pragma:enable-lookups
 
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { App, Construct } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Cluster } from '../lib';
-import { TestStack } from './util';
 
-class VpcStack extends TestStack {
+const env = {
+  region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
+  account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
+};
+
+class VpcStack extends Stack {
   public readonly vpc: ec2.Vpc;
 
   constructor(scope: Construct, id: string) {
-    super(scope, id);
+    super(scope, id, { env });
     this.vpc = new ec2.Vpc(this, 'vpc', { maxAzs: 2 });
   }
 }
 
-class ClusterStack extends TestStack {
+class ClusterStack extends Stack {
   public readonly cluster: Cluster;
 
   constructor(scope: Construct, id: string, props: { vpc: ec2.Vpc }) {
-    super(scope, id);
+    super(scope, id, { env });
 
     /// !show
     // define the cluster. kubectl is enabled by default.
@@ -45,38 +50,38 @@ class ClusterStack extends TestStack {
     // these resources upon creation or `kubectl delete` upon removal.
     this.cluster.addResource('hello-kubernetes',
       {
-        apiVersion: "v1",
-        kind: "Service",
-        metadata: { name: "hello-kubernetes" },
+        apiVersion: 'v1',
+        kind: 'Service',
+        metadata: { name: 'hello-kubernetes' },
         spec: {
-          type: "LoadBalancer",
-          ports: [ { port: 80, targetPort: 8080 } ],
-          selector: { app: "hello-kubernetes" }
-        }
+          type: 'LoadBalancer',
+          ports: [{ port: 80, targetPort: 8080 }],
+          selector: { app: 'hello-kubernetes' },
+        },
       },
       {
-        apiVersion: "apps/v1",
-        kind: "Deployment",
-        metadata: { name: "hello-kubernetes" },
+        apiVersion: 'apps/v1',
+        kind: 'Deployment',
+        metadata: { name: 'hello-kubernetes' },
         spec: {
           replicas: 1,
-          selector: { matchLabels: { app: "hello-kubernetes" } },
+          selector: { matchLabels: { app: 'hello-kubernetes' } },
           template: {
             metadata: {
-              labels: { app: "hello-kubernetes" }
+              labels: { app: 'hello-kubernetes' },
             },
             spec: {
               containers: [
                 {
-                  name: "hello-kubernetes",
-                  image: "paulbouwer/hello-kubernetes:1.5",
-                  ports: [ { containerPort: 8080 } ]
-                }
-              ]
-            }
-          }
-        }
-      }
+                  name: 'hello-kubernetes',
+                  image: 'paulbouwer/hello-kubernetes:1.5',
+                  ports: [{ containerPort: 8080 }],
+                },
+              ],
+            },
+          },
+        },
+      },
     );
     /// !hide
   }

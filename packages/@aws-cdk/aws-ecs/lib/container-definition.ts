@@ -2,11 +2,35 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
+import { EnvironmentFile, EnvironmentFileConfig } from './environment-file';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
+/**
+ * Specify the secret's version id or version stage
+ */
+export interface SecretVersionInfo {
+  /**
+   * version id of the secret
+   *
+   * @default - use default version id
+   */
+  readonly versionId?: string;
+  /**
+   * version stage of the secret
+   *
+   * @default - use default version stage
+   */
+  readonly versionStage?: string;
+}
 
 /**
  * A secret environment variable.
@@ -26,15 +50,53 @@ export abstract class Secret {
   /**
    * Creates a environment variable value from a secret stored in AWS Secrets
    * Manager.
+   *
+   * @param secret the secret stored in AWS Secrets Manager
+   * @param field the name of the field with the value that you want to set as
+   * the environment variable value. Only values in JSON format are supported.
+   * If you do not specify a JSON field, then the full content of the secret is
+   * used.
    */
-  public static fromSecretsManager(secret: secretsmanager.ISecret): Secret {
+  public static fromSecretsManager(secret: secretsmanager.ISecret, field?: string): Secret {
     return {
-      arn: secret.secretArn,
+      arn: field ? `${secret.secretArn}:${field}::` : secret.secretArn,
+      hasField: !!field,
       grantRead: grantee => secret.grantRead(grantee),
     };
   }
 
+  /**
+   * Creates a environment variable value from a secret stored in AWS Secrets
+   * Manager.
+   *
+   * @param secret the secret stored in AWS Secrets Manager
+   * @param versionInfo the version information to reference the secret
+   * @param field the name of the field with the value that you want to set as
+   * the environment variable value. Only values in JSON format are supported.
+   * If you do not specify a JSON field, then the full content of the secret is
+   * used.
+   */
+  public static fromSecretsManagerVersion(secret: secretsmanager.ISecret, versionInfo: SecretVersionInfo, field?: string): Secret {
+    return {
+      arn: `${secret.secretArn}:${field ?? ''}:${versionInfo.versionStage ?? ''}:${versionInfo.versionId ?? ''}`,
+      hasField: !!field,
+      grantRead: grantee => secret.grantRead(grantee),
+    };
+  }
+
+  /**
+   * The ARN of the secret
+   */
   public abstract readonly arn: string;
+
+  /**
+   * Whether this secret uses a specific JSON field
+   */
+  public abstract readonly hasField?: boolean;
+
+  /**
+   * Grants reading the secret to a principal
+   */
   public abstract grantRead(grantee: iam.IGrantable): iam.Grant;
 }
 
@@ -51,6 +113,13 @@ export interface ContainerDefinitionOptions {
    * TODO: Update these to specify using classes of IContainerImage
    */
   readonly image: ContainerImage;
+
+  /**
+   * The name of the container.
+   *
+   * @default - id of node associated with ContainerDefinition.
+   */
+  readonly containerName?: string;
 
   /**
    * The command that is passed to the container.
@@ -120,6 +189,15 @@ export interface ContainerDefinitionOptions {
    * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
+
+  /**
+   * The environment files to pass to the container.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html
+   *
+   * @default - No environment files.
+   */
+  readonly environmentFiles?: EnvironmentFile[];
 
   /**
    * The secret environment variables to pass to the container.
@@ -244,7 +322,7 @@ export interface ContainerDefinitionOptions {
    * Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
    * For more information see [KernelCapabilities](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html).
    *
-   * @default - No Linux paramters.
+   * @default - No Linux parameters.
    */
   readonly linuxParameters?: LinuxParameters;
 
@@ -254,6 +332,27 @@ export interface ContainerDefinitionOptions {
    * @default - No GPUs assigned.
    */
   readonly gpuCount?: number;
+
+  /**
+   * The port mappings to add to the container definition.
+   * @default - No ports are mapped.
+   */
+  readonly portMappings?: PortMapping[];
+
+  /**
+   * The inference accelerators referenced by the container.
+   * @default - No inference accelerators assigned.
+   */
+  readonly inferenceAcceleratorResources?: string[];
+
+  /**
+   * A list of namespaced kernel parameters to set in the container.
+   *
+   * @default - No system controls are set.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-systemcontrol.html
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definition_systemcontrols
+   */
+  readonly systemControls?: SystemControl[];
 }
 
 /**
@@ -271,7 +370,7 @@ export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
 /**
  * A container definition is used in a task definition to describe the containers that are launched as part of a task.
  */
-export class ContainerDefinition extends cdk.Construct {
+export class ContainerDefinition extends CoreConstruct {
   /**
    * The Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
    */
@@ -280,28 +379,28 @@ export class ContainerDefinition extends cdk.Construct {
   /**
    * The mount points for data volumes in your container.
    */
-   public readonly mountPoints = new Array<MountPoint>();
+  public readonly mountPoints = new Array<MountPoint>();
 
   /**
    * The list of port mappings for the container. Port mappings allow containers to access ports
    * on the host container instance to send or receive traffic.
    */
-   public readonly portMappings = new Array<PortMapping>();
+  public readonly portMappings = new Array<PortMapping>();
 
-   /**
-    * The data volumes to mount from another container in the same task definition.
-    */
-   public readonly volumesFrom = new Array<VolumeFrom>();
+  /**
+   * The data volumes to mount from another container in the same task definition.
+   */
+  public readonly volumesFrom = new Array<VolumeFrom>();
 
-   /**
-    * An array of ulimits to set in the container.
-    */
-   public readonly ulimits = new Array<Ulimit>();
+  /**
+   * An array of ulimits to set in the container.
+   */
+  public readonly ulimits = new Array<Ulimit>();
 
-   /**
-    * An array dependencies defined for container startup and shutdown.
-    */
-   public readonly containerDependencies = new Array<ContainerDependency>();
+  /**
+   * An array dependencies defined for container startup and shutdown.
+   */
+  public readonly containerDependencies = new Array<ContainerDependency>();
 
   /**
    * Specifies whether the container will be marked essential.
@@ -311,13 +410,13 @@ export class ContainerDefinition extends cdk.Construct {
    * stopped. If the essential parameter of a container is marked as false, then its
    * failure does not affect the rest of the containers in a task.
    *
-   * If this parameter isomitted, a container is assumed to be essential.
+   * If this parameter is omitted, a container is assumed to be essential.
    */
   public readonly essential: boolean;
 
-   /**
-    * The name of this container
-    */
+  /**
+   * The name of this container
+   */
   public readonly containerName: string;
 
   /**
@@ -331,9 +430,30 @@ export class ContainerDefinition extends cdk.Construct {
   public readonly taskDefinition: TaskDefinition;
 
   /**
+   * The environment files for this container
+   */
+  public readonly environmentFiles?: EnvironmentFileConfig[];
+
+  /**
    * The log configuration specification for the container.
    */
   public readonly logDriverConfig?: LogDriverConfig;
+
+  /**
+   * Whether this container definition references a specific JSON field of a secret
+   * stored in Secrets Manager.
+   */
+  public readonly referencesSecretJsonField?: boolean;
+
+  /**
+   * The name of the image referenced by this container.
+   */
+  public readonly imageName: string;
+
+  /**
+   * The inference accelerators referenced by this container.
+   */
+  private readonly inferenceAcceleratorResources: string[] = [];
 
   /**
    * The configured container links
@@ -342,27 +462,70 @@ export class ContainerDefinition extends cdk.Construct {
 
   private readonly imageConfig: ContainerImageConfig;
 
+  private readonly secrets?: CfnTaskDefinition.SecretProperty[];
+
+  private readonly environment: { [key: string]: string };
+
   /**
    * Constructs a new instance of the ContainerDefinition class.
    */
-  constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
+  constructor(scope: Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(scope, id);
     if (props.memoryLimitMiB !== undefined && props.memoryReservationMiB !== undefined) {
       if (props.memoryLimitMiB < props.memoryReservationMiB) {
-        throw new Error(`MemoryLimitMiB should not be less than MemoryReservationMiB.`);
+        throw new Error('MemoryLimitMiB should not be less than MemoryReservationMiB.');
       }
     }
-    this.essential = props.essential !== undefined ? props.essential : true;
+    this.essential = props.essential ?? true;
     this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
-    this.containerName = this.node.id;
+    this.containerName = props.containerName ?? this.node.id;
 
     this.imageConfig = props.image.bind(this, this);
+    this.imageName = this.imageConfig.imageName;
+
     if (props.logging) {
       this.logDriverConfig = props.logging.bind(this, this);
     }
+
+    if (props.secrets) {
+      this.secrets = [];
+      for (const [name, secret] of Object.entries(props.secrets)) {
+        if (secret.hasField) {
+          this.referencesSecretJsonField = true;
+        }
+        secret.grantRead(this.taskDefinition.obtainExecutionRole());
+        this.secrets.push({
+          name,
+          valueFrom: secret.arn,
+        });
+      }
+    }
+
+    if (props.environment) {
+      this.environment = { ...props.environment };
+    } else {
+      this.environment = {};
+    }
+
+    if (props.environmentFiles) {
+      this.environmentFiles = [];
+
+      for (const environmentFile of props.environmentFiles) {
+        this.environmentFiles.push(environmentFile.bind(this));
+      }
+    }
+
     props.taskDefinition._linkContainer(this);
+
+    if (props.portMappings) {
+      this.addPortMappings(...props.portMappings);
+    }
+
+    if (props.inferenceAcceleratorResources) {
+      this.addInferenceAcceleratorResource(...props.inferenceAcceleratorResources);
+    }
   }
 
   /**
@@ -373,7 +536,7 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public addLink(container: ContainerDefinition, alias?: string) {
     if (this.taskDefinition.networkMode !== NetworkMode.BRIDGE) {
-      throw new Error(`You must use network mode Bridge to add container links.`);
+      throw new Error('You must use network mode Bridge to add container links.');
     }
     if (alias !== undefined) {
       this.links.push(`${container.containerName}:${alias}`);
@@ -398,14 +561,14 @@ export class ContainerDefinition extends cdk.Construct {
     const mountPoint = {
       containerPath: scratch.containerPath,
       readOnly: scratch.readOnly,
-      sourceVolume: scratch.name
+      sourceVolume: scratch.name,
     };
 
     const volume = {
       host: {
-        sourcePath: scratch.sourcePath
+        sourcePath: scratch.sourcePath,
       },
-      name: scratch.name
+      name: scratch.name,
     };
 
     this.taskDefinition.addVolume(volume);
@@ -427,12 +590,33 @@ export class ContainerDefinition extends cdk.Construct {
         if (pm.hostPort === undefined) {
           pm = {
             ...pm,
-            hostPort: 0
+            hostPort: 0,
           };
         }
       }
 
       return pm;
+    }));
+  }
+
+  /**
+   * This method adds an environment variable to the container.
+   */
+  public addEnvironment(name: string, value: string) {
+    this.environment[name] = value;
+  }
+
+  /**
+   * This method adds one or more resources to the container.
+   */
+  public addInferenceAcceleratorResource(...inferenceAcceleratorResources: string[]) {
+    this.inferenceAcceleratorResources.push(...inferenceAcceleratorResources.map(resource => {
+      for (const inferenceAccelerator of this.taskDefinition.inferenceAccelerators) {
+        if (resource === inferenceAccelerator.deviceName) {
+          return resource;
+        }
+      }
+      throw new Error(`Resource value ${resource} in container definition doesn't match any inference accelerator device name in the task definition.`);
     }));
   }
 
@@ -513,14 +697,14 @@ export class ContainerDefinition extends cdk.Construct {
   /**
    * Render this container definition to a CloudFormation object
    *
-   * @param taskDefinition [disable-awslint:ref-via-interface] (made optional to avoid breaking change)
+   * @param _taskDefinition [disable-awslint:ref-via-interface] (unused but kept to avoid breaking change)
    */
-  public renderContainerDefinition(taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
+  public renderContainerDefinition(_taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
     return {
       command: this.props.command,
       cpu: this.props.cpu,
       disableNetworking: this.props.disableNetworking,
-      dependsOn: cdk.Lazy.anyValue({ produce: () => this.containerDependencies.map(renderContainerDependency) }, { omitEmptyArray: true }),
+      dependsOn: cdk.Lazy.any({ produce: () => this.containerDependencies.map(renderContainerDependency) }, { omitEmptyArray: true }),
       dnsSearchDomains: this.props.dnsSearchDomains,
       dnsServers: this.props.dnsServers,
       dockerLabels: this.props.dockerLabels,
@@ -531,35 +715,29 @@ export class ContainerDefinition extends cdk.Construct {
       image: this.imageConfig.imageName,
       memory: this.props.memoryLimitMiB,
       memoryReservation: this.props.memoryReservationMiB,
-      mountPoints: cdk.Lazy.anyValue({ produce: () => this.mountPoints.map(renderMountPoint) }, { omitEmptyArray: true }),
+      mountPoints: cdk.Lazy.any({ produce: () => this.mountPoints.map(renderMountPoint) }, { omitEmptyArray: true }),
       name: this.containerName,
-      portMappings: cdk.Lazy.anyValue({ produce: () => this.portMappings.map(renderPortMapping) }, { omitEmptyArray: true }),
+      portMappings: cdk.Lazy.any({ produce: () => this.portMappings.map(renderPortMapping) }, { omitEmptyArray: true }),
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
       repositoryCredentials: this.imageConfig.repositoryCredentials,
       startTimeout: this.props.startTimeout && this.props.startTimeout.toSeconds(),
       stopTimeout: this.props.stopTimeout && this.props.stopTimeout.toSeconds(),
-      ulimits: cdk.Lazy.anyValue({ produce: () => this.ulimits.map(renderUlimit) }, { omitEmptyArray: true }),
+      ulimits: cdk.Lazy.any({ produce: () => this.ulimits.map(renderUlimit) }, { omitEmptyArray: true }),
       user: this.props.user,
-      volumesFrom: cdk.Lazy.anyValue({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),
+      volumesFrom: cdk.Lazy.any({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
-      environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
-      secrets: this.props.secrets && Object.entries(this.props.secrets)
-        .map(([k, v]) => {
-          if (taskDefinition) {
-            v.grantRead(taskDefinition.obtainExecutionRole());
-          }
-          return {
-            name: k,
-            valueFrom: v.arn
-          };
-        }),
+      environment: this.environment && Object.keys(this.environment).length ? renderKV(this.environment, 'name', 'value') : undefined,
+      environmentFiles: this.environmentFiles && renderEnvironmentFiles(cdk.Stack.of(this).partition, this.environmentFiles),
+      secrets: this.secrets,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
-      links: cdk.Lazy.listValue({ produce: () => this.links }, { omitEmpty: true }),
+      links: cdk.Lazy.list({ produce: () => this.links }, { omitEmpty: true }),
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
-      resourceRequirements: (this.props.gpuCount !== undefined) ? renderResourceRequirements(this.props.gpuCount) : undefined,
+      resourceRequirements: (!this.props.gpuCount && this.inferenceAcceleratorResources.length == 0 ) ? undefined :
+        renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),
+      systemControls: this.props.systemControls && renderSystemControls(this.props.systemControls),
     };
   }
 }
@@ -616,9 +794,26 @@ export interface HealthCheck {
 }
 
 function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any[] {
-  const ret = new Array();
+  const ret = [];
   for (const [key, value] of Object.entries(env)) {
     ret.push({ [keyName]: key, [valueName]: value });
+  }
+  return ret;
+}
+
+function renderEnvironmentFiles(partition: string, environmentFiles: EnvironmentFileConfig[]): any[] {
+  const ret = [];
+  for (const environmentFile of environmentFiles) {
+    const s3Location = environmentFile.s3Location;
+
+    if (!s3Location) {
+      throw Error('Environment file must specify an S3 location');
+    }
+
+    ret.push({
+      type: environmentFile.fileType,
+      value: `arn:${partition}:s3:::${s3Location.bucketName}/${s3Location.objectKey}`,
+    });
   }
   return ret;
 }
@@ -626,10 +821,10 @@ function renderKV(env: { [key: string]: string }, keyName: string, valueName: st
 function renderHealthCheck(hc: HealthCheck): CfnTaskDefinition.HealthCheckProperty {
   return {
     command: getHealthCheckCommand(hc),
-    interval: hc.interval != null ? hc.interval.toSeconds() : 30,
-    retries: hc.retries !== undefined ? hc.retries : 3,
-    startPeriod: hc.startPeriod && hc.startPeriod.toSeconds(),
-    timeout: hc.timeout !== undefined ? hc.timeout.toSeconds() : 5,
+    interval: hc.interval?.toSeconds() ?? 30,
+    retries: hc.retries ?? 3,
+    startPeriod: hc.startPeriod?.toSeconds(),
+    timeout: hc.timeout?.toSeconds() ?? 5,
   };
 }
 
@@ -638,7 +833,7 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
   const hcCommand = new Array<string>();
 
   if (cmd.length === 0) {
-    throw new Error(`At least one argument must be supplied for health check command.`);
+    throw new Error('At least one argument must be supplied for health check command.');
   }
 
   if (cmd.length === 1) {
@@ -646,19 +841,29 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
     return hcCommand;
   }
 
-  if (cmd[0] !== "CMD" && cmd[0] !== 'CMD-SHELL') {
+  if (cmd[0] !== 'CMD' && cmd[0] !== 'CMD-SHELL') {
     hcCommand.push('CMD');
   }
 
   return hcCommand.concat(cmd);
 }
 
-function renderResourceRequirements(gpuCount: number): CfnTaskDefinition.ResourceRequirementProperty[] | undefined {
-  if (gpuCount === 0) { return undefined; }
-  return [{
-    type: 'GPU',
-    value: gpuCount.toString(),
-  }];
+function renderResourceRequirements(gpuCount: number = 0, inferenceAcceleratorResources: string[] = []):
+CfnTaskDefinition.ResourceRequirementProperty[] | undefined {
+  const ret = [];
+  for (const resource of inferenceAcceleratorResources) {
+    ret.push({
+      type: 'InferenceAccelerator',
+      value: resource,
+    });
+  }
+  if (gpuCount > 0) {
+    ret.push({
+      type: 'GPU',
+      value: gpuCount.toString(),
+    });
+  }
+  return ret;
 }
 
 /**
@@ -689,21 +894,21 @@ export interface Ulimit {
  * Type of resource to set a limit on
  */
 export enum UlimitName {
-  CORE = "core",
-  CPU = "cpu",
-  DATA = "data",
-  FSIZE = "fsize",
-  LOCKS = "locks",
-  MEMLOCK = "memlock",
-  MSGQUEUE = "msgqueue",
-  NICE = "nice",
-  NOFILE = "nofile",
-  NPROC = "nproc",
-  RSS = "rss",
-  RTPRIO = "rtprio",
-  RTTIME = "rttime",
-  SIGPENDING = "sigpending",
-  STACK = "stack"
+  CORE = 'core',
+  CPU = 'cpu',
+  DATA = 'data',
+  FSIZE = 'fsize',
+  LOCKS = 'locks',
+  MEMLOCK = 'memlock',
+  MSGQUEUE = 'msgqueue',
+  NICE = 'nice',
+  NOFILE = 'nofile',
+  NPROC = 'nproc',
+  RSS = 'rss',
+  RTPRIO = 'rtprio',
+  RTTIME = 'rttime',
+  SIGPENDING = 'sigpending',
+  STACK = 'stack'
 }
 
 function renderUlimit(ulimit: Ulimit): CfnTaskDefinition.UlimitProperty {
@@ -762,7 +967,7 @@ export enum ContainerDependencyCondition {
 function renderContainerDependency(containerDependency: ContainerDependency): CfnTaskDefinition.ContainerDependencyProperty {
   return {
     containerName: containerDependency.container.containerName,
-    condition: containerDependency.condition || ContainerDependencyCondition.HEALTHY
+    condition: containerDependency.condition || ContainerDependencyCondition.HEALTHY,
   };
 }
 
@@ -811,12 +1016,12 @@ export enum Protocol {
   /**
    * TCP
    */
-  TCP = "tcp",
+  TCP = 'tcp',
 
   /**
    * UDP
    */
-  UDP = "udp",
+  UDP = 'udp',
 }
 
 function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProperty {
@@ -903,4 +1108,26 @@ function renderVolumeFrom(vf: VolumeFrom): CfnTaskDefinition.VolumeFromProperty 
     sourceContainer: vf.sourceContainer,
     readOnly: vf.readOnly,
   };
+}
+
+/**
+ * Kernel parameters to set in the container
+ */
+export interface SystemControl {
+  /**
+   * The namespaced kernel parameter for which to set a value.
+   */
+  readonly namespace: string;
+
+  /**
+   * The value for the namespaced kernel parameter specified in namespace.
+   */
+  readonly value: string;
+}
+
+function renderSystemControls(systemControls: SystemControl[]): CfnTaskDefinition.SystemControlProperty[] {
+  return systemControls.map(sc => ({
+    namespace: sc.namespace,
+    value: sc.value,
+  }));
 }

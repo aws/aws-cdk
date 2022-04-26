@@ -1,0 +1,104 @@
+{
+  "name": "@aws-cdk/cloud-assembly-schema",
+  "version": "0.0.0",
+  "description": "Cloud Assembly Schema",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.cloudassembly.schema",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-cloud-assembly-schema"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.CloudAssembly.Schema",
+        "packageId": "Amazon.CDK.CloudAssembly.Schema",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.cloud-assembly-schema",
+        "module": "aws_cdk.cloud_assembly_schema",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": false
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "compat": "cdk-compat",
+    "update-schema": "bash scripts/update-schema.sh",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.4.1",
+    "@types/mock-fs": "^4.13.1",
+    "@types/semver": "^7.3.9",
+    "jest": "^27.5.1",
+    "mock-fs": "^4.14.0",
+    "typescript-json-schema": "^0.53.0"
+  },
+  "repository": {
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/@aws-cdk/cloud-assembly-schema"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "bundledDependencies": [
+    "jsonschema",
+    "semver"
+  ],
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "stability": "stable",
+  "awslint": {
+    "exclude": []
+  },
+  "dependencies": {
+    "jsonschema": "^1.4.0",
+    "semver": "^7.3.6"
+  },
+  "awscdkio": {
+    "announce": false
+  },
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest-1"
+  }
+}

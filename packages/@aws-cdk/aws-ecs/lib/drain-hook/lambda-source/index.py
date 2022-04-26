@@ -20,7 +20,12 @@ def lambda_handler(event, context):
   if not instance_arn:
     return
 
-  while has_tasks(cluster, instance_arn):
+  task_arns = container_instance_task_arns(cluster, instance_arn)
+  
+  if task_arns:
+    print('Instance ARN %s has task ARNs %s' % (instance_arn, ', '.join(task_arns)))
+
+  while has_tasks(cluster, instance_arn, task_arns):
     time.sleep(10)
 
   try:
@@ -40,8 +45,12 @@ def container_instance_arn(cluster, instance_id):
     return None
   return arns[0]
 
+def container_instance_task_arns(cluster, instance_arn):
+  """Fetch tasks for a container instance ARN."""
+  arns = ecs.list_tasks(cluster=cluster, containerInstance=instance_arn)['taskArns']
+  return arns
 
-def has_tasks(cluster, instance_arn):
+def has_tasks(cluster, instance_arn, task_arns):
   """Return True if the instance is running tasks for the given cluster."""
   instances = ecs.describe_container_instances(cluster=cluster, containerInstances=[instance_arn])['containerInstances']
   if not instances:
@@ -53,11 +62,22 @@ def has_tasks(cluster, instance_arn):
     set_container_instance_to_draining(cluster, instance_arn)
     return True
 
-  tasks = instance['runningTasksCount'] + instance['pendingTasksCount']
-  print('Instance %s has %s tasks' % (instance_arn, tasks))
+  task_count = None
 
-  return tasks > 0
+  if task_arns:
+    # Fetch details for tasks running on the container instance
+    tasks = ecs.describe_tasks(cluster=cluster, tasks=task_arns)['tasks']
+    if tasks:
+      # Consider any non-stopped tasks as running
+      task_count = sum(task['lastStatus'] != 'STOPPED' for task in tasks) + instance['pendingTasksCount']
+  
+  if not task_count:
+    # Fallback to instance task counts if detailed task information is unavailable
+    task_count = instance['runningTasksCount'] + instance['pendingTasksCount']
+    
+  print('Instance %s has %s tasks' % (instance_arn, task_count))
 
+  return task_count > 0
 
 def set_container_instance_to_draining(cluster, instance_arn):
   ecs.update_container_instances_state(

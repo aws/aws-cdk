@@ -1,3 +1,0 @@
-{
-  "app": "npx ts-node bin/%name%.ts"
-}

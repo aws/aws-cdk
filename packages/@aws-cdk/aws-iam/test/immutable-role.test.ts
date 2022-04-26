@@ -1,8 +1,12 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
+/* eslint-disable quote-props */
 
 describe('ImmutableRole', () => {
   let stack: Stack;
@@ -29,21 +33,21 @@ describe('ImmutableRole', () => {
 
     immutableRole.attachInlinePolicy(policy);
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Action": "s3:*",
-            "Resource": "*",
-            "Effect": "Allow",
+            'Action': 's3:*',
+            'Resource': '*',
+            'Effect': 'Allow',
           },
         ],
-        "Version": "2012-10-17",
+        'Version': '2012-10-17',
       },
-      "PolicyName": "Policy23B91518",
-      "Users": [
+      'PolicyName': 'Policy23B91518',
+      'Users': [
         {
-          "Ref": "User00B015A1",
+          'Ref': 'User00B015A1',
         },
       ],
     });
@@ -54,8 +58,8 @@ describe('ImmutableRole', () => {
 
     immutableRole.addManagedPolicy({ managedPolicyArn: 'Arn2' });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Role', {
-      "ManagedPolicyArns": [
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      'ManagedPolicyArns': [
         'Arn1',
       ],
     });
@@ -72,14 +76,14 @@ describe('ImmutableRole', () => {
       actions: ['s3:*'],
     }));
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Version": "2012-10-17",
-        "Statement": [
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Version': '2012-10-17',
+        'Statement': [
           {
-            "Resource": "*",
-            "Action": "s3:*",
-            "Effect": "Allow",
+            'Resource': '*',
+            'Action': 's3:*',
+            'Effect': 'Allow',
           },
         ],
       },
@@ -94,16 +98,23 @@ describe('ImmutableRole', () => {
       resourceArns: ['*'],
     });
 
-    expect(stack).not.toHaveResourceLike('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+    expect(Template.fromStack(stack).findResources('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Resource": "*",
-            "Action": "s3:*",
-            "Effect": "Allow",
+            'Resource': '*',
+            'Action': 's3:*',
+            'Effect': 'Allow',
           },
         ],
       },
-    });
+    })).toEqual({});
+  });
+
+  // this pattern is used here:
+  // aws-codepipeline-actions/lib/cloudformation/pipeline-actions.ts#L517
+  test('immutable role is a construct', () => {
+    new Construct(immutableRole as unknown as Construct, 'Child');
+    new Construct(mutableRole.withoutPolicyUpdates() as unknown as Construct, 'Child2');
   });
 });

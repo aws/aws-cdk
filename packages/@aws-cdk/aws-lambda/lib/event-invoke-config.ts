@@ -1,4 +1,5 @@
-import { Construct, Duration, Resource } from '@aws-cdk/core';
+import { Duration, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { DestinationType, IDestination } from './destination';
 import { IFunction } from './function-base';
 import { CfnEventInvokeConfig } from './lambda.generated';
@@ -89,7 +90,7 @@ export class EventInvokeConfig extends Resource {
         : undefined,
       functionName: props.function.functionName,
       maximumEventAgeInSeconds: props.maxEventAge && props.maxEventAge.toSeconds(),
-      maximumRetryAttempts: props.retryAttempts !== undefined ? props.retryAttempts : undefined,
+      maximumRetryAttempts: props.retryAttempts ?? undefined,
       qualifier: props.qualifier || '$LATEST',
     });
   }

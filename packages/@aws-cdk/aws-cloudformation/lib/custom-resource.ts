@@ -1,15 +1,22 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
-import { CfnResource, Construct, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
-import { CfnCustomResource } from './cloudformation.generated';
+import * as core from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Collection of arbitrary properties
+ *
+ * @deprecated this type has been deprecated in favor of using a key-value type directly
  */
 export type Properties = {[key: string]: any};
 
 /**
  * Configuration options for custom resource providers.
+ *
+ * @deprecated used in {@link ICustomResourceProvider} which is now deprecated
  */
 export interface CustomResourceProviderConfig {
   /**
@@ -21,6 +28,7 @@ export interface CustomResourceProviderConfig {
 
 /**
  * Represents a provider for an AWS CloudFormation custom resources.
+ * @deprecated use `core.ICustomResourceProvider`
  */
 export interface ICustomResourceProvider {
   /**
@@ -33,6 +41,8 @@ export interface ICustomResourceProvider {
 
 /**
  * Represents a provider for an AWS CloudFormation custom resources.
+ *
+ * @deprecated use core.CustomResource instead
  */
 export class CustomResourceProvider implements ICustomResourceProvider {
   /**
@@ -75,6 +85,7 @@ export class CustomResourceProvider implements ICustomResourceProvider {
 
 /**
  * Properties to provide a Lambda-backed custom resource
+ * @deprecated use `core.CustomResourceProps`
  */
 export interface CustomResourceProps {
   /**
@@ -88,21 +99,35 @@ export interface CustomResourceProps {
    * [resource provider framework]: https://docs.aws.amazon.com/cdk/api/latest/docs/custom-resources-readme.html
    *
    * ```ts
-   * // use the provider framework from aws-cdk/custom-resources:
-   * provider: new custom_resources.Provider({
+   * import * as custom_resources from '@aws-cdk/custom-resources';
+   * import * as lambda from '@aws-cdk/aws-lambda';
+   * import { Stack } from '@aws-cdk/core';
+   * declare const myOnEventLambda: lambda.Function;
+   * declare const myIsCompleteLambda: lambda.Function;
+   * const stack = new Stack();
+   *
+   * const provider = new custom_resources.Provider(stack, 'myProvider', {
    *   onEventHandler: myOnEventLambda,
    *   isCompleteHandler: myIsCompleteLambda, // optional
    * });
    * ```
    *
    * ```ts
+   * import * as cloudformation from '@aws-cdk/aws-cloudformation';
+   * import * as lambda from '@aws-cdk/aws-lambda';
+   * declare const myFunction: lambda.Function;
+   *
    * // invoke an AWS Lambda function when a lifecycle event occurs:
-   * provider: CustomResourceProvider.fromLambda(myFunction)
+   * const provider = cloudformation.CustomResourceProvider.fromLambda(myFunction);
    * ```
    *
    * ```ts
+   * import * as cloudformation from '@aws-cdk/aws-cloudformation';
+   * import * as sns from '@aws-cdk/aws-sns';
+   * declare const myTopic: sns.Topic;
+   *
    * // publish lifecycle events to an SNS topic:
-   * provider: CustomResourceProvider.fromTopic(myTopic)
+   * const provider = cloudformation.CustomResourceProvider.fromTopic(myTopic);
    * ```
    */
   readonly provider: ICustomResourceProvider;
@@ -142,103 +167,21 @@ export interface CustomResourceProps {
    *
    * @default cdk.RemovalPolicy.Destroy
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: core.RemovalPolicy;
 }
 
 /**
- * Custom resource that is implemented using a Lambda
- *
- * As a custom resource author, you should be publishing a subclass of this class
- * that hides the choice of provider, and accepts a strongly-typed properties
- * object with the properties your provider accepts.
+ * Deprecated.
+ * @deprecated use `core.CustomResource`
  */
-export class CustomResource extends Resource {
-  private readonly resource: CfnResource;
-
+export class CustomResource extends core.CustomResource {
   constructor(scope: Construct, id: string, props: CustomResourceProps) {
-    super(scope, id);
-
-    const type = renderResourceType(props.resourceType);
-    const providerConfig = props.provider.bind(this);
-    this.resource = new CfnResource(this, 'Default', {
-      type,
-      properties: {
-        ServiceToken: providerConfig.serviceToken,
-        ...uppercaseProperties(props.properties || {})
-      }
-    });
-
-    this.resource.applyRemovalPolicy(props.removalPolicy, {
-      default: RemovalPolicy.DESTROY
+    super(scope, id, {
+      pascalCaseProperties: true,
+      properties: props.properties,
+      removalPolicy: props.removalPolicy,
+      resourceType: props.resourceType,
+      serviceToken: core.Lazy.string({ produce: () => props.provider.bind(this).serviceToken }),
     });
   }
-
-  /**
-   * The physical name of this custom resource.
-   */
-  public get ref() {
-    return this.resource.ref;
-  }
-
-  /**
-   * Returns the value of an attribute of the custom resource of an arbitrary
-   * type. Attributes are returned from the custom resource provider through the
-   * `Data` map where the key is the attribute name.
-   *
-   * @param attributeName the name of the attribute
-   * @returns a token for `Fn::GetAtt`. Use `Token.asXxx` to encode the returned `Reference` as a specific type or
-   * use the convenience `getAttString` for string attributes.
-   */
-  public getAtt(attributeName: string) {
-    return this.resource.getAtt(attributeName);
-  }
-
-  /**
-   * Returns the value of an attribute of the custom resource of type string.
-   * Attributes are returned from the custom resource provider through the
-   * `Data` map where the key is the attribute name.
-   *
-   * @param attributeName the name of the attribute
-   * @returns a token for `Fn::GetAtt` encoded as a string.
-   */
-  public getAttString(attributeName: string): string {
-    return Token.asString(this.getAtt(attributeName));
-  }
-}
-
-/**
- * Uppercase the first letter of every property name
- *
- * It's customary for CloudFormation properties to start with capitals, and our
- * properties to start with lowercase, so this function translates from one
- * to the other
- */
-function uppercaseProperties(props: Properties): Properties {
-  const ret: Properties = {};
-  Object.keys(props).forEach(key => {
-    const upper = key.substr(0, 1).toUpperCase() + key.substr(1);
-    ret[upper] = props[key];
-  });
-  return ret;
-}
-
-function renderResourceType(resourceType?: string) {
-  if (!resourceType) {
-    return CfnCustomResource.CFN_RESOURCE_TYPE_NAME;
-  }
-
-  if (!resourceType.startsWith('Custom::')) {
-    throw new Error(`Custom resource type must begin with "Custom::" (${resourceType})`);
-  }
-
-  const typeName = resourceType.substr(resourceType.indexOf('::') + 2);
-  if (typeName.length > 60) {
-    throw new Error(`Custom resource type length > 60 (${resourceType})`);
-  }
-
-  if (!/^[a-z0-9_@-]+$/i.test(typeName)) {
-    throw new Error(`Custom resource type name can only include alphanumeric characters and _@- (${typeName})`);
-  }
-
-  return resourceType;
 }

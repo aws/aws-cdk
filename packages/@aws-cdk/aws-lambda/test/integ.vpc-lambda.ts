@@ -11,7 +11,7 @@ new lambda.Function(stack, 'MyLambda', {
   code: new lambda.InlineCode('def main(event, context): pass'),
   handler: 'index.main',
   runtime: lambda.Runtime.PYTHON_3_6,
-  vpc
+  vpc,
 });
 
 app.synth();

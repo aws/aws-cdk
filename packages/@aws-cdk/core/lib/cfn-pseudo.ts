@@ -1,4 +1,4 @@
-import { Construct } from './construct';
+import { Construct } from './construct-compat';
 import { CfnReference } from './private/cfn-reference';
 import { Token } from './token';
 
@@ -51,7 +51,7 @@ export class ScopedAws {
 
   public get notificationArns(): string[] {
     return Token.asList(CfnReference.forPseudo(AWS_NOTIFICATIONARNS, this.scope), {
-      displayHint: AWS_NOTIFICATIONARNS
+      displayHint: AWS_NOTIFICATIONARNS,
     });
   }
 
@@ -77,5 +77,10 @@ export class ScopedAws {
 }
 
 function pseudoString(name: string): string {
-  return Token.asString({ Ref: name }, { displayHint: name });
+  // we don't want any ':' in the serialized form,
+  // as ':' is the ARN separator,
+  // and so we don't want ARN components
+  // (which these CFN references like AWS::Partition certainly can be)
+  // to contain ':'s themselves
+  return Token.asString({ Ref: name }, { displayHint: name.replace('::', '.') });
 }

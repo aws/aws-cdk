@@ -1,7 +1,7 @@
-import { IConstruct } from "./construct";
-import { Intrinsic } from "./private/intrinsic";
-import { IPostProcessor, IResolveContext } from "./resolvable";
-import { Stack } from "./stack";
+import { IConstruct } from 'constructs';
+import { Intrinsic } from './private/intrinsic';
+import { IPostProcessor, IResolveContext } from './resolvable';
+import { Stack } from './stack';
 
 /**
  * Given an object, converts all keys to PascalCase given they are currently in camel case.
@@ -35,7 +35,7 @@ export function capitalizePropertyNames(construct: IConstruct, obj: any): any {
  * Turns empty arrays/objects to undefined (after evaluating tokens).
  */
 export function ignoreEmpty(obj: any): any {
- return new PostResolveToken(obj, o => {
+  return new PostResolveToken(obj, o => {
     // undefined/null
     if (o == null) {
       return o;
@@ -80,7 +80,7 @@ export function filterUndefined(obj: any): any {
  */
 export class PostResolveToken extends Intrinsic implements IPostProcessor {
   constructor(value: any, private readonly processor: (x: any) => any) {
-    super(value);
+    super(value, { stackTrace: false });
   }
 
   public resolve(context: IResolveContext) {
@@ -98,29 +98,10 @@ export class PostResolveToken extends Intrinsic implements IPostProcessor {
  */
 export function pathToTopLevelStack(s: Stack): Stack[] {
   if (s.nestedStackParent) {
-    return [ ...pathToTopLevelStack(s.nestedStackParent), s ];
+    return [...pathToTopLevelStack(s.nestedStackParent), s];
   } else {
-    return [ s ];
+    return [s];
   }
-}
-
-/**
- * @returns true if this stack is a direct or indirect parent of the nested
- * stack `nested`. If `nested` is a top-level stack, returns false.
- */
-export function isParentOfNestedStack(parent: Stack, child: Stack): boolean {
-  // if "nested" is not a nested stack, then by definition we cannot be its parent
-  if (!child.nestedStackParent) {
-    return false;
-  }
-
-  // if this is the direct parent, then we found it
-  if (parent === child.nestedStackParent) {
-    return true;
-  }
-
-  // traverse up
-  return isParentOfNestedStack(parent, child.nestedStackParent);
 }
 
 /**
@@ -138,4 +119,8 @@ export function findLastCommonElement<T>(path1: T[], path2: T[]): T | undefined 
   }
 
   return path1[i - 1];
+}
+
+export function undefinedIfAllValuesAreEmpty(object: object): object | undefined {
+  return Object.values(object).some(v => v !== undefined) ? object : undefined;
 }

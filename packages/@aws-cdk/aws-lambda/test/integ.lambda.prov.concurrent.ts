@@ -15,47 +15,50 @@ const pce = 5;
 const fn = new lambda.Function(stack, 'MyLambdaAliasPCE', {
   code: new lambda.InlineCode(lambdaCode.replace('#type#', 'Alias')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
 });
 
 fn.addToRolePolicy(new iam.PolicyStatement({
   resources: ['*'],
-  actions: ['*']
+  actions: ['*'],
 }));
 
-const version = fn.addVersion('1');
+const version = fn.currentVersion;
 
 const alias = new lambda.Alias(stack, 'Alias', {
   aliasName: 'prod',
   version,
-  provisionedConcurrentExecutions: pce
+  provisionedConcurrentExecutions: pce,
 });
 
 alias.addPermission('AliasPermission', {
-  principal: new iam.ServicePrincipal('cloudformation.amazonaws.com')
+  principal: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
 });
 
 // Integration test for provisioned concurrent execution via Version
 const fnVersionPCE = new lambda.Function(stack, 'MyLambdaVersionPCE', {
   code: new lambda.InlineCode(lambdaCode.replace('#type#', 'Version')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
+  currentVersionOptions: {
+    provisionedConcurrentExecutions: pce,
+  },
 });
 
 fnVersionPCE.addToRolePolicy(new iam.PolicyStatement({
   resources: ['*'],
-  actions: ['*']
+  actions: ['*'],
 }));
 
-const version2 = fnVersionPCE.addVersion('2', undefined, undefined, pce);
+const version2 = fnVersionPCE.currentVersion;
 
 const alias2 = new lambda.Alias(stack, 'Alias2', {
   aliasName: 'prod',
-  version: version2
+  version: version2,
 });
 
 alias2.addPermission('AliasPermission2', {
-  principal: new iam.ServicePrincipal('cloudformation.amazonaws.com')
+  principal: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
 });
 
 app.synth();

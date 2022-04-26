@@ -1,0 +1,76 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "sns-bucket-notifications": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "sns-bucket-notifications.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/sns-bucket-notifications/ObjectCreatedTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ObjectCreatedTopic92F47E19"
+          }
+        ],
+        "/sns-bucket-notifications/ObjectCreatedTopic/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ObjectCreatedTopicPolicyA938ECFC"
+          }
+        ],
+        "/sns-bucket-notifications/ObjectDeletedTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ObjectDeletedTopic2A914EC0"
+          }
+        ],
+        "/sns-bucket-notifications/ObjectDeletedTopic/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ObjectDeletedTopicPolicy026B02E6"
+          }
+        ],
+        "/sns-bucket-notifications/MyBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucketF68F3FF0"
+          }
+        ],
+        "/sns-bucket-notifications/MyBucket/Notifications/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucketNotifications46AC0CD2"
+          }
+        ],
+        "/sns-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+          }
+        ],
+        "/sns-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36"
+          }
+        ],
+        "/sns-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691"
+          }
+        ]
+      },
+      "displayName": "sns-bucket-notifications"
+    }
+  }
+}

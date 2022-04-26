@@ -1,3 +1,4 @@
+export * from './batch';
 export * from './codepipeline';
 export * from './sns';
 export * from './sqs';
@@ -6,4 +7,11 @@ export * from './aws-api';
 export * from './lambda';
 export * from './ecs-task-properties';
 export * from './ecs-task';
+export * from './event-bus';
 export * from './state-machine';
+export * from './kinesis-stream';
+export * from './log-group';
+export * from './kinesis-firehose-stream';
+export * from './api-gateway';
+export * from './api-destination';
+export * from './util';

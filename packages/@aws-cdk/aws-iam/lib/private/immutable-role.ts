@@ -1,9 +1,10 @@
-import { DependableTrait } from '@aws-cdk/core';
+import { ConcreteDependable, DependableTrait, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
 import { PolicyStatement } from '../policy-statement';
-import { IPrincipal } from '../principals';
+import { AddToPrincipalPolicyResult, IPrincipal } from '../principals';
 import { IRole } from '../role';
 
 /**
@@ -19,19 +20,24 @@ import { IRole } from '../role';
  * which was imported into the CDK with {@link Role.fromRoleArn}, you don't have to use this class -
  * simply pass the property mutable = false when calling {@link Role.fromRoleArn}.
  */
-export class ImmutableRole implements IRole {
+export class ImmutableRole extends Resource implements IRole {
   public readonly assumeRoleAction = this.role.assumeRoleAction;
   public readonly policyFragment = this.role.policyFragment;
   public readonly grantPrincipal = this;
+  public readonly principalAccount = this.role.principalAccount;
   public readonly roleArn = this.role.roleArn;
   public readonly roleName = this.role.roleName;
-  public readonly node = this.role.node;
   public readonly stack = this.role.stack;
 
-  constructor(private readonly role: IRole) {
+  constructor(scope: Construct, id: string, private readonly role: IRole, private readonly addGrantsToResources: boolean) {
+    super(scope, id, {
+      account: role.env.account,
+      region: role.env.region,
+    });
+
     // implement IDependable privately
     DependableTrait.implement(this, {
-      dependencyRoots: [ role ]
+      dependencyRoots: [role],
     });
   }
 
@@ -43,9 +49,15 @@ export class ImmutableRole implements IRole {
     // do nothing
   }
 
-  public addToPolicy(_statement: PolicyStatement): boolean {
-    // Not really added, but for the purposes of consumer code pretend that it was.
-    return true;
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
+  }
+
+  public addToPrincipalPolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
+    // If we return `false`, the grants will try to add the statement to the resource
+    // (if possible).
+    const pretendSuccess = !this.addGrantsToResources;
+    return { statementAdded: pretendSuccess, policyDependable: new ConcreteDependable() };
   }
 
   public grant(grantee: IPrincipal, ...actions: string[]): Grant {

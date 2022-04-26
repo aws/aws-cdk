@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <!-- Roll forward to future major versions of the netcoreapp as needed -->
+    <RollForward>Major</RollForward>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- CDK Construct Library dependencies -->
+    <PackageReference Include="Amazon.CDK" Version="%cdk-version%" />
+    <PackageReference Include="Amazon.CDK.AWS.IAM" Version="%cdk-version%" />
+    <PackageReference Include="Amazon.CDK.AWS.SNS" Version="%cdk-version%" />
+    <PackageReference Include="Amazon.CDK.AWS.SNS.Subscriptions" Version="%cdk-version%" />
+    <PackageReference Include="Amazon.CDK.AWS.SQS" Version="%cdk-version%" />
+
+    <!-- jsii Roslyn analyzers (un-comment to obtain compile-time checks for missing required props
+    <PackageReference Include="Amazon.Jsii.Analyzers" Version="*" PrivateAssets="all" />
+    -->
+  </ItemGroup>
+
+</Project>

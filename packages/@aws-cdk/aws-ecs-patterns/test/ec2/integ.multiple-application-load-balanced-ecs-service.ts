@@ -15,7 +15,7 @@ new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
   cluster,
   memoryLimitMiB: 256,
   taskImageOptions: {
-    image: ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+    image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
   targetGroups: [
     {
@@ -24,9 +24,9 @@ new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
     {
       containerPort: 90,
       pathPattern: 'a/b/c',
-      priority: 10
-    }
-  ]
+      priority: 10,
+    },
+  ],
 });
 
 app.synth();

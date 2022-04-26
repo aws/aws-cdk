@@ -1,11 +1,16 @@
 /// !cdk-integ *
 import * as sns from '@aws-cdk/aws-sns';
-import { App, Construct, Fn, Stack } from '@aws-cdk/core';
-import * as cfn from '../lib';
+import { App, Fn, NestedStack, Stack } from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 // references between siblings
 
-class ProducerNestedStack extends cfn.NestedStack {
+/* eslint-disable @aws-cdk/no-core-construct */
+
+class ProducerNestedStack extends NestedStack {
   public readonly topic: sns.Topic;
 
   constructor(scope: Construct, id: string) {
@@ -15,12 +20,12 @@ class ProducerNestedStack extends cfn.NestedStack {
   }
 }
 
-class ConsumerNestedStack extends cfn.NestedStack {
+class ConsumerNestedStack extends NestedStack {
   constructor(scope: Construct, id: string, topic: sns.Topic) {
     super(scope, id);
 
     new sns.Topic(this, 'ConsumerTopic', {
-      displayName: `Consuming ${Fn.select(2, Fn.split('-', topic.topicName))}` // just shorten because display name is limited
+      displayName: `Consuming ${Fn.select(2, Fn.split('-', topic.topicName))}`, // just shorten because display name is limited
     });
   }
 }

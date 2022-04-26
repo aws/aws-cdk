@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-codebuild",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS CodeBuild",
+  "description": "The CDK Construct Library for AWS::CodeBuild",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -17,13 +17,23 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CodeBuild",
         "packageId": "Amazon.CDK.AWS.CodeBuild",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-codebuild",
-        "module": "aws_cdk.aws_codebuild"
+        "module": "aws_cdk.aws_codebuild",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
       }
     }
   },
@@ -37,17 +47,24 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "compat": "cdk-compat",
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
-    "cloudformation": "AWS::CodeBuild"
+    "cloudformation": "AWS::CodeBuild",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "nyc": {
     "statements": 74,
@@ -66,50 +83,62 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
+    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
-    "@types/nodeunit": "^0.0.30",
-    "aws-sdk": "^2.638.0",
-    "cdk-build-tools": "0.0.0",
-    "cdk-integ-tools": "0.0.0",
-    "cfn2ts": "0.0.0",
-    "nodeunit": "^0.11.3",
-    "pkglint": "0.0.0"
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.4.1",
+    "aws-sdk": "^2.848.0",
+    "jest": "^27.5.1"
   },
   "dependencies": {
     "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
+    "@aws-cdk/aws-codestarnotifications": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/aws-ecr-assets": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/region-info": "0.0.0",
+    "constructs": "^3.3.69",
+    "yaml": "1.10.2"
   },
+  "bundledDependencies": [
+    "yaml"
+  ],
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
+    "@aws-cdk/aws-codestarnotifications": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/aws-ecr-assets": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/region-info": "0.0.0",
+    "constructs": "^3.3.69"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [
@@ -174,7 +203,6 @@
       "docs-public-apis:@aws-cdk/aws-codebuild.Source.gitHubEnterprise",
       "docs-public-apis:@aws-cdk/aws-codebuild.Source.s3",
       "docs-public-apis:@aws-cdk/aws-codebuild.StateChangeEvent.currentPhase",
-      "docs-public-apis:@aws-cdk/aws-codebuild.WindowsBuildImage.WIN_SERVER_CORE_2016_BASE",
       "docs-public-apis:@aws-cdk/aws-codebuild.WindowsBuildImage.fromDockerRegistry",
       "docs-public-apis:@aws-cdk/aws-codebuild.WindowsBuildImage.fromEcrRepository",
       "props-default-doc:@aws-cdk/aws-codebuild.ArtifactsProps.identifier",
@@ -203,8 +231,18 @@
       "docs-public-apis:@aws-cdk/aws-codebuild.S3SourceProps.path",
       "docs-public-apis:@aws-cdk/aws-codebuild.SourceConfig.sourceProperty",
       "docs-public-apis:@aws-cdk/aws-codebuild.SourceConfig.buildTriggers",
-      "props-default-doc:@aws-cdk/aws-codebuild.SourceConfig.buildTriggers"
+      "props-default-doc:@aws-cdk/aws-codebuild.SourceConfig.buildTriggers",
+      "props-physical-name:@aws-cdk/aws-codebuild.BitBucketSourceCredentialsProps",
+      "props-physical-name:@aws-cdk/aws-codebuild.GitHubSourceCredentialsProps",
+      "props-physical-name:@aws-cdk/aws-codebuild.GitHubEnterpriseSourceCredentialsProps"
     ]
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  },
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

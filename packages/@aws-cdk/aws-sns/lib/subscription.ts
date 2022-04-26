@@ -1,4 +1,7 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { IQueue } from '@aws-cdk/aws-sqs';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnSubscription } from './sns.generated';
 import { SubscriptionFilter } from './subscription-filter';
 import { ITopic } from './topic-base';
@@ -41,6 +44,21 @@ export interface SubscriptionOptions {
    * @default - the region where the CloudFormation stack is being deployed.
    */
   readonly region?: string;
+
+  /**
+   * Queue to be used as dead letter queue.
+   * If not passed no dead letter queue is enabled.
+   *
+   * @default - No dead letter queue enabled.
+   */
+  readonly deadLetterQueue?: IQueue;
+
+  /**
+   * Arn of role allowing access to firehose delivery stream.
+   * Required for a firehose subscription protocol.
+   * @default - No subscription role is provided
+   */
+  readonly subscriptionRoleArn?: string;
 }
 /**
  * Properties for creating a new subscription
@@ -59,13 +77,26 @@ export interface SubscriptionProps extends SubscriptionOptions {
  * this class.
  */
 export class Subscription extends Resource {
+
+  /**
+   * The DLQ associated with this subscription if present.
+   */
+  public readonly deadLetterQueue?: IQueue;
+
   private readonly filterPolicy?: { [attribute: string]: any[] };
 
   constructor(scope: Construct, id: string, props: SubscriptionProps) {
     super(scope, id);
 
-    if (props.rawMessageDelivery && ['http', 'https', 'sqs'].indexOf(props.protocol) < 0) {
-      throw new Error('Raw message delivery can only be enabled for HTTP/S and SQS subscriptions.');
+    if (props.rawMessageDelivery &&
+      [
+        SubscriptionProtocol.HTTP,
+        SubscriptionProtocol.HTTPS,
+        SubscriptionProtocol.SQS,
+        SubscriptionProtocol.FIREHOSE,
+      ]
+        .indexOf(props.protocol) < 0) {
+      throw new Error('Raw message delivery can only be enabled for HTTP, HTTPS, SQS, and Firehose subscriptions.');
     }
 
     if (props.filterPolicy) {
@@ -76,7 +107,7 @@ export class Subscription extends Resource {
       this.filterPolicy = Object.entries(props.filterPolicy)
         .reduce(
           (acc, [k, v]) => ({ ...acc, [k]: v.conditions }),
-          {}
+          {},
         );
 
       let total = 1;
@@ -86,6 +117,12 @@ export class Subscription extends Resource {
       }
     }
 
+    if (props.protocol === SubscriptionProtocol.FIREHOSE && !props.subscriptionRoleArn) {
+      throw new Error('Subscription role arn is required field for subscriptions with a firehose protocol.');
+    }
+
+    this.deadLetterQueue = this.buildDeadLetterQueue(props);
+
     new CfnSubscription(this, 'Resource', {
       endpoint: props.endpoint,
       protocol: props.protocol,
@@ -93,8 +130,39 @@ export class Subscription extends Resource {
       rawMessageDelivery: props.rawMessageDelivery,
       filterPolicy: this.filterPolicy,
       region: props.region,
+      redrivePolicy: this.buildDeadLetterConfig(this.deadLetterQueue),
+      subscriptionRoleArn: props.subscriptionRoleArn,
     });
 
+  }
+
+  private buildDeadLetterQueue(props: SubscriptionProps) {
+    if (!props.deadLetterQueue) {
+      return undefined;
+    }
+
+    const deadLetterQueue = props.deadLetterQueue;
+
+    deadLetterQueue.addToResourcePolicy(new PolicyStatement({
+      resources: [deadLetterQueue.queueArn],
+      actions: ['sqs:SendMessage'],
+      principals: [new ServicePrincipal('sns.amazonaws.com')],
+      conditions: {
+        ArnEquals: { 'aws:SourceArn': props.topic.topicArn },
+      },
+    }));
+
+    return deadLetterQueue;
+  }
+
+  private buildDeadLetterConfig(deadLetterQueue?: IQueue) {
+    if (deadLetterQueue) {
+      return {
+        deadLetterTargetArn: deadLetterQueue.queueArn,
+      };
+    } else {
+      return undefined;
+    }
   }
 }
 
@@ -140,5 +208,10 @@ export enum SubscriptionProtocol {
   /**
    * Notifications trigger a Lambda function.
    */
-  LAMBDA = 'lambda'
+  LAMBDA = 'lambda',
+
+  /**
+   * Notifications put records into a firehose delivery stream.
+   */
+  FIREHOSE = 'firehose'
 }

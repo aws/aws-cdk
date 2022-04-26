@@ -10,7 +10,7 @@ const vpc = new ec2.Vpc(stack, 'MyVpc');
 
 const nacl1 = new ec2.NetworkAcl(stack, 'myNACL1', {
   vpc,
-  subnetSelection: { subnetType: ec2.SubnetType.PRIVATE },
+  subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
 });
 
 nacl1.addEntry('AllowDNSEgress', {
@@ -24,7 +24,7 @@ nacl1.addEntry('AllowDNSIngress', {
   ruleNumber: 100,
   traffic: ec2.AclTraffic.udpPort(53),
   direction: ec2.TrafficDirection.INGRESS,
-  cidr: ec2.AclCidr.anyIpv4()
+  cidr: ec2.AclCidr.anyIpv4(),
 });
 
 app.synth();

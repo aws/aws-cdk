@@ -1,9 +1,13 @@
 import * as codedeploy from '@aws-cdk/aws-codedeploy';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Construction properties of the {@link CodeDeployServerDeployAction CodeDeploy server deploy CodePipeline Action}.
@@ -37,13 +41,13 @@ export class CodeDeployServerDeployAction extends Action {
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     // permissions, based on:
     // https://docs.aws.amazon.com/codedeploy/latest/userguide/auth-and-access-control-permissions-reference.html
 
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: [this.deploymentGroup.application.applicationArn],
-      actions: ['codedeploy:GetApplicationRevision', 'codedeploy:RegisterApplicationRevision']
+      actions: ['codedeploy:GetApplicationRevision', 'codedeploy:RegisterApplicationRevision'],
     }));
 
     options.role.addToPolicy(new iam.PolicyStatement({
@@ -53,12 +57,12 @@ export class CodeDeployServerDeployAction extends Action {
 
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: [this.deploymentGroup.deploymentConfig.deploymentConfigArn],
-      actions: ['codedeploy:GetDeploymentConfig']
+      actions: ['codedeploy:GetDeploymentConfig'],
     }));
 
     // grant the ASG Role permissions to read from the Pipeline Bucket
     for (const asg of this.deploymentGroup.autoScalingGroups || []) {
-      options.bucket.grantRead(asg.role);
+      options.bucket.grantRead(asg);
     }
 
     // the Action's Role needs to read from the Bucket to get artifacts

@@ -1,5 +1,16 @@
-import { Construct, Resource } from '@aws-cdk/core';
-import { CommonTaskDefinitionProps, Compatibility, ITaskDefinition, NetworkMode, TaskDefinition } from '../base/task-definition';
+import { Construct } from 'constructs';
+import { ImportedTaskDefinition } from '../base/_imported-task-definition';
+import {
+  CommonTaskDefinitionAttributes,
+  CommonTaskDefinitionProps,
+  Compatibility,
+  IpcMode,
+  ITaskDefinition,
+  NetworkMode,
+  PidMode,
+  TaskDefinition,
+  InferenceAccelerator,
+} from '../base/task-definition';
 import { PlacementConstraint } from '../placement';
 
 /**
@@ -9,9 +20,9 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
   /**
    * The Docker networking mode to use for the containers in the task.
    *
-   * The valid values are none, bridge, awsvpc, and host.
+   * The valid values are NONE, BRIDGE, AWS_VPC, and HOST.
    *
-   * @default - NetworkMode.Bridge for EC2 tasks, AwsVpc for Fargate tasks.
+   * @default - NetworkMode.BRIDGE for EC2 tasks, AWS_VPC for Fargate tasks.
    */
   readonly networkMode?: NetworkMode;
 
@@ -23,12 +34,46 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
    * @default - No placement constraints.
    */
   readonly placementConstraints?: PlacementConstraint[];
+
+  /**
+   * The IPC resource namespace to use for the containers in the task.
+   *
+   * Not supported in Fargate and Windows containers.
+   *
+   * @default - IpcMode used by the task is not specified
+   */
+  readonly ipcMode?: IpcMode;
+
+  /**
+   * The process namespace to use for the containers in the task.
+   *
+   * Not supported in Fargate and Windows containers.
+   *
+   * @default - PidMode used by the task is not specified
+   */
+  readonly pidMode?: PidMode;
+
+  /**
+   * The inference accelerators to use for the containers in the task.
+   *
+   * Not supported in Fargate.
+   *
+   * @default - No inference accelerators.
+   */
+  readonly inferenceAccelerators?: InferenceAccelerator[];
 }
 
 /**
  * The interface of a task definition run on an EC2 cluster.
  */
 export interface IEc2TaskDefinition extends ITaskDefinition {
+
+}
+
+/**
+ * Attributes used to import an existing EC2 task definition
+ */
+export interface Ec2TaskDefinitionAttributes extends CommonTaskDefinitionAttributes {
 
 }
 
@@ -43,13 +88,25 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
    * Imports a task definition from the specified task definition ARN.
    */
   public static fromEc2TaskDefinitionArn(scope: Construct, id: string, ec2TaskDefinitionArn: string): IEc2TaskDefinition {
-    class Import extends Resource implements IEc2TaskDefinition {
-      public readonly taskDefinitionArn = ec2TaskDefinitionArn;
-      public readonly compatibility = Compatibility.EC2;
-      public readonly isEc2Compatible = true;
-      public readonly isFargateCompatible = false;
-    }
-    return new Import(scope, id);
+    return new ImportedTaskDefinition(scope, id, {
+      taskDefinitionArn: ec2TaskDefinitionArn,
+    });
+  }
+
+  /**
+   * Imports an existing Ec2 task definition from its attributes
+   */
+  public static fromEc2TaskDefinitionAttributes(
+    scope: Construct,
+    id: string,
+    attrs: Ec2TaskDefinitionAttributes,
+  ): IEc2TaskDefinition {
+    return new ImportedTaskDefinition(scope, id, {
+      taskDefinitionArn: attrs.taskDefinitionArn,
+      compatibility: Compatibility.EC2,
+      networkMode: attrs.networkMode,
+      taskRole: attrs.taskRole,
+    });
   }
 
   /**
@@ -60,6 +117,9 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
       ...props,
       compatibility: Compatibility.EC2,
       placementConstraints: props.placementConstraints,
+      ipcMode: props.ipcMode,
+      pidMode: props.pidMode,
+      inferenceAccelerators: props.inferenceAccelerators,
     });
   }
 }

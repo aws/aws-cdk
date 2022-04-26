@@ -1,13 +1,19 @@
-import { Construct, Lazy, Resource, SecretValue, Stack } from '@aws-cdk/core';
+import { Arn, Aws, Lazy, Resource, SecretValue, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IGroup } from './group';
-import { CfnUser } from './iam.generated';
+import { CfnUser, CfnUserToGroupAddition } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
-import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
+/**
+ * Represents an IAM user
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html
+ */
 export interface IUser extends IIdentity {
   /**
    * The user's name
@@ -27,6 +33,9 @@ export interface IUser extends IIdentity {
   addToGroup(group: IGroup): void;
 }
 
+/**
+ * Properties for defining an IAM user
+ */
 export interface UserProps {
   /**
    * Groups to add this user to. You can also use `addToGroup` to add this
@@ -91,7 +100,7 @@ export interface UserProps {
    * The password for the user. This is required so the user can access the
    * AWS Management Console.
    *
-   * You can use `SecretValue.plainText` to specify a password in plain text or
+   * You can use `SecretValue.unsafePlainText` to specify a password in plain text or
    * use `secretsmanager.Secret.fromSecretAttributes` to reference a secret in
    * Secrets Manager.
    *
@@ -111,43 +120,102 @@ export interface UserProps {
 }
 
 /**
+ * Represents a user defined outside of this stack.
+ */
+export interface UserAttributes {
+  /**
+   * The ARN of the user.
+   *
+   * Format: arn:<partition>:iam::<account-id>:user/<user-name-with-path>
+   */
+  readonly userArn: string;
+}
+
+/**
  * Define a new IAM user
  */
 export class User extends Resource implements IIdentity, IUser {
   /**
-   * Import an existing user given a username
+   * Import an existing user given a username.
+   *
+   * @param scope construct scope
+   * @param id construct id
+   * @param userName the username of the existing user to import
    */
   public static fromUserName(scope: Construct, id: string, userName: string): IUser {
-    const arn = Stack.of(scope).formatArn({
+    const userArn = Stack.of(scope).formatArn({
       service: 'iam',
       region: '',
       resource: 'user',
-      resourceName: userName
+      resourceName: userName,
     });
 
+    return User.fromUserAttributes(scope, id, { userArn });
+  }
+
+  /**
+   * Import an existing user given a user ARN.
+   *
+   * If the ARN comes from a Token, the User cannot have a path; if so, any attempt
+   * to reference its username will fail.
+   *
+   * @param scope construct scope
+   * @param id construct id
+   * @param userArn the ARN of an existing user to import
+   */
+  public static fromUserArn(scope: Construct, id: string, userArn: string): IUser {
+    return User.fromUserAttributes(scope, id, { userArn });
+  }
+
+  /**
+   * Import an existing user given user attributes.
+   *
+   * If the ARN comes from a Token, the User cannot have a path; if so, any attempt
+   * to reference its username will fail.
+   *
+   * @param scope construct scope
+   * @param id construct id
+   * @param attrs the attributes of the user to import
+   */
+  public static fromUserAttributes(scope: Construct, id: string, attrs: UserAttributes): IUser {
     class Import extends Resource implements IUser {
       public readonly grantPrincipal: IPrincipal = this;
-      public readonly userName: string = userName;
-      public readonly userArn: string = arn;
+      public readonly principalAccount = Aws.ACCOUNT_ID;
+      // Resource name with path can have multiple elements separated by slash.
+      // Therefore, use element after last slash as userName. Happens to work for Tokens since
+      // they don't have a '/' in them.
+      public readonly userName: string = Arn.extractResourceName(attrs.userArn, 'user').split('/').pop()!;
+      public readonly userArn: string = attrs.userArn;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
-      public readonly policyFragment: PrincipalPolicyFragment = new ArnPrincipal(arn).policyFragment;
+      public readonly policyFragment: PrincipalPolicyFragment = new ArnPrincipal(attrs.userArn).policyFragment;
+      private readonly attachedPolicies = new AttachedPolicies();
       private defaultPolicy?: Policy;
+      private groupId = 0;
 
       public addToPolicy(statement: PolicyStatement): boolean {
+        return this.addToPrincipalPolicy(statement).statementAdded;
+      }
+
+      public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
         if (!this.defaultPolicy) {
           this.defaultPolicy = new Policy(this, 'Policy');
           this.defaultPolicy.attachToUser(this);
         }
         this.defaultPolicy.addStatements(statement);
-        return true;
+        return { statementAdded: true, policyDependable: this.defaultPolicy };
       }
 
-      public addToGroup(_group: IGroup): void {
-        throw new Error('Cannot add imported User to Group');
+      public addToGroup(group: IGroup): void {
+        new CfnUserToGroupAddition(Stack.of(group), `${this.userName}Group${this.groupId}`, {
+          groupName: group.groupName,
+          users: [this.userName],
+        });
+        this.groupId += 1;
       }
 
-      public attachInlinePolicy(_policy: Policy): void {
-        throw new Error('Cannot add inline policy to imported User');
+      public attachInlinePolicy(policy: Policy): void {
+        this.attachedPolicies.attach(policy);
+        policy.attachToUser(this);
       }
 
       public addManagedPolicy(_policy: IManagedPolicy): void {
@@ -159,6 +227,7 @@ export class User extends Resource implements IIdentity, IUser {
   }
 
   public readonly grantPrincipal: IPrincipal = this;
+  public readonly principalAccount: string | undefined = this.env.account;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   /**
@@ -174,7 +243,7 @@ export class User extends Resource implements IIdentity, IUser {
   public readonly userArn: string;
 
   /**
-   * Returns the permissions boundary attached to this user
+   * Returns the permissions boundary attached  to this user
    */
   public readonly permissionsBoundary?: IManagedPolicy;
 
@@ -196,10 +265,10 @@ export class User extends Resource implements IIdentity, IUser {
     const user = new CfnUser(this, 'Resource', {
       userName: this.physicalName,
       groups: undefinedIfEmpty(() => this.groups),
-      managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
+      managedPolicyArns: Lazy.list({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       path: props.path,
       permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
-      loginProfile: this.parseLoginProfile(props)
+      loginProfile: this.parseLoginProfile(props),
     });
 
     this.userName = this.getResourceNameAttribute(user.ref);
@@ -207,7 +276,8 @@ export class User extends Resource implements IIdentity, IUser {
       region: '', // IAM is global in each partition
       service: 'iam',
       resource: 'user',
-      resourceName: this.physicalName,
+      // Removes leading slash from path
+      resourceName: `${props.path ? props.path.substr(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
     });
 
     this.policyFragment = new ArnPrincipal(this.userArn).policyFragment;
@@ -246,21 +316,25 @@ export class User extends Resource implements IIdentity, IUser {
    *
    * @returns true
    */
-  public addToPolicy(statement: PolicyStatement): boolean {
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.defaultPolicy.attachToUser(this);
     }
 
     this.defaultPolicy.addStatements(statement);
-    return true;
+    return { statementAdded: true, policyDependable: this.defaultPolicy };
+  }
+
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 
   private parseLoginProfile(props: UserProps): CfnUser.LoginProfileProperty | undefined {
     if (props.password) {
       return {
-        password: props.password.toString(),
-        passwordResetRequired: props.passwordResetRequired
+        password: props.password.unsafeUnwrap(), // Safe usage
+        passwordResetRequired: props.passwordResetRequired,
       };
     }
 

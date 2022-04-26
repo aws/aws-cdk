@@ -1,13 +1,26 @@
-import { Construct, Lazy, Resource, Stack, Token } from "@aws-cdk/core";
+import { Lazy, Resource, Stack, Token, Annotations } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDashboard } from './cloudwatch.generated';
-import { Column, Row } from "./layout";
-import { IWidget } from "./widget";
+import { Column, Row } from './layout';
+import { IWidget } from './widget';
 
+/**
+ * Specify the period for graphs when the CloudWatch dashboard loads
+ */
 export enum PeriodOverride {
+  /**
+   * Period of all graphs on the dashboard automatically adapt to the time range of the dashboard.
+   */
   AUTO = 'auto',
+  /**
+   * Period set for each graph will be used
+   */
   INHERIT = 'inherit',
 }
 
+/**
+ * Properties for defining a CloudWatch Dashboard
+ */
 export interface DashboardProps {
   /**
    * Name of the dashboard.
@@ -62,6 +75,13 @@ export interface DashboardProps {
  * A CloudWatch dashboard
  */
 export class Dashboard extends Resource {
+  /**
+   * ARN of this dashboard
+   *
+   * @attribute
+   */
+  public readonly dashboardArn: string;
+
   private readonly rows: IWidget[] = [];
 
   constructor(scope: Construct, id: string, props: DashboardProps = {}) {
@@ -70,31 +90,39 @@ export class Dashboard extends Resource {
     });
 
     {
-      const {dashboardName} = props;
+      const { dashboardName } = props;
       if (dashboardName && !Token.isUnresolved(dashboardName) && !dashboardName.match(/^[\w-]+$/)) {
         throw new Error([
           `The value ${dashboardName} for field dashboardName contains invalid characters.`,
-          'It can only contain alphanumerics, dash (-) and underscore (_).'
+          'It can only contain alphanumerics, dash (-) and underscore (_).',
         ].join(' '));
       }
     }
 
     new CfnDashboard(this, 'Resource', {
       dashboardName: this.physicalName,
-      dashboardBody: Lazy.stringValue({ produce: () => {
-        const column = new Column(...this.rows);
-        column.position(0, 0);
-        return Stack.of(this).toJsonString({
-          start: props.start,
-          end: props.end,
-          periodOverride: props.periodOverride,
-          widgets: column.toJson(),
-        });
-      }})
+      dashboardBody: Lazy.string({
+        produce: () => {
+          const column = new Column(...this.rows);
+          column.position(0, 0);
+          return Stack.of(this).toJsonString({
+            start: props.start,
+            end: props.end,
+            periodOverride: props.periodOverride,
+            widgets: column.toJson(),
+          });
+        },
+      }),
     });
 
     (props.widgets || []).forEach(row => {
       this.addWidgets(...row);
+    });
+
+    this.dashboardArn = Stack.of(this).formatArn({
+      service: 'cloudwatch',
+      resource: 'dashboard',
+      resourceName: this.physicalName,
     });
   }
 
@@ -112,7 +140,29 @@ export class Dashboard extends Resource {
       return;
     }
 
+    const warnings = allWidgetsDeep(widgets).flatMap(w => w.warnings ?? []);
+    for (const w of warnings) {
+      Annotations.of(this).addWarning(w);
+    }
+
     const w = widgets.length > 1 ? new Row(...widgets) : widgets[0];
     this.rows.push(w);
   }
+}
+
+function allWidgetsDeep(ws: IWidget[]) {
+  const ret = new Array<IWidget>();
+  ws.forEach(recurse);
+  return ret;
+
+  function recurse(w: IWidget) {
+    ret.push(w);
+    if (hasSubWidgets(w)) {
+      w.widgets.forEach(recurse);
+    }
+  }
+}
+
+function hasSubWidgets(w: IWidget): w is IWidget & { widgets: IWidget[] } {
+  return 'widgets' in w;
 }

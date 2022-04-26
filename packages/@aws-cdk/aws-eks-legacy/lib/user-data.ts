@@ -12,14 +12,14 @@ export function renderUserData(clusterName: string, autoScalingGroup: autoscalin
 
   const extraArgs = new Array<string>();
 
-  extraArgs.push(`--use-max-pods ${options.useMaxPods === undefined ? true : options.useMaxPods}`);
+  extraArgs.push(`--use-max-pods ${options.useMaxPods ?? true}`);
 
   if (options.awsApiRetryAttempts) {
     extraArgs.push(`--aws-api-retry-attempts ${options.awsApiRetryAttempts}`);
   }
 
   if (options.enableDockerBridge) {
-    extraArgs.push(`--enable-docker-bridge`);
+    extraArgs.push('--enable-docker-bridge');
   }
 
   if (options.dockerConfigJson) {
@@ -39,8 +39,8 @@ export function renderUserData(clusterName: string, autoScalingGroup: autoscalin
   const kubeletExtraArgs = `--node-labels lifecycle=${lifecycleLabel} ${withTaints} ${kubeletExtraArgsSuffix}`.trim();
 
   return [
-    `set -o xtrace`,
+    'set -o xtrace',
     `/etc/eks/bootstrap.sh ${clusterName} --kubelet-extra-args "${kubeletExtraArgs}" ${commandLineSuffix}`.trim(),
-    `/opt/aws/bin/cfn-signal --exit-code $? --stack ${stack.stackName} --resource ${asgLogicalId} --region ${stack.region}`
+    `/opt/aws/bin/cfn-signal --exit-code $? --stack ${stack.stackName} --resource ${asgLogicalId} --region ${stack.region}`,
   ];
 }

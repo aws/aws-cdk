@@ -1,7 +1,12 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { IScalableTarget } from './scalable-target';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Base interface for target tracking props
@@ -83,7 +88,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * Only used for predefined metric ALBRequestCountPerTarget.
    *
-   * @example app/<load-balancer-name>/<load-balancer-id>/targetgroup/<target-group-name>/<target-group-id>
+   * Example value: `app/<load-balancer-name>/<load-balancer-id>/targetgroup/<target-group-name>/<target-group-id>`
    *
    * @default - No resource label.
    */
@@ -114,38 +119,43 @@ export interface TargetTrackingScalingPolicyProps extends BasicTargetTrackingSca
   readonly scalingTarget: IScalableTarget;
 }
 
-export class TargetTrackingScalingPolicy extends cdk.Construct {
+export class TargetTrackingScalingPolicy extends CoreConstruct {
   /**
    * ARN of the scaling policy
    */
   public readonly scalingPolicyArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: TargetTrackingScalingPolicyProps) {
+  constructor(scope: Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
-      throw new Error(`Exactly one of 'customMetric' or 'predefinedMetric' must be specified.`);
+      throw new Error('Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.');
     }
 
     if (props.customMetric && !props.customMetric.toMetricConfig().metricStat) {
-      throw new Error(`Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.`);
+      throw new Error('Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.');
     }
 
     super(scope, id);
 
+    // replace dummy value in DYNAMODB_WRITE_CAPACITY_UTILIZATION due to a jsii bug (https://github.com/aws/jsii/issues/2782)
+    const predefinedMetric = props.predefinedMetric === PredefinedMetric.DYNAMODB_WRITE_CAPACITY_UTILIZATION ?
+      PredefinedMetric.DYANMODB_WRITE_CAPACITY_UTILIZATION :
+      props.predefinedMetric;
+
     const resource = new CfnScalingPolicy(this, 'Resource', {
-      policyName: props.policyName || this.node.uniqueId,
+      policyName: props.policyName || cdk.Names.uniqueId(this),
       policyType: 'TargetTrackingScaling',
       scalingTargetId: props.scalingTarget.scalableTargetId,
       targetTrackingScalingPolicyConfiguration: {
         customizedMetricSpecification: renderCustomMetric(props.customMetric),
         disableScaleIn: props.disableScaleIn,
-        predefinedMetricSpecification: props.predefinedMetric !== undefined ? {
-          predefinedMetricType: props.predefinedMetric,
+        predefinedMetricSpecification: predefinedMetric !== undefined ? {
+          predefinedMetricType: predefinedMetric,
           resourceLabel: props.resourceLabel,
         } : undefined,
         scaleInCooldown: props.scaleInCooldown && props.scaleInCooldown.toSeconds(),
         scaleOutCooldown: props.scaleOutCooldown && props.scaleOutCooldown.toSeconds(),
-        targetValue: props.targetValue
-      }
+        targetValue: props.targetValue,
+      },
     });
 
     this.scalingPolicyArn = resource.ref;
@@ -173,15 +183,114 @@ function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.Custo
  * One of the predefined autoscaling metrics
  */
 export enum PredefinedMetric {
+  /**
+   * Average percentage of instances in an AppStream fleet that are being used.
+   */
+  APPSTREAM_AVERAGE_CAPACITY_UTILIZATION = 'AppStreamAverageCapacityUtilization',
+  /**
+   * Percentage of provisioned read capacity units utilized by a Keyspaces table.
+   */
+  CASSANDRA_READ_CAPACITY_UTILIZATION = 'CassandraReadCapacityUtilization',
+  /**
+   * Percentage of provisioned write capacity units utilized by a Keyspaces table.
+   */
+  CASSANDRA_WRITE_CAPACITY_UTILIZATION = 'CassandraWriteCapacityUtilization',
+  /**
+   * Percentage of provisioned inference units utilized by a Comprehend endpoint.
+   */
+  COMPREHEND_INFERENCE_UTILIZATION = 'ComprehendInferenceUtilization',
+  /**
+   * Average CPU Utilization of read replica instances in a Neptune DB cluster.
+   */
+  NEPTURE_READER_AVERAGE_CPU_UTILIZATION = 'NeptuneReaderAverageCPUUtilization',
+  /**
+   * Percentage of provisioned read capacity units consumed by a DynamoDB table.
+   */
   DYNAMODB_READ_CAPACITY_UTILIZATION = 'DynamoDBReadCapacityUtilization',
+  /**
+   * Percentage of provisioned write capacity units consumed by a DynamoDB table.
+   *
+   * Suffix `dummy` is necessary due to jsii bug (https://github.com/aws/jsii/issues/2782).
+   * Duplicate values will be dropped, so this suffix is added as a workaround.
+   * The value will be replaced when this enum is used.
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  DYNAMODB_WRITE_CAPACITY_UTILIZATION = 'DynamoDBWriteCapacityUtilization-dummy',
+  /**
+   * DYANMODB_WRITE_CAPACITY_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   * @deprecated use `PredefinedMetric.DYNAMODB_WRITE_CAPACITY_UTILIZATION`
+   */
   DYANMODB_WRITE_CAPACITY_UTILIZATION = 'DynamoDBWriteCapacityUtilization',
+  /**
+   * ALB_REQUEST_COUNT_PER_TARGET
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   ALB_REQUEST_COUNT_PER_TARGET = 'ALBRequestCountPerTarget',
+  /**
+   * RDS_READER_AVERAGE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   RDS_READER_AVERAGE_CPU_UTILIZATION = 'RDSReaderAverageCPUUtilization',
+  /**
+   * RDS_READER_AVERAGE_DATABASE_CONNECTIONS
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   RDS_READER_AVERAGE_DATABASE_CONNECTIONS = 'RDSReaderAverageDatabaseConnections',
+  /**
+   * EC2_SPOT_FLEET_REQUEST_AVERAGE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   EC2_SPOT_FLEET_REQUEST_AVERAGE_CPU_UTILIZATION = 'EC2SpotFleetRequestAverageCPUUtilization',
+  /**
+   * EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_IN
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_IN = 'EC2SpotFleetRequestAverageNetworkIn',
+  /**
+   * EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_OUT
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_OUT = 'EC2SpotFleetRequestAverageNetworkOut',
+  /**
+   * SAGEMAKER_VARIANT_INVOCATIONS_PER_INSTANCE
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   SAGEMAKER_VARIANT_INVOCATIONS_PER_INSTANCE = 'SageMakerVariantInvocationsPerInstance',
+  /**
+   * ECS_SERVICE_AVERAGE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   ECS_SERVICE_AVERAGE_CPU_UTILIZATION = 'ECSServiceAverageCPUUtilization',
+  /**
+   * ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION = 'ECSServiceAverageMemoryUtilization',
+  /**
+   * LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/monitoring-metrics.html#monitoring-metrics-concurrency
+   */
+  LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION = 'LambdaProvisionedConcurrencyUtilization',
+  /**
+   * KAFKA_BROKER_STORAGE_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  KAFKA_BROKER_STORAGE_UTILIZATION = 'KafkaBrokerStorageUtilization',
+  /**
+   * ELASTIC_CACHE_PRIMARY_ENGINE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  ELASTICACHE_PRIMARY_ENGINE_CPU_UTILIZATION = 'ElastiCachePrimaryEngineCPUUtilization',
+  /**
+   * ELASTIC_CACHE_REPLICA_ENGINE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  ELASTICACHE_REPLICA_ENGINE_CPU_UTILIZATION = 'ElastiCacheReplicaEngineCPUUtilization',
+  /**
+   * ELASTIC_CACHE_REPLICA_ENGINE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  ELASTICACHE_DATABASE_MEMORY_USAGE_COUNTED_FOR_EVICT_PERCENTAGE = 'ElastiCacheDatabaseMemoryUsageCountedForEvictPercentage',
 }

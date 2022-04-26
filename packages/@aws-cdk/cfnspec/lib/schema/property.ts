@@ -5,6 +5,7 @@ export type ScalarProperty = PrimitiveProperty | ComplexProperty | UnionProperty
 export type CollectionProperty = ListProperty | MapProperty | UnionProperty;
 export type ListProperty = PrimitiveListProperty | ComplexListProperty;
 export type MapProperty = PrimitiveMapProperty | ComplexMapProperty;
+export type ComplexMapProperty = MapOfStructs | MapOfListsOfPrimitives;
 export type TagProperty = TagPropertyStandard | TagPropertyAutoScalingGroup | TagPropertyJson | TagPropertyStringMap;
 
 export interface PropertyBase extends Documented {
@@ -81,13 +82,21 @@ export interface PrimitiveMapProperty extends MapPropertyBase {
   PrimitiveItemType: PrimitiveType;
 }
 
-export interface ComplexMapProperty extends MapPropertyBase {
+export interface MapOfStructs extends MapPropertyBase {
   /** Valid values for the property */
   ItemType: string;
 }
 
+export interface MapOfListsOfPrimitives extends MapPropertyBase {
+  /** The type of the map values, which in this case is always 'List'. */
+  ItemType: string;
+
+  /** The valid primitive type for the lists that are the values of this map. */
+  PrimitiveItemItemType: PrimitiveType;
+}
+
 export interface TagPropertyStandard extends PropertyBase {
-  ItemType: 'Tag' | 'TagsEntry' | 'TagRef';
+  ItemType: 'Tag' | 'TagsEntry' | 'TagRef' | 'ElasticFileSystemTag' | 'HostedZoneTag';
   Type: 'Tags';
 }
 
@@ -125,12 +134,12 @@ export enum UpdateType {
 
 export function isUpdateType(str: string): str is UpdateType {
   switch (str) {
-  case UpdateType.Conditional:
-  case UpdateType.Immutable:
-  case UpdateType.Mutable:
-    return true;
-  default:
-    return false;
+    case UpdateType.Conditional:
+    case UpdateType.Immutable:
+    case UpdateType.Mutable:
+      return true;
+    default:
+      return false;
   }
 }
 
@@ -177,8 +186,17 @@ export function isPrimitiveMapProperty(prop: Property): prop is PrimitiveMapProp
   return isMapProperty(prop) && !!(prop as PrimitiveMapProperty).PrimitiveItemType;
 }
 
-export function isComplexMapProperty(prop: Property): prop is ComplexMapProperty {
-  return isMapProperty(prop) && !!(prop as ComplexMapProperty).ItemType;
+export function isMapOfStructsProperty(prop: Property): prop is MapOfStructs {
+  return isMapProperty(prop) &&
+    !isPrimitiveMapProperty(prop) &&
+    !isMapOfListsOfPrimitivesProperty(prop);
+}
+
+// note: this (and the MapOfListsOfPrimitives type) are not actually valid in the CFN spec!
+// they are only here to support our patch of the CFN spec
+// to alleviate https://github.com/aws/aws-cdk/issues/3092
+export function isMapOfListsOfPrimitivesProperty(prop: Property): prop is MapOfListsOfPrimitives {
+  return isMapProperty(prop) && (prop as ComplexMapProperty).ItemType === 'List';
 }
 
 export function isUnionProperty(prop: Property): prop is UnionProperty {
@@ -223,8 +241,10 @@ export function isPropertyScrutinyType(str: string): str is PropertyScrutinyType
 }
 
 const tagPropertyNames = {
-  Tags: "",
-  UserPoolTags: "",
+  FileSystemTags: '',
+  HostedZoneTags: '',
+  Tags: '',
+  UserPoolTags: '',
 };
 
 export type TagPropertyName = keyof typeof tagPropertyNames;
@@ -255,7 +275,9 @@ export function isTagPropertyStandard(prop: Property): prop is TagPropertyStanda
     (prop as TagPropertyStandard).ItemType === 'Tag' ||
     (prop as TagPropertyStandard).ItemType === 'TagsEntry' ||
     (prop as TagPropertyStandard).Type === 'Tags' ||
-    (prop as TagPropertyStandard).ItemType === 'TagRef'
+    (prop as TagPropertyStandard).ItemType === 'TagRef' ||
+    (prop as TagPropertyStandard).ItemType === 'ElasticFileSystemTag' ||
+    (prop as TagPropertyStandard).ItemType === 'HostedZoneTag'
   );
 
 }

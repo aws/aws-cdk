@@ -1,12 +1,15 @@
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Construct, Token } from '@aws-cdk/core';
-import { ContainerDefinition } from "../container-definition";
-import { ContainerImage, ContainerImageConfig } from "../container-image";
+import { Annotations, Token } from '@aws-cdk/core';
+import { ContainerDefinition } from '../container-definition';
+import { ContainerImage, ContainerImageConfig } from '../container-image';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Regex pattern to check if it is an ECR image URL.
  *
- * @experimental
  */
 const ECR_IMAGE_REGEX = /(^[a-zA-Z0-9][a-zA-Z0-9-_]*).dkr.ecr.([a-zA-Z0-9][a-zA-Z0-9-_]*).amazonaws.com(.cn)?\/.*/;
 
@@ -34,10 +37,10 @@ export class RepositoryImage extends ContainerImage {
     super();
   }
 
-  public bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+  public bind(scope: CoreConstruct, containerDefinition: ContainerDefinition): ContainerImageConfig {
     // name could be a Token - in that case, skip validation altogether
     if (!Token.isUnresolved(this.imageName) && ECR_IMAGE_REGEX.test(this.imageName)) {
-      scope.node.addWarning("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
+      Annotations.of(scope).addWarning("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
     }
 
     if (this.props.credentials) {
@@ -47,8 +50,8 @@ export class RepositoryImage extends ContainerImage {
     return {
       imageName: this.imageName,
       repositoryCredentials: this.props.credentials && {
-        credentialsParameter: this.props.credentials.secretArn
-      }
+        credentialsParameter: this.props.credentials.secretArn,
+      },
     };
   }
 }

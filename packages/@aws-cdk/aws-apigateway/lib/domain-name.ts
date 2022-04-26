@@ -1,5 +1,7 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { IBucket } from '@aws-cdk/aws-s3';
+import { IResource, Names, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDomainName } from './apigateway.generated';
 import { BasePathMapping, BasePathMappingOptions } from './base-path-mapping';
 import { EndpointType, IRestApi } from './restapi';
@@ -10,8 +12,9 @@ import { EndpointType, IRestApi } from './restapi';
 export enum SecurityPolicy {
   /** Cipher suite TLS 1.0 */
   TLS_1_0 = 'TLS_1_0',
+
   /** Cipher suite TLS 1.2 */
-  TLS_1_2 = 'TLS_1_2'
+  TLS_1_2 = 'TLS_1_2',
 }
 
 export interface DomainNameOptions {
@@ -38,7 +41,23 @@ export interface DomainNameOptions {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-domainname.html
    * @default SecurityPolicy.TLS_1_0
    */
-  readonly securityPolicy?: SecurityPolicy
+  readonly securityPolicy?: SecurityPolicy;
+
+  /**
+   * The mutual TLS authentication configuration for a custom domain name.
+   * @default - mTLS is not configured.
+   */
+  readonly mtls?: MTLSConfig;
+
+  /**
+   * The base path name that callers of the API must provide in the URL after
+   * the domain name (e.g. `example.com/base-path`). If you specify this
+   * property, it can't be an empty string.
+   *
+   * @default - map requests from the domain root (e.g. `example.com`). If this
+   * is undefined, no additional mappings will be allowed on this domain name.
+   */
+  readonly basePath?: string;
 }
 
 export interface DomainNameProps extends DomainNameOptions {
@@ -95,6 +114,7 @@ export class DomainName extends Resource implements IDomainName {
   public readonly domainName: string;
   public readonly domainNameAliasDomainName: string;
   public readonly domainNameAliasHostedZoneId: string;
+  private readonly basePaths = new Set<string | undefined>();
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
     super(scope, id);
@@ -102,12 +122,18 @@ export class DomainName extends Resource implements IDomainName {
     const endpointType = props.endpointType || EndpointType.REGIONAL;
     const edge = endpointType === EndpointType.EDGE;
 
+    if (!Token.isUnresolved(props.domainName) && /[A-Z]/.test(props.domainName)) {
+      throw new Error(`Domain name does not support uppercase letters. Got: ${props.domainName}`);
+    }
+
+    const mtlsConfig = this.configureMTLS(props.mtls);
     const resource = new CfnDomainName(this, 'Resource', {
       domainName: props.domainName,
       certificateArn: edge ? props.certificate.certificateArn : undefined,
       regionalCertificateArn: edge ? undefined : props.certificate.certificateArn,
       endpointConfiguration: { types: [endpointType] },
-      securityPolicy: props.securityPolicy
+      mutualTlsAuthentication: mtlsConfig,
+      securityPolicy: props.securityPolicy,
     });
 
     this.domainName = resource.ref;
@@ -121,7 +147,9 @@ export class DomainName extends Resource implements IDomainName {
       : resource.attrRegionalHostedZoneId;
 
     if (props.mapping) {
-      this.addBasePathMapping(props.mapping);
+      this.addBasePathMapping(props.mapping, {
+        basePath: props.basePath,
+      });
     }
   }
 
@@ -131,13 +159,25 @@ export class DomainName extends Resource implements IDomainName {
    * @param options Options for mapping to base path with or without a stage
    */
   public addBasePathMapping(targetApi: IRestApi, options: BasePathMappingOptions = { }) {
+    if (this.basePaths.has(undefined)) {
+      throw new Error('This domain name already has an empty base path. No additional base paths are allowed.');
+    }
+    this.basePaths.add(options.basePath);
     const basePath = options.basePath || '/';
-    const id = `Map:${basePath}=>${targetApi.node.uniqueId}`;
+    const id = `Map:${basePath}=>${Names.nodeUniqueId(targetApi.node)}`;
     return new BasePathMapping(this, id, {
       domainName: this,
       restApi: targetApi,
-      ...options
+      ...options,
     });
+  }
+
+  private configureMTLS(mtlsConfig?: MTLSConfig): CfnDomainName.MutualTlsAuthenticationProperty | undefined {
+    if (!mtlsConfig) return undefined;
+    return {
+      truststoreUri: mtlsConfig.bucket.s3UrlForObject(mtlsConfig.key),
+      truststoreVersion: mtlsConfig.version,
+    };
   }
 }
 
@@ -153,7 +193,29 @@ export interface DomainNameAttributes {
   readonly domainNameAliasTarget: string;
 
   /**
-   * Thje Route53 hosted zone ID to use in order to connect a record set to this domain through an alias.
+   * The Route53 hosted zone ID to use in order to connect a record set to this domain through an alias.
    */
   readonly domainNameAliasHostedZoneId: string;
+}
+
+/**
+ * The mTLS authentication configuration for a custom domain name.
+ */
+export interface MTLSConfig {
+  /**
+   * The bucket that the trust store is hosted in.
+   */
+  readonly bucket: IBucket;
+
+  /**
+   * The key in S3 to look at for the trust store.
+   */
+  readonly key: string;
+
+  /**
+   *  The version of the S3 object that contains your truststore.
+   *  To specify a version, you must have versioning enabled for the S3 bucket.
+   *  @default - latest version
+   */
+  readonly version?: string;
 }

@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as sns from '@aws-cdk/aws-sns';
 import { Duration, Stack } from '@aws-cdk/core';
@@ -16,32 +16,32 @@ test('sns topic as an event rule target', () => {
   rule.addTarget(new targets.SnsTopic(topic));
 
   // THEN
-  expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
     PolicyDocument: {
       Statement: [
         {
-          Sid: "0",
-          Action: "sns:Publish",
-          Effect: "Allow",
-          Principal: { Service: "events.amazonaws.com" },
-          Resource: { Ref: "MyTopic86869434" }
-        }
+          Sid: '0',
+          Action: 'sns:Publish',
+          Effect: 'Allow',
+          Principal: { Service: 'events.amazonaws.com' },
+          Resource: { Ref: 'MyTopic86869434' },
+        },
       ],
-      Version: "2012-10-17"
+      Version: '2012-10-17',
     },
-    Topics: [{ Ref: "MyTopic86869434" }]
-  }));
+    Topics: [{ Ref: 'MyTopic86869434' }],
+  });
 
-  expect(stack).to(haveResource('AWS::Events::Rule', {
-    ScheduleExpression: "rate(1 hour)",
-    State: "ENABLED",
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 hour)',
+    State: 'ENABLED',
     Targets: [
       {
-        Arn: { Ref: "MyTopic86869434" },
-        Id: "Target0"
-      }
-    ]
-  }));
+        Arn: { Ref: 'MyTopic86869434' },
+        Id: 'Target0',
+      },
+    ],
+  });
 });
 
 test('multiple uses of a topic as a target results in a single policy statement', () => {
@@ -58,19 +58,19 @@ test('multiple uses of a topic as a target results in a single policy statement'
   }
 
   // THEN
-  expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
     PolicyDocument: {
       Statement: [
         {
-          Action: "sns:Publish",
-          Effect: "Allow",
-          Principal: { Service: "events.amazonaws.com" },
-          Resource: { Ref: "MyTopic86869434" },
-          Sid: "0"
-        }
+          Action: 'sns:Publish',
+          Effect: 'Allow',
+          Principal: { Service: 'events.amazonaws.com' },
+          Resource: { Ref: 'MyTopic86869434' },
+          Sid: '0',
+        },
       ],
-      Version: "2012-10-17"
+      Version: '2012-10-17',
     },
-    Topics: [ { Ref: "MyTopic86869434" } ]
-  }));
+    Topics: [{ Ref: 'MyTopic86869434' }],
+  });
 });

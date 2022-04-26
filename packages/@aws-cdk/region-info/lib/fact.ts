@@ -1,3 +1,5 @@
+import { AWS_REGIONS } from './aws-entities';
+
 /**
  * A database of regional information.
  */
@@ -7,7 +9,8 @@ export class Fact {
    *          may not be an exhaustive list of all available AWS regions.
    */
   public static get regions(): string[] {
-    return Object.keys(this.database);
+    // Return by copy to ensure no modifications can be made to the undelying constant.
+    return Array.from(AWS_REGIONS);
   }
 
   /**
@@ -51,7 +54,9 @@ export class Fact {
     if (fact.name in regionFacts && regionFacts[fact.name] !== fact.value && !allowReplacing) {
       throw new Error(`Region ${fact.region} already has a fact ${fact.name}, with value ${regionFacts[fact.name]}`);
     }
-    regionFacts[fact.name] = fact.value;
+    if (fact.value !== undefined) {
+      regionFacts[fact.name] = fact.value;
+    }
   }
 
   /**
@@ -93,7 +98,7 @@ export interface IFact {
   /**
    * The value of this fact.
    */
-  readonly value: string;
+  readonly value: string | undefined;
 }
 
 /**
@@ -127,13 +132,57 @@ export class FactName {
   public static readonly S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID = 's3-static-website:route-53-hosted-zone-id';
 
   /**
+   * The hosted zone ID used by Route 53 to alias a EBS environment endpoint in this region (e.g: Z2O1EMRO9K5GLX)
+   */
+  public static readonly EBS_ENV_ENDPOINT_HOSTED_ZONE_ID = 'ebs-environment:route-53-hosted-zone-id';
+
+  /**
+   * The prefix for VPC Endpoint Service names,
+   * cn.com.amazonaws.vpce for China regions,
+   * com.amazonaws.vpce otherwise.
+   */
+  public static readonly VPC_ENDPOINT_SERVICE_NAME_PREFIX = 'vpcEndpointServiceNamePrefix';
+
+  /**
+   * The account for ELBv2 in this region
+   */
+  public static readonly ELBV2_ACCOUNT = 'elbv2Account';
+
+  /**
+   * The ID of the AWS account that owns the public ECR repository that contains the
+   * AWS Deep Learning Containers images in a given region.
+   */
+  public static readonly DLC_REPOSITORY_ACCOUNT = 'dlcRepositoryAccount';
+
+  /**
+   * The ID of the AWS account that owns the public ECR repository that contains the
+   * AWS App Mesh Envoy Proxy images in a given region.
+   */
+  public static readonly APPMESH_ECR_ACCOUNT = 'appMeshRepositoryAccount';
+
+  /**
+   * The CIDR block used by Kinesis Data Firehose servers.
+   */
+  public static readonly FIREHOSE_CIDR_BLOCK = 'firehoseCidrBlock';
+
+  /**
+   * The ARN of CloudWatch Lambda Insights for a version (e.g. 1.0.98.0)
+   */
+  public static cloudwatchLambdaInsightsVersion(version: string, arch?: string) {
+    // if we are provided an architecture use that, otherwise
+    // default to x86_64 for backwards compatibility
+    const suffix = version.split('.').join('_') + `_${arch ?? 'x86_64'}`;
+    return `cloudwatch-lambda-insights-version:${suffix}`;
+  }
+
+  /**
    * The name of the regional service principal for a given service.
    *
    * @param service the service name, either simple (e.g: `s3`, `codedeploy`) or qualified (e.g: `s3.amazonaws.com`).
    *                The `.amazonaws.com` and `.amazonaws.com.cn` domains are stripped from service names, so they are
    *                canonicalized in that respect.
    */
-  public static servicePrincipal(service: string) {
+  public static servicePrincipal(service: string): string {
     return `service-principal:${service.replace(/\.amazonaws\.com(\.cn)?$/, '')}`;
   }
 }

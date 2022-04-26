@@ -1,5 +1,6 @@
-import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
-import { Construct } from '@aws-cdk/core';
+import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '@aws-cdk/aws-ecs';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
 
 /**
@@ -62,6 +63,22 @@ export interface ApplicationLoadBalancedEc2ServiceProps extends ApplicationLoadB
    * @default - No memory reserved.
    */
   readonly memoryReservationMiB?: number;
+
+  /**
+   * The placement constraints to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
+   *
+   * @default - No constraints.
+   */
+  readonly placementConstraints?: PlacementConstraint[];
+
+  /**
+   * The placement strategies to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
+   *
+   * @default - No strategies.
+  */
+  readonly placementStrategies?: PlacementStrategy[];
 }
 
 /**
@@ -97,12 +114,10 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       });
 
       // Create log driver if logging is enabled
-      const enableLogging = taskImageOptions.enableLogging !== undefined ? taskImageOptions.enableLogging : true;
-      const logDriver = taskImageOptions.logDriver !== undefined
-                          ? taskImageOptions.logDriver : enableLogging
-                            ? this.createAWSLogDriver(this.node.id) : undefined;
+      const enableLogging = taskImageOptions.enableLogging ?? true;
+      const logDriver = taskImageOptions.logDriver ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
 
-      const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
+      const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
         cpu: props.cpu,
@@ -111,17 +126,20 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
         logging: logDriver,
+        dockerLabels: taskImageOptions.dockerLabels,
       });
       container.addPortMappings({
-        containerPort: taskImageOptions.containerPort || 80
+        containerPort: taskImageOptions.containerPort || 80,
       });
     } else {
       throw new Error('You must specify one of: taskDefinition or image');
     }
 
-    this.service = new Ec2Service(this, "Service", {
+    const desiredCount = this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
+
+    this.service = new Ec2Service(this, 'Service', {
       cluster: this.cluster,
-      desiredCount: this.desiredCount,
+      desiredCount: desiredCount,
       taskDefinition: this.taskDefinition,
       assignPublicIp: false,
       serviceName: props.serviceName,
@@ -131,6 +149,10 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
+      deploymentController: props.deploymentController,
+      circuitBreaker: props.circuitBreaker,
+      placementConstraints: props.placementConstraints,
+      placementStrategies: props.placementStrategies,
     });
     this.addServiceAsTarget(this.service);
   }

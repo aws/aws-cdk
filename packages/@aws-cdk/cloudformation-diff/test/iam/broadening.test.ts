@@ -1,4 +1,4 @@
-import { diffTemplate } from '../../lib';
+import { diffTemplate, formatSecurityChanges } from '../../lib';
 import { poldoc, resource, template } from '../util';
 
 describe('broadening is', () => {
@@ -11,13 +11,38 @@ describe('broadening is', () => {
           Effect: 'Allow',
           Action: 'sqs:SendMessage',
           Resource: '*',
-          Principal: { Service: 'sns.amazonaws.com' }
-        })
-      })
+          Principal: { Service: 'sns.amazonaws.com' },
+        }),
+      }),
     }));
 
     // THEN
     expect(diff.permissionsBroadened).toBe(true);
+  });
+
+  test('permissions diff can be printed', () => {
+    // GIVEN
+    const diff = diffTemplate({}, template({
+      QueuePolicy: resource('AWS::SQS::QueuePolicy', {
+        Queues: [{ Ref: 'MyQueue' }],
+        PolicyDocument: poldoc({
+          Effect: 'Allow',
+          Action: 'sqs:SendMessage',
+          Resource: '*',
+          Principal: { Service: 'sns.amazonaws.com' },
+        }),
+      }),
+    }));
+
+    // WHEN
+    // Behave like process.stderr, but have a 'columns' property to trigger the column width calculation
+    const stdErrMostly = Object.create(process.stderr, {
+      columns: { value: 80 },
+    });
+    formatSecurityChanges(stdErrMostly, diff);
+
+    // THEN: does not throw
+    expect(true).toBeTruthy();
   });
 
   test('adding of positive statements to an existing policy', () => {
@@ -30,10 +55,10 @@ describe('broadening is', () => {
             Effect: 'Allow',
             Action: 'sqs:SendMessage',
             Resource: '*',
-            Principal: { Service: 'sns.amazonaws.com' }
-          }
-        )
-      })
+            Principal: { Service: 'sns.amazonaws.com' },
+          },
+        ),
+      }),
     }), template({
       QueuePolicy: resource('AWS::SQS::QueuePolicy', {
         Queues: [{ Ref: 'MyQueue' }],
@@ -42,16 +67,16 @@ describe('broadening is', () => {
             Effect: 'Allow',
             Action: 'sqs:SendMessage',
             Resource: '*',
-            Principal: { Service: 'sns.amazonaws.com' }
+            Principal: { Service: 'sns.amazonaws.com' },
           },
           {
             Effect: 'Allow',
             Action: 'sqs:LookAtMessage',
             Resource: '*',
-            Principal: { Service: 'sns.amazonaws.com' }
-          }
-        )
-      })
+            Principal: { Service: 'sns.amazonaws.com' },
+          },
+        ),
+      }),
     }));
 
     // THEN
@@ -67,9 +92,9 @@ describe('broadening is', () => {
           Effect: 'Allow',
           Action: 'sqs:SendMessage',
           Resource: '*',
-          NotPrincipal: { Service: 'sns.amazonaws.com' }
-        })
-      })
+          NotPrincipal: { Service: 'sns.amazonaws.com' },
+        }),
+      }),
     }), {});
 
     // THEN
@@ -86,10 +111,10 @@ describe('broadening is', () => {
             Effect: 'Allow',
             Action: 'sqs:SendMessage',
             Resource: '*',
-            Principal: { Service: 'sns.amazonaws.com' }
-          }
-        )
-      })
+            Principal: { Service: 'sns.amazonaws.com' },
+          },
+        ),
+      }),
     }), template({
       QueuePolicy: resource('AWS::SQS::QueuePolicy', {
         Queues: [{ Ref: 'MyOtherQueue' }],
@@ -98,10 +123,10 @@ describe('broadening is', () => {
             Effect: 'Allow',
             Action: 'sqs:SendMessage',
             Resource: '*',
-            Principal: { Service: 'sns.amazonaws.com' }
-          }
-        )
-      })
+            Principal: { Service: 'sns.amazonaws.com' },
+          },
+        ),
+      }),
     }));
 
     // THEN
@@ -121,9 +146,9 @@ describe('broadening is', () => {
               FromPort: 80,
               ToPort: 80,
               IpProtocol: 'tcp',
-            }
+            },
           ],
-        })
+        }),
       }));
 
     // THEN
@@ -143,9 +168,9 @@ describe('broadening is', () => {
               FromPort: 80,
               ToPort: 80,
               IpProtocol: 'tcp',
-            }
+            },
           ],
-        })
+        }),
       }));
 
     // THEN
@@ -164,16 +189,16 @@ describe('broadening is not', () => {
             Effect: 'Allow',
             Action: 'sqs:SendMessage',
             Resource: '*',
-            Principal: { Service: 'sns.amazonaws.com' }
+            Principal: { Service: 'sns.amazonaws.com' },
           },
           {
             Effect: 'Allow',
             Action: 'sqs:LookAtMessage',
             Resource: '*',
-            Principal: { Service: 'sns.amazonaws.com' }
-          }
-        )
-      })
+            Principal: { Service: 'sns.amazonaws.com' },
+          },
+        ),
+      }),
     }), template({
       QueuePolicy: resource('AWS::SQS::QueuePolicy', {
         Queues: [{ Ref: 'MyQueue' }],
@@ -182,10 +207,10 @@ describe('broadening is not', () => {
             Effect: 'Allow',
             Action: 'sqs:SendMessage',
             Resource: '*',
-            Principal: { Service: 'sns.amazonaws.com' }
-          }
-        )
-      })
+            Principal: { Service: 'sns.amazonaws.com' },
+          },
+        ),
+      }),
     }));
 
     // THEN

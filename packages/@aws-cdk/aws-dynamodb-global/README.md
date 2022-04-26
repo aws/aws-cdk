@@ -1,16 +1,17 @@
-## @aws-cdk/aws-dynamodb-global
+# @aws-cdk/aws-dynamodb-global
 <!--BEGIN STABILITY BANNER-->
 
 ---
 
-![Stability: Deprecated](https://img.shields.io/badge/stability-Deprecated-critical.svg?style=for-the-badge)
+![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
 
 > This API may emit warnings. Backward compatibility is not guaranteed.
 
 ---
+
 <!--END STABILITY BANNER-->
 
-### NOTICE: This module has been deprecated in favor of `@aws-cdk/aws-dynamodb.Table.replicationRegions`
+## NOTICE: This module has been deprecated in favor of `@aws-cdk/aws-dynamodb.Table.replicationRegions`
 
 ---
 
@@ -18,21 +19,22 @@ Global Tables builds upon DynamoDB’s global footprint to provide you with a fu
 
 Here is a minimal deployable Global DynamoDB tables definition:
 
-```typescript
+```ts
 import { AttributeType } from '@aws-cdk/aws-dynamodb';
 import { GlobalTable } from '@aws-cdk/aws-dynamodb-global';
 import { App } from '@aws-cdk/core';
 
 const app = new App();
 new GlobalTable(app, 'globdynamodb', {
-  partitionKey: { name: 'hashKey', type: AttributeType.String },
+  partitionKey: { name: 'hashKey', type: AttributeType.STRING },
   tableName: 'GlobalTable',
-  regions: [ "us-east-1", "us-east-2", "us-west-2" ]
+  regions: [ "us-east-1", "us-east-2", "us-west-2" ],
 });
 app.synth();
 ```
 
 ## Implementation Notes
+
 AWS Global DynamoDB Tables is an odd case currently.  The way this package works -
 
 * Creates a DynamoDB table in a separate stack in each `DynamoDBGlobalStackProps.region` specified

@@ -1,7 +1,9 @@
 {
   "Resources": {
     "SubscriberQueueC193DC66": {
-      "Type": "AWS::SQS::Queue"
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "SubscriberQueuePolicy25A0799E": {
       "Type": "AWS::SQS::QueuePolicy",
@@ -158,7 +160,7 @@
               },
               "/",
               {
-                "Ref": "AssetParametersdddca70fcceefd0a4532c8eb5ad3d5da6f51d64fda9343f0b57dd664736dccafS3BucketE3660F43"
+                "Ref": "AssetParameters91169429f2b5b85501c7b1b9d7beeb80c9bb6f4891f4e600fcaf65a8817ce0f4S3Bucket06F505B9"
               },
               "/",
               {
@@ -168,7 +170,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParametersdddca70fcceefd0a4532c8eb5ad3d5da6f51d64fda9343f0b57dd664736dccafS3VersionKeyFD0B0470"
+                        "Ref": "AssetParameters91169429f2b5b85501c7b1b9d7beeb80c9bb6f4891f4e600fcaf65a8817ce0f4S3VersionKey06BEDE93"
                       }
                     ]
                   }
@@ -181,7 +183,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParametersdddca70fcceefd0a4532c8eb5ad3d5da6f51d64fda9343f0b57dd664736dccafS3VersionKeyFD0B0470"
+                        "Ref": "AssetParameters91169429f2b5b85501c7b1b9d7beeb80c9bb6f4891f4e600fcaf65a8817ce0f4S3VersionKey06BEDE93"
                       }
                     ]
                   }
@@ -196,7 +198,9 @@
             "Ref": "SubscriberQueueC193DC66"
           }
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "NestedStack2NestedStackNestedStack2NestedStackResourceFDF82E43": {
       "Type": "AWS::CloudFormation::Stack",
@@ -250,10 +254,24 @@
         "Parameters": {
           "TopicNamePrefix": "Prefix2"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   },
   "Parameters": {
+    "AssetParameters91169429f2b5b85501c7b1b9d7beeb80c9bb6f4891f4e600fcaf65a8817ce0f4S3Bucket06F505B9": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"91169429f2b5b85501c7b1b9d7beeb80c9bb6f4891f4e600fcaf65a8817ce0f4\""
+    },
+    "AssetParameters91169429f2b5b85501c7b1b9d7beeb80c9bb6f4891f4e600fcaf65a8817ce0f4S3VersionKey06BEDE93": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"91169429f2b5b85501c7b1b9d7beeb80c9bb6f4891f4e600fcaf65a8817ce0f4\""
+    },
+    "AssetParameters91169429f2b5b85501c7b1b9d7beeb80c9bb6f4891f4e600fcaf65a8817ce0f4ArtifactHash407EE1C2": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"91169429f2b5b85501c7b1b9d7beeb80c9bb6f4891f4e600fcaf65a8817ce0f4\""
+    },
     "AssetParameters0d0404717d8867c09534f2cf382e8e24531ff64a968afa2efd7f071ad65a22dfS3BucketB322F951": {
       "Type": "String",
       "Description": "S3 bucket for asset \"0d0404717d8867c09534f2cf382e8e24531ff64a968afa2efd7f071ad65a22df\""
@@ -265,18 +283,6 @@
     "AssetParameters0d0404717d8867c09534f2cf382e8e24531ff64a968afa2efd7f071ad65a22dfArtifactHash5D335705": {
       "Type": "String",
       "Description": "Artifact hash for asset \"0d0404717d8867c09534f2cf382e8e24531ff64a968afa2efd7f071ad65a22df\""
-    },
-    "AssetParametersdddca70fcceefd0a4532c8eb5ad3d5da6f51d64fda9343f0b57dd664736dccafS3BucketE3660F43": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"dddca70fcceefd0a4532c8eb5ad3d5da6f51d64fda9343f0b57dd664736dccaf\""
-    },
-    "AssetParametersdddca70fcceefd0a4532c8eb5ad3d5da6f51d64fda9343f0b57dd664736dccafS3VersionKeyFD0B0470": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"dddca70fcceefd0a4532c8eb5ad3d5da6f51d64fda9343f0b57dd664736dccaf\""
-    },
-    "AssetParametersdddca70fcceefd0a4532c8eb5ad3d5da6f51d64fda9343f0b57dd664736dccafArtifactHashEECD8E35": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"dddca70fcceefd0a4532c8eb5ad3d5da6f51d64fda9343f0b57dd664736dccaf\""
     }
   }
 }

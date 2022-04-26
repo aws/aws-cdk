@@ -1,13 +1,19 @@
-import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnGroup } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
-import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IUser } from './user';
 import { AttachedPolicies } from './util';
 
+/**
+ * Represents an IAM Group.
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html
+ */
 export interface IGroup extends IIdentity {
   /**
    * Returns the IAM Group Name
@@ -24,6 +30,9 @@ export interface IGroup extends IIdentity {
   readonly groupArn: string;
 }
 
+/**
+ * Properties for defining an IAM group
+ */
 export interface GroupProps {
   /**
    * A name for the IAM group. For valid values, see the GroupName parameter
@@ -64,6 +73,7 @@ abstract class GroupBase extends Resource implements IGroup {
   public abstract readonly groupArn: string;
 
   public readonly grantPrincipal: IPrincipal = this;
+  public readonly principalAccount: string | undefined = this.env.account;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   private readonly attachedPolicies = new AttachedPolicies();
@@ -96,31 +106,72 @@ abstract class GroupBase extends Resource implements IGroup {
   /**
    * Adds an IAM statement to the default policy.
    */
-  public addToPolicy(statement: PolicyStatement): boolean {
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.defaultPolicy.attachToGroup(this);
     }
 
     this.defaultPolicy.addStatements(statement);
-    return true;
+    return { statementAdded: true, policyDependable: this.defaultPolicy };
+  }
+
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 }
 
+/**
+ * An IAM Group (collection of IAM users) lets you specify permissions for
+ * multiple users, which can make it easier to manage permissions for those users.
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html
+ */
 export class Group extends GroupBase {
-
   /**
-   * Imports a group from ARN
-   * @param groupArn (e.g. `arn:aws:iam::account-id:group/group-name`)
+   * Import an external group by ARN.
+   *
+   * If the imported Group ARN is a Token (such as a
+   * `CfnParameter.valueAsString` or a `Fn.importValue()`) *and* the referenced
+   * group has a `path` (like `arn:...:group/AdminGroup/NetworkAdmin`), the
+   * `groupName` property will not resolve to the correct value. Instead it
+   * will resolve to the first path component. We unfortunately cannot express
+   * the correct calculation of the full path name as a CloudFormation
+   * expression. In this scenario the Group ARN should be supplied without the
+   * `path` in order to resolve the correct group resource.
+   *
+   * @param scope construct scope
+   * @param id construct id
+   * @param groupArn the ARN of the group to import (e.g. `arn:aws:iam::account-id:group/group-name`)
    */
   public static fromGroupArn(scope: Construct, id: string, groupArn: string): IGroup {
-    const groupName = Stack.of(scope).parseArn(groupArn).resourceName!;
+    const arnComponents = Stack.of(scope).splitArn(groupArn, ArnFormat.SLASH_RESOURCE_NAME);
+    const groupName = arnComponents.resourceName!;
     class Import extends GroupBase {
       public groupName = groupName;
       public groupArn = groupArn;
+      public principalAccount = arnComponents.account;
     }
 
     return new Import(scope, id);
+  }
+
+  /**
+   * Import an existing group by given name (with path).
+   * This method has same caveats of `fromGroupArn`
+   *
+   * @param scope construct scope
+   * @param id construct id
+   * @param groupName the groupName (path included) of the existing group to import
+   */
+  static fromGroupName(scope: Construct, id: string, groupName: string) {
+    const groupArn = Stack.of(scope).formatArn({
+      service: 'iam',
+      region: '',
+      resource: 'group',
+      resourceName: groupName,
+    });
+    return Group.fromGroupArn(scope, id, groupArn);
   }
 
   public readonly groupName: string;
@@ -137,7 +188,7 @@ export class Group extends GroupBase {
 
     const group = new CfnGroup(this, 'Resource', {
       groupName: this.physicalName,
-      managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
+      managedPolicyArns: Lazy.list({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       path: props.path,
     });
 
@@ -146,7 +197,8 @@ export class Group extends GroupBase {
       region: '', // IAM is global in each partition
       service: 'iam',
       resource: 'group',
-      resourceName: this.physicalName,
+      // Removes leading slash from path
+      resourceName: `${props.path ? props.path.substr(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
     });
   }
 

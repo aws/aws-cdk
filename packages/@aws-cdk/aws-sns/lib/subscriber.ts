@@ -1,6 +1,10 @@
-import { Construct } from '@aws-cdk/core';
+
 import { SubscriptionOptions } from './subscription';
 import { ITopic } from './topic-base';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Subscription configuration
@@ -30,5 +34,10 @@ export interface TopicSubscriptionConfig extends SubscriptionOptions {
  * Topic subscription
  */
 export interface ITopicSubscription {
+  /**
+   * Returns a configuration used to subscribe to an SNS topic
+   *
+   * @param topic topic for which subscription will be configured
+   */
   bind(topic: ITopic): TopicSubscriptionConfig;
 }

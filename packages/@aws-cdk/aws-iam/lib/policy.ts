@@ -1,4 +1,5 @@
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
@@ -7,13 +8,23 @@ import { IRole } from './role';
 import { IUser } from './user';
 import { generatePolicyName, undefinedIfEmpty } from './util';
 
+/**
+ * Represents an IAM Policy
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage.html
+ */
 export interface IPolicy extends IResource {
   /**
+   * The name of this policy.
+   *
    * @attribute
    */
   readonly policyName: string;
 }
 
+/**
+ * Properties for defining an IAM inline policy document
+ */
 export interface PolicyProps {
   /**
    * The name of the policy. If you specify multiple policies for an entity,
@@ -67,11 +78,20 @@ export interface PolicyProps {
    * creating invalid--and hence undeployable--CloudFormation templates.
    *
    * In cases where you know the policy must be created and it is actually
-   * an error if no statements have been added to it, you can se this to `true`.
+   * an error if no statements have been added to it, you can set this to `true`.
    *
    * @default false
    */
   readonly force?: boolean;
+
+  /**
+   * Initial PolicyDocument to use for this Policy. If omited, any
+   * `PolicyStatement` provided in the `statements` property will be applied
+   * against the empty default `PolicyDocument`.
+   *
+   * @default - An empty policy.
+   */
+  readonly document?: PolicyDocument;
 }
 
 /**
@@ -82,6 +102,9 @@ export interface PolicyProps {
  */
 export class Policy extends Resource implements IPolicy {
 
+  /**
+   * Import a policy in this app based on its name
+   */
   public static fromPolicyName(scope: Construct, id: string, policyName: string): IPolicy {
     class Import extends Resource implements IPolicy {
       public readonly policyName = policyName;
@@ -108,10 +131,27 @@ export class Policy extends Resource implements IPolicy {
         // generatePolicyName will take the last 128 characters of the logical id since
         // policy names are limited to 128. the last 8 chars are a stack-unique hash, so
         // that shouod be sufficient to ensure uniqueness within a principal.
-        Lazy.stringValue({ produce: () => generatePolicyName(scope, resource.logicalId) })
+        Lazy.string({ produce: () => generatePolicyName(scope, resource.logicalId) }),
     });
 
-    const resource = new CfnPolicy(this, 'Resource', {
+    const self = this;
+
+    class CfnPolicyConditional extends CfnPolicy {
+      /**
+       * This function returns `true` if the CFN resource should be included in
+       * the cloudformation template unless `force` is `true`, if the policy
+       * document is empty, the resource will not be included.
+       */
+      protected shouldSynthesize() {
+        return self.force || self.referenceTaken || (!self.document.isEmpty && self.isAttached);
+      }
+    }
+
+    if (props.document) {
+      this.document = props.document;
+    }
+
+    const resource = new CfnPolicyConditional(this, 'Resource', {
       policyDocument: this.document,
       policyName: this.physicalName,
       roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
@@ -120,7 +160,7 @@ export class Policy extends Resource implements IPolicy {
     });
 
     this._policyName = this.physicalName!;
-    this.force = props.force !== undefined ? props.force : false;
+    this.force = props.force ?? false;
 
     if (props.users) {
       props.users.forEach(u => this.attachToUser(u));
@@ -199,22 +239,16 @@ export class Policy extends Resource implements IPolicy {
     // validate that the policy is attached to at least one principal (role, user or group).
     if (!this.isAttached) {
       if (this.force) {
-        result.push(`Policy created with force=true must be attached to at least one principal: user, group or role`);
+        result.push('Policy created with force=true must be attached to at least one principal: user, group or role');
       }
       if (!this.force && this.referenceTaken) {
         result.push('This Policy has been referenced by a resource, so it must be attached to at least one user, group or role.');
       }
     }
 
-    return result;
-  }
+    result.push(...this.document.validateForIdentityPolicy());
 
-  protected prepare() {
-    // Remove the resource if it shouldn't exist. This will prevent it from being rendered to the template.
-    const shouldExist = this.force || this.referenceTaken || (!this.document.isEmpty && this.isAttached);
-    if (!shouldExist) {
-      this.node.tryRemoveChild('Resource');
-    }
+    return result;
   }
 
   /**

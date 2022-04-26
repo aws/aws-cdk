@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:enable-lookups
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as eks from '../lib';
@@ -18,7 +19,7 @@ class EksClusterStack extends TestStack {
 
     cluster.addCapacity('Nodes', {
       instanceType: new ec2.InstanceType('t2.medium'),
-      desiredCapacity: 1,  // Raise this number to add more nodes
+      desiredCapacity: 1, // Raise this number to add more nodes
     });
     /// !hide
   }

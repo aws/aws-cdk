@@ -1,11 +1,38 @@
-import { IConstruct } from "./construct";
-import { Lazy } from "./lazy";
-import { unresolved } from "./private/encoding";
-import { Intrinsic } from "./private/intrinsic";
-import { resolve } from "./private/resolve";
-import { TokenMap } from "./private/token-map";
-import { IResolvable, ITokenResolver } from "./resolvable";
-import { TokenizedStringFragments } from "./string-fragments";
+import { IConstruct } from 'constructs';
+import { Lazy } from './lazy';
+import { unresolved } from './private/encoding';
+import { Intrinsic } from './private/intrinsic';
+import { resolve } from './private/resolve';
+import { TokenMap } from './private/token-map';
+import { IResolvable, ITokenResolver } from './resolvable';
+import { TokenizedStringFragments } from './string-fragments';
+
+/**
+ * An enum-like class that represents the result of comparing two Tokens.
+ * The return type of {@link Token.compareStrings}.
+ */
+export class TokenComparison {
+  /**
+   * This means we're certain the two components are NOT
+   * Tokens, and identical.
+   */
+  public static readonly SAME = new TokenComparison();
+
+  /**
+   * This means we're certain the two components are NOT
+   * Tokens, and different.
+   */
+  public static readonly DIFFERENT = new TokenComparison();
+
+  /** This means exactly one of the components is a Token. */
+  public static readonly ONE_UNRESOLVED = new TokenComparison();
+
+  /** This means both components are Tokens. */
+  public static readonly BOTH_UNRESOLVED = new TokenComparison();
+
+  private constructor() {
+  }
+}
 
 /**
  * Represents a special or lazily-evaluated value.
@@ -72,7 +99,26 @@ export class Token {
    * Return a resolvable representation of the given value
    */
   public static asAny(value: any): IResolvable {
+    // First, reverse any encoding that was already done (so we end up with an IResolvable
+    // if it was a token).
+    value = Tokenization.reverse(value) ?? value;
+    // Then,  either return the IResolvable we resolved to, or wrap in an Intrinsic
     return isResolvableObject(value) ? value : new Intrinsic(value);
+  }
+
+  /** Compare two strings that might contain Tokens with each other. */
+  public static compareStrings(possibleToken1: string, possibleToken2: string): TokenComparison {
+    const firstIsUnresolved = Token.isUnresolved(possibleToken1);
+    const secondIsUnresolved = Token.isUnresolved(possibleToken2);
+
+    if (firstIsUnresolved && secondIsUnresolved) {
+      return TokenComparison.BOTH_UNRESOLVED;
+    }
+    if (firstIsUnresolved || secondIsUnresolved) {
+      return TokenComparison.ONE_UNRESOLVED;
+    }
+
+    return possibleToken1 === possibleToken2 ? TokenComparison.SAME : TokenComparison.DIFFERENT;
   }
 
   private constructor() {
@@ -91,6 +137,19 @@ export class Tokenization {
   }
 
   /**
+   * Un-encode a string which is either a complete encoded token, or doesn't contain tokens at all
+   *
+   * It's illegal for the string to be a concatenation of an encoded token and something else.
+   */
+  public static reverseCompleteString(s: string): IResolvable | undefined {
+    const fragments = Tokenization.reverseString(s);
+    if (fragments.length !== 1) {
+      throw new Error(`Tokenzation.reverseCompleteString: argument must not be a concatentation, got '${s}'`);
+    }
+    return fragments.firstToken;
+  }
+
+  /**
    * Un-encode a Tokenized value from a number
    */
   public static reverseNumber(n: number): IResolvable | undefined {
@@ -105,6 +164,26 @@ export class Tokenization {
   }
 
   /**
+   * Reverse any value into a Resolvable, if possible
+   *
+   * In case of a string, the string must not be a concatenation.
+   */
+  public static reverse(x: any, options: ReverseOptions = {}): IResolvable | undefined {
+    if (Tokenization.isResolvable(x)) { return x; }
+    if (typeof x === 'string') {
+      if (options.failConcat === false) {
+        // Handle this specially because reverseCompleteString might fail
+        const fragments = Tokenization.reverseString(x);
+        return fragments.length === 1 ? fragments.firstToken : undefined;
+      }
+      return Tokenization.reverseCompleteString(x);
+    }
+    if (Array.isArray(x)) { return Tokenization.reverseList(x); }
+    if (typeof x === 'number') { return Tokenization.reverseNumber(x); }
+    return undefined;
+  }
+
+  /**
    * Resolves an object by evaluating all tokens and removing any undefined or empty objects or arrays.
    * Values can only be primitives, arrays or tokens. Other objects (i.e. with methods) will be rejected.
    *
@@ -115,7 +194,8 @@ export class Tokenization {
     return resolve(obj, {
       scope: options.scope,
       resolver: options.resolver,
-      preparing: (options.preparing !== undefined ? options.preparing : false)
+      preparing: (options.preparing ?? false),
+      removeEmpty: options.removeEmpty,
     });
   }
 
@@ -137,10 +217,12 @@ export class Tokenization {
     // only convert numbers to strings so that Refs, conditions, and other things don't end up synthesizing as [object object]
 
     if (Token.isUnresolved(x)) {
-      return Lazy.stringValue({ produce: context => {
+      return Lazy.uncachedString({
+        produce: context => {
           const resolved = context.resolve(x);
           return typeof resolved !== 'number' ? resolved : `${resolved}`;
-        } });
+        },
+      });
     } else {
       return typeof x !== 'number' ? x : `${x}`;
     }
@@ -148,6 +230,20 @@ export class Tokenization {
 
   private constructor() {
   }
+}
+
+/**
+ * Options for the 'reverse()' operation
+ */
+export interface ReverseOptions {
+  /**
+   * Fail if the given string is a concatenation
+   *
+   * If `false`, just return `undefined`.
+   *
+   * @default true
+   */
+  readonly failConcat?: boolean;
 }
 
 /**
@@ -174,6 +270,13 @@ export interface ResolveOptions {
    * @default false
    */
   readonly preparing?: boolean;
+
+  /**
+   * Whether to remove undefined elements from arrays and objects when resolving.
+   *
+   * @default true
+   */
+  readonly removeEmpty?: boolean;
 }
 
 /**

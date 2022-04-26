@@ -10,15 +10,15 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'CICD');
 const pipeline = new codepipeline.Pipeline(stack, 'CodePipeline', {
   artifactBucket: new s3.Bucket(stack, 'ArtifactBucket', {
-    removalPolicy: cdk.RemovalPolicy.DESTROY
-  })
+    removalPolicy: cdk.RemovalPolicy.DESTROY,
+  }),
 });
 const sourceOutput = new codepipeline.Artifact('Artifact_CICDGitHubF8BA7ADD');
 const source = new cpactions.GitHubSourceAction({
   actionName: 'GitHub',
   owner: 'awslabs',
   repo: 'aws-cdk',
-  oauthToken: cdk.SecretValue.plainText('DummyToken'),
+  oauthToken: cdk.SecretValue.unsafePlainText('DummyToken'),
   trigger: cpactions.GitHubTrigger.POLL,
   output: sourceOutput,
 });

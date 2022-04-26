@@ -1,13 +1,15 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Lazy } from '@aws-cdk/core';
-import { IntegrationOptions } from '../integration';
+import { Lazy, Names, Token } from '@aws-cdk/core';
+import { IntegrationConfig, IntegrationOptions } from '../integration';
 import { Method } from '../method';
 import { AwsIntegration } from './aws';
 
 export interface LambdaIntegrationOptions extends IntegrationOptions {
   /**
    * Use proxy integration or normal (request/response mapping) integration.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-output-format
+   *
    * @default true
    */
   readonly proxy?: boolean;
@@ -30,8 +32,9 @@ export interface LambdaIntegrationOptions extends IntegrationOptions {
  *
  * @example
  *
- *    const handler = new lambda.Function(this, 'MyFunction', ...);
- *    api.addMethod('GET', new LambdaIntegration(handler));
+ *    declare const resource: apigateway.Resource;
+ *    declare const handler: lambda.Function;
+ *    resource.addMethod('GET', new apigateway.LambdaIntegration(handler));
  *
  */
 export class LambdaIntegration extends AwsIntegration {
@@ -39,29 +42,29 @@ export class LambdaIntegration extends AwsIntegration {
   private readonly enableTest: boolean;
 
   constructor(handler: lambda.IFunction, options: LambdaIntegrationOptions = { }) {
-    const proxy = options.proxy === undefined ? true : options.proxy;
+    const proxy = options.proxy ?? true;
 
     super({
       proxy,
       service: 'lambda',
       path: `2015-03-31/functions/${handler.functionArn}/invocations`,
-      options
+      options,
     });
 
     this.handler = handler;
-    this.enableTest = options.allowTestInvoke === undefined ? true : false;
+    this.enableTest = options.allowTestInvoke ?? true;
   }
 
-  public bind(method: Method) {
-    super.bind(method);
+  public bind(method: Method): IntegrationConfig {
+    const bindResult = super.bind(method);
     const principal = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
-    const desc = `${method.restApi.node.uniqueId}.${method.httpMethod}.${method.resource.path.replace(/\//g, '.')}`;
+    const desc = `${Names.nodeUniqueId(method.api.node)}.${method.httpMethod}.${method.resource.path.replace(/\//g, '.')}`;
 
     this.handler.addPermission(`ApiPermission.${desc}`, {
       principal,
       scope: method,
-      sourceArn: Lazy.stringValue({ produce: () => method.methodArn }),
+      sourceArn: Lazy.string({ produce: () => method.methodArn }),
     });
 
     // add permission to invoke from the console
@@ -72,5 +75,25 @@ export class LambdaIntegration extends AwsIntegration {
         sourceArn: method.testMethodArn,
       });
     }
+
+    let functionName;
+
+    if (this.handler instanceof lambda.Function) {
+      // if not imported, extract the name from the CFN layer to reach
+      // the literal value if it is given (rather than a token)
+      functionName = (this.handler.node.defaultChild as lambda.CfnFunction).functionName;
+    } else {
+      // imported, just take the function name.
+      functionName = this.handler.functionName;
+    }
+
+    let deploymentToken;
+    if (!Token.isUnresolved(functionName)) {
+      deploymentToken = JSON.stringify({ functionName });
+    }
+    return {
+      ...bindResult,
+      deploymentToken,
+    };
   }
 }

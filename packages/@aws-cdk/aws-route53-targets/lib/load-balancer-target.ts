@@ -8,10 +8,10 @@ export class LoadBalancerTarget implements route53.IAliasRecordTarget {
   constructor(private readonly loadBalancer: elbv2.ILoadBalancerV2) {
   }
 
-  public bind(_record: route53.IRecordSet): route53.AliasRecordTargetConfig {
+  public bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
     return {
       hostedZoneId: this.loadBalancer.loadBalancerCanonicalHostedZoneId,
-      dnsName: this.loadBalancer.loadBalancerDnsName
+      dnsName: `dualstack.${this.loadBalancer.loadBalancerDnsName}`,
     };
   }
 }

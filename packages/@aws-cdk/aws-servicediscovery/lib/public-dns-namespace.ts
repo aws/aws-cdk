@@ -1,4 +1,5 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
 import { CfnPublicDnsNamespace } from './servicediscovery.generated';
@@ -20,7 +21,7 @@ export interface PublicDnsNamespaceAttributes {
    * Namespace ARN for the Namespace.
    */
   readonly namespaceArn: string;
- }
+}
 
 /**
  * Define a Public DNS Namespace
@@ -86,7 +87,7 @@ export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace 
   public createService(id: string, props?: DnsServiceProps): Service {
     return new Service(this, id, {
       namespace: this,
-      ...props
+      ...props,
     });
   }
 }

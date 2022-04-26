@@ -1,10 +1,13 @@
-import * as fs from 'fs-extra';
-import * as os from 'os';
 import * as path from 'path';
-import * as sinon from 'sinon';
 import { setTimeout as _setTimeout } from 'timers';
 import { promisify } from 'util';
-import { latestVersionIfHigher, VersionCheckTTL } from '../lib/version';
+import * as fs from 'fs-extra';
+import * as sinon from 'sinon';
+import * as logging from '../lib/logging';
+import * as npm from '../lib/util/npm';
+import { latestVersionIfHigher, VersionCheckTTL, displayVersionMessage } from '../lib/version';
+
+jest.setTimeout(10_000);
 
 const setTimeout = promisify(_setTimeout);
 
@@ -58,12 +61,6 @@ test('Return null if version is higher than npm', async () => {
   expect(result).toBeNull();
 });
 
-test('No homedir for the given user', () => {
-  sinon.stub(os, 'homedir').returns('');
-  sinon.stub(os, 'userInfo').returns({ username: '', uid: 10, gid: 11, shell: null, homedir: ''});
-  expect(() => new VersionCheckTTL()).toThrow(/Cannot determine home directory/);
-});
-
 test('Version specified is stored in the TTL file', async () => {
   const cacheFile = tmpfile();
   const cache = new VersionCheckTTL(cacheFile, 1);
@@ -78,4 +75,64 @@ test('No Version specified for storage in the TTL file', async () => {
   await cache.update();
   const storedVersion = fs.readFileSync(cacheFile, 'utf8');
   expect(storedVersion).toBe('');
+});
+
+test('Skip version check if environment variable is set', async () => {
+  sinon.stub(process, 'stdout').value({ ...process.stdout, isTTY: true });
+  sinon.stub(process, 'env').value({ ...process.env, CDK_DISABLE_VERSION_CHECK: '1' });
+  const printStub = sinon.stub(logging, 'print');
+  await displayVersionMessage();
+  expect(printStub.called).toEqual(false);
+});
+
+describe('version message', () => {
+  let previousIsTty: true | undefined;
+  beforeAll(() => {
+    previousIsTty = process.stdout.isTTY;
+    process.stdout.isTTY = true;
+  });
+
+  afterAll(() => {
+    process.stdout.isTTY = previousIsTty;
+  });
+
+  test('Prints a message when a new version is available', async () => {
+    // Given the current version is 1.0.0 and the latest version is 1.1.0
+    const currentVersion = '1.0.0';
+    jest.spyOn(npm, 'getLatestVersionFromNpm').mockResolvedValue('1.1.0');
+    const printSpy = jest.spyOn(logging, 'print');
+
+    // When displayVersionMessage is called
+    await displayVersionMessage(currentVersion, new VersionCheckTTL(tmpfile(), 0));
+
+    // Then the new version message is printed to stdout
+    expect(printSpy).toHaveBeenCalledWith(expect.stringContaining('1.1.0'));
+  });
+
+  test('Includes major upgrade documentation when available', async() => {
+    // Given the current version is 1.0.0 and the latest version is 2.0.0
+    const currentVersion = '1.0.0';
+    jest.spyOn(npm, 'getLatestVersionFromNpm').mockResolvedValue('2.0.0');
+    const printSpy = jest.spyOn(logging, 'print');
+
+    // When displayVersionMessage is called
+    await displayVersionMessage(currentVersion, new VersionCheckTTL(tmpfile(), 0));
+
+    // Then the V1 -> V2 documentation is printed
+    expect(printSpy).toHaveBeenCalledWith(expect.stringContaining('Information about upgrading from version 1.x to version 2.x is available here: https://docs.aws.amazon.com/cdk/v2/guide/migrating-v2.html'));
+  });
+
+  test('Does not include major upgrade documentation when unavailable', async() => {
+    // Given current version is 99.0.0 and the latest version is 100.0.0
+    const currentVersion = '99.0.0';
+    jest.spyOn(npm, 'getLatestVersionFromNpm').mockResolvedValue('100.0.0');
+    const printSpy = jest.spyOn(logging, 'print');
+
+    // When displayVersionMessage is called
+    await displayVersionMessage(currentVersion, new VersionCheckTTL(tmpfile(), 0));
+
+    // Then no upgrade documentation is printed
+    expect(printSpy).toHaveBeenCalledWith(expect.stringContaining('100.0.0'));
+    expect(printSpy).not.toHaveBeenCalledWith(expect.stringContaining('Information about upgrading from 99.x to 100.x'));
+  });
 });

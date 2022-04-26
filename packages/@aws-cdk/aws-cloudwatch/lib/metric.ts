@@ -1,11 +1,18 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
 import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Unit } from './metric-types';
 import { dispatchMetric, metricKey } from './private/metric-util';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 export type DimensionHash = {[dim: string]: any};
+
+export type DimensionsMap = { [dim: string]: string };
 
 /**
  * Options shared by most methods accepting metric options
@@ -38,8 +45,17 @@ export interface CommonMetricOptions {
    * Dimensions of the metric
    *
    * @default - No dimensions.
+   *
+   * @deprecated Use 'dimensionsMap' instead.
    */
   readonly dimensions?: DimensionHash;
+
+  /**
+   * Dimensions of the metric
+   *
+   * @default - No dimensions.
+   */
+  readonly dimensionsMap?: DimensionsMap;
 
   /**
    * Unit used to filter the metric stream
@@ -53,31 +69,46 @@ export interface CommonMetricOptions {
    *
    * CloudWatch does not honor this property for graphs.
    *
-   * @default All metric datums in the given metric stream
+   * @default - All metric datums in the given metric stream
    */
   readonly unit?: Unit;
 
   /**
    * Label for this metric when added to a Graph in a Dashboard
+   *
+   * You can use [dynamic labels](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/graph-dynamic-labels.html)
+   * to show summary information about the entire displayed time series
+   * in the legend. For example, if you use:
+   *
+   * ```
+   * [max: ${MAX}] MyMetric
+   * ```
+   *
+   * As the metric label, the maximum value in the visible range will
+   * be shown next to the time series name in the graph's legend.
+   *
+   * @default - No label
    */
   readonly label?: string;
 
   /**
-   * Color for this metric when added to a Graph in a Dashboard
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this metric is rendered on a graph.
+   * The `Color` class has a set of standard colors that can be used here.
+   * @default - Automatic color
    */
   readonly color?: string;
 
   /**
    * Account which this metric comes from.
    *
-   * @default Deployment account.
+   * @default - Deployment account.
    */
   readonly account?: string;
 
   /**
    * Region which this metric comes from.
    *
-   * @default Deployment region.
+   * @default - Deployment region.
    */
   readonly region?: string;
 }
@@ -108,7 +139,28 @@ export interface MetricOptions extends CommonMetricOptions {
  */
 export interface MathExpressionOptions {
   /**
-   * Label for this metric when added to a Graph in a Dashboard
+   * Label for this expression when added to a Graph in a Dashboard
+   *
+   * If this expression evaluates to more than one time series (for
+   * example, through the use of `METRICS()` or `SEARCH()` expressions),
+   * each time series will appear in the graph using a combination of the
+   * expression label and the individual metric label. Specify the empty
+   * string (`''`) to suppress the expression label and only keep the
+   * metric label.
+   *
+   * You can use [dynamic labels](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/graph-dynamic-labels.html)
+   * to show summary information about the displayed time series
+   * in the legend. For example, if you use:
+   *
+   * ```
+   * [max: ${MAX}] MyMetric
+   * ```
+   *
+   * As the metric label, the maximum value in the visible range will
+   * be shown next to the time series name in the graph's legend. If the
+   * math expression produces more than one time series, the maximum
+   * will be shown for each individual time series produce by this
+   * math expression.
    *
    * @default - Expression value is used as label
    */
@@ -130,6 +182,26 @@ export interface MathExpressionOptions {
    * @default Duration.minutes(5)
    */
   readonly period?: cdk.Duration;
+
+  /**
+   * Account to evaluate search expressions within.
+   *
+   * Specifying a searchAccount has no effect to the account used
+   * for metrics within the expression (passed via usingMetrics).
+   *
+   * @default - Deployment account.
+   */
+  readonly searchAccount?: string;
+
+  /**
+    * Region to evaluate search expressions within.
+    *
+    * Specifying a searchRegion has no effect to the region used
+    * for metrics within the expression (passed via usingMetrics).
+    *
+    * @default - Deployment region.
+    */
+  readonly searchRegion?: string;
 }
 
 /**
@@ -138,6 +210,9 @@ export interface MathExpressionOptions {
 export interface MathExpressionProps extends MathExpressionOptions {
   /**
    * The expression defining the metric.
+   *
+   * When an expression contains a SEARCH function, it cannot be used
+   * within an Alarm.
    */
   readonly expression: string;
 
@@ -146,8 +221,10 @@ export interface MathExpressionProps extends MathExpressionOptions {
    *
    * The key is the identifier that represents the given metric in the
    * expression, and the value is the actual Metric object.
+   *
+   * @default - Empty map.
    */
-  readonly usingMetrics: Record<string, IMetric>;
+  readonly usingMetrics?: Record<string, IMetric>;
 }
 
 /**
@@ -174,37 +251,32 @@ export class Metric implements IMetric {
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['cloudwatch:PutMetricData'],
-      resourceArns: ['*']
+      resourceArns: ['*'],
     });
   }
 
+  /** Dimensions of this metric */
   public readonly dimensions?: DimensionHash;
+  /** Namespace of this metric */
   public readonly namespace: string;
+  /** Name of this metric */
   public readonly metricName: string;
+  /** Period of this metric */
   public readonly period: cdk.Duration;
+  /** Statistic of this metric */
   public readonly statistic: string;
+  /** Label for this metric when added to a Graph in a Dashboard */
   public readonly label?: string;
+  /** The hex color code used when this metric is rendered on a graph. */
   public readonly color?: string;
 
-  /**
-   * Unit of the metric.
-   *
-   * @default None
-   */
+  /** Unit of the metric. */
   public readonly unit?: Unit;
 
-  /**
-   * Account which this metric comes from.
-   *
-   * @default Deployment account.
-   */
+  /** Account which this metric comes from */
   public readonly account?: string;
 
-  /**
-   * Region which this metric comes from.
-   *
-   * @default Deployment region.
-   */
+  /** Region which this metric comes from. */
   public readonly region?: string;
 
   constructor(props: MetricProps) {
@@ -213,12 +285,11 @@ export class Metric implements IMetric {
     if (periodSec !== 1 && periodSec !== 5 && periodSec !== 10 && periodSec !== 30 && periodSec % 60 !== 0) {
       throw new Error(`'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${periodSec}`);
     }
-
-    this.dimensions = props.dimensions;
+    this.dimensions = this.validateDimensions(props.dimensionsMap ?? props.dimensions);
     this.namespace = props.namespace;
     this.metricName = props.metricName;
     // Try parsing, this will throw if it's not a valid stat
-    this.statistic = normalizeStatistic(props.statistic || "Average");
+    this.statistic = normalizeStatistic(props.statistic || 'Average');
     this.label = props.label;
     this.color = props.color;
     this.unit = props.unit;
@@ -227,7 +298,7 @@ export class Metric implements IMetric {
   }
 
   /**
-   * Return a copy of Metric with properties changed.
+   * Return a copy of Metric `with` properties changed.
    *
    * All properties except namespace and metricName can be changed.
    *
@@ -244,12 +315,13 @@ export class Metric implements IMetric {
       // For these we're not going to do deep equality, misses some opportunity for optimization
       // but that's okay.
       && (props.dimensions === undefined)
+      && (props.dimensionsMap === undefined)
       && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())) {
       return this;
     }
 
     return new Metric({
-      dimensions: ifUndefined(props.dimensions, this.dimensions),
+      dimensionsMap: props.dimensionsMap ?? props.dimensions ?? this.dimensions,
       namespace: this.namespace,
       metricName: this.metricName,
       period: ifUndefined(props.period, this.period),
@@ -258,7 +330,7 @@ export class Metric implements IMetric {
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
       account: ifUndefined(props.account, this.account),
-      region: ifUndefined(props.region, this.region)
+      region: ifUndefined(props.region, this.region),
     });
   }
 
@@ -274,7 +346,7 @@ export class Metric implements IMetric {
    * If the scope we attach to is in an environment-agnostic stack,
    * nothing is done and the same Metric object is returned.
    */
-  public attachTo(scope: cdk.Construct): Metric {
+  public attachTo(scope: constructs.IConstruct): Metric {
     const stack = cdk.Stack.of(scope);
 
     return this.with({
@@ -298,15 +370,16 @@ export class Metric implements IMetric {
       },
       renderingProperties: {
         color: this.color,
-        label: this.label
-      }
+        label: this.label,
+      },
     };
   }
 
+  /** @deprecated use toMetricConfig() */
   public toAlarmConfig(): MetricAlarmConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+      throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
     const stat = parseStatistic(metricConfig.metricStat.statistic);
@@ -317,14 +390,17 @@ export class Metric implements IMetric {
       period: metricConfig.metricStat.period.toSeconds(),
       statistic: stat.type === 'simple' ? stat.statistic : undefined,
       extendedStatistic: stat.type === 'percentile' ? 'p' + stat.percentile : undefined,
-      unit: this.unit
+      unit: this.unit,
     };
   }
 
+  /**
+   * @deprecated use toMetricConfig()
+   */
   public toGraphConfig(): MetricGraphConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+      throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
     return {
@@ -342,7 +418,7 @@ export class Metric implements IMetric {
       statistic: metricConfig.metricStat.statistic,
       color: asString(metricConfig.renderingProperties?.color),
       label: asString(metricConfig.renderingProperties?.label),
-      unit: this.unit
+      unit: this.unit,
     };
   }
 
@@ -352,7 +428,7 @@ export class Metric implements IMetric {
    * Combines both properties that may adjust the metric (aggregation) as well
    * as alarm properties.
    */
-  public createAlarm(scope: cdk.Construct, id: string, props: CreateAlarmOptions): Alarm {
+  public createAlarm(scope: Construct, id: string, props: CreateAlarmOptions): Alarm {
     return new Alarm(scope, id, {
       metric: this.with({
         statistic: props.statistic,
@@ -388,6 +464,32 @@ export class Metric implements IMetric {
 
     return list;
   }
+
+  private validateDimensions(dims?: DimensionHash): DimensionHash | undefined {
+    if (!dims) {
+      return dims;
+    }
+
+    var dimsArray = Object.keys(dims);
+    if (dimsArray?.length > 10) {
+      throw new Error(`The maximum number of dimensions is 10, received ${dimsArray.length}`);
+    }
+
+    dimsArray.map(key => {
+      if (dims[key] === undefined || dims[key] === null) {
+        throw new Error(`Dimension value of '${dims[key]}' is invalid`);
+      };
+      if (key.length < 1 || key.length > 255) {
+        throw new Error(`Dimension name must be at least 1 and no more than 255 characters; received ${key}`);
+      };
+
+      if (dims[key].length < 1 || dims[key].length > 255) {
+        throw new Error(`Dimension value must be at least 1 and no more than 255 characters; received ${dims[key]}`);
+      };
+    });
+
+    return dims;
+  }
 }
 
 function asString(x?: unknown): string | undefined {
@@ -405,6 +507,10 @@ function asString(x?: unknown): string | undefined {
  * It also contains metadata which is used only in graphs, such as color and label.
  * It makes sense to embed this in here, so that compound constructs can attach
  * that metadata to metrics they expose.
+ *
+ * MathExpression can also be used for search expressions. In this case,
+ * it also optionally accepts a searchRegion and searchAccount property for cross-environment
+ * search expressions.
  *
  * This class does not represent a resource, so hence is not a construct. Instead,
  * MathExpression is an abstraction that makes it easy to specify metrics for use in both
@@ -427,7 +533,8 @@ export class MathExpression implements IMetric {
   public readonly label?: string;
 
   /**
-   * Color for this metric when added to a Graph.
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this metric is rendered on a graph.
+   * The `Color` class has a set of standard colors that can be used here.
    */
   public readonly color?: string;
 
@@ -436,19 +543,57 @@ export class MathExpression implements IMetric {
    */
   public readonly period: cdk.Duration;
 
+  /**
+   * Account to evaluate search expressions within.
+   */
+  public readonly searchAccount?: string;
+
+  /**
+   * Region to evaluate search expressions within.
+   */
+  public readonly searchRegion?: string;
+
+  /**
+   * Warnings generated by this math expression
+   */
+  public readonly warnings?: string[];
+
   constructor(props: MathExpressionProps) {
     this.period = props.period || cdk.Duration.minutes(5);
     this.expression = props.expression;
-    this.usingMetrics = changeAllPeriods(props.usingMetrics, this.period);
+    this.usingMetrics = changeAllPeriods(props.usingMetrics ?? {}, this.period);
     this.label = props.label;
     this.color = props.color;
+    this.searchAccount = props.searchAccount;
+    this.searchRegion = props.searchRegion;
 
-    const invalidVariableNames = Object.keys(props.usingMetrics).filter(x => !validVariableName(x));
+    const invalidVariableNames = Object.keys(this.usingMetrics).filter(x => !validVariableName(x));
     if (invalidVariableNames.length > 0) {
       throw new Error(`Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`);
     }
 
     this.validateNoIdConflicts();
+
+    // Check that all IDs used in the expression are also in the `usingMetrics` map. We
+    // can't throw on this anymore since we didn't use to do this validation from the start
+    // and now there will be loads of people who are violating the expected contract, but
+    // we can add warnings.
+    const missingIdentifiers = allIdentifiersInExpression(this.expression).filter(i => !this.usingMetrics[i]);
+
+    const warnings = [];
+
+    if (missingIdentifiers.length > 0) {
+      warnings.push(`Math expression '${this.expression}' references unknown identifiers: ${missingIdentifiers.join(', ')}. Please add them to the 'usingMetrics' map.`);
+    }
+
+    // Also copy warnings from deeper levels so graphs, alarms only have to inspect the top-level objects
+    for (const m of Object.values(this.usingMetrics)) {
+      warnings.push(...m.warnings ?? []);
+    }
+
+    if (warnings.length > 0) {
+      this.warnings = warnings;
+    }
   }
 
   /**
@@ -462,7 +607,9 @@ export class MathExpression implements IMetric {
     // Short-circuit creating a new object if there would be no effective change
     if ((props.label === undefined || props.label === this.label)
       && (props.color === undefined || props.color === this.color)
-      && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())) {
+      && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())
+      && (props.searchAccount === undefined || props.searchAccount === this.searchAccount)
+      && (props.searchRegion === undefined || props.searchRegion === this.searchRegion)) {
       return this;
     }
 
@@ -472,27 +619,38 @@ export class MathExpression implements IMetric {
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
       period: ifUndefined(props.period, this.period),
+      searchAccount: ifUndefined(props.searchAccount, this.searchAccount),
+      searchRegion: ifUndefined(props.searchRegion, this.searchRegion),
     });
   }
 
+  /**
+   * @deprecated use toMetricConfig()
+   */
   public toAlarmConfig(): MetricAlarmConfig {
-    throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+    throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
+  /**
+   * @deprecated use toMetricConfig()
+   */
   public toGraphConfig(): MetricGraphConfig {
-    throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+    throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
   public toMetricConfig(): MetricConfig {
     return {
       mathExpression: {
+        period: this.period.toSeconds(),
         expression: this.expression,
         usingMetrics: this.usingMetrics,
+        searchAccount: this.searchAccount,
+        searchRegion: this.searchRegion,
       },
       renderingProperties: {
         label: this.label,
-        color: this.color
-      }
+        color: this.color,
+      },
     };
   }
 
@@ -502,7 +660,7 @@ export class MathExpression implements IMetric {
    * Combines both properties that may adjust the metric (aggregation) as well
    * as alarm properties.
    */
-  public createAlarm(scope: cdk.Construct, id: string, props: CreateAlarmOptions): Alarm {
+  public createAlarm(scope: Construct, id: string, props: CreateAlarmOptions): Alarm {
     return new Alarm(scope, id, {
       metric: this.with({
         period: props.period,
@@ -541,17 +699,29 @@ export class MathExpression implements IMetric {
             seen.set(id, subMetric);
             visit(subMetric);
           }
-        }
+        },
       });
     }
   }
-
 }
 
-const VALID_VARIABLE = new RegExp('^[a-z][a-zA-Z0-9_]*$');
+/**
+ * Pattern for a variable name. Alphanum starting with lowercase.
+ */
+const VARIABLE_PAT = '[a-z][a-zA-Z0-9_]*';
+
+const VALID_VARIABLE = new RegExp(`^${VARIABLE_PAT}$`);
+const FIND_VARIABLE = new RegExp(VARIABLE_PAT, 'g');
 
 function validVariableName(x: string) {
   return VALID_VARIABLE.test(x);
+}
+
+/**
+ * Return all variable names used in an expression
+ */
+function allIdentifiersInExpression(x: string) {
+  return Array.from(matchAll(x, FIND_VARIABLE)).map(m => m[0]);
 }
 
 /**
@@ -709,4 +879,14 @@ interface IModifiableMetric {
 
 function isModifiableMetric(m: any): m is IModifiableMetric {
   return typeof m === 'object' && m !== null && !!m.with;
+}
+
+// Polyfill for string.matchAll(regexp)
+function matchAll(x: string, re: RegExp): RegExpMatchArray[] {
+  const ret = new Array<RegExpMatchArray>();
+  let m: RegExpExecArray | null;
+  while (m = re.exec(x)) {
+    ret.push(m);
+  }
+  return ret;
 }

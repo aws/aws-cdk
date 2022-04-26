@@ -19,9 +19,16 @@ const sourceAction = new cpactions.S3SourceAction({
   bucketKey: 'key',
 });
 
-const deployBucket = new s3.Bucket(stack, 'DeployBucket', {});
+const deployBucket = new s3.Bucket(stack, 'DeployBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
+const otherDeployBucket = new s3.Bucket(stack, 'OtherDeployBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
 
 new codepipeline.Pipeline(stack, 'Pipeline', {
+  artifactBucket: bucket,
   stages: [
     {
       stageName: 'Source',
@@ -39,7 +46,18 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
             cpactions.CacheControl.setPublic(),
             cpactions.CacheControl.maxAge(cdk.Duration.hours(12)),
           ],
-        })
+        }),
+      ],
+    },
+    {
+      stageName: 'Disabled',
+      transitionToEnabled: false,
+      actions: [
+        new cpactions.S3DeployAction({
+          actionName: 'DisabledDeployAction',
+          input: sourceOutput,
+          bucket: otherDeployBucket,
+        }),
       ],
     },
   ],

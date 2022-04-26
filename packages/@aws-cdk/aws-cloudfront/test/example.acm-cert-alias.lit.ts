@@ -1,6 +1,7 @@
 import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, Construct, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cloudfront from '../lib';
 
 class AcmCertificateAliasStack extends Stack {
@@ -17,7 +18,7 @@ class AcmCertificateAliasStack extends Stack {
     const distribution = new cloudfront.CloudFrontWebDistribution(this, 'AnAmazingWebsiteProbably', {
       originConfigs: [{
         s3OriginSource: { s3BucketSource },
-        behaviors: [{ isDefaultBehavior: true }]
+        behaviors: [{ isDefaultBehavior: true }],
       }],
       viewerCertificate: cloudfront.ViewerCertificate.fromAcmCertificate(
         certificate,
@@ -25,7 +26,7 @@ class AcmCertificateAliasStack extends Stack {
           aliases: ['example.com', 'www.example.com'],
           securityPolicy: cloudfront.SecurityPolicyProtocol.TLS_V1, // default
           sslMethod: cloudfront.SSLMethod.SNI, // default
-        }
+        },
       ),
     });
     /// !hide

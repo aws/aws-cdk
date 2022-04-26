@@ -1,12 +1,21 @@
-import { FileAssetPackaging } from '@aws-cdk/cdk-assets-schema';
 import { createReadStream, promises as fs } from 'fs';
 import * as path from 'path';
+import { FileAssetPackaging, FileSource } from '@aws-cdk/cloud-assembly-schema';
+import * as mime from 'mime';
 import { FileManifestEntry } from '../../asset-manifest';
 import { EventType } from '../../progress';
 import { zipDirectory } from '../archive';
-import { IAssetHandler, IHandlerHost } from "../asset-handler";
+import { IAssetHandler, IHandlerHost } from '../asset-handler';
 import { pathExists } from '../fs-extra';
-import { replaceAwsPlaceholders } from "../placeholders";
+import { replaceAwsPlaceholders } from '../placeholders';
+import { shell } from '../shell';
+
+/**
+ * The size of an empty zip file is 22 bytes
+ *
+ * Ref: https://en.wikipedia.org/wiki/ZIP_(file_format)
+ */
+const EMPTY_ZIP_FILE_SIZE = 22;
 
 export class FileAssetHandler implements IAssetHandler {
   private readonly fileCacheRoot: string;
@@ -21,18 +30,21 @@ export class FileAssetHandler implements IAssetHandler {
   public async publish(): Promise<void> {
     const destination = await replaceAwsPlaceholders(this.asset.destination, this.host.aws);
     const s3Url = `s3://${destination.bucketName}/${destination.objectKey}`;
-
     const s3 = await this.host.aws.s3Client(destination);
     this.host.emitMessage(EventType.CHECK, `Check ${s3Url}`);
 
-    const account = await this.host.aws.discoverCurrentAccount();
-    switch (await bucketOwnership(s3, destination.bucketName)) {
+    const bucketInfo = BucketInformation.for(this.host);
+
+    // A thunk for describing the current account. Used when we need to format an error
+    // message, not in the success case.
+    const account = async () => (await this.host.aws.discoverTargetAccount(destination))?.accountId;
+    switch (await bucketInfo.bucketOwnership(s3, destination.bucketName)) {
       case BucketOwnership.MINE:
         break;
       case BucketOwnership.DOES_NOT_EXIST:
-        throw new Error(`No bucket named '${destination.bucketName}'. Is account ${account} bootstrapped?`);
+        throw new Error(`No bucket named '${destination.bucketName}'. Is account ${await account()} bootstrapped?`);
       case BucketOwnership.SOMEONE_ELSES_OR_NO_ACCESS:
-        throw new Error(`Bucket named '${destination.bucketName}' exists, but not in account ${account}. Wrong account?`);
+        throw new Error(`Bucket named '${destination.bucketName}' exists, but not in account ${await account()}. Wrong account?`);
     }
 
     if (await objectExists(s3, destination.bucketName, destination.objectKey)) {
@@ -40,38 +52,110 @@ export class FileAssetHandler implements IAssetHandler {
       return;
     }
 
+    // Identify the the bucket encryption type to set the header on upload
+    // required for SCP rules denying uploads without encryption header
+    let paramsEncryption: {[index: string]:any}= {};
+    const encryption2 = await bucketInfo.bucketEncryption(s3, destination.bucketName);
+    switch (encryption2.type) {
+      case 'no_encryption':
+        break;
+      case 'aes256':
+        paramsEncryption = { ServerSideEncryption: 'AES256' };
+        break;
+      case 'kms':
+        // We must include the key ID otherwise S3 will encrypt with the default key
+        paramsEncryption = {
+          ServerSideEncryption: 'aws:kms',
+          SSEKMSKeyId: encryption2.kmsKeyId,
+        };
+        break;
+      case 'does_not_exist':
+        this.host.emitMessage(EventType.DEBUG, `No bucket named '${destination.bucketName}'. Is account ${await account()} bootstrapped?`);
+        break;
+      case 'access_denied':
+        this.host.emitMessage(EventType.DEBUG, `Could not read encryption settings of bucket '${destination.bucketName}': uploading with default settings ("cdk bootstrap" to version 9 if your organization's policies prevent a successful upload or to get rid of this message).`);
+        break;
+    }
+
     if (this.host.aborted) { return; }
-    const publishFile = await this.packageFile();
-    const contentType = this.asset.source.packaging === FileAssetPackaging.ZIP_DIRECTORY ? 'application/zip' : undefined;
+    const publishFile = this.asset.source.executable ?
+      await this.externalPackageFile(this.asset.source.executable) : await this.packageFile(this.asset.source);
+
+    // Add a validation to catch the cases where we're accidentally producing an empty ZIP file (or worse,
+    // an empty file)
+    if (publishFile.contentType === 'application/zip') {
+      const fileSize = (await fs.stat(publishFile.packagedPath)).size;
+      if (fileSize <= EMPTY_ZIP_FILE_SIZE) {
+        const message = [
+          '🚨 WARNING: EMPTY ZIP FILE 🚨',
+          '',
+          'Zipping this asset produced an empty zip file. We do not know the root cause for this yet, and we need your help tracking it down.',
+          '',
+          'Please visit https://github.com/aws/aws-cdk/issues/18459 and tell us:',
+          'Your OS version, Nodejs version, CLI version, package manager, what the asset is supposed to contain, whether',
+          'or not this error is reproducible, what files are in your cdk.out directory, if you recently changed anything,',
+          'and anything else you think might be relevant.',
+          '',
+          'The deployment will continue, but it may fail. You can try removing the cdk.out directory and running the command',
+          'again; let us know if that resolves it.',
+          '',
+          'If you meant to produce an empty asset file on purpose, you can add an empty dotfile to the asset for now',
+          'to disable this notice.',
+        ];
+
+        for (const line of message) {
+          this.host.emitMessage(EventType.FAIL, line);
+        }
+      }
+    }
 
     this.host.emitMessage(EventType.UPLOAD, `Upload ${s3Url}`);
-    await s3.upload({
+
+    const params = Object.assign({}, {
       Bucket: destination.bucketName,
       Key: destination.objectKey,
-      Body: createReadStream(publishFile),
-      ContentType: contentType
-    }).promise();
+      Body: createReadStream(publishFile.packagedPath),
+      ContentType: publishFile.contentType,
+    },
+    paramsEncryption);
+
+    await s3.upload(params).promise();
   }
 
-  private async packageFile(): Promise<string> {
-    const source = this.asset.source;
-    const fullPath = path.join(this.workDir, this.asset.source.path);
+  private async packageFile(source: FileSource): Promise<PackagedFileAsset> {
+    if (!source.path) {
+      throw new Error(`'path' is expected in the File asset source, got: ${JSON.stringify(source)}`);
+    }
+
+    const fullPath = path.resolve(this.workDir, source.path);
 
     if (source.packaging === FileAssetPackaging.ZIP_DIRECTORY) {
-      await fs.mkdir(this.fileCacheRoot, { recursive: true });
-      const ret = path.join(this.fileCacheRoot, `${this.asset.id.assetId}.zip`);
+      const contentType = 'application/zip';
 
-      if (await pathExists(ret)) {
-        this.host.emitMessage(EventType.CACHED, `From cache ${ret}`);
-        return ret;
+      await fs.mkdir(this.fileCacheRoot, { recursive: true });
+      const packagedPath = path.join(this.fileCacheRoot, `${this.asset.id.assetId}.zip`);
+
+      if (await pathExists(packagedPath)) {
+        this.host.emitMessage(EventType.CACHED, `From cache ${packagedPath}`);
+        return { packagedPath, contentType };
       }
 
-      this.host.emitMessage(EventType.BUILD, `Zip ${fullPath} -> ${ret}`);
-      await zipDirectory(fullPath, ret);
-      return ret;
+      this.host.emitMessage(EventType.BUILD, `Zip ${fullPath} -> ${packagedPath}`);
+      await zipDirectory(fullPath, packagedPath);
+      return { packagedPath, contentType };
     } else {
-      return fullPath;
+      const contentType = mime.getType(fullPath) ?? 'application/octet-stream';
+      return { packagedPath: fullPath, contentType };
     }
+  }
+
+  private async externalPackageFile(executable: string[]): Promise<PackagedFileAsset> {
+    this.host.emitMessage(EventType.BUILD, `Building asset source using command: '${executable}'`);
+
+    return {
+      packagedPath: (await shell(executable, { quiet: true })).trim(),
+      contentType: 'application/zip',
+    };
   }
 }
 
@@ -81,26 +165,136 @@ enum BucketOwnership {
   SOMEONE_ELSES_OR_NO_ACCESS
 }
 
-async function bucketOwnership(s3: AWS.S3, bucket: string): Promise<BucketOwnership> {
-  try {
-    await s3.getBucketLocation({ Bucket: bucket }).promise();
-    return BucketOwnership.MINE;
-  } catch (e) {
-    if (e.code === 'NoSuchBucket') { return BucketOwnership.DOES_NOT_EXIST; }
-    if (['AccessDenied', 'AllAccessDisabled'].includes(e.code)) { return BucketOwnership.SOMEONE_ELSES_OR_NO_ACCESS; }
-    throw e;
+type BucketEncryption =
+  | { readonly type: 'no_encryption' }
+  | { readonly type: 'aes256' }
+  | { readonly type: 'kms'; readonly kmsKeyId?: string }
+  | { readonly type: 'access_denied' }
+  | { readonly type: 'does_not_exist' }
+  ;
+
+async function objectExists(s3: AWS.S3, bucket: string, key: string) {
+  /*
+   * The object existence check here refrains from using the `headObject` operation because this
+   * would create a negative cache entry, making GET-after-PUT eventually consistent. This has been
+   * observed to result in CloudFormation issuing "ValidationError: S3 error: Access Denied", for
+   * example in https://github.com/aws/aws-cdk/issues/6430.
+   *
+   * To prevent this, we are instead using the listObjectsV2 call, using the looked up key as the
+   * prefix, and limiting results to 1. Since the list operation returns keys ordered by binary
+   * UTF-8 representation, the key we are looking for is guaranteed to always be the first match
+   * returned if it exists.
+   *
+   * If the file is too small, we discount it as a cache hit. There is an issue
+   * somewhere that sometimes produces empty zip files, and we would otherwise
+   * never retry building those assets without users having to manually clear
+   * their bucket, which is a bad experience.
+   */
+  const response = await s3.listObjectsV2({ Bucket: bucket, Prefix: key, MaxKeys: 1 }).promise();
+  return (
+    response.Contents != null &&
+    response.Contents.some(
+      (object) => object.Key === key && (object.Size == null || object.Size > EMPTY_ZIP_FILE_SIZE),
+    )
+  );
+}
+
+
+/**
+ * A packaged asset which can be uploaded (either a single file or directory)
+ */
+interface PackagedFileAsset {
+  /**
+   * Path of the file or directory
+   */
+  readonly packagedPath: string;
+
+  /**
+   * Content type to be added in the S3 upload action
+   *
+   * @default - No content type
+   */
+  readonly contentType?: string;
+}
+
+
+/**
+ * Cache for bucket information, so we don't have to keep doing the same calls again and again
+ *
+ * We scope the lifetime of the cache to the lifetime of the host, so that we don't have to do
+ * anything special for tests and yet the cache will live for the entire lifetime of the asset
+ * upload session when used by the CLI.
+ */
+class BucketInformation {
+  public static for(host: IHandlerHost) {
+    const existing = BucketInformation.caches.get(host);
+    if (existing) { return existing; }
+
+    const fresh = new BucketInformation();
+    BucketInformation.caches.set(host, fresh);
+    return fresh;
+  }
+
+  private static readonly caches = new WeakMap<IHandlerHost, BucketInformation>();
+
+  private readonly ownerships = new Map<string, BucketOwnership>();
+  private readonly encryptions = new Map<string, BucketEncryption>();
+
+  private constructor() {
+  }
+
+  public async bucketOwnership(s3: AWS.S3, bucket: string): Promise<BucketOwnership> {
+    return cached(this.ownerships, bucket, () => this._bucketOwnership(s3, bucket));
+  }
+
+  public async bucketEncryption(s3: AWS.S3, bucket: string): Promise<BucketEncryption> {
+    return cached(this.encryptions, bucket, () => this._bucketEncryption(s3, bucket));
+  }
+
+  private async _bucketOwnership(s3: AWS.S3, bucket: string): Promise<BucketOwnership> {
+    try {
+      await s3.getBucketLocation({ Bucket: bucket }).promise();
+      return BucketOwnership.MINE;
+    } catch (e) {
+      if (e.code === 'NoSuchBucket') { return BucketOwnership.DOES_NOT_EXIST; }
+      if (['AccessDenied', 'AllAccessDisabled'].includes(e.code)) { return BucketOwnership.SOMEONE_ELSES_OR_NO_ACCESS; }
+      throw e;
+    }
+  }
+
+  private async _bucketEncryption(s3: AWS.S3, bucket: string): Promise<BucketEncryption> {
+    try {
+      const encryption = await s3.getBucketEncryption({ Bucket: bucket }).promise();
+      const l = encryption?.ServerSideEncryptionConfiguration?.Rules?.length ?? 0;
+      if (l > 0) {
+        const apply = encryption?.ServerSideEncryptionConfiguration?.Rules[0]?.ApplyServerSideEncryptionByDefault;
+        let ssealgo = apply?.SSEAlgorithm;
+        if (ssealgo === 'AES256') return { type: 'aes256' };
+        if (ssealgo === 'aws:kms') return { type: 'kms', kmsKeyId: apply?.KMSMasterKeyID };
+      }
+      return { type: 'no_encryption' };
+    } catch (e) {
+      if (e.code === 'NoSuchBucket') {
+        return { type: 'does_not_exist' };
+      }
+      if (e.code === 'ServerSideEncryptionConfigurationNotFoundError') {
+        return { type: 'no_encryption' };
+      }
+
+      if (['AccessDenied', 'AllAccessDisabled'].includes(e.code)) {
+        return { type: 'access_denied' };
+      }
+      return { type: 'no_encryption' };
+    }
   }
 }
 
-async function objectExists(s3: AWS.S3, bucket: string, key: string) {
-  try {
-    await s3.headObject({ Bucket: bucket, Key: key }).promise();
-    return true;
-  } catch (e) {
-    if (e.code === 'NotFound') {
-      return false;
-    }
-
-    throw e;
+async function cached<A, B>(cache: Map<A, B>, key: A, factory: (x: A) => Promise<B>): Promise<B> {
+  if (cache.has(key)) {
+    return cache.get(key)!;
   }
+
+  const fresh = await factory(key);
+  cache.set(key, fresh);
+  return fresh;
 }

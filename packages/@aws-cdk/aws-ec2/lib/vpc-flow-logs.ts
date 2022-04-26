@@ -1,14 +1,19 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, IResource, PhysicalName, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { IResource, PhysicalName, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnFlowLog } from './ec2.generated';
 import { ISubnet, IVpc } from './vpc';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * A FlowLog
  *
- * @experimental
+ *
  */
 export interface IFlowLog extends IResource {
   /**
@@ -22,7 +27,7 @@ export interface IFlowLog extends IResource {
 /**
  * The type of VPC traffic to log
  *
- * @experimental
+ *
  */
 export enum FlowLogTrafficType {
   /**
@@ -43,7 +48,7 @@ export enum FlowLogTrafficType {
 
 /**
  * The available destination types for Flow Logs
- * @experimental
+ *
  */
 export enum FlowLogDestinationType {
   /**
@@ -60,7 +65,7 @@ export enum FlowLogDestinationType {
 /**
  * The type of resource to create the flow log for
  *
- * @experimental
+ *
  */
 export abstract class FlowLogResourceType {
   /**
@@ -69,7 +74,7 @@ export abstract class FlowLogResourceType {
   public static fromSubnet(subnet: ISubnet): FlowLogResourceType {
     return {
       resourceType: 'Subnet',
-      resourceId: subnet.subnetId
+      resourceId: subnet.subnetId,
     };
   }
 
@@ -79,7 +84,7 @@ export abstract class FlowLogResourceType {
   public static fromVpc(vpc: IVpc): FlowLogResourceType {
     return {
       resourceType: 'VPC',
-      resourceId: vpc.vpcId
+      resourceId: vpc.vpcId,
     };
   }
 
@@ -89,7 +94,7 @@ export abstract class FlowLogResourceType {
   public static fromNetworkInterfaceId(id: string): FlowLogResourceType {
     return {
       resourceType: 'NetworkInterface',
-      resourceId: id
+      resourceId: id,
     };
   }
 
@@ -107,7 +112,7 @@ export abstract class FlowLogResourceType {
 /**
  * The destination type for the flow log
  *
- * @experimental
+ *
  */
 export abstract class FlowLogDestination {
   /**
@@ -117,30 +122,31 @@ export abstract class FlowLogDestination {
     return new CloudWatchLogsDestination({
       logDestinationType: FlowLogDestinationType.CLOUD_WATCH_LOGS,
       logGroup,
-      iamRole
+      iamRole,
     });
   }
 
   /**
    * Use S3 as the destination
    */
-  public static toS3(bucket?: s3.IBucket): FlowLogDestination {
+  public static toS3(bucket?: s3.IBucket, keyPrefix?: string): FlowLogDestination {
     return new S3Destination({
       logDestinationType: FlowLogDestinationType.S3,
-      s3Bucket: bucket
+      s3Bucket: bucket,
+      keyPrefix,
     });
   }
 
   /**
    * Generates a flow log destination configuration
    */
-  public abstract bind(scope: Construct, flowLog: FlowLog): FlowLogDestinationConfig;
+  public abstract bind(scope: CoreConstruct, flowLog: FlowLog): FlowLogDestinationConfig;
 }
 
 /**
  * Flow Log Destination configuration
  *
- * @experimental
+ *
  */
 export interface FlowLogDestinationConfig {
   /**
@@ -170,48 +176,56 @@ export interface FlowLogDestinationConfig {
    * @default - undefined
    */
   readonly s3Bucket?: s3.IBucket;
+
+  /**
+   * S3 bucket key prefix to publish the flow logs to
+   *
+   * @default - undefined
+   */
+  readonly keyPrefix?: string;
 }
 
 /**
- * @experimental
+ *
  */
 class S3Destination extends FlowLogDestination {
   constructor(private readonly props: FlowLogDestinationConfig) {
     super();
   }
 
-  public bind(scope: Construct, _flowLog: FlowLog): FlowLogDestinationConfig {
+  public bind(scope: CoreConstruct, _flowLog: FlowLog): FlowLogDestinationConfig {
     let s3Bucket: s3.IBucket;
     if (this.props.s3Bucket === undefined) {
       s3Bucket = new s3.Bucket(scope, 'Bucket', {
         encryption: s3.BucketEncryption.UNENCRYPTED,
-        removalPolicy: RemovalPolicy.RETAIN
+        removalPolicy: RemovalPolicy.RETAIN,
       });
     } else {
       s3Bucket = this.props.s3Bucket;
     }
     return {
       logDestinationType: FlowLogDestinationType.S3,
-      s3Bucket
+      s3Bucket,
+      keyPrefix: this.props.keyPrefix,
     };
   }
 }
 
 /**
- * @experimental
+ *
  */
 class CloudWatchLogsDestination extends FlowLogDestination {
   constructor(private readonly props: FlowLogDestinationConfig) {
     super();
   }
 
-  public bind(scope: Construct, _flowLog: FlowLog): FlowLogDestinationConfig {
+  public bind(scope: CoreConstruct, _flowLog: FlowLog): FlowLogDestinationConfig {
     let iamRole: iam.IRole;
     let logGroup: logs.ILogGroup;
     if (this.props.iamRole === undefined) {
       iamRole = new iam.Role(scope, 'IAMRole', {
         roleName: PhysicalName.GENERATE_IF_NEEDED,
-        assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com')
+        assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com'),
       });
     } else {
       iamRole = this.props.iamRole;
@@ -223,30 +237,30 @@ class CloudWatchLogsDestination extends FlowLogDestination {
       logGroup = this.props.logGroup;
     }
 
-    iamRole.addToPolicy(
+    iamRole.addToPrincipalPolicy(
       new iam.PolicyStatement({
         actions: [
           'logs:CreateLogStream',
           'logs:PutLogEvents',
-          'logs:DescribeLogStreams'
+          'logs:DescribeLogStreams',
         ],
         effect: iam.Effect.ALLOW,
-        resources: [logGroup.logGroupArn]
-      })
+        resources: [logGroup.logGroupArn],
+      }),
     );
 
-    iamRole.addToPolicy(
+    iamRole.addToPrincipalPolicy(
       new iam.PolicyStatement({
         actions: ['iam:PassRole'],
         effect: iam.Effect.ALLOW,
-        resources: [iamRole.roleArn]
-      })
+        resources: [iamRole.roleArn],
+      }),
     );
 
     return {
       logDestinationType: FlowLogDestinationType.CLOUD_WATCH_LOGS,
       logGroup,
-      iamRole
+      iamRole,
     };
   }
 }
@@ -254,7 +268,7 @@ class CloudWatchLogsDestination extends FlowLogDestination {
 /**
  * Options to add a flow log to a VPC
  *
- * @experimental
+ *
  */
 export interface FlowLogOptions {
   /**
@@ -276,7 +290,7 @@ export interface FlowLogOptions {
 /**
  * Properties of a VPC Flow Log
  *
- * @experimental
+ *
  */
 export interface FlowLogProps extends FlowLogOptions {
   /**
@@ -298,7 +312,7 @@ export interface FlowLogProps extends FlowLogOptions {
 /**
  * The base class for a Flow Log
  *
- * @experimental
+ *
  */
 abstract class FlowLogBase extends Resource implements IFlowLog {
   /**
@@ -313,7 +327,7 @@ abstract class FlowLogBase extends Resource implements IFlowLog {
  * A VPC flow log.
  * @resource AWS::EC2::FlowLog
  *
- * @experimental
+ *
  */
 export class FlowLog extends FlowLogBase {
   /**
@@ -340,6 +354,11 @@ export class FlowLog extends FlowLogBase {
   public readonly bucket?: s3.IBucket;
 
   /**
+   * S3 bucket key prefix to publish the flow logs under
+   */
+  readonly keyPrefix?: string;
+
+  /**
    * The iam role used to publish logs to CloudWatch
    */
   public readonly iamRole?: iam.IRole;
@@ -351,7 +370,7 @@ export class FlowLog extends FlowLogBase {
 
   constructor(scope: Construct, id: string, props: FlowLogProps) {
     super(scope, id, {
-      physicalName: props.flowLogName
+      physicalName: props.flowLogName,
     });
 
     const destination = props.destination || FlowLogDestination.toCloudWatchLogs();
@@ -360,6 +379,12 @@ export class FlowLog extends FlowLogBase {
     this.logGroup = destinationConfig.logGroup;
     this.bucket = destinationConfig.s3Bucket;
     this.iamRole = destinationConfig.iamRole;
+    this.keyPrefix = destinationConfig.keyPrefix;
+
+    let logDestination: string | undefined = undefined;
+    if (this.bucket) {
+      logDestination = this.keyPrefix ? this.bucket.arnForObjects(this.keyPrefix) : this.bucket.bucketArn;
+    }
 
     const flowLog = new CfnFlowLog(this, 'FlowLog', {
       deliverLogsPermissionArn: this.iamRole ? this.iamRole.roleArn : undefined,
@@ -370,7 +395,7 @@ export class FlowLog extends FlowLogBase {
       trafficType: props.trafficType
         ? props.trafficType
         : FlowLogTrafficType.ALL,
-      logDestination: this.bucket ? this.bucket.bucketArn : undefined
+      logDestination,
     });
 
     this.flowLogId = flowLog.ref;

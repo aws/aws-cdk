@@ -5,32 +5,25 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "./clone.sh && cdk-build",
+    "build": "cdk-build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "pkglint": "pkglint -f",
+    "pkglint": "true",
     "package": "cdk-package",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test"
   },
   "cdk-build": {
+    "jest": true,
+    "pre": [
+      "./clone.sh"
+    ],
     "eslint": {
-      "disable": true
-    },
-    "tslint": {
       "disable": true
     },
     "pkglint": {
       "disable": true
-    }
-  },
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "statements": 75,
-        "branches": 65
-      }
     }
   },
   "author": {
@@ -40,20 +33,23 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^25.1.4",
-    "cdk-build-tools": "0.0.0",
-    "jest": "^24.9.0",
-    "pkglint": "0.0.0",
-    "ts-jest": "^25.2.0",
     "@monocdk-experiment/rewrite-imports": "0.0.0",
-    "monocdk-experiment": "0.0.0"
+    "@types/jest": "^27.4.1",
+    "@types/node": "^10.17.60",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "constructs": "^3.3.69",
+    "jest": "^27.5.1",
+    "monocdk": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "ts-jest": "^27.1.4"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "0.0.0"
   },
   "peerDependencies": {
-    "jest": "^24.9.0",
-    "monocdk-experiment": "^0.0.0"
+    "constructs": "^3.3.69",
+    "jest": "^27.5.1",
+    "monocdk": "^0.0.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -66,7 +62,11 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "experimental"
+  "stability": "deprecated",
+  "maturity": "deprecated",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

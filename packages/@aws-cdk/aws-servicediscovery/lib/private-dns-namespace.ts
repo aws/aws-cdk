@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, Resource } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
 import { CfnPrivateDnsNamespace } from './servicediscovery.generated';
@@ -68,13 +69,13 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
   constructor(scope: Construct, id: string, props: PrivateDnsNamespaceProps) {
     super(scope, id);
     if (props.vpc === undefined) {
-      throw new Error(`VPC must be specified for PrivateDNSNamespaces`);
+      throw new Error('VPC must be specified for PrivateDNSNamespaces');
     }
 
     const ns = new CfnPrivateDnsNamespace(this, 'Resource', {
       name: props.name,
       description: props.description,
-      vpc: props.vpc.vpcId
+      vpc: props.vpc.vpcId,
     });
 
     this.namespaceName = props.name;
@@ -98,7 +99,7 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
   public createService(id: string, props?: DnsServiceProps): Service {
     return new Service(this, id, {
       namespace: this,
-      ...props
+      ...props,
     });
   }
 }

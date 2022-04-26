@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BaseInstanceProps, InstanceBase } from './instance';
 import { NamespaceType } from './namespace';
 import { DnsRecordType, IService } from './service';
@@ -46,7 +46,7 @@ export class CnameInstance extends InstanceBase {
    */
   public readonly cname: string;
 
-  constructor(scope: cdk.Construct, id: string, props: CnameInstanceProps) {
+  constructor(scope: Construct, id: string, props: CnameInstanceProps) {
     super(scope, id);
 
     if (props.service.namespace.type === NamespaceType.HTTP) {
@@ -62,8 +62,8 @@ export class CnameInstance extends InstanceBase {
       serviceId: props.service.serviceId,
       instanceAttributes: {
         AWS_INSTANCE_CNAME: props.instanceCname,
-        ...props.customAttributes
-      }
+        ...props.customAttributes,
+      },
     });
 
     this.service = props.service;

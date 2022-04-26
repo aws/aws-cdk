@@ -1,5 +1,8 @@
-import * as deepEqual from 'fast-deep-equal';
 import { deepRemoveUndefined } from '../util';
+
+// namespace object imports won't work in the bundle for function exports
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const deepEqual = require('fast-deep-equal');
 
 export class Statement {
   /**
@@ -32,36 +35,76 @@ export class Statement {
    */
   public readonly condition?: any;
 
-  constructor(statement: UnknownMap) {
-    this.sid = expectString(statement.Sid);
-    this.effect = expectEffect(statement.Effect);
-    this.resources = new Targets(statement, 'Resource', 'NotResource');
-    this.actions = new Targets(statement, 'Action', 'NotAction');
-    this.principals = new Targets(statement, 'Principal', 'NotPrincipal');
-    this.condition = statement.Condition;
+  private readonly serializedIntrinsic: string | undefined;
+
+  constructor(statement: UnknownMap | string) {
+    if (typeof statement === 'string') {
+      this.sid = undefined;
+      this.effect = Effect.Unknown;
+      this.resources = new Targets({}, '', '');
+      this.actions = new Targets({}, '', '');
+      this.principals = new Targets({}, '', '');
+      this.condition = undefined;
+      this.serializedIntrinsic = statement;
+    } else {
+      this.sid = expectString(statement.Sid);
+      this.effect = expectEffect(statement.Effect);
+      this.resources = new Targets(statement, 'Resource', 'NotResource');
+      this.actions = new Targets(statement, 'Action', 'NotAction');
+      this.principals = new Targets(statement, 'Principal', 'NotPrincipal');
+      this.condition = statement.Condition;
+      this.serializedIntrinsic = undefined;
+    }
   }
 
   /**
    * Whether this statement is equal to the other statement
    */
-  public equal(other: Statement) {
+  public equal(other: Statement): boolean {
     return (this.sid === other.sid
       && this.effect === other.effect
+      && this.serializedIntrinsic === other.serializedIntrinsic
       && this.resources.equal(other.resources)
       && this.actions.equal(other.actions)
       && this.principals.equal(other.principals)
       && deepEqual(this.condition, other.condition));
   }
 
-  public toJson(): StatementJson {
-    return deepRemoveUndefined({
-      sid: this.sid,
-      effect: this.effect,
-      resources: this.resources.toJson(),
-      principals: this.principals.toJson(),
-      actions: this.actions.toJson(),
-      condition: this.condition,
-    });
+  public render(): RenderedStatement {
+    return this.serializedIntrinsic
+      ? {
+        resource: this.serializedIntrinsic,
+        effect: '',
+        action: '',
+        principal: this.principals.render(), // these will be replaced by the call to replaceEmpty() from IamChanges
+        condition: '',
+      }
+      : {
+        resource: this.resources.render(),
+        effect: this.effect,
+        action: this.actions.render(),
+        principal: this.principals.render(),
+        condition: renderCondition(this.condition),
+      };
+  }
+
+  /**
+   * Return a machine-readable version of the changes.
+   * This is only used in tests.
+   *
+   * @internal
+   */
+  public _toJson(): StatementJson {
+    return this.serializedIntrinsic
+      ? this.serializedIntrinsic
+      : deepRemoveUndefined({
+        sid: this.sid,
+        effect: this.effect,
+        resources: this.resources._toJson(),
+        principals: this.principals._toJson(),
+        actions: this.actions._toJson(),
+        condition: this.condition,
+      });
   }
 
   /**
@@ -74,6 +117,14 @@ export class Statement {
     const notTarget = this.actions.not || this.principals.not || this.resources.not;
     return this.effect === Effect.Allow ? notTarget : !notTarget;
   }
+}
+
+export interface RenderedStatement {
+  readonly resource: string;
+  readonly effect: string;
+  readonly action: string;
+  readonly principal: string;
+  readonly condition: string;
 }
 
 export interface StatementJson {
@@ -199,7 +250,22 @@ export class Targets {
     this.values.sort();
   }
 
-  public toJson(): TargetsJson {
+  /**
+   * Render into a summary table cell
+   */
+  public render(): string {
+    return this.not
+      ? this.values.map(s => `NOT ${s}`).join('\n')
+      : this.values.join('\n');
+  }
+
+  /**
+   * Return a machine-readable version of the changes.
+   * This is only used in tests.
+   *
+   * @internal
+   */
+  public _toJson(): TargetsJson {
     return { not: this.not, values: this.values };
   }
 }
@@ -243,7 +309,7 @@ function forceListOfStrings(x: unknown): string[] {
 /**
  * Render the Condition column
  */
-export function renderCondition(condition: any) {
+export function renderCondition(condition: any): string {
   if (!condition || Object.keys(condition).length === 0) { return ''; }
   const jsonRepresentation = JSON.stringify(condition, undefined, 2);
 
@@ -258,5 +324,5 @@ export function renderCondition(condition: any) {
   // We can make it more compact without losing information by getting rid of the outermost braces
   // and the indentation.
   const lines = jsonRepresentation.split('\n');
-  return lines.slice(1, lines.length - 1).map(s => s.substr(2)).join('\n');
+  return lines.slice(1, lines.length - 1).map(s => s.slice(2)).join('\n');
 }

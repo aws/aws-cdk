@@ -1,7 +1,6 @@
-import * as fs from 'fs-extra';
-import * as os from 'os';
 import * as path from 'path';
-import { debug } from '../../logging';
+import * as fs from 'fs-extra';
+import { accountCacheDir, debug } from './_env';
 import { Account } from './sdk-provider';
 
 /**
@@ -22,7 +21,7 @@ export class AccountAccessKeyCache {
    * @param filePath Path to the cache file
    */
   constructor(filePath?: string) {
-    this.cacheFile = filePath || path.join(os.homedir(), '.cdk', 'cache', 'accounts_partitions.json');
+    this.cacheFile = filePath || path.join(accountCacheDir(), 'accounts_partitions.json');
   }
 
   /**
@@ -39,11 +38,10 @@ export class AccountAccessKeyCache {
    * @param accessKeyId
    * @param resolver
    */
-  public async fetch(accessKeyId: string, resolver: () => Promise<Account | undefined>) {
+  public async fetch<A extends Account>(accessKeyId: string, resolver: () => Promise<A>) {
     // try to get account ID based on this access key ID from disk.
     const cached = await this.get(accessKeyId);
     if (cached) {
-
       debug(`Retrieved account ID ${cached.accountId} from disk cache`);
       return cached;
     }
@@ -63,7 +61,7 @@ export class AccountAccessKeyCache {
     return map[accessKeyId];
   }
 
-  /** Put a mapping betweenn access key and account ID */
+  /** Put a mapping between access key and account ID */
   public async put(accessKeyId: string, account: Account) {
     let map = await this.loadMap();
 
@@ -77,18 +75,28 @@ export class AccountAccessKeyCache {
   }
 
   private async loadMap(): Promise<{ [accessKeyId: string]: Account }> {
-    if (!(await fs.pathExists(this.cacheFile))) {
-      return { };
+    try {
+      return await fs.readJson(this.cacheFile);
+    } catch (e) {
+      // File doesn't exist or is not readable. This is a cache,
+      // pretend we successfully loaded an empty map.
+      if (e.code === 'ENOENT' || e.code === 'EACCES') { return {}; }
+      // File is not JSON, could be corrupted because of concurrent writes.
+      // Again, an empty cache is fine.
+      if (e instanceof SyntaxError) { return {}; }
+      throw e;
     }
-
-    return await fs.readJson(this.cacheFile);
   }
 
   private async saveMap(map: { [accessKeyId: string]: Account }) {
-    if (!(await fs.pathExists(this.cacheFile))) {
-      await fs.mkdirs(path.dirname(this.cacheFile));
+    try {
+      await fs.ensureFile(this.cacheFile);
+      await fs.writeJson(this.cacheFile, map, { spaces: 2 });
+    } catch (e) {
+      // File doesn't exist or file/dir isn't writable. This is a cache,
+      // if we can't write it then too bad.
+      if (e.code === 'ENOENT' || e.code === 'EACCES' || e.code === 'EROFS') { return; }
+      throw e;
     }
-
-    await fs.writeJson(this.cacheFile, map, { spaces: 2 });
   }
 }

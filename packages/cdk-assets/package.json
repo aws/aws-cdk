@@ -5,21 +5,23 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "bin": {
-    "cdk-assets": "bin/cdk-assets"
+    "cdk-assets": "bin/cdk-assets",
+    "docker-credential-cdk-assets": "bin/docker-credential-cdk-assets"
   },
   "scripts": {
     "build": "cdk-build",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
     "watch": "cdk-watch",
-    "cfn2ts": "cfn2ts",
-    "build+test": "npm run build && npm test",
-    "build+test+package": "npm run build+test && npm run package",
-    "compat": "cdk-compat"
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
+    "compat": "cdk-compat",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -28,25 +30,27 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/archiver": "^3.1.0",
-    "@types/glob": "^7.1.1",
-    "@types/jest": "^25.1.4",
-    "@types/mock-fs": "^4.10.0",
-    "@types/node": "^10.17.17",
-    "@types/yargs": "^15.0.4",
-    "@types/jszip": "^3.1.7",
-    "jszip": "^3.2.2",
-    "cdk-build-tools": "0.0.0",
-    "jest": "^24.9.0",
-    "mock-fs": "^4.11.0",
-    "pkglint": "0.0.0"
+    "@types/archiver": "^5.3.1",
+    "@types/glob": "^7.2.0",
+    "@types/jest": "^27.4.1",
+    "@types/mime": "^2.0.3",
+    "@types/mock-fs": "^4.13.1",
+    "@types/node": "^10.17.60",
+    "@types/yargs": "^15.0.14",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "jest": "^27.5.1",
+    "jszip": "^3.9.1",
+    "mock-fs": "^4.14.0",
+    "@aws-cdk/pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/cdk-assets-schema": "0.0.0",
-    "archiver": "^3.1.1",
-    "aws-sdk": "^2.638.0",
-    "glob": "^7.1.6",
-    "yargs": "^15.3.0"
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "archiver": "^5.3.0",
+    "aws-sdk": "^2.1093.0",
+    "glob": "^7.2.0",
+    "mime": "^2.6.0",
+    "yargs": "^16.2.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -59,24 +63,21 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "cdk-package": {
+    "shrinkWrap": true
+  },
+  "nozem": {
+    "ostools": [
+      "unzip",
+      "diff",
+      "rm"
+    ]
   },
   "stability": "experimental",
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 60,
-        "statements": 80
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
+  "maturity": "experimental",
+  "publishConfig": {
+    "tag": "latest-1"
   }
 }

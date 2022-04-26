@@ -1,0 +1,27 @@
+{
+  "Parameters": {
+    "MyBucketParameter": {
+      "Type": "String",
+      "Default": "default-bucket-param-name"
+    }
+  },
+  "Resources": {
+    "BucketImport": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Ref": "MyBucketParameter"
+        }
+      }
+    },
+    "GrandChildStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/grandchild-import-stack.json",
+        "Parameters": {
+          "MyBucketParameter": "some-other-bucket-name"
+        }
+      }
+    }
+  }
+}

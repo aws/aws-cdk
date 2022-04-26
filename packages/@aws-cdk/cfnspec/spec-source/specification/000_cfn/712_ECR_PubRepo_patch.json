@@ -1,0 +1,16 @@
+{
+  "ResourceTypes": {
+    "AWS::ECR::PublicRepository": {
+      "patch": {
+        "description": "Correct the missing type of the RepositoryPolicyText property for the AWS::ECR::PublicRepository resource type",
+        "operations": [
+          {
+            "op": "add",
+            "path": "/Properties/RepositoryPolicyText/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    }
+  }
+}

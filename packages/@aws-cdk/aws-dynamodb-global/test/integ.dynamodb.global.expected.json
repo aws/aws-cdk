@@ -1,7 +1,5 @@
 [
   {
-  },
-  {
     "Resources": {
       "globdynamodbintegGlobalTableuseast162596384": {
         "Type": "AWS::DynamoDB::Table",
@@ -134,14 +132,14 @@
             "Statement": [
               {
                 "Action": [
-                  "iam:CreateServiceLinkedRole",
                   "application-autoscaling:DeleteScalingPolicy",
                   "application-autoscaling:DeregisterScalableTarget",
                   "dynamodb:CreateGlobalTable",
-                  "dynamodb:DescribeLimits",
                   "dynamodb:DeleteTable",
                   "dynamodb:DescribeGlobalTable",
-                  "dynamodb:UpdateGlobalTable"
+                  "dynamodb:DescribeLimits",
+                  "dynamodb:UpdateGlobalTable",
+                  "iam:CreateServiceLinkedRole"
                 ],
                 "Effect": "Allow",
                 "Resource": "*"
@@ -198,15 +196,15 @@
               ]
             }
           },
-          "Handler": "index.handler",
           "Role": {
             "Fn::GetAtt": [
               "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12ServiceRoleD9686810",
               "Arn"
             ]
           },
-          "Runtime": "nodejs10.x",
           "Description": "Lambda to make DynamoDB a global table",
+          "Handler": "index.handler",
+          "Runtime": "nodejs12.x",
           "Timeout": 300
         },
         "DependsOn": [
@@ -249,5 +247,6 @@
         "Description": "Artifact hash for asset \"94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3a\""
       }
     }
-  }
+  },
+  {}
 ]

@@ -1,5 +1,5 @@
 import { CfnParameter } from '../cfn-parameter';
-import { Construct } from '../construct';
+import { Construct } from '../construct-compat';
 
 export class FileAssetParameters extends Construct {
   public readonly bucketNameParameter: CfnParameter;
@@ -20,10 +20,10 @@ export class FileAssetParameters extends Construct {
 
     this.objectKeyParameter = new CfnParameter(this, 'S3VersionKey', {
       type: 'String',
-      description: `S3 key for asset version "${id}"`
+      description: `S3 key for asset version "${id}"`,
     });
 
-    this.artifactHashParameter   = new CfnParameter(this, 'ArtifactHash', {
+    this.artifactHashParameter = new CfnParameter(this, 'ArtifactHash', {
       description: `Artifact hash for asset "${id}"`,
       type: 'String',
     });

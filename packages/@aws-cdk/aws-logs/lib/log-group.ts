@@ -1,15 +1,19 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import * as kms from '@aws-cdk/aws-kms';
+import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
 import { FilterPattern, IFilterPattern } from './pattern';
+import { ResourcePolicy } from './policy';
 import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
 
-export interface ILogGroup extends IResource {
+export interface ILogGroup extends iam.IResourceWithPolicy {
   /**
-   * The ARN of this log group
+   * The ARN of this log group, with ':*' appended
+   *
    * @attribute
    */
   readonly logGroupArn: string;
@@ -69,6 +73,11 @@ export interface ILogGroup extends IResource {
    * Give the indicated permissions on this log group and all streams
    */
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Public method to get the physical name of this log group
+   */
+  logGroupPhysicalName(): string;
 }
 
 /**
@@ -76,7 +85,7 @@ export interface ILogGroup extends IResource {
  */
 abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
-   * The ARN of this log group
+   * The ARN of this log group, with ':*' appended
    */
   public abstract readonly logGroupArn: string;
 
@@ -84,6 +93,9 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    * The name of this log group
    */
   public abstract readonly logGroupName: string;
+
+
+  private policy?: ResourcePolicy;
 
   /**
    * Create a new Log Stream for this Log Group
@@ -94,7 +106,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   public addStream(id: string, props: StreamOptions = {}): LogStream {
     return new LogStream(this, id, {
       logGroup: this,
-      ...props
+      ...props,
     });
   }
 
@@ -107,7 +119,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   public addSubscriptionFilter(id: string, props: SubscriptionFilterOptions): SubscriptionFilter {
     return new SubscriptionFilter(this, id, {
       logGroup: this,
-      ...props
+      ...props,
     });
   }
 
@@ -120,7 +132,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   public addMetricFilter(id: string, props: MetricFilterOptions): MetricFilter {
     return new MetricFilter(this, id, {
       logGroup: this,
-      ...props
+      ...props,
     });
   }
 
@@ -144,14 +156,14 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
       metricNamespace,
       metricName,
       filterPattern: FilterPattern.exists(jsonField),
-      metricValue: jsonField
+      metricValue: jsonField,
     });
 
     return new cloudwatch.Metric({ metricName, namespace: metricNamespace }).attachTo(this);
   }
 
   /**
-   * Give permissions to write to create and write to streams in this log group
+   * Give permissions to create and write to streams in this log group
    */
   public grantWrite(grantee: iam.IGrantable) {
     return this.grant(grantee, 'logs:CreateLogStream', 'logs:PutLogEvents');
@@ -161,14 +173,59 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    * Give the indicated permissions on this log group and all streams
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
-    return iam.Grant.addToPrincipal({
+    return iam.Grant.addToPrincipalOrResource({
       grantee,
       actions,
       // A LogGroup ARN out of CloudFormation already includes a ':*' at the end to include the log streams under the group.
       // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#w2ab1c21c10c63c43c11
       resourceArns: [this.logGroupArn],
-      scope: this,
+      resource: this,
     });
+  }
+
+  /**
+   * Public method to get the physical name of this log group
+   * @returns Physical name of log group
+   */
+  public logGroupPhysicalName(): string {
+    return this.physicalName;
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this log group.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Any ARN Principals inside of the statement will be converted into AWS Account ID strings
+   * because CloudWatch Logs Resource Policies do not accept ARN principals.
+   *
+   * @param statement The policy statement to add
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    if (!this.policy) {
+      this.policy = new ResourcePolicy(this, 'Policy');
+    }
+    this.policy.document.addStatements(statement.copy({
+      principals: statement.principals.map(p => this.convertArnPrincpalToAccountId(p)),
+    }));
+    return { statementAdded: true, policyDependable: this.policy };
+  }
+
+  private convertArnPrincpalToAccountId(principal: iam.IPrincipal) {
+    if (principal.principalAccount) {
+      // we use ArnPrincipal here because the constructor inserts the argument
+      // into the template without mutating it, which means that there is no
+      // ARN created by this call.
+      return new iam.ArnPrincipal(principal.principalAccount);
+    }
+
+    if (principal instanceof iam.ArnPrincipal) {
+      const parsedArn = Arn.split(principal.arn, ArnFormat.SLASH_RESOURCE_NAME);
+      if (parsedArn.account) {
+        return new iam.ArnPrincipal(parsedArn.account);
+      }
+    }
+
+    return principal;
   }
 }
 
@@ -199,7 +256,7 @@ export enum RetentionDays {
   /**
    * 2 weeks
    */
-  TWO_WEEKS =  14,
+  TWO_WEEKS = 14,
 
   /**
    * 1 month
@@ -272,6 +329,13 @@ export enum RetentionDays {
  */
 export interface LogGroupProps {
   /**
+   * The KMS Key to encrypt the log group with.
+   *
+   * @default - log group is encrypted with the default master key
+   */
+  readonly encryptionKey?: kms.IKey;
+
+  /**
    * Name of the log group.
    *
    * @default Automatically generated
@@ -308,25 +372,31 @@ export class LogGroup extends LogGroupBase {
    * Import an existing LogGroup given its ARN
    */
   public static fromLogGroupArn(scope: Construct, id: string, logGroupArn: string): ILogGroup {
+    const baseLogGroupArn = logGroupArn.replace(/:\*$/, '');
+
     class Import extends LogGroupBase {
-      public readonly logGroupArn = logGroupArn;
-      public readonly logGroupName = Stack.of(scope).parseArn(logGroupArn, ':').resourceName!;
+      public readonly logGroupArn = `${baseLogGroupArn}:*`;
+      public readonly logGroupName = Stack.of(scope).splitArn(baseLogGroupArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: baseLogGroupArn,
+    });
   }
 
   /**
    * Import an existing LogGroup given its name
    */
   public static fromLogGroupName(scope: Construct, id: string, logGroupName: string): ILogGroup {
+    const baseLogGroupName = logGroupName.replace(/:\*$/, '');
+
     class Import extends LogGroupBase {
-      public readonly logGroupName = logGroupName;
+      public readonly logGroupName = baseLogGroupName;
       public readonly logGroupArn = Stack.of(scope).formatArn({
         service: 'logs',
         resource: 'log-group',
-        sep: ':',
-        resourceName: logGroupName,
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+        resourceName: baseLogGroupName + ':*',
       });
     }
 
@@ -352,11 +422,12 @@ export class LogGroup extends LogGroupBase {
     if (retentionInDays === undefined) { retentionInDays = RetentionDays.TWO_YEARS; }
     if (retentionInDays === Infinity || retentionInDays === RetentionDays.INFINITE) { retentionInDays = undefined; }
 
-    if (retentionInDays !== undefined && retentionInDays <= 0) {
+    if (retentionInDays !== undefined && !Token.isUnresolved(retentionInDays) && retentionInDays <= 0) {
       throw new Error(`retentionInDays must be positive, got ${retentionInDays}`);
     }
 
     const resource = new CfnLogGroup(this, 'Resource', {
+      kmsKeyId: props.encryptionKey?.keyArn,
       logGroupName: this.physicalName,
       retentionInDays,
     });
@@ -367,7 +438,7 @@ export class LogGroup extends LogGroupBase {
       service: 'logs',
       resource: 'log-group',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
     this.logGroupName = this.getResourceNameAttribute(resource.ref);
   }

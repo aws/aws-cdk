@@ -1,15 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
-source ${scriptdir}/common.bash
 
-header CLI Integration Tests
+echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+echo 'CLI Integration Tests'
+echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
-prepare_fixture
+cd $scriptdir
 
-for test in $(cd ${scriptdir} && ls test-*.sh); do
-  echo "============================================================================================"
-  echo "${test}"
-  echo "============================================================================================"
-  /bin/bash ${scriptdir}/${test}
-done
+source ../common/jest-test.bash
+invokeJest "$@"

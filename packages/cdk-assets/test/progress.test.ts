@@ -1,17 +1,18 @@
-import { AssetManifestSchema } from '@aws-cdk/cdk-assets-schema';
+import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as mockfs from 'mock-fs';
-import { AssetManifest, AssetPublishing, EventType, IPublishProgress, IPublishProgressListener } from '../lib';
-import { mockAws, mockedApiFailure, mockedApiResult, mockUpload } from './mock-aws';
+import { AssetManifest, AssetPublishing } from '../lib';
+import { FakeListener } from './fake-listener';
+import { mockAws, mockedApiResult, mockUpload } from './mock-aws';
 
 let aws: ReturnType<typeof mockAws>;
 beforeEach(() => {
   mockfs({
     '/simple/cdk.out/assets.json': JSON.stringify({
-      version: AssetManifestSchema.currentVersion(),
+      version: Manifest.version(),
       files: {
         theAsset: {
           source: {
-            path: 'some_file'
+            path: 'some_file',
           },
           destinations: {
             theDestination1: {
@@ -37,7 +38,7 @@ beforeEach(() => {
 
   // Accept all S3 uploads as new
   aws.mockS3.getBucketLocation = mockedApiResult({});
-  aws.mockS3.headObject = mockedApiFailure('NotFound', 'File does not exist');
+  aws.mockS3.listObjectsV2 = mockedApiResult({ Contents: undefined });
   aws.mockS3.upload = mockUpload();
 });
 
@@ -58,6 +59,19 @@ test('test listener', async () => {
   expect(allMessages).toContain('theAsset:theDestination2');
 });
 
+test('test publishing in parallel', async () => {
+  const progressListener = new FakeListener();
+
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws, progressListener, publishInParallel: true });
+  await pub.publish();
+
+  const allMessages = progressListener.messages.join('\n');
+
+  // Log mentions asset/destination ids
+  expect(allMessages).toContain('theAsset:theDestination1');
+  expect(allMessages).toContain('theAsset:theDestination2');
+});
+
 test('test abort', async () => {
   const progressListener = new FakeListener(true);
 
@@ -69,18 +83,3 @@ test('test abort', async () => {
   // We never get to asset 2
   expect(allMessages).not.toContain('theAsset:theDestination2');
 });
-
-class FakeListener implements IPublishProgressListener {
-  public readonly messages = new Array<string>();
-
-  constructor(private readonly doAbort = false) {
-  }
-
-  public onPublishEvent(_type: EventType, event: IPublishProgress): void {
-    this.messages.push(event.message);
-
-    if (this.doAbort) {
-      event.abort();
-    }
-  }
-}

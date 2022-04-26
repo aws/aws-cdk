@@ -18,17 +18,13 @@
     "VPCPublicSubnet1SubnetB4246D30": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.0.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
+        "CidrBlock": "10.0.0.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
-          {
-            "Key": "Name",
-            "Value": "TestStack/VPC/PublicSubnet1"
-          },
           {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
@@ -36,6 +32,10 @@
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "TestStack/VPC/PublicSubnet1"
           }
         ]
       }
@@ -95,14 +95,14 @@
     "VPCPublicSubnet1NATGatewayE0556630": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet1SubnetB4246D30"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "VPCPublicSubnet1EIP6AD938E8",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "VPCPublicSubnet1SubnetB4246D30"
         },
         "Tags": [
           {
@@ -115,17 +115,13 @@
     "VPCPublicSubnet2Subnet74179F39": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.32.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
+        "CidrBlock": "10.0.32.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
-          {
-            "Key": "Name",
-            "Value": "TestStack/VPC/PublicSubnet2"
-          },
           {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
@@ -133,6 +129,10 @@
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "TestStack/VPC/PublicSubnet2"
           }
         ]
       }
@@ -192,14 +192,14 @@
     "VPCPublicSubnet2NATGateway3C070193": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet2Subnet74179F39"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "VPCPublicSubnet2EIP4947BC00",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "VPCPublicSubnet2Subnet74179F39"
         },
         "Tags": [
           {
@@ -212,17 +212,13 @@
     "VPCPublicSubnet3Subnet631C5E25": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.64.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1c",
+        "CidrBlock": "10.0.64.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
-          {
-            "Key": "Name",
-            "Value": "TestStack/VPC/PublicSubnet3"
-          },
           {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
@@ -230,6 +226,10 @@
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "TestStack/VPC/PublicSubnet3"
           }
         ]
       }
@@ -289,14 +289,14 @@
     "VPCPublicSubnet3NATGatewayD3048F5C": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet3Subnet631C5E25"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "VPCPublicSubnet3EIPAD4BC883",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "VPCPublicSubnet3Subnet631C5E25"
         },
         "Tags": [
           {
@@ -309,17 +309,13 @@
     "VPCPrivateSubnet1Subnet8BCA10E0": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.96.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
+        "CidrBlock": "10.0.96.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
-          {
-            "Key": "Name",
-            "Value": "TestStack/VPC/PrivateSubnet1"
-          },
           {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
@@ -327,6 +323,10 @@
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "TestStack/VPC/PrivateSubnet1"
           }
         ]
       }
@@ -371,17 +371,13 @@
     "VPCPrivateSubnet2SubnetCFCDAA7A": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.128.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
+        "CidrBlock": "10.0.128.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
-          {
-            "Key": "Name",
-            "Value": "TestStack/VPC/PrivateSubnet2"
-          },
           {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
@@ -389,6 +385,10 @@
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "TestStack/VPC/PrivateSubnet2"
           }
         ]
       }
@@ -433,17 +433,13 @@
     "VPCPrivateSubnet3Subnet3EDCD457": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.160.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1c",
+        "CidrBlock": "10.0.160.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
-          {
-            "Key": "Name",
-            "Value": "TestStack/VPC/PrivateSubnet3"
-          },
           {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
@@ -451,6 +447,10 @@
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "TestStack/VPC/PrivateSubnet3"
           }
         ]
       }
@@ -620,6 +620,7 @@
           "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
         },
         "InstanceType": "t3.nano",
+        "Monitoring": true,
         "SecurityGroupIds": [
           {
             "Fn::GetAtt": [

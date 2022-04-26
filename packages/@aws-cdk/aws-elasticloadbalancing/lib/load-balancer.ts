@@ -1,6 +1,9 @@
-import { Connections, IConnectable, ISecurityGroup, IVpc, Peer, Port,
-  SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType } from '@aws-cdk/aws-ec2';
-import { Construct, Duration, Lazy, Resource } from '@aws-cdk/core';
+import {
+  Connections, IConnectable, ISecurityGroup, IVpc, Peer, Port,
+  SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType,
+} from '@aws-cdk/aws-ec2';
+import { Duration, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
 /**
@@ -68,6 +71,17 @@ export interface LoadBalancerProps {
    * @default - Public subnets if internetFacing, Private subnets otherwise
    */
   readonly subnetSelection?: SubnetSelection;
+
+  /**
+   * Enable Loadbalancer access logs
+   * Can be used to avoid manual work as aws console
+   * Required S3 bucket name , enabled flag
+   * Can add interval for pushing log
+   * Can set bucket prefix in order to provide folder name inside bucket
+   * @default - disabled
+   */
+  readonly accessLoggingPolicy?: CfnLoadBalancer.AccessLoggingPolicyProperty;
+
 }
 
 /**
@@ -184,9 +198,17 @@ export interface LoadBalancerListener {
   readonly policyNames?: string[];
 
   /**
-   * ID of SSL certificate
+   * the ARN of the SSL certificate
+   * @deprecated - use sslCertificateArn instead
    */
   readonly sslCertificateId?: string;
+
+  /**
+   * the ARN of the SSL certificate
+   *
+   * @default - none
+   */
+  readonly sslCertificateArn?: string;
 
   /**
    * Allow connections to the load balancer from the given set of connection peers
@@ -240,15 +262,19 @@ export class LoadBalancer extends Resource implements IConnectable {
     const selectedSubnets: SelectedSubnets = loadBalancerSubnets(props);
 
     this.elb = new CfnLoadBalancer(this, 'Resource', {
-      securityGroups: [ this.securityGroup.securityGroupId ],
+      securityGroups: [this.securityGroup.securityGroupId],
       subnets: selectedSubnets.subnetIds,
-      listeners: Lazy.anyValue({ produce: () => this.listeners }),
+      listeners: Lazy.any({ produce: () => this.listeners }),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
-      crossZone: (props.crossZone === undefined || props.crossZone) ? true : false
+      crossZone: props.crossZone ?? true,
     });
     if (props.internetFacing) {
       this.elb.node.addDependency(selectedSubnets.internetConnectivityEstablished);
+    }
+
+    if (props.accessLoggingPolicy !== undefined) {
+      this.elb.accessLoggingPolicy = props.accessLoggingPolicy;
     }
 
     ifUndefined(props.listeners, []).forEach(b => this.addListener(b));
@@ -261,19 +287,23 @@ export class LoadBalancer extends Resource implements IConnectable {
    * @returns A ListenerPort object that controls connections to the listener port
    */
   public addListener(listener: LoadBalancerListener): ListenerPort {
+    if (listener.sslCertificateArn && listener.sslCertificateId) {
+      throw new Error('"sslCertificateId" is deprecated, please use "sslCertificateArn" only.');
+    }
     const protocol = ifUndefinedLazy(listener.externalProtocol, () => wellKnownProtocol(listener.externalPort));
     const instancePort = listener.internalPort || listener.externalPort;
+    const sslCertificateArn = listener.sslCertificateArn || listener.sslCertificateId;
     const instanceProtocol = ifUndefined(listener.internalProtocol,
-                 ifUndefined(tryWellKnownProtocol(instancePort),
-                 isHttpProtocol(protocol) ? LoadBalancingProtocol.HTTP : LoadBalancingProtocol.TCP));
+      ifUndefined(tryWellKnownProtocol(instancePort),
+        isHttpProtocol(protocol) ? LoadBalancingProtocol.HTTP : LoadBalancingProtocol.TCP));
 
     this.listeners.push({
       loadBalancerPort: listener.externalPort.toString(),
       protocol,
       instancePort: instancePort.toString(),
       instanceProtocol,
-      sslCertificateId: listener.sslCertificateId,
-      policyNames: listener.policyNames
+      sslCertificateId: sslCertificateArn,
+      policyNames: listener.policyNames,
     });
 
     const port = new ListenerPort(this.securityGroup, Port.tcp(listener.externalPort));
@@ -422,10 +452,10 @@ function ifUndefinedLazy<T>(x: T | undefined, def: () => T): T {
  */
 function healthCheckToJSON(healthCheck: HealthCheck): CfnLoadBalancer.HealthCheckProperty {
   const protocol = ifUndefined(healthCheck.protocol,
-           ifUndefined(tryWellKnownProtocol(healthCheck.port),
-           LoadBalancingProtocol.TCP));
+    ifUndefined(tryWellKnownProtocol(healthCheck.port),
+      LoadBalancingProtocol.TCP));
 
-  const path = protocol === LoadBalancingProtocol.HTTP || protocol === LoadBalancingProtocol.HTTPS ? ifUndefined(healthCheck.path, "/") : "";
+  const path = protocol === LoadBalancingProtocol.HTTP || protocol === LoadBalancingProtocol.HTTPS ? ifUndefined(healthCheck.path, '/') : '';
 
   const target = `${protocol.toUpperCase()}:${healthCheck.port}${path}`;
 
@@ -443,11 +473,11 @@ function loadBalancerSubnets(props: LoadBalancerProps): SelectedSubnets {
     return props.vpc.selectSubnets(props.subnetSelection);
   } else if (props.internetFacing) {
     return props.vpc.selectSubnets({
-      subnetType: SubnetType.PUBLIC
+      subnetType: SubnetType.PUBLIC,
     });
   } else {
     return props.vpc.selectSubnets({
-      subnetType: SubnetType.PRIVATE
+      subnetType: SubnetType.PRIVATE,
     });
   }
 }

@@ -1,9 +1,14 @@
-import { Schedule } from "@aws-cdk/aws-applicationautoscaling";
-import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from "@aws-cdk/aws-ecs";
-import { Rule } from "@aws-cdk/aws-events";
-import { EcsTask } from "@aws-cdk/aws-events-targets";
-import { Construct, Stack } from "@aws-cdk/core";
+import { Schedule } from '@aws-cdk/aws-applicationautoscaling';
+import { ISecurityGroup, IVpc, SubnetSelection, SubnetType } from '@aws-cdk/aws-ec2';
+import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from '@aws-cdk/aws-ecs';
+import { Rule } from '@aws-cdk/aws-events';
+import { EcsTask } from '@aws-cdk/aws-events-targets';
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The properties for the base ScheduledEc2Task or ScheduledFargateTask task.
@@ -34,11 +39,42 @@ export interface ScheduledTaskBaseProps {
   readonly schedule: Schedule;
 
   /**
+   * Indicates whether the rule is enabled.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
+
+  /**
+   * A name for the rule.
+   *
+   * @default - AWS CloudFormation generates a unique physical ID and uses that ID
+   * for the rule name. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html).
+   */
+  readonly ruleName?: string;
+
+  /**
    * The desired number of instantiations of the task definition to keep running on the service.
    *
    * @default 1
    */
   readonly desiredTaskCount?: number;
+
+  /**
+   * In what subnets to place the task's ENIs
+   *
+   * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
+   *
+   * @default Private subnets
+   */
+  readonly subnetSelection?: SubnetSelection;
+
+  /**
+   * Existing security groups to use for your service.
+   *
+   * @default - a new security group will be created.
+   */
+  readonly securityGroups?: ISecurityGroup[]
 }
 
 export interface ScheduledTaskImageProps {
@@ -83,7 +119,7 @@ export interface ScheduledTaskImageProps {
 /**
  * The base class for ScheduledEc2Task and ScheduledFargateTask tasks.
  */
-export abstract class ScheduledTaskBase extends Construct {
+export abstract class ScheduledTaskBase extends CoreConstruct {
   /**
    * The name of the cluster that hosts the service.
    */
@@ -96,9 +132,23 @@ export abstract class ScheduledTaskBase extends Construct {
   public readonly desiredTaskCount: number;
 
   /**
+   * In what subnets to place the task's ENIs
+   *
+   * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
+   *
+   * @default Private subnets
+   */
+  public readonly subnetSelection: SubnetSelection;
+
+  /**
    * The CloudWatch Events rule for the service.
    */
   public readonly eventRule: Rule;
+
+  /**
+   * The security group to use for the ECS Task.
+   */
+  private readonly _securityGroups?: ISecurityGroup[];
 
   /**
    * Constructs a new instance of the ScheduledTaskBase class.
@@ -111,11 +161,18 @@ export abstract class ScheduledTaskBase extends Construct {
       throw new Error('You must specify a desiredTaskCount greater than 0');
     }
     this.desiredTaskCount = props.desiredTaskCount || 1;
+    this.subnetSelection = props.subnetSelection || { subnetType: SubnetType.PRIVATE };
+    this._securityGroups = props.securityGroups;
 
     // An EventRule that describes the event trigger (in this case a scheduled run)
     this.eventRule = new Rule(this, 'ScheduledEventRule', {
       schedule: props.schedule,
+      ruleName: props.ruleName,
+      enabled: props.enabled,
     });
+
+    // add a warning on synth when minute is not defined in a cron schedule
+    props.schedule._bind(scope);
   }
 
   /**
@@ -128,18 +185,29 @@ export abstract class ScheduledTaskBase extends Construct {
     const eventRuleTarget = new EcsTask( {
       cluster: this.cluster,
       taskDefinition,
-      taskCount: this.desiredTaskCount
+      taskCount: this.desiredTaskCount,
+      subnetSelection: this.subnetSelection,
+      securityGroups: this._securityGroups,
     });
 
-    this.eventRule.addTarget(eventRuleTarget);
+    this.addTaskAsTarget(eventRuleTarget);
 
     return eventRuleTarget;
   }
 
   /**
+   * Adds task as a target of the scheduled event rule.
+   *
+   * @param ecsTaskTarget the EcsTask to add to the event rule
+   */
+  protected addTaskAsTarget(ecsTaskTarget: EcsTask) {
+    this.eventRule.addTarget(ecsTaskTarget);
+  }
+
+  /**
    * Returns the default cluster.
    */
-  protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
+  protected getDefaultCluster(scope: CoreConstruct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = Stack.of(scope);

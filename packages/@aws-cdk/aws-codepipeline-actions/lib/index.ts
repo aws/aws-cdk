@@ -1,5 +1,7 @@
 export * from './alexa-ask/deploy-action';
-export * from './cloudformation/pipeline-actions';
+export * from './bitbucket/source-action';
+export * from './codestar-connections/source-action';
+export * from './cloudformation';
 export * from './codebuild/build-action';
 export * from './codecommit/source-action';
 export * from './codedeploy/ecs-deploy-action';
@@ -13,4 +15,7 @@ export * from './lambda/invoke-action';
 export * from './manual-approval-action';
 export * from './s3/deploy-action';
 export * from './s3/source-action';
-export * from './action'; // for some reason, JSII fails building the module without exporting this class
+export * from './stepfunctions/invoke-action';
+export * from './servicecatalog/deploy-action-beta1';
+export * from './action';
+

@@ -1,7 +1,10 @@
-import { Construct } from '@aws-cdk/core';
-import { ContainerDefinition } from '../container-definition';
-import { LogDriver, LogDriverConfig } from "../index";
-import { removeEmpty } from './utils';
+import { ContainerDefinition, Secret } from '../container-definition';
+import { LogDriver, LogDriverConfig } from './log-driver';
+import { removeEmpty, renderLogDriverSecretOptions } from './utils';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The configuration to use when creating a log driver.
@@ -22,8 +25,15 @@ export interface GenericLogDriverProps {
 
   /**
    * The configuration options to send to the log driver.
+   * @default - the log driver options.
    */
   readonly options?: { [key: string]: string };
+
+  /**
+   * The secrets to pass to the log configuration.
+   * @default - no secret options provided.
+   */
+  readonly secretOptions?: { [key: string]: Secret };
 }
 
 /**
@@ -47,6 +57,11 @@ export class GenericLogDriver extends LogDriver {
   private options: { [key: string]: string };
 
   /**
+   * The secrets to pass to the log configuration.
+   */
+  private secretOptions?: { [key: string]: Secret };
+
+  /**
    * Constructs a new instance of the GenericLogDriver class.
    *
    * @param props the generic log driver configuration options.
@@ -56,15 +71,17 @@ export class GenericLogDriver extends LogDriver {
 
     this.logDriver = props.logDriver;
     this.options = props.options || {};
+    this.secretOptions = props.secretOptions;
   }
 
   /**
    * Called when the log driver is configured on a container.
    */
-  public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
+  public bind(_scope: CoreConstruct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     return {
       logDriver: this.logDriver,
       options: removeEmpty(this.options),
+      secretOptions: this.secretOptions && renderLogDriverSecretOptions(this.secretOptions, _containerDefinition.taskDefinition),
     };
   }
 }

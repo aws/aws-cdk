@@ -1,0 +1,69 @@
+{
+  "Resources": {
+    "NestedStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Ref": "AssetParameters6b884775090ed88cd1a143f64442a92a6c34eaeff3857976d15ef2e3beee05d7S3BucketC8A1BF52"
+              },
+              "/",
+              {
+                "Fn::Select": [
+                  0,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "AssetParameters6b884775090ed88cd1a143f64442a92a6c34eaeff3857976d15ef2e3beee05d7S3VersionKeyA9E03E19"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "AssetParameters6b884775090ed88cd1a143f64442a92a6c34eaeff3857976d15ef2e3beee05d7S3VersionKeyA9E03E19"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "Parameters": {
+    "AssetParameters6b884775090ed88cd1a143f64442a92a6c34eaeff3857976d15ef2e3beee05d7S3BucketC8A1BF52": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"6b884775090ed88cd1a143f64442a92a6c34eaeff3857976d15ef2e3beee05d7\""
+    },
+    "AssetParameters6b884775090ed88cd1a143f64442a92a6c34eaeff3857976d15ef2e3beee05d7S3VersionKeyA9E03E19": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"6b884775090ed88cd1a143f64442a92a6c34eaeff3857976d15ef2e3beee05d7\""
+    },
+    "AssetParameters6b884775090ed88cd1a143f64442a92a6c34eaeff3857976d15ef2e3beee05d7ArtifactHash605B2835": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"6b884775090ed88cd1a143f64442a92a6c34eaeff3857976d15ef2e3beee05d7\""
+    }
+  }
+}

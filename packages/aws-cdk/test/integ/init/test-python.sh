@@ -23,9 +23,11 @@ for template in $templates; do
 
     cdk init -l python $template
 
-    source .env/bin/activate
+    source .venv/bin/activate
     type -p pip
     pip install -r requirements.txt
+    ./.venv/bin/pip install -r requirements-dev.txt
+    pytest
 
     cdk synth
 done

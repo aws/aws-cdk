@@ -138,9 +138,48 @@ export class SerializationLibrary {
 }
 
 /**
- * Defines the input/output formats and ser/de for a single DataFormat.
+ * Classification string given to tables with this data format.
+ *
+ * @see https://docs.aws.amazon.com/glue/latest/dg/add-classifier.html#classifier-built-in
  */
-export interface DataFormat {
+export class ClassificationString {
+  /**
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-avro
+   */
+  public static readonly AVRO = new ClassificationString('avro');
+
+  /**
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-csv
+   */
+  public static readonly CSV = new ClassificationString('csv');
+
+  /**
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-json
+   */
+  public static readonly JSON = new ClassificationString('json');
+
+  /**
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-xml
+   */
+  public static readonly XML = new ClassificationString('xml');
+
+  /**
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-parquet
+   */
+  public static readonly PARQUET = new ClassificationString('parquet');
+
+  /**
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-orc
+   */
+  public static readonly ORC = new ClassificationString('orc');
+
+  constructor(public readonly value: string) {}
+}
+
+/**
+ * Properties of a DataFormat instance.
+ */
+export interface DataFormatProps {
   /**
    * `InputFormat` for this data format.
    */
@@ -155,52 +194,64 @@ export interface DataFormat {
    * Serialization library for this data format.
    */
   readonly serializationLibrary: SerializationLibrary;
+
+  /**
+   * Classification string given to tables with this data format.
+   *
+   * @default - No classification is specified.
+   */
+  readonly classificationString?: ClassificationString;
 }
 
-export namespace DataFormat {
+/**
+ * Defines the input/output formats and ser/de for a single DataFormat.
+ */
+export class DataFormat {
   /**
    * DataFormat for Apache Web Server Logs. Also works for CloudFront logs
    *
    * @see https://docs.aws.amazon.com/athena/latest/ug/apache.html
    */
-  export const ApacheLogs: DataFormat = {
+  public static readonly APACHE_LOGS = new DataFormat({
     inputFormat: InputFormat.TEXT,
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
-    serializationLibrary: SerializationLibrary.REGEXP
-  };
+    serializationLibrary: SerializationLibrary.REGEXP,
+  });
 
   /**
    * DataFormat for Apache Avro
    *
    * @see https://docs.aws.amazon.com/athena/latest/ug/avro.html
    */
-  export const Avro: DataFormat = {
+  public static readonly AVRO = new DataFormat({
     inputFormat: InputFormat.AVRO,
     outputFormat: OutputFormat.AVRO,
-    serializationLibrary: SerializationLibrary.AVRO
-  };
+    serializationLibrary: SerializationLibrary.AVRO,
+    classificationString: ClassificationString.AVRO,
+  });
 
   /**
    * DataFormat for CloudTrail logs stored on S3
    *
    * @see https://docs.aws.amazon.com/athena/latest/ug/cloudtrail.html
    */
-  export const CloudTrailLogs: DataFormat = {
+  public static readonly CLOUDTRAIL_LOGS = new DataFormat({
     inputFormat: InputFormat.CLOUDTRAIL,
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
-    serializationLibrary: SerializationLibrary.CLOUDTRAIL
-  };
+    serializationLibrary: SerializationLibrary.CLOUDTRAIL,
+  });
 
   /**
    * DataFormat for CSV Files
    *
    * @see https://docs.aws.amazon.com/athena/latest/ug/csv.html
    */
-  export const CSV: DataFormat = {
+  public static readonly CSV = new DataFormat({
     inputFormat: InputFormat.TEXT,
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
-    serializationLibrary: SerializationLibrary.OPEN_CSV
-  };
+    serializationLibrary: SerializationLibrary.OPEN_CSV,
+    classificationString: ClassificationString.CSV,
+  });
 
   /**
    * Stored as plain text files in JSON format.
@@ -208,53 +259,83 @@ export namespace DataFormat {
    *
    * @see https://docs.aws.amazon.com/athena/latest/ug/json.html
    */
-  export const Json: DataFormat = {
+  public static readonly JSON = new DataFormat({
     inputFormat: InputFormat.TEXT,
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
-    serializationLibrary: SerializationLibrary.OPENX_JSON
-  };
+    serializationLibrary: SerializationLibrary.OPENX_JSON,
+    classificationString: ClassificationString.JSON,
+  });
 
   /**
    * DataFormat for Logstash Logs, using the GROK SerDe
    *
    * @see https://docs.aws.amazon.com/athena/latest/ug/grok.html
    */
-  export const Logstash: DataFormat = {
+  public static readonly LOGSTASH = new DataFormat({
     inputFormat: InputFormat.TEXT,
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
-    serializationLibrary: SerializationLibrary.GROK
-  };
+    serializationLibrary: SerializationLibrary.GROK,
+  });
 
   /**
    * DataFormat for Apache ORC (Optimized Row Columnar)
    *
    * @see https://docs.aws.amazon.com/athena/latest/ug/orc.html
    */
-  export const Orc: DataFormat = {
+  public static readonly ORC = new DataFormat({
     inputFormat: InputFormat.ORC,
     outputFormat: OutputFormat.ORC,
-    serializationLibrary: SerializationLibrary.ORC
-  };
+    serializationLibrary: SerializationLibrary.ORC,
+    classificationString: ClassificationString.ORC,
+  });
 
   /**
    * DataFormat for Apache Parquet
    *
    * @see https://docs.aws.amazon.com/athena/latest/ug/parquet.html
    */
-  export const Parquet: DataFormat = {
+  public static readonly PARQUET = new DataFormat({
     inputFormat: InputFormat.PARQUET,
     outputFormat: OutputFormat.PARQUET,
-    serializationLibrary: SerializationLibrary.PARQUET
-  };
+    serializationLibrary: SerializationLibrary.PARQUET,
+    classificationString: ClassificationString.PARQUET,
+  });
 
   /**
    * DataFormat for TSV (Tab-Separated Values)
    *
    * @see https://docs.aws.amazon.com/athena/latest/ug/lazy-simple-serde.html
    */
-  export const TSV: DataFormat = {
+  public static readonly TSV = new DataFormat({
     inputFormat: InputFormat.TEXT,
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
-    serializationLibrary: SerializationLibrary.LAZY_SIMPLE
-  };
+    serializationLibrary: SerializationLibrary.LAZY_SIMPLE,
+  });
+
+  /**
+   * `InputFormat` for this data format.
+   */
+  public readonly inputFormat: InputFormat;
+
+  /**
+   * `OutputFormat` for this data format.
+   */
+  public readonly outputFormat: OutputFormat;
+
+  /**
+   * Serialization library for this data format.
+   */
+  public readonly serializationLibrary: SerializationLibrary;
+
+  /**
+   * Classification string given to tables with this data format.
+   */
+  public readonly classificationString?: ClassificationString;
+
+  public constructor(props: DataFormatProps) {
+    this.inputFormat = props.inputFormat;
+    this.outputFormat = props.outputFormat;
+    this.serializationLibrary = props.serializationLibrary;
+    this.classificationString = props.classificationString;
+  }
 }

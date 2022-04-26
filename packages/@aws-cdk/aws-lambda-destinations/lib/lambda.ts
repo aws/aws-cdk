@@ -1,8 +1,12 @@
 import * as events from '@aws-cdk/aws-events';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct } from '@aws-cdk/core';
+
 import { EventBridgeDestination } from './event-bridge';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Options for a Lambda destination
@@ -42,7 +46,7 @@ export class LambdaDestination implements lambda.IDestination {
       this.fn.grantInvoke(fn);
 
       return {
-        destination: this.fn.functionArn
+        destination: this.fn.functionArn,
       };
     }
 
@@ -62,9 +66,9 @@ export class LambdaDestination implements lambda.IDestination {
       },
       targets: [
         new targets.LambdaFunction(this.fn, {
-          event: events.RuleTargetInput.fromEventPath('$.detail.responsePayload') // Extract response payload
-        })
-      ]
+          event: events.RuleTargetInput.fromEventPath('$.detail.responsePayload'), // Extract response payload
+        }),
+      ],
     });
 
     const destination = new EventBridgeDestination(); // Use default event bus here

@@ -1,8 +1,8 @@
-import '@aws-cdk/assert/jest';
-import { App, CfnElement, Lazy, Stack } from "@aws-cdk/core";
-import { AnyPrincipal, ArnPrincipal, IRole, Policy, PolicyStatement, Role } from "../lib";
+import { Template } from '@aws-cdk/assertions';
+import { App, Aws, CfnElement, Lazy, Stack } from '@aws-cdk/core';
+import { AnyPrincipal, ArnPrincipal, IRole, Policy, PolicyStatement, Role } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 const roleAccount = '123456789012';
 const notRoleAccount = '012345678901';
@@ -59,7 +59,7 @@ describe('IAM Role.fromRoleArn', () => {
             importedRole.attachInlinePolicy(somePolicy(roleStack, 'MyPolicy'));
           });
 
-          test("correctly attaches the Policy to the imported role", () => {
+          test('correctly attaches the Policy to the imported role', () => {
             assertRoleHasAttachedPolicy(roleStack, roleName, 'MyPolicy');
           });
         });
@@ -70,7 +70,7 @@ describe('IAM Role.fromRoleArn', () => {
             importedRole.attachInlinePolicy(somePolicy(policyStack, 'MyPolicy'));
           });
 
-          test("correctly attaches the Policy to the imported role", () => {
+          test('correctly attaches the Policy to the imported role', () => {
             assertRoleHasAttachedPolicy(policyStack, roleName, 'MyPolicy');
           });
         });
@@ -82,7 +82,7 @@ describe('IAM Role.fromRoleArn', () => {
               importedRole.attachInlinePolicy(somePolicy(policyStack, 'MyPolicy'));
             });
 
-            test("correctly attaches the Policy to the imported role", () => {
+            test('correctly attaches the Policy to the imported role', () => {
               assertRoleHasAttachedPolicy(policyStack, roleName, 'MyPolicy');
             });
           });
@@ -93,7 +93,7 @@ describe('IAM Role.fromRoleArn', () => {
               importedRole.attachInlinePolicy(somePolicy(policyStack, 'MyPolicy'));
             });
 
-            test("does NOT attach the Policy to the imported role", () => {
+            test('does NOT attach the Policy to the imported role', () => {
               assertPolicyDidNotAttachToRole(policyStack, 'MyPolicy');
             });
           });
@@ -131,7 +131,7 @@ describe('IAM Role.fromRoleArn', () => {
               importedRole.attachInlinePolicy(somePolicy(roleStack, 'MyPolicy'));
             });
 
-            test("correctly attaches the Policy to the imported role", () => {
+            test('correctly attaches the Policy to the imported role', () => {
               assertRoleHasAttachedPolicy(roleStack, roleName, 'MyPolicy');
             });
           });
@@ -144,7 +144,7 @@ describe('IAM Role.fromRoleArn', () => {
               importedRole.attachInlinePolicy(somePolicy(policyStack, 'MyPolicy'));
             });
 
-            test("correctly attaches the Policy to the imported role", () => {
+            test('correctly attaches the Policy to the imported role', () => {
               assertRoleHasAttachedPolicy(policyStack, roleName, 'MyPolicy');
             });
           });
@@ -158,7 +158,7 @@ describe('IAM Role.fromRoleArn', () => {
                 importedRole.attachInlinePolicy(somePolicy(policyStack, 'MyPolicy'));
               });
 
-              test("correctly attaches the Policy to the imported role", () => {
+              test('correctly attaches the Policy to the imported role', () => {
                 assertRoleHasAttachedPolicy(policyStack, roleName, 'MyPolicy');
               });
             });
@@ -169,7 +169,7 @@ describe('IAM Role.fromRoleArn', () => {
                 importedRole.attachInlinePolicy(somePolicy(policyStack, 'MyPolicy'));
               });
 
-              test("does NOT attach the Policy to the imported role", () => {
+              test('does NOT attach the Policy to the imported role', () => {
                 assertPolicyDidNotAttachToRole(policyStack, 'MyPolicy');
               });
             });
@@ -196,7 +196,7 @@ describe('IAM Role.fromRoleArn', () => {
           });
 
           test("does NOT generate a default Policy resource pointing at the imported role's physical name", () => {
-            expect(roleStack).not.toHaveResourceLike('AWS::IAM::Policy');
+            Template.fromStack(roleStack).resourceCountIs('AWS::IAM::Policy', 0);
           });
         });
 
@@ -206,7 +206,7 @@ describe('IAM Role.fromRoleArn', () => {
               importedRole.attachInlinePolicy(somePolicy(roleStack, 'MyPolicy'));
             });
 
-            test("does NOT attach the Policy to the imported role", () => {
+            test('does NOT attach the Policy to the imported role', () => {
               assertPolicyDidNotAttachToRole(roleStack, 'MyPolicy');
             });
           });
@@ -219,7 +219,7 @@ describe('IAM Role.fromRoleArn', () => {
               importedRole.attachInlinePolicy(somePolicy(policyStack, 'MyPolicy'));
             });
 
-            test("does NOT attach the Policy to the imported role", () => {
+            test('does NOT attach the Policy to the imported role', () => {
               assertPolicyDidNotAttachToRole(policyStack, 'MyPolicy');
             });
           });
@@ -233,7 +233,7 @@ describe('IAM Role.fromRoleArn', () => {
                 importedRole.attachInlinePolicy(somePolicy(policyStack, 'MyPolicy'));
               });
 
-              test("does NOT attach the Policy to the imported role", () => {
+              test('does NOT attach the Policy to the imported role', () => {
                 assertPolicyDidNotAttachToRole(policyStack, 'MyPolicy');
               });
             });
@@ -244,7 +244,7 @@ describe('IAM Role.fromRoleArn', () => {
                 importedRole.attachInlinePolicy(somePolicy(policyStack, 'MyPolicy'));
               });
 
-              test("does NOT attach the Policy to the imported role", () => {
+              test('does NOT attach the Policy to the imported role', () => {
                 assertPolicyDidNotAttachToRole(policyStack, 'MyPolicy');
               });
             });
@@ -255,7 +255,7 @@ describe('IAM Role.fromRoleArn', () => {
                 importedRole.attachInlinePolicy(somePolicy(policyStack, 'MyPolicy'));
               });
 
-              test("does NOT attach the Policy to the imported role", () => {
+              test('does NOT attach the Policy to the imported role', () => {
                 assertPolicyDidNotAttachToRole(policyStack, 'MyPolicy');
               });
             });
@@ -283,7 +283,7 @@ describe('IAM Role.fromRoleArn', () => {
         });
 
         test("does NOT generate a default Policy resource pointing at the imported role's physical name", () => {
-          expect(roleStack).not.toHaveResourceLike('AWS::IAM::Policy');
+          Template.fromStack(roleStack).resourceCountIs('AWS::IAM::Policy', 0);
         });
       });
 
@@ -292,32 +292,53 @@ describe('IAM Role.fromRoleArn', () => {
 
         describe('that belongs to a stack with account equal to the account in the imported role ARN', () => {
           beforeEach(() => {
-            policyStack = new Stack(app, 'PolicyStack', { env: { account : roleAccount } });
+            policyStack = new Stack(app, 'PolicyStack', { env: { account: roleAccount } });
             importedRole.attachInlinePolicy(somePolicy(policyStack, 'MyPolicy'));
           });
 
-          test("does NOT attach the Policy to the imported role", () => {
+          test('does NOT attach the Policy to the imported role', () => {
             assertPolicyDidNotAttachToRole(policyStack, 'MyPolicy');
           });
+        });
+      });
+    });
+
+    describe('and with mutable=false and addGrantsToResources=true', () => {
+      beforeEach(() => {
+        roleStack = new Stack(app, 'RoleStack');
+        importedRole = Role.fromRoleArn(roleStack, 'ImportedRole',
+          `arn:aws:iam::${roleAccount}:role/${roleName}`, { mutable: false, addGrantsToResources: true });
+      });
+
+      describe('then adding a PolicyStatement to it', () => {
+        let addToPolicyResult: boolean;
+
+        beforeEach(() => {
+          addToPolicyResult = importedRole.addToPolicy(somePolicyStatement());
+        });
+
+        test('pretends to fail', () => {
+          expect(addToPolicyResult).toBe(false);
+        });
+
+        test("does NOT generate a default Policy resource pointing at the imported role's physical name", () => {
+          Template.fromStack(roleStack).resourceCountIs('AWS::IAM::Policy', 0);
         });
       });
     });
   });
 
   describe('imported with a dynamic ARN', () => {
-    const dynamicValue = Lazy.stringValue({ produce: () => 'role-arn' });
+    const dynamicValue = Lazy.string({ produce: () => 'role-arn' });
     const roleName: any = {
-      "Fn::Select": [1,
+      'Fn::Select': [1,
         {
-          "Fn::Split": ["/",
+          'Fn::Split': ['/',
             {
-              "Fn::Select": [5,
-                { "Fn::Split": [":", "role-arn"] },
-              ]
-            },
-          ],
-        },
-      ],
+              'Fn::Select': [5,
+                { 'Fn::Split': [':', 'role-arn'] }],
+            }],
+        }],
     };
 
     describe('into an env-agnostic stack', () => {
@@ -336,14 +357,14 @@ describe('IAM Role.fromRoleArn', () => {
           assumedBy: new ArnPrincipal(importedRole.roleName),
         });
 
-        expect(roleStack).toHaveResourceLike('AWS::IAM::Role', {
-          "AssumeRolePolicyDocument": {
-            "Statement": [
+        Template.fromStack(roleStack).hasResourceProperties('AWS::IAM::Role', {
+          'AssumeRolePolicyDocument': {
+            'Statement': [
               {
-                "Action": "sts:AssumeRole",
-                "Effect": "Allow",
-                "Principal": {
-                  "AWS": roleName,
+                'Action': 'sts:AssumeRole',
+                'Effect': 'Allow',
+                'Principal': {
+                  'AWS': roleName,
                 },
               },
             ],
@@ -375,7 +396,7 @@ describe('IAM Role.fromRoleArn', () => {
             importedRole.attachInlinePolicy(somePolicy(roleStack, 'MyPolicy'));
           });
 
-          test("correctly attaches the Policy to the imported role", () => {
+          test('correctly attaches the Policy to the imported role', () => {
             assertRoleHasAttachedPolicy(roleStack, roleName, 'MyPolicy');
           });
         });
@@ -386,7 +407,7 @@ describe('IAM Role.fromRoleArn', () => {
             importedRole.attachInlinePolicy(somePolicy(policyStack, 'MyPolicy'));
           });
 
-          test("correctly attaches the Policy to the imported role", () => {
+          test('correctly attaches the Policy to the imported role', () => {
             assertRoleHasAttachedPolicy(policyStack, roleName, 'MyPolicy');
           });
         });
@@ -397,7 +418,7 @@ describe('IAM Role.fromRoleArn', () => {
             importedRole.attachInlinePolicy(somePolicy(policyStack, 'MyPolicy'));
           });
 
-          test("correctly attaches the Policy to the imported role", () => {
+          test('correctly attaches the Policy to the imported role', () => {
             assertRoleHasAttachedPolicy(policyStack, roleName, 'MyPolicy');
           });
         });
@@ -434,7 +455,7 @@ describe('IAM Role.fromRoleArn', () => {
             importedRole.attachInlinePolicy(somePolicy(roleStack, 'MyPolicy'));
           });
 
-          test("correctly attaches the Policy to the imported role", () => {
+          test('correctly attaches the Policy to the imported role', () => {
             assertRoleHasAttachedPolicy(roleStack, roleName, 'MyPolicy');
           });
         });
@@ -445,7 +466,7 @@ describe('IAM Role.fromRoleArn', () => {
             importedRole.attachInlinePolicy(somePolicy(policyStack, 'MyPolicy'));
           });
 
-          test("correctly attaches the Policy to the imported role", () => {
+          test('correctly attaches the Policy to the imported role', () => {
             assertRoleHasAttachedPolicy(policyStack, roleName, 'MyPolicy');
           });
         });
@@ -457,7 +478,7 @@ describe('IAM Role.fromRoleArn', () => {
               importedRole.attachInlinePolicy(somePolicy(policyStack, 'MyPolicy'));
             });
 
-            test("correctly attaches the Policy to the imported role", () => {
+            test('correctly attaches the Policy to the imported role', () => {
               assertRoleHasAttachedPolicy(policyStack, roleName, 'MyPolicy');
             });
           });
@@ -468,7 +489,7 @@ describe('IAM Role.fromRoleArn', () => {
               importedRole.attachInlinePolicy(somePolicy(policyStack, 'MyPolicy'));
             });
 
-            test("correctly attaches the Policy to the imported role", () => {
+            test('correctly attaches the Policy to the imported role', () => {
               assertRoleHasAttachedPolicy(policyStack, roleName, 'MyPolicy');
             });
           });
@@ -480,23 +501,71 @@ describe('IAM Role.fromRoleArn', () => {
   describe('imported with the ARN of a service role', () => {
     beforeEach(() => {
       roleStack = new Stack();
-      importedRole = Role.fromRoleArn(roleStack, 'Role',
-        `arn:aws:iam::${roleAccount}:role/service-role/codebuild-role`);
     });
 
-    it("correctly strips the 'service-role' prefix from the role name", () => {
-      new Policy(roleStack, 'Policy', {
-        statements: [somePolicyStatement()],
-        roles: [importedRole],
+    describe('without a service principal in the role name', () => {
+      beforeEach(() => {
+        importedRole = Role.fromRoleArn(roleStack, 'Role',
+          `arn:aws:iam::${roleAccount}:role/service-role/codebuild-role`);
       });
 
-      expect(roleStack).toHaveResourceLike('AWS::IAM::Policy', {
-        "Roles": [
-          "codebuild-role",
-        ],
+      it("correctly strips the 'service-role' prefix from the role name", () => {
+        new Policy(roleStack, 'Policy', {
+          statements: [somePolicyStatement()],
+          roles: [importedRole],
+        });
+
+        Template.fromStack(roleStack).hasResourceProperties('AWS::IAM::Policy', {
+          'Roles': [
+            'codebuild-role',
+          ],
+        });
+      });
+    });
+
+    describe('with a service principal in the role name', () => {
+      beforeEach(() => {
+        importedRole = Role.fromRoleArn(roleStack, 'Role',
+          `arn:aws:iam::${roleAccount}:role/aws-service-role/anyservice.amazonaws.com/codebuild-role`);
+      });
+
+      it("correctly strips both the 'aws-service-role' prefix and the service principal from the role name", () => {
+        new Policy(roleStack, 'Policy', {
+          statements: [somePolicyStatement()],
+          roles: [importedRole],
+        });
+
+        Template.fromStack(roleStack).hasResourceProperties('AWS::IAM::Policy', {
+          'Roles': [
+            'codebuild-role',
+          ],
+        });
       });
     });
   });
+
+  describe('for an incorrect ARN', () => {
+    beforeEach(() => {
+      roleStack = new Stack(app, 'RoleStack');
+    });
+
+    describe("that accidentally skipped the 'region' fragment of the ARN", () => {
+      test('throws an exception, indicating that error', () => {
+        expect(() => {
+          Role.fromRoleArn(roleStack, 'Role',
+            `arn:${Aws.PARTITION}:iam:${Aws.ACCOUNT_ID}:role/AwsCicd-${Aws.REGION}-CodeBuildRole`);
+        }).toThrow(/The `resource` component \(6th component\) of an ARN is required:/);
+      });
+    });
+  });
+});
+
+test('Role.fromRoleName', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Stack', { env: { region: 'asdf', account: '1234' } });
+  const role = Role.fromRoleName(stack, 'MyRole', 'MyRole');
+
+  expect(stack.resolve(role.roleArn)).toEqual({ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::1234:role/MyRole']] });
 });
 
 function somePolicyStatement() {
@@ -538,9 +607,9 @@ function _assertStackContainsPolicyResource(stack: Stack, roleNames: any[], name
     PolicyDocument: {
       Statement: [
         {
-          Action: "s3:*",
-          Effect: "Allow",
-          Resource: "xyz",
+          Action: 's3:*',
+          Effect: 'Allow',
+          Resource: 'xyz',
         },
       ],
     },
@@ -550,5 +619,5 @@ function _assertStackContainsPolicyResource(stack: Stack, roleNames: any[], name
     expected.PolicyName = nameOfPolicy;
   }
 
-  expect(stack).toHaveResourceLike('AWS::IAM::Policy', expected);
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', expected);
 }

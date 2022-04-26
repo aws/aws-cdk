@@ -11,4 +11,12 @@ nyc.config.js
 coverage
 dist
 tsconfig.json
-tslint.json
+!.eslintrc.js
+!jest.config.js
+
+junit.xml
+
+!**/*.integ.snapshot/**/asset.*/*.js
+!**/*.integ.snapshot/**/asset.*/*.d.ts
+
+!**/*.integ.snapshot/**/asset.*/**

@@ -1,9 +1,14 @@
-import { App, Stack } from '@aws-cdk/core';
+import { App, CfnOutput, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { UserPool } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool');
 
-new UserPool(stack, 'myuserpool', {
+const userpool = new UserPool(stack, 'myuserpool', {
   userPoolName: 'MyUserPool',
+  removalPolicy: RemovalPolicy.DESTROY,
+});
+
+new CfnOutput(stack, 'user-pool-id', {
+  value: userpool.userPoolId,
 });

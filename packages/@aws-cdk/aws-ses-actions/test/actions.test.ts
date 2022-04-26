@@ -1,5 +1,4 @@
-import { ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -22,28 +21,28 @@ beforeEach(() => {
 test('add header action', () => {
   rule.addAction(new actions.AddHeader({
     name: 'X-My-Header',
-    value: 'value'
+    value: 'value',
   }));
 
-  expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
     Rule: {
       Actions: [
         {
           AddHeaderAction: {
             HeaderName: 'X-My-Header',
-            HeaderValue: 'value'
-          }
-        }
+            HeaderValue: 'value',
+          },
+        },
       ],
-      Enabled: true
-    }
+      Enabled: true,
+    },
   });
 });
 
 test('add header action with invalid header name', () => {
   expect(() => rule.addAction(new actions.AddHeader({
     name: 'He@der',
-    value: 'value'
+    value: 'value',
   }))).toThrow(/`name`/);
 });
 
@@ -51,7 +50,7 @@ test('add header action with invalid header value', () => {
   expect(() => rule.addAction(new actions.AddHeader({
     name: 'Header',
     value: `va
-    lu`
+    lu`,
   }))).toThrow(/`value`/);
 });
 
@@ -59,10 +58,10 @@ test('add bounce action', () => {
   rule.addAction(new actions.Bounce({
     sender: 'noreply@aws.com',
     template: actions.BounceTemplate.MESSAGE_CONTENT_REJECTED,
-    topic
+    topic,
   }));
 
-  expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
     Rule: {
       Actions: [
         {
@@ -71,14 +70,14 @@ test('add bounce action', () => {
             Sender: 'noreply@aws.com',
             SmtpReplyCode: '500',
             TopicArn: {
-              Ref: 'TopicBFC7AF6E'
+              Ref: 'TopicBFC7AF6E',
             },
             StatusCode: '5.6.1',
-          }
-        }
+          },
+        },
       ],
-      Enabled: true
-    }
+      Enabled: true,
+    },
   });
 });
 
@@ -86,16 +85,16 @@ test('add lambda action', () => {
   const fn = new lambda.Function(stack, 'Function', {
     code: lambda.Code.fromInline('boom'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_10_X
+    runtime: lambda.Runtime.NODEJS_10_X,
   });
 
   rule.addAction(new actions.Lambda({
     function: fn,
     invocationType: actions.LambdaInvocationType.REQUEST_RESPONSE,
-    topic
+    topic,
   }));
 
-  expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
+  Template.fromStack(stack).hasResource('AWS::SES::ReceiptRule', {
     Properties: {
       Rule: {
         Actions: [
@@ -104,39 +103,39 @@ test('add lambda action', () => {
               FunctionArn: {
                 'Fn::GetAtt': [
                   'Function76856677',
-                  'Arn'
-                ]
+                  'Arn',
+                ],
               },
               InvocationType: 'RequestResponse',
               TopicArn: {
-                Ref: 'TopicBFC7AF6E'
-              }
-            }
+                Ref: 'TopicBFC7AF6E',
+              },
+            },
           },
         ],
-        Enabled: true
+        Enabled: true,
       },
       RuleSetName: {
-        Ref: 'RuleSetE30C6C48'
-      }
+        Ref: 'RuleSetE30C6C48',
+      },
     },
     DependsOn: [
-      'FunctionAllowSes1829904A'
-    ]
-  }, ResourcePart.CompleteDefinition);
+      'FunctionAllowSes1829904A',
+    ],
+  });
 
-  expect(stack).toHaveResource('AWS::Lambda::Permission', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
     Action: 'lambda:InvokeFunction',
     FunctionName: {
       'Fn::GetAtt': [
         'Function76856677',
-        'Arn'
-      ]
+        'Arn',
+      ],
     },
     Principal: 'ses.amazonaws.com',
     SourceAccount: {
-      Ref: 'AWS::AccountId'
-    }
+      Ref: 'AWS::AccountId',
+    },
   });
 });
 
@@ -148,45 +147,45 @@ test('add s3 action', () => {
     bucket,
     kmsKey,
     objectKeyPrefix: 'emails/',
-    topic
+    topic,
   }));
 
-  expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
+  Template.fromStack(stack).hasResource('AWS::SES::ReceiptRule', {
     Properties: {
       Rule: {
         Actions: [
           {
             S3Action: {
               BucketName: {
-                Ref: 'Bucket83908E77'
+                Ref: 'Bucket83908E77',
               },
               KmsKeyArn: {
                 'Fn::GetAtt': [
                   'Key961B73FD',
-                  'Arn'
-                ]
+                  'Arn',
+                ],
               },
               ObjectKeyPrefix: 'emails/',
               TopicArn: {
-                Ref: 'TopicBFC7AF6E'
+                Ref: 'TopicBFC7AF6E',
               },
-            }
-          }
+            },
+          },
         ],
-        Enabled: true
+        Enabled: true,
       },
       RuleSetName: {
-        Ref: 'RuleSetE30C6C48'
-      }
+        Ref: 'RuleSetE30C6C48',
+      },
     },
     DependsOn: [
       'BucketPolicyE9A3008A',
-    ]
-  }, ResourcePart.CompleteDefinition);
+    ],
+  });
 
-  expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
     Bucket: {
-      Ref: 'Bucket83908E77'
+      Ref: 'Bucket83908E77',
     },
     PolicyDocument: {
       Statement: [
@@ -195,13 +194,13 @@ test('add s3 action', () => {
           Condition: {
             StringEquals: {
               'aws:Referer': {
-                Ref: 'AWS::AccountId'
-              }
-            }
+                Ref: 'AWS::AccountId',
+              },
+            },
           },
           Effect: 'Allow',
           Principal: {
-            Service: "ses.amazonaws.com"
+            Service: 'ses.amazonaws.com',
           },
           Resource: {
             'Fn::Join': [
@@ -210,130 +209,88 @@ test('add s3 action', () => {
                 {
                   'Fn::GetAtt': [
                     'Bucket83908E77',
-                    'Arn'
-                  ]
+                    'Arn',
+                  ],
                 },
-                '/emails/*'
-              ]
-            ]
-          }
-        }
+                '/emails/*',
+              ],
+            ],
+          },
+        },
       ],
-      Version: '2012-10-17'
-    }
+      Version: '2012-10-17',
+    },
   });
 
-  expect(stack).toHaveResource('AWS::KMS::Key', {
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     KeyPolicy: {
-      Statement: [
-        {
-          Action: [
-            'kms:Create*',
-            'kms:Describe*',
-            'kms:Enable*',
-            'kms:List*',
-            'kms:Put*',
-            'kms:Update*',
-            'kms:Revoke*',
-            'kms:Disable*',
-            'kms:Get*',
-            'kms:Delete*',
-            'kms:ScheduleKeyDeletion',
-            'kms:CancelKeyDeletion',
-            "kms:GenerateDataKey",
-            "kms:TagResource",
-            "kms:UntagResource"
-          ],
-          Effect: 'Allow',
-          Principal: {
-            AWS: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition'
-                  },
-                  ':iam::',
-                  {
-                    Ref: 'AWS::AccountId'
-                  },
-                  ':root'
-                ]
-              ]
-            }
+      Statement: Match.arrayWith([{
+        Action: [
+          'kms:Encrypt',
+          'kms:GenerateDataKey',
+        ],
+        Condition: {
+          Null: {
+            'kms:EncryptionContext:aws:ses:rule-name': 'false',
+            'kms:EncryptionContext:aws:ses:message-id': 'false',
           },
-          Resource: '*'
-        },
-        {
-          Action: [
-            'km:Encrypt',
-            'kms:GenerateDataKey'
-          ],
-          Condition: {
-            Null: {
-              'kms:EncryptionContext:aws:ses:rule-name': 'false',
-              'kms:EncryptionContext:aws:ses:message-id': 'false'
+          StringEquals: {
+            'kms:EncryptionContext:aws:ses:source-account': {
+              Ref: 'AWS::AccountId',
             },
-            StringEquals: {
-              'kms:EncryptionContext:aws:ses:source-account': {
-                Ref: 'AWS::AccountId'
-              }
-            }
           },
-          Effect: 'Allow',
-          Principal: {
-            Service: "ses.amazonaws.com"
-          },
-          Resource: '*'
-        }
-      ],
-      Version: '2012-10-17'
-    }
+        },
+        Effect: 'Allow',
+        Principal: {
+          Service: 'ses.amazonaws.com',
+        },
+        Resource: '*',
+      }]),
+    },
   });
 });
 
 test('add sns action', () => {
   rule.addAction(new actions.Sns({
     encoding: actions.EmailEncoding.BASE64,
-    topic
+    topic,
   }));
 
-  expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
     Rule: {
       Actions: [
         {
           SNSAction: {
             Encoding: 'Base64',
             TopicArn: {
-              Ref: 'TopicBFC7AF6E'
-            }
-          }
-        }
+              Ref: 'TopicBFC7AF6E',
+            },
+          },
+        },
       ],
-      Enabled: true
-    }
+      Enabled: true,
+    },
   });
 });
 
 test('add stop action', () => {
   rule.addAction(new actions.Stop({
-    topic
+    topic,
   }));
 
-  expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
     Rule: {
       Actions: [
         {
           StopAction: {
             Scope: 'RuleSet',
             TopicArn: {
-              Ref: 'TopicBFC7AF6E'
-            }
-          }
-        }
+              Ref: 'TopicBFC7AF6E',
+            },
+          },
+        },
       ],
-      Enabled: true
-    }
+      Enabled: true,
+    },
   });
 });

@@ -1,6 +1,19 @@
-// tslint:disable:no-console
+/* eslint-disable no-console */
 import { execSync } from 'child_process';
+import * as fs from 'fs';
+import { join } from 'path';
+// import the AWSLambda package explicitly,
+// which is globally available in the Lambda runtime,
+// as otherwise linking this repository with link-all.sh
+// fails in the CDK app executed with ts-node
+/* eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved */
+import * as AWSLambda from 'aws-lambda';
 import { AwsSdkCall } from '../aws-custom-resource';
+
+/**
+ * Serialized form of the physical resource id for use in the operation parameters
+ */
+export const PHYSICAL_RESOURCE_ID_REFERENCE = 'PHYSICAL:RESOURCEID:';
 
 /**
  * Flattens a nested object
@@ -8,30 +21,29 @@ import { AwsSdkCall } from '../aws-custom-resource';
  * @param object the object to be flattened
  * @returns a flat object with path as keys
  */
-export function flatten(object: object): { [key: string]: string } {
+export function flatten(object: object): { [key: string]: any } {
   return Object.assign(
     {},
     ...function _flatten(child: any, path: string[] = []): any {
       return [].concat(...Object.keys(child)
-        .map(key =>
-          typeof child[key] === 'object' && child[key] !== null
-            ? _flatten(child[key], path.concat([key]))
-            : ({ [path.concat([key]).join('.')]: child[key] })
-      ));
-    }(object)
+        .map(key => {
+          const childKey = Buffer.isBuffer(child[key]) ? child[key].toString('utf8') : child[key];
+          return typeof childKey === 'object' && childKey !== null
+            ? _flatten(childKey, path.concat([key]))
+            : ({ [path.concat([key]).join('.')]: childKey });
+        }));
+    }(object),
   );
 }
 
 /**
- * Decodes encoded true/false values
+ * Decodes encoded special values (physicalResourceId)
  */
-function decodeBooleans(object: object) {
+function decodeSpecialValues(object: object, physicalResourceId: string) {
   return JSON.parse(JSON.stringify(object), (_k, v) => {
     switch (v) {
-      case 'TRUE:BOOLEAN':
-        return true;
-      case 'FALSE:BOOLEAN':
-        return false;
+      case PHYSICAL_RESOURCE_ID_REFERENCE:
+        return physicalResourceId;
       default:
         return v;
     }
@@ -47,11 +59,15 @@ function filterKeys(object: object, pred: (key: string) => boolean) {
       (acc, [k, v]) => pred(k)
         ? { ...acc, [k]: v }
         : acc,
-        {}
+      {},
     );
 }
 
 let latestSdkInstalled = false;
+
+export function forceSdkInstallation() {
+  latestSdkInstalled = false;
+}
 
 /**
  * Installs latest AWS SDK v2
@@ -63,11 +79,42 @@ function installLatestSdk(): void {
   latestSdkInstalled = true;
 }
 
+// no currently patched services
+const patchedServices: { serviceName: string; apiVersions: string[] }[] = [];
+/**
+ * Patches the AWS SDK by loading service models in the same manner as the actual SDK
+ */
+function patchSdk(awsSdk: any): any {
+  const apiLoader = awsSdk.apiLoader;
+  patchedServices.forEach(({ serviceName, apiVersions }) => {
+    const lowerServiceName = serviceName.toLowerCase();
+    if (!awsSdk.Service.hasService(lowerServiceName)) {
+      apiLoader.services[lowerServiceName] = {};
+      awsSdk[serviceName] = awsSdk.Service.defineService(lowerServiceName, apiVersions);
+    } else {
+      awsSdk.Service.addVersions(awsSdk[serviceName], apiVersions);
+    }
+    apiVersions.forEach(apiVersion => {
+      Object.defineProperty(apiLoader.services[lowerServiceName], apiVersion, {
+        get: function get() {
+          const modelFilePrefix = `aws-sdk-patch/${lowerServiceName}-${apiVersion}`;
+          const model = JSON.parse(fs.readFileSync(join(__dirname, `${modelFilePrefix}.service.json`), 'utf-8'));
+          model.paginators = JSON.parse(fs.readFileSync(join(__dirname, `${modelFilePrefix}.paginators.json`), 'utf-8')).pagination;
+          return model;
+        },
+        enumerable: true,
+        configurable: true,
+      });
+    });
+  });
+  return awsSdk;
+}
+
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   try {
     let AWS: any;
-    if (!latestSdkInstalled) {
+    if (!latestSdkInstalled && event.ResourceProperties.InstallLatestAwsSdk === 'true') {
       try {
         installLatestSdk();
         AWS = require('/tmp/node_modules/aws-sdk');
@@ -75,17 +122,23 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         console.log(`Failed to install latest AWS SDK v2: ${e}`);
         AWS = require('aws-sdk'); // Fallback to pre-installed version
       }
-    } else {
+    } else if (latestSdkInstalled) {
       AWS = require('/tmp/node_modules/aws-sdk');
-    }
-
-    if (process.env.USE_NORMAL_SDK) { // For tests only
+    } else {
       AWS = require('aws-sdk');
+    }
+    try {
+      AWS = patchSdk(AWS);
+    } catch (e) {
+      console.log(`Failed to patch AWS SDK: ${e}. Proceeding with the installed copy.`);
     }
 
     console.log(JSON.stringify(event));
     console.log('AWS SDK VERSION: ' + AWS.VERSION);
 
+    event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
+    event.ResourceProperties.Update = decodeCall(event.ResourceProperties.Update);
+    event.ResourceProperties.Delete = decodeCall(event.ResourceProperties.Delete);
     // Default physical resource id
     let physicalResourceId: string;
     switch (event.RequestType) {
@@ -106,21 +159,51 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
 
     if (call) {
+
+      let credentials;
+      if (call.assumedRoleArn) {
+        const timestamp = (new Date()).getTime();
+
+        const params = {
+          RoleArn: call.assumedRoleArn,
+          RoleSessionName: `${timestamp}-${physicalResourceId}`.substring(0, 64),
+        };
+
+        credentials = new AWS.ChainableTemporaryCredentials({
+          params: params,
+        });
+      }
+
+      if (!Object.prototype.hasOwnProperty.call(AWS, call.service)) {
+        throw Error(`Service ${call.service} does not exist in AWS SDK version ${AWS.VERSION}.`);
+      }
       const awsService = new (AWS as any)[call.service]({
         apiVersion: call.apiVersion,
+        credentials: credentials,
         region: call.region,
       });
 
       try {
-        const response = await awsService[call.action](call.parameters && decodeBooleans(call.parameters)).promise();
+        const response = await awsService[call.action](
+          call.parameters && decodeSpecialValues(call.parameters, physicalResourceId)).promise();
         flatData = {
           apiVersion: awsService.config.apiVersion, // For test purposes: check if apiVersion was correctly passed.
           region: awsService.config.region, // For test purposes: check if region was correctly passed.
           ...flatten(response),
         };
-        data = call.outputPath
-          ? filterKeys(flatData, k => k.startsWith(call.outputPath!))
-          : flatData;
+
+        let outputPaths: string[] | undefined;
+        if (call.outputPath) {
+          outputPaths = [call.outputPath];
+        } else if (call.outputPaths) {
+          outputPaths = call.outputPaths;
+        }
+
+        if (outputPaths) {
+          data = filterKeys(flatData, startsWithOneOf(outputPaths));
+        } else {
+          data = flatData;
+        }
       } catch (e) {
         if (!call.ignoreErrorCodesMatching || !new RegExp(call.ignoreErrorCodesMatching).test(e.code)) {
           throw e;
@@ -147,7 +230,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       RequestId: event.RequestId,
       LogicalResourceId: event.LogicalResourceId,
       NoEcho: false,
-      Data: data
+      Data: data,
     });
 
     console.log('Responding', responseBody);
@@ -158,7 +241,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       hostname: parsedUrl.hostname,
       path: parsedUrl.path,
       method: 'PUT',
-      headers: { 'content-type': '', 'content-length': responseBody.length }
+      headers: { 'content-type': '', 'content-length': responseBody.length },
     };
 
     return new Promise((resolve, reject) => {
@@ -173,4 +256,20 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       }
     });
   }
+}
+
+function decodeCall(call: string | undefined) {
+  if (!call) { return undefined; }
+  return JSON.parse(call);
+}
+
+function startsWithOneOf(searchStrings: string[]): (string: string) => boolean {
+  return function(string: string): boolean {
+    for (const searchString of searchStrings) {
+      if (string.startsWith(searchString)) {
+        return true;
+      }
+    }
+    return false;
+  };
 }

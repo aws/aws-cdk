@@ -1,0 +1,9 @@
+*.js
+*.js.map
+*.d.ts
+dist
+
+*.snk
+!.eslintrc.js
+!config/*.js
+junit.xml

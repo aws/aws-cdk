@@ -1,5 +1,6 @@
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
-import { App, Construct, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Deployment, LambdaRestApi, Stage } from '../lib';
 
 class LateBoundDeploymentStageStack extends Stack {
@@ -8,8 +9,8 @@ class LateBoundDeploymentStageStack extends Stack {
 
     const fn = new Function(this, 'myfn', {
       code: Code.fromInline('foo'),
-      runtime: Runtime.NODEJS_10_X,
-      handler: 'index.handler'
+      runtime: Runtime.NODEJS_14_X,
+      handler: 'index.handler',
     });
 
     const api = new LambdaRestApi(this, 'lambdarestapi', {
@@ -19,8 +20,8 @@ class LateBoundDeploymentStageStack extends Stack {
 
     api.deploymentStage = new Stage(this, 'stage', {
       deployment: new Deployment(this, 'deployment', {
-        api
-      })
+        api,
+      }),
     });
   }
 }

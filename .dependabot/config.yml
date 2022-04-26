@@ -1,9 +1,0 @@
----
-# See: https://dependabot.com/docs/config-file/
-version: 1
-update_configs:
-  # Dependabot will detect the lerna mono-repo and discover packages in there
-  - directory: /
-    package_manager: javascript
-    update_schedule: live
-    version_requirement_updates: increase_versions

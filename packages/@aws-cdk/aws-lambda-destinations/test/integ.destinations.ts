@@ -1,7 +1,8 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { App, Construct, Duration, Stack, StackProps } from '@aws-cdk/core';
+import { App, Duration, Stack, StackProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as destinations from '../lib';
 
 /*
@@ -18,7 +19,7 @@ class TestStack extends Stack {
     const queue = new sqs.Queue(this, 'Queue');
 
     const fn = new lambda.Function(this, 'SnsSqs', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = async (event) => {
         if (event === 'OK') return 'success';
@@ -27,11 +28,11 @@ class TestStack extends Stack {
       onFailure: new destinations.SnsDestination(topic),
       onSuccess: new destinations.SqsDestination(queue),
       maxEventAge: Duration.hours(3),
-      retryAttempts: 1
+      retryAttempts: 1,
     });
 
     const onSuccessLambda = new lambda.Function(this, 'OnSucces', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = async (event) => {
         console.log(event);
@@ -39,7 +40,7 @@ class TestStack extends Stack {
     });
 
     new lambda.Function(this, 'EventBusLambda', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = async (event) => {
         if (event === 'OK') return 'success';
@@ -57,7 +58,7 @@ class TestStack extends Stack {
       onSuccess: new destinations.SqsDestination(queue),
       onFailure: new destinations.SnsDestination(topic),
       maxEventAge: Duration.hours(2),
-      retryAttempts: 0
+      retryAttempts: 0,
     });
   }
 }

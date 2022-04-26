@@ -1,0 +1,4 @@
+{
+    "description": "Template for a CDK Construct Library",
+    "aliases": "library"
+}

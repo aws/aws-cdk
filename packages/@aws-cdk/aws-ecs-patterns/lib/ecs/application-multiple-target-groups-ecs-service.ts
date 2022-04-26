@@ -1,8 +1,11 @@
-import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
+import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '@aws-cdk/aws-ecs';
 import { ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
-import { Construct } from '@aws-cdk/core';
-import { ApplicationMultipleTargetGroupsServiceBase,
-  ApplicationMultipleTargetGroupsServiceBaseProps } from '../base/application-multiple-target-groups-service-base';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
+import {
+  ApplicationMultipleTargetGroupsServiceBase,
+  ApplicationMultipleTargetGroupsServiceBaseProps,
+} from '../base/application-multiple-target-groups-service-base';
 
 /**
  * The properties for the ApplicationMultipleTargetGroupsEc2Service service.
@@ -55,6 +58,22 @@ export interface ApplicationMultipleTargetGroupsEc2ServiceProps extends Applicat
    * @default - No memory reserved.
    */
   readonly memoryReservationMiB?: number;
+
+  /**
+   * The placement constraints to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
+   *
+   * @default - No constraints.
+   */
+  readonly placementConstraints?: PlacementConstraint[];
+
+  /**
+   * The placement strategies to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
+   *
+   * @default - No strategies.
+  */
+  readonly placementStrategies?: PlacementStrategy[];
 }
 
 /**
@@ -89,10 +108,10 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
       const taskImageOptions = props.taskImageOptions;
       this.taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {
         executionRole: taskImageOptions.executionRole,
-        taskRole: taskImageOptions.taskRole
+        taskRole: taskImageOptions.taskRole,
       });
 
-      const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
+      const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
         cpu: props.cpu,
@@ -101,11 +120,12 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
         logging: this.logDriver,
+        dockerLabels: taskImageOptions.dockerLabels,
       });
       if (taskImageOptions.containerPorts) {
         for (const containerPort of taskImageOptions.containerPorts) {
           container.addPortMappings({
-            containerPort
+            containerPort,
           });
         }
       }
@@ -117,7 +137,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
     }
     if (this.taskDefinition.defaultContainer.portMappings.length === 0) {
       this.taskDefinition.defaultContainer.addPortMappings({
-        containerPort: 80
+        containerPort: 80,
       });
     }
 
@@ -128,15 +148,17 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
     } else {
       this.targetGroup = this.listener.addTargets('ECS', {
         targets: [this.service],
-        port: this.taskDefinition.defaultContainer.portMappings[0].containerPort
+        port: this.taskDefinition.defaultContainer.portMappings[0].containerPort,
       });
     }
   }
 
   private createEc2Service(props: ApplicationMultipleTargetGroupsEc2ServiceProps): Ec2Service {
-    return new Ec2Service(this, "Service", {
+    const desiredCount = this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
+
+    return new Ec2Service(this, 'Service', {
       cluster: this.cluster,
-      desiredCount: this.desiredCount,
+      desiredCount: desiredCount,
       taskDefinition: this.taskDefinition,
       assignPublicIp: false,
       serviceName: props.serviceName,
@@ -144,6 +166,8 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
+      placementConstraints: props.placementConstraints,
+      placementStrategies: props.placementStrategies,
     });
   }
 }

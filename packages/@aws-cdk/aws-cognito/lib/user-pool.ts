@@ -1,124 +1,17 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { IKey } from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { toASCII as punycodeEncode } from 'punycode/';
 import { CfnUserPool } from './cognito.generated';
-
-/**
- * Standard attributes
- * Specified following the OpenID Connect spec
- * @see https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
- */
-export enum UserPoolAttribute {
-  /**
-   * End-User's preferred postal address.
-   */
-  ADDRESS = 'address',
-
-  /**
-   * End-User's birthday, represented as an ISO 8601:2004 [ISO8601‑2004] YYYY-MM-DD format.
-   * The year MAY be 0000, indicating that it is omitted.
-   * To represent only the year, YYYY format is allowed.
-   */
-  BIRTHDATE = 'birthdate',
-
-  /**
-   * End-User's preferred e-mail address.
-   * Its value MUST conform to the RFC 5322 [RFC5322] addr-spec syntax.
-   */
-  EMAIL = 'email',
-
-  /**
-   * Surname(s) or last name(s) of the End-User.
-   * Note that in some cultures, people can have multiple family names or no family name;
-   * all can be present, with the names being separated by space characters.
-   */
-  FAMILY_NAME = 'family_name',
-
-  /**
-   * End-User's gender.
-   */
-  GENDER = 'gender',
-
-  /**
-   * Given name(s) or first name(s) of the End-User.
-   * Note that in some cultures, people can have multiple given names;
-   * all can be present, with the names being separated by space characters.
-   */
-  GIVEN_NAME = 'given_name',
-
-  /**
-   * End-User's locale, represented as a BCP47 [RFC5646] language tag.
-   * This is typically an ISO 639-1 Alpha-2 [ISO639‑1] language code in lowercase
-   * and an ISO 3166-1 Alpha-2 [ISO3166‑1] country code in uppercase, separated by a dash.
-   * For example, en-US or fr-CA.
-   */
-  LOCALE = 'locale',
-
-  /**
-   * Middle name(s) of the End-User.
-   * Note that in some cultures, people can have multiple middle names;
-   * all can be present, with the names being separated by space characters.
-   * Also note that in some cultures, middle names are not used.
-   */
-  MIDDLE_NAME = 'middle_name',
-
-  /**
-   * End-User's full name in displayable form including all name parts,
-   * possibly including titles and suffixes, ordered according to the End-User's locale and preferences.
-   */
-  NAME = 'name',
-
-  /**
-   * Casual name of the End-User that may or may not be the same as the given_name.
-   * For instance, a nickname value of Mike might be returned alongside a given_name value of Michael.
-   */
-  NICKNAME = 'nickname',
-
-  /**
-   * End-User's preferred telephone number.
-   * E.164 [E.164] is RECOMMENDED as the format of this Claim, for example, +1 (425) 555-1212 or +56 (2) 687 2400.
-   * If the phone number contains an extension, it is RECOMMENDED that the extension be represented using the
-   * RFC 3966 [RFC3966] extension syntax, for example, +1 (604) 555-1234;ext=5678.
-   */
-  PHONE_NUMBER = 'phone_number',
-
-  /**
-   * URL of the End-User's profile picture.
-   * This URL MUST refer to an image file (for example, a PNG, JPEG, or GIF image file),
-   * rather than to a Web page containing an image.
-   * Note that this URL SHOULD specifically reference a profile photo of the End-User
-   * suitable for displaying when describing the End-User, rather than an arbitrary photo taken by the End-User
-   */
-  PICTURE = 'picture',
-
-  /**
-   * Shorthand name by which the End-User wishes to be referred to.
-   */
-  PREFERRED_USERNAME = 'preferred_username',
-
-  /**
-   * URL of the End-User's profile page. The contents of this Web page SHOULD be about the End-User.
-   */
-  PROFILE = 'profile',
-
-  /**
-   * The End-User's time zone
-   */
-  TIMEZONE = 'zoneinfo',
-
-  /**
-   * Time the End-User's information was last updated.
-   * Its value is a JSON number representing the number of seconds from 1970-01-01T0:0:0Z
-   * as measured in UTC until the date/time.
-   */
-  UPDATED_AT = 'updated_at',
-
-  /**
-   * URL of the End-User's Web page or blog.
-   * This Web page SHOULD contain information published by the End-User or an organization that the End-User is affiliated with.
-   */
-  WEBSITE = 'website'
-}
+import { StandardAttributeNames } from './private/attr-names';
+import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
+import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
+import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
+import { UserPoolEmail } from './user-pool-email';
+import { IUserPoolIdentityProvider } from './user-pool-idp';
+import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -143,7 +36,7 @@ export interface SignInAliases {
   readonly phone?: boolean;
 
   /**
-   * Whether a user is allowed to ign in with a secondary username, that can be set and modified after sign up.
+   * Whether a user is allowed to sign in with a secondary username, that can be set and modified after sign up.
    * Can only be used in conjunction with `USERNAME`.
    * @default false
    */
@@ -156,6 +49,10 @@ export interface SignInAliases {
 export interface AutoVerifiedAttrs {
   /**
    * Whether the email address of the user should be auto verified at sign up.
+   *
+   * Note: If both `email` and `phone` is set, Cognito only verifies the phone number. To also verify email, see here -
+   * https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-email-phone-verification.html
+   *
    * @default - true, if email is turned on for `signIn`. false, otherwise.
    */
   readonly email?: boolean;
@@ -167,71 +64,189 @@ export interface AutoVerifiedAttrs {
   readonly phone?: boolean;
 }
 
+/**
+ * Triggers for a user pool
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html
+ */
 export interface UserPoolTriggers {
   /**
    * Creates an authentication challenge.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-create-auth-challenge.html
+   * @default - no trigger configured
    */
   readonly createAuthChallenge?: lambda.IFunction;
 
   /**
    * A custom Message AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-message.html
+   * @default - no trigger configured
    */
   readonly customMessage?: lambda.IFunction;
 
   /**
    * Defines the authentication challenge.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-define-auth-challenge.html
+   * @default - no trigger configured
    */
   readonly defineAuthChallenge?: lambda.IFunction;
 
   /**
    * A post-authentication AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-authentication.html
+   * @default - no trigger configured
    */
   readonly postAuthentication?: lambda.IFunction;
 
   /**
    * A post-confirmation AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-confirmation.html
+   * @default - no trigger configured
    */
   readonly postConfirmation?: lambda.IFunction;
 
   /**
    * A pre-authentication AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-authentication.html
+   * @default - no trigger configured
    */
   readonly preAuthentication?: lambda.IFunction;
 
   /**
    * A pre-registration AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-sign-up.html
+   * @default - no trigger configured
    */
   readonly preSignUp?: lambda.IFunction;
 
   /**
    * A pre-token-generation AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+   * @default - no trigger configured
    */
   readonly preTokenGeneration?: lambda.IFunction;
 
   /**
    * A user-migration AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html
+   * @default - no trigger configured
    */
   readonly userMigration?: lambda.IFunction;
 
   /**
    * Verifies the authentication challenge response.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-verify-auth-challenge-response.html
+   * @default - no trigger configured
    */
   readonly verifyAuthChallengeResponse?: lambda.IFunction;
+
+  /**
+   * Amazon Cognito invokes this trigger to send email notifications to users.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-email-sender.html
+   * @default - no trigger configured
+   */
+  readonly customEmailSender?: lambda.IFunction
+
+  /**
+   * Amazon Cognito invokes this trigger to send SMS notifications to users.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sms-sender.html
+   * @default - no trigger configured
+   */
+  readonly customSmsSender?: lambda.IFunction
 
   /**
    * Index signature
    */
   [trigger: string]: lambda.IFunction | undefined;
+}
+
+/**
+ * User pool operations to which lambda triggers can be attached.
+ */
+export class UserPoolOperation {
+  /**
+   * Creates a challenge in a custom auth flow
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-create-auth-challenge.html
+   */
+  public static readonly CREATE_AUTH_CHALLENGE = new UserPoolOperation('createAuthChallenge');
+
+  /**
+   * Advanced customization and localization of messages
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-message.html
+   */
+  public static readonly CUSTOM_MESSAGE = new UserPoolOperation('customMessage');
+
+  /**
+   * Determines the next challenge in a custom auth flow
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-define-auth-challenge.html
+   */
+  public static readonly DEFINE_AUTH_CHALLENGE = new UserPoolOperation('defineAuthChallenge');
+
+  /**
+   * Event logging for custom analytics
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-authentication.html
+   */
+  public static readonly POST_AUTHENTICATION = new UserPoolOperation('postAuthentication');
+
+  /**
+   * Custom welcome messages or event logging for custom analytics
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-confirmation.html
+   */
+  public static readonly POST_CONFIRMATION = new UserPoolOperation('postConfirmation');
+
+  /**
+   * Custom validation to accept or deny the sign-in request
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-authentication.html
+   */
+  public static readonly PRE_AUTHENTICATION = new UserPoolOperation('preAuthentication');
+
+  /**
+   * Custom validation to accept or deny the sign-up request
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-sign-up.html
+   */
+  public static readonly PRE_SIGN_UP = new UserPoolOperation('preSignUp');
+
+  /**
+   * Add or remove attributes in Id tokens
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+   */
+  public static readonly PRE_TOKEN_GENERATION = new UserPoolOperation('preTokenGeneration');
+
+  /**
+   * Migrate a user from an existing user directory to user pools
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html
+   */
+  public static readonly USER_MIGRATION = new UserPoolOperation('userMigration');
+
+  /**
+   * Determines if a response is correct in a custom auth flow
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-verify-auth-challenge-response.html
+   */
+  public static readonly VERIFY_AUTH_CHALLENGE_RESPONSE = new UserPoolOperation('verifyAuthChallengeResponse');
+
+  /**
+   * Amazon Cognito invokes this trigger to send email notifications to users.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-email-sender.html
+   */
+  public static readonly CUSTOM_EMAIL_SENDER = new UserPoolOperation('customEmailSender');
+
+  /**
+   * Amazon Cognito invokes this trigger to send email notifications to users.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sms-sender.html
+   */
+  public static readonly CUSTOM_SMS_SENDER = new UserPoolOperation('customSmsSender');
+
+  /** A custom user pool operation */
+  public static of(name: string): UserPoolOperation {
+    const lowerCamelCase = name.charAt(0).toLowerCase() + name.slice(1);
+    return new UserPoolOperation(lowerCamelCase);
+  }
+
+  /** The key to use in `CfnUserPool.LambdaConfigProperty` */
+  public readonly operationName: string;
+
+  private constructor(operationName: string) {
+    this.operationName = operationName;
+  }
 }
 
 /**
@@ -260,7 +275,9 @@ export interface UserVerificationConfig {
    * The email body template for the verification email sent to the user upon sign up.
    * See https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-message-templates.html to
    * learn more about message templates.
-   * @default 'Hello {username}, Your verification code is {####}'
+   *
+   * @default - 'The verification code to your new account is {####}' if VerificationEmailStyle.CODE is chosen,
+   * 'Verify your account by clicking on {##Verify Email##}' if VerificationEmailStyle.LINK is chosen.
    */
   readonly emailBody?: string;
 
@@ -275,7 +292,9 @@ export interface UserVerificationConfig {
    * The message template for the verification SMS sent to the user upon sign up.
    * See https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-message-templates.html to
    * learn more about message templates.
-   * @default 'The verification code to your new account is {####}'
+   *
+   * @default - 'The verification code to your new account is {####}' if VerificationEmailStyle.CODE is chosen,
+   * not configured if VerificationEmailStyle.LINK is chosen
    */
   readonly smsMessage?: string;
 }
@@ -301,6 +320,161 @@ export interface UserInvitationConfig {
    * @default 'Your username is {username} and temporary password is {####}'
    */
   readonly smsMessage?: string;
+}
+
+/**
+ * The different ways in which a user pool's MFA enforcement can be configured.
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa.html
+ */
+export enum Mfa {
+  /** Users are not required to use MFA for sign in, and cannot configure one. */
+  OFF = 'OFF',
+  /** Users are not required to use MFA for sign in, but can configure one if they so choose to. */
+  OPTIONAL = 'OPTIONAL',
+  /** Users are required to configure an MFA, and have to use it to sign in. */
+  REQUIRED = 'ON',
+}
+
+/**
+ * The different ways in which a user pool can obtain their MFA token for sign in.
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa.html
+ */
+export interface MfaSecondFactor {
+  /**
+   * The MFA token is sent to the user via SMS to their verified phone numbers
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-sms-text-message.html
+   * @default true
+   */
+  readonly sms: boolean;
+
+  /**
+   * The MFA token is a time-based one time password that is generated by a hardware or software token
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-totp.html
+   * @default false
+   */
+  readonly otp: boolean;
+}
+
+/**
+ * Password policy for User Pools.
+ */
+export interface PasswordPolicy {
+  /**
+   * The length of time the temporary password generated by an admin is valid.
+   * This must be provided as whole days, like Duration.days(3) or Duration.hours(48).
+   * Fractional days, such as Duration.hours(20), will generate an error.
+   * @default Duration.days(7)
+   */
+  readonly tempPasswordValidity?: Duration;
+
+  /**
+   * Minimum length required for a user's password.
+   * @default 8
+   */
+  readonly minLength?: number;
+
+  /**
+   * Whether the user is required to have lowercase characters in their password.
+   * @default true
+   */
+  readonly requireLowercase?: boolean;
+
+  /**
+   * Whether the user is required to have uppercase characters in their password.
+   * @default true
+   */
+  readonly requireUppercase?: boolean;
+
+  /**
+   * Whether the user is required to have digits in their password.
+   * @default true
+   */
+  readonly requireDigits?: boolean;
+
+  /**
+   * Whether the user is required to have symbols in their password.
+   * @default true
+   */
+  readonly requireSymbols?: boolean;
+}
+
+/**
+ * Email settings for the user pool.
+ */
+export interface EmailSettings {
+  /**
+   * The 'from' address on the emails received by the user.
+   * @default noreply@verificationemail.com
+   */
+  readonly from?: string;
+
+  /**
+   * The 'replyTo' address on the emails received by the user as defined by IETF RFC-5322.
+   * When set, most email clients recognize to change 'to' line to this address when a reply is drafted.
+   * @default - Not set.
+   */
+  readonly replyTo?: string;
+}
+
+/**
+ * How will a user be able to recover their account?
+ *
+ * When a user forgets their password, they can have a code sent to their verified email or verified phone to recover their account.
+ * You can choose the preferred way to send codes below.
+ * We recommend not allowing phone to be used for both password resets and multi-factor authentication (MFA).
+ *
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/how-to-recover-a-user-account.html
+ */
+export enum AccountRecovery {
+  /**
+   * Email if available, otherwise phone, but don’t allow a user to reset their password via phone if they are also using it for MFA
+   */
+  EMAIL_AND_PHONE_WITHOUT_MFA,
+
+  /**
+   * Phone if available, otherwise email, but don’t allow a user to reset their password via phone if they are also using it for MFA
+   */
+  PHONE_WITHOUT_MFA_AND_EMAIL,
+
+  /**
+   * Email only
+   */
+  EMAIL_ONLY,
+
+  /**
+   * Phone only, but don’t allow a user to reset their password via phone if they are also using it for MFA
+   */
+  PHONE_ONLY_WITHOUT_MFA,
+
+  /**
+   * (Not Recommended) Phone if available, otherwise email, and do allow a user to reset their password via phone if they are also using it for MFA.
+   */
+  PHONE_AND_EMAIL,
+
+  /**
+   * None – users will have to contact an administrator to reset their passwords
+   */
+  NONE,
+}
+
+/**
+ * Device tracking settings
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html
+ */
+export interface DeviceTracking {
+  /**
+   * Indicates whether a challenge is required on a new device. Only applicable to a new device.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html
+   * @default false
+   */
+  readonly challengeRequiredOnNewDevice: boolean;
+
+  /**
+   * If true, a device is only remembered on user prompt.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html
+   * @default false
+   */
+  readonly deviceOnlyRememberedOnUserPrompt: boolean;
 }
 
 /**
@@ -349,6 +523,21 @@ export interface UserPoolProps {
   readonly smsRoleExternalId?: string;
 
   /**
+   * The region to integrate with SNS to send SMS messages
+   *
+   * This property will do nothing if SMS configuration is not configured
+   * @default - The same region as the user pool, with a few exceptions - https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-sms-settings.html#user-pool-sms-settings-first-time
+   */
+  readonly snsRegion?: string;
+
+  /**
+   * Setting this would explicitly enable or disable SMS role creation.
+   * When left unspecified, CDK will determine based on other properties if a role is needed or not.
+   * @default - CDK will determine based on other properties of the user pool if an SMS role should be created or not.
+   */
+  readonly enableSmsRole?: boolean;
+
+  /**
    * Methods in which a user registers or signs in to a user pool.
    * Allows either username with aliases OR sign in with email, phone, or both.
    *
@@ -367,17 +556,108 @@ export interface UserPoolProps {
    * Attributes which Cognito will look to verify automatically upon user sign up.
    * EMAIL and PHONE are the only available options.
    *
-   * @default - If `signIn` include email and/or phone, they will be included in `autoVerifiedAttributes` by default.
+   * @default - If `signInAlias` includes email and/or phone, they will be included in `autoVerifiedAttributes` by default.
    * If absent, no attributes will be auto-verified.
    */
   readonly autoVerify?: AutoVerifiedAttrs;
 
   /**
-   * Lambda functions to use for supported Cognito triggers.
+   * The set of attributes that are required for every user in the user pool.
+   * Read more on attributes here - https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
    *
+   * @default - All standard attributes are optional and mutable.
+   */
+  readonly standardAttributes?: StandardAttributes;
+
+  /**
+   * Define a set of custom attributes that can be configured for each user in the user pool.
+   *
+   * @default - No custom attributes.
+   */
+  readonly customAttributes?: { [key: string]: ICustomAttribute };
+
+  /**
+   * Configure whether users of this user pool can or are required use MFA to sign in.
+   *
+   * @default Mfa.OFF
+   */
+  readonly mfa?: Mfa;
+
+  /**
+   * The SMS message template sent during MFA verification.
+   * Use '{####}' in the template where Cognito should insert the verification code.
+   * @default 'Your authentication code is {####}.'
+   */
+  readonly mfaMessage?: string;
+
+  /**
+   * Configure the MFA types that users can use in this user pool. Ignored if `mfa` is set to `OFF`.
+   *
+   * @default - { sms: true, otp: false }, if `mfa` is set to `OPTIONAL` or `REQUIRED`.
+   * { sms: false, otp: false }, otherwise
+   */
+  readonly mfaSecondFactor?: MfaSecondFactor;
+
+  /**
+   * Password policy for this user pool.
+   * @default - see defaults on each property of PasswordPolicy.
+   */
+  readonly passwordPolicy?: PasswordPolicy;
+
+  /**
+   * Email settings for a user pool.
+   *
+   * @default - see defaults on each property of EmailSettings.
+   * @deprecated Use 'email' instead.
+   */
+  readonly emailSettings?: EmailSettings;
+
+  /**
+   * Email settings for a user pool.
+   * @default - cognito will use the default email configuration
+   */
+  readonly email?: UserPoolEmail;
+
+  /**
+   * Lambda functions to use for supported Cognito triggers.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html
    * @default - No Lambda triggers.
    */
   readonly lambdaTriggers?: UserPoolTriggers;
+
+  /**
+   * Whether sign-in aliases should be evaluated with case sensitivity.
+   * For example, when this option is set to false, users will be able to sign in using either `MyUsername` or `myusername`.
+   * @default true
+   */
+  readonly signInCaseSensitive?: boolean;
+
+  /**
+   * How will a user be able to recover their account?
+   *
+   * @default AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL
+   */
+  readonly accountRecovery?: AccountRecovery;
+
+  /**
+   * Policy to apply when the user pool is removed from the stack
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Device tracking settings
+   * @default - see defaults on each property of DeviceTracking.
+   */
+  readonly deviceTracking?: DeviceTracking;
+
+  /**
+   * This key will be used to encrypt temporary passwords and authorization codes that Amazon Cognito generates.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sender-triggers.html
+   * @default - no key ID configured
+   */
+  readonly customSenderKmsKey?: IKey;
 }
 
 /**
@@ -395,36 +675,108 @@ export interface IUserPool extends IResource {
    * @attribute
    */
   readonly userPoolArn: string;
+
+  /**
+   * Get all identity providers registered with this user pool.
+   */
+  readonly identityProviders: IUserPoolIdentityProvider[];
+
+  /**
+   * Add a new app client to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html
+   */
+  addClient(id: string, options?: UserPoolClientOptions): UserPoolClient;
+
+  /**
+   * Associate a domain to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html
+   */
+  addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain;
+
+  /**
+   * Add a new resource server to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-resource-servers.html
+   */
+  addResourceServer(id: string, options: UserPoolResourceServerOptions): UserPoolResourceServer;
+
+  /**
+   * Register an identity provider with this user pool.
+   */
+  registerIdentityProvider(provider: IUserPoolIdentityProvider): void;
+}
+
+abstract class UserPoolBase extends Resource implements IUserPool {
+  public abstract readonly userPoolId: string;
+  public abstract readonly userPoolArn: string;
+  public readonly identityProviders: IUserPoolIdentityProvider[] = [];
+
+  public addClient(id: string, options?: UserPoolClientOptions): UserPoolClient {
+    return new UserPoolClient(this, id, {
+      userPool: this,
+      ...options,
+    });
+  }
+
+  public addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain {
+    return new UserPoolDomain(this, id, {
+      userPool: this,
+      ...options,
+    });
+  }
+
+  public addResourceServer(id: string, options: UserPoolResourceServerOptions): UserPoolResourceServer {
+    return new UserPoolResourceServer(this, id, {
+      userPool: this,
+      ...options,
+    });
+  }
+
+  public registerIdentityProvider(provider: IUserPoolIdentityProvider) {
+    this.identityProviders.push(provider);
+  }
 }
 
 /**
  * Define a Cognito User Pool
  */
-export class UserPool extends Resource implements IUserPool {
+export class UserPool extends UserPoolBase {
   /**
    * Import an existing user pool based on its id.
    */
   public static fromUserPoolId(scope: Construct, id: string, userPoolId: string): IUserPool {
-    class Import extends Resource implements IUserPool {
-      public readonly userPoolId = userPoolId;
-      public readonly userPoolArn = Stack.of(this).formatArn({
-        service: 'cognito-idp',
-        resource: 'userpool',
-        resourceName: userPoolId,
-      });
-    }
-    return new Import(scope, id);
+    let userPoolArn = Stack.of(scope).formatArn({
+      service: 'cognito-idp',
+      resource: 'userpool',
+      resourceName: userPoolId,
+    });
+
+    return UserPool.fromUserPoolArn(scope, id, userPoolArn);
   }
 
   /**
    * Import an existing user pool based on its ARN.
    */
   public static fromUserPoolArn(scope: Construct, id: string, userPoolArn: string): IUserPool {
-    class Import extends Resource implements IUserPool {
-      public readonly userPoolArn = userPoolArn;
-      public readonly userPoolId = Stack.of(this).parseArn(userPoolArn).resourceName!;
+    const arnParts = Stack.of(scope).splitArn(userPoolArn, ArnFormat.SLASH_RESOURCE_NAME);
+
+    if (!arnParts.resourceName) {
+      throw new Error('invalid user pool ARN');
     }
-    return new Import(scope, id);
+
+    const userPoolId = arnParts.resourceName;
+
+    class ImportedUserPool extends UserPoolBase {
+      public readonly userPoolArn = userPoolArn;
+      public readonly userPoolId = userPoolId;
+      constructor() {
+        super(scope, id, {
+          account: arnParts.account,
+          region: arnParts.region,
+        });
+      }
+    }
+
+    return new ImportedUserPool();
   }
 
   /**
@@ -449,65 +801,102 @@ export class UserPool extends Resource implements IUserPool {
    */
   public readonly userPoolProviderUrl: string;
 
-  private triggers: CfnUserPool.LambdaConfigProperty = { };
+  private triggers: CfnUserPool.LambdaConfigProperty = {};
 
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
     super(scope, id);
 
     const signIn = this.signInConfiguration(props);
 
+    if (props.customSenderKmsKey) {
+      const kmsKey = props.customSenderKmsKey;
+      (this.triggers as any).kmsKeyId = kmsKey.keyArn;
+    }
+
     if (props.lambdaTriggers) {
       for (const t of Object.keys(props.lambdaTriggers)) {
-        const trigger = props.lambdaTriggers[t];
-        if (trigger !== undefined) {
-          this.addLambdaPermission(trigger as lambda.IFunction, t);
-          (this.triggers as any)[t] = (trigger as lambda.IFunction).functionArn;
+        let trigger: lambda.IFunction | undefined;
+        switch (t) {
+          case 'customSmsSender':
+          case 'customEmailSender':
+            if (!this.triggers.kmsKeyId) {
+              throw new Error('you must specify a KMS key if you are using customSmsSender or customEmailSender.');
+            }
+            trigger = props.lambdaTriggers[t];
+            const version = 'V1_0';
+            if (trigger !== undefined) {
+              this.addLambdaPermission(trigger as lambda.IFunction, t);
+              (this.triggers as any)[t] = {
+                lambdaArn: trigger.functionArn,
+                lambdaVersion: version,
+              };
+            }
+            break;
+          default:
+            trigger = props.lambdaTriggers[t] as lambda.IFunction | undefined;
+            if (trigger !== undefined) {
+              this.addLambdaPermission(trigger as lambda.IFunction, t);
+              (this.triggers as any)[t] = (trigger as lambda.IFunction).functionArn;
+            }
+            break;
         }
       }
     }
 
-    const emailVerificationSubject = props.userVerification?.emailSubject ?? 'Verify your new account';
-    const emailVerificationMessage = props.userVerification?.emailBody ?? 'Hello {username}, Your verification code is {####}';
-    const smsVerificationMessage = props.userVerification?.smsMessage ?? 'The verification code to your new account is {####}';
-
-    const defaultEmailOption = props.userVerification?.emailStyle ?? VerificationEmailStyle.CODE;
-    const verificationMessageTemplate: CfnUserPool.VerificationMessageTemplateProperty =
-      (defaultEmailOption === VerificationEmailStyle.CODE) ? {
-        defaultEmailOption,
-        emailMessage: emailVerificationMessage,
-        emailSubject: emailVerificationSubject,
-        smsMessage: smsVerificationMessage,
-      } : {
-        defaultEmailOption,
-        emailMessageByLink: emailVerificationMessage,
-        emailSubjectByLink: emailVerificationSubject,
-        smsMessage: smsVerificationMessage
-      };
-
+    const verificationMessageTemplate = this.verificationMessageConfiguration(props);
+    let emailVerificationMessage;
+    let emailVerificationSubject;
+    if (verificationMessageTemplate.defaultEmailOption === VerificationEmailStyle.CODE) {
+      emailVerificationMessage = verificationMessageTemplate.emailMessage;
+      emailVerificationSubject = verificationMessageTemplate.emailSubject;
+    }
+    const smsVerificationMessage = verificationMessageTemplate.smsMessage;
     const inviteMessageTemplate: CfnUserPool.InviteMessageTemplateProperty = {
       emailMessage: props.userInvitation?.emailBody,
       emailSubject: props.userInvitation?.emailSubject,
       smsMessage: props.userInvitation?.smsMessage,
     };
-    const selfSignUpEnabled = props.selfSignUpEnabled !== undefined ? props.selfSignUpEnabled : false;
+    const selfSignUpEnabled = props.selfSignUpEnabled ?? false;
     const adminCreateUserConfig: CfnUserPool.AdminCreateUserConfigProperty = {
       allowAdminCreateUserOnly: !selfSignUpEnabled,
       inviteMessageTemplate: props.userInvitation !== undefined ? inviteMessageTemplate : undefined,
     };
+
+    const passwordPolicy = this.configurePasswordPolicy(props);
+
+    if (props.email && props.emailSettings) {
+      throw new Error('you must either provide "email" or "emailSettings", but not both');
+    }
+    const emailConfiguration = props.email ? props.email._bind(this) : undefinedIfNoKeys({
+      from: encodePuny(props.emailSettings?.from),
+      replyToEmailAddress: encodePuny(props.emailSettings?.replyTo),
+    });
 
     const userPool = new CfnUserPool(this, 'Resource', {
       userPoolName: props.userPoolName,
       usernameAttributes: signIn.usernameAttrs,
       aliasAttributes: signIn.aliasAttrs,
       autoVerifiedAttributes: signIn.autoVerifyAttrs,
-      lambdaConfig: Lazy.anyValue({ produce: () => this.triggers }),
+      lambdaConfig: Lazy.any({ produce: () => undefinedIfNoKeys(this.triggers) }),
+      smsAuthenticationMessage: this.mfaMessage(props),
       smsConfiguration: this.smsConfiguration(props),
       adminCreateUserConfig,
       emailVerificationMessage,
       emailVerificationSubject,
       smsVerificationMessage,
       verificationMessageTemplate,
+      schema: this.schemaConfiguration(props),
+      mfaConfiguration: props.mfa,
+      enabledMfas: this.mfaConfiguration(props),
+      policies: passwordPolicy !== undefined ? { passwordPolicy } : undefined,
+      emailConfiguration,
+      usernameConfiguration: undefinedIfNoKeys({
+        caseSensitive: props.signInCaseSensitive,
+      }),
+      accountRecoverySetting: this.accountRecovery(props),
+      deviceConfiguration: props.deviceTracking,
     });
+    userPool.applyRemovalPolicy(props.removalPolicy);
 
     this.userPoolId = userPool.ref;
     this.userPoolArn = userPool.attrArn;
@@ -517,121 +906,93 @@ export class UserPool extends Resource implements IUserPool {
   }
 
   /**
-   * Attach 'Create Auth Challenge' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-create-auth-challenge.html
-   * @param fn the lambda function to attach
+   * Add a lambda trigger to a user pool operation
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html
    */
-  public addCreateAuthChallengeTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'CreateAuthChallenge');
-    this.triggers = { ...this.triggers, createAuthChallenge: fn.functionArn };
-  }
+  public addTrigger(operation: UserPoolOperation, fn: lambda.IFunction): void {
+    if (operation.operationName in this.triggers) {
+      throw new Error(`A trigger for the operation ${operation.operationName} already exists.`);
+    }
 
-  /**
-   * Attach 'Custom Message' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-message.html
-   * @param fn the lambda function to attach
-   */
-  public addCustomMessageTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'CustomMessage');
-    this.triggers = { ...this.triggers, customMessage: fn.functionArn };
-  }
+    this.addLambdaPermission(fn, operation.operationName);
+    switch (operation.operationName) {
+      case 'customEmailSender':
+      case 'customSmsSender':
+        if (!this.triggers.kmsKeyId) {
+          throw new Error('you must specify a KMS key if you are using customSmsSender or customEmailSender.');
+        }
+        (this.triggers as any)[operation.operationName] = {
+          lambdaArn: fn.functionArn,
+          lambdaVersion: 'V1_0',
+        };
+        break;
+      default:
+        (this.triggers as any)[operation.operationName] = fn.functionArn;
+    }
 
-  /**
-   * Attach 'Define Auth Challenge' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-define-auth-challenge.html
-   * @param fn the lambda function to attach
-   */
-  public addDefineAuthChallengeTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'DefineAuthChallenge');
-    this.triggers = { ...this.triggers, defineAuthChallenge: fn.functionArn };
-  }
-
-  /**
-   * Attach 'Post Authentication' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-authentication.html
-   * @param fn the lambda function to attach
-   */
-  public addPostAuthenticationTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'PostAuthentication');
-    this.triggers = { ...this.triggers, postAuthentication: fn.functionArn };
-  }
-
-  /**
-   * Attach 'Post Confirmation' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-confirmation.html
-   * @param fn the lambda function to attach
-   */
-  public addPostConfirmationTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'PostConfirmation');
-    this.triggers = { ...this.triggers, postConfirmation: fn.functionArn };
-  }
-
-  /**
-   * Attach 'Pre Authentication' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-authentication.html
-   * @param fn the lambda function to attach
-   */
-  public addPreAuthenticationTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'PreAuthentication');
-    this.triggers = { ...this.triggers, preAuthentication: fn.functionArn };
-  }
-
-  /**
-   * Attach 'Pre Sign Up' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-sign-up.html
-   * @param fn the lambda function to attach
-   */
-  public addPreSignUpTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'PreSignUp');
-    this.triggers = { ...this.triggers, preSignUp: fn.functionArn };
-  }
-
-  /**
-   * Attach 'Pre Token Generation' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
-   * @param fn the lambda function to attach
-   */
-  public addPreTokenGenerationTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'PreTokenGeneration');
-    this.triggers = { ...this.triggers, preTokenGeneration: fn.functionArn };
-  }
-
-  /**
-   * Attach 'User Migration' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html
-   * @param fn the lambda function to attach
-   */
-  public addUserMigrationTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'UserMigration');
-    this.triggers = { ...this.triggers, userMigration: fn.functionArn };
-  }
-
-  /**
-   * Attach 'Verify Auth Challenge Response' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-verify-auth-challenge-response.html
-   * @param fn the lambda function to attach
-   */
-  public addVerifyAuthChallengeResponseTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'VerifyAuthChallengeResponse');
-    this.triggers = { ...this.triggers, verifyAuthChallengeResponse: fn.functionArn };
   }
 
   private addLambdaPermission(fn: lambda.IFunction, name: string): void {
-    const normalize = name.charAt(0).toUpperCase() + name.slice(1);
-    fn.addPermission(`${normalize}Cognito`, {
+    const capitalize = name.charAt(0).toUpperCase() + name.slice(1);
+    fn.addPermission(`${capitalize}Cognito`, {
       principal: new ServicePrincipal('cognito-idp.amazonaws.com'),
-      sourceArn: this.userPoolArn
+      sourceArn: Lazy.string({ produce: () => this.userPoolArn }),
     });
+  }
+
+  private mfaMessage(props: UserPoolProps): string | undefined {
+    const CODE_TEMPLATE = '{####}';
+    const MAX_LENGTH = 140;
+    const message = props.mfaMessage;
+
+    if (message && !Token.isUnresolved(message)) {
+      if (!message.includes(CODE_TEMPLATE)) {
+        throw new Error(`MFA message must contain the template string '${CODE_TEMPLATE}'`);
+      }
+
+      if (message.length > MAX_LENGTH) {
+        throw new Error(`MFA message must be between ${CODE_TEMPLATE.length} and ${MAX_LENGTH} characters`);
+      }
+    }
+
+    return message;
+  }
+
+  private verificationMessageConfiguration(props: UserPoolProps): CfnUserPool.VerificationMessageTemplateProperty {
+    const CODE_TEMPLATE = '{####}';
+    const VERIFY_EMAIL_TEMPLATE = '{##Verify Email##}';
+
+    const emailStyle = props.userVerification?.emailStyle ?? VerificationEmailStyle.CODE;
+    const emailSubject = props.userVerification?.emailSubject ?? 'Verify your new account';
+    const smsMessage = props.userVerification?.smsMessage ?? `The verification code to your new account is ${CODE_TEMPLATE}`;
+
+    if (emailStyle === VerificationEmailStyle.CODE) {
+      const emailMessage = props.userVerification?.emailBody ?? `The verification code to your new account is ${CODE_TEMPLATE}`;
+      if (!Token.isUnresolved(emailMessage) && emailMessage.indexOf(CODE_TEMPLATE) < 0) {
+        throw new Error(`Verification email body must contain the template string '${CODE_TEMPLATE}'`);
+      }
+      if (!Token.isUnresolved(smsMessage) && smsMessage.indexOf(CODE_TEMPLATE) < 0) {
+        throw new Error(`SMS message must contain the template string '${CODE_TEMPLATE}'`);
+      }
+      return {
+        defaultEmailOption: VerificationEmailStyle.CODE,
+        emailMessage,
+        emailSubject,
+        smsMessage,
+      };
+    } else {
+      const emailMessage = props.userVerification?.emailBody ??
+        `Verify your account by clicking on ${VERIFY_EMAIL_TEMPLATE}`;
+      if (!Token.isUnresolved(emailMessage) && emailMessage.indexOf(VERIFY_EMAIL_TEMPLATE) < 0) {
+        throw new Error(`Verification email body must contain the template string '${VERIFY_EMAIL_TEMPLATE}'`);
+      }
+      return {
+        defaultEmailOption: VerificationEmailStyle.LINK,
+        emailMessageByLink: emailMessage,
+        emailSubjectByLink: emailSubject,
+        smsMessage,
+      };
+    }
   }
 
   private signInConfiguration(props: UserPoolProps) {
@@ -647,63 +1008,210 @@ export class UserPool extends Resource implements IUserPool {
 
     if (signIn.username) {
       aliasAttrs = [];
-      if (signIn.email) { aliasAttrs.push(UserPoolAttribute.EMAIL); }
-      if (signIn.phone) { aliasAttrs.push(UserPoolAttribute.PHONE_NUMBER); }
-      if (signIn.preferredUsername) { aliasAttrs.push(UserPoolAttribute.PREFERRED_USERNAME); }
+      if (signIn.email) { aliasAttrs.push(StandardAttributeNames.email); }
+      if (signIn.phone) { aliasAttrs.push(StandardAttributeNames.phoneNumber); }
+      if (signIn.preferredUsername) { aliasAttrs.push(StandardAttributeNames.preferredUsername); }
       if (aliasAttrs.length === 0) { aliasAttrs = undefined; }
     } else {
       usernameAttrs = [];
-      if (signIn.email) { usernameAttrs.push(UserPoolAttribute.EMAIL); }
-      if (signIn.phone) { usernameAttrs.push(UserPoolAttribute.PHONE_NUMBER); }
+      if (signIn.email) { usernameAttrs.push(StandardAttributeNames.email); }
+      if (signIn.phone) { usernameAttrs.push(StandardAttributeNames.phoneNumber); }
     }
 
     if (props.autoVerify) {
       autoVerifyAttrs = [];
-      if (props.autoVerify.email) { autoVerifyAttrs.push(UserPoolAttribute.EMAIL); }
-      if (props.autoVerify.phone) { autoVerifyAttrs.push(UserPoolAttribute.PHONE_NUMBER); }
+      if (props.autoVerify.email) { autoVerifyAttrs.push(StandardAttributeNames.email); }
+      if (props.autoVerify.phone) { autoVerifyAttrs.push(StandardAttributeNames.phoneNumber); }
     } else if (signIn.email || signIn.phone) {
       autoVerifyAttrs = [];
-      if (signIn.email) { autoVerifyAttrs.push(UserPoolAttribute.EMAIL); }
-      if (signIn.phone) { autoVerifyAttrs.push(UserPoolAttribute.PHONE_NUMBER); }
+      if (signIn.email) { autoVerifyAttrs.push(StandardAttributeNames.email); }
+      if (signIn.phone) { autoVerifyAttrs.push(StandardAttributeNames.phoneNumber); }
     }
 
     return { usernameAttrs, aliasAttrs, autoVerifyAttrs };
   }
 
-  private smsConfiguration(props: UserPoolProps): CfnUserPool.SmsConfigurationProperty {
+  private smsConfiguration(props: UserPoolProps): CfnUserPool.SmsConfigurationProperty | undefined {
+    if (props.enableSmsRole === false && props.smsRole) {
+      throw new Error('enableSmsRole cannot be disabled when smsRole is specified');
+    }
+
     if (props.smsRole) {
       return {
         snsCallerArn: props.smsRole.roleArn,
-        externalId: props.smsRoleExternalId
-      };
-    } else {
-      const smsRoleExternalId = this.node.uniqueId.substr(0, 1223); // sts:ExternalId max length of 1224
-      const smsRole = props.smsRole ?? new Role(this, 'smsRole', {
-        assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com', {
-          conditions: {
-            StringEquals: { 'sts:ExternalId': smsRoleExternalId }
-          }
-        }),
-        inlinePolicies: {
-          /*
-           * The UserPool is very particular that it must contain an 'sns:Publish' action as an inline policy.
-           * Ideally, a conditional that restricts this action to 'sms' protocol needs to be attached, but the UserPool deployment fails validation.
-           * Seems like a case of being excessively strict.
-           */
-          'sns-publish': new PolicyDocument({
-            statements: [
-              new PolicyStatement({
-                actions: [ 'sns:Publish' ],
-                resources: [ '*' ],
-              })
-            ]
-          })
-        }
-      });
-      return {
-        externalId: smsRoleExternalId,
-        snsCallerArn: smsRole.roleArn
+        externalId: props.smsRoleExternalId,
+        snsRegion: props.snsRegion,
       };
     }
+
+    if (props.enableSmsRole === false) {
+      return undefined;
+    }
+
+    const mfaConfiguration = this.mfaConfiguration(props);
+    const phoneVerification = props.signInAliases?.phone === true || props.autoVerify?.phone === true;
+    const roleRequired = mfaConfiguration?.includes('SMS_MFA') || phoneVerification;
+    if (!roleRequired && props.enableSmsRole === undefined) {
+      return undefined;
+    }
+
+    const smsRoleExternalId = Names.uniqueId(this).slice(0, 1223); // sts:ExternalId max length of 1224
+    const smsRole = props.smsRole ?? new Role(this, 'smsRole', {
+      assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com', {
+        conditions: {
+          StringEquals: { 'sts:ExternalId': smsRoleExternalId },
+        },
+      }),
+      inlinePolicies: {
+        /*
+          * The UserPool is very particular that it must contain an 'sns:Publish' action as an inline policy.
+          * Ideally, a conditional that restricts this action to 'sms' protocol needs to be attached, but the UserPool deployment fails validation.
+          * Seems like a case of being excessively strict.
+          */
+        'sns-publish': new PolicyDocument({
+          statements: [
+            new PolicyStatement({
+              actions: ['sns:Publish'],
+              resources: ['*'],
+            }),
+          ],
+        }),
+      },
+    });
+    return {
+      externalId: smsRoleExternalId,
+      snsCallerArn: smsRole.roleArn,
+      snsRegion: props.snsRegion,
+    };
   }
+
+  private mfaConfiguration(props: UserPoolProps): string[] | undefined {
+    if (props.mfa === undefined || props.mfa === Mfa.OFF) {
+      // since default is OFF, treat undefined and OFF the same way
+      return undefined;
+    } else if (props.mfaSecondFactor === undefined &&
+      (props.mfa === Mfa.OPTIONAL || props.mfa === Mfa.REQUIRED)) {
+      return ['SMS_MFA'];
+    } else {
+      const enabledMfas = [];
+      if (props.mfaSecondFactor!.sms) {
+        enabledMfas.push('SMS_MFA');
+      }
+      if (props.mfaSecondFactor!.otp) {
+        enabledMfas.push('SOFTWARE_TOKEN_MFA');
+      }
+      return enabledMfas;
+    }
+  }
+
+  private configurePasswordPolicy(props: UserPoolProps): CfnUserPool.PasswordPolicyProperty | undefined {
+    const tempPasswordValidity = props.passwordPolicy?.tempPasswordValidity;
+    if (tempPasswordValidity !== undefined && tempPasswordValidity.toDays() > Duration.days(365).toDays()) {
+      throw new Error(`tempPasswordValidity cannot be greater than 365 days (received: ${tempPasswordValidity.toDays()})`);
+    }
+    const minLength = props.passwordPolicy ? props.passwordPolicy.minLength ?? 8 : undefined;
+    if (minLength !== undefined && (minLength < 6 || minLength > 99)) {
+      throw new Error(`minLength for password must be between 6 and 99 (received: ${minLength})`);
+    }
+    return undefinedIfNoKeys({
+      temporaryPasswordValidityDays: tempPasswordValidity?.toDays({ integral: true }),
+      minimumLength: minLength,
+      requireLowercase: props.passwordPolicy?.requireLowercase,
+      requireUppercase: props.passwordPolicy?.requireUppercase,
+      requireNumbers: props.passwordPolicy?.requireDigits,
+      requireSymbols: props.passwordPolicy?.requireSymbols,
+    });
+  }
+
+  private schemaConfiguration(props: UserPoolProps): CfnUserPool.SchemaAttributeProperty[] | undefined {
+    const schema: CfnUserPool.SchemaAttributeProperty[] = [];
+
+    if (props.standardAttributes) {
+      const stdAttributes = (Object.entries(props.standardAttributes) as Array<[keyof StandardAttributes, StandardAttribute]>)
+        .filter(([, attr]) => !!attr)
+        .map(([attrName, attr]) => ({
+          name: StandardAttributeNames[attrName],
+          mutable: attr.mutable ?? true,
+          required: attr.required ?? false,
+        }));
+
+      schema.push(...stdAttributes);
+    }
+
+    if (props.customAttributes) {
+      const customAttrs = Object.keys(props.customAttributes).map((attrName) => {
+        const attrConfig = props.customAttributes![attrName].bind();
+        const numberConstraints: CfnUserPool.NumberAttributeConstraintsProperty = {
+          minValue: attrConfig.numberConstraints?.min?.toString(),
+          maxValue: attrConfig.numberConstraints?.max?.toString(),
+        };
+        const stringConstraints: CfnUserPool.StringAttributeConstraintsProperty = {
+          minLength: attrConfig.stringConstraints?.minLen?.toString(),
+          maxLength: attrConfig.stringConstraints?.maxLen?.toString(),
+        };
+
+        return {
+          name: attrName,
+          attributeDataType: attrConfig.dataType,
+          numberAttributeConstraints: attrConfig.numberConstraints
+            ? numberConstraints
+            : undefined,
+          stringAttributeConstraints: attrConfig.stringConstraints
+            ? stringConstraints
+            : undefined,
+          mutable: attrConfig.mutable,
+        };
+      });
+      schema.push(...customAttrs);
+    }
+
+    if (schema.length === 0) {
+      return undefined;
+    }
+    return schema;
+  }
+
+  private accountRecovery(props: UserPoolProps): undefined | CfnUserPool.AccountRecoverySettingProperty {
+    const accountRecovery = props.accountRecovery ?? AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL;
+    switch (accountRecovery) {
+      case AccountRecovery.EMAIL_AND_PHONE_WITHOUT_MFA:
+        return {
+          recoveryMechanisms: [
+            { name: 'verified_email', priority: 1 },
+            { name: 'verified_phone_number', priority: 2 },
+          ],
+        };
+      case AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL:
+        return {
+          recoveryMechanisms: [
+            { name: 'verified_phone_number', priority: 1 },
+            { name: 'verified_email', priority: 2 },
+          ],
+        };
+      case AccountRecovery.EMAIL_ONLY:
+        return {
+          recoveryMechanisms: [{ name: 'verified_email', priority: 1 }],
+        };
+      case AccountRecovery.PHONE_ONLY_WITHOUT_MFA:
+        return {
+          recoveryMechanisms: [{ name: 'verified_phone_number', priority: 1 }],
+        };
+      case AccountRecovery.NONE:
+        return {
+          recoveryMechanisms: [{ name: 'admin_only', priority: 1 }],
+        };
+      case AccountRecovery.PHONE_AND_EMAIL:
+        return undefined;
+      default:
+        throw new Error(`Unsupported AccountRecovery type - ${accountRecovery}`);
+    }
+  }
+}
+
+function undefinedIfNoKeys(struct: object): object | undefined {
+  const allUndefined = Object.values(struct).every(val => val === undefined);
+  return allUndefined ? undefined : struct;
+}
+function encodePuny(input: string | undefined): string | undefined {
+  return input !== undefined ? punycodeEncode(input) : input;
 }

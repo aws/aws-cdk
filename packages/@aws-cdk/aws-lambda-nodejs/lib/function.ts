@@ -1,10 +1,15 @@
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
-import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Builder } from './builder';
-import { nodeMajorVersion, parseStackTrace } from './util';
+import * as lambda from '@aws-cdk/aws-lambda';
+import { Architecture } from '@aws-cdk/aws-lambda';
+import { Bundling } from './bundling';
+import { LockFile } from './package-manager';
+import { BundlingOptions } from './types';
+import { callsites, findUpMultiple } from './util';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties for a NodejsFunction
@@ -31,79 +36,121 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * The runtime environment. Only runtimes of the Node.js family are
    * supported.
    *
-   * @default - `NODEJS_12_X` if `process.versions.node` >= '12.0.0',
-   * `NODEJS_10_X` otherwise.
+   * @default Runtime.NODEJS_14_X
    */
   readonly runtime?: lambda.Runtime;
 
   /**
-   * Whether to minify files when bundling.
+   * Whether to automatically reuse TCP connections when working with the AWS
+   * SDK for JavaScript.
    *
-   * @default false
+   * This sets the `AWS_NODEJS_CONNECTION_REUSE_ENABLED` environment variable
+   * to `1`.
+   *
+   * @see https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
+   *
+   * @default true
    */
-  readonly minify?: boolean;
+  readonly awsSdkConnectionReuse?: boolean;
 
   /**
-   * Whether to include source maps when bundling.
+   * The path to the dependencies lock file (`yarn.lock` or `package-lock.json`).
    *
-   * @default false
+   * This will be used as the source for the volume mounted in the Docker
+   * container.
+   *
+   * Modules specified in `nodeModules` will be installed using the right
+   * installer (`npm` or `yarn`) along with this lock file.
+   *
+   * @default - the path is found by walking up parent directories searching for
+   *   a `yarn.lock` or `package-lock.json` file
    */
-  readonly sourceMaps?: boolean;
+  readonly depsLockFilePath?: string;
 
   /**
-   * The build directory
+   * Bundling options
    *
-   * @default - `.build` in the entry file directory
+   * @default - use default bundling options: no minify, no sourcemap, all
+   *   modules are bundled.
    */
-  readonly buildDir?: string;
+  readonly bundling?: BundlingOptions;
 
   /**
-   * The cache directory
+   * The path to the directory containing project config files (`package.json` or `tsconfig.json`)
    *
-   * Parcel uses a filesystem cache for fast rebuilds.
-   *
-   * @default - `.cache` in the root directory
+   * @default - the directory containing the `depsLockFilePath`
    */
-  readonly cacheDir?: string;
+  readonly projectRoot?: string;
 }
 
 /**
- * A Node.js Lambda function bundled using Parcel
+ * A Node.js Lambda function bundled using esbuild
  */
 export class NodejsFunction extends lambda.Function {
-  constructor(scope: cdk.Construct, id: string, props: NodejsFunctionProps = {}) {
+  constructor(scope: Construct, id: string, props: NodejsFunctionProps = {}) {
     if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.NODEJS) {
       throw new Error('Only `NODEJS` runtimes are supported.');
     }
 
-    const entry = findEntry(id, props.entry);
-    const handler = props.handler || 'handler';
-    const buildDir = props.buildDir || path.join(path.dirname(entry), '.build');
-    const handlerDir = path.join(buildDir, crypto.createHash('sha256').update(entry).digest('hex'));
-    const defaultRunTime = nodeMajorVersion() >= 12
-    ? lambda.Runtime.NODEJS_12_X
-    : lambda.Runtime.NODEJS_10_X;
-    const runtime = props.runtime || defaultRunTime;
-
-    // Build with Parcel
-    const builder = new Builder({
-      entry,
-      outDir: handlerDir,
-      global: handler,
-      minify: props.minify,
-      sourceMaps: props.sourceMaps,
-      cacheDir: props.cacheDir,
-      nodeVersion: extractVersion(runtime),
-    });
-    builder.build();
+    // Entry and defaults
+    const entry = path.resolve(findEntry(id, props.entry));
+    const handler = props.handler ?? 'handler';
+    const runtime = props.runtime ?? lambda.Runtime.NODEJS_14_X;
+    const architecture = props.architecture ?? Architecture.X86_64;
+    const depsLockFilePath = findLockFile(props.depsLockFilePath);
+    const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
 
     super(scope, id, {
       ...props,
       runtime,
-      code: lambda.Code.fromAsset(handlerDir),
+      code: Bundling.bundle({
+        ...props.bundling ?? {},
+        entry,
+        runtime,
+        architecture,
+        depsLockFilePath,
+        projectRoot,
+      }),
       handler: `index.${handler}`,
     });
+
+    // Enable connection reuse for aws-sdk
+    if (props.awsSdkConnectionReuse ?? true) {
+      this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
+    }
   }
+}
+
+/**
+ * Checks given lock file or searches for a lock file
+ */
+function findLockFile(depsLockFilePath?: string): string {
+  if (depsLockFilePath) {
+    if (!fs.existsSync(depsLockFilePath)) {
+      throw new Error(`Lock file at ${depsLockFilePath} doesn't exist`);
+    }
+
+    if (!fs.statSync(depsLockFilePath).isFile()) {
+      throw new Error('`depsLockFilePath` should point to a file');
+    }
+
+    return path.resolve(depsLockFilePath);
+  }
+
+  const lockFiles = findUpMultiple([
+    LockFile.PNPM,
+    LockFile.YARN,
+    LockFile.NPM,
+  ]);
+
+  if (lockFiles.length === 0) {
+    throw new Error('Cannot find a package lock file (`pnpm-lock.yaml`, `yarn.lock` or `package-lock.json`). Please specify it with `depsFileLockPath`.');
+  }
+  if (lockFiles.length > 1) {
+    throw new Error(`Multiple package lock files found: ${lockFiles.join(', ')}. Please specify the desired one with \`depsFileLockPath\`.`);
+  }
+
+  return lockFiles[0];
 }
 
 /**
@@ -111,10 +158,11 @@ export class NodejsFunction extends lambda.Function {
  * 1. Given entry file
  * 2. A .ts file named as the defining file with id as suffix (defining-file.id.ts)
  * 3. A .js file name as the defining file with id as suffix (defining-file.id.js)
+ * 4. A .mjs file name as the defining file with id as suffix (defining-file.id.mjs)
  */
 function findEntry(id: string, entry?: string): string {
   if (entry) {
-    if (!/\.(js|ts)$/.test(entry)) {
+    if (!/\.(jsx?|tsx?|mjs)$/.test(entry)) {
       throw new Error('Only JavaScript or TypeScript entry files are supported.');
     }
     if (!fs.existsSync(entry)) {
@@ -136,32 +184,31 @@ function findEntry(id: string, entry?: string): string {
     return jsHandlerFile;
   }
 
-  throw new Error('Cannot find entry file.');
+  const mjsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.mjs`);
+  if (fs.existsSync(mjsHandlerFile)) {
+    return mjsHandlerFile;
+  }
+
+  throw new Error(`Cannot find handler file ${tsHandlerFile}, ${jsHandlerFile} or ${mjsHandlerFile}`);
 }
 
 /**
  * Finds the name of the file where the `NodejsFunction` is defined
  */
 function findDefiningFile(): string {
-  const stackTrace = parseStackTrace();
-  const functionIndex = stackTrace.findIndex(s => /NodejsFunction/.test(s.methodName || ''));
+  let definingIndex;
+  const sites = callsites();
+  for (const [index, site] of sites.entries()) {
+    if (site.getFunctionName() === 'NodejsFunction') {
+      // The next site is the site where the NodejsFunction was created
+      definingIndex = index + 1;
+      break;
+    }
+  }
 
-  if (functionIndex === -1 || !stackTrace[functionIndex + 1]) {
+  if (!definingIndex || !sites[definingIndex]) {
     throw new Error('Cannot find defining file.');
   }
 
-  return stackTrace[functionIndex + 1].file;
-}
-
-/**
- * Extracts the version from the runtime
- */
-function extractVersion(runtime: lambda.Runtime): string | undefined {
-  const match = runtime.name.match(/nodejs(\d+)/);
-
-  if (!match) {
-    return undefined;
-  }
-
-  return match[1];
+  return sites[definingIndex].getFileName();
 }

@@ -1,10 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { ArtifactType } from '@aws-cdk/cx-api';
-import { Construct, IConstruct, ISynthesisSession } from '../construct';
+import { ArtifactType } from '@aws-cdk/cloud-assembly-schema';
+import { Annotations } from '../annotations';
+import { Construct, IConstruct, ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { IInspectable, TreeInspector } from '../tree';
+import { ConstructInfo, constructInfoFromConstruct } from './runtime-info';
 
 const FILE_PATH = 'tree.json';
 
@@ -13,14 +15,17 @@ const FILE_PATH = 'tree.json';
  * This generates, as part of synthesis, a file containing the construct tree and the metadata for each node in the tree.
  * The output is in a tree format so as to preserve the construct hierarchy.
  *
- * @experimental
  */
 export class TreeMetadata extends Construct {
   constructor(scope: Construct) {
     super(scope, 'Tree');
   }
 
-  protected synthesize(session: ISynthesisSession) {
+  /**
+   * Create tree.json
+   * @internal
+   */
+  public _synthesizeTree(session: ISynthesisSession) {
     const lookup: { [path: string]: Node } = { };
 
     const visit = (construct: IConstruct): Node => {
@@ -28,7 +33,7 @@ export class TreeMetadata extends Construct {
         try {
           return visit(c);
         } catch (e) {
-          this.node.addWarning(`Failed to render tree metadata for node [${c.node.id}]. Reason: ${e}`);
+          Annotations.of(this).addWarning(`Failed to render tree metadata for node [${c.node.id}]. Reason: ${e}`);
           return undefined;
         }
       });
@@ -40,7 +45,8 @@ export class TreeMetadata extends Construct {
         id: construct.node.id || 'App',
         path: construct.node.path,
         children: Object.keys(childrenMap).length === 0 ? undefined : childrenMap,
-        attributes: this.synthAttributes(construct)
+        attributes: this.synthAttributes(construct),
+        constructInfo: constructInfoFromConstruct(construct),
       };
 
       lookup[node.path] = node;
@@ -59,8 +65,8 @@ export class TreeMetadata extends Construct {
     builder.addArtifact('Tree', {
       type: ArtifactType.CDK_TREE,
       properties: {
-        file: FILE_PATH
-      }
+        file: FILE_PATH,
+      },
     });
   }
 
@@ -82,8 +88,13 @@ export class TreeMetadata extends Construct {
 }
 
 interface Node {
-  id: string;
-  path: string;
-  children?: { [key: string]: Node };
-  attributes?: { [key: string]: any };
+  readonly id: string;
+  readonly path: string;
+  readonly children?: { [key: string]: Node };
+  readonly attributes?: { [key: string]: any };
+
+  /**
+   * Information on the construct class that led to this node, if available
+   */
+  readonly constructInfo?: ConstructInfo;
 }

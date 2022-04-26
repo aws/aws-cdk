@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
@@ -24,83 +24,39 @@ test('event bus as destination', () => {
   // WHEN
   new lambda.Function(stack, 'Function', {
     ...lambdaProps,
-    onSuccess: new destinations.EventBridgeDestination(eventBus)
+    onSuccess: new destinations.EventBridgeDestination(eventBus),
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
     DestinationConfig: {
       OnSuccess: {
         Destination: {
           'Fn::GetAtt': [
             'EventBus7B8748AA',
-            'Arn'
-          ]
-        }
-      }
-    }
+            'Arn',
+          ],
+        },
+      },
+    },
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
           Action: 'events:PutEvents',
           Effect: 'Allow',
-          Resource: '*'
-        }
+          Resource: {
+            'Fn::GetAtt': [
+              'EventBus7B8748AA',
+              'Arn',
+            ],
+          },
+        },
       ],
-      Version: '2012-10-17'
-    }
-  });
-});
-
-test('event bus as destination defaults to default event bus', () => {
-  // WHEN
-  new lambda.Function(stack, 'Function', {
-    ...lambdaProps,
-    onSuccess: new destinations.EventBridgeDestination()
-  });
-
-  // THEN
-  expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
-    DestinationConfig: {
-      OnSuccess: {
-        Destination: {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              {
-                Ref: 'AWS::Partition'
-              },
-              ':events:',
-              {
-                Ref: 'AWS::Region'
-              },
-              ':',
-              {
-                Ref: 'AWS::AccountId'
-              },
-              ':event-bus/default'
-            ]
-          ]
-        }
-      }
-    }
-  });
-
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: [
-        {
-          Action: 'events:PutEvents',
-          Effect: 'Allow',
-          Resource: '*'
-        }
-      ],
-      Version: '2012-10-17'
-    }
+      Version: '2012-10-17',
+    },
   });
 });
 
@@ -111,39 +67,37 @@ test('lambda as destination', () => {
   // WHEN
   new lambda.Function(stack, 'Function', {
     ...lambdaProps,
-    onSuccess: new destinations.LambdaDestination(successLambda)
+    onSuccess: new destinations.LambdaDestination(successLambda),
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
     DestinationConfig: {
       OnSuccess: {
         Destination: {
           'Fn::GetAtt': [
             'SuccessFunction93C61D39',
-            'Arn'
-          ]
-        }
-      }
-    }
+            'Arn',
+          ],
+        },
+      },
+    },
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
           Action: 'lambda:InvokeFunction',
           Effect: 'Allow',
-          Resource: {
-            'Fn::GetAtt': [
-              'SuccessFunction93C61D39',
-              'Arn'
-            ]
-          }
-        }
+          Resource: [
+            { 'Fn::GetAtt': ['SuccessFunction93C61D39', 'Arn'] },
+            { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['SuccessFunction93C61D39', 'Arn'] }, ':*']] },
+          ],
+        },
       ],
-      Version: '2012-10-17'
-    }
+      Version: '2012-10-17',
+    },
   });
 });
 
@@ -160,7 +114,7 @@ test('lambda payload as destination', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
     DestinationConfig: {
       OnSuccess: {
         Destination: {
@@ -169,20 +123,20 @@ test('lambda payload as destination', () => {
             [
               'arn:',
               {
-                Ref: 'AWS::Partition'
+                Ref: 'AWS::Partition',
               },
               ':events:',
               {
-                Ref: 'AWS::Region'
+                Ref: 'AWS::Region',
               },
               ':',
               {
-                Ref: 'AWS::AccountId'
+                Ref: 'AWS::AccountId',
               },
-              ':event-bus/default'
-            ]
-          ]
-        }
+              ':event-bus/default',
+            ],
+          ],
+        },
       },
       OnFailure: {
         Destination: {
@@ -191,41 +145,60 @@ test('lambda payload as destination', () => {
             [
               'arn:',
               {
-                Ref: 'AWS::Partition'
+                Ref: 'AWS::Partition',
               },
               ':events:',
               {
-                Ref: 'AWS::Region'
+                Ref: 'AWS::Region',
               },
               ':',
               {
-                Ref: 'AWS::AccountId'
+                Ref: 'AWS::AccountId',
               },
-              ':event-bus/default'
-            ]
-          ]
-        }
-      }
-    }
+              ':event-bus/default',
+            ],
+          ],
+        },
+      },
+    },
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
           Action: 'events:PutEvents',
           Effect: 'Allow',
-          Resource: '*'
-        }
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':events:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':event-bus/default',
+              ],
+            ],
+          },
+        },
       ],
-      Version: '2012-10-17'
-    }
+      Version: '2012-10-17',
+    },
   });
 
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     EventPattern: {
       'detail-type': [
-        'Lambda Function Invocation Result - Success'
+        'Lambda Function Invocation Result - Success',
       ],
       'resources': [
         {
@@ -235,36 +208,36 @@ test('lambda payload as destination', () => {
               {
                 'Fn::GetAtt': [
                   'Function76856677',
-                  'Arn'
-                ]
+                  'Arn',
+                ],
               },
-              ':$LATEST'
-            ]
-          ]
-        }
+              ':$LATEST',
+            ],
+          ],
+        },
       ],
       'source': [
-        'lambda'
-      ]
+        'lambda',
+      ],
     },
     Targets: [
       {
         Arn: {
           'Fn::GetAtt': [
             'SuccessFunction93C61D39',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         Id: 'Target0',
-        InputPath: '$.detail.responsePayload'
-      }
-    ]
+        InputPath: '$.detail.responsePayload',
+      },
+    ],
   });
 
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     EventPattern: {
       'detail-type': [
-        'Lambda Function Invocation Result - Failure'
+        'Lambda Function Invocation Result - Failure',
       ],
       'resources': [
         {
@@ -274,30 +247,30 @@ test('lambda payload as destination', () => {
               {
                 'Fn::GetAtt': [
                   'Function76856677',
-                  'Arn'
-                ]
+                  'Arn',
+                ],
               },
-              ':$LATEST'
-            ]
-          ]
-        }
+              ':$LATEST',
+            ],
+          ],
+        },
       ],
       'source': [
-        'lambda'
-      ]
+        'lambda',
+      ],
     },
     Targets: [
       {
         Arn: {
           'Fn::GetAtt': [
             'FailureFunctionE917A574',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         Id: 'Target0',
-        InputPath: '$.detail.responsePayload'
-      }
-    ]
+        InputPath: '$.detail.responsePayload',
+      },
+    ],
   });
 });
 
@@ -308,33 +281,33 @@ test('sns as destination', () => {
   // WHEN
   new lambda.Function(stack, 'Function', {
     ...lambdaProps,
-    onSuccess: new destinations.SnsDestination(topic)
+    onSuccess: new destinations.SnsDestination(topic),
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
     DestinationConfig: {
       OnSuccess: {
         Destination: {
-          Ref: 'TopicBFC7AF6E'
-        }
-      }
-    }
+          Ref: 'TopicBFC7AF6E',
+        },
+      },
+    },
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
           Action: 'sns:Publish',
           Effect: 'Allow',
           Resource: {
-            Ref: 'TopicBFC7AF6E'
-          }
-        }
+            Ref: 'TopicBFC7AF6E',
+          },
+        },
       ],
-      Version: '2012-10-17'
-    }
+      Version: '2012-10-17',
+    },
   });
 });
 
@@ -345,42 +318,42 @@ test('sqs as destination', () => {
   // WHEN
   new lambda.Function(stack, 'Function', {
     ...lambdaProps,
-    onSuccess: new destinations.SqsDestination(queue)
+    onSuccess: new destinations.SqsDestination(queue),
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
     DestinationConfig: {
       OnSuccess: {
         Destination: {
           'Fn::GetAtt': [
             'Queue4A7E3555',
-            'Arn'
-          ]
-        }
-      }
-    }
+            'Arn',
+          ],
+        },
+      },
+    },
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
           Action: [
             'sqs:SendMessage',
             'sqs:GetQueueAttributes',
-            'sqs:GetQueueUrl'
+            'sqs:GetQueueUrl',
           ],
           Effect: 'Allow',
           Resource: {
             'Fn::GetAtt': [
               'Queue4A7E3555',
-              'Arn'
-            ]
-          }
-        }
+              'Arn',
+            ],
+          },
+        },
       ],
-      Version: '2012-10-17'
-    }
+      Version: '2012-10-17',
+    },
   });
 });

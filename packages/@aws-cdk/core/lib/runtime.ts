@@ -1,4 +1,4 @@
-import { Construct } from './construct';
+import { Construct } from './construct-compat';
 
 // ----------------------------------------------------------------------
 // PROPERTY MAPPERS
@@ -31,7 +31,7 @@ export function dateToCloudFormation(x?: Date): any {
     return undefined;
   }
 
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   return `${x.getUTCFullYear()}-${pad(x.getUTCMonth() + 1)}-${pad(x.getUTCDate())}T${pad(x.getUTCHours())}:${pad(x.getUTCMinutes())}:${pad(x.getUTCSeconds())}`;
 }
 
@@ -40,7 +40,7 @@ export function dateToCloudFormation(x?: Date): any {
  */
 function pad(x: number) {
   if (x < 10) {
-    return "0" + x.toString();
+    return '0' + x.toString();
   }
   return x.toString();
 }
@@ -51,7 +51,7 @@ function pad(x: number) {
 export function cfnTagToCloudFormation(x: any): any {
   return {
     Key: x.key,
-    Value: x.value
+    Value: x.value,
   };
 }
 
@@ -137,7 +137,7 @@ export class ValidationResult {
     if (!this.isSuccess) {
       let message = this.errorTree();
       // The first letter will be lowercase, so uppercase it for a nicer error message
-      message = message.substr(0, 1).toUpperCase() + message.substr(1);
+      message = message.slice(0, 1).toUpperCase() + message.slice(1);
       throw new CfnSynthesisError(message);
     }
   }
@@ -205,7 +205,7 @@ export type Validator = (x: any) => ValidationResult;
  */
 export function canInspect(x: any) {
   // Note: using weak equality on purpose, we also want to catch undefined
-  return (x != null && !isCloudFormationIntrinsic(x));
+  return (x != null && !isCloudFormationIntrinsic(x) && !isCloudFormationDynamicReference(x));
 }
 
 // CloudFormation validators for primitive types
@@ -316,7 +316,7 @@ export function propertyValidator(propName: string, validator: Validator): Valid
  */
 export function requiredValidator(x: any) {
   if (x == null) {
-    return new ValidationResult(`required but missing`);
+    return new ValidationResult('required but missing');
   }
   return VALIDATION_SUCCESS;
 }
@@ -333,10 +333,10 @@ export function requiredValidator(x: any) {
  * @throws if the property ``name`` is not present in ``props``.
  */
 export function requireProperty(props: { [name: string]: any }, name: string, context: Construct): any {
-  if (!(name in props)) {
+  const value = props[name];
+  if (value == null) {
     throw new Error(`${context.toString()} is missing required property: ${name}`);
   }
-  const value = props[name];
   // Possibly add type-checking here...
   return value;
 }
@@ -382,7 +382,16 @@ function isCloudFormationIntrinsic(x: any) {
   const keys = Object.keys(x);
   if (keys.length !== 1) { return false; }
 
-  return keys[0] === 'Ref' || keys[0].substr(0, 4) === 'Fn::';
+  return keys[0] === 'Ref' || keys[0].slice(0, 4) === 'Fn::';
+}
+
+/**
+ * Check whether the indicated value is a CloudFormation dynamic reference.
+ *
+ * CloudFormation dynamic references take the format: '{{resolve:service-name:reference-key}}'
+ */
+function isCloudFormationDynamicReference(x: any) {
+  return (typeof x === 'string' && x.startsWith('{{resolve:') && x.endsWith('}}'));
 }
 
 // Cannot be public because JSII gets confused about es5.d.ts

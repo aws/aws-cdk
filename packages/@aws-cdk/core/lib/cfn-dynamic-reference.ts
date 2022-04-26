@@ -1,4 +1,4 @@
-import { Intrinsic } from "./private/intrinsic";
+import { Intrinsic } from './private/intrinsic';
 
 /**
  * Properties for a Dynamic Reference

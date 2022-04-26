@@ -1,7 +1,11 @@
 import * as ecr from '@aws-cdk/aws-ecr';
-import * as cdk from '@aws-cdk/core';
+import { DockerImageAsset, TarballImageAsset } from '@aws-cdk/aws-ecr-assets';
 import { ContainerDefinition } from './container-definition';
 import { CfnTaskDefinition } from './ecs.generated';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Constructs for types of container images
@@ -40,19 +44,42 @@ export abstract class ContainerImage {
    */
   public static fromDockerImageAsset(asset: DockerImageAsset): ContainerImage {
     return {
-      bind(_scope: cdk.Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+      bind(_scope: CoreConstruct, containerDefinition: ContainerDefinition): ContainerImageConfig {
         asset.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
         return {
-          imageName: asset.imageUri
+          imageName: asset.imageUri,
         };
-      }
+      },
+    };
+  }
+
+  /**
+   * Use an existing tarball for this container image.
+   *
+   * Use this method if the container image has already been created by another process (e.g. jib)
+   * and you want to add it as a container image asset.
+   *
+   * @param tarballFile Absolute path to the tarball. You can use language-specific idioms (such as `__dirname` in Node.js)
+   *                    to create an absolute path based on the current script running directory.
+   */
+  public static fromTarball(tarballFile: string): ContainerImage {
+    return {
+      bind(scope: CoreConstruct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+
+        const asset = new TarballImageAsset(scope, 'Tarball', { tarballFile });
+        asset.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
+
+        return {
+          imageName: asset.imageUri,
+        };
+      },
     };
   }
 
   /**
    * Called when the image is used by a ContainerDefinition
    */
-  public abstract bind(scope: cdk.Construct, containerDefinition: ContainerDefinition): ContainerImageConfig;
+  public abstract bind(scope: CoreConstruct, containerDefinition: ContainerDefinition): ContainerImageConfig;
 }
 
 /**
@@ -70,7 +97,6 @@ export interface ContainerImageConfig {
   readonly repositoryCredentials?: CfnTaskDefinition.RepositoryCredentialsProperty;
 }
 
-import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 import { AssetImage, AssetImageProps } from './images/asset-image';
 import { EcrImage } from './images/ecr';
 import { RepositoryImage, RepositoryImageProps } from './images/repository';

@@ -1,9 +1,13 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Construct, Fn } from '@aws-cdk/core';
+import { Fn, Lazy, RemovalPolicy } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { Alias, AliasOptions } from './alias';
+import { Architecture } from './architecture';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { CfnVersion } from './lambda.generated';
+import { addAlias } from './util';
 
 export interface IVersion extends IFunction {
   /**
@@ -16,12 +20,24 @@ export interface IVersion extends IFunction {
    * The underlying AWS Lambda function.
    */
   readonly lambda: IFunction;
+
+  /**
+   * The ARN of the version for Lambda@Edge.
+   */
+  readonly edgeArn: string;
+
+  /**
+   * Defines an alias for this version.
+   * @param aliasName The name of the alias
+   * @param options Alias options
+   */
+  addAlias(aliasName: string, options?: AliasOptions): Alias;
 }
 
 /**
- * Properties for a new Lambda version
+ * Options for `lambda.Version`
  */
-export interface VersionProps extends EventInvokeConfigOptions {
+export interface VersionOptions extends EventInvokeConfigOptions {
   /**
    * SHA256 of the version of the Lambda source code
    *
@@ -39,16 +55,29 @@ export interface VersionProps extends EventInvokeConfigOptions {
   readonly description?: string;
 
   /**
-   * Function to get the value of
-   */
-  readonly lambda: IFunction;
-
-  /**
    * Specifies a provisioned concurrency configuration for a function's version.
    *
    * @default No provisioned concurrency
    */
   readonly provisionedConcurrentExecutions?: number;
+
+  /**
+   * Whether to retain old versions of this function when a new version is
+   * created.
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
+}
+
+/**
+ * Properties for a new Lambda version
+ */
+export interface VersionProps extends VersionOptions {
+  /**
+   * Function to get the value of
+   */
+  readonly lambda: IFunction;
 }
 
 export interface VersionAttributes {
@@ -64,16 +93,17 @@ export interface VersionAttributes {
 }
 
 /**
- * A single newly-deployed version of a Lambda function.
+ * Tag the current state of a Function with a Version number
  *
- * This object exists to--at deploy time--query the "then-current" version of
- * the Lambda function that it refers to. This Version object can then be
- * used in `Alias` to refer to a particular deployment of a Lambda.
+ * Avoid using this resource directly. If you need a Version object, use
+ * `function.currentVersion` instead. That will add a Version object to your
+ * template, and make sure the Version is invalidated whenever the Function
+ * object changes. If you use the `Version` resource directly, you are
+ * responsible for making sure it is invalidated (by changing its
+ * logical ID) whenever necessary.
  *
- * This means that for every new update you deploy to your Lambda (using the
- * CDK and Aliases), you must always create a new Version object. In
- * particular, it must have a different name, so that a new resource is
- * created.
+ * Version resources can then be used in `Alias` resources to refer to a
+ * particular deployment of a Lambda.
  *
  * If you want to ensure that you're associating the right version with
  * the right deployment, specify the `codeSha256` property while
@@ -99,9 +129,21 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly functionArn = versionArn;
       public readonly grantPrincipal = lambda.grantPrincipal;
       public readonly role = lambda.role;
+      public readonly architecture = lambda.architecture;
 
       protected readonly qualifier = version;
-      protected readonly canCreatePermissions = false;
+      protected readonly canCreatePermissions = this._isStackAccount();
+
+      public addAlias(name: string, opts: AliasOptions = {}): Alias {
+        return addAlias(this, this, name, opts);
+      }
+
+      public get edgeArn(): string {
+        if (version === '$LATEST') {
+          throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+        }
+        return this.functionArn;
+      }
     }
     return new Import(scope, id);
   }
@@ -114,9 +156,21 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly functionArn = `${attrs.lambda.functionArn}:${attrs.version}`;
       public readonly grantPrincipal = attrs.lambda.grantPrincipal;
       public readonly role = attrs.lambda.role;
+      public readonly architecture = attrs.lambda.architecture;
 
       protected readonly qualifier = attrs.version;
-      protected readonly canCreatePermissions = false;
+      protected readonly canCreatePermissions = this._isStackAccount();
+
+      public addAlias(name: string, opts: AliasOptions = {}): Alias {
+        return addAlias(this, this, name, opts);
+      }
+
+      public get edgeArn(): string {
+        if (attrs.version === '$LATEST') {
+          throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+        }
+        return this.functionArn;
+      }
     }
     return new Import(scope, id);
   }
@@ -125,6 +179,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public readonly lambda: IFunction;
   public readonly functionArn: string;
   public readonly functionName: string;
+  public readonly architecture: Architecture;
 
   protected readonly qualifier: string;
   protected readonly canCreatePermissions = true;
@@ -133,13 +188,20 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     super(scope, id);
 
     this.lambda = props.lambda;
+    this.architecture = props.lambda.architecture;
 
     const version = new CfnVersion(this, 'Resource', {
       codeSha256: props.codeSha256,
       description: props.description,
       functionName: props.lambda.functionName,
-      provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props)
+      provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props),
     });
+
+    if (props.removalPolicy) {
+      version.applyRemovalPolicy(props.removalPolicy, {
+        default: RemovalPolicy.DESTROY,
+      });
+    }
 
     this.version = version.attrVersion;
     this.functionArn = version.ref;
@@ -165,16 +227,45 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   }
 
   public metric(metricName: string, props: cloudwatch.MetricOptions = {}): cloudwatch.Metric {
-    // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differes from the base behavior.
+    // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differs from the base behavior.
     return super.metric(metricName, {
       dimensions: {
         FunctionName: this.lambda.functionName,
         // construct the ARN from the underlying lambda so that alarms on an alias
         // don't cause a circular dependency with CodeDeploy
         // see: https://github.com/aws/aws-cdk/issues/2231
-        Resource: `${this.lambda.functionArn}:${this.version}`
+        Resource: `${this.lambda.functionArn}:${this.version}`,
       },
-      ...props
+      ...props,
+    });
+  }
+
+  /**
+   * Defines an alias for this version.
+   * @param aliasName The name of the alias (e.g. "live")
+   * @param options Alias options
+   */
+  public addAlias(aliasName: string, options: AliasOptions = {}): Alias {
+    return addAlias(this, this, aliasName, options);
+  }
+
+  public get edgeArn(): string {
+    // Validate first that this version can be used for Lambda@Edge
+    if (this.version === '$LATEST') {
+      throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+    }
+
+    // Check compatibility at synthesis. It could be that the version was associated
+    // with a CloudFront distribution first and made incompatible afterwards.
+    return Lazy.string({
+      produce: () => {
+        // Validate that the underlying function can be used for Lambda@Edge
+        if (this.lambda instanceof Function) {
+          this.lambda._checkEdgeCompatibility();
+        }
+
+        return this.functionArn;
+      },
     });
   }
 
@@ -192,7 +283,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       throw new Error('provisionedConcurrentExecutions must have value greater than or equal to 1');
     }
 
-    return {provisionedConcurrentExecutions: props.provisionedConcurrentExecutions};
+    return { provisionedConcurrentExecutions: props.provisionedConcurrentExecutions };
   }
 }
 

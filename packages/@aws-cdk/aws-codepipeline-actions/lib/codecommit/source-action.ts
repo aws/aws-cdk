@@ -2,9 +2,13 @@ import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+import { Names, Stack, Token, TokenComparison } from '@aws-cdk/core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * How should the CodeCommit Action detect changes.
@@ -77,17 +81,62 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
    * The CodeCommit repository.
    */
   readonly repository: codecommit.IRepository;
+
+  /**
+   * Role to be used by on commit event rule.
+   * Used only when trigger value is CodeCommitTrigger.EVENTS.
+   *
+   * @default a new role will be created.
+   */
+  readonly eventRole?: iam.IRole;
+
+  /**
+   * Whether the output should be the contents of the repository
+   * (which is the default),
+   * or a link that allows CodeBuild to clone the repository before building.
+   *
+   * **Note**: if this option is true,
+   * then only CodeBuild actions can use the resulting {@link output}.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeCommit.html
+   */
+  readonly codeBuildCloneOutput?: boolean;
 }
 
 /**
  * CodePipeline Source that is provided by an AWS CodeCommit repository.
+ *
+ * If the CodeCommit repository is in a different account, you must use
+ * `CodeCommitTrigger.EVENTS` to trigger the pipeline.
+ *
+ * (That is because the Pipeline structure normally only has a `RepositoryName`
+ * field, and that is not enough for the pipeline to locate the repository's
+ * source account. However, if the pipeline is triggered via an EventBridge
+ * event, the event itself has the full repository ARN in there, allowing the
+ * pipeline to locate the repository).
  */
 export class CodeCommitSourceAction extends Action {
+  /**
+   * The name of the property that holds the ARN of the CodeCommit Repository
+   * inside of the CodePipeline Artifact's metadata.
+   *
+   * @internal
+   */
+  public static readonly _FULL_CLONE_ARN_PROPERTY = 'CodeCommitCloneRepositoryArn';
+
   private readonly branch: string;
   private readonly props: CodeCommitSourceActionProps;
 
   constructor(props: CodeCommitSourceActionProps) {
-    const branch = props.branch || 'master';
+    const branch = props.branch ?? 'master';
+    if (!branch) {
+      throw new Error("'branch' parameter cannot be an empty string");
+    }
+
+    if (props.codeBuildCloneOutput === true) {
+      props.output.setMetadata(CodeCommitSourceAction._FULL_CLONE_ARN_PROPERTY, props.repository.repositoryArn);
+    }
 
     super({
       ...props,
@@ -115,12 +164,15 @@ export class CodeCommitSourceAction extends Action {
   }
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     const createEvent = this.props.trigger === undefined ||
       this.props.trigger === CodeCommitTrigger.EVENTS;
     if (createEvent) {
-      this.props.repository.onCommit(stage.pipeline.node.uniqueId + 'EventRule', {
-        target: new targets.CodePipeline(stage.pipeline),
+      const eventId = this.generateEventId(stage);
+      this.props.repository.onCommit(eventId, {
+        target: new targets.CodePipeline(stage.pipeline, {
+          eventRole: this.props.eventRole,
+        }),
         branches: [this.branch],
       });
     }
@@ -128,9 +180,14 @@ export class CodeCommitSourceAction extends Action {
     // the Action will write the contents of the Git repository to the Bucket,
     // so its Role needs write permissions to the Pipeline Bucket
     options.bucket.grantReadWrite(options.role);
+    // when this action is cross-account,
+    // the Role needs the s3:PutObjectAcl permission for some not yet fully understood reason
+    if (Token.compareStrings(this.props.repository.env.account, Stack.of(stage.pipeline).account) === TokenComparison.DIFFERENT) {
+      options.bucket.grantPutAcl(options.role);
+    }
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp
-    options.role.addToPolicy(new iam.PolicyStatement({
+    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       resources: [this.props.repository.repositoryArn],
       actions: [
         'codecommit:GetBranch',
@@ -138,6 +195,7 @@ export class CodeCommitSourceAction extends Action {
         'codecommit:UploadArchive',
         'codecommit:GetUploadArchiveStatus',
         'codecommit:CancelUploadArchive',
+        ...(this.props.codeBuildCloneOutput === true ? ['codecommit:GetRepository'] : []),
       ],
     }));
 
@@ -146,7 +204,30 @@ export class CodeCommitSourceAction extends Action {
         RepositoryName: this.props.repository.repositoryName,
         BranchName: this.branch,
         PollForSourceChanges: this.props.trigger === CodeCommitTrigger.POLL,
+        OutputArtifactFormat: this.props.codeBuildCloneOutput === true
+          ? 'CODEBUILD_CLONE_REF'
+          : undefined,
       },
     };
+  }
+
+  private generateEventId(stage: codepipeline.IStage): string {
+    const baseId = Names.nodeUniqueId(stage.pipeline.node);
+    if (Token.isUnresolved(this.branch)) {
+      let candidate = '';
+      let counter = 0;
+      do {
+        candidate = this.eventIdFromPrefix(`${baseId}${counter}`);
+        counter += 1;
+      } while (this.props.repository.node.tryFindChild(candidate) !== undefined);
+      return candidate;
+    } else {
+      const branchIdDisambiguator = this.branch === 'master' ? '' : `-${this.branch}-`;
+      return this.eventIdFromPrefix(`${baseId}${branchIdDisambiguator}`);
+    }
+  }
+
+  private eventIdFromPrefix(eventIdPrefix: string) {
+    return `${eventIdPrefix}EventRule`;
   }
 }

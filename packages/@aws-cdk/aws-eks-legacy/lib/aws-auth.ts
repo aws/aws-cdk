@@ -1,8 +1,12 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Lazy, Stack } from '@aws-cdk/core';
+import { Lazy, Stack } from '@aws-cdk/core';
 import { Mapping } from './aws-auth-mapping';
 import { Cluster } from './cluster';
 import { KubernetesResource } from './k8s-resource';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 export interface AwsAuthProps {
   /**
@@ -33,19 +37,19 @@ export class AwsAuth extends Construct {
       cluster: props.cluster,
       manifest: [
         {
-          apiVersion: "v1",
-          kind: "ConfigMap",
+          apiVersion: 'v1',
+          kind: 'ConfigMap',
           metadata: {
-            name: "aws-auth",
-            namespace: "kube-system"
+            name: 'aws-auth',
+            namespace: 'kube-system',
           },
           data: {
             mapRoles: this.synthesizeMapRoles(),
             mapUsers: this.synthesizeMapUsers(),
             mapAccounts: this.synthesizeMapAccounts(),
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
   }
 
@@ -59,7 +63,7 @@ export class AwsAuth extends Construct {
   public addMastersRole(role: iam.IRole, username?: string) {
     this.addRoleMapping(role, {
       username,
-      groups: [ 'system:masters' ]
+      groups: ['system:masters'],
     });
   }
 
@@ -92,28 +96,28 @@ export class AwsAuth extends Construct {
   }
 
   private synthesizeMapRoles() {
-    return Lazy.anyValue({
+    return Lazy.any({
       produce: () => this.stack.toJsonString(this.roleMappings.map(m => ({
         rolearn: m.role.roleArn,
         username: m.mapping.username,
-        groups: m.mapping.groups
-      })))
+        groups: m.mapping.groups,
+      }))),
     });
   }
 
   private synthesizeMapUsers() {
-    return Lazy.anyValue({
+    return Lazy.any({
       produce: () => this.stack.toJsonString(this.userMappings.map(m => ({
         userarn: m.user.userArn,
         username: m.mapping.username,
-        groups: m.mapping.groups
-      })))
+        groups: m.mapping.groups,
+      }))),
     });
   }
 
   private synthesizeMapAccounts() {
-    return Lazy.anyValue({
-      produce: () => this.stack.toJsonString(this.accounts)
+    return Lazy.any({
+      produce: () => this.stack.toJsonString(this.accounts),
     });
   }
 }

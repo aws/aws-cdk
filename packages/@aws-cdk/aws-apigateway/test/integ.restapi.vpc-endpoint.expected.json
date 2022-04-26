@@ -26,16 +26,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet1"
           }
         ]
       }
@@ -95,14 +95,14 @@
     "MyVpcPublicSubnet1NATGatewayAD3400C1": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "MyVpcPublicSubnet1SubnetF6608456"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "MyVpcPublicSubnet1EIP096967CB",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "MyVpcPublicSubnet1SubnetF6608456"
         },
         "Tags": [
           {
@@ -123,16 +123,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet2"
           }
         ]
       }
@@ -192,14 +192,14 @@
     "MyVpcPublicSubnet2NATGateway91BFBEC9": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "MyVpcPublicSubnet2Subnet492B6BFB"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "MyVpcPublicSubnet2EIP8CCBA239",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "MyVpcPublicSubnet2Subnet492B6BFB"
         },
         "Tags": [
           {
@@ -220,16 +220,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet3"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet3"
           }
         ]
       }
@@ -289,14 +289,14 @@
     "MyVpcPublicSubnet3NATGatewayD4B50EBE": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "MyVpcPublicSubnet3Subnet57EEE236"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "MyVpcPublicSubnet3EIPC5ACADAB",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "MyVpcPublicSubnet3Subnet57EEE236"
         },
         "Tags": [
           {
@@ -317,16 +317,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "test-apigateway-vpcendpoint/MyVpc/PrivateSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "test-apigateway-vpcendpoint/MyVpc/PrivateSubnet1"
           }
         ]
       }
@@ -379,16 +379,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "test-apigateway-vpcendpoint/MyVpc/PrivateSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "test-apigateway-vpcendpoint/MyVpc/PrivateSubnet2"
           }
         ]
       }
@@ -441,16 +441,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "test-apigateway-vpcendpoint/MyVpc/PrivateSubnet3"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "test-apigateway-vpcendpoint/MyVpc/PrivateSubnet3"
           }
         ]
       }
@@ -624,35 +624,13 @@
             {
               "Action": "execute-api:Invoke",
               "Effect": "Allow",
-              "Principal": "*"
+              "Principal": {
+                "AWS": "*"
+              }
             }
           ],
           "Version": "2012-10-17"
         }
-      }
-    },
-    "MyApiDeploymentECB0D05E4316cb89aa1d468052daa78055609f5a": {
-      "Type": "AWS::ApiGateway::Deployment",
-      "Properties": {
-        "RestApiId": {
-          "Ref": "MyApi49610EDF"
-        },
-        "Description": "Automatically created by the RestApi construct"
-      },
-      "DependsOn": [
-        "MyApiGETD0C7AA0C"
-      ]
-    },
-    "MyApiDeploymentStageprodE1054AF0": {
-      "Type": "AWS::ApiGateway::Stage",
-      "Properties": {
-        "RestApiId": {
-          "Ref": "MyApi49610EDF"
-        },
-        "DeploymentId": {
-          "Ref": "MyApiDeploymentECB0D05E4316cb89aa1d468052daa78055609f5a"
-        },
-        "StageName": "prod"
       }
     },
     "MyApiCloudWatchRole2BEC1A9C": {
@@ -698,6 +676,33 @@
       },
       "DependsOn": [
         "MyApi49610EDF"
+      ]
+    },
+    "MyApiDeploymentECB0D05E58dcfc85d01f2b81270e177f5347476d": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "MyApi49610EDF"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "MyApiGETD0C7AA0C"
+      ]
+    },
+    "MyApiDeploymentStageprodE1054AF0": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "MyApi49610EDF"
+        },
+        "DeploymentId": {
+          "Ref": "MyApiDeploymentECB0D05E58dcfc85d01f2b81270e177f5347476d"
+        },
+        "StageName": "prod"
+      },
+      "DependsOn": [
+        "MyApiAccount13882D84"
       ]
     },
     "MyApiGETD0C7AA0C": {

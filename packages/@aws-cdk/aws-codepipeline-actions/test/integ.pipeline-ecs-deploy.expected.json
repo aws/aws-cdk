@@ -26,16 +26,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-codepipeline-ecs-deploy/VPC/PublicSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-codepipeline-ecs-deploy/VPC/PublicSubnet1"
           }
         ]
       }
@@ -95,14 +95,14 @@
     "VPCPublicSubnet1NATGatewayE0556630": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet1SubnetB4246D30"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "VPCPublicSubnet1EIP6AD938E8",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "VPCPublicSubnet1SubnetB4246D30"
         },
         "Tags": [
           {
@@ -123,16 +123,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-codepipeline-ecs-deploy/VPC/PrivateSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-codepipeline-ecs-deploy/VPC/PrivateSubnet1"
           }
         ]
       }
@@ -201,6 +201,11 @@
     },
     "EcrRepoBB83A592": {
       "Type": "AWS::ECR::Repository",
+      "Properties": {
+        "ImageScanningConfiguration": {
+          "ScanOnPush": false
+        }
+      },
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
@@ -256,7 +261,6 @@
           "MaximumPercent": 200,
           "MinimumHealthyPercent": 50
         },
-        "DesiredCount": 1,
         "EnableECSManagedTags": false,
         "LaunchType": "FARGATE",
         "NetworkConfiguration": {
@@ -357,7 +361,8 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "EcsProject54EFDCA6"
-                      }
+                      },
+                      ":*"
                     ]
                   ]
                 },
@@ -380,8 +385,7 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "EcsProject54EFDCA6"
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 }
@@ -390,8 +394,12 @@
             {
               "Action": [
                 "ecr:BatchCheckLayerAvailability",
+                "ecr:BatchGetImage",
+                "ecr:CompleteLayerUpload",
                 "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
+                "ecr:InitiateLayerUpload",
+                "ecr:PutImage",
+                "ecr:UploadLayerPart"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -408,27 +416,16 @@
             },
             {
               "Action": [
-                "ecr:PutImage",
-                "ecr:InitiateLayerUpload",
-                "ecr:UploadLayerPart",
-                "ecr:CompleteLayerUpload"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "EcrRepoBB83A592",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
-                "s3:PutObject*",
-                "s3:Abort*"
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -528,6 +525,7 @@
             }
           ],
           "Image": "aws/codebuild/docker:17.09.0",
+          "ImagePullCredentialsType": "CODEBUILD",
           "PrivilegedMode": true,
           "Type": "LINUX_CONTAINER"
         },
@@ -540,7 +538,11 @@
         "Source": {
           "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"pre_build\": {\n      \"commands\": \"$(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)\"\n    },\n    \"build\": {\n      \"commands\": \"docker build -t $REPOSITORY_URI:latest .\"\n    },\n    \"post_build\": {\n      \"commands\": [\n        \"docker push $REPOSITORY_URI:latest\",\n        \"printf '[{ \\\"name\\\": \\\"Container\\\", \\\"imageUri\\\": \\\"%s\\\" }]' $REPOSITORY_URI:latest > imagedefinitions.json\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"files\": \"imagedefinitions.json\"\n  }\n}",
           "Type": "CODEPIPELINE"
-        }
+        },
+        "Cache": {
+          "Type": "NO_CACHE"
+        },
+        "EncryptionKey": "alias/aws/s3"
       }
     },
     "MyPipelineRoleC0D47CA4": {
@@ -567,12 +569,16 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
-                "s3:PutObject*",
-                "s3:Abort*"
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -601,32 +607,26 @@
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyPipelineSourceCodePipelineActionRoleAA05D76F",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyPipelineBuildCodeBuildCodePipelineActionRoleCAE538CA",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyPipelineDeployDeployActionCodePipelineActionRole854184EF",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyPipelineBuildCodeBuildCodePipelineActionRoleCAE538CA",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "MyPipelineDeployDeployActionCodePipelineActionRole854184EF",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "MyPipelineSourceCodePipelineActionRoleAA05D76F",
+                    "Arn"
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -735,7 +735,8 @@
                       "FargateServiceAC2B3B85",
                       "Name"
                     ]
-                  }
+                  },
+                  "DeploymentTimeout": 60
                 },
                 "InputArtifacts": [
                   {
@@ -806,8 +807,8 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",
@@ -828,7 +829,7 @@
                           "Arn"
                         ]
                       },
-                      "/*"
+                      "/path/to/Dockerfile"
                     ]
                   ]
                 }
@@ -836,9 +837,13 @@
             },
             {
               "Action": [
+                "s3:Abort*",
                 "s3:DeleteObject*",
-                "s3:PutObject*",
-                "s3:Abort*"
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -1001,8 +1006,8 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",

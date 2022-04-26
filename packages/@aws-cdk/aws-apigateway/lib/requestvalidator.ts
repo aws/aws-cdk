@@ -1,4 +1,5 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnRequestValidator, CfnRequestValidatorProps } from './apigateway.generated';
 import { IRestApi, RestApi } from './restapi';
 
@@ -72,7 +73,7 @@ export class RequestValidator extends Resource implements IRequestValidator {
       name: this.physicalName,
       restApiId: props.restApi.restApiId,
       validateRequestBody: props.validateRequestBody,
-      validateRequestParameters: props.validateRequestParameters
+      validateRequestParameters: props.validateRequestParameters,
     };
 
     const resource = new CfnRequestValidator(this, 'Resource', validatorProps);

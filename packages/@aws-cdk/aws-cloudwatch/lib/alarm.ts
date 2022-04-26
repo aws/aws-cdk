@@ -1,25 +1,15 @@
-import { Construct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, Lazy, Stack, Token, Annotations } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IAlarmAction } from './alarm-action';
-import { CfnAlarm } from './cloudwatch.generated';
+import { AlarmBase, IAlarm } from './alarm-base';
+import { CfnAlarm, CfnAlarmProps } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
-import { IMetric, MetricStatConfig } from './metric-types';
+import { IMetric, MetricExpressionConfig, MetricStatConfig } from './metric-types';
 import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
 import { parseStatistic } from './private/statistic';
-
-export interface IAlarm extends IResource {
-  /**
-   * @attribute
-   */
-  readonly alarmArn: string;
-
-  /**
-   * @attribute
-   */
-  readonly alarmName: string;
-}
 
 /**
  * Properties for Alarms
@@ -38,18 +28,50 @@ export interface AlarmProps extends CreateAlarmOptions {
  * Comparison operator for evaluating alarms
  */
 export enum ComparisonOperator {
+  /**
+   * Specified statistic is greater than or equal to the threshold
+   */
   GREATER_THAN_OR_EQUAL_TO_THRESHOLD = 'GreaterThanOrEqualToThreshold',
+
+  /**
+   * Specified statistic is strictly greater than the threshold
+   */
   GREATER_THAN_THRESHOLD = 'GreaterThanThreshold',
+
+  /**
+   * Specified statistic is strictly less than the threshold
+   */
   LESS_THAN_THRESHOLD = 'LessThanThreshold',
+
+  /**
+   * Specified statistic is less than or equal to the threshold.
+   */
   LESS_THAN_OR_EQUAL_TO_THRESHOLD = 'LessThanOrEqualToThreshold',
+
+  /**
+   * Specified statistic is lower than or greater than the anomaly model band.
+   * Used only for alarms based on anomaly detection models
+   */
   LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD = 'LessThanLowerOrGreaterThanUpperThreshold',
+
+  /**
+   * Specified statistic is greater than the anomaly model band.
+   * Used only for alarms based on anomaly detection models
+   */
+  GREATER_THAN_UPPER_THRESHOLD = 'GreaterThanUpperThreshold',
+
+  /**
+   * Specified statistic is lower than the anomaly model band.
+   * Used only for alarms based on anomaly detection models
+   */
+  LESS_THAN_LOWER_THRESHOLD = 'LessThanLowerThreshold',
 }
 
 const OPERATOR_SYMBOLS: {[key: string]: string} = {
   GreaterThanOrEqualToThreshold: '>=',
   GreaterThanThreshold: '>',
   LessThanThreshold: '<',
-  LessThanOrEqualToThreshold: '>=',
+  LessThanOrEqualToThreshold: '<=',
 };
 
 /**
@@ -80,12 +102,19 @@ export enum TreatMissingData {
 /**
  * An alarm on a CloudWatch metric
  */
-export class Alarm extends Resource implements IAlarm {
+export class Alarm extends AlarmBase {
 
+  /**
+   * Import an existing CloudWatch alarm provided an ARN
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name
+   * @param alarmArn Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm:Foo)
+   */
   public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
-    class Import extends Resource implements IAlarm {
+    class Import extends AlarmBase implements IAlarm {
       public readonly alarmArn = alarmArn;
-      public readonly alarmName = Stack.of(scope).parseArn(alarmArn, ':').resourceName!;
+      public readonly alarmName = Stack.of(scope).splitArn(alarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
     }
     return new Import(scope, id);
   }
@@ -109,10 +138,6 @@ export class Alarm extends Resource implements IAlarm {
    */
   public readonly metric: IMetric;
 
-  private alarmActionArns?: string[];
-  private insufficientDataActionArns?: string[];
-  private okActionArns?: string[];
-
   /**
    * This metric as an annotation
    */
@@ -124,6 +149,21 @@ export class Alarm extends Resource implements IAlarm {
     });
 
     const comparisonOperator = props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
+
+    // Render metric, process potential overrides from the alarm
+    // (It would be preferable if the statistic etc. was worked into the metric,
+    // but hey we're allowing overrides...)
+    const metricProps: Writeable<Partial<CfnAlarmProps>> = this.renderMetric(props.metric);
+    if (props.period) {
+      metricProps.period = props.period.toSeconds();
+    }
+    if (props.statistic) {
+      // Will overwrite both fields if present
+      Object.assign(metricProps, {
+        statistic: renderIfSimpleStatistic(props.statistic),
+        extendedStatistic: renderIfExtendedStatistic(props.statistic),
+      });
+    }
 
     const alarm = new CfnAlarm(this, 'Resource', {
       // Meta
@@ -140,73 +180,33 @@ export class Alarm extends Resource implements IAlarm {
 
       // Actions
       actionsEnabled: props.actionsEnabled,
-      alarmActions: Lazy.listValue({ produce: () => this.alarmActionArns }),
-      insufficientDataActions: Lazy.listValue({ produce: (() => this.insufficientDataActionArns) }),
-      okActions: Lazy.listValue({ produce: () => this.okActionArns }),
+      alarmActions: Lazy.list({ produce: () => this.alarmActionArns }),
+      insufficientDataActions: Lazy.list({ produce: (() => this.insufficientDataActionArns) }),
+      okActions: Lazy.list({ produce: () => this.okActionArns }),
 
       // Metric
-      ...this.renderMetric(props.metric),
-      ...dropUndefined({
-        // Alarm overrides
-        period: props.period && props.period.toSeconds(),
-        statistic: renderIfSimpleStatistic(props.statistic),
-        extendedStatistic: renderIfExtendedStatistic(props.statistic),
-      })
+      ...metricProps,
     });
 
     this.alarmArn = this.getResourceArnAttribute(alarm.attrArn, {
       service: 'cloudwatch',
       resource: 'alarm',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
     this.alarmName = this.getResourceNameAttribute(alarm.ref);
 
     this.metric = props.metric;
+    const datapoints = props.datapointsToAlarm || props.evaluationPeriods;
     this.annotation = {
-      // tslint:disable-next-line:max-line-length
-      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
+      // eslint-disable-next-line max-len
+      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${datapoints} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
       value: props.threshold,
     };
-  }
 
-  /**
-   * Trigger this action if the alarm fires
-   *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
-   */
-  public addAlarmAction(...actions: IAlarmAction[]) {
-    if (this.alarmActionArns === undefined) {
-      this.alarmActionArns = [];
+    for (const w of this.metric.warnings ?? []) {
+      Annotations.of(this).addWarning(w);
     }
-
-    this.alarmActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
-  }
-
-  /**
-   * Trigger this action if there is insufficient data to evaluate the alarm
-   *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
-   */
-  public addInsufficientDataAction(...actions: IAlarmAction[]) {
-    if (this.insufficientDataActionArns === undefined) {
-      this.insufficientDataActionArns = [];
-    }
-
-    this.insufficientDataActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
-  }
-
-  /**
-   * Trigger this action if the alarm returns from breaching state into ok state
-   *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
-   */
-  public addOkAction(...actions: IAlarmAction[]) {
-    if (this.okActionArns === undefined) {
-      this.okActionArns = [];
-    }
-
-    this.okActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
   }
 
   /**
@@ -229,21 +229,72 @@ export class Alarm extends Resource implements IAlarm {
     return this.annotation;
   }
 
+  /**
+   * Trigger this action if the alarm fires
+   *
+   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
+   */
+  public addAlarmAction(...actions: IAlarmAction[]) {
+    if (this.alarmActionArns === undefined) {
+      this.alarmActionArns = [];
+    }
+
+    this.alarmActionArns.push(...actions.map(a =>
+      this.validateActionArn(a.bind(this, this).alarmActionArn),
+    ));
+  }
+
+  private validateActionArn(actionArn: string): string {
+    const ec2ActionsRegexp: RegExp = /arn:aws:automate:[a-z|\d|-]+:ec2:[a-z]+/;
+    if (ec2ActionsRegexp.test(actionArn)) {
+      // Check per-instance metric
+      const metricConfig = this.metric.toMetricConfig();
+      if (metricConfig.metricStat?.dimensions?.length != 1 || metricConfig.metricStat?.dimensions![0].name != 'InstanceId') {
+        throw new Error(`EC2 alarm actions requires an EC2 Per-Instance Metric. (${JSON.stringify(metricConfig)} does not have an 'InstanceId' dimension)`);
+      }
+    }
+    return actionArn;
+  }
+
   private renderMetric(metric: IMetric) {
     const self = this;
     return dispatchMetric(metric, {
-      withStat(st) {
-        self.validateMetricStat(st, metric);
+      withStat(stat, conf) {
+        self.validateMetricStat(stat, metric);
+        const canRenderAsLegacyMetric = conf.renderingProperties?.label == undefined && !self.requiresAccountId(stat);
+        // Do this to disturb existing templates as little as possible
+        if (canRenderAsLegacyMetric) {
+          return dropUndefined({
+            dimensions: stat.dimensions,
+            namespace: stat.namespace,
+            metricName: stat.metricName,
+            period: stat.period?.toSeconds(),
+            statistic: renderIfSimpleStatistic(stat.statistic),
+            extendedStatistic: renderIfExtendedStatistic(stat.statistic),
+            unit: stat.unitFilter,
+          });
+        }
 
-        return dropUndefined({
-          dimensions: st.dimensions,
-          namespace: st.namespace,
-          metricName: st.metricName,
-          period: st.period?.toSeconds(),
-          statistic: renderIfSimpleStatistic(st.statistic),
-          extendedStatistic: renderIfExtendedStatistic(st.statistic),
-          unit: st.unitFilter,
-        });
+        return {
+          metrics: [
+            {
+              metricStat: {
+                metric: {
+                  metricName: stat.metricName,
+                  namespace: stat.namespace,
+                  dimensions: stat.dimensions,
+                },
+                period: stat.period.toSeconds(),
+                stat: stat.statistic,
+                unit: stat.unitFilter,
+              },
+              id: 'm1',
+              accountId: self.requiresAccountId(stat) ? stat.account : undefined,
+              label: conf.renderingProperties?.label,
+              returnData: true,
+            } as CfnAlarm.MetricDataQueryProperty,
+          ],
+        };
       },
 
       withExpression() {
@@ -273,26 +324,37 @@ export class Alarm extends Resource implements IAlarm {
                   unit: stat.unitFilter,
                 },
                 id: entry.id || uniqueMetricId(),
+                accountId: self.requiresAccountId(stat) ? stat.account : undefined,
                 label: conf.renderingProperties?.label,
-                returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+                returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
               };
             },
             withExpression(expr, conf) {
+
+              const hasSubmetrics = mathExprHasSubmetrics(expr);
+
+              if (hasSubmetrics) {
+                assertSubmetricsCount(expr);
+              }
+
+              self.validateMetricExpression(expr);
+
               return {
                 expression: expr.expression,
                 id: entry.id || uniqueMetricId(),
                 label: conf.renderingProperties?.label,
-                returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+                period: hasSubmetrics ? undefined : expr.period,
+                returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
               };
             },
-          }) as CfnAlarm.MetricDataQueryProperty)
+          }) as CfnAlarm.MetricDataQueryProperty),
         };
-      }
+      },
     });
   }
 
   /**
-   * Validate that if a region and account are in the given stat config, they match the Alarm
+   * Validate that if a region is in the given stat config, they match the Alarm
    */
   private validateMetricStat(stat: MetricStatConfig, metric: IMetric) {
     const stack = Stack.of(this);
@@ -300,9 +362,33 @@ export class Alarm extends Resource implements IAlarm {
     if (definitelyDifferent(stat.region, stack.region)) {
       throw new Error(`Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`);
     }
-    if (definitelyDifferent(stat.account, stack.account)) {
-      throw new Error(`Cannot create an Alarm in account '${stack.account}' based on metric '${metric}' in '${stat.account}'`);
+  }
+
+  /**
+   * Validates that the expression config does not specify searchAccount or searchRegion props
+   * as search expressions are not supported by Alarms.
+   */
+  private validateMetricExpression(expr: MetricExpressionConfig) {
+    if (expr.searchAccount !== undefined || expr.searchRegion !== undefined) {
+      throw new Error('Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion');
     }
+  }
+
+  /**
+   * Determine if the accountId property should be included in the metric.
+   */
+  private requiresAccountId(stat: MetricStatConfig): boolean {
+    const stackAccount = Stack.of(this).account;
+
+    // if stat.account is undefined, it's by definition in the same account
+    if (stat.account === undefined) {
+      return false;
+    }
+
+    // Return true if they're different. The ACCOUNT_ID token is interned
+    // so will always have the same string value (and even if we guess wrong
+    // it will still work).
+    return stackAccount !== stat.account;
   }
 }
 
@@ -340,6 +426,22 @@ function renderIfExtendedStatistic(statistic?: string): string | undefined {
     // Already percentile. Avoid parsing because we might get into
     // floating point rounding issues, return as-is but lowercase the p.
     return statistic.toLowerCase();
+  } else if (parsed.type === 'generic') {
+    return statistic;
   }
+
   return undefined;
 }
+
+function mathExprHasSubmetrics(expr: MetricExpressionConfig) {
+  return Object.keys(expr.usingMetrics).length > 0;
+}
+
+function assertSubmetricsCount(expr: MetricExpressionConfig) {
+  if (Object.keys(expr.usingMetrics).length > 10) {
+    // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarms-on-metric-math-expressions
+    throw new Error('Alarms on math expressions cannot contain more than 10 individual metrics');
+  };
+}
+
+type Writeable<T> = { -readonly [P in keyof T]: T[P] };

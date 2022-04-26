@@ -1,3 +1,101 @@
+import { BundlingOptions } from './bundling';
+
+/**
+ * Common interface for all assets.
+ */
+export interface IAsset {
+  /**
+   * A hash of this asset, which is available at construction time. As this is a plain string, it
+   * can be used in construct IDs in order to enforce creation of a new resource when the content
+   * hash has changed.
+   */
+  readonly assetHash: string;
+}
+
+/**
+ * Asset hash options
+ */
+export interface AssetOptions {
+  /**
+   * Specify a custom hash for this asset. If `assetHashType` is set it must
+   * be set to `AssetHashType.CUSTOM`. For consistency, this custom hash will
+   * be SHA256 hashed and encoded as hex. The resulting hash will be the asset
+   * hash.
+   *
+   * NOTE: the hash is used in order to identify a specific revision of the asset, and
+   * used for optimizing and caching deployment activities related to this asset such as
+   * packaging, uploading to Amazon S3, etc. If you chose to customize the hash, you will
+   * need to make sure it is updated every time the asset changes, or otherwise it is
+   * possible that some deployments will not be invalidated.
+   *
+   * @default - based on `assetHashType`
+   */
+  readonly assetHash?: string;
+
+  /**
+   * Specifies the type of hash to calculate for this asset.
+   *
+   * If `assetHash` is configured, this option must be `undefined` or
+   * `AssetHashType.CUSTOM`.
+   *
+   * @default - the default is `AssetHashType.SOURCE`, but if `assetHash` is
+   * explicitly specified this value defaults to `AssetHashType.CUSTOM`.
+   */
+  readonly assetHashType?: AssetHashType;
+
+  /**
+   * Bundle the asset by executing a command in a Docker container or a custom bundling provider.
+   *
+   * The asset path will be mounted at `/asset-input`. The Docker
+   * container is responsible for putting content at `/asset-output`.
+   * The content at `/asset-output` will be zipped and used as the
+   * final asset.
+   *
+   * @default - uploaded as-is to S3 if the asset is a regular file or a .zip file,
+   * archived into a .zip file and uploaded to S3 otherwise
+   *
+   *
+   */
+  readonly bundling?: BundlingOptions;
+}
+
+/**
+ * The type of asset hash
+ *
+ * NOTE: the hash is used in order to identify a specific revision of the asset, and
+ * used for optimizing and caching deployment activities related to this asset such as
+ * packaging, uploading to Amazon S3, etc.
+ */
+export enum AssetHashType {
+  /**
+   * Based on the content of the source path
+   *
+   * When bundling, use `SOURCE` when the content of the bundling output is not
+   * stable across repeated bundling operations.
+   */
+  SOURCE = 'source',
+
+  /**
+   * Based on the content of the bundled path
+   *
+   * @deprecated use `OUTPUT` instead
+   */
+  BUNDLE = 'bundle',
+
+  /**
+   * Based on the content of the bundling output
+   *
+   * Use `OUTPUT` when the source of the asset is a top level folder containing
+   * code and/or dependencies that are not directly linked to the asset.
+   */
+  OUTPUT = 'output',
+
+  /**
+   * Use a custom hash
+   */
+  CUSTOM = 'custom',
+}
+
 /**
  * Represents the source for a file asset.
  */
@@ -10,16 +108,29 @@ export interface FileAssetSource {
   readonly sourceHash: string;
 
   /**
-   * The path, relative to the root of the cloud assembly, in which this asset
-   * source resides. This can be a path to a file or a directory, dependning on the
-   * packaging type.
+   * An external command that will produce the packaged asset.
+   *
+   * The command should produce the location of a ZIP file on `stdout`.
+   *
+   * @default - Exactly one of `directory` and `executable` is required
    */
-  readonly fileName: string;
+  readonly executable?: string[];
+
+  /**
+   * The path, relative to the root of the cloud assembly, in which this asset
+   * source resides. This can be a path to a file or a directory, depending on the
+   * packaging type.
+   *
+   * @default - Exactly one of `directory` and `executable` is required
+   */
+  readonly fileName?: string;
 
   /**
    * Which type of packaging to perform.
+   *
+   * @default - Required if `fileName` is specified.
    */
-  readonly packaging: FileAssetPackaging;
+  readonly packaging?: FileAssetPackaging;
 }
 
 export interface DockerImageAssetSource {
@@ -34,10 +145,21 @@ export interface DockerImageAssetSource {
   readonly sourceHash: string;
 
   /**
+   * An external command that will produce the packaged asset.
+   *
+   * The command should produce the name of a local Docker image on `stdout`.
+   *
+   * @default - Exactly one of `directoryName` and `executable` is required
+   */
+  readonly executable?: string[];
+
+  /**
    * The directory where the Dockerfile is stored, must be relative
    * to the cloud assembly root.
+   *
+   * @default - Exactly one of `directoryName` and `executable` is required
    */
-  readonly directoryName: string;
+  readonly directoryName?: string;
 
   /**
    * Build args to pass to the `docker build` command.
@@ -46,6 +168,8 @@ export interface DockerImageAssetSource {
    * values cannot refer to unresolved tokens (such as `lambda.functionArn` or
    * `queue.queueUrl`).
    *
+   * Only allowed when `directoryName` is specified.
+   *
    * @default - no build args are passed
    */
   readonly dockerBuildArgs?: { [key: string]: string };
@@ -53,12 +177,16 @@ export interface DockerImageAssetSource {
   /**
    * Docker target to build to
    *
+   * Only allowed when `directoryName` is specified.
+   *
    * @default - no target
    */
   readonly dockerBuildTarget?: string;
 
   /**
    * Path to the Dockerfile (relative to the directory).
+   *
+   * Only allowed when `directoryName` is specified.
    *
    * @default - no file
    */
@@ -75,6 +203,15 @@ export interface DockerImageAssetSource {
    * @deprecated repository name should be specified at the environment-level and not at the image level
    */
   readonly repositoryName?: string;
+
+  /**
+   * Networking mode for the RUN commands during build. _Requires Docker Engine API v1.25+_.
+   *
+   * Specify this property to build images on a specific networking mode.
+   *
+   * @default - no networking mode specified
+   */
+  readonly networkMode?: string;
 }
 
 /**
@@ -111,10 +248,52 @@ export interface FileAssetLocation {
 
   /**
    * The HTTP URL of this asset on Amazon S3.
-   *
-   * @example https://s3-us-east-1.amazonaws.com/mybucket/myobject
+   * @default - value specified in `httpUrl` is used.
+   * @deprecated use `httpUrl`
    */
-  readonly s3Url: string;
+  readonly s3Url?: string;
+
+  /**
+   * The HTTP URL of this asset on Amazon S3.
+   *
+   * This value suitable for inclusion in a CloudFormation template, and
+   * may be an encoded token.
+   *
+   * Example value: `https://s3-us-east-1.amazonaws.com/mybucket/myobject`
+   */
+  readonly httpUrl: string;
+
+  /**
+   * The S3 URL of this asset on Amazon S3.
+   *
+   * This value suitable for inclusion in a CloudFormation template, and
+   * may be an encoded token.
+   *
+   * Example value: `s3://mybucket/myobject`
+   */
+  readonly s3ObjectUrl: string;
+
+  /**
+   * The ARN of the KMS key used to encrypt the file asset bucket, if any.
+   *
+   * The CDK bootstrap stack comes with a key policy that does not require
+   * setting this property, so you only need to set this property if you
+   * have customized the bootstrap stack to require it.
+   *
+   * @default - Asset bucket is not encrypted, or decryption permissions are
+   * defined by a Key Policy.
+   */
+  readonly kmsKeyArn?: string;
+
+  /**
+   * Like `s3ObjectUrl`, but not suitable for CloudFormation consumption
+   *
+   * If there are placeholders in the S3 URL, they will be returned unreplaced
+   * and un-evaluated.
+   *
+   * @default - This feature cannot be used
+   */
+  readonly s3ObjectUrlWithPlaceholders?: string;
 }
 
 /**

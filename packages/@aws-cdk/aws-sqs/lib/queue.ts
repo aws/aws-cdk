@@ -1,5 +1,6 @@
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, Duration, Stack, Token } from '@aws-cdk/core';
+import { Duration, RemovalPolicy, Stack, Token, ArnFormat } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
@@ -97,9 +98,8 @@ export interface QueueProps {
    * turn will be encrypted using this key, and reused for a maximum of
    * `dataKeyReuseSecs` seconds.
    *
-   * The 'encryption' property must be either not specified or set to "Kms".
-   * An error will be emitted if encryption is set to "Unencrypted" or
-   * "KmsManaged".
+   * If the 'encryptionMasterKey' property is set, 'encryption' type will be
+   * implicitly set to "KMS".
    *
    * @default If encryption is set to KMS and not specified, a key will be created.
    */
@@ -137,6 +137,38 @@ export interface QueueProps {
    * @default false
    */
   readonly contentBasedDeduplication?: boolean;
+
+  /**
+   * For high throughput for FIFO queues, specifies whether message deduplication
+   * occurs at the message group or queue level.
+   *
+   * (Only applies to FIFO queues.)
+   *
+   * @default DeduplicationScope.QUEUE
+   */
+  readonly deduplicationScope?: DeduplicationScope;
+
+  /**
+   * For high throughput for FIFO queues, specifies whether the FIFO queue
+   * throughput quota applies to the entire queue or per message group.
+   *
+   * (Only applies to FIFO queues.)
+   *
+   * @default FifoThroughputLimit.PER_QUEUE
+   */
+  readonly fifoThroughputLimit?: FifoThroughputLimit;
+
+  /**
+   * Policy to apply when the queue is removed from the stack
+   *
+   * Even though queues are technically stateful, their contents are transient and it
+   * is common to add and remove Queues while rearchitecting your application. The
+   * default is therefore `DESTROY`. Change it to `RETAIN` if the messages are so
+   * valuable that accidentally losing them would be unacceptable.
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -177,10 +209,45 @@ export enum QueueEncryption {
 }
 
 /**
+ * What kind of deduplication scope to apply
+ */
+export enum DeduplicationScope {
+  /**
+   * Deduplication occurs at the message group level
+   */
+  MESSAGE_GROUP = 'messageGroup',
+  /**
+   * Deduplication occurs at the message queue level
+   */
+  QUEUE = 'queue',
+}
+
+/**
+ * Whether the FIFO queue throughput quota applies to the entire queue or per message group
+ */
+export enum FifoThroughputLimit {
+  /**
+   * Throughput quota applies per queue
+   */
+  PER_QUEUE = 'perQueue',
+  /**
+   * Throughput quota applies per message group id
+   */
+  PER_MESSAGE_GROUP_ID = 'perMessageGroupId',
+}
+
+/**
  * A new Amazon SQS queue
  */
 export class Queue extends QueueBase {
 
+  /**
+   * Import an existing SQS queue provided an ARN
+   *
+   * @param scope The parent creating construct
+   * @param id The construct's name
+   * @param queueArn queue ARN (i.e. arn:aws:sqs:us-east-2:444455556666:queue1)
+   */
   public static fromQueueArn(scope: Construct, id: string, queueArn: string): IQueue {
     return Queue.fromQueueAttributes(scope, id, { queueArn });
   }
@@ -190,8 +257,9 @@ export class Queue extends QueueBase {
    */
   public static fromQueueAttributes(scope: Construct, id: string, attrs: QueueAttributes): IQueue {
     const stack = Stack.of(scope);
-    const queueName = attrs.queueName || stack.parseArn(attrs.queueArn).resource;
-    const queueUrl = attrs.queueUrl || `https://sqs.${stack.region}.${stack.urlSuffix}/${stack.account}/${queueName}`;
+    const parsedArn = stack.splitArn(attrs.queueArn, ArnFormat.NO_RESOURCE_NAME);
+    const queueName = attrs.queueName || parsedArn.resource;
+    const queueUrl = attrs.queueUrl || `https://sqs.${parsedArn.region}.${stack.urlSuffix}/${parsedArn.account}/${queueName}`;
 
     class Import extends QueueBase {
       public readonly queueArn = attrs.queueArn; // arn:aws:sqs:us-east-1:123456789012:queue1
@@ -200,9 +268,28 @@ export class Queue extends QueueBase {
       public readonly encryptionMasterKey = attrs.keyArn
         ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn)
         : undefined;
-      public readonly fifo = queueName.endsWith('.fifo') ? true : false;
+      public readonly fifo: boolean = this.determineFifo();
 
       protected readonly autoCreatePolicy = false;
+
+      /**
+       * Determine fifo flag based on queueName and fifo attribute
+       */
+      private determineFifo(): boolean {
+        if (Token.isUnresolved(this.queueArn)) {
+          return attrs.fifo || false;
+        } else {
+          if (typeof attrs.fifo !== 'undefined') {
+            if (attrs.fifo && !queueName.endsWith('.fifo')) {
+              throw new Error("FIFO queue names must end in '.fifo'");
+            }
+            if (!attrs.fifo && queueName.endsWith('.fifo')) {
+              throw new Error("Non-FIFO queue name may not end in '.fifo'");
+            }
+          }
+          return queueName.endsWith('.fifo') ? true : false;
+        }
+      }
     }
 
     return new Import(scope, id);
@@ -233,6 +320,11 @@ export class Queue extends QueueBase {
    */
   public readonly fifo: boolean;
 
+  /**
+   * If this queue is configured with a dead-letter queue, this is the dead-letter queue settings.
+   */
+  public readonly deadLetterQueue?: DeadLetterQueue;
+
   protected readonly autoCreatePolicy = true;
 
   constructor(scope: Construct, id: string, props: QueueProps = {}) {
@@ -243,11 +335,11 @@ export class Queue extends QueueBase {
     validateProps(props);
 
     const redrivePolicy = props.deadLetterQueue
-              ? {
-                deadLetterTargetArn: props.deadLetterQueue.queue.queueArn,
-                maxReceiveCount: props.deadLetterQueue.maxReceiveCount
-                }
-              : undefined;
+      ? {
+        deadLetterTargetArn: props.deadLetterQueue.queue.queueArn,
+        maxReceiveCount: props.deadLetterQueue.maxReceiveCount,
+      }
+      : undefined;
 
     const { encryptionMasterKey, encryptionProps } = _determineEncryptionProps.call(this);
 
@@ -265,6 +357,7 @@ export class Queue extends QueueBase {
       receiveMessageWaitTimeSeconds: props.receiveMessageWaitTime && props.receiveMessageWaitTime.toSeconds(),
       visibilityTimeout: props.visibilityTimeout && props.visibilityTimeout.toSeconds(),
     });
+    queue.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.DESTROY);
 
     this.queueArn = this.getResourceArnAttribute(queue.attrArn, {
       service: 'sqs',
@@ -273,6 +366,7 @@ export class Queue extends QueueBase {
     this.queueName = this.getResourceNameAttribute(queue.attrQueueName);
     this.encryptionMasterKey = encryptionMasterKey;
     this.queueUrl = queue.ref;
+    this.deadLetterQueue = props.deadLetterQueue;
 
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
       let encryption = props.encryption || QueueEncryption.UNENCRYPTED;
@@ -289,22 +383,22 @@ export class Queue extends QueueBase {
         return {
           encryptionProps: {
             kmsMasterKeyId: 'alias/aws/sqs',
-            kmsDataKeyReusePeriodSeconds: props.dataKeyReuse && props.dataKeyReuse.toSeconds()
-          }
+            kmsDataKeyReusePeriodSeconds: props.dataKeyReuse && props.dataKeyReuse.toSeconds(),
+          },
         };
       }
 
       if (encryption === QueueEncryption.KMS) {
         const masterKey = props.encryptionMasterKey || new kms.Key(this, 'Key', {
-          description: `Created by ${this.node.path}`
+          description: `Created by ${this.node.path}`,
         });
 
         return {
           encryptionMasterKey: masterKey,
           encryptionProps: {
             kmsMasterKeyId: masterKey.keyArn,
-            kmsDataKeyReusePeriodSeconds: props.dataKeyReuse && props.dataKeyReuse.toSeconds()
-          }
+            kmsDataKeyReusePeriodSeconds: props.dataKeyReuse && props.dataKeyReuse.toSeconds(),
+          },
         };
       }
 
@@ -321,6 +415,8 @@ export class Queue extends QueueBase {
     const queueName = props.queueName;
     if (typeof fifoQueue === 'undefined' && queueName && !Token.isUnresolved(queueName) && queueName.endsWith('.fifo')) { fifoQueue = true; }
     if (typeof fifoQueue === 'undefined' && props.contentBasedDeduplication) { fifoQueue = true; }
+    if (typeof fifoQueue === 'undefined' && props.deduplicationScope) { fifoQueue = true; }
+    if (typeof fifoQueue === 'undefined' && props.fifoThroughputLimit) { fifoQueue = true; }
 
     // If we have a name, see that it agrees with the FIFO setting
     if (typeof queueName === 'string') {
@@ -336,8 +432,18 @@ export class Queue extends QueueBase {
       throw new Error('Content-based deduplication can only be defined for FIFO queues');
     }
 
+    if (props.deduplicationScope && !fifoQueue) {
+      throw new Error('Deduplication scope can only be defined for FIFO queues');
+    }
+
+    if (props.fifoThroughputLimit && !fifoQueue) {
+      throw new Error('FIFO throughput limit can only be defined for FIFO queues');
+    }
+
     return {
       contentBasedDeduplication: props.contentBasedDeduplication,
+      deduplicationScope: props.deduplicationScope,
+      fifoThroughputLimit: props.fifoThroughputLimit,
       fifoQueue,
     };
   }
@@ -346,6 +452,8 @@ export class Queue extends QueueBase {
 interface FifoProps {
   readonly fifoQueue?: boolean;
   readonly contentBasedDeduplication?: boolean;
+  readonly deduplicationScope?: DeduplicationScope;
+  readonly fifoThroughputLimit?: FifoThroughputLimit;
 }
 
 interface EncryptionProps {

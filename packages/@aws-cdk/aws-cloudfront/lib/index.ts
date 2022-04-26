@@ -1,6 +1,16 @@
+export * from './cache-policy';
 export * from './distribution';
-export * from './web_distribution';
-export * from './origin_access_identity';
+export * from './function';
+export * from './geo-restriction';
+export * from './key-group';
+export * from './origin';
+export * from './origin-access-identity';
+export * from './origin-request-policy';
+export * from './public-key';
+export * from './response-headers-policy';
+export * from './web-distribution';
+
+export * as experimental from './experimental';
 
 // AWS::CloudFront CloudFormation Resources:
 export * from './cloudfront.generated';

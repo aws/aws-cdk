@@ -1,10 +1,32 @@
 import * as iam from '@aws-cdk/aws-iam';
+import { Fn, Token } from '@aws-cdk/core';
+import { Connections, IConnectable } from './connections';
 import { Instance } from './instance';
 import { InstanceType } from './instance-types';
-import { IMachineImage, LookupMachineImage } from "./machine-image";
+import { IMachineImage, LookupMachineImage } from './machine-image';
 import { Port } from './port';
-import { SecurityGroup } from './security-group';
+import { ISecurityGroup, SecurityGroup } from './security-group';
 import { PrivateSubnet, PublicSubnet, RouterType, Vpc } from './vpc';
+
+/**
+ * Direction of traffic to allow all by default.
+ */
+export enum NatTrafficDirection {
+  /**
+   * Allow all outbound traffic and disallow all inbound traffic.
+   */
+  OUTBOUND_ONLY = 'OUTBOUND_ONLY',
+
+  /**
+   * Allow all outbound and inbound traffic.
+   */
+  INBOUND_AND_OUTBOUND = 'INBOUND_AND_OUTBOUND',
+
+  /**
+   * Disallow all outbound and inbound traffic.
+   */
+  NONE = 'NONE',
+}
 
 /**
  * Pair represents a gateway created by NAT Provider
@@ -28,7 +50,7 @@ export interface GatewayConfig {
  * Determines what type of NAT provider to create, either NAT gateways or NAT
  * instance.
  *
- * @experimental
+ *
  */
 export abstract class NatProvider {
   /**
@@ -38,8 +60,8 @@ export abstract class NatProvider {
    *
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html
    */
-  public static gateway(): NatProvider {
-    return new NatGateway();
+  public static gateway(props: NatGatewayProps = {}): NatProvider {
+    return new NatGatewayProvider(props);
   }
 
   /**
@@ -53,8 +75,8 @@ export abstract class NatProvider {
    *
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html
    */
-  public static instance(props: NatInstanceProps): NatProvider {
-    return new NatInstance(props);
+  public static instance(props: NatInstanceProps): NatInstanceProvider {
+    return new NatInstanceProvider(props);
   }
 
   /**
@@ -64,11 +86,15 @@ export abstract class NatProvider {
 
   /**
    * Called by the VPC to configure NAT
+   *
+   * Don't call this directly, the VPC will call it automatically.
    */
   public abstract configureNat(options: ConfigureNatOptions): void;
 
   /**
    * Configures subnet with the gateway
+   *
+   * Don't call this directly, the VPC will call it automatically.
    */
   public abstract configureSubnet(subnet: PrivateSubnet): void;
 }
@@ -76,7 +102,7 @@ export abstract class NatProvider {
 /**
  * Options passed by the VPC when NAT needs to be configured
  *
- * @experimental
+ *
  */
 export interface ConfigureNatOptions {
   /**
@@ -98,9 +124,22 @@ export interface ConfigureNatOptions {
 }
 
 /**
+ * Properties for a NAT gateway
+ *
+ */
+export interface NatGatewayProps {
+  /**
+   * EIP allocation IDs for the NAT gateways
+   *
+   * @default - No fixed EIPs allocated for the NAT gateways
+   */
+  readonly eipAllocationIds?: string[];
+}
+
+/**
  * Properties for a NAT instance
  *
- * @experimental
+ *
  */
 export interface NatInstanceProps {
   /**
@@ -134,16 +173,70 @@ export interface NatInstanceProps {
    * @default - No SSH access will be possible.
    */
   readonly keyName?: string;
+
+  /**
+   * Security Group for NAT instances
+   *
+   * @default - A new security group will be created
+   */
+  readonly securityGroup?: ISecurityGroup;
+
+  /**
+   * Allow all inbound traffic through the NAT instance
+   *
+   * If you set this to false, you must configure the NAT instance's security
+   * groups in another way, either by passing in a fully configured Security
+   * Group using the `securityGroup` property, or by configuring it using the
+   * `.securityGroup` or `.connections` members after passing the NAT Instance
+   * Provider to a Vpc.
+   *
+   * @default true
+   * @deprecated - Use `defaultAllowedTraffic`.
+   */
+  readonly allowAllTraffic?: boolean;
+
+  /**
+   * Direction to allow all traffic through the NAT instance by default.
+   *
+   * By default, inbound and outbound traffic is allowed.
+   *
+   * If you set this to another value than INBOUND_AND_OUTBOUND, you must
+   * configure the NAT instance's security groups in another way, either by
+   * passing in a fully configured Security Group using the `securityGroup`
+   * property, or by configuring it using the `.securityGroup` or
+   * `.connections` members after passing the NAT Instance Provider to a Vpc.
+   *
+   * @default NatTrafficDirection.INBOUND_AND_OUTBOUND
+   */
+  readonly defaultAllowedTraffic?: NatTrafficDirection;
 }
 
-class NatGateway extends NatProvider {
+/**
+ * Provider for NAT Gateways
+ */
+class NatGatewayProvider extends NatProvider {
   private gateways: PrefSet<string> = new PrefSet<string>();
 
+  constructor(private readonly props: NatGatewayProps = {}) {
+    super();
+  }
+
   public configureNat(options: ConfigureNatOptions) {
+    if (
+      this.props.eipAllocationIds != null
+      && !Token.isUnresolved(this.props.eipAllocationIds)
+      && this.props.eipAllocationIds.length < options.natSubnets.length
+    ) {
+      throw new Error(`Not enough NAT gateway EIP allocation IDs (${this.props.eipAllocationIds.length} provided) for the requested subnet count (${options.natSubnets.length} needed).`);
+    }
+
     // Create the NAT gateways
+    let i = 0;
     for (const sub of options.natSubnets) {
-      const gateway = sub.addNatGateway();
+      const eipAllocationId = this.props.eipAllocationIds ? pickN(i, this.props.eipAllocationIds) : undefined;
+      const gateway = sub.addNatGateway(eipAllocationId);
       this.gateways.add(sub.availabilityZone, gateway.ref);
+      i++;
     }
 
     // Add routes to them in the private subnets
@@ -163,42 +256,59 @@ class NatGateway extends NatProvider {
   }
 
   public get configuredGateways(): GatewayConfig[] {
-    return this.gateways.values().map(x => ({az: x[0], gatewayId: x[1]}));
+    return this.gateways.values().map(x => ({ az: x[0], gatewayId: x[1] }));
   }
 }
 
-class NatInstance extends NatProvider {
+/**
+ * NAT provider which uses NAT Instances
+ */
+export class NatInstanceProvider extends NatProvider implements IConnectable {
   private gateways: PrefSet<Instance> = new PrefSet<Instance>();
+  private _securityGroup?: ISecurityGroup;
+  private _connections?: Connections;
 
   constructor(private readonly props: NatInstanceProps) {
     super();
+
+    if (props.defaultAllowedTraffic !== undefined && props.allowAllTraffic !== undefined) {
+      throw new Error('Can not specify both of \'defaultAllowedTraffic\' and \'defaultAllowedTraffic\'; prefer \'defaultAllowedTraffic\'');
+    }
   }
 
   public configureNat(options: ConfigureNatOptions) {
+    const defaultDirection = this.props.defaultAllowedTraffic ??
+      (this.props.allowAllTraffic ?? true ? NatTrafficDirection.INBOUND_AND_OUTBOUND : NatTrafficDirection.OUTBOUND_ONLY);
+
     // Create the NAT instances. They can share a security group and a Role.
     const machineImage = this.props.machineImage || new NatInstanceImage();
-    const sg = new SecurityGroup(options.vpc, 'NatSecurityGroup', {
+    this._securityGroup = this.props.securityGroup ?? new SecurityGroup(options.vpc, 'NatSecurityGroup', {
       vpc: options.vpc,
       description: 'Security Group for NAT instances',
+      allowAllOutbound: isOutboundAllowed(defaultDirection),
     });
-    sg.connections.allowFromAnyIpv4(Port.allTcp());
+    this._connections = new Connections({ securityGroups: [this._securityGroup] });
+
+    if (isInboundAllowed(defaultDirection)) {
+      this.connections.allowFromAnyIpv4(Port.allTraffic());
+    }
 
     // FIXME: Ideally, NAT instances don't have a role at all, but
     // 'Instance' does not allow that right now.
     const role = new iam.Role(options.vpc, 'NatRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
 
     for (const sub of options.natSubnets) {
       const natInstance = new Instance(sub, 'NatInstance', {
         instanceType: this.props.instanceType,
         machineImage,
-        sourceDestCheck: false,  // Required for NAT
+        sourceDestCheck: false, // Required for NAT
         vpc: options.vpc,
         vpcSubnets: { subnets: [sub] },
-        securityGroup: sg,
+        securityGroup: this._securityGroup,
         role,
-        keyName: this.props.keyName
+        keyName: this.props.keyName,
       });
       // NAT instance routes all traffic, both ways
       this.gateways.add(sub.availabilityZone, natInstance);
@@ -210,6 +320,30 @@ class NatInstance extends NatProvider {
     }
   }
 
+  /**
+   * The Security Group associated with the NAT instances
+   */
+  public get securityGroup(): ISecurityGroup {
+    if (!this._securityGroup) {
+      throw new Error('Pass the NatInstanceProvider to a Vpc before accessing \'securityGroup\'');
+    }
+    return this._securityGroup;
+  }
+
+  /**
+   * Manage the Security Groups associated with the NAT instances
+   */
+  public get connections(): Connections {
+    if (!this._connections) {
+      throw new Error('Pass the NatInstanceProvider to a Vpc before accessing \'connections\'');
+    }
+    return this._connections;
+  }
+
+  public get configuredGateways(): GatewayConfig[] {
+    return this.gateways.values().map(x => ({ az: x[0], gatewayId: x[1].instanceId }));
+  }
+
   public configureSubnet(subnet: PrivateSubnet) {
     const az = subnet.availabilityZone;
     const gatewayId = this.gateways.pick(az).instanceId;
@@ -218,10 +352,6 @@ class NatInstance extends NatProvider {
       routerId: gatewayId,
       enablesInternetConnectivity: true,
     });
-  }
-
-  public get configuredGateways(): GatewayConfig[] {
-    return this.gateways.values().map(x => ({az: x[0], gatewayId: x[1].instanceId}));
   }
 }
 
@@ -258,7 +388,7 @@ class PrefSet<A> {
 /**
  * Machine image representing the latest NAT instance image
  *
- * @experimental
+ *
  */
 export class NatInstanceImage extends LookupMachineImage {
   constructor() {
@@ -267,4 +397,26 @@ export class NatInstanceImage extends LookupMachineImage {
       owners: ['amazon'],
     });
   }
+}
+
+function isOutboundAllowed(direction: NatTrafficDirection) {
+  return direction === NatTrafficDirection.INBOUND_AND_OUTBOUND ||
+    direction === NatTrafficDirection.OUTBOUND_ONLY;
+}
+
+function isInboundAllowed(direction: NatTrafficDirection) {
+  return direction === NatTrafficDirection.INBOUND_AND_OUTBOUND;
+}
+
+/**
+ * Token-aware pick index function
+ */
+function pickN(i: number, xs: string[]) {
+  if (Token.isUnresolved(xs)) { return Fn.select(i, xs); }
+
+  if (i >= xs.length) {
+    throw new Error(`Cannot get element ${i} from ${xs}`);
+  }
+
+  return xs[i];
 }

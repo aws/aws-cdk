@@ -1,8 +1,26 @@
-import { Construct, Duration, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, Duration, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { AccessLogFormat, IAccessLogDestination } from './access-log';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
-import { IRestApi } from './restapi';
+import { IRestApi, RestApiBase } from './restapi';
 import { parseMethodOptionsPath } from './util';
+
+/**
+ * Represents an APIGateway Stage.
+ */
+export interface IStage extends IResource {
+  /**
+   * Name of this stage.
+   * @attribute
+   */
+  readonly stageName: string;
+
+  /**
+   * RestApi to which this stage is associated.
+   */
+  readonly restApi: IRestApi;
+}
 
 export interface StageOptions extends MethodDeploymentOptions {
   /**
@@ -12,6 +30,22 @@ export interface StageOptions extends MethodDeploymentOptions {
    * @default - "prod"
    */
   readonly stageName?: string;
+
+  /**
+   * The CloudWatch Logs log group.
+   *
+   * @default - No destination
+   */
+  readonly accessLogDestination?: IAccessLogDestination;
+
+  /**
+   * A single line format of access logs of data, as specified by selected $content variables.
+   * The format must include at least `AccessLogFormat.contextRequestId()`.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference
+   *
+   * @default - Common Log Format
+   */
+  readonly accessLogFormat?: AccessLogFormat;
 
   /**
    * Specifies whether Amazon X-Ray tracing is enabled for this method.
@@ -107,8 +141,10 @@ export interface MethodDeploymentOptions {
   readonly loggingLevel?: MethodLoggingLevel;
 
   /**
-   * Specifies whether data trace logging is enabled for this method, which
-   * effects the log entries pushed to Amazon CloudWatch Logs.
+   * Specifies whether data trace logging is enabled for this method.
+   * When enabled, API gateway will log the full API requests and responses.
+   * This can be useful to troubleshoot APIs, but can result in logging sensitive data.
+   * We recommend that you don't enable this feature for production APIs.
    *
    * @default false
    */
@@ -157,10 +193,7 @@ export interface MethodDeploymentOptions {
   readonly cacheDataEncrypted?: boolean;
 }
 
-export class Stage extends Resource {
-  /**
-   * @attribute
-   */
+export class Stage extends Resource implements IStage {
   public readonly stageName: string;
 
   public readonly restApi: IRestApi;
@@ -172,6 +205,29 @@ export class Stage extends Resource {
     this.enableCacheCluster = props.cacheClusterEnabled;
 
     const methodSettings = this.renderMethodSettings(props); // this can mutate `this.cacheClusterEnabled`
+
+    // custom access logging
+    let accessLogSetting: CfnStage.AccessLogSettingProperty | undefined;
+    const accessLogDestination = props.accessLogDestination;
+    const accessLogFormat = props.accessLogFormat;
+    if (!accessLogDestination && !accessLogFormat) {
+      accessLogSetting = undefined;
+    } else {
+      if (accessLogFormat !== undefined &&
+        !Token.isUnresolved(accessLogFormat.toString()) &&
+        !/.*\$context.requestId.*/.test(accessLogFormat.toString())) {
+
+        throw new Error('Access log must include at least `AccessLogFormat.contextRequestId()`');
+      }
+      if (accessLogFormat !== undefined && accessLogDestination === undefined) {
+        throw new Error('Access log format is specified without a destination');
+      }
+
+      accessLogSetting = {
+        destinationArn: accessLogDestination?.bind(this).destinationArn,
+        format: accessLogFormat?.toString() ? accessLogFormat?.toString() : AccessLogFormat.clf().toString(),
+      };
+    }
 
     // enable cache cluster if cacheClusterSize is set
     if (props.cacheClusterSize !== undefined) {
@@ -185,6 +241,7 @@ export class Stage extends Resource {
     const cacheClusterSize = this.enableCacheCluster ? (props.cacheClusterSize || '0.5') : undefined;
     const resource = new CfnStage(this, 'Resource', {
       stageName: props.stageName || 'prod',
+      accessLogSetting,
       cacheClusterEnabled: this.enableCacheCluster,
       cacheClusterSize,
       clientCertificateId: props.clientCertificateId,
@@ -199,6 +256,10 @@ export class Stage extends Resource {
 
     this.stageName = resource.ref;
     this.restApi = props.deployment.api;
+
+    if (RestApiBase._isRestApiBase(this.restApi)) {
+      this.restApi._attachStage(this);
+    }
   }
 
   /**
@@ -210,6 +271,26 @@ export class Stage extends Resource {
       throw new Error(`Path must begin with "/": ${path}`);
     }
     return `https://${this.restApi.restApiId}.execute-api.${Stack.of(this).region}.${Stack.of(this).urlSuffix}/${this.stageName}${path}`;
+  }
+
+  /**
+   * Returns the resource ARN for this stage:
+   *
+   *   arn:aws:apigateway:{region}::/restapis/{restApiId}/stages/{stageName}
+   *
+   * Note that this is separate from the execute-api ARN for methods and resources
+   * within this stage.
+   *
+   * @attribute
+   */
+  public get stageArn() {
+    return Stack.of(this).formatArn({
+      arnFormat: ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME,
+      service: 'apigateway',
+      account: '',
+      resource: 'restapis',
+      resourceName: `${this.restApi.restApiId}/stages/${this.stageName}`,
+    });
   }
 
   private renderMethodSettings(props: StageProps): CfnStage.MethodSettingProperty[] | undefined {
@@ -225,7 +306,7 @@ export class Stage extends Resource {
       throttlingRateLimit: props.throttlingRateLimit,
       cachingEnabled: props.cachingEnabled,
       cacheTtl: props.cacheTtl,
-      cacheDataEncrypted: props.cacheDataEncrypted
+      cacheDataEncrypted: props.cacheDataEncrypted,
     };
 
     // if any of them are defined, add an entry for '/*/*'.
@@ -254,11 +335,12 @@ export class Stage extends Resource {
       const { httpMethod, resourcePath } = parseMethodOptionsPath(path);
 
       return {
-        httpMethod, resourcePath,
+        httpMethod,
+        resourcePath,
         cacheDataEncrypted: options.cacheDataEncrypted,
         cacheTtlInSeconds: options.cacheTtl && options.cacheTtl.toSeconds(),
         cachingEnabled: options.cachingEnabled,
-        dataTraceEnabled: options.dataTraceEnabled,
+        dataTraceEnabled: options.dataTraceEnabled ?? false,
         loggingLevel: options.loggingLevel,
         metricsEnabled: options.metricsEnabled,
         throttlingBurstLimit: options.throttlingBurstLimit,

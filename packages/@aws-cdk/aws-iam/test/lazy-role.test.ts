@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as iam from '../lib';
 
@@ -9,11 +9,11 @@ describe('IAM lazy role', () => {
 
     // WHEN
     new iam.LazyRole(stack, 'Lazy', {
-      assumedBy: new iam.ServicePrincipal('test.service')
+      assumedBy: new iam.ServicePrincipal('test.service'),
     });
 
     // THEN
-    expect(stack).not.toHaveResource('AWS::IAM::Role');
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
   });
 
   test('creates the resource when a property is read', () => {
@@ -22,20 +22,20 @@ describe('IAM lazy role', () => {
 
     // WHEN
     const roleArn = new iam.LazyRole(stack, 'Lazy', {
-      assumedBy: new iam.ServicePrincipal('test.service')
+      assumedBy: new iam.ServicePrincipal('test.service'),
     }).roleArn;
 
     // THEN
     expect(roleArn).not.toBeNull();
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
           Action: 'sts:AssumeRole',
           Effect: 'Allow',
-          Principal: { Service: 'test.service' }
-        }]
-      }
+          Principal: { Service: 'test.service' },
+        }],
+      },
     });
   });
 
@@ -45,7 +45,7 @@ describe('IAM lazy role', () => {
 
     // WHEN
     const role = new iam.LazyRole(stack, 'Lazy', {
-      assumedBy: new iam.ServicePrincipal('test.service')
+      assumedBy: new iam.ServicePrincipal('test.service'),
     });
 
     // THEN

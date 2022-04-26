@@ -17,27 +17,40 @@
       "dotnet": {
         "namespace": "Amazon.CDK.CXAPI",
         "packageId": "Amazon.CDK.CXAPI",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.cx-api",
-        "module": "aws_cdk.cx_api"
+        "module": "aws_cdk.cx_api",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": false
+        }
       }
     }
   },
   "scripts": {
     "build": "cdk-build",
     "watch": "cdk-watch",
-    "lint": "cdk-lint",
+    "lint": "cdk-lint && madge --circular --extensions js lib",
     "test": "cdk-test",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -45,34 +58,22 @@
     "organization": true
   },
   "dependencies": {
-    "semver": "^7.1.3"
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "semver": "^7.3.6"
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 80,
-        "statements": 80
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
+  "peerDependencies": {
+    "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^25.1.4",
-    "@types/mock-fs": "^4.10.0",
-    "@types/semver": "^7.1.0",
-    "cdk-build-tools": "0.0.0",
-    "jest": "^24.9.0",
-    "mock-fs": "^4.11.0",
-    "pkglint": "0.0.0"
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.4.1",
+    "@types/mock-fs": "^4.13.1",
+    "@types/semver": "^7.3.9",
+    "jest": "^27.5.1",
+    "madge": "^5.0.1",
+    "mock-fs": "^4.14.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -88,9 +89,10 @@
     "semver"
   ],
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "experimental",
+  "stability": "stable",
+  "maturity": "stable",
   "awslint": {
     "exclude": [
       "props-default-doc:@aws-cdk/cx-api.MetadataEntry.data",
@@ -113,6 +115,9 @@
       "props-default-doc:@aws-cdk/cx-api.AssemblyManifest.runtime",
       "props-default-doc:@aws-cdk/cx-api.AvailabilityZonesContextQuery.account",
       "props-default-doc:@aws-cdk/cx-api.AvailabilityZonesContextQuery.region",
+      "props-default-doc:@aws-cdk/cx-api.EndpointServiceAvailabilityZonesContextQuery.account",
+      "props-default-doc:@aws-cdk/cx-api.EndpointServiceAvailabilityZonesContextQuery.region",
+      "props-default-doc:@aws-cdk/cx-api.EndpointServiceAvailabilityZonesContextQuery.serviceName",
       "props-default-doc:@aws-cdk/cx-api.AwsCloudFormationStackProperties.parameters",
       "docs-public-apis:@aws-cdk/cx-api.ContainerImageAssetMetadataEntry",
       "docs-public-apis:@aws-cdk/cx-api.FileAssetMetadataEntry",
@@ -148,5 +153,11 @@
       "docs-public-apis:@aws-cdk/cx-api.SynthesisMessageLevel.WARNING",
       "docs-public-apis:@aws-cdk/cx-api.SynthesisMessageLevel.ERROR"
     ]
+  },
+  "awscdkio": {
+    "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest-1"
   }
 }

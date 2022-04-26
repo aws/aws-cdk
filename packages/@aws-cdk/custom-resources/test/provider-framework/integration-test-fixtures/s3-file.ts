@@ -1,11 +1,15 @@
-import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, Stack } from '@aws-cdk/core';
-import * as path from 'path';
+import { CustomResource, Stack } from '@aws-cdk/core';
+import { Construct, Node } from 'constructs';
 import * as cr from '../../../lib';
 import * as api from './s3-file-handler/api';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 interface S3FileProps {
   /**
@@ -33,7 +37,7 @@ interface S3FileProps {
   readonly public?: boolean;
 }
 
-export class S3File extends Construct {
+export class S3File extends CoreConstruct {
   public readonly objectKey: string;
   public readonly url: string;
   public readonly etag: string;
@@ -41,15 +45,15 @@ export class S3File extends Construct {
   constructor(scope: Construct, id: string, props: S3FileProps) {
     super(scope, id);
 
-    const resource = new cfn.CustomResource(this, 'Resource', {
-      provider: S3FileProvider.getOrCreate(this),
+    const resource = new CustomResource(this, 'Resource', {
+      serviceToken: S3FileProvider.getOrCreate(this),
       resourceType: 'Custom::S3File',
       properties: {
         [api.PROP_BUCKET_NAME]: props.bucket.bucketName,
         [api.PROP_CONTENTS]: props.contents,
         [api.PROP_OBJECT_KEY]: props.objectKey,
-        [api.PROP_PUBLIC]: props.public
-      }
+        [api.PROP_PUBLIC]: props.public,
+      },
     });
 
     this.objectKey = resource.getAttString(api.ATTR_OBJECT_KEY);
@@ -58,7 +62,7 @@ export class S3File extends Construct {
   }
 }
 
-class S3FileProvider extends Construct {
+class S3FileProvider extends CoreConstruct {
 
   /**
    * Returns the singleton provider.
@@ -66,8 +70,8 @@ class S3FileProvider extends Construct {
   public static getOrCreate(scope: Construct) {
     const stack = Stack.of(scope);
     const id = 'com.amazonaws.cdk.custom-resources.s3file-provider';
-    const x = stack.node.tryFindChild(id) as S3FileProvider || new S3FileProvider(stack, id);
-    return x.provider;
+    const x = Node.of(stack).tryFindChild(id) as S3FileProvider || new S3FileProvider(stack, id);
+    return x.provider.serviceToken;
   }
 
   private readonly provider: cr.Provider;
@@ -78,20 +82,21 @@ class S3FileProvider extends Construct {
     this.provider = new cr.Provider(this, 's3file-provider', {
       onEventHandler: new lambda.Function(this, 's3file-on-event', {
         code: lambda.Code.fromAsset(path.join(__dirname, 's3-file-handler')),
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_12_X,
         handler: 'index.onEvent',
         initialPolicy: [
           new iam.PolicyStatement({
-            resources: [ '*' ],
+            resources: ['*'],
             actions: [
               's3:GetObject*',
               's3:GetBucket*',
               's3:List*',
               's3:DeleteObject*',
               's3:PutObject*',
-              's3:Abort*'
-            ] })
-          ]
+              's3:Abort*',
+            ],
+          }),
+        ],
       }),
     });
   }

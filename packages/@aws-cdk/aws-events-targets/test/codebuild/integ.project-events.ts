@@ -20,6 +20,7 @@ const project = new codebuild.Project(stack, 'MyProject', {
 });
 
 const queue = new sqs.Queue(stack, 'MyQueue');
+const deadLetterQueue = new sqs.Queue(stack, 'DeadLetterQueue');
 
 const topic = new sns.Topic(stack, 'MyTopic');
 topic.addSubscription(new subs.SqsSubscription(queue));
@@ -33,20 +34,24 @@ project.onStateChange('StateChange', { target: new targets.SnsTopic(topic) });
 // details.
 project.onPhaseChange('PhaseChange', {
   target: new targets.SnsTopic(topic, {
-    message: events.RuleTargetInput.fromText(`Build phase changed to ${codebuild.PhaseChangeEvent.completedPhase}`)
-  })
+    message: events.RuleTargetInput.fromText(`Build phase changed to ${codebuild.PhaseChangeEvent.completedPhase}`),
+  }),
 });
 
 // trigger a build when a commit is pushed to the repo
 const onCommitRule = repo.onCommit('OnCommit', {
-  target: new targets.CodeBuildProject(project),
-  branches: ['master']
+  target: new targets.CodeBuildProject(project, {
+    deadLetterQueue: deadLetterQueue,
+    maxEventAge: cdk.Duration.hours(2),
+    retryAttempts: 2,
+  }),
+  branches: ['master'],
 });
 
 onCommitRule.addTarget(new targets.SnsTopic(topic, {
   message: events.RuleTargetInput.fromText(
-    `A commit was pushed to the repository ${codecommit.ReferenceEvent.repositoryName} on branch ${codecommit.ReferenceEvent.referenceName}`
-  )
+    `A commit was pushed to the repository ${codecommit.ReferenceEvent.repositoryName} on branch ${codecommit.ReferenceEvent.referenceName}`,
+  ),
 }));
 
 app.synth();

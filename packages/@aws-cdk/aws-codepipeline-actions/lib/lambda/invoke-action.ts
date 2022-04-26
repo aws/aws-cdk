@@ -1,16 +1,17 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Stack } from "@aws-cdk/core";
+import { Stack } from '@aws-cdk/core';
 import { Action } from '../action';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Construction properties of the {@link LambdaInvokeAction Lambda invoke CodePipeline Action}.
  */
 export interface LambdaInvokeActionProps extends codepipeline.CommonAwsActionProps {
-  // because of @see links
-  // tslint:disable:max-line-length
-
   /**
    * The optional input Artifacts of the Action.
    * A Lambda Action can have up to 5 inputs.
@@ -37,11 +38,23 @@ export interface LambdaInvokeActionProps extends codepipeline.CommonAwsActionPro
    * A set of key-value pairs that will be accessible to the invoked Lambda
    * inside the event that the Pipeline will call it with.
    *
+   * Only one of `userParameters` or `userParametersString` can be specified.
+   *
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html#actions-invoke-lambda-function-json-event-example
+   * @default - no user parameters will be passed
    */
   readonly userParameters?: { [key: string]: any };
 
-  // tslint:enable:max-line-length
+  /**
+   * The string representation of the user parameters that will be
+   * accessible to the invoked Lambda inside the event
+   * that the Pipeline will call it with.
+   *
+   * Only one of `userParametersString` or `userParameters` can be specified.
+   *
+   * @default - no user parameters will be passed
+   */
+  readonly userParametersString?: string;
 
   /**
    * The lambda function to invoke.
@@ -72,6 +85,10 @@ export class LambdaInvokeAction extends Action {
     });
 
     this.props = props;
+
+    if (props.userParameters && props.userParametersString) {
+      throw new Error('Only one of userParameters or userParametersString can be specified');
+    }
   }
 
   /**
@@ -90,18 +107,15 @@ export class LambdaInvokeAction extends Action {
   }
 
   protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     // allow pipeline to list functions
     options.role.addToPolicy(new iam.PolicyStatement({
       actions: ['lambda:ListFunctions'],
-      resources: ['*']
+      resources: ['*'],
     }));
 
     // allow pipeline to invoke this lambda functionn
-    options.role.addToPolicy(new iam.PolicyStatement({
-      actions: ['lambda:InvokeFunction'],
-      resources: [this.props.lambda.functionArn]
-    }));
+    this.props.lambda.grantInvoke(options.role);
 
     // allow the Role access to the Bucket, if there are any inputs/outputs
     if ((this.actionProperties.inputs || []).length > 0) {
@@ -116,13 +130,13 @@ export class LambdaInvokeAction extends Action {
     // (the Pipeline ARN will not be enough)
     this.props.lambda.addToRolePolicy(new iam.PolicyStatement({
       resources: ['*'],
-      actions: ['codepipeline:PutJobSuccessResult', 'codepipeline:PutJobFailureResult']
+      actions: ['codepipeline:PutJobSuccessResult', 'codepipeline:PutJobFailureResult'],
     }));
 
     return {
       configuration: {
         FunctionName: this.props.lambda.functionName,
-        UserParameters: Stack.of(scope).toJsonString(this.props.userParameters),
+        UserParameters: this.props.userParametersString ?? Stack.of(scope).toJsonString(this.props.userParameters),
       },
     };
   }

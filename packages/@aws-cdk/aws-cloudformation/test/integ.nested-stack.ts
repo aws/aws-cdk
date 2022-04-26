@@ -2,8 +2,13 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sns_subscriptions from '@aws-cdk/aws-sns-subscriptions';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { App, CfnParameter, Construct, Stack } from '@aws-cdk/core';
-import * as cfn from '../lib';
+import { App, CfnParameter, NestedStack, Stack } from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
+/* eslint-disable @aws-cdk/no-core-construct */
 
 interface MyNestedStackProps {
   readonly subscriber?: sqs.Queue;
@@ -12,20 +17,20 @@ interface MyNestedStackProps {
   readonly topicNamePrefix: string;
 }
 
-class MyNestedStack extends cfn.NestedStack {
+class MyNestedStack extends NestedStack {
   constructor(scope: Construct, id: string, props: MyNestedStackProps) {
     const topicNamePrefixLogicalId = 'TopicNamePrefix';
 
     super(scope, id, {
       parameters: {
-        [topicNamePrefixLogicalId]: props.topicNamePrefix // pass in a parameter to the nested stack
-      }
+        [topicNamePrefixLogicalId]: props.topicNamePrefix, // pass in a parameter to the nested stack
+      },
     });
 
     const topicNamePrefixParameter = new CfnParameter(this, 'TopicNamePrefix', { type: 'String' });
 
     for (let i = 0; i < props.topicCount; ++i) {
-      const topic = new sns.Topic(this, `topic-${i}`, { displayName: `${topicNamePrefixParameter.valueAsString}-${i}`});
+      const topic = new sns.Topic(this, `topic-${i}`, { displayName: `${topicNamePrefixParameter.valueAsString}-${i}` });
 
       // since the subscription resources are defined in the subscriber's stack, this
       // will add an SNS subscription resource to the parent stack that reference this topic.
@@ -36,13 +41,13 @@ class MyNestedStack extends cfn.NestedStack {
 
     if (props.subscriber) {
       new lambda.Function(this, 'fn', {
-        runtime: lambda.Runtime.NODEJS_10_X,
-        code: lambda.Code.inline('console.error("hi")'),
+        runtime: lambda.Runtime.NODEJS_14_X,
+        code: lambda.Code.fromInline('console.error("hi")'),
         handler: 'index.handler',
         environment: {
-          TOPIC_ARN: props.siblingTopic ? props.siblingTopic.topicArn : '',
-          QUEUE_URL: props.subscriber.queueUrl // nested stack references a resource in the parent
-        }
+          TOPIC_ARN: props.siblingTopic?.topicArn ?? '',
+          QUEUE_URL: props.subscriber.queueUrl, // nested stack references a resource in the parent
+        },
       });
     }
   }

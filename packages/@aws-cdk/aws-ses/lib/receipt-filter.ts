@@ -1,5 +1,10 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnReceiptFilter } from './ses.generated';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core'
 
 /**
  * The policy for the receipt filter.
@@ -59,26 +64,26 @@ export class ReceiptFilter extends Resource {
           policy: props.policy || ReceiptFilterPolicy.BLOCK,
         },
         name: this.physicalName,
-      }
+      },
     });
   }
 }
 
 /**
- * Construction properties for a WhiteListReceiptFilter.
+ * Construction properties for am AllowListReceiptFilter.
  */
-export interface WhiteListReceiptFilterProps {
+export interface AllowListReceiptFilterProps {
   /**
-   * A list of ip addresses or ranges to white list.
+   * A list of ip addresses or ranges to allow list.
    */
   readonly ips: string[];
 }
 
 /**
- * A white list receipt filter.
+ * An allow list receipt filter.
  */
-export class WhiteListReceiptFilter extends Construct {
-  constructor(scope: Construct, id: string, props: WhiteListReceiptFilterProps) {
+export class AllowListReceiptFilter extends CoreConstruct {
+  constructor(scope: Construct, id: string, props: AllowListReceiptFilterProps) {
     super(scope, id);
 
     new ReceiptFilter(this, 'BlockAll');
@@ -86,8 +91,24 @@ export class WhiteListReceiptFilter extends Construct {
     props.ips.forEach(ip => {
       new ReceiptFilter(this, `Allow${ip.replace(/[^\d]/g, '')}`, {
         ip,
-        policy: ReceiptFilterPolicy.ALLOW
+        policy: ReceiptFilterPolicy.ALLOW,
       });
     });
+  }
+}
+
+/**
+ * Construction properties for a WhiteListReceiptFilter.
+ * @deprecated use `AllowListReceiptFilterProps`
+ */
+export interface WhiteListReceiptFilterProps extends AllowListReceiptFilterProps { }
+
+/**
+ * An allow list receipt filter.
+ * @deprecated use `AllowListReceiptFilter`
+ */
+export class WhiteListReceiptFilter extends AllowListReceiptFilter {
+  constructor(scope: Construct, id: string, props: WhiteListReceiptFilterProps) {
+    super(scope, id, props);
   }
 }

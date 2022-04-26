@@ -1,4 +1,4 @@
-import { IConstruct } from "./construct";
+import { IConstruct } from './construct-compat';
 
 /**
  * Trait marker for classes that can be depended upon
@@ -21,7 +21,6 @@ export interface IDependable {
  * This class can be used when a set of constructs which are disjoint in the
  * construct tree needs to be combined to be used as a single dependable.
  *
- * @experimental
  */
 export class ConcreteDependable implements IDependable {
   private readonly _dependencyRoots = new Array<IConstruct>();
@@ -58,11 +57,14 @@ const DEPENDABLE_SYMBOL = Symbol.for('@aws-cdk/core.DependableTrait');
  * const roots = DependableTrait.get(construct).dependencyRoots;
  *
  * // Definition
- * DependableTrait.implement(construct, {
- *   get dependencyRoots() { return []; }
- * });
+ * class TraitImplementation implements DependableTrait {
+ *   public readonly dependencyRoots: IConstruct[];
+ *   constructor() {
+ *     this.dependencyRoots = [constructA, constructB, constructC];
+ *   }
+ * }
+ * DependableTrait.implement(construct, new TraitImplementation());
  *
- * @experimental
  */
 export abstract class DependableTrait {
   /**

@@ -13,11 +13,11 @@
 #
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
-version=${1:-minor}
-
-echo "Starting ${version} version bump"
-
-# /bin/bash ./install.sh
-
-# Generate CHANGELOG and create a commit (see .versionrc.json)
-npx standard-version --release-as ${version}
+scriptdir=$(cd $(dirname $0) && pwd)
+cd ${scriptdir}
+yarn install --frozen-lockfile
+if [[ "${LEGACY_BUMP:-}" == "" ]]; then
+  #  if we're using 'cdk-release' for the bump, build that package, including all of its dependencies
+  npx lerna run build --include-dependencies --scope @aws-cdk/cdk-release
+fi
+${scriptdir}/scripts/bump.js ${1:-minor}

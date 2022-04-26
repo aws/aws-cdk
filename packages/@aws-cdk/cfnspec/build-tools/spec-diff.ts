@@ -1,8 +1,7 @@
-import * as fs from 'fs-extra';
 import * as util from 'util';
+import * as fs from 'fs-extra';
 
 /* eslint-disable @typescript-eslint/no-require-imports */
-// tslint:disable-next-line:no-var-requires
 const jsonDiff = require('json-diff').diff;
 /* eslint-enable */
 
@@ -93,22 +92,27 @@ async function main() {
 
     for (const key of Object.keys(update)) {
       switch (key) {
-      case 'Properties':
-        for (const prop of Object.keys(update.Properties)) {
-          describeChanges(resourceType, prop, update.Properties[prop]).forEach(change => {
-            propertyChanges.push(change);
-          });
-        }
-        break;
-      case 'Attributes':
-        for (const attr of Object.keys(update.Attributes)) {
-          describeChanges(resourceType, attr, update.Attributes[attr]).forEach(change => {
+        case 'Properties':
+          for (const prop of Object.keys(update.Properties)) {
+            describeChanges(resourceType, prop, update.Properties[prop]).forEach(change => {
+              propertyChanges.push(change);
+            });
+          }
+          break;
+        case 'Attributes':
+          for (const attr of Object.keys(update.Attributes)) {
+            describeChanges(resourceType, attr, update.Attributes[attr]).forEach(change => {
+              attributeChanges.push(change);
+            });
+          }
+          break;
+        case 'Documentation':
+          describeChanges(resourceType, key, update.Documentation).forEach(change => {
             attributeChanges.push(change);
           });
-        }
-        break;
-      default:
-        throw new Error(`Unexpected update to ${resourceType}: ${key}`);
+          break;
+        default:
+          throw new Error(`Unexpected update to ${resourceType}: ${key}`);
       }
     }
   }
@@ -140,7 +144,7 @@ async function main() {
       throw new Error('Unexpected update to a resource type. Expecting only "Properties" to change: ' + propertyType);
     }
 
-    for (const prop of Object.keys(update.Properties)) {
+    for (const prop of Object.keys(update.Properties ?? {})) {
       describeChanges(propertyType, prop, update.Properties[prop]).forEach(change => {
         propertyTypeChanges.push(change);
       });
@@ -193,7 +197,7 @@ async function main() {
 
   function isSuffix(key: string, suffix: string) {
     const index = key.indexOf(suffix);
-    return index === -1 ? undefined : key.substr(0, index);
+    return index === -1 ? undefined : key.slice(0, index);
   }
 
   function suffixKeys(suffix: string, xs: Record<string, any>): Record<string, any> {
@@ -237,16 +241,16 @@ async function main() {
           throw new Error(`Unexpected array diff entry: ${JSON.stringify(entry)}`);
         }
         switch (entry[0]) {
-        case '+':
-          changes.push(`  * Added ${entry[1]}`);
-          break;
-        case '-':
-          throw new Error(`Something awkward happened: ${entry[1]} was deleted from ${namespace} ${prefix}!`);
-        case ' ':
+          case '+':
+            changes.push(`  * Added ${entry[1]}`);
+            break;
+          case '-':
+            throw new Error(`Something awkward happened: ${entry[1]} was deleted from ${namespace} ${prefix}!`);
+          case ' ':
           // This entry is "context"
-          break;
-        default:
-          throw new Error(`Unexpected array diff entry: ${JSON.stringify(entry)}`);
+            break;
+          default:
+            throw new Error(`Unexpected array diff entry: ${JSON.stringify(entry)}`);
         }
       }
     } else {

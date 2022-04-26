@@ -1,7 +1,7 @@
 /**
  * Either an IPv4 or an IPv6 CIDR
  *
- * @experimental
+ *
  */
 export abstract class AclCidr {
   /**
@@ -9,7 +9,7 @@ export abstract class AclCidr {
    */
   public static ipv4(ipv4Cidr: string): AclCidr {
     return new AclCidrImpl({
-      cidrBlock: ipv4Cidr
+      cidrBlock: ipv4Cidr,
     });
   }
 
@@ -25,7 +25,7 @@ export abstract class AclCidr {
    */
   public static ipv6(ipv6Cidr: string): AclCidr {
     return new AclCidrImpl({
-      ipv6CidrBlock: ipv6Cidr
+      ipv6CidrBlock: ipv6Cidr,
     });
   }
 
@@ -52,7 +52,7 @@ class AclCidrImpl extends AclCidr {
 /**
  * Acl Configuration for CIDR
  *
- * @experimental
+ *
  */
 export interface AclCidrConfig {
   /**
@@ -69,7 +69,7 @@ export interface AclCidrConfig {
 /**
  * The traffic that is configured using a Network ACL entry
  *
- * @experimental
+ *
  */
 export abstract class AclTraffic {
   /**
@@ -77,7 +77,7 @@ export abstract class AclTraffic {
    */
   public static allTraffic(): AclTraffic {
     return new AclTrafficImpl({
-      protocol: -1
+      protocol: -1,
     });
   }
 
@@ -87,7 +87,7 @@ export abstract class AclTraffic {
   public static icmp(props: AclIcmp): AclTraffic {
     return new AclTrafficImpl({
       protocol: 1,
-      icmp: props
+      icmp: props,
     });
   }
 
@@ -99,7 +99,7 @@ export abstract class AclTraffic {
   public static icmpv6(props: AclIcmp): AclTraffic {
     return new AclTrafficImpl({
       protocol: 58,
-      icmp: props
+      icmp: props,
     });
   }
 
@@ -111,8 +111,8 @@ export abstract class AclTraffic {
       protocol: 6,
       portRange: {
         from: port,
-        to: port
-      }
+        to: port,
+      },
     });
   }
 
@@ -125,7 +125,7 @@ export abstract class AclTraffic {
       portRange: {
         from: startPort,
         to: endPort,
-      }
+      },
     });
   }
 
@@ -137,8 +137,8 @@ export abstract class AclTraffic {
       protocol: 17,
       portRange: {
         from: port,
-        to: port
-      }
+        to: port,
+      },
     });
   }
 
@@ -151,7 +151,7 @@ export abstract class AclTraffic {
       portRange: {
         from: startPort,
         to: endPort,
-      }
+      },
     });
   }
 
@@ -171,7 +171,7 @@ class AclTrafficImpl extends AclTraffic {
 /**
  * Acl Configuration for traffic
  *
- * @experimental
+ *
  */
 export interface AclTrafficConfig {
   /**
@@ -210,7 +210,7 @@ export interface AclTrafficConfig {
 /**
  * Properties to create Icmp
  *
- * @experimental
+ *
  */
 export interface AclIcmp {
   /**
@@ -230,7 +230,7 @@ export interface AclIcmp {
 /**
  * Properties to create PortRange
  *
- * @experimental
+ *
  */
 export interface AclPortRange {
   /**

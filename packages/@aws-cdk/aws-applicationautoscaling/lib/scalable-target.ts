@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, Lazy, Resource, withResolved } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, withResolved } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnScalableTarget } from './applicationautoscaling.generated';
 import { Schedule } from './schedule';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
@@ -38,7 +39,8 @@ export interface ScalableTargetProps {
    *
    * This string consists of the resource type and unique identifier.
    *
-   * @example service/ecsStack-MyECSCluster-AB12CDE3F4GH/ecsStack-MyECSService-AB12CDE3F4GH
+   * Example value: `service/ecsStack-MyECSCluster-AB12CDE3F4GH/ecsStack-MyECSService-AB12CDE3F4GH`
+   *
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_RegisterScalableTarget.html
    */
   readonly resourceId: string;
@@ -48,7 +50,7 @@ export interface ScalableTargetProps {
    *
    * Specify the service namespace, resource type, and scaling property.
    *
-   * @example ecs:service:DesiredCount
+   * Example value: `ecs:service:DesiredCount`
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_ScalingPolicy.html
    */
   readonly scalableDimension: string;
@@ -81,7 +83,8 @@ export class ScalableTarget extends Resource implements IScalableTarget {
   /**
    * ID of the Scalable Target
    *
-   * @example service/ecsStack-MyECSCluster-AB12CDE3F4GH/ecsStack-MyECSService-AB12CDE3F4GH|ecs:service:DesiredCount|ecs
+   * Example value: `service/ecsStack-MyECSCluster-AB12CDE3F4GH/ecsStack-MyECSService-AB12CDE3F4GH|ecs:service:DesiredCount|ecs`
+   *
    * @attribute
    */
   public readonly scalableTargetId: string;
@@ -115,7 +118,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
     });
 
     this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('application-autoscaling.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('application-autoscaling.amazonaws.com'),
     });
 
     const resource = new CfnScalableTarget(this, 'Resource', {
@@ -124,8 +127,8 @@ export class ScalableTarget extends Resource implements IScalableTarget {
       resourceId: props.resourceId,
       roleArn: this.role.roleArn,
       scalableDimension: props.scalableDimension,
-      scheduledActions: Lazy.anyValue({ produce: () => this.actions}, { omitEmptyArray: true}),
-      serviceNamespace: props.serviceNamespace
+      scheduledActions: Lazy.any({ produce: () => this.actions }, { omitEmptyArray: true }),
+      serviceNamespace: props.serviceNamespace,
     });
 
     this.scalableTargetId = resource.ref;
@@ -135,7 +138,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
    * Add a policy statement to the role's policy
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
   /**
@@ -145,6 +148,10 @@ export class ScalableTarget extends Resource implements IScalableTarget {
     if (action.minCapacity === undefined && action.maxCapacity === undefined) {
       throw new Error(`You must supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`);
     }
+
+    // add a warning on synth when minute is not defined in a cron schedule
+    action.schedule._bind(this);
+
     this.actions.push({
       scheduledActionName: id,
       schedule: action.schedule.expressionString,
@@ -152,7 +159,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
       endTime: action.endTime,
       scalableTargetAction: {
         maxCapacity: action.maxCapacity,
-        minCapacity: action.minCapacity
+        minCapacity: action.minCapacity,
       },
     });
   }
@@ -273,4 +280,14 @@ export enum ServiceNamespace {
    * Comprehend
    */
   COMPREHEND = 'comprehend',
+
+  /**
+   * Kafka
+   */
+  KAFKA = 'kafka',
+
+  /**
+   * ElastiCache
+   */
+  ELASTICACHE = 'elasticache',
 }

@@ -1,6 +1,11 @@
 /// !cdk-integ *
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as ec2 from '../lib';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 const app = new cdk.App();
 
@@ -8,8 +13,8 @@ interface ConstructThatTakesAVpcProps {
   vpc: ec2.IVpc;
 }
 
-class ConstructThatTakesAVpc extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, _props: ConstructThatTakesAVpcProps) {
+class ConstructThatTakesAVpc extends Construct {
+  constructor(scope: constructs.Construct, id: string, _props: ConstructThatTakesAVpcProps) {
     super(scope, id);
 
     // new ec2.CfnInstance(this, 'Instance', {
@@ -46,7 +51,7 @@ class Stack2 extends cdk.Stack {
 
     // Pass the VPC to a construct that needs it
     new ConstructThatTakesAVpc(this, 'Construct', {
-      vpc: props.vpc
+      vpc: props.vpc,
     });
   }
 }

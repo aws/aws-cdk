@@ -15,11 +15,12 @@ class TestStack extends cdk.Stack {
       vpc,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.NANO),
       machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      detailedMonitoring: true,
     });
 
     instance.addToRolePolicy(new PolicyStatement({
       actions: ['ssm:*'],
-      resources: ['*']
+      resources: ['*'],
     }));
 
     instance.connections.allowFromAnyIpv4(ec2.Port.icmpPing());

@@ -1,16 +1,20 @@
 import * as aws from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
 import { AmiContextProviderPlugin } from '../../lib/context-providers/ami';
-import { MockSDK } from '../util/mock-sdk';
+import { MockSdkProvider } from '../util/mock-sdk';
 
-AWS.setSDKInstance(aws);
+// If the 'aws-sdk' package imported here and the 'aws-sdk' package imported by 'aws-sdk-mock' aren't
+// the same physical package on disk (if version mismatches cause hoisting/deduping to not happen),
+// the type check here takes too long and makes the TypeScript compiler fail.
+// Suppress the type check using 'as any' to make this more robust.
+AWS.setSDKInstance(aws as any);
 
 afterEach(done => {
   AWS.restore();
   done();
 });
 
-const mockSDK = new MockSDK();
+const mockSDK = new MockSdkProvider();
 
 type AwsCallback<T> = (err: Error | null, val: T) => void;
 
@@ -28,8 +32,8 @@ test('calls DescribeImages on the request', async () => {
     region: 'asdf',
     owners: ['some-owner'],
     filters: {
-      'some-filter': ['filtered']
-    }
+      'some-filter': ['filtered'],
+    },
   });
 
   // THEN
@@ -39,8 +43,8 @@ test('calls DescribeImages on the request', async () => {
       {
         Name: 'some-filter',
         Values: ['filtered'],
-      }
-    ]
+      },
+    ],
   } as aws.EC2.DescribeImagesRequest);
 });
 
@@ -51,13 +55,13 @@ test('returns the most recent AMI matching the criteria', async () => {
       Images: [
         {
           ImageId: 'ami-1234',
-          CreationDate: "2016-06-22T08:39:59.000Z",
+          CreationDate: '2016-06-22T08:39:59.000Z',
         },
         {
           ImageId: 'ami-5678',
-          CreationDate: "2019-06-22T08:39:59.000Z",
-        }
-      ]
+          CreationDate: '2019-06-22T08:39:59.000Z',
+        },
+      ],
     });
   });
 
@@ -65,7 +69,7 @@ test('returns the most recent AMI matching the criteria', async () => {
   const result = await new AmiContextProviderPlugin(mockSDK).getValue({
     account: '1234',
     region: 'asdf',
-    filters: {}
+    filters: {},
   });
 
   // THEN

@@ -1,8 +1,11 @@
-import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
-import { LogDriver, LogDriverConfig } from "./log-driver";
+import { LogDriver, LogDriverConfig } from './log-driver';
 import { joinWithCommas, stringifyOptions } from './utils';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Specifies the json-file log driver configuration options.
@@ -49,14 +52,14 @@ export class JsonFileLogDriver extends LogDriver {
 
     // Validation
     if (props.maxFile && props.maxFile < 0) {
-        throw new Error('`maxFile` must be a positive integer.');
+      throw new Error('`maxFile` must be a positive integer.');
     }
   }
 
   /**
    * Called when the log driver is configured on a container
    */
-  public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
+  public bind(_scope: CoreConstruct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     return {
       logDriver: 'json-file',
       options: stringifyOptions({
@@ -65,7 +68,7 @@ export class JsonFileLogDriver extends LogDriver {
         'compress': this.props.compress,
         'labels': joinWithCommas(this.props.labels),
         'env': joinWithCommas(this.props.env),
-        'env-regex': this.props.envRegex
+        'env-regex': this.props.envRegex,
       }),
     };
   }

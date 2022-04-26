@@ -1,4 +1,4 @@
-import { Intrinsic } from "./private/intrinsic";
+import { Intrinsic } from './private/intrinsic';
 
 const REFERENCE_SYMBOL = Symbol.for('@aws-cdk/core.Reference');
 
@@ -26,4 +26,4 @@ export abstract class Reference extends Intrinsic {
   }
 }
 
-import { IConstruct } from './construct';
+import { IConstruct } from './construct-compat';

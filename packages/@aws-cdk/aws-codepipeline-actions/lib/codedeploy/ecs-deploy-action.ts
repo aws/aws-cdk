@@ -1,8 +1,12 @@
 import * as codedeploy from '@aws-cdk/aws-codedeploy';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+import { Lazy } from '@aws-cdk/core';
 import { Action } from '../action';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Configuration for replacing a placeholder string in the ECS task
@@ -136,13 +140,13 @@ export class CodeDeployEcsDeployAction extends Action {
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     // permissions, based on:
     // https://docs.aws.amazon.com/codedeploy/latest/userguide/auth-and-access-control-permissions-reference.html
 
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: [this.actionProps.deploymentGroup.application.applicationArn],
-      actions: ['codedeploy:GetApplication', 'codedeploy:GetApplicationRevision', 'codedeploy:RegisterApplicationRevision']
+      actions: ['codedeploy:GetApplication', 'codedeploy:GetApplicationRevision', 'codedeploy:RegisterApplicationRevision'],
     }));
 
     options.role.addToPolicy(new iam.PolicyStatement({
@@ -152,13 +156,13 @@ export class CodeDeployEcsDeployAction extends Action {
 
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: [this.actionProps.deploymentGroup.deploymentConfig.deploymentConfigArn],
-      actions: ['codedeploy:GetDeploymentConfig']
+      actions: ['codedeploy:GetDeploymentConfig'],
     }));
 
     // Allow action to register the task definition template file with ECS
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: ['*'],
-      actions: ['ecs:RegisterTaskDefinition']
+      actions: ['ecs:RegisterTaskDefinition'],
     }));
 
     // Allow passing any roles specified in the task definition template file to ECS
@@ -170,24 +174,26 @@ export class CodeDeployEcsDeployAction extends Action {
           'iam:PassedToService': [
             'ecs-tasks.amazonaws.com',
           ],
-        }
-      }
+        },
+      },
     }));
 
     // the Action's Role needs to read from the Bucket to get artifacts
     options.bucket.grantRead(options.role);
 
+    const taskDefinitionTemplateArtifact = determineTaskDefinitionArtifact(this.actionProps);
+    const appSpecTemplateArtifact = determineAppSpecArtifact(this.actionProps);
     const actionConfig: codepipeline.ActionConfig = {
       configuration: {
         ApplicationName: this.actionProps.deploymentGroup.application.applicationName,
         DeploymentGroupName: this.actionProps.deploymentGroup.deploymentGroupName,
 
-        TaskDefinitionTemplateArtifact: determineTaskDefinitionArtifact(this.actionProps).artifactName,
+        TaskDefinitionTemplateArtifact: Lazy.string({ produce: () => taskDefinitionTemplateArtifact.artifactName }),
         TaskDefinitionTemplatePath: this.actionProps.taskDefinitionTemplateFile
           ? this.actionProps.taskDefinitionTemplateFile.fileName
           : 'taskdef.json',
 
-        AppSpecTemplateArtifact: determineAppSpecArtifact(this.actionProps).artifactName,
+        AppSpecTemplateArtifact: Lazy.string({ produce: () => appSpecTemplateArtifact.artifactName }),
         AppSpecTemplatePath: this.actionProps.appSpecTemplateFile
           ? this.actionProps.appSpecTemplateFile.fileName
           : 'appspec.yaml',
@@ -197,7 +203,7 @@ export class CodeDeployEcsDeployAction extends Action {
     if (this.actionProps.containerImageInputs) {
       for (let i = 1; i <= this.actionProps.containerImageInputs.length; i++) {
         const imageInput = this.actionProps.containerImageInputs[i - 1];
-        actionConfig.configuration[`Image${i}ArtifactName`] = imageInput.input.artifactName;
+        actionConfig.configuration[`Image${i}ArtifactName`] = Lazy.string({ produce: () => imageInput.input.artifactName });
         actionConfig.configuration[`Image${i}ContainerName`] = imageInput.taskDefinitionPlaceholder
           ? imageInput.taskDefinitionPlaceholder
           : 'IMAGE';

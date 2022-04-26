@@ -5,6 +5,15 @@ import { Duration } from '@aws-cdk/core';
  */
 export interface IMetric {
   /**
+   * Any warnings related to this metric
+   *
+   * Should be attached to the consuming construct.
+   *
+   * @default - None
+   */
+  readonly warnings?: string[];
+
+  /**
    * Inspect the details of the metric object
    */
   toMetricConfig(): MetricConfig;
@@ -12,20 +21,22 @@ export interface IMetric {
   /**
    * Turn this metric object into an alarm configuration
    *
-   * @deprecated Use `toMetricsConfig()` instead.
+   * @deprecated Use `toMetricConfig()` instead.
    */
   toAlarmConfig(): MetricAlarmConfig;
 
   /**
    * Turn this metric object into a graph configuration
    *
-   * @deprecated Use `toMetricsConfig()` instead.
+   * @deprecated Use `toMetricConfig()` instead.
    */
   toGraphConfig(): MetricGraphConfig;
 }
 
 /**
  * Metric dimension
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html
  *
  */
 export interface Dimension {
@@ -44,10 +55,29 @@ export interface Dimension {
  * Statistic to use over the aggregation period
  */
 export enum Statistic {
+  /**
+   * The count (number) of data points used for the statistical calculation.
+   */
   SAMPLE_COUNT = 'SampleCount',
+
+  /**
+   * The value of Sum / SampleCount during the specified period.
+   */
   AVERAGE = 'Average',
+  /**
+   * All values submitted for the matching metric added together.
+   * This statistic can be useful for determining the total volume of a metric.
+   */
   SUM = 'Sum',
+  /**
+   * The lowest value observed during the specified period.
+   * You can use this value to determine low volumes of activity for your application.
+   */
   MINIMUM = 'Minimum',
+  /**
+   * The highest value observed during the specified period.
+   * You can use this value to determine high volumes of activity for your application.
+   */
   MAXIMUM = 'Maximum'
 }
 
@@ -55,32 +85,139 @@ export enum Statistic {
  * Unit for metric
  */
 export enum Unit {
+  /**
+   * Seconds
+   */
   SECONDS = 'Seconds',
+
+  /**
+   * Microseconds
+   */
   MICROSECONDS = 'Microseconds',
+
+  /**
+   * Milliseconds
+   */
   MILLISECONDS = 'Milliseconds',
+
+  /**
+   * Bytes
+   */
   BYTES = 'Bytes',
+
+  /**
+   * Kilobytes
+   */
   KILOBYTES = 'Kilobytes',
+
+  /**
+   * Megabytes
+   */
   MEGABYTES = 'Megabytes',
+
+  /**
+   * Gigabytes
+   */
   GIGABYTES = 'Gigabytes',
+
+  /**
+   * Terabytes
+   */
   TERABYTES = 'Terabytes',
+
+  /**
+   * Bits
+   */
   BITS = 'Bits',
+
+  /**
+   * Kilobits
+   */
   KILOBITS = 'Kilobits',
+
+  /**
+   * Megabits
+   */
   MEGABITS = 'Megabits',
+
+  /**
+   * Gigabits
+   */
   GIGABITS = 'Gigabits',
+
+  /**
+   * Terabits
+   */
   TERABITS = 'Terabits',
+
+  /**
+   * Percent
+   */
   PERCENT = 'Percent',
+
+  /**
+   * Count
+   */
   COUNT = 'Count',
+
+  /**
+   * Bytes/second (B/s)
+   */
   BYTES_PER_SECOND = 'Bytes/Second',
+
+  /**
+   * Kilobytes/second (kB/s)
+   */
   KILOBYTES_PER_SECOND = 'Kilobytes/Second',
+
+  /**
+   * Megabytes/second (MB/s)
+   */
   MEGABYTES_PER_SECOND = 'Megabytes/Second',
+
+  /**
+   * Gigabytes/second (GB/s)
+   */
   GIGABYTES_PER_SECOND = 'Gigabytes/Second',
+
+  /**
+   * Terabytes/second (TB/s)
+   */
   TERABYTES_PER_SECOND = 'Terabytes/Second',
+
+  /**
+   * Bits/second (b/s)
+   */
   BITS_PER_SECOND = 'Bits/Second',
+
+  /**
+   * Kilobits/second (kb/s)
+   */
   KILOBITS_PER_SECOND = 'Kilobits/Second',
+
+  /**
+   * Megabits/second (Mb/s)
+   */
   MEGABITS_PER_SECOND = 'Megabits/Second',
+
+  /**
+   * Gigabits/second (Gb/s)
+   */
   GIGABITS_PER_SECOND = 'Gigabits/Second',
+
+  /**
+   * Terabits/second (Tb/s)
+   */
   TERABITS_PER_SECOND = 'Terabits/Second',
+
+  /**
+   * Count/second
+   */
   COUNT_PER_SECOND = 'Count/Second',
+
+  /**
+   * No unit
+   */
   NONE = 'None'
 }
 
@@ -91,14 +228,14 @@ export interface MetricConfig {
   /**
    * In case the metric represents a query, the details of the query
    *
-   * @default - unset
+   * @default - None
    */
   readonly metricStat?: MetricStatConfig;
 
   /**
    * In case the metric is a math expression, the details of the math expression
    *
-   * @default - unset
+   * @default - None
    */
   readonly mathExpression?: MetricExpressionConfig;
 
@@ -108,7 +245,7 @@ export interface MetricConfig {
    * Examples are 'label' and 'color', but any key in here will be
    * added to dashboard graphs.
    *
-   * @default {}
+   * @default - None
    */
   readonly renderingProperties?: Record<string, unknown>;
 }
@@ -189,6 +326,25 @@ export interface MetricExpressionConfig {
    * Metrics used in the math expression
    */
   readonly usingMetrics: Record<string, IMetric>;
+
+  /**
+   * How many seconds to aggregate over
+   */
+  readonly period: number;
+
+  /**
+   * Account to evaluate search expressions within.
+   *
+   * @default - Deployment account.
+   */
+  readonly searchAccount?: string;
+
+  /**
+   * Region to evaluate search expressions within.
+   *
+   * @default - Deployment region.
+   */
+  readonly searchRegion?: string;
 }
 
 /**
@@ -312,7 +468,8 @@ export interface MetricRenderingProperties {
   readonly label?: string;
 
   /**
-   * Color for the graph line
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this metric is rendered on a graph.
+   * The `Color` class has a set of standard colors that can be used here.
    */
   readonly color?: string;
 

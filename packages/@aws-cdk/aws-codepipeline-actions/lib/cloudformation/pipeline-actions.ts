@@ -3,6 +3,11 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Action } from '../action';
+import { parseCapabilities, SingletonPolicy } from './private/singleton-policy';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties common to all CloudFormation actions
@@ -82,8 +87,8 @@ abstract class CloudFormationAction extends Action {
     this.props = props;
   }
 
-  protected bound(_scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  codepipeline.ActionConfig {
     const singletonPolicy = SingletonPolicy.forRole(options.role);
 
     if ((this.actionProperties.outputs || []).length > 0) {
@@ -123,8 +128,8 @@ export class CloudFormationExecuteChangeSetAction extends CloudFormationAction {
     this.props2 = props;
   }
 
-  protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  codepipeline.ActionConfig {
     SingletonPolicy.forRole(options.role).grantExecuteChangeSet(this.props2);
 
     const actionConfig = super.bound(scope, stage, options);
@@ -139,7 +144,6 @@ export class CloudFormationExecuteChangeSetAction extends CloudFormationAction {
   }
 }
 
-// tslint:disable:max-line-length Because of long URLs in documentation
 /**
  * Properties common to CloudFormation actions that stage deployments
  */
@@ -165,8 +169,24 @@ interface CloudFormationDeployActionProps extends CloudFormationActionProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
    * @default None, unless `adminPermissions` is true
+   * @deprecated use {@link cfnCapabilities} instead
    */
   readonly capabilities?: cloudformation.CloudFormationCapabilities[];
+
+  /**
+   * Acknowledge certain changes made as part of deployment.
+   *
+   * For stacks that contain certain resources,
+   * explicit acknowledgement is required that AWS CloudFormation might create or update those resources.
+   * For example, you must specify `ANONYMOUS_IAM` or `NAMED_IAM` if your stack template contains AWS
+   * Identity and Access Management (IAM) resources.
+   * For more information, see the link below.
+   *
+   * @default None, unless `adminPermissions` is true
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
+   */
+  readonly cfnCapabilities?: cdk.CfnCapabilities[];
 
   /**
    * Whether to grant full permissions to CloudFormation while deploying this template.
@@ -235,7 +255,6 @@ interface CloudFormationDeployActionProps extends CloudFormationActionProps {
    */
   readonly extraInputs?: codepipeline.Artifact[];
 }
-// tslint:enable:max-line-length
 
 /**
  * Base class for all CloudFormation actions that execute or stage deployments.
@@ -261,8 +280,8 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
     return this.getDeploymentRole('property role()');
   }
 
-  protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  codepipeline.ActionConfig {
     if (this.props2.deploymentRole) {
       this._deploymentRole = this.props2.deploymentRole;
     } else {
@@ -272,13 +291,13 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
         // pass role is not allowed for cross-account access - so,
         // create the deployment Role in the other account!
         this._deploymentRole = new iam.Role(roleStack,
-            `${stage.pipeline.node.uniqueId}-${stage.stageName}-${this.actionProperties.actionName}-DeploymentRole`, {
-          assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
-          roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
-        });
+          `${cdk.Names.nodeUniqueId(stage.pipeline.node)}-${stage.stageName}-${this.actionProperties.actionName}-DeploymentRole`, {
+            assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
+            roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+          });
       } else {
         this._deploymentRole = new iam.Role(scope, 'Role', {
-          assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com')
+          assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
         });
       }
 
@@ -299,9 +318,18 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
 
     SingletonPolicy.forRole(options.role).grantPassRole(this._deploymentRole);
 
-    const capabilities = this.props2.adminPermissions && this.props2.capabilities === undefined
-      ? [cloudformation.CloudFormationCapabilities.NAMED_IAM]
-      : this.props2.capabilities;
+    const providedCapabilities = this.props2.cfnCapabilities ??
+      this.props2.capabilities?.map(c => {
+        switch (c) {
+          case cloudformation.CloudFormationCapabilities.NONE: return cdk.CfnCapabilities.NONE;
+          case cloudformation.CloudFormationCapabilities.ANONYMOUS_IAM: return cdk.CfnCapabilities.ANONYMOUS_IAM;
+          case cloudformation.CloudFormationCapabilities.NAMED_IAM: return cdk.CfnCapabilities.NAMED_IAM;
+          case cloudformation.CloudFormationCapabilities.AUTO_EXPAND: return cdk.CfnCapabilities.AUTO_EXPAND;
+        }
+      });
+    const capabilities = this.props2.adminPermissions && providedCapabilities === undefined
+      ? [cdk.CfnCapabilities.NAMED_IAM]
+      : providedCapabilities;
 
     const actionConfig = super.bound(scope, stage, options);
     return {
@@ -361,8 +389,8 @@ export class CloudFormationCreateReplaceChangeSetAction extends CloudFormationDe
     this.props3 = props;
   }
 
-  protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  codepipeline.ActionConfig {
     // the super call order is to preserve the existing order of statements in policies
     const actionConfig = super.bound(scope, stage, options);
 
@@ -430,8 +458,8 @@ export class CloudFormationCreateUpdateStackAction extends CloudFormationDeployA
     this.props3 = props;
   }
 
-  protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  codepipeline.ActionConfig {
     // the super call order is to preserve the existing order of statements in policies
     const actionConfig = super.bound(scope, stage, options);
 
@@ -451,7 +479,6 @@ export class CloudFormationCreateUpdateStackAction extends CloudFormationDeployA
 /**
  * Properties for the CloudFormationDeleteStackAction.
  */
-// tslint:disable-next-line:no-empty-interface
 export interface CloudFormationDeleteStackActionProps extends CloudFormationDeployActionProps {
 }
 
@@ -470,8 +497,8 @@ export class CloudFormationDeleteStackAction extends CloudFormationDeployAction 
     this.props3 = props;
   }
 
-  protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  codepipeline.ActionConfig {
     // the super call order is to preserve the existing order of statements in policies
     const actionConfig = super.bound(scope, stage, options);
 
@@ -485,149 +512,4 @@ export class CloudFormationDeleteStackAction extends CloudFormationDeployAction 
       },
     };
   }
-}
-
-/**
- * Manages a bunch of singleton-y statements on the policy of an IAM Role.
- * Dedicated methods can be used to add specific permissions to the role policy
- * using as few statements as possible (adding resources to existing compatible
- * statements instead of adding new statements whenever possible).
- *
- * Statements created outside of this class are not considered when adding new
- * permissions.
- */
-class SingletonPolicy extends cdk.Construct implements iam.IGrantable {
-  /**
-   * Obtain a SingletonPolicy for a given role.
-   * @param role the Role this policy is bound to.
-   * @returns the SingletonPolicy for this role.
-   */
-  public static forRole(role: iam.IRole): SingletonPolicy {
-    const found = role.node.tryFindChild(SingletonPolicy.UUID);
-    return (found as SingletonPolicy) || new SingletonPolicy(role);
-  }
-
-  private static readonly UUID = '8389e75f-0810-4838-bf64-d6f85a95cf83';
-
-  public readonly grantPrincipal: iam.IPrincipal;
-
-  private statements: { [key: string]: iam.PolicyStatement } = {};
-
-  private constructor(private readonly role: iam.IRole) {
-    super(role as unknown as cdk.Construct, SingletonPolicy.UUID);
-    this.grantPrincipal = role;
-  }
-
-  public grantExecuteChangeSet(props: { stackName: string, changeSetName: string, region?: string }): void {
-    this.statementFor({
-      actions: [
-        'cloudformation:DescribeStacks',
-        'cloudformation:DescribeChangeSet',
-        'cloudformation:ExecuteChangeSet',
-      ],
-      conditions: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': props.changeSetName } },
-    }).addResources(this.stackArnFromProps(props));
-  }
-
-  public grantCreateReplaceChangeSet(props: { stackName: string, changeSetName: string, region?: string }): void {
-    this.statementFor({
-      actions: [
-        'cloudformation:CreateChangeSet',
-        'cloudformation:DeleteChangeSet',
-        'cloudformation:DescribeChangeSet',
-        'cloudformation:DescribeStacks',
-      ],
-      conditions: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': props.changeSetName } },
-    }).addResources(this.stackArnFromProps(props));
-  }
-
-  public grantCreateUpdateStack(props: { stackName: string, replaceOnFailure?: boolean, region?: string }): void {
-    const actions = [
-      'cloudformation:DescribeStack*',
-      'cloudformation:CreateStack',
-      'cloudformation:UpdateStack',
-      'cloudformation:GetTemplate*',
-      'cloudformation:ValidateTemplate',
-      'cloudformation:GetStackPolicy',
-      'cloudformation:SetStackPolicy',
-    ];
-    if (props.replaceOnFailure) {
-      actions.push('cloudformation:DeleteStack');
-    }
-    this.statementFor({ actions }).addResources(this.stackArnFromProps(props));
-  }
-
-  public grantDeleteStack(props: { stackName: string, region?: string }): void {
-    this.statementFor({
-      actions: [
-        'cloudformation:DescribeStack*',
-        'cloudformation:DeleteStack',
-      ]
-    }).addResources(this.stackArnFromProps(props));
-  }
-
-  public grantPassRole(role: iam.IRole): void {
-    this.statementFor({ actions: ['iam:PassRole'] }).addResources(role.roleArn);
-  }
-
-  private statementFor(template: StatementTemplate): iam.PolicyStatement {
-    const key = keyFor(template);
-    if (!(key in this.statements)) {
-      this.statements[key] = new iam.PolicyStatement({ actions: template.actions });
-      if (template.conditions) {
-        this.statements[key].addConditions(template.conditions);
-      }
-      this.role.addToPolicy(this.statements[key]);
-    }
-    return this.statements[key];
-
-    function keyFor(props: StatementTemplate): string {
-      const actions = `${props.actions.sort().join('\x1F')}`;
-      const conditions = formatConditions(props.conditions);
-      return `${actions}\x1D${conditions}`;
-
-      function formatConditions(cond?: StatementCondition): string {
-        if (cond == null) { return ''; }
-        let result = '';
-        for (const op of Object.keys(cond).sort()) {
-          result += `${op}\x1E`;
-          const condition = cond[op];
-          for (const attribute of Object.keys(condition).sort()) {
-            const value = condition[attribute];
-            result += `${value}\x1F`;
-          }
-        }
-        return result;
-      }
-    }
-  }
-
-  private stackArnFromProps(props: { stackName: string, region?: string }): string {
-    return cdk.Stack.of(this).formatArn({
-      region: props.region,
-      service: 'cloudformation',
-      resource: 'stack',
-      resourceName: `${props.stackName}/*`
-    });
-  }
-}
-
-interface StatementTemplate {
-  actions: string[];
-  conditions?: StatementCondition;
-}
-
-type StatementCondition = { [op: string]: { [attribute: string]: string } };
-
-function parseCapabilities(capabilities: cloudformation.CloudFormationCapabilities[] | undefined): string | undefined {
-  if (capabilities === undefined) {
-    return undefined;
-  } else if (capabilities.length === 1) {
-    const capability = capabilities.toString();
-    return (capability === '') ? undefined : capability;
-  } else if (capabilities.length > 1) {
-    return capabilities.join(',');
-  }
-
-  return undefined;
 }

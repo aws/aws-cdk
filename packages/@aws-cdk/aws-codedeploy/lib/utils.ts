@@ -1,5 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Aws } from '@aws-cdk/core';
+import { Aws, Token } from '@aws-cdk/core';
 import { CfnDeploymentGroup } from './codedeploy.generated';
 import { AutoRollbackConfig } from './rollback-config';
 
@@ -16,7 +16,7 @@ export function arnForDeploymentConfig(name: string): string {
 }
 
 export function renderAlarmConfiguration(alarms: cloudwatch.IAlarm[], ignorePollAlarmFailure?: boolean):
-      CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
+CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
   return alarms.length === 0
     ? undefined
     : {
@@ -33,7 +33,7 @@ enum AutoRollbackEvent {
 }
 
 export function renderAutoRollbackConfiguration(alarms: cloudwatch.IAlarm[], autoRollbackConfig: AutoRollbackConfig = {}):
-    CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
+CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
   const events = new Array<string>();
 
   // we roll back failed deployments by default
@@ -54,7 +54,7 @@ export function renderAutoRollbackConfiguration(alarms: cloudwatch.IAlarm[], aut
     } else if (autoRollbackConfig.deploymentInAlarm === true) {
       throw new Error(
         "The auto-rollback setting 'deploymentInAlarm' does not have any effect unless you associate " +
-        "at least one CloudWatch alarm with the Deployment Group");
+        'at least one CloudWatch alarm with the Deployment Group');
     }
   }
 
@@ -64,4 +64,19 @@ export function renderAutoRollbackConfiguration(alarms: cloudwatch.IAlarm[], aut
       events,
     }
     : undefined;
+}
+
+export function validateName(type: 'Application' | 'Deployment group' | 'Deployment config', name: string): string[] {
+  const ret = [];
+
+  if (!Token.isUnresolved(name) && name !== undefined) {
+    if (name.length > 100) {
+      ret.push(`${type} name: "${name}" can be a max of 100 characters.`);
+    }
+    if (!/^[a-z0-9._+=,@-]+$/i.test(name)) {
+      ret.push(`${type} name: "${name}" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).`);
+    }
+  }
+
+  return ret;
 }

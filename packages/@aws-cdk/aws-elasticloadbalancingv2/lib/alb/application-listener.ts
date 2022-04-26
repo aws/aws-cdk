@@ -1,14 +1,19 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, Duration, IResource, Lazy, Resource } from '@aws-cdk/core';
-import { BaseListener } from '../shared/base-listener';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Duration, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
+import { BaseListener, BaseListenerLookupOptions } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { ApplicationProtocol, SslPolicy } from '../shared/enums';
+import { ApplicationProtocol, ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, IpAddressType, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
+import { ListenerAction } from './application-listener-action';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
 import { ApplicationListenerRule, FixedResponse, RedirectResponse, validateFixedResponse, validateRedirectResponse } from './application-listener-rule';
 import { IApplicationLoadBalancer } from './application-load-balancer';
 import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
+import { ListenerCondition } from './conditions';
 
 /**
  * Basic properties for an ApplicationListener
@@ -37,7 +42,7 @@ export interface BaseApplicationListenerProps {
   readonly certificateArns?: string[];
 
   /**
-   * Certificate list of ACM cert ARNs
+   * Certificate list of ACM cert ARNs. You must provide exactly one certificate if the listener protocol is HTTPS or TLS.
    *
    * @default - No certificates.
    */
@@ -53,20 +58,40 @@ export interface BaseApplicationListenerProps {
   /**
    * Default target groups to load balance to
    *
+   * All target groups will be load balanced to with equal weight and without
+   * stickiness. For a more complex configuration than that, use
+   * either `defaultAction` or `addAction()`.
+   *
+   * Cannot be specified together with `defaultAction`.
+   *
    * @default - None.
    */
   readonly defaultTargetGroups?: IApplicationTargetGroup[];
 
   /**
-   * Allow anyone to connect to this listener
+   * Default action to take for requests to this listener
    *
-   * If this is specified, the listener will be opened up to anyone who can reach it.
+   * This allows full control of the default action of the load balancer,
+   * including Action chaining, fixed responses and redirect responses.
+   *
+   * See the `ListenerAction` class for all options.
+   *
+   * Cannot be specified together with `defaultTargetGroups`.
+   *
+   * @default - None.
+   */
+  readonly defaultAction?: ListenerAction;
+
+  /**
+   * Allow anyone to connect to the load balancer on the listener port
+   *
+   * If this is specified, the load balancer will be opened up to anyone who can reach it.
    * For internal load balancers this is anyone in the same VPC. For public load
    * balancers, this is anyone on the internet.
    *
    * If you want to be more selective about who can access this load
    * balancer, set this to `false` and use the listener's `connections`
-   * object to selectively grant access to the listener.
+   * object to selectively grant access to the load balancer on the listener port.
    *
    * @default true
    */
@@ -84,11 +109,52 @@ export interface ApplicationListenerProps extends BaseApplicationListenerProps {
 }
 
 /**
+ * Options for ApplicationListener lookup
+ */
+export interface ApplicationListenerLookupOptions extends BaseListenerLookupOptions {
+  /**
+   * ARN of the listener to look up
+   * @default - does not filter by listener arn
+   */
+  readonly listenerArn?: string;
+
+  /**
+   * Filter listeners by listener protocol
+   * @default - does not filter by listener protocol
+   */
+  readonly listenerProtocol?: ApplicationProtocol;
+}
+
+/**
  * Define an ApplicationListener
  *
  * @resource AWS::ElasticLoadBalancingV2::Listener
  */
 export class ApplicationListener extends BaseListener implements IApplicationListener {
+  /**
+   * Look up an ApplicationListener.
+   */
+  public static fromLookup(scope: Construct, id: string, options: ApplicationListenerLookupOptions): IApplicationListener {
+    if (Token.isUnresolved(options.listenerArn)) {
+      throw new Error('All arguments to look up a load balancer listener must be concrete (no Tokens)');
+    }
+
+    let listenerProtocol: cxschema.LoadBalancerListenerProtocol | undefined;
+    switch (options.listenerProtocol) {
+      case ApplicationProtocol.HTTP: listenerProtocol = cxschema.LoadBalancerListenerProtocol.HTTP; break;
+      case ApplicationProtocol.HTTPS: listenerProtocol = cxschema.LoadBalancerListenerProtocol.HTTPS; break;
+    }
+
+    const props = BaseListener._queryContextProvider(scope, {
+      userOptions: options,
+      loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
+      listenerArn: options.listenerArn,
+      listenerProtocol,
+    });
+
+    return new LookedUpApplicationListener(scope, id, props);
+  }
+
   /**
    * Import an existing listener
    */
@@ -119,12 +185,12 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   constructor(scope: Construct, id: string, props: ApplicationListenerProps) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
     if (protocol === undefined || port === undefined) {
-      throw new Error(`At least one of 'port' or 'protocol' is required`);
+      throw new Error('At least one of \'port\' or \'protocol\' is required');
     }
 
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
-      certificates: Lazy.anyValue({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
+      certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
       protocol,
       port,
       sslPolicy: props.sslPolicy,
@@ -136,10 +202,10 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     // Attach certificates
     if (props.certificateArns && props.certificateArns.length > 0) {
-      this.addCertificateArns("ListenerCertificate", props.certificateArns);
+      this.addCertificateArns('ListenerCertificate', props.certificateArns);
     }
     if (props.certificates && props.certificates.length > 0) {
-      this.addCertificates("DefaultCertificates", props.certificates);
+      this.addCertificates('DefaultCertificates', props.certificates);
     }
 
     // This listener edits the securitygroup of the load balancer,
@@ -149,10 +215,23 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       defaultPort: ec2.Port.tcp(port),
     });
 
-    (props.defaultTargetGroups || []).forEach(this.addDefaultTargetGroup.bind(this));
+    if (props.defaultAction && props.defaultTargetGroups) {
+      throw new Error('Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'');
+    }
+
+    if (props.defaultAction) {
+      this.setDefaultAction(props.defaultAction);
+    }
+
+    if (props.defaultTargetGroups) {
+      this.setDefaultAction(ListenerAction.forward(props.defaultTargetGroups));
+    }
 
     if (props.open !== false) {
       this.connections.allowDefaultPortFrom(ec2.Peer.anyIpv4(), `Allow from anyone on port ${port}`);
+      if (this.loadBalancer.ipAddressType === IpAddressType.DUAL_STACK) {
+        this.connections.allowDefaultPortFrom(ec2.Peer.anyIpv6(), `Allow from anyone on port ${port}`);
+      }
     }
   }
 
@@ -184,19 +263,54 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       this.certificateArns.push(first.certificateArn);
     }
 
-    if (additionalCerts.length > 0) {
-      new ApplicationListenerCertificate(this, id, {
+    // Only one certificate can be specified per resource, even though
+    // `certificates` is of type Array
+    for (let i = 0; i < additionalCerts.length; i++) {
+      new ApplicationListenerCertificate(this, `${id}${i + 1}`, {
         listener: this,
-        certificates: additionalCerts
+        certificates: [additionalCerts[i]],
       });
+    }
+  }
+
+  /**
+   * Perform the given default action on incoming requests
+   *
+   * This allows full control of the default action of the load balancer,
+   * including Action chaining, fixed responses and redirect responses. See
+   * the `ListenerAction` class for all options.
+   *
+   * It's possible to add routing conditions to the Action added in this way.
+   * At least one Action must be added without conditions (which becomes the
+   * default Action).
+   */
+  public addAction(id: string, props: AddApplicationActionProps): void {
+    checkAddRuleProps(props);
+
+    if (props.priority !== undefined) {
+      // New rule
+      //
+      // TargetGroup.registerListener is called inside ApplicationListenerRule.
+      new ApplicationListenerRule(this, id + 'Rule', {
+        listener: this,
+        priority: props.priority,
+        ...props,
+      });
+    } else {
+      // New default target with these targetgroups
+      this.setDefaultAction(props.action);
     }
   }
 
   /**
    * Load balance incoming requests to the given target groups.
    *
-   * It's possible to add conditions to the TargetGroups added in this way.
-   * At least one TargetGroup must be added without conditions.
+   * All target groups will be load balanced to with equal weight and without
+   * stickiness. For a more complex configuration than that, use `addAction()`.
+   *
+   * It's possible to add routing conditions to the TargetGroups added in this
+   * way. At least one TargetGroup must be added without conditions (which will
+   * become the default Action for this listener).
    */
   public addTargetGroups(id: string, props: AddApplicationTargetGroupsProps): void {
     checkAddRuleProps(props);
@@ -207,17 +321,12 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       // TargetGroup.registerListener is called inside ApplicationListenerRule.
       new ApplicationListenerRule(this, id + 'Rule', {
         listener: this,
-        hostHeader: props.hostHeader,
-        pathPattern: props.pathPattern,
-        pathPatterns: props.pathPatterns,
         priority: props.priority,
-        targetGroups: props.targetGroups
+        ...props,
       });
     } else {
-      // New default target(s)
-      for (const targetGroup of props.targetGroups) {
-        this.addDefaultTargetGroup(targetGroup);
-      }
+      // New default target with these targetgroups
+      this.setDefaultAction(ListenerAction.forward(props.targetGroups));
     }
   }
 
@@ -225,7 +334,10 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    * Load balance incoming requests to the given load balancing targets.
    *
    * This method implicitly creates an ApplicationTargetGroup for the targets
-   * involved.
+   * involved, and a 'forward' action to route traffic to the given TargetGroup.
+   *
+   * If you want more control over the precise setup, create the TargetGroup
+   * and use `addAction` yourself.
    *
    * It's possible to add conditions to the targets added in this way. At least
    * one set of targets must be added without conditions.
@@ -234,28 +346,18 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    */
   public addTargets(id: string, props: AddApplicationTargetsProps): ApplicationTargetGroup {
     if (!this.loadBalancer.vpc) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error('Can only call addTargets() when using a constructed Load Balancer or an imported Load Balancer with specified vpc; construct a new TargetGroup and use addTargetGroup');
     }
 
     const group = new ApplicationTargetGroup(this, id + 'Group', {
-      deregistrationDelay: props.deregistrationDelay,
-      healthCheck: props.healthCheck,
-      port: props.port,
-      protocol: props.protocol,
-      slowStart: props.slowStart,
-      stickinessCookieDuration: props.stickinessCookieDuration,
-      targetGroupName: props.targetGroupName,
-      targets: props.targets,
-      vpc: this.loadBalancer.vpc
+      vpc: this.loadBalancer.vpc,
+      ...props,
     });
 
     this.addTargetGroups(id, {
-      hostHeader: props.hostHeader,
-      pathPattern: props.pathPattern,
-      pathPatterns: props.pathPatterns,
-      priority: props.priority,
       targetGroups: [group],
+      ...props,
     });
 
     return group;
@@ -263,6 +365,8 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
   /**
    * Add a fixed response
+   *
+   * @deprecated Use `addAction()` instead
    */
   public addFixedResponse(id: string, props: AddFixedResponseProps) {
     checkAddRuleProps(props);
@@ -270,7 +374,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     const fixedResponse: FixedResponse = {
       statusCode: props.statusCode,
       contentType: props.contentType,
-      messageBody: props.messageBody
+      messageBody: props.messageBody,
     };
 
     validateFixedResponse(fixedResponse);
@@ -280,18 +384,20 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         listener: this,
         priority: props.priority,
         fixedResponse,
-        ...props
+        ...props,
       });
     } else {
-      this._addDefaultAction({
-        fixedResponseConfig: fixedResponse,
-        type: 'fixed-response'
-      });
+      this.setDefaultAction(ListenerAction.fixedResponse(Token.asNumber(props.statusCode), {
+        contentType: props.contentType,
+        messageBody: props.messageBody,
+      }));
     }
   }
 
   /**
    * Add a redirect response
+   *
+   * @deprecated Use `addAction()` instead
    */
   public addRedirectResponse(id: string, props: AddRedirectResponseProps) {
     checkAddRuleProps(props);
@@ -301,7 +407,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       port: props.port,
       protocol: props.protocol,
       query: props.query,
-      statusCode: props.statusCode
+      statusCode: props.statusCode,
     };
 
     validateRedirectResponse(redirectResponse);
@@ -311,13 +417,17 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         listener: this,
         priority: props.priority,
         redirectResponse,
-        ...props
+        ...props,
       });
     } else {
-      this._addDefaultAction({
-        redirectConfig: redirectResponse,
-        type: 'redirect'
-      });
+      this.setDefaultAction(ListenerAction.redirect({
+        host: props.host,
+        path: props.path,
+        port: props.port,
+        protocol: props.protocol,
+        query: props.query,
+        permanent: props.statusCode === 'HTTP_301',
+      }));
     }
   }
 
@@ -342,11 +452,11 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   }
 
   /**
-   * Add a default TargetGroup
+   * Wrapper for _setDefaultAction which does a type-safe bind
    */
-  private addDefaultTargetGroup(targetGroup: IApplicationTargetGroup) {
-    this._addDefaultTargetGroup(targetGroup);
-    targetGroup.registerListener(this);
+  private setDefaultAction(action: ListenerAction) {
+    action.bind(this, this);
+    this._setDefaultAction(action);
   }
 }
 
@@ -362,8 +472,14 @@ export interface IApplicationListener extends IResource, ec2.IConnectable {
 
   /**
    * Add one or more certificates to this listener.
+   * @deprecated use `addCertificates()`
    */
   addCertificateArns(id: string, arns: string[]): void;
+
+  /**
+   * Add one or more certificates to this listener.
+   */
+  addCertificates(id: string, certificates: IListenerCertificate[]): void;
 
   /**
    * Load balance incoming requests to the given target groups.
@@ -392,6 +508,21 @@ export interface IApplicationListener extends IResource, ec2.IConnectable {
    * Don't call this directly. It is called by ApplicationTargetGroup.
    */
   registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void;
+
+  /**
+   * Perform the given action on incoming requests
+   *
+   * This allows full control of the default action of the load balancer,
+   * including Action chaining, fixed responses and redirect responses. See
+   * the `ListenerAction` class for all options.
+   *
+   * It's possible to add routing conditions to the Action added in this way.
+   *
+   * It is not possible to add a default action to an imported IApplicationListener.
+   * In order to add actions to an imported IApplicationListener a `priority`
+   * must be provided.
+   */
+  addAction(id: string, props: AddApplicationActionProps): void;
 }
 
 /**
@@ -433,45 +564,45 @@ export interface ApplicationListenerAttributes {
   readonly securityGroupAllowsAllOutbound?: boolean;
 }
 
-class ImportedApplicationListener extends Resource implements IApplicationListener {
-  public readonly connections: ec2.Connections;
+abstract class ExternalApplicationListener extends Resource implements IApplicationListener {
+  /**
+   * Connections object.
+   */
+  public abstract readonly connections: ec2.Connections;
 
   /**
    * ARN of the listener
    */
-  public readonly listenerArn: string;
+  public abstract readonly listenerArn: string;
 
-  constructor(scope: Construct, id: string, props: ApplicationListenerAttributes) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
+  }
 
-    this.listenerArn = props.listenerArn;
+  /**
+   * Register that a connectable that has been added to this load balancer.
+   *
+   * Don't call this directly. It is called by ApplicationTargetGroup.
+   */
+  public registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void {
+    this.connections.allowTo(connectable, portRange, 'Load balancer to target');
+  }
 
-    const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
-
-    let securityGroup: ec2.ISecurityGroup;
-    if (props.securityGroup) {
-      securityGroup = props.securityGroup;
-    } else if (props.securityGroupId) {
-      securityGroup = ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', props.securityGroupId, {
-        allowAllOutbound: props.securityGroupAllowsAllOutbound
-      });
-    } else {
-      throw new Error('Either `securityGroup` or `securityGroupId` must be specified to import an application listener.');
-    }
-
-    this.connections = new ec2.Connections({
-      securityGroups: [securityGroup],
-      defaultPort,
-    });
+  /**
+   * Add one or more certificates to this listener.
+   * @deprecated use `addCertificates()`
+   */
+  public addCertificateArns(id: string, arns: string[]): void {
+    this.addCertificates(id, arns.map(ListenerCertificate.fromArn));
   }
 
   /**
    * Add one or more certificates to this listener.
    */
-  public addCertificateArns(id: string, arns: string[]): void {
+  public addCertificates(id: string, certificates: IListenerCertificate[]): void {
     new ApplicationListenerCertificate(this, id, {
       listener: this,
-      certificateArns: arns
+      certificates,
     });
   }
 
@@ -488,10 +619,8 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
       // New rule
       new ApplicationListenerRule(this, id, {
         listener: this,
-        hostHeader: props.hostHeader,
-        pathPattern: props.pathPattern,
         priority: props.priority,
-        targetGroups: props.targetGroups
+        ...props,
       });
     } else {
       throw new Error('Cannot add default Target Groups to imported ApplicationListener');
@@ -510,17 +639,88 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
    * @returns The newly created target group
    */
   public addTargets(_id: string, _props: AddApplicationTargetsProps): ApplicationTargetGroup {
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     throw new Error('Can only call addTargets() when using a constructed ApplicationListener; construct a new TargetGroup and use addTargetGroup.');
   }
 
   /**
-   * Register that a connectable that has been added to this load balancer.
+   * Perform the given action on incoming requests
    *
-   * Don't call this directly. It is called by ApplicationTargetGroup.
+   * This allows full control of the default action of the load balancer,
+   * including Action chaining, fixed responses and redirect responses. See
+   * the `ListenerAction` class for all options.
+   *
+   * It's possible to add routing conditions to the Action added in this way.
+   *
+   * It is not possible to add a default action to an imported IApplicationListener.
+   * In order to add actions to an imported IApplicationListener a `priority`
+   * must be provided.
    */
-  public registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void {
-    this.connections.allowTo(connectable, portRange, 'Load balancer to target');
+  public addAction(id: string, props: AddApplicationActionProps): void {
+    checkAddRuleProps(props);
+
+    if (props.priority !== undefined) {
+      // New rule
+      //
+      // TargetGroup.registerListener is called inside ApplicationListenerRule.
+      new ApplicationListenerRule(this, id + 'Rule', {
+        listener: this,
+        priority: props.priority,
+        ...props,
+      });
+    } else {
+      throw new Error('priority must be set for actions added to an imported listener');
+    }
+  }
+}
+
+/**
+ * An imported application listener.
+ */
+class ImportedApplicationListener extends ExternalApplicationListener {
+  public readonly listenerArn: string;
+  public readonly connections: ec2.Connections;
+
+  constructor(scope: Construct, id: string, props: ApplicationListenerAttributes) {
+    super(scope, id);
+
+    this.listenerArn = props.listenerArn;
+    const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
+
+    let securityGroup: ec2.ISecurityGroup;
+    if (props.securityGroup) {
+      securityGroup = props.securityGroup;
+    } else if (props.securityGroupId) {
+      securityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId, {
+        allowAllOutbound: props.securityGroupAllowsAllOutbound,
+      });
+    } else {
+      throw new Error('Either `securityGroup` or `securityGroupId` must be specified to import an application listener.');
+    }
+
+    this.connections = new ec2.Connections({
+      securityGroups: [securityGroup],
+      defaultPort,
+    });
+  }
+}
+
+class LookedUpApplicationListener extends ExternalApplicationListener {
+  public readonly listenerArn: string;
+  public readonly connections: ec2.Connections;
+
+  constructor(scope: Construct, id: string, props: cxapi.LoadBalancerListenerContextResponse) {
+    super(scope, id);
+
+    this.listenerArn = props.listenerArn;
+    this.connections = new ec2.Connections({
+      defaultPort: ec2.Port.tcp(props.listenerPort),
+    });
+
+    for (const securityGroupId of props.securityGroupIds) {
+      const securityGroup = ec2.SecurityGroup.fromLookupById(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
+      this.connections.addSecurityGroup(securityGroup);
+    }
   }
 }
 
@@ -542,6 +742,15 @@ export interface AddRuleProps {
   readonly priority?: number;
 
   /**
+   * Rule applies if matches the conditions.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html
+   *
+   * @default - No conditions.
+   */
+  readonly conditions?: ListenerCondition[];
+
+  /**
    * Rule applies if the requested host matches the indicated host
    *
    * May contain up to three '*' wildcards.
@@ -551,6 +760,7 @@ export interface AddRuleProps {
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#host-conditions
    *
    * @default No host condition
+   * @deprecated Use `conditions` instead.
    */
   readonly hostHeader?: string;
 
@@ -563,7 +773,7 @@ export interface AddRuleProps {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
    * @default No path condition
-   * @deprecated Use `pathPatterns` instead.
+   * @deprecated Use `conditions` instead.
    */
   readonly pathPattern?: string;
 
@@ -576,6 +786,7 @@ export interface AddRuleProps {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
    * @default - No path condition.
+   * @deprecated Use `conditions` instead.
    */
   readonly pathPatterns?: string[];
 }
@@ -591,6 +802,16 @@ export interface AddApplicationTargetGroupsProps extends AddRuleProps {
 }
 
 /**
+ * Properties for adding a new action to a listener
+ */
+export interface AddApplicationActionProps extends AddRuleProps {
+  /**
+   * Action to perform
+   */
+  readonly action: ListenerAction;
+}
+
+/**
  * Properties for adding new targets to a listener
  */
 export interface AddApplicationTargetsProps extends AddRuleProps {
@@ -600,6 +821,13 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * @default Determined from port if known
    */
   readonly protocol?: ApplicationProtocol;
+
+  /**
+   * The protocol version to use
+   *
+   * @default ApplicationProtocolVersion.HTTP1
+   */
+  readonly protocolVersion?: ApplicationProtocolVersion;
 
   /**
    * The port on which the listener listens for requests.
@@ -629,6 +857,20 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * @default Stickiness disabled
    */
   readonly stickinessCookieDuration?: Duration;
+
+  /**
+   * The name of an application-based stickiness cookie.
+   *
+   * Names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP,
+   * and AWSALBTG; they're reserved for use by the load balancer.
+   *
+   * Note: `stickinessCookieName` parameter depends on the presence of `stickinessCookieDuration` parameter.
+   * If `stickinessCookieDuration` is not set, `stickinessCookieName` will be omitted.
+   *
+   * @default - If `stickinessCookieDuration` is set, a load-balancer generated cookie is used. Otherwise, no stickiness is defined.
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html
+   */
+  readonly stickinessCookieName?: string;
 
   /**
    * The targets to add to this target group.
@@ -661,25 +903,42 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
   /**
    * Health check configuration
    *
-   * @default No health check
+   * @default - The default value for each property in this configuration varies depending on the target.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-targetgroup.html#aws-resource-elasticloadbalancingv2-targetgroup-properties
    */
   readonly healthCheck?: HealthCheck;
+
+  /**
+   * The load balancing algorithm to select targets for routing requests.
+   *
+   * @default round_robin.
+   */
+  readonly loadBalancingAlgorithmType?: TargetGroupLoadBalancingAlgorithmType;
+
 }
 
 /**
  * Properties for adding a fixed response to a listener
+ *
+ * @deprecated Use `ApplicationListener.addAction` instead.
  */
 export interface AddFixedResponseProps extends AddRuleProps, FixedResponse {
 }
 
 /**
  * Properties for adding a redirect response to a listener
+ *
+ * @deprecated Use `ApplicationListener.addAction` instead.
  */
 export interface AddRedirectResponseProps extends AddRuleProps, RedirectResponse {
 }
 
 function checkAddRuleProps(props: AddRuleProps) {
-  if ((props.hostHeader !== undefined || props.pathPattern !== undefined || props.pathPatterns !== undefined) !== (props.priority !== undefined)) {
-    throw new Error(`Setting 'pathPattern' or 'hostHeader' also requires 'priority', and vice versa`);
+  const conditionsCount = props.conditions?.length || 0;
+  const hasAnyConditions = conditionsCount !== 0 ||
+    props.hostHeader !== undefined || props.pathPattern !== undefined || props.pathPatterns !== undefined;
+  const hasPriority = props.priority !== undefined;
+  if (hasAnyConditions !== hasPriority) {
+    throw new Error('Setting \'conditions\', \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa');
   }
 }

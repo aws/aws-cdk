@@ -1,5 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
-import { App, CfnOutput, Construct, Stack, StackProps } from '@aws-cdk/core';
+import { App, CfnOutput, Stack, StackProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as destinations from '../lib';
 
 // Test success case with:
@@ -19,7 +20,7 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     const lambdaProps: lambda.FunctionProps = {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = async (event) => {
         console.log('Event: %j', event);
@@ -36,7 +37,7 @@ class TestStack extends Stack {
     first.configureAsyncInvoke({
       onSuccess: new destinations.LambdaDestination(second, { responseOnly: true }),
       onFailure: new destinations.LambdaDestination(error, { responseOnly: true }),
-      retryAttempts: 0
+      retryAttempts: 0,
     });
 
     second.configureAsyncInvoke({

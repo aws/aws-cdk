@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
+import { Lazy, Duration } from '@aws-cdk/core';
 import { Method } from './method';
-import { VpcLink } from './vpc-link';
+import { IVpcLink, VpcLink } from './vpc-link';
 
 export interface IntegrationOptions {
   /**
@@ -80,6 +81,14 @@ export interface IntegrationOptions {
   readonly requestTemplates?: { [contentType: string]: string };
 
   /**
+   * The maximum amount of time an integration will run before it returns without a response.
+   * Must be between 50 milliseconds and 29 seconds.
+   *
+   * @default Duration.seconds(29)
+   */
+  readonly timeout?: Duration;
+
+  /**
    * The response that API Gateway provides after a method's backend completes
    * processing a request. API Gateway intercepts the response from the
    * backend so that you can control how API Gateway surfaces backend
@@ -90,7 +99,7 @@ export interface IntegrationOptions {
 
   /**
    * The type of network connection to the integration endpoint.
-   * @default ConnectionType.Internet
+   * @default - ConnectionType.VPC_LINK if `vpcLink` property is configured; ConnectionType.Internet otherwise.
    */
   readonly connectionType?: ConnectionType;
 
@@ -98,7 +107,7 @@ export interface IntegrationOptions {
    * The VpcLink used for the integration.
    * Required if connectionType is VPC_LINK
    */
-  readonly vpcLink?: VpcLink;
+  readonly vpcLink?: IVpcLink;
 }
 
 export interface IntegrationProps {
@@ -113,9 +122,9 @@ export interface IntegrationProps {
    * - If you specify HTTP for the `type` property, specify the API endpoint URL.
    * - If you specify MOCK for the `type` property, don't specify this property.
    * - If you specify AWS for the `type` property, specify an AWS service that
-   *   follows this form: `arn:aws:apigateway:region:subdomain.service|service:path|action/service_api.`
+   *   follows this form: `arn:partition:apigateway:region:subdomain.service|service:path|action/service_api.`
    *   For example, a Lambda function URI follows this form:
-   *   arn:aws:apigateway:region:lambda:path/path. The path is usually in the
+   *   arn:partition:apigateway:region:lambda:path/path. The path is usually in the
    *   form /2015-03-31/functions/LambdaFunctionARN/invocations.
    *
    * @see https://docs.aws.amazon.com/apigateway/api-reference/resource/integration/#uri
@@ -135,29 +144,104 @@ export interface IntegrationProps {
 }
 
 /**
+ * Result of binding an Integration to a Method.
+ */
+export interface IntegrationConfig {
+  /**
+   * Integration options.
+   * @default - no integration options
+   */
+  readonly options?: IntegrationOptions;
+
+  /**
+   * Specifies an API method integration type.
+   */
+  readonly type: IntegrationType;
+
+  /**
+   * The Uniform Resource Identifier (URI) for the integration.
+   * @see https://docs.aws.amazon.com/apigateway/api-reference/resource/integration/#uri
+   * @default - no URI. Usually applies to MOCK integration
+   */
+  readonly uri?: string;
+
+  /**
+   * The integration's HTTP method type.
+   * @default - no integration method specified.
+   */
+  readonly integrationHttpMethod?: string;
+
+  /**
+   * This value is included in computing the Deployment's fingerprint. When the fingerprint
+   * changes, a new deployment is triggered.
+   * This property should contain values associated with the Integration that upon changing
+   * should trigger a fresh the Deployment needs to be refreshed.
+   * @default undefined deployments are not triggered for any change to this integration.
+   */
+  readonly deploymentToken?: string;
+}
+
+/**
  * Base class for backend integrations for an API Gateway method.
  *
  * Use one of the concrete classes such as `MockIntegration`, `AwsIntegration`, `LambdaIntegration`
  * or implement on your own by specifying the set of props.
  */
 export class Integration {
-  constructor(private readonly props: IntegrationProps) { }
+  constructor(private readonly props: IntegrationProps) {
+    const options = this.props.options || { };
+    if (options.credentialsPassthrough !== undefined && options.credentialsRole !== undefined) {
+      throw new Error('\'credentialsPassthrough\' and \'credentialsRole\' are mutually exclusive');
+    }
 
-  /**
-   * Allows `Method` to access the integration props.
-   *
-   * @internal
-   */
-  public get _props() {
-    return this.props;
+    if (options.connectionType === ConnectionType.VPC_LINK && options.vpcLink === undefined) {
+      throw new Error('\'connectionType\' of VPC_LINK requires \'vpcLink\' prop to be set');
+    }
+
+    if (options.connectionType === ConnectionType.INTERNET && options.vpcLink !== undefined) {
+      throw new Error('cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
+    }
+
+    if (options.timeout && !options.timeout.isUnresolved() && (options.timeout.toMilliseconds() < 50 || options.timeout.toMilliseconds() > 29000)) {
+      throw new Error('Integration timeout must be between 50 milliseconds and 29 seconds.');
+    }
   }
 
   /**
    * Can be overridden by subclasses to allow the integration to interact with the method
    * being integrated, access the REST API object, method ARNs, etc.
    */
-  public bind(_method: Method) {
-    return;
+  public bind(_method: Method): IntegrationConfig {
+    let uri = this.props.uri;
+    const options = this.props.options;
+
+    if (options?.connectionType === ConnectionType.VPC_LINK && uri === undefined) {
+      uri = Lazy.string({
+        // needs to be a lazy since the targets can be added to the VpcLink construct after initialization.
+        produce: () => {
+          const vpcLink = options.vpcLink;
+          if (vpcLink instanceof VpcLink) {
+            const targets = vpcLink._targetDnsNames;
+            if (targets.length > 1) {
+              throw new Error("'uri' is required when there are more than one NLBs in the VPC Link");
+            } else {
+              return `http://${targets[0]}`;
+            }
+          } else {
+            throw new Error("'uri' is required when the 'connectionType' is VPC_LINK");
+          }
+        },
+      });
+    }
+    return {
+      options: {
+        ...options,
+        connectionType: options?.vpcLink ? ConnectionType.VPC_LINK : options?.connectionType,
+      },
+      type: this.props.type,
+      uri,
+      integrationHttpMethod: this.props.integrationHttpMethod,
+    };
   }
 }
 

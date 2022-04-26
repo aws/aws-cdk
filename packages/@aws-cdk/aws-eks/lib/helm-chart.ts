@@ -1,7 +1,12 @@
-import { CustomResource } from '@aws-cdk/aws-cloudformation';
-import { Construct, Stack } from '@aws-cdk/core';
-import { Cluster } from './cluster';
+import { Asset } from '@aws-cdk/aws-s3-assets';
+import { CustomResource, Duration, Names, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Helm Chart options.
@@ -10,8 +15,11 @@ import { KubectlProvider } from './kubectl-provider';
 export interface HelmChartOptions {
   /**
    * The name of the chart.
+   * Either this or `chartAsset` must be specified.
+   *
+   * @default - No chart name. Implies `chartAsset` is used.
    */
-  readonly chart: string;
+  readonly chart?: string;
 
   /**
    * The name of the release.
@@ -32,6 +40,14 @@ export interface HelmChartOptions {
   readonly repository?: string;
 
   /**
+  * The chart in the form of an asset.
+  * Either this or `chart` must be specified.
+  *
+  * @default - No chart asset. Implies `chart` is used.
+  */
+  readonly chartAsset?: Asset;
+
+  /**
    * The Kubernetes namespace scope of the requests.
    * @default default
    */
@@ -49,6 +65,18 @@ export interface HelmChartOptions {
    * @default - Helm will not wait before marking release as successful
    */
   readonly wait?: boolean;
+
+  /**
+   * Amount of time to wait for any individual Kubernetes operation. Maximum 15 minutes.
+   * @default Duration.minutes(5)
+   */
+  readonly timeout?: Duration;
+
+  /**
+   * create namespace if not exist
+   * @default true
+   */
+  readonly createNamespace?: boolean;
 }
 
 /**
@@ -60,7 +88,7 @@ export interface HelmChartProps extends HelmChartOptions {
    *
    * [disable-awslint:ref-via-interface]
    */
-  readonly cluster: Cluster;
+  readonly cluster: ICluster;
 }
 
 /**
@@ -68,9 +96,9 @@ export interface HelmChartProps extends HelmChartOptions {
  *
  * Applies/deletes the resources using `kubectl` in sync with the resource.
  */
-export class HelmChart extends Construct {
+export class HelmChart extends CoreConstruct {
   /**
-   * The CloudFormation reosurce type.
+   * The CloudFormation resource type.
    */
   public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-HelmChart';
 
@@ -79,22 +107,47 @@ export class HelmChart extends Construct {
 
     const stack = Stack.of(this);
 
-    const provider = KubectlProvider.getOrCreate(this);
+    const provider = KubectlProvider.getOrCreate(this, props.cluster);
+
+    const timeout = props.timeout?.toSeconds();
+    if (timeout && timeout > 900) {
+      throw new Error('Helm chart timeout cannot be higher than 15 minutes.');
+    }
+
+    if (!props.chart && !props.chartAsset) {
+      throw new Error("Either 'chart' or 'chartAsset' must be specified to install a helm chart");
+    }
+
+    if (props.chartAsset && (props.repository || props.version)) {
+      throw new Error(
+        "Neither 'repository' nor 'version' can be used when configuring 'chartAsset'",
+      );
+    }
+
+    // default not to wait
+    const wait = props.wait ?? false;
+    // default to create new namespace
+    const createNamespace = props.createNamespace ?? true;
+
+    props.chartAsset?.grantRead(provider.handlerRole);
 
     new CustomResource(this, 'Resource', {
-      provider: provider.provider,
+      serviceToken: provider.serviceToken,
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
         ClusterName: props.cluster.clusterName,
-        RoleArn: props.cluster._getKubectlCreationRoleArn(provider.role),
-        Release: props.release || this.node.uniqueId.slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
+        RoleArn: provider.roleArn, // TODO: bake into the provider's environment
+        Release: props.release ?? Names.uniqueId(this).slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
         Chart: props.chart,
+        ChartAssetURL: props.chartAsset?.s3ObjectUrl,
         Version: props.version,
-        Wait: props.wait || false,
+        Wait: wait || undefined, // props are stringified so we encode “false” as undefined
+        Timeout: timeout ? `${timeout.toString()}s` : undefined, // Helm v3 expects duration instead of integer
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
-        Namespace: props.namespace || 'default',
-        Repository: props.repository
-      }
+        Namespace: props.namespace ?? 'default',
+        Repository: props.repository,
+        CreateNamespace: createNamespace || undefined,
+      },
     });
   }
 }

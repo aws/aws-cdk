@@ -1,4 +1,5 @@
-import { IConstruct, Stack, Token } from "@aws-cdk/core";
+import { ArnFormat, Stack, Token } from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 
 export const AUTOGEN_MARKER = '$$autogen$$';
 
@@ -21,12 +22,19 @@ export function arnForParameterName(scope: IConstruct, parameterName: string, op
     throw new Error(`Parameter names must be fully qualified (if they include "/" they must also begin with a "/"): ${nameToValidate}`);
   }
 
-  return Stack.of(scope).formatArn({
-    service: 'ssm',
-    resource: 'parameter',
-    sep: isSimpleName() ? '/' : '',
-    resourceName: parameterName,
-  });
+  if (isSimpleName()) {
+    return Stack.of(scope).formatArn({
+      service: 'ssm',
+      resource: 'parameter',
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+      resourceName: parameterName,
+    });
+  } else {
+    return Stack.of(scope).formatArn({
+      service: 'ssm',
+      resource: `parameter${parameterName}`,
+    });
+  }
 
   /**
    * Determines the ARN separator for this parameter: if we have a concrete
@@ -40,7 +48,7 @@ export function arnForParameterName(scope: IConstruct, parameterName: string, op
     if (!concreteName || Token.isUnresolved(concreteName)) {
 
       if (options.simpleName === undefined) {
-        throw new Error(`Unable to determine ARN separator for SSM parameter since the parameter name is an unresolved token. Use "fromAttributes" and specify "simpleName" explicitly`);
+        throw new Error('Unable to determine ARN separator for SSM parameter since the parameter name is an unresolved token. Use "fromAttributes" and specify "simpleName" explicitly');
       }
 
       return options.simpleName;
@@ -52,7 +60,7 @@ export function arnForParameterName(scope: IConstruct, parameterName: string, op
     if (options.simpleName !== undefined && options.simpleName !== result) {
 
       if (concreteName === AUTOGEN_MARKER) {
-        throw new Error(`If "parameterName" is not explicitly defined, "simpleName" must be "true" or undefined since auto-generated parameter names always have simple names`);
+        throw new Error('If "parameterName" is not explicitly defined, "simpleName" must be "true" or undefined since auto-generated parameter names always have simple names');
       }
 
       throw new Error(`Parameter name "${concreteName}" is ${result ? 'a simple name' : 'not a simple name'}, but "simpleName" was explicitly set to ${options.simpleName}. Either omit it or set it to ${result}`);

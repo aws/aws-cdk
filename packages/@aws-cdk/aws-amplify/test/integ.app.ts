@@ -1,4 +1,5 @@
-import { App, Construct, Stack, StackProps } from '@aws-cdk/core';
+import { App, Stack, StackProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as amplify from '../lib';
 
 class TestStack extends Stack {
@@ -7,7 +8,22 @@ class TestStack extends Stack {
 
     const amplifyApp = new amplify.App(this, 'App', {
       basicAuth: amplify.BasicAuth.fromGeneratedPassword('aws'),
-      autoBranchCreation: {}
+      autoBranchCreation: {},
+      customResponseHeaders: [
+        {
+          pattern: '*.json',
+          headers: {
+            'custom-header-name-1': 'custom-header-value-1',
+            'custom-header-name-2': 'custom-header-value-2',
+          },
+        },
+        {
+          pattern: '/path/*',
+          headers: {
+            'custom-header-name-1': 'custom-header-value-2',
+          },
+        },
+      ],
     });
 
     amplifyApp.addCustomRule({

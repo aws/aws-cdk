@@ -1,15 +1,37 @@
 const path = require('path');
-const cdk = require('@aws-cdk/core');
-const ec2 = require('@aws-cdk/aws-ec2');
-const ssm = require('@aws-cdk/aws-ssm');
-const iam = require('@aws-cdk/aws-iam');
-const sns = require('@aws-cdk/aws-sns');
-const lambda = require('@aws-cdk/aws-lambda');
-const docker = require('@aws-cdk/aws-ecr-assets');
-const core = require('@aws-cdk/core')
+
+var constructs = require('constructs');
+if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
+  var cdk = require('@aws-cdk/core');
+  var ec2 = require('@aws-cdk/aws-ec2');
+  var s3 = require('@aws-cdk/aws-s3');
+  var ssm = require('@aws-cdk/aws-ssm');
+  var iam = require('@aws-cdk/aws-iam');
+  var sns = require('@aws-cdk/aws-sns');
+  var sqs = require('@aws-cdk/aws-sqs');
+  var lambda = require('@aws-cdk/aws-lambda');
+  var docker = require('@aws-cdk/aws-ecr-assets');
+} else {
+  var cdk = require('aws-cdk-lib');
+  var {
+    aws_ec2: ec2,
+    aws_s3: s3,
+    aws_ssm: ssm,
+    aws_iam: iam,
+    aws_sns: sns,
+    aws_sqs: sqs,
+    aws_lambda: lambda,
+    aws_ecr_assets: docker
+  } = require('aws-cdk-lib');
+}
+
+const { Annotations } = cdk;
 const { StackWithNestedStack, StackWithNestedStackUsingParameters } = require('./nested-stack');
 
-const stackPrefix = process.env.STACK_NAME_PREFIX || 'cdk-toolkit-integration';
+const stackPrefix = process.env.STACK_NAME_PREFIX;
+if (!stackPrefix) {
+  throw new Error(`the STACK_NAME_PREFIX environment variable is required`);
+}
 
 class MyStack extends cdk.Stack {
   constructor(parent, id, props) {
@@ -41,12 +63,46 @@ class YourStack extends cdk.Stack {
   }
 }
 
+class ImportableStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    if (!process.env.OMIT_TOPIC) {
+      const queue = new sqs.Queue(this, 'Queue', {
+        removalPolicy: process.env.ORPHAN_TOPIC ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY,
+      });
+
+      new cdk.CfnOutput(this, 'QueueName', {
+        value: queue.queueName,
+      });
+      new cdk.CfnOutput(this, 'QueueLogicalId', {
+        value: queue.node.defaultChild.logicalId,
+      });
+    }
+
+    new cdk.CfnWaitConditionHandle(this, 'Handle');
+  }
+}
+
+class StackUsingContext extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+    new cdk.CfnResource(this, 'Handle', {
+      type: 'AWS::CloudFormation::WaitConditionHandle'
+    });
+
+    new cdk.CfnOutput(this, 'Output', {
+      value: this.availabilityZones,
+    });
+  }
+}
+
 class ParameterStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
 
     new sns.Topic(this, 'TopicParameter', {
-      topicName: new cdk.CfnParameter(this, 'TopicNameParam')
+      topicName: new cdk.CfnParameter(this, 'TopicNameParam').valueAsString
     });
   }
 }
@@ -56,7 +112,48 @@ class OtherParameterStack extends cdk.Stack {
     super(parent, id, props);
 
     new sns.Topic(this, 'TopicParameter', {
-      topicName: new cdk.CfnParameter(this, 'OtherTopicNameParam')
+      topicName: new cdk.CfnParameter(this, 'OtherTopicNameParam').valueAsString
+    });
+  }
+}
+
+class MultiParameterStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new sns.Topic(this, 'TopicParameter', {
+      displayName: new cdk.CfnParameter(this, 'DisplayNameParam').valueAsString
+    });
+    new sns.Topic(this, 'OtherTopicParameter', {
+      displayName: new cdk.CfnParameter(this, 'OtherDisplayNameParam').valueAsString
+    });
+  }
+}
+
+class OutputsStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    const topic = new sns.Topic(this, 'MyOutput', {
+      topicName: `${cdk.Stack.of(this).stackName}MyTopic`
+    });
+
+    new cdk.CfnOutput(this, 'TopicName', {
+      value: topic.topicName
+    })
+  }
+}
+
+class AnotherOutputsStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    const topic = new sns.Topic(this, 'MyOtherOutput', {
+      topicName: `${cdk.Stack.of(this).stackName}MyOtherTopic`
+    });
+
+    new cdk.CfnOutput(this, 'TopicName', {
+      value: topic.topicName
     });
   }
 }
@@ -66,7 +163,7 @@ class IamStack extends cdk.Stack {
     super(parent, id, props);
 
     new iam.Role(this, 'SomeRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazon.aws.com')
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
   }
 }
@@ -79,7 +176,22 @@ class ProvidingStack extends cdk.Stack {
   }
 }
 
+class StackWithError extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
 
+    this.topic = new sns.Topic(this, 'BogusTopic'); // Some filler
+    Annotations.of(this).addError('This is an error');
+  }
+}
+
+class StageWithError extends cdk.Stage {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new StackWithError(this, 'Stack');
+  }
+}
 
 class ConsumingStack extends cdk.Stack {
   constructor(parent, id, props) {
@@ -94,7 +206,7 @@ class MissingSSMParameterStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
 
-    const parameterName = this.node.tryGetContext('test:ssm-parameter-name');
+    const parameterName = constructs.Node.of(this).tryGetContext('test:ssm-parameter-name');
     if (parameterName) {
       const param = getSsmParameterValue(this, parameterName);
       new iam.Role(this, 'PhonyRole', { assumedBy: new iam.AccountPrincipal(param) });
@@ -108,7 +220,7 @@ class LambdaStack extends cdk.Stack {
 
     const fn = new lambda.Function(this, 'my-function', {
       code: lambda.Code.asset(path.join(__dirname, 'lambda')),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.handler'
     });
 
@@ -126,7 +238,7 @@ class DockerStack extends cdk.Stack {
 
     // Add at least a single resource (WaitConditionHandle), otherwise this stack will never
     // be deployed (and its assets never built)
-    new core.CfnResource(this, 'Handle', {
+    new cdk.CfnResource(this, 'Handle', {
       type: 'AWS::CloudFormation::WaitConditionHandle'
     });
   }
@@ -143,7 +255,7 @@ class DockerStackWithCustomFile extends cdk.Stack {
 
     // Add at least a single resource (WaitConditionHandle), otherwise this stack will never
     // be deployed (and its assets never built)
-    new core.CfnResource(this, 'Handle', {
+    new cdk.CfnResource(this, 'Handle', {
       type: 'AWS::CloudFormation::WaitConditionHandle'
     });
   }
@@ -155,7 +267,7 @@ class FailedStack extends cdk.Stack {
     super(parent, id, props);
 
     // fails on 'Property PolicyDocument cannot be empty'.
-    new core.CfnResource(this, 'EmptyPolicy', {
+    new cdk.CfnResource(this, 'EmptyPolicy', {
       type: 'AWS::IAM::Policy'
     })
 
@@ -170,9 +282,10 @@ class DefineVpcStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
 
-    new ec2.Vpc(this, 'VPC', {
+    const vpc = new ec2.Vpc(this, 'VPC', {
       maxAzs: 1,
-    }).node.applyAspect(new cdk.Tag(VPC_TAG_NAME, VPC_TAG_VALUE));
+    })
+    cdk.Aspects.of(vpc).add(new cdk.Tag(VPC_TAG_NAME, VPC_TAG_VALUE));
   }
 }
 
@@ -195,6 +308,33 @@ class ConditionalResourceStack extends cdk.Stack {
   }
 }
 
+class SomeStage extends cdk.Stage {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new YourStack(this, 'StackInStage');
+  }
+}
+
+class StageUsingContext extends cdk.Stage {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new StackUsingContext(this, 'StackInStage');
+  }
+}
+
+class BuiltinLambdaStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new s3.Bucket(this, 'Bucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true, // will deploy a Nodejs lambda backed custom resource
+    });
+  }
+}
+
 const app = new cdk.App();
 
 const defaultEnv = {
@@ -202,35 +342,77 @@ const defaultEnv = {
   region: process.env.CDK_DEFAULT_REGION
 };
 
-// Deploy all does a wildcard ${stackPrefix}-test-*
-new MyStack(app, `${stackPrefix}-test-1`, { env: defaultEnv });
-new YourStack(app, `${stackPrefix}-test-2`);
-// Deploy wildcard with parameters does ${stackPrefix}-param-test-*
-new ParameterStack(app, `${stackPrefix}-param-test-1`);
-new OtherParameterStack(app, `${stackPrefix}-param-test-2`);
-// Not included in wildcard
-new IamStack(app, `${stackPrefix}-iam-test`);
-const providing = new ProvidingStack(app, `${stackPrefix}-order-providing`);
-new ConsumingStack(app, `${stackPrefix}-order-consuming`, { providingStack: providing });
+// Sometimes we don't want to synthesize all stacks because it will impact the results
+const stackSet = process.env.INTEG_STACK_SET || 'default';
 
-new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env: defaultEnv });
+switch (stackSet) {
+  case 'default':
+    // Deploy all does a wildcard ${stackPrefix}-test-*
+    new MyStack(app, `${stackPrefix}-test-1`, { env: defaultEnv });
+    new YourStack(app, `${stackPrefix}-test-2`);
+    // Deploy wildcard with parameters does ${stackPrefix}-param-test-*
+    new ParameterStack(app, `${stackPrefix}-param-test-1`);
+    new OtherParameterStack(app, `${stackPrefix}-param-test-2`);
+    // Deploy stack with multiple parameters
+    new MultiParameterStack(app, `${stackPrefix}-param-test-3`);
+    // Deploy stack with outputs does ${stackPrefix}-outputs-test-*
+    new OutputsStack(app, `${stackPrefix}-outputs-test-1`);
+    new AnotherOutputsStack(app, `${stackPrefix}-outputs-test-2`);
+    // Not included in wildcard
+    new IamStack(app, `${stackPrefix}-iam-test`, { env: defaultEnv });
+    const providing = new ProvidingStack(app, `${stackPrefix}-order-providing`);
+    new ConsumingStack(app, `${stackPrefix}-order-consuming`, { providingStack: providing });
 
-new LambdaStack(app, `${stackPrefix}-lambda`);
-new DockerStack(app, `${stackPrefix}-docker`);
-new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
-new FailedStack(app, `${stackPrefix}-failed`)
+    new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env: defaultEnv });
 
-if (process.env.ENABLE_VPC_TESTING) { // Gating so we don't do context fetching unless that's what we are here for
-  const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
-  if (process.env.ENABLE_VPC_TESTING === 'DEFINE')
-    new DefineVpcStack(app, `${stackPrefix}-define-vpc`, { env });
-  if (process.env.ENABLE_VPC_TESTING === 'IMPORT')
-  new ImportVpcStack(app, `${stackPrefix}-import-vpc`, { env });
+    new LambdaStack(app, `${stackPrefix}-lambda`);
+    new DockerStack(app, `${stackPrefix}-docker`);
+    new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
+    new FailedStack(app, `${stackPrefix}-failed`)
+
+    if (process.env.ENABLE_VPC_TESTING) { // Gating so we don't do context fetching unless that's what we are here for
+      const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
+      if (process.env.ENABLE_VPC_TESTING === 'DEFINE')
+        new DefineVpcStack(app, `${stackPrefix}-define-vpc`, { env });
+      if (process.env.ENABLE_VPC_TESTING === 'IMPORT')
+        new ImportVpcStack(app, `${stackPrefix}-import-vpc`, { env });
+    }
+
+    new ConditionalResourceStack(app, `${stackPrefix}-conditional-resource`)
+
+    new StackWithNestedStack(app, `${stackPrefix}-with-nested-stack`);
+    new StackWithNestedStackUsingParameters(app, `${stackPrefix}-with-nested-stack-using-parameters`);
+
+    new YourStack(app, `${stackPrefix}-termination-protection`, {
+      terminationProtection: process.env.TERMINATION_PROTECTION !== 'FALSE' ? true : false,
+    });
+
+    new SomeStage(app, `${stackPrefix}-stage`);
+
+    new BuiltinLambdaStack(app, `${stackPrefix}-builtin-lambda-function`);
+
+    new ImportableStack(app, `${stackPrefix}-importable-stack`);
+    break;
+
+  case 'stage-using-context':
+    // Cannot be combined with other test stacks, because we use this to test
+    // that stage context is propagated up and causes synth to fail when combined
+    // with '--no-lookups'.
+
+    // Needs a dummy stack at the top level because the CLI will fail otherwise
+    new YourStack(app, `${stackPrefix}-toplevel`, { env: defaultEnv });
+    new StageUsingContext(app, `${stackPrefix}-stage-using-context`, {
+      env: defaultEnv,
+    });
+    break;
+
+  case 'stage-with-errors':
+    const stage = new StageWithError(app, `${stackPrefix}-stage-with-errors`);
+    stage.synth({ validateOnSynthesis: true });
+    break;
+
+  default:
+    throw new Error(`Unrecognized INTEG_STACK_SET: '${stackSet}'`);
 }
-
-new ConditionalResourceStack(app, `${stackPrefix}-conditional-resource`)
-
-new StackWithNestedStack(app, `${stackPrefix}-with-nested-stack`);
-new StackWithNestedStackUsingParameters(app, `${stackPrefix}-with-nested-stack-using-parameters`);
 
 app.synth();

@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { ArnFormat, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
 import { fromServiceAtrributes } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
@@ -24,7 +25,7 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    *
    * This property is only used for tasks that use the awsvpc network mode.
    *
-   * @default - Use subnet default.
+   * @default false
    */
   readonly assignPublicIp?: boolean;
 
@@ -33,18 +34,28 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    *
    * This property is only used for tasks that use the awsvpc network mode.
    *
-   * @default - Private subnets.
+   * @default - Public subnets if `assignPublicIp` is set, otherwise the first available one of Private, Isolated, Public, in that order.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
+   * The security groups to associate with the service. If you do not specify a security group, a new security group is created.
+   *
+   * This property is only used for tasks that use the awsvpc network mode.
+   *
+   * @default - A new security group is created.
+   * @deprecated use securityGroups instead.
+   */
+  readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * The security groups to associate with the service. If you do not specify a security group, a new security group is created.
    *
    * This property is only used for tasks that use the awsvpc network mode.
    *
    * @default - A new security group is created.
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * The placement constraints to use for tasks in the service. For more information, see
@@ -71,15 +82,6 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * @default false
    */
   readonly daemon?: boolean;
-
-  /**
-   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
-   * Tags can only be propagated to the tasks within the service during service creation.
-   *
-   * @deprecated Use `propagateTags` instead.
-   * @default PropagatedTagSource.NONE
-   */
-  readonly propagateTaskTagsFrom?: PropagatedTagSource;
 }
 
 /**
@@ -126,7 +128,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
   public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IEc2Service {
     class Import extends Resource implements IEc2Service {
       public readonly serviceArn = ec2ServiceArn;
-      public readonly serviceName = Stack.of(scope).parseArn(ec2ServiceArn).resourceName as string;
+      public readonly serviceName = Stack.of(scope).splitArn(ec2ServiceArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
     }
     return new Import(scope, id);
   }
@@ -154,36 +156,31 @@ export class Ec2Service extends BaseService implements IEc2Service {
       throw new Error('Maximum percent must be 100 for daemon mode.');
     }
 
-    if (props.daemon && props.minHealthyPercent !== undefined && props.minHealthyPercent !== 0) {
-      throw new Error('Minimum healthy percent must be 0 for daemon mode.');
+    if (props.minHealthyPercent !== undefined && props.maxHealthyPercent !== undefined && props.minHealthyPercent >= props.maxHealthyPercent) {
+      throw new Error('Minimum healthy percent must be less than maximum healthy percent.');
     }
 
     if (!props.taskDefinition.isEc2Compatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
 
-    if (props.propagateTags && props.propagateTaskTagsFrom) {
-      throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
+    if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
+      throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
     }
-
-    const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
-                                      : (props.propagateTags !== undefined ? props.propagateTags : PropagatedTagSource.NONE);
 
     super(scope, id, {
       ...props,
-      // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
-      desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
+      desiredCount: props.desiredCount,
       maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
       minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
       launchType: LaunchType.EC2,
-      propagateTags: propagateTagsFromSource,
       enableECSManagedTags: props.enableECSManagedTags,
     },
     {
       cluster: props.cluster.clusterName,
-      taskDefinition: props.taskDefinition.taskDefinitionArn,
-      placementConstraints: Lazy.anyValue({ produce: () => this.constraints }, { omitEmptyArray: true }),
-      placementStrategies: Lazy.anyValue({ produce: () => this.strategies }, { omitEmptyArray: true }),
+      taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
+      placementConstraints: Lazy.any({ produce: () => this.constraints }, { omitEmptyArray: true }),
+      placementStrategies: Lazy.any({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
     }, props.taskDefinition);
 
@@ -191,8 +188,15 @@ export class Ec2Service extends BaseService implements IEc2Service {
     this.strategies = [];
     this.daemon = props.daemon || false;
 
+    let securityGroups;
+    if (props.securityGroup !== undefined) {
+      securityGroups = [props.securityGroup];
+    } else if (props.securityGroups !== undefined) {
+      securityGroups = props.securityGroups;
+    }
+
     if (props.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
-      this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, props.securityGroup);
+      this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroups from ASG.
       // We have to be smart here -- by default future Security Group rules would be created
@@ -209,9 +213,9 @@ export class Ec2Service extends BaseService implements IEc2Service {
     this.addPlacementConstraints(...props.placementConstraints || []);
     this.addPlacementStrategies(...props.placementStrategies || []);
 
-    if (!this.taskDefinition.defaultContainer) {
-      throw new Error('A TaskDefinition must have at least one essential container');
-    }
+    this.node.addValidation({
+      validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
+    });
   }
 
   /**
@@ -229,7 +233,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
   }
 
   /**
-   * Adds one or more placement strategies to use for tasks in the service. For more information, see
+   * Adds one or more placement constraints to use for tasks in the service. For more information, see
    * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
    */
   public addPlacementConstraints(...constraints: PlacementConstraint[]) {
@@ -251,11 +255,14 @@ export class Ec2Service extends BaseService implements IEc2Service {
 }
 
 /**
- * Validate combinations of networking arguments
+ * Validate combinations of networking arguments.
  */
 function validateNoNetworkingProps(props: Ec2ServiceProps) {
-  if (props.vpcSubnets !== undefined || props.securityGroup !== undefined || props.assignPublicIp) {
-    throw new Error('vpcSubnets, securityGroup and assignPublicIp can only be used in AwsVpc networking mode');
+  if (props.vpcSubnets !== undefined
+    || props.securityGroup !== undefined
+    || props.securityGroups !== undefined
+    || props.assignPublicIp) {
+    throw new Error('vpcSubnets, securityGroup(s) and assignPublicIp can only be used in AwsVpc networking mode');
   }
 }
 

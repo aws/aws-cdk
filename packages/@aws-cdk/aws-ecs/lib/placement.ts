@@ -1,5 +1,5 @@
-import { BuiltInAttributes } from "./ec2/ec2-service";
-import { CfnService } from "./ecs.generated";
+import { BuiltInAttributes } from './ec2/ec2-service';
+import { CfnService } from './ecs.generated';
 
 /**
  * Instance resource used for bin packing

@@ -1,0 +1,35 @@
+{
+    "PropertyTypes": {
+        "patch": {
+            "description": "Remove AWS::ECS::TaskDefinition.Options, replace back with Map<String>",
+            "operations": [
+                {
+                    "op": "remove",
+                    "path": "/AWS::ECS::TaskDefinition.Options"
+                },
+                {
+                    "op": "replace",
+                    "path": "/AWS::ECS::TaskDefinition.FirelensConfiguration/Properties/Options",
+                    "value": {
+                        "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-firelensconfiguration.html#cfn-ecs-taskdefinition-firelensconfiguration-options",
+                        "Required": false,
+                        "Type": "Map",
+                        "PrimitiveItemType": "String",
+                        "UpdateType": "Immutable"
+                    }
+                },
+                {
+                    "op": "replace",
+                    "path": "/AWS::ECS::TaskDefinition.LogConfiguration/Properties/Options",
+                    "value": {
+                        "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-containerdefinitions-logconfiguration.html#cfn-ecs-taskdefinition-containerdefinition-logconfiguration-options",
+                        "Required": false,
+                        "Type": "Map",
+                        "PrimitiveItemType": "String",
+                        "UpdateType": "Immutable"
+                    }
+                }
+            ]
+        }
+    }
+}

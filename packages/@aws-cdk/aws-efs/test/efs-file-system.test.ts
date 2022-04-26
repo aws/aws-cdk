@@ -1,190 +1,414 @@
-import {expect as expectCDK, haveResource} from '@aws-cdk/assert';
-import * as ec2 from "@aws-cdk/aws-ec2";
-import * as kms from "@aws-cdk/aws-kms";
-import {Stack} from "@aws-cdk/core";
-import {WARNING_METADATA_KEY} from "@aws-cdk/cx-api";
-import {EfsFileSystem, EfsLifecyclePolicyProperty, EfsPerformanceMode, EfsThroughputMode} from "../lib/efs-file-system";
+import { Template, Match } from '@aws-cdk/assertions';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
+import { App, RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode, OutOfInfrequentAccessPolicy } from '../lib';
 
 let stack = new Stack();
 let vpc = new ec2.Vpc(stack, 'VPC');
 
-beforeEach( () => {
-    stack = new Stack();
-    vpc = new ec2.Vpc(stack, 'VPC');
+beforeEach(() => {
+  stack = new Stack();
+  vpc = new ec2.Vpc(stack, 'VPC');
+});
+
+testFutureBehavior(
+  'when @aws-cdk/aws-efs:defaultEncryptionAtRest is enabled, encryption is enabled by default',
+  { [cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST]: true },
+  App,
+  (app) => {
+    const customStack = new Stack(app);
+
+    const customVpc = new ec2.Vpc(customStack, 'VPC');
+    new FileSystem(customVpc, 'EfsFileSystem', {
+      vpc: customVpc,
+    });
+
+    Template.fromStack(customStack).hasResourceProperties('AWS::EFS::FileSystem', {
+      Encrypted: true,
+    });
+
+  });
+
+testLegacyBehavior('when @aws-cdk/aws-efs:defaultEncryptionAtRest is missing, encryption is disabled by default', App, (app) => {
+  const customStack = new Stack(app);
+
+  const customVpc = new ec2.Vpc(customStack, 'VPC');
+  new FileSystem(customVpc, 'EfsFileSystem', {
+    vpc: customVpc,
+  });
+
+  Template.fromStack(customStack).hasResourceProperties('AWS::EFS::FileSystem', {
+    Encrypted: Match.absent(),
+  });
+
 });
 
 test('default file system is created correctly', () => {
-    // WHEN
-    new EfsFileSystem(stack, 'EfsFileSystem', {
-        vpc,
-    });
-    // THEN
-    expectCDK(stack).to(haveResource('AWS::EFS::FileSystem'));
-    expectCDK(stack).to(haveResource('AWS::EFS::MountTarget'));
-    expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroup'));
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+  });
+  // THEN
+  const assertions = Template.fromStack(stack);
+  assertions.hasResource('AWS::EFS::FileSystem', {
+    DeletionPolicy: 'Retain',
+    UpdateReplacePolicy: 'Retain',
+  });
+  assertions.resourceCountIs('AWS::EFS::MountTarget', 2);
+  assertions.resourceCountIs('AWS::EC2::SecurityGroup', 1);
 });
 
 test('unencrypted file system is created correctly with default KMS', () => {
-    // WHEN
-    new EfsFileSystem(stack, 'EfsFileSystem', {
-        vpc,
-        encrypted: false
-    });
-    // THEN
-    expectCDK(stack).notTo(haveResource('AWS::EFS::FileSystem', {
-        Encrypted: true,
-    }));
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    encrypted: false,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    Encrypted: false,
+  });
 });
 
 test('encrypted file system is created correctly with default KMS', () => {
-    // WHEN
-    new EfsFileSystem(stack, 'EfsFileSystem', {
-        vpc,
-        encrypted: true
-    });
-    // THEN
-    expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
-        Encrypted: true,
-    }));
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    encrypted: true,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    Encrypted: true,
+  });
 });
 
 test('encrypted file system is created correctly with custom KMS', () => {
-    const key = new kms.Key(stack, 'customKeyFS');
+  const key = new kms.Key(stack, 'customKeyFS');
 
-    // WHEN
-    new EfsFileSystem(stack, 'EfsFileSystem', {
-        vpc,
-        encrypted: true,
-        kmsKey: key
-    });
-    // THEN
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    encrypted: true,
+    kmsKey: key,
+  });
+  // THEN
 
-    /**
-     * CDK appends 8-digit MD5 hash of the resource path to the logical Id of the resource in order to make sure
-     * that the id is unique across multiple stacks. There isnt a direct way to identify the exact name of the resource
-     * in generated CDK, hence hardcoding the MD5 hash here for assertion. Assumption is that the path of the Key wont
-     * change in this UT. Checked the unique id by generating the cloud formation stack.
-     */
-    expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
-        Encrypted: true,
-        KmsKeyId: {
-            Ref: 'customKeyFSDDB87C6D'
-        }
-    }));
+  /*
+   * CDK appends 8-digit MD5 hash of the resource path to the logical Id of the resource in order to make sure
+   * that the id is unique across multiple stacks. There isnt a direct way to identify the exact name of the resource
+   * in generated CDK, hence hardcoding the MD5 hash here for assertion. Assumption is that the path of the Key wont
+   * change in this UT. Checked the unique id by generating the cloud formation stack.
+   */
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    Encrypted: true,
+    KmsKeyId: {
+      'Fn::GetAtt': [
+        'customKeyFSDDB87C6D',
+        'Arn',
+      ],
+    },
+  });
 });
 
-test('file system is created correctly with life cycle property', () => {
-    // WHEN
-    new EfsFileSystem(stack, 'EfsFileSystem', {
-        vpc,
-        lifecyclePolicy: EfsLifecyclePolicyProperty.AFTER_14_DAYS
-    });
-    // THEN
-    expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
-        LifecyclePolicies: [{
-            TransitionToIA: "AFTER_14_DAYS"
-        }]
-    }));
+test('file system is created correctly with a life cycle property', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    lifecyclePolicy: LifecyclePolicy.AFTER_7_DAYS,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    LifecyclePolicies: [{
+      TransitionToIA: 'AFTER_7_DAYS',
+    }],
+  });
+});
+
+test('file system is created correctly with a life cycle property and out of infrequent access property', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    lifecyclePolicy: LifecyclePolicy.AFTER_7_DAYS,
+    outOfInfrequentAccessPolicy: OutOfInfrequentAccessPolicy.AFTER_1_ACCESS,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    LifecyclePolicies: [
+      {
+        TransitionToIA: 'AFTER_7_DAYS',
+      },
+      {
+        TransitionToPrimaryStorageClass: 'AFTER_1_ACCESS',
+      },
+    ],
+  });
+});
+
+test('LifecyclePolicies should be disabled when lifecyclePolicy and outInfrequentAccessPolicy are not specified', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    LifecyclePolicies: Match.absent(),
+  });
 });
 
 test('file system is created correctly with performance mode', () => {
-    // WHEN
-    new EfsFileSystem(stack, 'EfsFileSystem', {
-        vpc,
-        performanceMode: EfsPerformanceMode.MAX_IO
-    });
-    // THEN
-    expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
-        PerformanceMode: "maxIO"
-    }));
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    performanceMode: PerformanceMode.MAX_IO,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    PerformanceMode: 'maxIO',
+  });
 });
 
 test('file system is created correctly with bursting throughput mode', () => {
-    // WHEN
-    new EfsFileSystem(stack, 'EfsFileSystem', {
-        vpc,
-        throughputMode: EfsThroughputMode.BURSTING
-    });
-    // THEN
-    expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
-        ThroughputMode: "bursting"
-    }));
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    throughputMode: ThroughputMode.BURSTING,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    ThroughputMode: 'bursting',
+  });
 });
 
 test('Exception when throughput mode is set to PROVISIONED, but provisioned throughput is not set', () => {
-    expect(() => {
-        new EfsFileSystem(stack, 'EfsFileSystem', {
-            vpc,
-            throughputMode: EfsThroughputMode.PROVISIONED
-        });
-    }).toThrowError(/Property provisionedThroughputInMibps is required when throughputMode is PROVISIONED/);
-});
-
-test('Warning when provisioned throughput is less than the valid range', () => {
-    const fileSystem = new EfsFileSystem(stack, 'EfsFileSystem', {
-        vpc,
-        throughputMode: EfsThroughputMode.PROVISIONED,
-        provisionedThroughputInMibps: 0
+  expect(() => {
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      throughputMode: ThroughputMode.PROVISIONED,
     });
-
-    expect(fileSystem.node.metadata[0].type).toMatch(WARNING_METADATA_KEY);
-    expect(fileSystem.node.metadata[0].data).toContain("Valid values for throughput are 1-1024 MiB/s");
-    expect(fileSystem.node.metadata[0].data).toContain("You can get this limit increased by contacting AWS Support");
-
-    expectCDK(stack).to(haveResource('AWS::EFS::FileSystem'));
+  }).toThrowError(/Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED/);
 });
 
-test('Warning when provisioned throughput is above than the valid range', () => {
-    const fileSystem = new EfsFileSystem(stack, 'EfsFileSystem1', {
-        vpc,
-        throughputMode: EfsThroughputMode.PROVISIONED,
-        provisionedThroughputInMibps: 1025
+test('fails when provisioned throughput is less than the valid range', () => {
+  expect(() => new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    throughputMode: ThroughputMode.PROVISIONED,
+    provisionedThroughputPerSecond: Size.kibibytes(10),
+  })).toThrow(/cannot be converted into a whole number/);
+});
+
+test('fails when provisioned throughput is not a whole number of mebibytes', () => {
+  expect(() => {
+    new FileSystem(stack, 'EfsFileSystem2', {
+      vpc,
+      throughputMode: ThroughputMode.PROVISIONED,
+      provisionedThroughputPerSecond: Size.kibibytes(2050),
     });
-
-    expect(fileSystem.node.metadata[0].type).toMatch(WARNING_METADATA_KEY);
-    expect(fileSystem.node.metadata[0].data).toContain("Valid values for throughput are 1-1024 MiB/s");
-    expect(fileSystem.node.metadata[0].data).toContain("You can get this limit increased by contacting AWS Support");
-
-    expectCDK(stack).to(haveResource('AWS::EFS::FileSystem'));
-});
-
-test('Error when provisioned throughput is invalid number', () => {
-    expect(() => {
-        new EfsFileSystem(stack, 'EfsFileSystem2', {
-            vpc,
-            throughputMode: EfsThroughputMode.PROVISIONED,
-            provisionedThroughputInMibps: 1.5
-        });
-    }).toThrowError(/Invalid input for provisionedThroughputInMibps/);
+  }).toThrowError(/cannot be converted into a whole number/);
 });
 
 test('file system is created correctly with provisioned throughput mode', () => {
-    // WHEN
-    new EfsFileSystem(stack, 'EfsFileSystem', {
-        vpc,
-        throughputMode: EfsThroughputMode.PROVISIONED,
-        provisionedThroughputInMibps: 5
-    });
-    // THEN
-    expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
-        ThroughputMode: "provisioned",
-        ProvisionedThroughputInMibps: 5
-    }));
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    throughputMode: ThroughputMode.PROVISIONED,
+    provisionedThroughputPerSecond: Size.mebibytes(5),
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    ThroughputMode: 'provisioned',
+    ProvisionedThroughputInMibps: 5,
+  });
 });
 
-test('existing file system is imported correctly', () => {
-    // WHEN
-    const fs = EfsFileSystem.fromEfsFileSystemAttributes(stack, "existingFS", {
-        fileSystemID: "fs123",
-        securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
-            allowAllOutbound: false
-        })
+test('existing file system is imported correctly using id', () => {
+  // WHEN
+  const fs = FileSystem.fromFileSystemAttributes(stack, 'existingFS', {
+    fileSystemId: 'fs123',
+    securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+      allowAllOutbound: false,
+    }),
+  });
+
+  fs.connections.allowToAnyIpv4(ec2.Port.tcp(443));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
+    GroupId: 'sg-123456789',
+  });
+});
+
+test('existing file system is imported correctly using arn', () => {
+  // WHEN
+  const arn = stack.formatArn({
+    service: 'elasticfilesystem',
+    resource: 'file-system',
+    resourceName: 'fs-12912923',
+  });
+  const fs = FileSystem.fromFileSystemAttributes(stack, 'existingFS', {
+    fileSystemArn: arn,
+    securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+      allowAllOutbound: false,
+    }),
+  });
+
+  fs.connections.allowToAnyIpv4(ec2.Port.tcp(443));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
+    GroupId: 'sg-123456789',
+  });
+
+  expect(fs.fileSystemArn).toEqual(arn);
+  expect(fs.fileSystemId).toEqual('fs-12912923');
+});
+
+test('must throw an error when trying to import a fileSystem without specifying id or arn', () => {
+  // WHEN
+  expect(() => {
+    FileSystem.fromFileSystemAttributes(stack, 'existingFS', {
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+        allowAllOutbound: false,
+      }),
     });
+  }).toThrow(/One of fileSystemId or fileSystemArn, but not both, must be provided./);
+});
 
-    fs.connections.allowToAnyIpv4(ec2.Port.tcp(443));
+test('must throw an error when trying to import a fileSystem specifying both id and arn', () => {
+  // WHEN
+  const arn = stack.formatArn({
+    service: 'elasticfilesystem',
+    resource: 'file-system',
+    resourceName: 'fs-12912923',
+  });
 
-    // THEN
-    expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
-      GroupId: 'sg-123456789',
-    }));
+  expect(() => {
+    FileSystem.fromFileSystemAttributes(stack, 'existingFS', {
+      fileSystemArn: arn,
+      fileSystemId: 'fs-12343435',
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+        allowAllOutbound: false,
+      }),
+    });
+  }).toThrow(/One of fileSystemId or fileSystemArn, but not both, must be provided./);
+});
+
+test('support granting permissions', () => {
+  const fileSystem = new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+  });
+
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AnyPrincipal(),
+  });
+
+  fileSystem.grant(role, 'elasticfilesystem:ClientWrite');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'elasticfilesystem:ClientWrite',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': [
+              'EfsFileSystem37910666',
+              'Arn',
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    PolicyName: 'RoleDefaultPolicy5FFB7DAB',
+    Roles: [
+      {
+        Ref: 'Role1ABCC5F0',
+      },
+    ],
+  });
+});
+
+test('support tags', () => {
+  // WHEN
+  const fileSystem = new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+  });
+  Tags.of(fileSystem).add('Name', 'LookAtMeAndMyFancyTags');
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    FileSystemTags: [
+      { Key: 'Name', Value: 'LookAtMeAndMyFancyTags' },
+    ],
+  });
+});
+
+test('file system is created correctly when given a name', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    fileSystemName: 'MyNameableFileSystem',
+    vpc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    FileSystemTags: [
+      { Key: 'Name', Value: 'MyNameableFileSystem' },
+    ],
+  });
+});
+
+test('auto-named if none provided', () => {
+  // WHEN
+  const fileSystem = new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    FileSystemTags: [
+      { Key: 'Name', Value: fileSystem.node.path },
+    ],
+  });
+});
+
+test('removalPolicy is DESTROY', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', { vpc, removalPolicy: RemovalPolicy.DESTROY });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::EFS::FileSystem', {
+    DeletionPolicy: 'Delete',
+    UpdateReplacePolicy: 'Delete',
+  });
+});
+
+test('can specify backup policy', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', { vpc, enableAutomaticBackups: true });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    BackupPolicy: {
+      Status: 'ENABLED',
+    },
+  });
+});
+
+test('can create when using a VPC with multiple subnets per availability zone', () => {
+  // create a vpc with two subnets in the same availability zone.
+  const oneAzVpc = new ec2.Vpc(stack, 'Vpc', {
+    maxAzs: 1,
+    subnetConfiguration: [{ name: 'One', subnetType: ec2.SubnetType.ISOLATED }, { name: 'Two', subnetType: ec2.SubnetType.ISOLATED }],
+    natGateways: 0,
+  });
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc: oneAzVpc,
+  });
+  // make sure only one mount target is created.
+  Template.fromStack(stack).resourceCountIs('AWS::EFS::MountTarget', 1);
 });

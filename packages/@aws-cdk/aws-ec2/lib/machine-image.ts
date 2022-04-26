@@ -1,8 +1,13 @@
 import * as ssm from '@aws-cdk/aws-ssm';
-import { Construct, ContextProvider, Stack, Token } from '@aws-cdk/core';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { ContextProvider, CfnMapping, Aws, Stack, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { UserData } from './user-data';
 import { WindowsVersion } from './windows-versions';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Interface for classes that can select an appropriate machine image to use
@@ -65,6 +70,38 @@ export abstract class MachineImage {
   }
 
   /**
+   * An image specified in SSM parameter store that is automatically kept up-to-date
+   *
+   * This Machine Image automatically updates to the latest version on every
+   * deployment. Be aware this will cause your instances to be replaced when a
+   * new version of the image becomes available. Do not store stateful information
+   * on the instance if you are using this image.
+   *
+   * @param parameterName The name of SSM parameter containing the AMi id
+   * @param os The operating system type of the AMI
+   * @param userData optional user data for the given image
+   * @deprecated Use `MachineImage.fromSsmParameter()` instead
+   */
+  public static fromSSMParameter(parameterName: string, os: OperatingSystemType, userData?: UserData): IMachineImage {
+    return new GenericSSMParameterImage(parameterName, os, userData);
+  }
+
+  /**
+   * An image specified in SSM parameter store
+   *
+   * By default, the SSM parameter is refreshed at every deployment,
+   * causing your instances to be replaced whenever a new version of the AMI
+   * is released.
+   *
+   * Pass `{ cachedInContext: true }` to keep the AMI ID stable. If you do, you
+   * will have to remember to periodically invalidate the context to refresh
+   * to the newest AMI ID.
+   */
+  public static fromSsmParameter(parameterName: string, options?: SsmParameterImageOptions): IMachineImage {
+    return new GenericSsmParameterImage(parameterName, options);
+  }
+
+  /**
    * Look up a shared Machine Image using DescribeImages
    *
    * The most recent, available, launchable image matching the given filter
@@ -75,6 +112,8 @@ export abstract class MachineImage {
    * will be used on future runs. To refresh the AMI lookup, you will have to
    * evict the value from the cache using the `cdk context` command. See
    * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
+   *
+   * This function can not be used in environment-agnostic stacks.
    */
   public static lookup(props: LookupMachineImageProps): IMachineImage {
     return new LookupMachineImage(props);
@@ -97,10 +136,114 @@ export interface MachineImageConfig {
 
   /**
    * Initial UserData for this image
+   */
+  readonly userData: UserData;
+}
+
+/**
+ * Select the image based on a given SSM parameter
+ *
+ * This Machine Image automatically updates to the latest version on every
+ * deployment. Be aware this will cause your instances to be replaced when a
+ * new version of the image becomes available. Do not store stateful information
+ * on the instance if you are using this image.
+ *
+ * The AMI ID is selected using the values published to the SSM parameter store.
+ */
+export class GenericSSMParameterImage implements IMachineImage {
+  // FIXME: this class ought to be `@deprecated` and removed from v2, but that
+  // is causing build failure right now. Ref: https://github.com/aws/jsii/issues/3025
+  // @-deprecated Use `MachineImage.fromSsmParameter()` instead
+
+  /**
+   * Name of the SSM parameter we're looking up
+   */
+  public readonly parameterName: string;
+
+  constructor(parameterName: string, private readonly os: OperatingSystemType, private readonly userData?: UserData) {
+    this.parameterName = parameterName;
+  }
+
+  /**
+   * Return the image to use in the given context
+   */
+  public getImage(scope: Construct): MachineImageConfig {
+    const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.parameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
+    return {
+      imageId: ami,
+      osType: this.os,
+      userData: this.userData ?? (this.os === OperatingSystemType.WINDOWS ? UserData.forWindows() : UserData.forLinux()),
+    };
+  }
+}
+
+/**
+ * Properties for GenericSsmParameterImage
+ */
+export interface SsmParameterImageOptions {
+  /**
+   * Operating system
    *
-   * @default - Default UserData appropriate for the osType is created
+   * @default OperatingSystemType.LINUX
+   */
+  readonly os?: OperatingSystemType;
+
+  /**
+   * Custom UserData
+   *
+   * @default - UserData appropriate for the OS
    */
   readonly userData?: UserData;
+
+  /**
+   * Whether the AMI ID is cached to be stable between deployments
+   *
+   * By default, the newest image is used on each deployment. This will cause
+   * instances to be replaced whenever a new version is released, and may cause
+   * downtime if there aren't enough running instances in the AutoScalingGroup
+   * to reschedule the tasks on.
+   *
+   * If set to true, the AMI ID will be cached in `cdk.context.json` and the
+   * same value will be used on future runs. Your instances will not be replaced
+   * but your AMI version will grow old over time. To refresh the AMI lookup,
+   * you will have to evict the value from the cache using the `cdk context`
+   * command. See https://docs.aws.amazon.com/cdk/latest/guide/context.html for
+   * more information.
+   *
+   * Can not be set to `true` in environment-agnostic stacks.
+   *
+   * @default false
+   */
+  readonly cachedInContext?: boolean;
+}
+
+/**
+ * Select the image based on a given SSM parameter
+ *
+ * This Machine Image automatically updates to the latest version on every
+ * deployment. Be aware this will cause your instances to be replaced when a
+ * new version of the image becomes available. Do not store stateful information
+ * on the instance if you are using this image.
+ *
+ * The AMI ID is selected using the values published to the SSM parameter store.
+ */
+class GenericSsmParameterImage implements IMachineImage {
+  constructor(private readonly parameterName: string, private readonly props: SsmParameterImageOptions = {}) {
+  }
+
+  /**
+   * Return the image to use in the given context
+   */
+  public getImage(scope: Construct): MachineImageConfig {
+    const imageId = lookupImage(scope, this.props.cachedInContext, this.parameterName);
+
+    const osType = this.props.os ?? OperatingSystemType.LINUX;
+    return {
+      imageId,
+      osType,
+      userData: this.props.userData ?? (osType === OperatingSystemType.WINDOWS ? UserData.forWindows() : UserData.forLinux()),
+    };
+  }
 }
 
 /**
@@ -127,29 +270,25 @@ export interface WindowsImageProps {
  *
  * https://aws.amazon.com/blogs/mt/query-for-the-latest-windows-ami-using-systems-manager-parameter-store/
  */
-export class WindowsImage implements IMachineImage  {
-  constructor(private readonly version: WindowsVersion, private readonly props: WindowsImageProps = {}) {
+export class WindowsImage extends GenericSSMParameterImage {
+  constructor(version: WindowsVersion, props: WindowsImageProps = {}) {
+    super('/aws/service/ami-windows-latest/' + version, OperatingSystemType.WINDOWS, props.userData);
   }
+}
+
+/**
+ * CPU type
+ */
+export enum AmazonLinuxCpuType {
+  /**
+   * arm64 CPU type
+   */
+  ARM_64 = 'arm64',
 
   /**
-   * Return the image to use in the given context
+   * x86_64 CPU type
    */
-  public getImage(scope: Construct): MachineImageConfig {
-    const parameterName = this.imageParameterName();
-    const ami = ssm.StringParameter.valueForTypedStringParameter(scope, parameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
-    return {
-      imageId: ami,
-      userData: this.props.userData,
-      osType: OperatingSystemType.WINDOWS,
-    };
-  }
-
-  /**
-   * Construct the SSM parameter name for the given Windows image
-   */
-  private imageParameterName(): string {
-    return '/aws/service/ami-windows-latest/' + this.version;
-  }
+  X86_64 = 'x86_64',
 }
 
 /**
@@ -171,6 +310,13 @@ export interface AmazonLinuxImageProps {
   readonly edition?: AmazonLinuxEdition;
 
   /**
+   * What kernel version of Amazon Linux to use
+   *
+   * @default -
+   */
+  readonly kernel?: AmazonLinuxKernel;
+
+  /**
    * Virtualization type
    *
    * @default HVM
@@ -190,6 +336,34 @@ export interface AmazonLinuxImageProps {
    * @default - Empty UserData for Linux machines
    */
   readonly userData?: UserData;
+
+  /**
+   * CPU Type
+   *
+   * @default X86_64
+   */
+  readonly cpuType?: AmazonLinuxCpuType;
+
+  /**
+   * Whether the AMI ID is cached to be stable between deployments
+   *
+   * By default, the newest image is used on each deployment. This will cause
+   * instances to be replaced whenever a new version is released, and may cause
+   * downtime if there aren't enough running instances in the AutoScalingGroup
+   * to reschedule the tasks on.
+   *
+   * If set to true, the AMI ID will be cached in `cdk.context.json` and the
+   * same value will be used on future runs. Your instances will not be replaced
+   * but your AMI version will grow old over time. To refresh the AMI lookup,
+   * you will have to evict the value from the cache using the `cdk context`
+   * command. See https://docs.aws.amazon.com/cdk/latest/guide/context.html for
+   * more information.
+   *
+   * Can not be set to `true` in environment-agnostic stacks.
+   *
+   * @default false
+   */
+  readonly cachedInContext?: boolean;
 }
 
 /**
@@ -202,39 +376,63 @@ export interface AmazonLinuxImageProps {
  *
  * The AMI ID is selected using the values published to the SSM parameter store.
  */
-export class AmazonLinuxImage implements IMachineImage {
-  private readonly generation: AmazonLinuxGeneration;
-  private readonly edition: AmazonLinuxEdition;
-  private readonly virtualization: AmazonLinuxVirt;
-  private readonly storage: AmazonLinuxStorage;
+export class AmazonLinuxImage extends GenericSSMParameterImage {
+  /**
+   * Return the SSM parameter name that will contain the Amazon Linux image with the given attributes
+   */
+  public static ssmParameterName(props: AmazonLinuxImageProps = {}) {
+    const generation = (props && props.generation) || AmazonLinuxGeneration.AMAZON_LINUX;
+    const edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
+    const cpu = (props && props.cpuType) || AmazonLinuxCpuType.X86_64;
+    let kernel = (props && props.kernel) || undefined;
+    let virtualization: AmazonLinuxVirt | undefined;
+    let storage: AmazonLinuxStorage | undefined;
+
+    if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2022) {
+      kernel = AmazonLinuxKernel.KERNEL5_X;
+      if (props && props.storage) {
+        throw new Error('Storage parameter does not exist in smm parameter name for Amazon Linux 2022.');
+      }
+      if (props && props.virtualization) {
+        throw new Error('Virtualization parameter does not exist in smm parameter name for Amazon Linux 2022.');
+      }
+    } else {
+      virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
+      storage = (props && props.storage) || AmazonLinuxStorage.GENERAL_PURPOSE;
+    }
+
+    const parts: Array<string|undefined> = [
+      generation,
+      'ami',
+      edition !== AmazonLinuxEdition.STANDARD ? edition : undefined,
+      kernel,
+      virtualization,
+      cpu,
+      storage,
+    ].filter(x => x !== undefined); // Get rid of undefineds
+
+    return '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
+  }
+
+  private readonly cachedInContext: boolean;
 
   constructor(private readonly props: AmazonLinuxImageProps = {}) {
-    this.generation = (props && props.generation) || AmazonLinuxGeneration.AMAZON_LINUX;
-    this.edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
-    this.virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
-    this.storage = (props && props.storage) || AmazonLinuxStorage.GENERAL_PURPOSE;
+    super(AmazonLinuxImage.ssmParameterName(props), OperatingSystemType.LINUX, props.userData);
+
+    this.cachedInContext = props.cachedInContext ?? false;
   }
 
   /**
    * Return the image to use in the given context
    */
   public getImage(scope: Construct): MachineImageConfig {
-    const parts: Array<string|undefined> = [
-      this.generation,
-      'ami',
-      this.edition !== AmazonLinuxEdition.STANDARD ? this.edition : undefined,
-      this.virtualization,
-      'x86_64', // No 32-bits images vended through this
-      this.storage
-    ].filter(x => x !== undefined); // Get rid of undefineds
+    const imageId = lookupImage(scope, this.cachedInContext, this.parameterName);
 
-    const parameterName = '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
-    const ami = ssm.StringParameter.valueForTypedStringParameter(scope, parameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
-
+    const osType = OperatingSystemType.LINUX;
     return {
-      imageId: ami,
-      userData: this.props.userData,
-      osType: OperatingSystemType.LINUX,
+      imageId,
+      osType,
+      userData: this.props.userData ?? UserData.forLinux(),
     };
   }
 }
@@ -252,6 +450,21 @@ export enum AmazonLinuxGeneration {
    * Amazon Linux 2
    */
   AMAZON_LINUX_2 = 'amzn2',
+
+  /**
+   * Amazon Linux 2022
+   */
+  AMAZON_LINUX_2022 = 'al2022',
+}
+
+/**
+ * Amazon Linux Kernel
+ */
+export enum AmazonLinuxKernel {
+  /**
+   * Standard edition
+   */
+  KERNEL5_X = 'kernel-5.10',
 }
 
 /**
@@ -266,7 +479,7 @@ export enum AmazonLinuxEdition {
   /**
    * Minimal edition
    */
-  MINIMAL = 'minimal'
+  MINIMAL = 'minimal',
 }
 
 /**
@@ -281,7 +494,7 @@ export enum AmazonLinuxVirt {
   /**
    * PV virtualization
    */
-  PV = 'pv'
+  PV = 'pv',
 }
 
 export enum AmazonLinuxStorage {
@@ -293,7 +506,7 @@ export enum AmazonLinuxStorage {
   /**
    * S3-backed storage
    */
-  S3 = 'ebs',
+  S3 = 's3',
 
   /**
    * General Purpose-based storage (recommended)
@@ -331,25 +544,34 @@ export interface GenericWindowsImageProps {
  * Linux images IDs are not published to SSM parameter store yet, so you'll have to
  * manually specify an AMI map.
  */
-export class GenericLinuxImage implements IMachineImage  {
-  constructor(private readonly amiMap: {[region: string]: string}, private readonly props: GenericLinuxImageProps = {}) {
+export class GenericLinuxImage implements IMachineImage {
+  constructor(private readonly amiMap: { [region: string]: string }, private readonly props: GenericLinuxImageProps = {}) {
   }
 
   public getImage(scope: Construct): MachineImageConfig {
+    const userData = this.props.userData ?? UserData.forLinux();
+    const osType = OperatingSystemType.LINUX;
     const region = Stack.of(scope).region;
     if (Token.isUnresolved(region)) {
-      throw new Error(`Unable to determine AMI from AMI map since stack is region-agnostic`);
+      const mapping: { [k1: string]: { [k2: string]: any } } = {};
+      for (const [rgn, ami] of Object.entries(this.amiMap)) {
+        mapping[rgn] = { ami };
+      }
+      const amiMap = new CfnMapping(scope, 'AmiMap', { mapping });
+      return {
+        imageId: amiMap.findInMap(Aws.REGION, 'ami'),
+        userData,
+        osType,
+      };
     }
-
-    const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
-    if (!ami) {
+    const imageId = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
+    if (!imageId) {
       throw new Error(`Unable to find AMI in AMI map: no AMI specified for region '${region}'`);
     }
-
     return {
-      imageId: ami,
-      userData: this.props.userData,
-      osType: OperatingSystemType.LINUX,
+      imageId,
+      userData,
+      osType,
     };
   }
 }
@@ -359,25 +581,34 @@ export class GenericLinuxImage implements IMachineImage  {
  *
  * Allows you to create a generic Windows EC2 , manually specify an AMI map.
  */
-export class GenericWindowsImage implements IMachineImage  {
+export class GenericWindowsImage implements IMachineImage {
   constructor(private readonly amiMap: {[region: string]: string}, private readonly props: GenericWindowsImageProps = {}) {
   }
 
   public getImage(scope: Construct): MachineImageConfig {
+    const userData = this.props.userData ?? UserData.forWindows();
+    const osType = OperatingSystemType.WINDOWS;
     const region = Stack.of(scope).region;
     if (Token.isUnresolved(region)) {
-      throw new Error(`Unable to determine AMI from AMI map since stack is region-agnostic`);
+      const mapping: { [k1: string]: { [k2: string]: any } } = {};
+      for (const [rgn, ami] of Object.entries(this.amiMap)) {
+        mapping[rgn] = { ami };
+      }
+      const amiMap = new CfnMapping(scope, 'AmiMap', { mapping });
+      return {
+        imageId: amiMap.findInMap(Aws.REGION, 'ami'),
+        userData,
+        osType,
+      };
     }
-
-    const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
-    if (!ami) {
+    const imageId = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
+    if (!imageId) {
       throw new Error(`Unable to find AMI in AMI map: no AMI specified for region '${region}'`);
     }
-
     return {
-      imageId: ami,
-      userData: this.props.userData,
-      osType: OperatingSystemType.WINDOWS,
+      imageId,
+      userData,
+      osType,
     };
   }
 }
@@ -388,6 +619,11 @@ export class GenericWindowsImage implements IMachineImage  {
 export enum OperatingSystemType {
   LINUX,
   WINDOWS,
+  /**
+   * Used when the type of the operating system is not known
+   * (for example, for imported Auto-Scaling Groups).
+   */
+  UNKNOWN,
 }
 
 /**
@@ -418,11 +654,11 @@ export class LookupMachineImage implements IMachineImage {
     Object.assign(filters, this.props.filters);
 
     const value = ContextProvider.getValue(scope, {
-      provider: cxapi.AMI_PROVIDER,
+      provider: cxschema.ContextProvider.AMI_PROVIDER,
       props: {
         owners: this.props.owners,
         filters,
-       } as cxapi.AmiContextQuery,
+      } as cxschema.AmiContextQuery,
       dummyValue: 'ami-1234',
     }).value as cxapi.AmiContextResponse;
 
@@ -430,10 +666,12 @@ export class LookupMachineImage implements IMachineImage {
       throw new Error(`Response to AMI lookup invalid, got: ${value}`);
     }
 
+    const osType = this.props.windows ? OperatingSystemType.WINDOWS : OperatingSystemType.LINUX;
+
     return {
       imageId: value,
-      osType: this.props.windows ? OperatingSystemType.WINDOWS : OperatingSystemType.LINUX,
-      userData: this.props.userData
+      osType,
+      userData: this.props.userData ?? UserData.forOperatingSystem(osType),
     };
   }
 }
@@ -475,4 +713,10 @@ export interface LookupMachineImageProps {
    * @default - Empty user data appropriate for the platform type
    */
   readonly userData?: UserData;
+}
+
+function lookupImage(scope: Construct, cachedInContext: boolean | undefined, parameterName: string) {
+  return cachedInContext
+    ? ssm.StringParameter.valueFromLookup(scope, parameterName)
+    : ssm.StringParameter.valueForTypedStringParameter(scope, parameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
 }

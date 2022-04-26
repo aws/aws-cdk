@@ -1,0 +1,15 @@
+{
+    "ResourceTypes": {
+        "AWS::AppIntegrations::EventIntegration": {
+            "patch": {
+                "description": "Remove incorrect PrimitiveType",
+                "operations": [
+                    {
+                        "op": "remove",
+                        "path": "/Properties/EventFilter/PrimitiveType"
+                    }
+                ]
+            }
+        }
+    }
+}

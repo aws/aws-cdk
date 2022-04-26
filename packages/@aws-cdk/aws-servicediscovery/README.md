@@ -1,12 +1,14 @@
-## Amazon ECS Service Discovery Construct Library
+# Amazon ECS Service Discovery Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
@@ -20,7 +22,7 @@ depend on.
 For further information on AWS Cloud Map,
 see the [AWS Cloud Map documentation](https://docs.aws.amazon.com/cloud-map)
 
-### HTTP Namespace Example
+## HTTP Namespace Example
 
 The following example creates an AWS Cloud Map namespace that
 supports API calls, creates a service in that namespace, and
@@ -28,7 +30,7 @@ registers an instance to it:
 
 [Creating a Cloud Map service within an HTTP namespace](test/integ.service-with-http-namespace.lit.ts)
 
-### Private DNS Namespace Example
+## Private DNS Namespace Example
 
 The following example creates an AWS Cloud Map namespace that
 supports both API calls and DNS queries within a vpc, creates a
@@ -37,7 +39,7 @@ instance:
 
 [Creating a Cloud Map service within a Private DNS namespace](test/integ.service-with-private-dns-namespace.lit.ts)
 
-### Public DNS Namespace Example
+## Public DNS Namespace Example
 
 The following example creates an AWS Cloud Map namespace that
 supports both API calls and public DNS queries, creates a service in

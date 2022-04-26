@@ -58,21 +58,33 @@
         "Code": {
           "ZipFile": "foo"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "MyLambdaServiceRole4539ECB6",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
         "MyLambdaServiceRole4539ECB6"
       ]
     },
-    "MyLambdaVersion16CDE3C40": {
+    "MyLambdaFunctionUrlC2055677": {
+      "Type": "AWS::Lambda::Url",
+      "Properties": {
+        "AuthType": "AWS_IAM",
+        "TargetFunctionArn": {
+          "Fn::GetAtt": [
+            "MyLambdaCCE802FB",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "MyLambdaCurrentVersionE7A382CCaab0ffd2d3271bb29338c3fe7c7f3151": {
       "Type": "AWS::Lambda::Version",
       "Properties": {
         "FunctionName": {
@@ -88,7 +100,7 @@
         },
         "FunctionVersion": {
           "Fn::GetAtt": [
-            "MyLambdaVersion16CDE3C40",
+            "MyLambdaCurrentVersionE7A382CCaab0ffd2d3271bb29338c3fe7c7f3151",
             "Version"
           ]
         },
@@ -103,6 +115,26 @@
           "Ref": "Alias325C5727"
         },
         "Principal": "cloudformation.amazonaws.com"
+      }
+    },
+    "AliasFunctionUrlDC6EC566": {
+      "Type": "AWS::Lambda::Url",
+      "Properties": {
+        "AuthType": "NONE",
+        "TargetFunctionArn": {
+          "Ref": "Alias325C5727"
+        }
+      }
+    },
+    "Aliasinvokefunctionurl4CA9917B": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunctionUrl",
+        "FunctionName": {
+          "Ref": "Alias325C5727"
+        },
+        "Principal": "*",
+        "FunctionUrlAuthType": "NONE"
       }
     }
   }
