@@ -97,7 +97,7 @@ describe('cluster user', () => {
       Ref: 'UserSecretE2C04A69',
     });
   });
-  
+
   it('uses username when provided', () => {
     const username = 'username';
 
