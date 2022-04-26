@@ -33,14 +33,14 @@ export interface ServiceAccountOptions {
   /**
    * Additional annotations of the service account.
    *
-   * @default - no dadditional annotations
+   * @default - no additional annotations
    */
   readonly annotations?: {[key:string]: string};
 
   /**
    * Additional labels of the service account.
    *
-   * @default - no dadditional labels
+   * @default - no additional labels
    */
   readonly labels?: {[key:string]: string};
 }
