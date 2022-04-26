@@ -28,8 +28,8 @@ for module in $INPUT ; do
   then
     mkdir -p $DESTINATION/test/$name
     cp -r $module/test/* $DESTINATION/test/$name 2>/dev/null || :
-    find $DESTINATION/test/$name -name "*.d.ts" -type f -delete
-    find $DESTINATION/test/$name -name "*.js" -type f -delete
+    # find $DESTINATION/test/$name -name "*.d.ts" -type f -delete
+    # find $DESTINATION/test/$name -name "*.js" -type f -delete
     find $DESTINATION/test/$name -name "*.test.ts" -type f -delete
     echo
     echo "Processing module: $DESTINATION/test/$name"
