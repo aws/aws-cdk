@@ -9,16 +9,14 @@ rewrite_import() {
   test=$2
   echo "Rewriting $test"
   name=$(basename $module)
-  sed -i '.bak' -E "s/^(import .* from) '(\.\.\/)+lib'/\1 '@aws-cdk\/$name'/" $test
+  sed -i '.bak' -E "s/(\.\.\/)+lib/@aws-cdk\/$name/" $test
+  sed -i '.bak' -E "s/(@aws-cdk\/[\a-z0-9\-]+)\/[^']*/\1/" $test 2>/dev/null || :
 }
 
 rewrite_imports() {
   module=$1
   shopt -s nullglob
-  for file in $module/*.ts ; do
-    rewrite_import $module $file
-  done
-  for file in $module/**/*.ts ; do
+  for file in $(find $module -name "*.ts"); do 
     rewrite_import $module $file
   done
   find $module -name "*.bak" -type f -delete
@@ -26,7 +24,7 @@ rewrite_imports() {
 
 for module in $INPUT ; do
   name=$(basename $module)
-  if ! [[ $name == "integ-runner" || $name == "integ-tests" || $name == "integration" ]]
+  if ! [[ $name == "integ-runner" || $name == "integ-tests" || $name == "integration" || $name == "cfn-spec" || $name == "core" ]]
   then
     mkdir -p $DESTINATION/test/$name
     cp -r $module/test/* $DESTINATION/test/$name 2>/dev/null || :
@@ -39,7 +37,12 @@ for module in $INPUT ; do
   fi
 done
 
+# Ad-hoc transformations
 
+
+# Cleaning up leftovers
+rm -rf $DESTINATION/test/pipelines/blueprint
+rm -rf $DESTINATION/test/**/asset.*
 
 # TODO
 # * Make the input folder an input parameter
