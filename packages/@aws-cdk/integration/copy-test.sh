@@ -24,7 +24,7 @@ rewrite_imports() {
 
 for module in $INPUT ; do
   name=$(basename $module)
-  if ! [[ $name == "integ-runner" || $name == "integ-tests" || $name == "integration" || $name == "cfn-spec" || $name == "core" ]]
+  if ! [[ $name == "integ-runner" || $name == "integ-tests" || $name == "integration" || $name == "cfnspec" || $name == "core" ]]
   then
     mkdir -p $DESTINATION/test/$name
     cp -r $module/test/* $DESTINATION/test/$name 2>/dev/null || :
@@ -41,8 +41,9 @@ done
 
 
 # Cleaning up leftovers
+find test -name "asset.*" -exec rm -rf "{}" \; 2>/dev/null || :
 rm -rf $DESTINATION/test/pipelines/blueprint
-rm -rf $DESTINATION/test/**/asset.*
+rm $DESTINATION/test/aws-eks/cluster-resource-handler-mocks.ts
 
 # TODO
 # * Make the input folder an input parameter
