@@ -28,8 +28,8 @@ for module in $INPUT ; do
   then
     mkdir -p $DESTINATION/test/$name
     cp -r $module/test/* $DESTINATION/test/$name 2>/dev/null || :
-    # find $DESTINATION/test/$name -name "*.d.ts" -type f -delete
-    # find $DESTINATION/test/$name -name "*.js" -type f -delete
+    find $DESTINATION/test/$name -name "*.d.ts" -type f -delete
+    find $DESTINATION/test/$name -name "*.js" -type f -delete
     find $DESTINATION/test/$name -name "*.test.ts" -type f -delete
     echo
     echo "Processing module: $DESTINATION/test/$name"
@@ -44,6 +44,11 @@ done
 find test -name "asset.*" -exec rm -rf "{}" \; 2>/dev/null || :
 rm -rf $DESTINATION/test/pipelines/blueprint
 rm $DESTINATION/test/aws-eks/cluster-resource-handler-mocks.ts
+rm $DESTINATION/test/pipelines/testhelpers/test-app.ts
+sed -i ".bak" -E "s/export \* from '.\/test-app';//" $DESTINATION/test/pipelines/testhelpers/index.ts
+
+# Restoring some state
+sed -i ".bak" -E "s/import \* as consts from .*/import * as consts from '@aws-cdk\/custom-resources\/provider-framework\/runtime\/consts';/" $DESTINATION/test/custom-resources/provider-framework/mocks.ts
 
 # TODO
 # * Make the input folder an input parameter

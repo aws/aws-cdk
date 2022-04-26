@@ -267,6 +267,9 @@
       "path": "../aws-dynamodb"
     },
     {
+      "path": "../aws-dynamodb-global"
+    },
+    {
       "path": "../aws-ec2"
     },
     {
@@ -727,6 +730,9 @@
     },
     {
       "path": "../custom-resources"
+    },
+    {
+      "path": "../example-construct-library"
     },
     {
       "path": "../integ-tests"
