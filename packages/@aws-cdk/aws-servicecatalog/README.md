@@ -342,7 +342,7 @@ as well as in any end user accounts that wish to provision a product with the la
 You can do this by passing in the role with an explicitly set name:
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam'
+import * as iam from '@aws-cdk/aws-iam';
 
 declare const portfolio: servicecatalog.Portfolio;
 declare const product: servicecatalog.CloudFormationProduct;
