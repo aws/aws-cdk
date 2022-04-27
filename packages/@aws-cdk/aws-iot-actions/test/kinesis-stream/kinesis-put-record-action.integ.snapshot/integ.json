@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-iot-actions/test/kinesis-stream/integ.kinesis-put-record-action": {
+      "stacks": [
+        "test-kinesis-stream-action-stack"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}
