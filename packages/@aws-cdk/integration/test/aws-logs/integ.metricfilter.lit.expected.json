@@ -1,0 +1,28 @@
+{
+  "Resources": {
+    "LogGroupF5B46931": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "RetentionInDays": 731
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "MetricFilter1B93B6E5": {
+      "Type": "AWS::Logs::MetricFilter",
+      "Properties": {
+        "FilterPattern": "{ $.latency = \"*\" }",
+        "LogGroupName": {
+          "Ref": "LogGroupF5B46931"
+        },
+        "MetricTransformations": [
+          {
+            "MetricName": "Latency",
+            "MetricNamespace": "MyApp",
+            "MetricValue": "$.latency"
+          }
+        ]
+      }
+    }
+  }
+}

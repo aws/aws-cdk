@@ -1,0 +1,21 @@
+{
+  "version": "0.0.0",
+  "artifacts": {
+    "MyStackName": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://37736633/us-region-1",
+      "properties": {
+        "templateFile": "template.json"
+      },
+      "metadata": {
+        "/foo/bar": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "logicalIdOfFooBar",
+            "trace": "bam"
+          }
+        ]
+      }
+    }
+  }
+}
