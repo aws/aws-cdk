@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/cloudformation-include",
   "version": "0.0.0",
+  "private": true,
   "description": "A package that facilitates working with existing CloudFormation templates in the CDK",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -24,7 +25,7 @@
         "module": "aws_cdk.cloudformation_include",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -261,7 +262,8 @@
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/aws-xray": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69",
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^10.0.0",
     "yaml": "1.10.2"
   },
   "peerDependencies": {
@@ -453,7 +455,8 @@
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/aws-xray": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^10.0.0"
   },
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
@@ -480,7 +483,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "awslint": {
     "exclude": [

@@ -2,10 +2,6 @@ import { Aspects, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AddStageOpts as StageOptions, WaveOptions, Wave, IFileSetProducer, ShellStep, FileSet } from '../blueprint';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Properties for a `Pipeline`
  */
@@ -35,7 +31,7 @@ export interface PipelineBaseProps {
  * when `buildPipeline()` is called, or when `app.synth()` is called (whichever
  * happens first).
  */
-export abstract class PipelineBase extends CoreConstruct {
+export abstract class PipelineBase extends Construct {
   /**
    * The build step that produces the CDK Cloud Assembly
    */

@@ -3,10 +3,6 @@ import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { IScalableTarget } from './scalable-target';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Properties for a scaling policy
  */
@@ -71,7 +67,7 @@ export interface StepScalingActionProps {
  *
  * This Action must be used as the target of a CloudWatch alarm to take effect.
  */
-export class StepScalingAction extends CoreConstruct {
+export class StepScalingAction extends Construct {
   /**
    * ARN of the scaling policy
    */
