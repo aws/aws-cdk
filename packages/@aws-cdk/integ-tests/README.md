@@ -23,7 +23,7 @@ certain handler:
 
 ```ts
 interface StackUnderTestProps extends StackProps {
-  functionProps?: lambda.FunctionProps;
+  architecture?: lambda.Architecture;
 }
 
 class StackUnderTest extends Stack {
@@ -34,7 +34,7 @@ class StackUnderTest extends Stack {
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
-      ...props.functionProps,
+      architecture: props.architecture,
     });
   }
 }
@@ -67,7 +67,8 @@ class StackUnderTest extends Stack {
 const app = new App();
 
 const stack = new Stack(app, 'stack');
-new IntegTestCase(stack, 'DifferentArchitectures', {
+
+const differentArchsCase = new IntegTestCase(stack, 'DifferentArchitectures', {
   stacks: [
     new StackUnderTest(app, 'Stack1', {
       architecture: lambda.Architecture.ARM_64,
@@ -76,6 +77,13 @@ new IntegTestCase(stack, 'DifferentArchitectures', {
       architecture: lambda.Architecture.X86_64,
     }),
   ],
+});
+
+// There must be exactly one instance of TestCase per file
+new IntegTest(app, 'integ-test', {
+
+  // Register as many test cases as you want here
+  testCases: [differentArchsCase],
 });
 ```
 
@@ -90,7 +98,7 @@ const stackUnderTest = new Stack(app, 'StackUnderTest', /* ... */);
 
 const stack = new Stack(app, 'stack');
 
-new IntegTestCase(stack, 'CustomizedDeploymentWorkflow', {
+const testCase = new IntegTestCase(stack, 'CustomizedDeploymentWorkflow', {
   stacks: [stackUnderTest],
   diffAssets: true,
   stackUpdateWorkflow: true,
@@ -107,6 +115,10 @@ new IntegTestCase(stack, 'CustomizedDeploymentWorkflow', {
       },
     },
   },
+});
+
+new IntegTest(app, 'integ-test', {
+  testCases: [testCase],
 });
 ```
 
