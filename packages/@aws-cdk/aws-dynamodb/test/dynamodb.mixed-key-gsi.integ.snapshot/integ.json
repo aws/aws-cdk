@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-dynamodb/test/integ.dynamodb.mixed-key-gsi": {
+      "stacks": [
+        "aws-cdk-dynamodb-gsi"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

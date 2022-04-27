@@ -121,8 +121,8 @@
       "ref-via-interface:@aws-cdk/aws-servicecatalog.PortfolioProps.tagOptions"
     ]
   },
-  "maturity": "developer-preview",
-  "stability": "experimental",
+  "maturity": "stable",
+  "stability": "stable",
   "awscdkio": {
     "announce": false
   },

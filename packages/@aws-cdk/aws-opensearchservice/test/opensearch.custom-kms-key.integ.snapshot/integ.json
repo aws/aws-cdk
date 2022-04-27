@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-opensearchservice/test/integ.opensearch.custom-kms-key": {
+      "stacks": [
+        "cdk-integ-opensearch-custom-kms-key"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

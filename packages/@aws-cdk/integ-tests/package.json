@@ -61,16 +61,36 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/jest": "^27.4.1",
     "@types/node": "^10.17.60",
-    "jest": "^27.5.1"
+    "jest": "^27.5.1",
+    "nock": "^13.2.4",
+    "aws-sdk-mock": "5.6.0",
+    "sinon": "^9.2.4",
+    "aws-sdk": "^2.1093.0"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/triggers": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
     "constructs": "^3.3.69"
+  },
+  "peerDependencies": {
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/triggers": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^3.3.69",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -96,11 +116,6 @@
   "maturity": "experimental",
   "publishConfig": {
     "tag": "latest"
-  },
-  "peerDependencies": {
-    "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
   },
   "awscdkio": {
     "announce": false

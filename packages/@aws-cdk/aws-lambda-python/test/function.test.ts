@@ -77,6 +77,23 @@ test('PythonFunction with index in a subdirectory', () => {
   });
 });
 
+test('PythonFunction with index in a nested subdirectory', () => {
+  new PythonFunction(stack, 'handler', {
+    entry: 'test/lambda-handler-sub-nested',
+    index: 'inner/inner2/custom_index.py',
+    handler: 'custom_handler',
+    runtime: Runtime.PYTHON_3_8,
+  });
+
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    entry: expect.stringMatching(/aws-lambda-python\/test\/lambda-handler-sub-nested$/),
+  }));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Handler: 'inner.inner2.custom_index.custom_handler',
+  });
+});
+
 test('throws when index is not py', () => {
   expect(() => new PythonFunction(stack, 'Fn', {
     entry: 'test/lambda-handler',
