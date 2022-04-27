@@ -75,7 +75,7 @@ export interface DashboardProps {
  * A CloudWatch dashboard
  */
 export class Dashboard extends Resource {
-  
+
   /**
    * The name of this dashboard
    *
