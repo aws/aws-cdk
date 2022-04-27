@@ -92,7 +92,7 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
   const reqCertResponse = await acm.requestCertificate({
     DomainName: domainName,
     SubjectAlternativeNames: subjectAlternativeNames,
-    IdempotencyToken: crypto.createHash('sha256').update(requestId).digest('hex').substr(0, 32),
+    IdempotencyToken: crypto.createHash('sha256').update(requestId).digest('hex').slice(0, 32),
     ValidationMethod: 'DNS'
   }).promise();
 

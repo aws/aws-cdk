@@ -115,6 +115,10 @@ export class StackActivityMonitor {
     return new StackActivityMonitor(cfn, stackName, printer, stackArtifact, options.changeSetCreationTime);
   }
 
+  /**
+   * Resource errors found while monitoring the deployment
+   */
+  public readonly errors = new Array<string>();
 
   private active = false;
   private activity: { [eventId: string]: StackActivity } = { };
@@ -262,6 +266,7 @@ export class StackActivityMonitor {
 
     events.reverse();
     for (const event of events) {
+      this.checkForErrors(event);
       this.printer.addActivity(event);
     }
   }
@@ -284,13 +289,25 @@ export class StackActivityMonitor {
     await this.readNewEvents();
   }
 
+  private checkForErrors(activity: StackActivity) {
+    if (hasErrorMessage(activity.event.ResourceStatus ?? '')) {
+      const isCancelled = (activity.event.ResourceStatusReason ?? '').indexOf('cancelled') > -1;
+
+      // Cancelled is not an interesting failure reason, nor is the stack message (stack
+      // message will just say something like "stack failed to update")
+      if (!isCancelled && activity.event.StackName !== activity.event.LogicalResourceId) {
+        this.errors.push(activity.event.ResourceStatusReason ?? '');
+      }
+    }
+  }
+
   private simplifyConstructPath(path: string) {
     path = path.replace(/\/Resource$/, '');
     path = path.replace(/^\//, ''); // remove "/" prefix
 
     // remove "<stack-name>/" prefix
     if (path.startsWith(this.stackName + '/')) {
-      path = path.substr(this.stackName.length + 1);
+      path = path.slice(this.stackName.length + 1);
     }
     return path;
   }
@@ -527,7 +544,7 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
         e.StackName,
         (progress !== false ? `${this.progress()} | ` : ''),
         new Date(e.Timestamp).toLocaleTimeString(),
-        color(padRight(STATUS_WIDTH, (e.ResourceStatus || '').substr(0, STATUS_WIDTH))), // pad left and trim
+        color(padRight(STATUS_WIDTH, (e.ResourceStatus || '').slice(0, STATUS_WIDTH))), // pad left and trim
         padRight(this.props.resourceTypeColumnWidth, e.ResourceType || ''),
         color(chalk.bold(resourceName)),
         logicalId,
@@ -623,7 +640,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
 
       return util.format('%s | %s | %s | %s%s',
         padLeft(TIMESTAMP_WIDTH, new Date(res.event.Timestamp).toLocaleTimeString()),
-        color(padRight(STATUS_WIDTH, (res.event.ResourceStatus || '').substr(0, STATUS_WIDTH))),
+        color(padRight(STATUS_WIDTH, (res.event.ResourceStatus || '').slice(0, STATUS_WIDTH))),
         padRight(this.props.resourceTypeColumnWidth, res.event.ResourceType || ''),
         color(chalk.bold(shorten(40, resourceName))),
         this.failureReasonOnNextLine(res));
@@ -652,7 +669,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
 
       lines.push(util.format(chalk.red('%s | %s | %s | %s%s') + '\n',
         padLeft(TIMESTAMP_WIDTH, new Date(failure.event.Timestamp).toLocaleTimeString()),
-        padRight(STATUS_WIDTH, (failure.event.ResourceStatus || '').substr(0, STATUS_WIDTH)),
+        padRight(STATUS_WIDTH, (failure.event.ResourceStatus || '').slice(0, STATUS_WIDTH)),
         padRight(this.props.resourceTypeColumnWidth, failure.event.ResourceType || ''),
         shorten(40, failure.event.LogicalResourceId ?? ''),
         this.failureReasonOnNextLine(failure)));
@@ -665,6 +682,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
 
     // Display in the same block space, otherwise we're going to have silly empty lines.
     this.block.displayLines(lines);
+    this.block.removeEmptyLines();
   }
 
   private progressBar(width: number) {
@@ -727,7 +745,7 @@ function colorFromStatusActivity(status?: string) {
     return chalk.red;
   }
 
-  if (status.startsWith('CREATE_') || status.startsWith('UPDATE_')) {
+  if (status.startsWith('CREATE_') || status.startsWith('UPDATE_') || status.startsWith('IMPORT_')) {
     return chalk.green;
   }
   // For stacks, it may also be 'UPDDATE_ROLLBACK_IN_PROGRESS'
@@ -744,7 +762,7 @@ function colorFromStatusActivity(status?: string) {
 function shorten(maxWidth: number, p: string) {
   if (p.length <= maxWidth) { return p; }
   const half = Math.floor((maxWidth - 3) / 2);
-  return p.substr(0, half) + '...' + p.substr(p.length - half);
+  return p.slice(0, half) + '...' + p.slice(-half);
 }
 
 const TIMESTAMP_WIDTH = 12;

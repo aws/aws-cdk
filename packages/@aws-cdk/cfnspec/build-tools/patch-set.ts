@@ -228,7 +228,7 @@ function findPatches(data: any, patchSource: any): Patch[] {
       throw new Error(`adjustPath: expected string, got ${JSON.stringify(originalPath)}`);
     }
     if (originalPath.startsWith('$/')) {
-      return originalPath.substr(1);
+      return originalPath.slice(1);
     }
     return jsonPath.map(p => `/${p}`).join('') + originalPath;
   }
