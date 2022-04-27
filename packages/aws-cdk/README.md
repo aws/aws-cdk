@@ -350,7 +350,7 @@ Example `stacks.json` after deployment of multiple stacks
     "name": "outputs-test-1",
   },
   {
-    "id": "arn:aws:cloudformation:us-east-1:000000000000:stack/outputs-test-2/528053e0-c59a-23fc-ace2-1296d0f2c267", 
+    "id": "arn:aws:cloudformation:us-east-1:000000000000:stack/outputs-test-2/8cd51353-2811-4f3a-ab88-83c0ee7a6404", 
     "name": "outputs-test-2",
   }
 ]
