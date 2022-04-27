@@ -1,10 +1,10 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as assets from '@aws-cdk/aws-s3-assets';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IModel } from './model';
 
 // The only supported extension for local asset model data
-const ARTIFACT_EXTENSION = ".tar.gz";
+const ARTIFACT_EXTENSION = '.tar.gz';
 
 /**
  * The configuration needed to reference model artifacts.
@@ -37,7 +37,7 @@ export abstract class ModelData {
    * @param id The id to associate with the new asset
    * @param path The local path to a model artifact file as a gzipped tar file
    */
-  public static fromAsset(scope: cdk.Construct, id: string, path: string): ModelData {
+  public static fromAsset(scope: Construct, id: string, path: string): ModelData {
     return new AssetModelData(scope, id, path);
   }
 
@@ -47,7 +47,7 @@ export abstract class ModelData {
    * @param scope The scope within which the model data is resolved
    * @param model The Model construct performing the URI resolution
    */
-  public abstract bind(scope: cdk.Construct, model: IModel): ModelDataConfig;
+  public abstract bind(scope: Construct, model: IModel): ModelDataConfig;
 }
 
 class S3ModelData extends ModelData {
@@ -55,7 +55,7 @@ class S3ModelData extends ModelData {
     super();
   }
 
-  public bind(_scope: cdk.Construct, model: IModel): ModelDataConfig {
+  public bind(_scope: Construct, model: IModel): ModelDataConfig {
     this.bucket.grantRead(model);
 
     return {
@@ -67,7 +67,7 @@ class S3ModelData extends ModelData {
 class AssetModelData extends ModelData {
   private readonly asset: assets.Asset;
 
-  constructor(readonly scope: cdk.Construct, readonly id: string, readonly path: string) {
+  constructor(readonly scope: Construct, readonly id: string, readonly path: string) {
     super();
     this.asset = new assets.Asset(scope, id, {
       path: this.path,
@@ -77,7 +77,7 @@ class AssetModelData extends ModelData {
     }
   }
 
-  public bind(_scope: cdk.Construct, model: IModel): ModelDataConfig {
+  public bind(_scope: Construct, model: IModel): ModelDataConfig {
     this.asset.grantRead(model);
 
     return {

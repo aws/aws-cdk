@@ -1,9 +1,10 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { CfnModel } from '.';
+import { Construct } from 'constructs';
 import { ContainerImage } from './container-image';
 import { ModelData } from './model-data';
+import { CfnModel } from './sagemaker.generated';
 
 /**
  * Name tag constant
@@ -221,8 +222,8 @@ export class Model extends ModelBase {
    * @param id the resource id.
    * @param modelName the name of the model.
    */
-  public static fromModelName(scope: cdk.Construct, id: string, modelName: string): IModel {
-    return Model.fromModelAttributes(scope, id, {modelName});
+  public static fromModelName(scope: Construct, id: string, modelName: string): IModel {
+    return Model.fromModelAttributes(scope, id, { modelName });
   }
 
   /**
@@ -231,7 +232,7 @@ export class Model extends ModelBase {
    * @param id the resource id.
    * @param attrs the attributes of the model to import.
    */
-  public static fromModelAttributes(scope: cdk.Construct, id: string, attrs: ModelAttributes): IModel {
+  public static fromModelAttributes(scope: Construct, id: string, attrs: ModelAttributes): IModel {
     const modelName = attrs.modelName;
     const role = attrs.role;
 
@@ -241,18 +242,18 @@ export class Model extends ModelBase {
       public readonly grantPrincipal: iam.IPrincipal;
       public readonly modelArn: string;
 
-      constructor(s: cdk.Construct, i: string) {
+      constructor(s: Construct, i: string) {
         super(s, i);
 
         this.modelArn = cdk.Stack.of(this).formatArn({
           service: 'sagemaker',
           resource: 'model',
-          resourceName: this.modelName
+          resourceName: this.modelName,
         });
         this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this });
         if (attrs.securityGroups) {
           this._connections = new ec2.Connections({
-            securityGroups: attrs.securityGroups
+            securityGroups: attrs.securityGroups,
           });
         }
       }
@@ -281,9 +282,9 @@ export class Model extends ModelBase {
   public readonly grantPrincipal: iam.IPrincipal;
   private readonly subnets: ec2.SelectedSubnets | undefined;
 
-  constructor(scope: cdk.Construct, id: string, props: ModelProps) {
+  constructor(scope: Construct, id: string, props: ModelProps) {
     super(scope, id, {
-      physicalName: props.modelName
+      physicalName: props.modelName,
     });
 
     // validate containers
@@ -338,13 +339,13 @@ export class Model extends ModelBase {
 
   private configureNetworking(props: ModelProps): ec2.Connections | undefined {
     if ((props.securityGroups || props.allowAllOutbound !== undefined) && !props.vpc) {
-      throw new Error(`Cannot configure 'securityGroups' or 'allowAllOutbound' without configuring a VPC`);
+      throw new Error('Cannot configure \'securityGroups\' or \'allowAllOutbound\' without configuring a VPC');
     }
 
     if (!props.vpc) { return undefined; }
 
     if ((props.securityGroups && props.securityGroups.length > 0) && props.allowAllOutbound !== undefined) {
-      throw new Error(`Configure 'allowAllOutbound' directly on the supplied SecurityGroups`);
+      throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroups');
     }
 
     let securityGroups: ec2.ISecurityGroup[];
@@ -366,7 +367,7 @@ export class Model extends ModelBase {
 
     return {
       subnets: this.subnets!.subnetIds,
-      securityGroupIds: this.connections.securityGroups.map(s => s.securityGroupId)
+      securityGroupIds: this.connections.securityGroups.map(s => s.securityGroupId),
     };
   }
 

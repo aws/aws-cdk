@@ -3,18 +3,19 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as sagemaker from '../lib';
 
 describe('When instantiating SageMaker Model', () => {
   test('with more than 5 containers, an exception is thrown', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const testRepo = ecr.Repository.fromRepositoryName(stack, `testRepo`, `123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel`);
+    const testRepo = ecr.Repository.fromRepositoryName(stack, 'testRepo', '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel');
     const container = { image: sagemaker.ContainerImage.fromEcrRepository(testRepo) };
     const extraContainers: sagemaker.ContainerDefinition[] = [];
     for (let i = 0; i < 5; i++) {
       const containerDefinition = {
-        image: sagemaker.ContainerImage.fromEcrRepository(testRepo)
+        image: sagemaker.ContainerImage.fromEcrRepository(testRepo),
       };
       extraContainers.push(containerDefinition);
     }
@@ -30,12 +31,12 @@ describe('When instantiating SageMaker Model', () => {
     // GIVEN
     const stack = new cdk.Stack();
     class ConstructCreatingContainerImage extends sagemaker.ContainerImage {
-      public bind(scope: cdk.Construct, _model: sagemaker.Model): sagemaker.ContainerImageConfig {
+      public bind(scope: constructs.Construct, _model: sagemaker.Model): sagemaker.ContainerImageConfig {
         new iam.User(scope, 'User', {
-          userName: 'ExtraConstructUserName'
+          userName: 'ExtraConstructUserName',
         });
         return {
-          imageName: 'anything'
+          imageName: 'anything',
         };
       }
     }
@@ -43,15 +44,15 @@ describe('When instantiating SageMaker Model', () => {
     // WHEN
     new sagemaker.Model(stack, 'Model', {
       container: {
-        image: new ConstructCreatingContainerImage()
-      }
+        image: new ConstructCreatingContainerImage(),
+      },
     });
 
     // THEN
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::SageMaker::Model', {});
     template.hasResourceProperties('AWS::IAM::User', {
-      UserName: 'ExtraConstructUserName'
+      UserName: 'ExtraConstructUserName',
     });
   });
 
@@ -63,14 +64,14 @@ describe('When instantiating SageMaker Model', () => {
 
       // WHEN
       new sagemaker.Model(stack, 'Model', {
-        container: {image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo'))},
+        container: { image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) },
         vpc,
-        securityGroups: [new ec2.SecurityGroup(stack, 'SG', {vpc})]
+        securityGroups: [new ec2.SecurityGroup(stack, 'SG', { vpc })],
       });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', Match.not({
-        GroupDescription: 'Default/Model/SecurityGroup'
+        GroupDescription: 'Default/Model/SecurityGroup',
       }));
     });
 
@@ -80,13 +81,13 @@ describe('When instantiating SageMaker Model', () => {
 
       // WHEN
       new sagemaker.Model(stack, 'Model', {
-        container: {image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo'))},
+        container: { image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) },
         vpc: new ec2.Vpc(stack, 'testVPC'),
       });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
-        GroupDescription: 'Default/Model/SecurityGroup'
+        GroupDescription: 'Default/Model/SecurityGroup',
       });
     });
 
@@ -98,10 +99,10 @@ describe('When instantiating SageMaker Model', () => {
       // WHEN
       const when = () =>
         new sagemaker.Model(stack, 'Model', {
-          container: {image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo'))},
+          container: { image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) },
           vpc,
-          securityGroups: [new ec2.SecurityGroup(stack, 'SG', {vpc})],
-          allowAllOutbound: false
+          securityGroups: [new ec2.SecurityGroup(stack, 'SG', { vpc })],
+          allowAllOutbound: false,
         });
 
       // THEN
@@ -118,8 +119,8 @@ describe('When instantiating SageMaker Model', () => {
       // WHEN
       const when = () =>
         new sagemaker.Model(stack, 'Model', {
-          container: {image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo'))},
-          securityGroups: [new ec2.SecurityGroup(stack, 'SG', {vpc: vpcNotSpecified})]
+          container: { image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) },
+          securityGroups: [new ec2.SecurityGroup(stack, 'SG', { vpc: vpcNotSpecified })],
         });
 
       // THEN
@@ -133,8 +134,8 @@ describe('When instantiating SageMaker Model', () => {
       // WHEN
       const when = () =>
         new sagemaker.Model(stack, 'Model', {
-          container: {image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo'))},
-          allowAllOutbound: false
+          container: { image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) },
+          allowAllOutbound: false,
         });
 
       // THEN
@@ -148,7 +149,7 @@ describe('When accessing Connections object', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const modelWithoutVpc = new sagemaker.Model(stack, 'Model', {
-      container: {image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo'))},
+      container: { image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) },
     });
 
     // WHEN
@@ -162,7 +163,7 @@ describe('When accessing Connections object', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const importedModel = sagemaker.Model.fromModelAttributes(stack, 'Model', {
-      modelName: 'MyModel'
+      modelName: 'MyModel',
     });
 
     // WHEN
@@ -183,7 +184,7 @@ test('When adding security group after model instantiation, it is reflected in V
   });
 
   // WHEN
-  model.connections.addSecurityGroup(new ec2.SecurityGroup(stack, 'AdditionalGroup', {vpc}));
+  model.connections.addSecurityGroup(new ec2.SecurityGroup(stack, 'AdditionalGroup', { vpc }));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::SageMaker::Model', {
@@ -192,17 +193,17 @@ test('When adding security group after model instantiation, it is reflected in V
         {
           'Fn::GetAtt': [
             'ModelSecurityGroup2A7C9E10',
-            'GroupId'
-          ]
+            'GroupId',
+          ],
         },
         {
           'Fn::GetAtt': [
             'AdditionalGroup4973CFAA',
-            'GroupId'
-          ]
-        }
-      ]
-    }
+            'GroupId',
+          ],
+        },
+      ],
+    },
   });
 });
 
@@ -231,8 +232,8 @@ test('When importing a model by name, the ARN is constructed correctly', () => {
     env:
       {
         region: 'us-west-2',
-        account: '123456789012'
-      }
+        account: '123456789012',
+      },
   });
 
   // WHEN

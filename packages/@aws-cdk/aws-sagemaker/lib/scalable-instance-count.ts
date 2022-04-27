@@ -1,5 +1,5 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * The properties of a scalable attribute representing task count.
@@ -14,7 +14,7 @@ export class ScalableInstanceCount extends appscaling.BaseScalableAttribute {
   /**
    * Constructs a new instance of the ScalableInstanceCount class.
    */
-  constructor(scope: cdk.Construct, id: string, props: ScalableInstanceCountProps) {
+  constructor(scope: Construct, id: string, props: ScalableInstanceCountProps) {
     super(scope, id, props);
   }
 

@@ -1,7 +1,7 @@
+import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import * as path from "path";
 import * as sagemaker from '../lib';
 
 /*
@@ -39,7 +39,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-sagemaker-endpoint');
 
 const image = sagemaker.ContainerImage.fromAsset(stack, 'ModelImage', {
-  directory: path.join(__dirname, 'test-image')
+  directory: path.join(__dirname, 'test-image'),
 });
 const modelData = sagemaker.ModelData.fromAsset(stack, 'ModelData',
   path.join(__dirname, 'test-artifacts', 'valid-artifact.tar.gz'));
@@ -61,7 +61,7 @@ const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
   extraProductionVariants: [{
     model: modelWithArtifactAndVpc,
     variantName: 'secondVariant',
-  }]
+  }],
 });
 endpointConfig.addProductionVariant({
   model: modelWithoutArtifactAndVpc,
@@ -77,7 +77,7 @@ endpoint.grantInvoke(invokerRole);
 
 const productionVariant = endpoint.findProductionVariant('firstVariant');
 const instanceCount = productionVariant.autoScaleInstanceCount({
-  maxCapacity: 3
+  maxCapacity: 3,
 });
 instanceCount.scaleOnInvocations('LimitRPS', {
   maxRequestsPerSecond: 30,

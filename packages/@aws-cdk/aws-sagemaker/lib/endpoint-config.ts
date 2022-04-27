@@ -1,9 +1,10 @@
+import { EOL } from 'os';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
-import { EOL } from 'os';
-import { CfnEndpointConfig } from '.';
+import { Construct } from 'constructs';
 import { IModel } from './model';
+import { CfnEndpointConfig } from './sagemaker.generated';
 
 /**
  * The interface for a SageMaker EndpointConfig resource.
@@ -165,13 +166,13 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    * @param id the resource id.
    * @param endpointConfigName the name of the endpoint configuration.
    */
-  public static fromEndpointConfigName(scope: cdk.Construct, id: string, endpointConfigName: string): IEndpointConfig {
+  public static fromEndpointConfigName(scope: Construct, id: string, endpointConfigName: string): IEndpointConfig {
     class Import extends cdk.Resource implements IEndpointConfig {
       public endpointConfigName = endpointConfigName;
       public endpointConfigArn = cdk.Stack.of(this).formatArn({
         service: 'sagemaker',
         resource: 'endpoint-config',
-        resourceName: this.endpointConfigName
+        resourceName: this.endpointConfigName,
       });
     }
 
@@ -189,9 +190,9 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
 
   private readonly _productionVariants: { [key: string]: ProductionVariant; } = {};
 
-  constructor(scope: cdk.Construct, id: string, props: EndpointConfigProps) {
+  constructor(scope: Construct, id: string, props: EndpointConfigProps) {
     super(scope, id, {
-      physicalName: props.endpointConfigName
+      physicalName: props.endpointConfigName,
     });
 
     // apply a name tag to the endpoint config resource
@@ -203,7 +204,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     const endpointConfig = new CfnEndpointConfig(this, 'EndpointConfig', {
       kmsKeyId: (props.encryptionKey) ? props.encryptionKey.keyArn : undefined,
       endpointConfigName: this.physicalName,
-      productionVariants: cdk.Lazy.any({ produce: () => this.renderProductionVariants() })
+      productionVariants: cdk.Lazy.any({ produce: () => this.renderProductionVariants() }),
     });
     this.endpointConfigName = this.getResourceNameAttribute(endpointConfig.attrEndpointConfigName);
     this.endpointConfigArn = this.getResourceArnAttribute(endpointConfig.ref, {
@@ -229,7 +230,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       initialVariantWeight: props.initialVariantWeight || 1.0,
       instanceType: props.instanceType || ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MEDIUM),
       modelName: props.model.modelName,
-      variantName: props.variantName
+      variantName: props.variantName,
     };
   }
 

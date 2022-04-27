@@ -48,13 +48,13 @@ the S3 path where the model artifacts are stored and the Docker registry path fo
 contains the inference code. The `ContainerDefinition` interface encapsulates both the specification
 of model inference code as a `ContainerImage` and an optional set of artifacts as `ModelData`.
 
-#### Container Images
+### Container Images
 
 Inference code can be stored in the Amazon EC2 Container Registry (Amazon ECR), which is specified
 via `ContainerDefinition`'s `image` property which accepts a class that extends the `ContainerImage`
 abstract base class.
 
-##### `EcrImage`
+#### `EcrImage`
 
 Reference an image available within ECR:
 
@@ -66,7 +66,7 @@ const repository = ecr.Repository.fromRepositoryName(this, 'Repository', 'repo')
 const image = sagemaker.ContainerImage.fromEcrRepository(repository, 'tag');
 ```
 
-##### `AssetImage`
+#### `AssetImage`
 
 Reference a local directory containing a Dockerfile:
 
@@ -79,13 +79,13 @@ const image = sagemaker.ContainerImage.fromAsset(this, 'Image', {
 });
 ```
 
-#### Model Artifacts
+### Model Artifacts
 
 Models are often associated with model artifacts, which are specified via the `modelData` property
 which accepts a class that extends the `ModelData` abstract base class. The default is to have no
 model artifacts associated with a model.
 
-##### `S3ModelData`
+#### `S3ModelData`
 
 Reference an S3 bucket and object key as the artifacts for a model:
 
@@ -97,7 +97,7 @@ const bucket = new s3.Bucket(this, 'MyBucket');
 const modelData = sagemaker.ModelData.fromBucket(bucket, 'path/to/artifact/file.tar.gz');
 ```
 
-##### `AssetModelData`
+#### `AssetModelData`
 
 Reference local model data:
 

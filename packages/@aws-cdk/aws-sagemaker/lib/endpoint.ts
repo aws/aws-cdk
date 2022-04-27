@@ -1,11 +1,12 @@
+import { EOL } from 'os';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as ec2 from "@aws-cdk/aws-ec2";
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { EOL } from 'os';
-import { CfnEndpoint } from '.';
-import { EndpointConfig, ProductionVariant } from "./endpoint-config";
+import { Construct } from 'constructs';
+import { EndpointConfig, ProductionVariant } from './endpoint-config';
+import { CfnEndpoint } from './sagemaker.generated';
 import { ScalableInstanceCount } from './scalable-instance-count';
 
 /*
@@ -146,10 +147,10 @@ class EndpointProductionVariant implements IEndpointProductionVariant {
       metricName,
       dimensions: {
         EndpointName: this.endpoint.endpointName,
-        VariantName: this.variantName
+        VariantName: this.variantName,
       },
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -164,14 +165,14 @@ class EndpointProductionVariant implements IEndpointProductionVariant {
   public metricModelLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('AWS/SageMaker', 'ModelLatency', {
       statistic: 'Average',
-      ...props
+      ...props,
     });
   }
 
   public metricOverheadLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('AWS/SageMaker', 'OverheadLatency', {
       statistic: 'Average',
-      ...props
+      ...props,
     });
   }
 
@@ -184,35 +185,35 @@ class EndpointProductionVariant implements IEndpointProductionVariant {
   public metricDiskUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('/aws/sagemaker/Endpoints', 'DiskUtilization', {
       statistic: 'Average',
-      ...props
+      ...props,
     });
   }
 
   public metricCPUUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('/aws/sagemaker/Endpoints', 'CPUUtilization', {
       statistic: 'Average',
-      ...props
+      ...props,
     });
   }
 
   public metricMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('/aws/sagemaker/Endpoints', 'MemoryUtilization', {
       statistic: 'Average',
-      ...props
+      ...props,
     });
   }
 
   public metricGPUUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('/aws/sagemaker/Endpoints', 'GPUUtilization', {
       statistic: 'Average',
-      ...props
+      ...props,
     });
   }
 
   public metricGPUMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('/aws/sagemaker/Endpoints', 'GPUMemoryUtilization', {
       statistic: 'Average',
-      ...props
+      ...props,
     });
   }
 
@@ -256,7 +257,7 @@ class EndpointProductionVariant implements IEndpointProductionVariant {
       service: 'iam',
       region: '',
       resource: 'role/aws-service-role/sagemaker.application-autoscaling.amazonaws.com',
-      resourceName: 'AWSServiceRoleForApplicationAutoScaling_SageMakerEndpoint'
+      resourceName: 'AWSServiceRoleForApplicationAutoScaling_SageMakerEndpoint',
     }));
   }
 }
@@ -339,13 +340,13 @@ export class Endpoint extends EndpointBase {
    * @param id the resource id.
    * @param endpointName the name of the endpoint.
    */
-  public static fromEndpointName(scope: cdk.Construct, id: string, endpointName: string): IEndpoint {
+  public static fromEndpointName(scope: Construct, id: string, endpointName: string): IEndpoint {
     class Import extends EndpointBase {
       public endpointName = endpointName;
       public endpointArn = cdk.Stack.of(this).formatArn({
         service: 'sagemaker',
         resource: 'endpoint',
-        resourceName: this.endpointName
+        resourceName: this.endpointName,
       });
     }
 
@@ -366,9 +367,9 @@ export class Endpoint extends EndpointBase {
   public readonly endpointName: string;
   private readonly endpointConfig: EndpointConfig;
 
-  constructor(scope: cdk.Construct, id: string, props: EndpointProps) {
+  constructor(scope: Construct, id: string, props: EndpointProps) {
     super(scope, id, {
-      physicalName: props.endpointName
+      physicalName: props.endpointName,
     });
 
     // apply a name tag to the endpoint resource

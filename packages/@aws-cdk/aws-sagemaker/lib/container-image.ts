@@ -1,6 +1,6 @@
 import * as ecr from '@aws-cdk/aws-ecr';
-import * as assets from "@aws-cdk/aws-ecr-assets";
-import * as cdk from '@aws-cdk/core';
+import * as assets from '@aws-cdk/aws-ecr-assets';
+import { Construct } from 'constructs';
 import { Model } from './model';
 
 /**
@@ -35,14 +35,14 @@ export abstract class ContainerImage {
    * @param id The id to assign to the image asset
    * @param props The properties of a Docker image asset
    */
-  public static fromAsset(scope: cdk.Construct, id: string, props: assets.DockerImageAssetProps): ContainerImage {
+  public static fromAsset(scope: Construct, id: string, props: assets.DockerImageAssetProps): ContainerImage {
     return new AssetImage(scope, id, props);
   }
 
   /**
    * Called when the image is used by a Model
    */
-  public abstract bind(scope: cdk.Construct, model: Model): ContainerImageConfig;
+  public abstract bind(scope: Construct, model: Model): ContainerImageConfig;
 }
 
 class EcrImage extends ContainerImage {
@@ -50,11 +50,11 @@ class EcrImage extends ContainerImage {
     super();
   }
 
-  public bind(_scope: cdk.Construct, model: Model): ContainerImageConfig {
+  public bind(_scope: Construct, model: Model): ContainerImageConfig {
     this.repository.grantPull(model);
 
     return {
-      imageName: this.repository.repositoryUriForTag(this.tag)
+      imageName: this.repository.repositoryUriForTag(this.tag),
     };
   }
 }
@@ -62,12 +62,12 @@ class EcrImage extends ContainerImage {
 class AssetImage extends ContainerImage {
   private readonly asset: assets.DockerImageAsset;
 
-  constructor(readonly scope: cdk.Construct, readonly id: string, readonly props: assets.DockerImageAssetProps) {
+  constructor(readonly scope: Construct, readonly id: string, readonly props: assets.DockerImageAssetProps) {
     super();
     this.asset = new assets.DockerImageAsset(scope, id, props);
   }
 
-  public bind(_scope: cdk.Construct, model: Model): ContainerImageConfig {
+  public bind(_scope: Construct, model: Model): ContainerImageConfig {
     this.asset.repository.grantPull(model);
 
     return {

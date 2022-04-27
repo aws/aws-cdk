@@ -6,12 +6,12 @@ describe('When validating stack containing an EndpointConfig', () => {
   test('with more than 10 production variants, an error is recorded', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = sagemaker.Model.fromModelName(stack, `Model`, `model`);
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
       productionVariant: {
         variantName: 'variant',
-        model
-      }
+        model,
+      },
     });
     for (let i = 0; i < 10; i++) {
       endpointConfig.addProductionVariant({ variantName: `variant-${i}`, model });
@@ -29,9 +29,8 @@ describe('When adding a production variant to an EndpointConfig', () => {
   test('with too few instances specified, an exception is thrown', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = sagemaker.Model.fromModelName(stack, `Model`, `model`);
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
-      productionVariant: { variantName: 'variant', model } });
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariant: { variantName: 'variant', model } });
 
     // WHEN
     const when = () =>
@@ -48,9 +47,8 @@ describe('When adding a production variant to an EndpointConfig', () => {
   test('with a negative weight, an exception is thrown', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = sagemaker.Model.fromModelName(stack, `Model`, `model`);
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
-      productionVariant: { variantName: 'variant', model } });
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariant: { variantName: 'variant', model } });
 
     // WHEN
     const when = () =>
@@ -67,9 +65,8 @@ describe('When adding a production variant to an EndpointConfig', () => {
   test('with an unsupported instance type, an exception is thrown', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = sagemaker.Model.fromModelName(stack, `Model`, `model`);
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
-      productionVariant: { variantName: 'variant', model } });
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariant: { variantName: 'variant', model } });
 
     // WHEN
     const when = () =>
@@ -86,9 +83,8 @@ describe('When adding a production variant to an EndpointConfig', () => {
   test('with a duplicate variant name, an exception is thrown', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = sagemaker.Model.fromModelName(stack, `Model`, `model`);
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
-      productionVariant: { variantName: 'variant', model } });
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariant: { variantName: 'variant', model } });
 
     // WHEN
     const when = () => endpointConfig.addProductionVariant({ variantName: 'variant', model });
@@ -102,9 +98,8 @@ describe('When searching an EndpointConfig for a production variant', () => {
   test('that exists, the variant is returned', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = sagemaker.Model.fromModelName(stack, `Model`, `model`);
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
-      productionVariant: { variantName: 'variant', model } });
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariant: { variantName: 'variant', model } });
 
     // WHEN
     const variant = endpointConfig.findProductionVariant('variant');
@@ -116,9 +111,8 @@ describe('When searching an EndpointConfig for a production variant', () => {
   test('that does not exist, an exception is thrown', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = sagemaker.Model.fromModelName(stack, `Model`, `model`);
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
-      productionVariant: { variantName: 'variant', model } });
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariant: { variantName: 'variant', model } });
 
     // WHEN
     const when = () => endpointConfig.findProductionVariant('missing-variant');
@@ -134,8 +128,8 @@ test('When importing an endpoint configuration by name, the ARN is constructed c
     env:
       {
         region: 'us-west-2',
-        account: '123456789012'
-      }
+        account: '123456789012',
+      },
   });
 
   // WHEN

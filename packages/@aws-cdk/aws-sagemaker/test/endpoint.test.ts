@@ -1,4 +1,4 @@
-import * as ec2 from "@aws-cdk/aws-ec2";
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as sagemaker from '../lib';
 
@@ -6,9 +6,8 @@ describe('When searching an Endpoint for a production variant', () => {
   test('that exists, the variant is returned', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = sagemaker.Model.fromModelName(stack, 'Model', `model`);
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
-      productionVariant: { variantName: 'variant', model } });
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariant: { variantName: 'variant', model } });
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
 
     // WHEN
@@ -21,9 +20,8 @@ describe('When searching an Endpoint for a production variant', () => {
   test('that does not exist, an exception is thrown', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = sagemaker.Model.fromModelName(stack, 'Model', `model`);
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
-      productionVariant: { variantName: 'variant', model } });
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariant: { variantName: 'variant', model } });
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
 
     // WHEN
@@ -38,9 +36,8 @@ describe('When fetching production variants from an Endpoint', () => {
   test('with one production variant, the variant is returned', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = sagemaker.Model.fromModelName(stack, 'Model', `model`);
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
-      productionVariant: { variantName: 'variant', model } });
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariant: { variantName: 'variant', model } });
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
 
     // WHEN
@@ -58,8 +55,8 @@ describe('When importing an endpoint by name, the ARN is constructed correctly',
     env:
       {
         region: 'us-west-2',
-        account: '123456789012'
-      }
+        account: '123456789012',
+      },
   });
 
   // WHEN
@@ -73,9 +70,8 @@ describe('When auto-scaling a production variant\'s instance count', () => {
   test('with minimum capacity greater than initial instance count, an exception is thrown', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = sagemaker.Model.fromModelName(stack, 'Model', `model`);
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
-      productionVariant: { variantName: 'variant', model } });
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariant: { variantName: 'variant', model } });
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
     const variant = endpoint.findProductionVariant('variant');
 
@@ -92,9 +88,8 @@ describe('When auto-scaling a production variant\'s instance count', () => {
   test('with maximum capacity less than initial instance count, an exception is thrown', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = sagemaker.Model.fromModelName(stack, 'Model', `model`);
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
-      productionVariant: { variantName: 'variant', model, initialInstanceCount: 2 } });
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariant: { variantName: 'variant', model, initialInstanceCount: 2 } });
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
     const variant = endpoint.findProductionVariant('variant');
 
@@ -108,13 +103,13 @@ describe('When auto-scaling a production variant\'s instance count', () => {
   test('with burstable instance type, an exception is thrown', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = sagemaker.Model.fromModelName(stack, 'Model', `model`);
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
       productionVariant: {
         variantName: 'variant',
         model,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MEDIUM)
-      }
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MEDIUM),
+      },
     });
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
     const variant = endpoint.findProductionVariant('variant');
@@ -129,13 +124,13 @@ describe('When auto-scaling a production variant\'s instance count', () => {
   test('which already has auto-scaling enabled, an exception is thrown', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = sagemaker.Model.fromModelName(stack, 'Model', `model`);
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
       productionVariant: {
         variantName: 'variant',
         model,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE)
-      }
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+      },
     });
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
     const variant = endpoint.findProductionVariant('variant');

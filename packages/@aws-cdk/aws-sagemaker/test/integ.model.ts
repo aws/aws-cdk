@@ -1,8 +1,8 @@
-import * as ec2 from "@aws-cdk/aws-ec2";
-import * as ecr_assets from "@aws-cdk/aws-ecr-assets";
+import * as path from 'path';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
-import * as path from 'path';
 import * as sagemaker from '../lib';
 
 /*
@@ -72,7 +72,7 @@ const artifactFilePath = path.join(__dirname, 'test-artifacts', 'valid-artifact.
 const ecrImage = sagemaker.ContainerImage.fromEcrRepository(
   new ecr_assets.DockerImageAsset(stack, 'EcrImage', {
     directory: dockerfileDirectory,
-  }).repository
+  }).repository,
 );
 
 const localImage = sagemaker.ContainerImage.fromAsset(stack, 'LocalImage', {
@@ -90,7 +90,7 @@ const artifactAsset = new s3_assets.Asset(stack, 'S3ModelData', {
 });
 const s3ModelData = sagemaker.ModelData.fromBucket(
   artifactAsset.bucket,
-  artifactAsset.s3ObjectKey
+  artifactAsset.s3ObjectKey,
 );
 
 const localModelData = sagemaker.ModelData.fromAsset(stack, 'LocalModelData', artifactFilePath);
@@ -111,11 +111,11 @@ new sagemaker.Model(stack, 'PrimaryContainerModel', {
 
 new sagemaker.Model(stack, 'InferencePipelineModel', {
   container: {
-    image: localImage
+    image: localImage,
   },
   extraContainers: [
     { image: localImage, modelData: localModelData },
-    { image: localImage, modelData: localModelData }
+    { image: localImage, modelData: localModelData },
   ],
 });
 
