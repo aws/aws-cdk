@@ -75,6 +75,13 @@ export interface DashboardProps {
  * A CloudWatch dashboard
  */
 export class Dashboard extends Resource {
+  /**
+   * ARN of this dashboard
+   *
+   * @attribute
+   */
+  public readonly dashboardArn: string;
+
   private readonly rows: IWidget[] = [];
 
   constructor(scope: Construct, id: string, props: DashboardProps = {}) {
@@ -110,6 +117,12 @@ export class Dashboard extends Resource {
 
     (props.widgets || []).forEach(row => {
       this.addWidgets(...row);
+    });
+
+    this.dashboardArn = Stack.of(this).formatArn({
+      service: 'cloudwatch',
+      resource: 'dashboard',
+      resourceName: this.physicalName,
     });
   }
 
