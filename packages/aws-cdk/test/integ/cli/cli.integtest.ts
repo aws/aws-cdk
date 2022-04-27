@@ -570,7 +570,7 @@ integTest('cdk ls', withDefaultFixture(async (fixture) => {
     'lambda',
     'missing-ssm-parameter',
     'order-providing',
-    'bo-1',
+    'outputs-test-1',
     'outputs-test-2',
     'param-test-1',
     'param-test-2',
