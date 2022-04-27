@@ -1232,7 +1232,6 @@ new tasks.SageMakerCreateTransformJob(this, 'Batch Inference', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE),
   }
 });
-
 ```
 
 ### Create Processing Job
@@ -1241,37 +1240,19 @@ You can call the [`CreateProcessingJob`](https://docs.aws.amazon.com/sagemaker/l
 
 ```ts
 new tasks.SageMakerCreateProcessingJob(this, 'ProcessSagemaker', {
-  processingJobName: sfn.JsonPath.stringAt('$.JobName'),
-  appSpecification: {
-    containerImage: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.ImageName')),
-  },
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   processingInputs: [{
-    inputName: 'input1', // optional: default is `input<N>`, where N is the index of the specified input
+    inputName: 'myInput',
     s3Input: {
-      localPathPrefix: 'input1PathPrefix', // optional: default uses inputName. Data from the specified s3Location is mounted to the following prefix: `/opt/ml/processing/inputs/s3/<localPathPrefix>`/
       s3Location: tasks.S3Location.fromJsonExpression('$.S3BucketInputs'),
     },
   }],
-  processingOutputConfig: {
-    outputs: [{
-      outputName: 'output1', // optional: default is `output<N>`, where N is the index of the specified output
-      s3Output: {
-        localPathPrefix: 'output1PathPrefix', // optional: default uses outputName. Data is written to the configured s3Location from the following prefix: `/opt/ml/processing/inputs/s3/<localPathPrefix>`/
-        s3Location: tasks.S3Location.fromJsonExpression('$.S3BucketOutputs'),
-      },
-    }],
-  },
-  processingResources: {
-    clusterConfig: {
-      instanceCount: 1,
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
-      volumeSize: Size.gibibytes(50),
-      volumeEncryptionKey: new kms.Key(this, 'StorageVolumeKey'),
+  processingOutputs: [{
+    outputName: 'myOutput',
+    s3Output: {
+      s3Location: tasks.S3Location.fromJsonExpression('$.S3BucketOutputs'),
     },
-  }, // optional: default is 1 instance of EC2 `M4.XLarge` with a `10GB` unencrypted attached storage volume
-  stoppingCondition: {
-    maxRuntime: Duration.hours(2),
-  }, // optional: default is 1 hour
+  }],
 });
 ```
 
