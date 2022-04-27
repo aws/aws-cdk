@@ -352,8 +352,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     // Lambda does not actually accept an organization principal here.
     // so the principal becomes '*' and the organization ID will be sent to
     // the 'principalOrgID' property.
-    if (permission.principal instanceof iam.OrganizationPrincipal) {
-      principalOrgID = permission.principal.organizationId;
+    if (permission.principal.toString().startsWith('OrganizationPrincipal')) {
+      principalOrgID = permission.principal.policyFragment.conditions.StringEquals['aws:PrincipalOrgID'];
     }
 
     const action = permission.action ?? 'lambda:InvokeFunction';
