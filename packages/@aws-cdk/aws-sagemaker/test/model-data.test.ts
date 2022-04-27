@@ -1,50 +1,41 @@
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as path from 'path';
 import * as sagemaker from '../lib';
 
-export = {
-  'When creating model data from a local asset': {
-    'by supplying a directory, an exception is thrown'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack();
+describe('When creating model data from a local asset', () => {
+  test('by supplying a directory, an exception is thrown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
 
-      // WHEN
-      const when = () =>
-        sagemaker.ModelData.fromAsset(stack, 'ModelData', path.join(__dirname, 'test-artifacts'));
+    // WHEN
+    const when = () =>
+      sagemaker.ModelData.fromAsset(stack, 'ModelData', path.join(__dirname, 'test-artifacts'));
 
-      // THEN
-      test.throws(when, /Asset must be a .tar.gz file/);
+    // THEN
+    expect(when).toThrow(/Asset must be a .tar.gz file/);
+  });
 
-      test.done();
-    },
+  test('by supplying a zip file, an exception is thrown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
 
-    'by supplying a zip file, an exception is thrown'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack();
+    // WHEN
+    const when = () =>
+      sagemaker.ModelData.fromAsset(stack, 'ModelData', path.join(__dirname, 'test-artifacts', 'invalid-artifact.zip'));
 
-      // WHEN
-      const when = () =>
-        sagemaker.ModelData.fromAsset(stack, 'ModelData', path.join(__dirname, 'test-artifacts', 'invalid-artifact.zip'));
+    // THEN
+    expect(when).toThrow(/Asset must be a .tar.gz file/);
+  });
 
-      // THEN
-      test.throws(when, /Asset must be a .tar.gz file/);
+  test('by supplying a file with an unsupported extension, an exception is thrown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
 
-      test.done();
-    },
+    // WHEN
+    const when = () =>
+      sagemaker.ModelData.fromAsset(stack, 'ModelData', path.join(__dirname, 'test-artifacts', 'invalid-artifact.tar'));
 
-    'by supplying a file with an unsupported extension, an exception is thrown'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack();
-
-      // WHEN
-      const when = () =>
-        sagemaker.ModelData.fromAsset(stack, 'ModelData', path.join(__dirname, 'test-artifacts', 'invalid-artifact.tar'));
-
-      // THEN
-      test.throws(when, /Asset must be a .tar.gz file/);
-
-      test.done();
-    },
-  },
-};
+    // THEN
+    expect(when).toThrow(/Asset must be a .tar.gz file/);
+  });
+});
