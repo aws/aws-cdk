@@ -294,6 +294,7 @@ Example `outputs.json` after deployment of multiple stacks
   }
 }
 ```
+
 #### Stacks
 
 Write the stack name and ARNs into a file.  When you stack(s) finish deploying, the names and ARNs of each stack will be written to the file as JSON.
@@ -354,7 +355,6 @@ Example `stacks.json` after deployment of multiple stacks
     "name": "outputs-test-2",
   }
 ]
-
 ```
 
 #### Deployment Progress
