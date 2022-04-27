@@ -1,4 +1,4 @@
-import { AssetManifest, IManifestEntry } from './asset-manifest';
+import { AssetManifest, DockerImageManifestEntry, IManifestEntry } from './asset-manifest';
 import { IAws } from './aws';
 import { IHandlerHost } from './private/asset-handler';
 import { makeAssetHandler } from './private/handlers';
@@ -69,7 +69,18 @@ export class AssetPublishing implements IPublishProgress {
   constructor(private readonly manifest: AssetManifest, private readonly options: AssetPublishingOptions) {
     this.assets = manifest.entries;
     this.totalOperations = this.assets.length;
-    this.publishInParallel = options.publishInParallel ?? false;
+
+    if (process.platform === 'darwin' && this.assets.some(asset => asset instanceof DockerImageManifestEntry)) {
+      // In OSX, publishing Docker images in parallel exposes a race condition
+      // in Docker's osxkeychain helper because the helper can't handle
+      // concurrency, resulting in "delete, delete, add, add" sequences and the
+      // following error: "The specified item already exists in the keychain."
+      // So, for OSX, we disable publishing in parallel when a docker image
+      // asset is present.
+      this.publishInParallel = false;
+    } else {
+      this.publishInParallel = options.publishInParallel ?? false;
+    }
 
     const self = this;
     this.handlerHost = {
