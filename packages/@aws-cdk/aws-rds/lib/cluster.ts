@@ -345,12 +345,27 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   protected readonly securityGroups: ec2.ISecurityGroup[];
   protected readonly subnetGroup: ISubnetGroup;
 
+  /**
+   * Secret in SecretsManager to store the database cluster user credentials.
+   */
   public abstract readonly secret?: secretsmanager.ISecret;
 
+  /**
+   * The VPC network to place the cluster in.
+   */
   public readonly vpc: ec2.IVpc;
+  /**
+   * The cluster's subnets.
+   */
   public readonly vpcSubnets?: ec2.SubnetSelection;
 
+  /**
+   * Application for single user rotation of the master password to this cluster.
+   */
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
+  /**
+   * Application for multi user rotation to this cluster.
+   */
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
   constructor(scope: Construct, id: string, props: DatabaseClusterBaseProps) {
