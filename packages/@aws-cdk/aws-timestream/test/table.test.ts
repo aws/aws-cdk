@@ -48,20 +48,14 @@ describe('Timestream Table', () => {
     new Table(stack, 'TestTable', {
       database,
       tableName: 'testTable',
-      magneticStoreWriteProperties: {
-        enableMagneticStoreWrites: true,
-        magneticStoreRejectedDataLocation: {
-          s3Configuration: {
-            bucket: bucket,
-            encryptionOption: EncryptionOptions.SSE_S3,
-            key: key,
-          },
-        },
-      },
-      retentionProperties: {
-        magneticStoreRetentionPeriod: Duration.days(20),
-        memoryStoreRetentionPeriod: Duration.days(1),
-      },
+
+      magneticWriteEnable: true,
+      magneticWriteBucket: bucket,
+      magneticWriteEncryptionOption: EncryptionOptions.SSE_S3,
+      magneticWriteKey: key,
+      magneticStoreRetentionPeriod: Duration.days(20),
+      memoryStoreRetentionPeriod: Duration.days(1),
+
     });
 
     const expected: any = {
@@ -106,10 +100,8 @@ describe('Timestream Table', () => {
     expect(() => new Table(stack, 'TestTable', {
       database,
       tableName: 'testTable',
-      magneticStoreWriteProperties: {
-        enableMagneticStoreWrites: true,
-      },
-    })).toThrowError('If enableMagneticStoreWrites is true magneticStoreRejectedDataLocation must be defined.');
+      magneticWriteEnable: true,
+    })).toThrowError('If enable for MagneticStoreWrites is true magneticWriteBucket must be defined.');
   });
 
   test('permission grant readWrite for table', () => {
@@ -217,6 +209,43 @@ describe('Timestream Table', () => {
 
     expect(table.tableName).toBe('table');
     expect(table.databaseName).toBe('database');
+  });
+
+  test('table default encryption', () => {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    const bucket = new Bucket(stack, 'Bucket');
+    const key = new Key(stack, 'TestKey');
+
+    const database = new Database(stack, 'TestDatabase', {
+      databaseName: 'Database_1',
+      kmsKey: key,
+    });
+
+    new Table(stack, 'TestTable', {
+      database,
+      tableName: 'testTable',
+
+      magneticWriteEnable: true,
+      magneticWriteBucket: bucket,
+      magneticWriteKey: key,
+      magneticStoreRetentionPeriod: Duration.days(20),
+      memoryStoreRetentionPeriod: Duration.days(1),
+
+    });
+
+    const expected: any = {
+      MagneticStoreWriteProperties: {
+        magneticStoreRejectedDataLocation: {
+          s3Configuration: {
+            encryptionOption: 'SSE_S3',
+          },
+        },
+      },
+    };
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Timestream::Table', expected);
   });
 });
 

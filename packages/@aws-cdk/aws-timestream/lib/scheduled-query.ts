@@ -1,9 +1,9 @@
 import { Schedule } from '@aws-cdk/aws-events';
 import { IRole, UnknownPrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IKey } from '@aws-cdk/aws-kms';
-import { IBucket } from '@aws-cdk/aws-s3';
+import { Bucket, IBucket } from '@aws-cdk/aws-s3';
 import { ITopic } from '@aws-cdk/aws-sns';
-import { IResource, Resource } from '@aws-cdk/core';
+import { ArnFormat, IResolvable, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { EncryptionOptions } from './enums';
 import { ITable } from './table';
@@ -21,11 +21,21 @@ export interface IScheduledQuery extends IResource {
   readonly scheduledQueryArn: string
 
   /**
-   * The scheduled query error reporting configuration.
-   *
-   * @attribute
+  *  Name of the S3 bucket under which error reports will be created.
+  */
+  readonly errorReportBucket?: IBucket
+
+  /**
+   * Encryption at rest options for the error reports. If no encryption option is specified, Timestream will choose SSE_S3 as default.
+   * @default SSE_S3
    */
-  readonly errorReportConfiguration: ErrorReportConfiguration
+  readonly errorReportEncryptionOption?: EncryptionOptions
+
+  /**
+   * Prefix for the error report key. Timestream by default adds the following prefix to the error report path.
+   * @default "timestream-errors/"
+   */
+  readonly errorReportObjectKeyPrefix?: string
 
   /**
    * The KMS key used to encrypt the query resource, if a customer managed KMS key was provided.
@@ -39,14 +49,14 @@ export interface IScheduledQuery extends IResource {
    *
    * @attribute
    */
-  readonly name: string
+  readonly name: string|IResolvable
 
   /**
-   * The scheduled query notification configuration.
+   * SNS topic that the scheduled query status notifications will be sent to.
    *
    * @attribute
    */
-  readonly notificationConfiguration: NotificationConfiguration
+  readonly notificationTopic: ITopic
 
   /**
    * The scheduled query string.
@@ -85,17 +95,19 @@ abstract class ScheduledQueryBase extends Resource implements IScheduledQuery {
    *
    * @param scope CDK construct
    * @param id The ID of the construct
-   * @param scheduledQueryArn The table ARN to reference
-   * @returns Table construct
+   * @param scheduledQueryArn The scheduledQuery ARN to reference
+   * @returns ScheduledQuery construct
    */
   public static fromScheduledQueryArn(scope: Construct, id: string, scheduledQueryArn: string): IScheduledQuery {
     class Import extends ScheduledQueryBase {
       public readonly scheduledQueryArn = scheduledQueryArn;
-      public readonly name = this.physicalName
-      public readonly executionRole: IRole = this.executionRole
-      public readonly errorReportConfiguration: ErrorReportConfiguration = this.errorReportConfiguration
+      public readonly name = Stack.of(scope).splitArn(scheduledQueryArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName || this.physicalName
+      public readonly executionRole: IRole = this.executionRole|| 'dummy-value'
+      public readonly errorReportBucket?: IBucket = this.errorReportBucket
+      public readonly errorReportEncryptionOption?: EncryptionOptions = this.errorReportEncryptionOption
+      public readonly errorReportObjectKeyPrefix?: string = this.errorReportObjectKeyPrefix
       public readonly kmsKey: IKey = this.kmsKey
-      public readonly notificationConfiguration: NotificationConfiguration = this.notificationConfiguration
+      public readonly notificationTopic: ITopic = this.notificationTopic
       public readonly queryString: string = this.queryString
       public readonly schedule: Schedule = this.schedule
       public readonly targetConfiguration: TargetConfiguration = this.targetConfiguration
@@ -112,9 +124,21 @@ abstract class ScheduledQueryBase extends Resource implements IScheduledQuery {
   abstract readonly scheduledQueryArn: string
 
   /**
-   * The scheduled query error reporting configuration.
+   *  Name of the S3 bucket under which error reports will be created.
    */
-  abstract readonly errorReportConfiguration: ErrorReportConfiguration
+  abstract readonly errorReportBucket?: IBucket
+
+  /**
+       * Encryption at rest options for the error reports. If no encryption option is specified, Timestream will choose SSE_S3 as default.
+       * @default SSE_S3
+       */
+  abstract readonly errorReportEncryptionOption?: EncryptionOptions
+
+  /**
+       * Prefix for the error report key. Timestream by default adds the following prefix to the error report path.
+       * @default "timestream-errors/"
+       */
+  abstract readonly errorReportObjectKeyPrefix?: string
 
   /**
    * The KMS key used to encrypt the query resource, if a customer managed KMS key was provided.
@@ -124,12 +148,12 @@ abstract class ScheduledQueryBase extends Resource implements IScheduledQuery {
   /**
    * The scheduled query name.
    */
-  abstract readonly name: string
+  abstract readonly name: string|IResolvable
 
   /**
-   * The scheduled query notification configuration.
+   * SNS topic that the scheduled query status notifications will be sent to.
    */
-  abstract readonly notificationConfiguration: NotificationConfiguration
+  abstract readonly notificationTopic: ITopic
 
   /**
    * The scheduled query string.
@@ -154,56 +178,6 @@ abstract class ScheduledQueryBase extends Resource implements IScheduledQuery {
 
 }
 
-/**
- * Details on S3 location for error reports that result from running a query.
- */
-export interface S3Configuration {
-  /**
-   *  Name of the S3 bucket under which error reports will be created.
-   */
-  readonly bucket: IBucket
-
-  /**
-   * Encryption at rest options for the error reports. If no encryption option is specified, Timestream will choose SSE_S3 as default.
-   */
-  readonly encryptionOption: EncryptionOptions
-
-  /**
-   * Prefix for the error report key. Timestream by default adds the following prefix to the error report path.
-   * @default "timestream-errors/"
-   */
-  readonly objectKeyPrefix?: string
-}
-
-/**
- * Configuration required for error reporting.
- */
-export interface ErrorReportConfiguration {
-  /**
-    * The S3 configuration for the error reports.
-    */
-  readonly s3Configuration: S3Configuration
-}
-
-/**
- * Details on SNS that are required to send the notification.
- */
-export interface SnsConfiguration {
-  /**
-   * SNS topic ARN that the scheduled query status notifications will be sent to.
-   */
-  readonly topic: ITopic
-}
-
-/**
- * Notification configuration for a scheduled query. A notification is sent by Timestream when a scheduled query is created, its state is updated or when it is deleted.
- */
-export interface NotificationConfiguration {
-  /**
-   * Details on SNS configuration.
-   */
-  readonly snsConfiguration: SnsConfiguration
-}
 
 /**
  * This type is used to map column(s) from the query result to a dimension in the destination table.
@@ -299,7 +273,7 @@ export interface MultiMeasureMappings {
 /**
  * Configuration to write data into Timestream database and table. This configuration allows the user to map the query result select columns into the destination table columns.
  */
-export interface TimestreamConfiguration {
+export interface TargetConfiguration {
 
   /**
    * This is to allow mapping column(s) from the query result to the dimension in the destination table.
@@ -339,16 +313,6 @@ export interface TimestreamConfiguration {
 }
 
 /**
- * Configuration used for writing the output of a query.
- */
-export interface TargetConfiguration {
-  /**
-   * Configuration needed to write data into the Timestream database and table.
-   */
-  readonly timestreamConfiguration: TimestreamConfiguration
-}
-
-/**
  * Scheduled Query Properties
  */
 export interface ScheduledQueryProps {
@@ -360,9 +324,22 @@ export interface ScheduledQueryProps {
   readonly clientToken?: string
 
   /**
-   * Configuration for error reporting. Error reports will be generated when a problem is encountered when writing the query results.
+   *  Name of the S3 bucket under which error reports will be created.
+   *  @default autogenerated Bucket
    */
-  readonly errorReportConfiguration: ErrorReportConfiguration
+  readonly errorReportBucket?: IBucket
+
+  /**
+    * Encryption at rest options for the error reports. If no encryption option is specified, Timestream will choose SSE_S3 as default.
+    * @default SSE_S3
+    */
+  readonly errorReportEncryptionOption?: EncryptionOptions
+
+  /**
+    * Prefix for the error report key. Timestream by default adds the following prefix to the error report path.
+    * @default "timestream-errors/"
+    */
+  readonly errorReportObjectKeyPrefix?: string
 
   /**
    * The Amazon KMS key used to encrypt the scheduled query resource, at-rest. If the Amazon KMS key is not specified, the scheduled query resource will be encrypted with a Timestream owned Amazon KMS key. To specify a KMS key, use the key ID, key ARN, alias name, or alias ARN. When using an alias name, prefix the name with alias/
@@ -374,7 +351,7 @@ export interface ScheduledQueryProps {
   /**
    * Notification configuration for the scheduled query. A notification is sent by Timestream when a query run finishes, when the state is updated or when you delete it.
    */
-  readonly notificationConfiguration: NotificationConfiguration
+  readonly notificationTopic: ITopic
 
   /**
    * The query string to run. Parameter names can be specified in the query string @ character followed by an identifier. The named Parameter @scheduled_runtime is reserved and can be used in the query to get the time at which the query is scheduled to run.
@@ -390,7 +367,7 @@ export interface ScheduledQueryProps {
    * The ARN for the IAM role that Timestream will assume when running the scheduled query.
    * @default autogenerated
    */
-  readonly scheduledQueryExecutionRole?: IRole
+  readonly executionRole?: IRole
 
   /**
    * A name for the query. Scheduled query names must be unique within each Region.
@@ -413,7 +390,7 @@ export interface ScheduledQueryProps {
 
 
 /**
- *  Create a scheduled query that will be run on your behalf at the configured schedule. Timestream assumes the execution role provided as part of the ScheduledQueryExecutionRoleArn parameter to run the query. You can use the NotificationConfiguration parameter to configure notification for your scheduled query operations.
+ *  Create a scheduled query that will be run on your behalf at the configured schedule. Timestream assumes the execution role provided as part of the executionRole (or the autogenerated role) parameter to run the query. You can use the NotificationConfiguration parameter to configure notification for your scheduled query operations.
  */
 export class ScheduledQuery extends ScheduledQueryBase {
   /**
@@ -424,11 +401,22 @@ export class ScheduledQuery extends ScheduledQueryBase {
   readonly scheduledQueryArn: string
 
   /**
-   * The scheduled query error reporting configuration.
-   *
+   *  Name of the S3 bucket under which error reports will be created.
    * @attribute
    */
-  readonly errorReportConfiguration: ErrorReportConfiguration
+  readonly errorReportBucket?: IBucket
+
+  /**
+       * Encryption at rest options for the error reports. If no encryption option is specified, Timestream will choose SSE_S3 as default.
+       * @attribute
+       */
+  readonly errorReportEncryptionOption?: EncryptionOptions
+
+  /**
+       * Prefix for the error report key. Timestream by default adds the following prefix to the error report path.
+       * @attribute
+       */
+  readonly errorReportObjectKeyPrefix?: string
 
   /**
    * The KMS key used to encrypt the query resource, if a customer managed KMS key was provided.
@@ -442,14 +430,14 @@ export class ScheduledQuery extends ScheduledQueryBase {
    *
    * @attribute
    */
-  readonly name: string
+  readonly name: string|IResolvable
 
   /**
    * The scheduled query notification configuration.
    *
    * @attribute
    */
-  readonly notificationConfiguration: NotificationConfiguration
+  readonly notificationTopic: ITopic
 
   /**
    * The scheduled query string.
@@ -481,49 +469,67 @@ export class ScheduledQuery extends ScheduledQueryBase {
 
   constructor(scope: Construct, id: string, props: ScheduledQueryProps) {
     super(scope, id, {
-      physicalName: props.scheduledQueryName,
+      physicalName: props.scheduledQueryName || `SQ-${Stack.of(scope).region}-${scope.node.id}`,
     });
 
-    let scheduledQueryExecutionRoleArn = props.scheduledQueryExecutionRole;
+    let scheduledQueryExecutionRole = props.executionRole;
 
-    if (!scheduledQueryExecutionRoleArn) {
+    if (!scheduledQueryExecutionRole) {
       const role = new Role(this, 'TimeStreamScheduledQueryRole', {
         assumedBy: new ServicePrincipal('timestream.amazonaws.com'),
       });
-      props.notificationConfiguration.snsConfiguration.topic.grantPublish(role);
-      props.targetConfiguration?.timestreamConfiguration.table.grantReadWrite(role);
-      props.errorReportConfiguration.s3Configuration.bucket.grantReadWrite(role);
+      props.notificationTopic.grantPublish(role);
+      props.targetConfiguration?.table.grantReadWrite(role);
+      props.errorReportBucket?.grantReadWrite(role);
       props.sourceTable?.grantRead(role);
 
 
-      if (!props.sourceTable && !props.targetConfiguration?.timestreamConfiguration.table) {
+      if (!props.sourceTable && !props.targetConfiguration?.table) {
         throw new Error('Neither sourceTable nor TargetConfiguration are set, cannot determine correct permissions, please supply scheduledQueryExecutionRole');
       }
 
-      scheduledQueryExecutionRoleArn = role;
+      scheduledQueryExecutionRole = role;
     }
 
     let cfnScheduledQueryProps: CfnScheduledQueryProps = {
       errorReportConfiguration: {
         s3Configuration: {
-          bucketName: props.errorReportConfiguration.s3Configuration.bucket.bucketName,
+          bucketName: props.errorReportBucket?.bucketName || 'placeholder',
         },
       },
       clientToken: props.clientToken,
       kmsKeyId: props.kmsKey?.keyId,
-      notificationConfiguration: { snsConfiguration: { topicArn: props.notificationConfiguration.snsConfiguration.topic.topicArn } },
+      notificationConfiguration: { snsConfiguration: { topicArn: props.notificationTopic.topicArn } },
       queryString: props.queryString,
       scheduleConfiguration: { scheduleExpression: props.schedule.expressionString },
-      scheduledQueryExecutionRoleArn: scheduledQueryExecutionRoleArn.roleArn,
-      scheduledQueryName: props.scheduledQueryName,
+      scheduledQueryExecutionRoleArn: scheduledQueryExecutionRole.roleArn,
+      scheduledQueryName: props.scheduledQueryName || `SQ-${Stack.of(scope).region}-${scope.node.id}`,
     };
 
-    if (props.errorReportConfiguration) {
+    if (!props.errorReportBucket && (props.errorReportEncryptionOption || props.errorReportObjectKeyPrefix)) {
+      throw new Error('errorReportBucket not set.');
+    }
+
+    if (props.errorReportBucket?.bucketName) {
       (cfnScheduledQueryProps.errorReportConfiguration as any) = {
         s3Configuration: {
-          bucketName: props.errorReportConfiguration.s3Configuration.bucket.bucketName,
-          encryptionOption: props.errorReportConfiguration.s3Configuration?.encryptionOption,
-          objectKeyPrefix: props.errorReportConfiguration.s3Configuration?.objectKeyPrefix || 'timestream-errors/',
+          bucketName: props.errorReportBucket?.bucketName,
+          encryptionOption: props.errorReportEncryptionOption || EncryptionOptions.SSE_S3,
+          objectKeyPrefix: props.errorReportObjectKeyPrefix || 'timestream-errors/',
+        },
+      };
+      this.errorReportBucket = props.errorReportBucket;
+      this.errorReportEncryptionOption = props.errorReportEncryptionOption || EncryptionOptions.SSE_S3;
+      this.errorReportObjectKeyPrefix = props.errorReportObjectKeyPrefix || 'timestream-errors/';
+    } else {
+      this.errorReportBucket = new Bucket(scope, 'ErrorReportBucket');
+      this.errorReportEncryptionOption = props.errorReportEncryptionOption || EncryptionOptions.SSE_S3;
+      this.errorReportObjectKeyPrefix = props.errorReportObjectKeyPrefix || 'timestream-errors/';
+      (cfnScheduledQueryProps.errorReportConfiguration as any) = {
+        s3Configuration: {
+          bucketName: this.errorReportBucket.bucketName,
+          encryptionOption: this.errorReportEncryptionOption,
+          objectKeyPrefix: this.errorReportObjectKeyPrefix,
         },
       };
     }
@@ -532,13 +538,13 @@ export class ScheduledQuery extends ScheduledQueryBase {
     if (props.targetConfiguration) {
       (cfnScheduledQueryProps.targetConfiguration as any) = {
         timestreamConfiguration: {
-          databaseName: props.targetConfiguration!.timestreamConfiguration.table.databaseName,
-          tableName: props.targetConfiguration!.timestreamConfiguration.table.tableName,
-          dimensionMappings: props.targetConfiguration!.timestreamConfiguration.dimensionMappings,
-          measureNameColumn: props.targetConfiguration!.timestreamConfiguration?.measureNameColumn,
-          mixedMeasureMappings: props.targetConfiguration!.timestreamConfiguration?.mixedMeasureMappings,
-          multiMeasureMappings: props.targetConfiguration!.timestreamConfiguration?.multiMeasureMappings,
-          timeColumn: props.targetConfiguration!.timestreamConfiguration.timeColumn,
+          databaseName: props.targetConfiguration!.table.databaseName,
+          tableName: props.targetConfiguration!.table.tableName,
+          dimensionMappings: props.targetConfiguration!.dimensionMappings,
+          measureNameColumn: props.targetConfiguration?.measureNameColumn,
+          mixedMeasureMappings: props.targetConfiguration?.mixedMeasureMappings,
+          multiMeasureMappings: props.targetConfiguration?.multiMeasureMappings,
+          timeColumn: props.targetConfiguration!.timeColumn,
         },
       };
     }
@@ -548,11 +554,11 @@ export class ScheduledQuery extends ScheduledQueryBase {
 
     this.scheduledQueryArn = resource.attrArn;
     this.kmsKey = props.kmsKey;
-    this.name = resource.attrSqName;
+    this.name = this.physicalName;
     this.schedule = props.schedule;
-    this.executionRole = scheduledQueryExecutionRoleArn;
-    this.errorReportConfiguration = props.errorReportConfiguration;
-    this.notificationConfiguration = props.notificationConfiguration;
+    this.executionRole = scheduledQueryExecutionRole;
+
+    this.notificationTopic = props.notificationTopic;
     this.queryString = props.queryString;
     this.targetConfiguration = props.targetConfiguration;
   }

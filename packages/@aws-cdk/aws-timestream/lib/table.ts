@@ -47,77 +47,6 @@ export interface ITable extends IResource {
 }
 
 /**
- * S3 Configuration
- */
-export interface MagneticS3Configuration {
-  /**
-   * The name of the S3 bucket.
-   */
-  readonly bucket: IBucket,
-
-  /**
-   * The encryption option for the S3 location. Valid values are S3 server-side encryption with an S3 managed key (SSE_S3) or AWS managed key (SSE_KMS).
-   */
-  readonly encryptionOption: EncryptionOptions,
-
-  /**
-   * The AWS KMS key  to use when encrypting with an AWS managed key.
-   *
-   * @default None
-   */
-  readonly key?: IKey,
-
-  /**
-   * The prefix to use option for the objects stored in S3.
-   *
-   * @default None
-   */
-  readonly objectKeyPrefix?: string
-}
-
-/**
- * The location to write error reports for records rejected, asynchronously, during magnetic store writes. Only S3Configuration objects are allowed
- */
-export interface MagneticStoreRejectedDataLocation {
-  /**
-   * S3 Configuration
-   */
-  readonly s3Configuration: MagneticS3Configuration
-}
-
-/**
- * Contains properties to set on the table when enabling magnetic store writes.
- */
-export interface MagneticStoreWriteProperties {
-  /**
-   * A boolean flag to enable magnetic store writes.
-   */
-  readonly enableMagneticStoreWrites: boolean
-
-  /**
-   * The location to write error reports for records rejected, asynchronously, during magnetic store writes. Only S3Configuration objects are allowed
-   *
-   * @default None
-   */
-  readonly magneticStoreRejectedDataLocation?: MagneticStoreRejectedDataLocation
-}
-
-/**
- * The retention duration for the memory store and magnetic store. This object has the following attributes:
- */
-export interface RetentionProperties {
-  /**
-   * Retention duration for memory store.
-   */
-  readonly memoryStoreRetentionPeriod: Duration
-
-  /**
-   * Retention duration for magnetic store.
-   */
-  readonly magneticStoreRetentionPeriod: Duration
-}
-
-/**
  * Table Properties
  */
 export interface TableProps {
@@ -127,18 +56,48 @@ export interface TableProps {
   readonly database: IDatabase,
 
   /**
-   * Contains properties to set on the table when enabling magnetic store writes.
-   *
-   * @default None
-   */
-  readonly magneticStoreWriteProperties?: MagneticStoreWriteProperties,
+  * A boolean flag to enable magnetic store writes.
+  * @default true, when DataLocation is set
+  */
+  readonly magneticWriteEnable?: boolean
 
   /**
-   * The retention duration for the memory store and magnetic store. This object has the following attributes:
+   * The name of the S3 bucket, to write rejected Data to
+   * @default no Bucket
+   */
+  readonly magneticWriteBucket?: IBucket,
+
+  /**
+   * The encryption option for the S3 location, to write rejected Data to. Valid values are S3 server-side encryption with an S3 managed key (SSE_S3) or AWS managed key (SSE_KMS).
+   * @default SSE_S3
+   */
+  readonly magneticWriteEncryptionOption?: EncryptionOptions,
+
+  /**
+   * The AWS KMS key to use when encrypting with an AWS managed key, upon rejected data write
    *
    * @default None
    */
-  readonly retentionProperties?: RetentionProperties
+  readonly magneticWriteKey?: IKey,
+
+  /**
+   * The prefix to use option for the objects stored in S3, upon rejected magnetic write
+   *
+   * @default None
+   */
+  readonly magneticWriteObjectKeyPrefix?: string
+
+  /**
+  * Retention duration for memory store.
+  * @default default lifecycle
+  */
+  readonly memoryStoreRetentionPeriod?: Duration
+
+  /**
+  * Retention duration for magnetic store.
+  * @default default lifecycle
+  */
+  readonly magneticStoreRetentionPeriod?: Duration
 
   /**
    * The name of the Timestream table.
@@ -230,8 +189,8 @@ export class Table extends TableBase {
 
     this.node.addDependency(props.database);
 
-    if (props.magneticStoreWriteProperties?.enableMagneticStoreWrites && !props.magneticStoreWriteProperties.magneticStoreRejectedDataLocation) {
-      throw Error('If enableMagneticStoreWrites is true magneticStoreRejectedDataLocation must be defined.');
+    if (props.magneticWriteEnable && !props.magneticWriteBucket?.bucketName) {
+      throw Error('If enable for MagneticStoreWrites is true magneticWriteBucket must be defined.');
     }
 
     let cfnTableProps: CfnTableProps = {
@@ -239,23 +198,25 @@ export class Table extends TableBase {
       tableName: props.tableName,
     };
 
-    if (props.retentionProperties !== undefined) {
+    if (props.memoryStoreRetentionPeriod && props.magneticStoreRetentionPeriod) {
       (cfnTableProps.retentionProperties as any) = {
-        memoryStoreRetentionPeriodInHours: props.retentionProperties.memoryStoreRetentionPeriod.toHours().toString(),
-        magneticStoreRetentionPeriodInDays: props.retentionProperties.magneticStoreRetentionPeriod.toDays().toString(),
+        memoryStoreRetentionPeriodInHours: props.memoryStoreRetentionPeriod.toHours().toString(),
+        magneticStoreRetentionPeriodInDays: props.magneticStoreRetentionPeriod.toDays().toString(),
       };
+
+
     }
 
-    if (props.magneticStoreWriteProperties && props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration) {
+    if (props.magneticWriteEnable && props.magneticWriteBucket?.bucketName) {
 
       (cfnTableProps.magneticStoreWriteProperties as any) = {
-        enableMagneticStoreWrites: props.magneticStoreWriteProperties?.enableMagneticStoreWrites,
+        enableMagneticStoreWrites: !!props.magneticWriteEnable ? props.magneticWriteEnable : true,
         magneticStoreRejectedDataLocation: {
           s3Configuration: {
-            bucketName: props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.bucket.bucketName,
-            encryptionOption: props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.encryptionOption,
-            kmsKeyId: props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.key?.keyId,
-            objectKeyPrefix: props.magneticStoreWriteProperties?.magneticStoreRejectedDataLocation?.s3Configuration.objectKeyPrefix,
+            bucketName: props.magneticWriteBucket.bucketName,
+            encryptionOption: props.magneticWriteEncryptionOption || EncryptionOptions.SSE_S3,
+            kmsKeyId: props.magneticWriteKey?.keyId,
+            objectKeyPrefix: props.magneticWriteObjectKeyPrefix,
           },
         },
       };
@@ -269,7 +230,7 @@ export class Table extends TableBase {
       service: 'timestream',
       resource: this.physicalName,
     });
-    // does not use the ref, because of the ref behaving strange:
+    // does not use the ref, because of ref behaving strange:
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-table.html#aws-resource-timestream-table-return-values
     this.tableName = this.getResourceNameAttribute(resource.attrName);
     this.databaseName = resource.databaseName;

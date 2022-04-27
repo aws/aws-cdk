@@ -60,15 +60,9 @@ declare const bucket: s3.Bucket;
 
 new Table(scope, "TimestreamTable", {
   database,
-  magneticStoreWriteProperties: {
-    enableMagneticStoreWrites: true,
-    magneticStoreRejectedDataLocation: {
-      s3Configuration: {
-        bucket: bucket,
-        encryptionOption: EncryptionOptions.SSE_S3,
-      },
-    },
-  },
+  magneticWriteEnable: true,
+  magneticWriteBucket: bucket,
+  magneticWriteEncryptionOption: EncryptionOptions.SSE_S3,
 });
 ```
 
@@ -81,16 +75,14 @@ declare const database: Database;
 
 new Table(scope, "TimestreamTable", {
   database,
-  retentionProperties: {
-    memoryStoreRetentionPeriod: Duration.hours(24),
-    magneticStoreRetentionPeriod: Duration.days(7),
-  },
+  magneticStoreRetentionPeriod: Duration.days(20),
+  memoryStoreRetentionPeriod: Duration.days(1),
 });
 ```
 
 ## Scheduled Query
 
-Create a scheduled query that will be run on your behalf at the configured schedule. Timestream assumes the execution role provided as part of the ScheduledQueryExecutionRoleArn parameter to run the query. You can use the NotificationConfiguration parameter to configure notification for your scheduled query operations.
+Create a scheduled query that will be run on your behalf at the configured schedule. Timestream assumes the execution role provided as part of the ScheduledQueryExecutionRoleArn parameter to run the query. You can use the NotificationTopic parameter for notifications for your scheduled query operations.
 
 ```ts
 import * as events from '@aws-cdk/aws-events';
@@ -101,21 +93,12 @@ declare const bucket: s3.Bucket;
 new ScheduledQuery(scope, "ScheduledQuery", {
   queryString:
     'SELECT time, measure_name as name, measure_name as amount FROM "ATestDB"."Test"',
-  errorReportConfiguration: {
-    s3Configuration: {
-      bucket: bucket,
-      encryptionOption: EncryptionOptions.SSE_S3,
-      objectKeyPrefix: "prefix/",
-    },
-  },
+  errorReportBucket: bucket,
+  errorReportEncryptionOption: EncryptionOptions.SSE_S3,
+  errorReportObjectKeyPrefix: "prefix/",
   scheduledQueryName: "Test_Query",
-  notificationConfiguration: {
-    snsConfiguration: {
-      topic: topic,
-    },
-  },
+  notificationTopic: topic,
   targetConfiguration: {
-    timestreamConfiguration: {
       dimensionMappings: [
         {
           name: "name",
@@ -133,9 +116,8 @@ new ScheduledQuery(scope, "ScheduledQuery", {
       },
       table: table,
       timeColumn: "time",
-    },
   },
   schedule: events.Schedule.rate(Duration.days(1)),
-  scheduledQueryExecutionRole: role,
+  executionRole: role,
 });
 ```
