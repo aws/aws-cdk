@@ -345,7 +345,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   protected readonly securityGroups: ec2.ISecurityGroup[];
   protected readonly subnetGroup: ISubnetGroup;
 
-  public readonly secret?: secretsmanager.ISecret;
+  public abstract readonly secret?: secretsmanager.ISecret;
 
   public readonly vpc: ec2.IVpc;
   public readonly vpcSubnets?: ec2.SubnetSelection;
@@ -361,9 +361,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
-
-    const credentials = renderCredentials(this, props.engine, props.credentials);
-    const secret = credentials.secret;
 
     const { subnetIds } = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets);
 
@@ -426,10 +423,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     const clusterIdentifier = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER)
       ? props.clusterIdentifier?.toLowerCase()
       : props.clusterIdentifier;
-
-    if (secret) {
-      this.secret = secret.attach(this);
-    }
 
     this.newCfnProps = {
       // Basic
@@ -592,10 +585,13 @@ export class DatabaseCluster extends DatabaseClusterNew {
   public readonly instanceIdentifiers: string[];
   public readonly instanceEndpoints: Endpoint[];
 
+  public readonly secret?: secretsmanager.ISecret;
+
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id, props);
 
     const credentials = renderCredentials(this, props.engine, props.credentials);
+    const secret = credentials.secret;
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
@@ -607,6 +603,10 @@ export class DatabaseCluster extends DatabaseClusterNew {
     });
 
     this.clusterIdentifier = cluster.ref;
+
+    if (secret) {
+      this.secret = secret.attach(this);
+    }
 
     // create a number token that represents the port of the cluster
     const portAttribute = Token.asNumber(cluster.attrEndpointPort);
@@ -651,8 +651,13 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
   public readonly instanceIdentifiers: string[];
   public readonly instanceEndpoints: Endpoint[];
 
+  public readonly secret?: secretsmanager.ISecret;
+
   constructor(scope: Construct, id: string, props: DatabaseClusterFromSnapshotProps) {
     super(scope, id, props);
+
+    const credentials = renderCredentials(this, props.engine, props.credentials);
+    const secret = credentials.secret;
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
@@ -660,6 +665,10 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     });
 
     this.clusterIdentifier = cluster.ref;
+
+    if (secret) {
+      this.secret = secret.attach(this);
+    }
 
     // create a number token that represents the port of the cluster
     const portAttribute = Token.asNumber(cluster.attrEndpointPort);
@@ -676,29 +685,6 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     const createdInstances = createInstances(this, props, this.subnetGroup);
     this.instanceIdentifiers = createdInstances.instanceIdentifiers;
     this.instanceEndpoints = createdInstances.instanceEndpoints;
-  }
-
-  /**
-   * Adds the single user rotation of the master password to this cluster.
-   */
-  public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
-    if (!this.secret) {
-      throw new Error('Cannot add single user rotation for a cluster without secret.');
-    }
-
-    const id = 'RotationSingleUser';
-    const existing = this.node.tryFindChild(id);
-    if (existing) {
-      throw new Error('A single user rotation was already added to this cluster.');
-    }
-
-    return new secretsmanager.SecretRotation(this, id, {
-      ...applyDefaultRotationOptions(options, this.vpcSubnets),
-      secret: this.secret,
-      application: this.singleUserRotationApplication,
-      vpc: this.vpc,
-      target: this,
-    });
   }
 }
 
