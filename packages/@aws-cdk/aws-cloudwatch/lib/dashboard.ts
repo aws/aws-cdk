@@ -75,6 +75,14 @@ export interface DashboardProps {
  * A CloudWatch dashboard
  */
 export class Dashboard extends Resource {
+
+  /**
+   * The name of this dashboard
+   *
+   * @attribute
+  */
+  public readonly dashboardName: string;
+
   /**
    * ARN of this dashboard
    *
@@ -99,7 +107,7 @@ export class Dashboard extends Resource {
       }
     }
 
-    new CfnDashboard(this, 'Resource', {
+    const dashboard = new CfnDashboard(this, 'Resource', {
       dashboardName: this.physicalName,
       dashboardBody: Lazy.string({
         produce: () => {
@@ -114,6 +122,8 @@ export class Dashboard extends Resource {
         },
       }),
     });
+
+    this.dashboardName = this.getResourceNameAttribute(dashboard.ref);
 
     (props.widgets || []).forEach(row => {
       this.addWidgets(...row);
