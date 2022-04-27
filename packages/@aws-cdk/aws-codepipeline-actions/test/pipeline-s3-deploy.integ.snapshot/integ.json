@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-codepipeline-actions/test/integ.pipeline-s3-deploy": {
+      "stacks": [
+        "aws-cdk-codepipeline-s3-deploy"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

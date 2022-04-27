@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-route53-targets/test/integ.interface-vpc-endpoint-target": {
+      "stacks": [
+        "aws-cdk-interface-vpc-endpoint"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}
