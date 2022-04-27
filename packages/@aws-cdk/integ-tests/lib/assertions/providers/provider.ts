@@ -4,9 +4,6 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 let SDK_METADATA: any = undefined;
 
 /**
@@ -15,7 +12,7 @@ let SDK_METADATA: any = undefined;
  * that serves as the custom resource provider for the various
  * assertion providers
  */
-export class AssertionsProvider extends CoreConstruct {
+export class AssertionsProvider extends Construct {
   public readonly serviceToken: string;
   private readonly grantPrincipal: iam.IPrincipal;
 
