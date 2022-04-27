@@ -1,10 +1,14 @@
 import { CfnOutput, CustomResource, Lazy } from '@aws-cdk/core';
-import { Construct, IConstruct, Node } from 'constructs';
+import { IConstruct, Node } from 'constructs';
 import { md5hash } from './private/hash';
 import { RESULTS_RESOURCE_TYPE, AssertionsProvider } from './providers';
 import { SdkQuery, SdkQueryOptions } from './sdk';
 
 const DEPLOY_ASSERT_SYMBOL = Symbol.for('@aws-cdk/integ-tests.DeployAssert');
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from 'constructs';
 
 /**
  * Represents a deploy time assertion
