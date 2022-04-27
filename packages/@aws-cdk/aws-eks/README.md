@@ -903,6 +903,21 @@ new CfnOutput(this, 'ServiceAccountIamRole', { value: serviceAccount.role.roleAr
 Note that using `serviceAccount.serviceAccountName` above **does not** translate into a resource dependency.
 This is why an explicit dependency is needed. See <https://github.com/aws/aws-cdk/issues/9910> for more details.
 
+It is possible to pass annotations and labels to the service account.
+
+```ts
+declare const cluster: eks.Cluster;
+// add service account with annotations and labels
+const serviceAccount = cluster.addServiceAccount('MyServiceAccount', {
+  annotations: {
+    'eks.amazonaws.com/sts-regional-endpoints': 'false',
+  },
+  labels: {
+    'some-label': 'with-some-value',
+  },
+});
+```
+
 You can also add service accounts to existing clusters.
 To do so, pass the `openIdConnectProvider` property when you import the cluster into the application.
 

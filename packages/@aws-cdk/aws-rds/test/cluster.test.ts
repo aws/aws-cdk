@@ -1997,6 +1997,7 @@ describe('cluster', () => {
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
         SnapshotIdentifier: 'mySnapshot',
         EnableIAMDatabaseAuthentication: true,
+        CopyTagsToSnapshot: true,
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
