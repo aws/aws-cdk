@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-ecs-patterns/test/ec2/integ.multiple-application-load-balanced-ecs-service": {
+      "stacks": [
+        "aws-ecs-integ"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}
