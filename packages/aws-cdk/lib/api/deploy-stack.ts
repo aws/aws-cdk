@@ -329,8 +329,12 @@ async function prepareAndExecuteChangeSet(
     Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
     Tags: options.tags,
   }).promise();
+
+  const execute = options.execute ?? true;
+
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
-  const changeSetDescription = await waitForChangeSet(cfn, deployName, changeSetName);
+  // Fetching all pages if we'll execute, so we can have the correct change count when monitoring.
+  const changeSetDescription = await waitForChangeSet(cfn, deployName, changeSetName, { fetchAll: execute });
 
   // Update termination protection only if it has changed.
   const terminationProtection = stackArtifact.terminationProtection ?? false;
@@ -352,7 +356,6 @@ async function prepareAndExecuteChangeSet(
     return { noOp: true, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId! };
   }
 
-  const execute = options.execute === undefined ? true : options.execute;
   if (execute) {
     debug('Initiating execution of changeset %s on stack %s', changeSet.Id, deployName);
 
@@ -378,6 +381,8 @@ async function prepareAndExecuteChangeSet(
       // This shouldn't really happen, but catch it anyway. You never know.
       if (!finalStack) { throw new Error('Stack deploy failed (the stack disappeared while we were deploying it)'); }
       cloudFormationStack = finalStack;
+    } catch (e) {
+      throw new Error(suffixWithErrors(e.message, monitor?.errors));
     } finally {
       await monitor?.stop();
     }
@@ -510,6 +515,8 @@ export async function destroyStack(options: DestroyStackOptions) {
     if (destroyedStack && destroyedStack.stackStatus.name !== 'DELETE_COMPLETE') {
       throw new Error(`Failed to destroy ${deployName}: ${destroyedStack.stackStatus}`);
     }
+  } catch (e) {
+    throw new Error(suffixWithErrors(e.message, monitor?.errors));
   } finally {
     if (monitor) { await monitor.stop(); }
   }
@@ -639,4 +646,10 @@ function restUrlFromManifest(url: string, environment: cxapi.Environment, sdk: I
 
   const urlSuffix: string = sdk.getEndpointSuffix(environment.region);
   return `https://s3.${environment.region}.${urlSuffix}/${bucketName}/${objectKey}`;
+}
+
+function suffixWithErrors(msg: string, errors?: string[]) {
+  return errors && errors.length > 0
+    ? `${msg}: ${errors.join(', ')}`
+    : msg;
 }

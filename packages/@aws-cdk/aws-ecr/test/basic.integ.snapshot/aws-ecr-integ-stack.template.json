@@ -3,9 +3,6 @@
   "Repo02AC86CF": {
    "Type": "AWS::ECR::Repository",
    "Properties": {
-    "ImageScanningConfiguration": {
-     "ScanOnPush": false
-    },
     "LifecyclePolicy": {
      "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}}]}"
     }

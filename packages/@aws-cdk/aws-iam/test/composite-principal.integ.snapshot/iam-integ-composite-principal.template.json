@@ -9,6 +9,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
+        "AWS": "*",
         "Service": {
          "Fn::Join": [
           "",
@@ -20,13 +21,6 @@
           ]
          ]
         }
-       }
-      },
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": "*"
        }
       }
      ],

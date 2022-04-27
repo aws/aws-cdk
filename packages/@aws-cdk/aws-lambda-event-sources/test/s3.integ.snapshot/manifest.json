@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "lambda-event-source-s3": {
       "type": "aws:cloudformation:stack",

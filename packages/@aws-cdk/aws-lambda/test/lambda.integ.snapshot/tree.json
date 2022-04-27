@@ -132,6 +132,36 @@
                   "version": "0.0.0"
                 }
               },
+              "FunctionUrl": {
+                "id": "FunctionUrl",
+                "path": "aws-cdk-lambda-1/MyLambda/FunctionUrl",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-lambda-1/MyLambda/FunctionUrl/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Url",
+                      "aws:cdk:cloudformation:props": {
+                        "authType": "AWS_IAM",
+                        "targetFunctionArn": {
+                          "Fn::GetAtt": [
+                            "MyLambdaCCE802FB",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-lambda.CfnUrl",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.FunctionUrl",
+                  "version": "0.0.0"
+                }
+              },
               "CurrentVersion": {
                 "id": "CurrentVersion",
                 "path": "aws-cdk-lambda-1/MyLambda/CurrentVersion",
@@ -179,7 +209,7 @@
                     },
                     "functionVersion": {
                       "Fn::GetAtt": [
-                        "MyLambdaCurrentVersionE7A382CCf9fac83eca6426eeed700cdc0106fc3d",
+                        "MyLambdaCurrentVersionE7A382CCaab0ffd2d3271bb29338c3fe7c7f3151",
                         "Version"
                       ]
                     },
@@ -210,6 +240,52 @@
                       "Ref": "Alias325C5727"
                     },
                     "principal": "cloudformation.amazonaws.com"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "FunctionUrl": {
+                "id": "FunctionUrl",
+                "path": "aws-cdk-lambda-1/Alias/FunctionUrl",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-lambda-1/Alias/FunctionUrl/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Url",
+                      "aws:cdk:cloudformation:props": {
+                        "authType": "NONE",
+                        "targetFunctionArn": {
+                          "Ref": "Alias325C5727"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-lambda.CfnUrl",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.FunctionUrl",
+                  "version": "0.0.0"
+                }
+              },
+              "invoke-function-url": {
+                "id": "invoke-function-url",
+                "path": "aws-cdk-lambda-1/Alias/invoke-function-url",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunctionUrl",
+                    "functionName": {
+                      "Ref": "Alias325C5727"
+                    },
+                    "principal": "*",
+                    "functionUrlAuthType": "NONE"
                   }
                 },
                 "constructInfo": {

@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-stepfunctions-tasks-athena-get-query-results-integ": {
       "type": "aws:cloudformation:stack",
