@@ -1,25 +1,26 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Duration, Lazy, Size, Stack } from '@aws-cdk/core';
+import { Duration, Names, Lazy, Size, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import {
-  AppSpecification,
   DatasetDefinition,
   ExperimentConfig,
   InputMode,
+  DockerImage,
   NetworkConfig,
   ProcessingInput,
-  ProcessingOutputConfig,
-  ProcessingResources,
+  ProcessingOutput,
   S3DataType,
-  CompressionType,
   StoppingCondition,
+  CompressionType,
   S3DataDistributionType,
   AthenaOutputFormat,
   RedshiftOutputFormat,
   S3UploadMode,
+  ProcessingCluster,
 } from './base-types';
 
 /**
@@ -30,16 +31,35 @@ export interface SageMakerCreateProcessingJobProps extends sfn.TaskStateBaseProp
    * Role for the Processing Job. The role must be granted all necessary permissions for the SageMaker processing job to
    * be able to operate.
    *
-   * See https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-roles.html#sagemaker-roles-createprocessingjob-perms
+   * @see https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-roles.html#sagemaker-roles-createprocessingjob-perms
    *
    * @default - a role with appropriate permissions will be created.
    */
   readonly role?: iam.IRole;
 
   /**
-   * Configures the processing job to run a specified Docker container image.
+   * The container image that contains the processing algorithm.
    */
-  readonly appSpecification: AppSpecification;
+  readonly image: DockerImage;
+
+  /**
+   * The entrypoint for the container specified in `image`.
+   * When specified, this value overrides the ENTRYPOINT command in the Docker image.
+   *
+   * @see https://docs.aws.amazon.com/sagemaker/latest/dg/build-your-own-processing-container.html
+   *
+   * @default []
+   */
+  readonly containerEntrypoint?: string[];
+
+  /**
+   * The arguments for the container specified in `image` used to run a processing job.
+   *
+   * @see https://docs.aws.amazon.com/sagemaker/latest/dg/build-your-own-processing-container.html
+   *
+   * @default []
+   */
+  readonly containerArgs?: string[];
 
   /**
    * The environment variables (map of keys to values) to set in the Docker container. Up to 100 key and values entries
@@ -47,7 +67,7 @@ export interface SageMakerCreateProcessingJobProps extends sfn.TaskStateBaseProp
    *
    * @default - No environment variables
    */
-  readonly environment?: sfn.TaskInput;
+  readonly environment?: {[key: string]: string};
 
   /**
    * Associates a SageMaker job as a trial component with an experiment and trial. Specified when you call the
@@ -74,15 +94,24 @@ export interface SageMakerCreateProcessingJobProps extends sfn.TaskStateBaseProp
 
   /**
    * The name of the processing job. The name must be unique within an AWS Region in the AWS account.
+   *
+   * @default - A unique name will be created for you
    */
-  readonly processingJobName: string;
+  readonly processingJobName?: string;
+
+  /**
+   * The KMS key that Amazon SageMaker users to encrypt the processing job output.
+   *
+   * @default None
+   */
+  readonly processingOutputKey?: kms.IKey,
 
   /**
    * Output configuration for the processing job.
    *
-   * @default - No processing output configuration
+   * @default - No processing outputs
    */
-  readonly processingOutputConfig?: ProcessingOutputConfig;
+  readonly processingOutputs?: ProcessingOutput[];
 
   /**
    * Identifies the resources, ML compute instances, and ML storage volumes to deploy for a processing job.
@@ -90,22 +119,21 @@ export interface SageMakerCreateProcessingJobProps extends sfn.TaskStateBaseProp
    *
    * @default - 1 instance of EC2 `M4.XLarge` with `10GB` volume
    */
-  readonly processingResources?: ProcessingResources;
+  readonly processingCluster?: ProcessingCluster;
 
   /**
-   * The time limit for how long the processing job is allowed to run.
+   * Sets a time limit for training.
    *
-   * @default - maximum runtime of 1 hour
+   * @default - max runtime of 1 hour
    */
   readonly stoppingCondition?: StoppingCondition;
 
   /**
-   * (Optional) An array of key-value pairs. For more information, see Using Cost Allocation Tags in the AWS Billing and Cost
-   * Management User Guide: https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html#allocation-whatURL
+   * Tags to be applied to the train job.
    *
    * @default - No tags
    */
-  readonly tags?: sfn.TaskInput;
+  readonly tags?: { [key: string]: string };
 }
 
 /**
@@ -129,12 +157,13 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
   /**
    * The processing resources for the task.
    */
-  private readonly processingResources: ProcessingResources;
+  private readonly processingCluster: ProcessingCluster;
   /**
    * The stopping condition for the task
    */
   private readonly stoppingCondition: StoppingCondition;
 
+  private readonly jobName: string;
   private readonly vpc?: ec2.IVpc;
   private securityGroup?: ec2.ISecurityGroup;
   private readonly securityGroups: ec2.ISecurityGroup[] = [];
@@ -151,33 +180,19 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
     validatePatternSupported(this.integrationPattern, SageMakerCreateProcessingJob.SUPPORTED_INTEGRATION_PATTERNS);
 
+    this.jobName = props.processingJobName ?? this.generateName();
+
     // set the default processing resources if not defined.
-    this.processingResources = props.processingResources || {
-      clusterConfig: {
-        instanceCount: 1,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE),
-        volumeSize: Size.gibibytes(10),
-      },
+    this.processingCluster = props.processingCluster || {
+      instanceCount: 1,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE),
+      volumeSize: Size.gibibytes(10),
     };
 
     // set the stopping condition if not defined
     this.stoppingCondition = props.stoppingCondition || {
       maxRuntime: Duration.hours(1),
     };
-
-    // validate environment variables
-    if (!props.appSpecification.imageUri && !props.appSpecification.containerImage) {
-      throw new Error('Must define either an image URI or container image in the application specification');
-    }
-
-    // check that either algorithm name or image is defined
-    if (!props.appSpecification.imageUri && !props.appSpecification.containerImage) {
-      throw new Error('Must define either an image URI or container image in the application specification');
-    }
-
-    if (props.appSpecification.imageUri && props.appSpecification.containerImage) {
-      throw new Error('Cannot define both an image URI and container image in the application specification');
-    }
 
     props.processingInputs?.forEach(input => {
       if (input.s3Input && input.datasetDefinition || (!input.s3Input && !input.datasetDefinition)) {
@@ -204,11 +219,11 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
     }
 
     // validate ProcessingOutputConfig outputs
-    if (props.processingOutputConfig?.outputs) {
-      if (props.processingOutputConfig?.outputs.length > 10) {
+    if (props.processingOutputs) {
+      if (props.processingOutputs.length > 10) {
         throw new Error('ProcessingOutputConfig must contain a maximum of 10 outputs.');
       }
-      props.processingOutputConfig.outputs.forEach(output => {
+      props.processingOutputs.forEach(output => {
         if (output.featureStoreOutput?.featureGroupName && output.featureStoreOutput?.featureGroupName.length > 64) {
           throw new Error('output TrialComponentDisplayName must have a minimum length of 1 and a maximum length of 120.');
         }
@@ -265,39 +280,39 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
 
   private renderParameters(): { [key: string]: any } {
     return {
-      ...this.renderAppSpecification(this.props.appSpecification),
+      ...this.renderAppSpecification(this.props),
       Environment: this.props.environment?.value,
       ...this.renderExperimentConfig(this.props.experimentConfig),
       ...this.renderNetworkConfig(this.props.networkConfig),
       ...this.renderProcessingInputs(this.props.processingInputs),
       ProcessingJobName: this.props.processingJobName,
-      ...this.renderProcessingOutputConfig(this.props.processingOutputConfig),
-      ...this.renderProcessingResources(this.processingResources),
+      ...this.renderProcessingOutputConfig(this.props),
+      ...this.renderProcessingResources(this.processingCluster),
       RoleArn: this._role!.roleArn,
       ...this.renderStoppingCondition(this.stoppingCondition),
       Tags: this.props.tags?.value,
     };
   }
 
-  private renderAppSpecification(spec: AppSpecification): { [key: string]: any } {
+  private renderAppSpecification(props: SageMakerCreateProcessingJobProps): { [key: string]: any } {
     return {
       AppSpecification: {
-        ...(spec.containerArguments) ? { ContainerArguments: spec.containerArguments } : {},
-        ...(spec.containerEntrypoint) ? { ContainerEntrypoint: spec.containerEntrypoint } : {},
-        ImageUri: spec.imageUri || spec.containerImage!.bind(this).imageUri,
+        ...(props.containerArgs ? { ContainerArguments: props.containerArgs }: {}),
+        ...(props.containerEntrypoint ? { ContainerEntrypoint: props.containerEntrypoint } : {}),
+        ImageUri: props.image.bind(this).imageUri,
       },
     };
   }
 
-  private renderProcessingResources(config: ProcessingResources): { [key: string]: any } {
+  private renderProcessingResources(cluster: ProcessingCluster): { [key: string]: any } {
     return {
       ProcessingResources: {
         ClusterConfig: {
-          InstanceCount: config.clusterConfig.instanceCount,
-          InstanceType: 'ml.' + config.clusterConfig.instanceType,
-          VolumeSizeInGB: config.clusterConfig.volumeSize?.toGibibytes(),
-          ...(config.clusterConfig.volumeEncryptionKey) ?
-            { VolumeKmsKeyId: config.clusterConfig.volumeEncryptionKey.keyArn } : {},
+          InstanceCount: cluster.instanceCount,
+          InstanceType: 'ml.' + cluster.instanceType,
+          VolumeSizeInGB: cluster.volumeSize?.toGibibytes(),
+          ...(cluster?.volumeEncryptionKey) ?
+            { VolumeKmsKeyId: cluster.volumeEncryptionKey.keyArn } : {},
         },
       },
     };
@@ -402,27 +417,29 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
     } : {};
   }
 
-  private renderProcessingOutputConfig(config: ProcessingOutputConfig | undefined): { [key: string]: any } {
-    return (config) ? {
+  private renderProcessingOutputConfig(props: SageMakerCreateProcessingJobProps): { [key: string]: any } {
+    if (!props.processingOutputs || props.processingOutputs.length === 0) { return {}; }
+
+    return {
       ProcessingOutputConfig: {
-        ...(config.encryptionKey) ? { KmsKeyId: config.encryptionKey.keyId } : {},
-        Outputs: config.outputs.map((output, index) => {
-          const outputName = output.outputName|| `output${index}`;
+        ...(props.processingOutputKey ? { KmsKeyId: props.processingOutputKey?.keyId } : {}),
+        Outputs: props.processingOutputs.map((output, index) => {
+          const outputName = output.outputName ?? `output${index}`;
           return {
-            OutputName: output.outputName || outputName,
-            AppManaged: output.appManaged || false,
-            ...(output.featureStoreOutput) ? {
+            OutputName: outputName,
+            AppManaged: output.appManaged ?? false,
+            ...(output.featureStoreOutput ? {
               FeatureStoreOutput: { FeatureGroupName: output.featureStoreOutput.featureGroupName },
-            } : {},
+            } : {}),
             S3Output: {
-              LocalPath: `/opt/ml/processing/outputs/s3/${output.s3Output.localPathPrefix || outputName}/`,
-              S3UploadMode: output.s3Output.s3UploadMode || S3UploadMode.END_OF_JOB,
+              LocalPath: `/opt/ml/processing/outputs/s3/${output.s3Output.localPathPrefix ?? outputName}/`,
+              S3UploadMode: output.s3Output.s3UploadMode ?? S3UploadMode.END_OF_JOB,
               S3Uri: output.s3Output.s3Location.bind(this, { forWriting: true }).uri,
             },
           };
         }),
       },
-    } : {};
+    };
   }
 
   private renderExperimentConfig(config: ExperimentConfig | undefined): { [key: string]: any } {
@@ -484,9 +501,9 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
         },
       });
 
-    if (this.props.processingResources && this.props.processingResources.clusterConfig &&
-      this.props.processingResources.clusterConfig.volumeEncryptionKey) {
-      this.props.processingResources.clusterConfig.volumeEncryptionKey.grant(this._role, 'kms:CreateGrant');
+    if (this.props.processingCluster && this.props.processingCluster &&
+      this.props.processingCluster.volumeEncryptionKey) {
+      this.props.processingCluster.volumeEncryptionKey.grant(this._role, 'kms:CreateGrant');
     }
 
     // create a security group if not defined
@@ -509,7 +526,7 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
             service: 'sagemaker',
             resource: 'processing-job',
             // If the job name comes from input, we cannot target the policy to a particular ARN prefix reliably...
-            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.processingJobName) ? '*' : `${this.props.processingJobName}*`,
+            resourceName: sfn.JsonPath.isEncodedJsonPath(this.jobName) ? '*' : `${this.jobName}*`,
           }),
         ],
       }),
@@ -542,5 +559,13 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
     }
 
     return policyStatements;
+  }
+
+  private generateName(): string {
+    const name = Stack.of(this).region + Names.uniqueId(this);
+    if (name.length > 64) {
+      return name.substring(0, 32) + name.substring(name.length - 32);
+    }
+    return name;
   }
 }

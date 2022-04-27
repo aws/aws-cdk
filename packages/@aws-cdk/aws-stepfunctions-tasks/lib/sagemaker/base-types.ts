@@ -488,48 +488,6 @@ export enum CompressionType {
 //
 
 /**
- * Configures the processing job to run a specified Docker container image.
- */
-export interface AppSpecification {
-  /**
-   * The arguments for a container used to run a processing job.
-   *
-   * @see https://docs.aws.amazon.com/sagemaker/latest/dg/build-your-own-processing-container.html
-   *
-   * @default []
-   */
-  readonly containerArguments?: string[];
-
-  /**
-   * The entrypoint for a container used to run a processing job.
-   * When specified, this value overrides the ENTRYPOINT command configured in your Docker image.
-   *
-   * @see https://docs.aws.amazon.com/sagemaker/latest/dg/build-your-own-processing-container.html
-   *
-   * @default None
-   */
-  readonly containerEntrypoint?: string[];
-
-  /**
-   * Registry path of the Docker image that contains the processing algorithm.
-   * If you specify a value for this parameter, you can't specify a value for ImageUri.
-   * This parameter must be popualted if the ImageUri is left unspecified
-   *
-   * @default None
-   */
-  readonly containerImage?: DockerImage;
-
-  /**
-   * The fully qualified URI of the Docker image to be run by the processing job.
-   * If you specify a value for this parameter, you can't specify a value for ContainerImage.
-   * This parameter must be popualted if the ContainerImage is left unspecified
-   *
-   * @default None
-   */
-  readonly imageUri?: string;
-}
-
-/**
  * Associates a SageMaker job as a trial component with an experiment and trial. Specified when you call the
  * following APIs: CreateProcessingJob, CreateTrainingJob, CreateTransformJob
  */
@@ -997,39 +955,9 @@ export interface ProcessingFeatureStoreOutput {
 }
 
 /**
- * Output configuration for the processing job.
- */
-export interface ProcessingOutputConfig {
-  /**
-   * The AWS Key Management Service (AWS KMS) key that Amazon SageMaker uses to encrypt the processing job output.
-   * KmsKeyId can be an ID of a KMS key, ARN of a KMS key, alias of a KMS key, or alias of a KMS key.
-   * The KmsKeyId is applied to all outputs.
-   *
-   * @default None
-   */
-  readonly encryptionKey?: kms.IKey;
-
-  /**
-   * Output configuration information for a processing job.
-   */
-  readonly outputs: ProcessingOutput[];
-}
-
-/**
- * Identifies the resources, ML compute instances, and ML storage volumes to deploy for a processing job. In distributed
- * training, you specify more than one instance.
- */
-export interface ProcessingResources {
-  /**
-   * Configuration for the cluster used to run a processing job.
-   */
-  readonly clusterConfig: ClusterConfig;
-}
-
-/**
  * The configuration for the resources in a cluster used to run the processing job.
  */
-export interface ClusterConfig {
+export interface ProcessingCluster {
   /**
    * The number of ML compute instances to use.
    *
