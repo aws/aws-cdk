@@ -186,20 +186,9 @@ in the AWS Lambda Developer Guide.
 ```ts
 // Grant permissions to an entire AWS organization
 declare const fn: lambda.Function;
-const orgPrincipal = new iam.OrganizationPrincipal('o-xxxxxxxxxx');
+const org = new iam.OrganizationPrincipal('o-xxxxxxxxxx');
 
-fn.grantInvoke(orgPrincipal);
-
-// Equivalent to:
-fn.addPermission('grant to entire org', {
-  principal: orgPrincipal,
-});
-
-// Equivalent to:
-fn.addPermission('grant to entire org', {
-  principal: new iam.StarPrincipal(),
-  principalOrg: orgPrincipal,
-})
+fn.grantInvoke(org);
 ```
 
 In the above example, the `principal` will be `*` and all users in the
@@ -211,11 +200,9 @@ AWS account or role as the `principal`:
 ```ts
 // Grant permission to an account ONLY IF they are part of the organization
 declare const fn: lambda.Function;
+const account = new iam.AccountPrincipal('123456789012');
 
-fn.addPermission('grant to account in org', {
-  principal: new iam.AccountPrincipal('123456789012'),
-  principalOrg: new iam.OrganizationPrincipal('o-xxxxxxxxxx'),
-});
+fn.grantInvoke(account.inOrganization('o-xxxxxxxxxx'));
 ```
 
 For more information, see
@@ -230,11 +217,6 @@ declare const fn: lambda.Function;
 const account = new iam.AccountPrincipal('123456789012');
 
 fn.grantInvoke(account);
-
-// Equivalent to:
-fn.addPermission('grant to account in org', {
-  principal: account,
-});
 ```
 
 For more information, see
@@ -265,13 +247,6 @@ const servicePrincipalWithConditions = servicePrincipal.withConditions({
 });
 
 fn.grantInvoke(servicePrincipalWithConditions);
-
-// Equivalent to:
-fn.addPermission('my-service Invocation', {
-  principal: servicePrincipal,
-  sourceArn: sourceArn,
-  sourceAccount: sourceAccount,
-});
 ```
 
 ## Versions
