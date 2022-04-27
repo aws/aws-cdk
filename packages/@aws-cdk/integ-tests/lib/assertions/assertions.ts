@@ -1,7 +1,10 @@
 import { CustomResource } from '@aws-cdk/core';
-import { Construct } from 'constructs';
 import { IAssertion } from './deploy-assert';
 import { AssertionRequest, AssertionsProvider, ASSERT_RESOURCE_TYPE, AssertionType } from './providers';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from 'constructs';
 
 /**
  * Options for an EqualsAssertion
