@@ -22,9 +22,7 @@ class CallSageMakerStack extends cdk.Stack {
 
     const processingJob = new tasks.SageMakerCreateProcessingJob(this, 'Process Task', {
       processingJobName: sfn.JsonPath.stringAt('$.JobName'),
-      appSpecification: {
-        containerImage: tasks.DockerImage.fromAsset(this, 'Image', { directory: path.resolve(__dirname, 'processing-image') }),
-      },
+      image: tasks.DockerImage.fromAsset(this, 'Image', { directory: path.resolve(__dirname, 'processing-image') }),
       resultPath: '$.ProcessingJob',
     });
 

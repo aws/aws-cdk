@@ -26,9 +26,7 @@ beforeEach(() => {
 test('create basic processing job', () => {
   // WHEN
   const task = new SageMakerCreateProcessingJob(stack, 'ProcessSagemaker', {
-    appSpecification: {
-      containerImage: DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.ImageName')),
-    },
+    image: DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.ImageName')),
     processingJobName: 'MyProcessJob',
   });
 
@@ -76,21 +74,13 @@ test('create complex processing job', () => {
     processingJobName: sfn.JsonPath.stringAt('$.ProcessJobName'),
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     role,
-    appSpecification: {
-      containerArguments: ['arg1', 'arg2'],
-      containerEntrypoint: ['a'],
-      containerImage: DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.ImageName')),
+    containerArgs: ['arg1', 'arg2'],
+    containerEntrypoint: ['a'],
+    image: DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.ImageName')),
+    environment: {
+      key1: '0.1',
+      key2: 'value2',
     },
-    environment: sfn.TaskInput.fromObject([
-      {
-        Key: 'key1',
-        Value: '0.1',
-      },
-      {
-        Key: 'key2',
-        Value: 'value2',
-      },
-    ]),
     experimentConfig: {
       experimentName: 'expName',
       trialComponentDisplayName: 'X',
@@ -127,42 +117,37 @@ test('create complex processing job', () => {
         },
       },
     ],
-    processingOutputConfig: {
-      encryptionKey: key,
-      outputs: [
-        {
-          outputName: 'processing-output-one',
-          s3Output: {
-            localPathPrefix: 'processing-output-one',
-            s3UploadMode: S3UploadMode.END_OF_JOB,
-            s3Location: S3Location.fromJsonExpression('$.S3Bucket.ProcessingInput.One'),
-          },
+    processingOutputKey: key,
+    processingOutputs: [
+      {
+        outputName: 'processing-output-one',
+        s3Output: {
+          localPathPrefix: 'processing-output-one',
+          s3UploadMode: S3UploadMode.END_OF_JOB,
+          s3Location: S3Location.fromJsonExpression('$.S3Bucket.ProcessingInput.One'),
         },
-        {
-          outputName: 'processing-output-two',
-          s3Output: {
-            localPathPrefix: 'processing-output-two',
-            s3UploadMode: S3UploadMode.CONTINUOUS,
-            s3Location: S3Location.fromJsonExpression('$.S3Bucket.ProcessingInput.Two'),
-          },
-        },
-      ],
-    },
-    processingResources: {
-      clusterConfig: {
-        instanceCount: 3,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
-        volumeSize: cdk.Size.gibibytes(50),
-        volumeEncryptionKey: key,
       },
+      {
+        outputName: 'processing-output-two',
+        s3Output: {
+          localPathPrefix: 'processing-output-two',
+          s3UploadMode: S3UploadMode.CONTINUOUS,
+          s3Location: S3Location.fromJsonExpression('$.S3Bucket.ProcessingInput.Two'),
+        },
+      },
+    ],
+    processingCluster: {
+      instanceCount: 3,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+      volumeSize: cdk.Size.gibibytes(50),
+      volumeEncryptionKey: key,
     },
     stoppingCondition: {
       maxRuntime: cdk.Duration.hours(4),
     },
-    tags: sfn.TaskInput.fromObject([{
-      Key: 'Project',
-      Value: 'MyProject',
-    }]),
+    tags: {
+      Project: 'MyProject',
+    },
   });
   processTask.addSecurityGroup(securityGroup);
 
@@ -270,16 +255,10 @@ test('create complex processing job', () => {
         },
       },
       'StoppingCondition': { MaxRuntimeInSeconds: 14400 },
-      'Environment': [
-        {
-          Key: 'key1',
-          Value: '0.1',
-        },
-        {
-          Key: 'key2',
-          Value: 'value2',
-        },
-      ],
+      'Environment': {
+        key1: '0.1',
+        key2: 'value2',
+      },
       'Tags': [{ Key: 'Project', Value: 'MyProject' }],
     },
   });
@@ -288,9 +267,7 @@ test('create complex processing job', () => {
 test('pass param to processing job', () => {
   // WHEN
   const task = new SageMakerCreateProcessingJob(stack, 'ProcessSagemaker', {
-    appSpecification: {
-      containerImage: DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.ImageName')),
-    },
+    image: DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.ImageName')),
     processingJobName: 'MyProcessJob',
   });
 
@@ -323,9 +300,7 @@ test('pass param to processing job', () => {
 test('Constructor throws if processing job is created with conflicting inputs', () => {
   expect(() => {
     new SageMakerCreateProcessingJob(stack, 'ProcessSagemaker', {
-      appSpecification: {
-        containerImage: DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.ImageName')),
-      },
+      image: DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.ImageName')),
       processingInputs: [
         {
           inputName: 'conflictingInputTest',
@@ -363,9 +338,7 @@ test('Constructor throws if processing job is created with conflicting input dat
     });
 
     new SageMakerCreateProcessingJob(stack, 'ProcessSagemaker', {
-      appSpecification: {
-        containerImage: DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.ImageName')),
-      },
+      image: DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.ImageName')),
       processingInputs: [
         {
           inputName: 'conflictingInputTest',
@@ -398,9 +371,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
   expect(() => {
     new SageMakerCreateProcessingJob(stack, 'ProcessSagemaker', {
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
-      appSpecification: {
-        containerImage: DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.ImageName')),
-      },
+      image: DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.ImageName')),
       processingJobName: 'MyProcessJob',
     });
   }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/i);

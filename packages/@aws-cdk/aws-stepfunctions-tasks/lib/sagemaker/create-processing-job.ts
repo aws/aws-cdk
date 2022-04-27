@@ -22,6 +22,7 @@ import {
   S3UploadMode,
   ProcessingCluster,
 } from './base-types';
+import { renderEnvironment, renderTags } from './private/utils';
 
 /**
  * Properties for creating an Amazon SageMaker processing job task
@@ -281,7 +282,7 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
   private renderParameters(): { [key: string]: any } {
     return {
       ...this.renderAppSpecification(this.props),
-      Environment: this.props.environment?.value,
+      ...renderEnvironment(this.props.environment),
       ...this.renderExperimentConfig(this.props.experimentConfig),
       ...this.renderNetworkConfig(this.props.networkConfig),
       ...this.renderProcessingInputs(this.props.processingInputs),
@@ -290,7 +291,7 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
       ...this.renderProcessingResources(this.processingCluster),
       RoleArn: this._role!.roleArn,
       ...this.renderStoppingCondition(this.stoppingCondition),
-      Tags: this.props.tags?.value,
+      ...renderTags(this.props.tags),
     };
   }
 
