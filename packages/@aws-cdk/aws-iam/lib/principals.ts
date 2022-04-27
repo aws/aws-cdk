@@ -370,7 +370,8 @@ export class ArnPrincipal extends PrincipalBase {
   }
 
   /**
-   * If specified, the account must belong to the organization for permissions to be granted.
+   * A convenience method for adding a condition that the principal is part of the specified
+   * AWS Organization.
    */
   public inOrganization(organizationId: string) {
     return this.withConditions({
