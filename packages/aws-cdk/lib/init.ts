@@ -8,7 +8,22 @@ import { error, print, warning } from './logging';
 import { cdkHomeDir, rootDir } from './util/directories';
 import { versionNumber } from './version';
 
-export type InvokeHook = (targetDirectory: string) => Promise<void>;
+
+export type SubstitutePlaceholders = (...fileNames: string[]) => Promise<void>;
+
+/**
+ * Helpers passed to hook functions
+ */
+export interface HookContext {
+  /**
+   * Callback function to replace placeholders on arbitrary files
+   *
+   * This makes token substitution available to non-`.template` files.
+   */
+  readonly substitutePlaceholdersIn: SubstitutePlaceholders;
+}
+
+export type InvokeHook = (targetDirectory: string, context: HookContext) => Promise<void>;
 
 /* eslint-disable @typescript-eslint/no-var-requires */ // Packages don't have @types module
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -98,14 +113,27 @@ export class InitTemplate {
           + `(it supports: ${this.languages.map(l => chalk.blue(l)).join(', ')})`);
       throw new Error(`Unsupported language: ${language}`);
     }
+
+    const projectInfo: ProjectInfo = {
+      name: decamelize(path.basename(path.resolve(targetDirectory))),
+    };
+
+    const hookContext: HookContext = {
+      substitutePlaceholdersIn: async (...fileNames: string[]) => {
+        for (const fileName of fileNames) {
+          const fullPath = path.join(targetDirectory, fileName);
+          const template = await fs.readFile(fullPath, { encoding: 'utf-8' });
+          await fs.writeFile(fullPath, this.expand(template, projectInfo));
+        }
+      },
+    };
+
     const sourceDirectory = path.join(this.basePath, language);
     const hookTempDirectory = path.join(targetDirectory, 'tmp');
     await fs.mkdir(hookTempDirectory);
-    await this.installFiles(sourceDirectory, targetDirectory, {
-      name: decamelize(path.basename(path.resolve(targetDirectory))),
-    });
+    await this.installFiles(sourceDirectory, targetDirectory, projectInfo);
     await this.applyFutureFlags(targetDirectory);
-    await this.invokeHooks(hookTempDirectory, targetDirectory);
+    await this.invokeHooks(hookTempDirectory, targetDirectory, hookContext);
     await fs.remove(hookTempDirectory);
   }
 
@@ -137,7 +165,7 @@ export class InitTemplate {
    *        will be invoked, passing the target directory as the only argument. Hooks are invoked
    *        in lexical order.
    */
-  private async invokeHooks(sourceDirectory: string, targetDirectory: string) {
+  private async invokeHooks(sourceDirectory: string, targetDirectory: string, hookContext: HookContext) {
     const files = await fs.readdir(sourceDirectory);
     files.sort(); // Sorting allows template authors to control the order in which hooks are invoked.
 
@@ -145,7 +173,7 @@ export class InitTemplate {
       if (file.match(/^.*\.hook\.js$/)) {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         const invoke: InvokeHook = require(path.join(sourceDirectory, file)).invoke;
-        await invoke(targetDirectory);
+        await invoke(targetDirectory, hookContext);
       }
     }
   }

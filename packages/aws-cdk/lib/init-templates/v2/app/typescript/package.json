@@ -1,0 +1,27 @@
+{
+  "name": "%name%",
+  "version": "0.1.0",
+  "bin": {
+    "%name%": "bin/%name%.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.4.1",
+    "@types/node": "10.17.27",
+    "jest": "^27.5.1",
+    "ts-jest": "^27.1.4",
+    "aws-cdk": "%cdk-version%",
+    "ts-node": "^10.7.0",
+    "typescript": "~3.9.7"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "%cdk-version%",
+    "constructs": "%constructs-version%",
+    "source-map-support": "^0.5.21"
+  }
+}

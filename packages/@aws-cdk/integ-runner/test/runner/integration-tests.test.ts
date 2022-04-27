@@ -1,5 +1,5 @@
 import * as mockfs from 'mock-fs';
-import { IntegrationTests } from '../../lib/runner/integ-tests';
+import { IntegrationTests } from '../../lib/runner/integration-tests';
 
 describe('IntegrationTests', () => {
   const testsFile = '/tmp/foo/bar/does/not/exist/tests.json';
@@ -17,12 +17,12 @@ describe('IntegrationTests', () => {
       [testsFileExclude]: JSON.stringify({
         exclude: true,
         tests: [
-          'test/test-data/integ.integ-test1.js',
+          'test-data/integ.integ-test1.js',
         ],
       }),
       [testsFile]: JSON.stringify({
         tests: [
-          'test/test-data/integ.integ-test1.js',
+          'test-data/integ.integ-test1.js',
         ],
       }),
     });
@@ -33,26 +33,26 @@ describe('IntegrationTests', () => {
   });
 
   test('from cli args', async () => {
-    const integTests = await tests.fromCliArgs(['test/test-data/integ.integ-test1.js']);
+    const integTests = await tests.fromCliArgs(['test-data/integ.integ-test1.js']);
 
     expect(integTests.length).toEqual(1);
     expect(integTests[0].fileName).toEqual(expect.stringMatching(/integ.integ-test1.js$/));
   });
 
   test('from cli args, test not found', async () => {
-    const integTests = await tests.fromCliArgs(['test/test-data/integ.integ-test16.js']);
+    const integTests = await tests.fromCliArgs(['test-data/integ.integ-test16.js']);
 
     expect(integTests.length).toEqual(0);
     expect(stderrMock.mock.calls[0][0]).toContain(
-      'No such integ test: test/test-data/integ.integ-test16.js',
+      'No such integ test: test-data/integ.integ-test16.js',
     );
     expect(stderrMock.mock.calls[1][0]).toContain(
-      'Available tests: test/test-data/integ.integ-test1.js test/test-data/integ.integ-test2.js test/test-data/integ.integ-test3.js',
+      'Available tests: test-data/integ.integ-test1.js test-data/integ.integ-test2.js test-data/integ.integ-test3.js',
     );
   });
 
   test('from cli args, exclude', async () => {
-    const integTests = await tests.fromCliArgs(['test/test-data/integ.integ-test1.js'], true);
+    const integTests = await tests.fromCliArgs(['test-data/integ.integ-test1.js'], true);
 
     const fileNames = integTests.map(test => test.fileName);
     expect(integTests.length).toEqual(2);
@@ -78,7 +78,7 @@ describe('IntegrationTests', () => {
       },
       [testsFile]: JSON.stringify({
         tests: [
-          'test/test-data/integ.integ-test16.js',
+          'test-data/integ.integ-test16.js',
         ],
       }),
     });
@@ -86,10 +86,10 @@ describe('IntegrationTests', () => {
 
     expect(integTests.length).toEqual(0);
     expect(stderrMock.mock.calls[0][0]).toContain(
-      'No such integ test: test/test-data/integ.integ-test16.js',
+      'No such integ test: test-data/integ.integ-test16.js',
     );
     expect(stderrMock.mock.calls[1][0]).toContain(
-      'Available tests: test/test-data/integ.integ-test1.js test/test-data/integ.integ-test2.js test/test-data/integ.integ-test3.js',
+      'Available tests: test-data/integ.integ-test1.js test-data/integ.integ-test2.js test-data/integ.integ-test3.js',
     );
   });
 
