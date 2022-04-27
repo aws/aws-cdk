@@ -294,6 +294,69 @@ Example `outputs.json` after deployment of multiple stacks
   }
 }
 ```
+#### Stacks
+
+Write the stack name and ARNs into a file.  When you stack(s) finish deploying, the names and ARNs of each stack will be written to the file as JSON.
+
+Usage of stacks in a CDK stack
+
+Specify an stacks file to write to by supplying the `--stacks-file` parameter
+
+```console
+$ cdk deploy --stacks-file stacks.json
+```
+
+Alternatively, the `stacksFile` key can be specified in the project config (`cdk.json`).
+
+The following shows a sample `cdk.json` where the `stacksFile` key is set to *stacks.json*.
+
+```json
+{
+  "app": "npx ts-node bin/myproject.ts",
+  "context": {
+    "@aws-cdk/core:enableStackNameDuplicates": "true",
+    "aws-cdk:enableDiffNoFail": "true",
+    "@aws-cdk/core:stackRelativeExports": "true"
+  },
+  "stacksFile": "stacks.json"
+}
+```
+
+The `stacksFile` key can also be specified as a user setting (`~/.cdk.json`)
+
+When the stack finishes deployment, `stacks.json` would look like this:
+
+```json
+[
+  {
+    "id": "arn:aws:cloudformation:us-east-1:000000000000:stack/outputs-test-1/528053e0-c59a-23fc-ace2-1296d0f2c267", 
+    "name": "outputs-test-1",
+  }
+]
+```
+
+If multiple stacks are being deployed or the wild card `*` is used to deploy all stacks, array elements will be appended as necessary to the stacks file.
+
+
+```console
+$ cdk deploy '*' --stacks-file "/Users/code/myproject/stacks.json"
+```
+
+Example `stacks.json` after deployment of multiple stacks
+
+```json
+[
+  {
+    "id": "arn:aws:cloudformation:us-east-1:000000000000:stack/outputs-test-1/528053e0-c59a-23fc-ace2-1296d0f2c267", 
+    "name": "outputs-test-1",
+  },
+  {
+    "id": "arn:aws:cloudformation:us-east-1:000000000000:stack/outputs-test-2/528053e0-c59a-23fc-ace2-1296d0f2c267", 
+    "name": "outputs-test-2",
+  }
+]
+
+```
 
 #### Deployment Progress
 
