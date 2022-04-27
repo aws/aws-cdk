@@ -372,7 +372,7 @@ export class Endpoint extends EndpointBase {
     });
 
     // apply a name tag to the endpoint resource
-    this.node.applyAspect(new cdk.Tag(NAME_TAG, this.node.path));
+    cdk.Tags.of(this).add(NAME_TAG, this.node.path);
 
     this.endpointConfig = props.endpointConfig;
 

@@ -195,7 +195,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     });
 
     // apply a name tag to the endpoint config resource
-    this.node.applyAspect(new cdk.Tag(NAME_TAG, this.node.path));
+    cdk.Tags.of(this).add(NAME_TAG, this.node.path);
 
     [props.productionVariant, ...props.extraProductionVariants || []].map(p => this.addProductionVariant(p));
 
@@ -203,7 +203,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     const endpointConfig = new CfnEndpointConfig(this, 'EndpointConfig', {
       kmsKeyId: (props.encryptionKey) ? props.encryptionKey.keyArn : undefined,
       endpointConfigName: this.physicalName,
-      productionVariants: cdk.Lazy.anyValue({ produce: () => this.renderProductionVariants() })
+      productionVariants: cdk.Lazy.any({ produce: () => this.renderProductionVariants() })
     });
     this.endpointConfigName = this.getResourceNameAttribute(endpointConfig.attrEndpointConfigName);
     this.endpointConfigArn = this.getResourceArnAttribute(endpointConfig.ref, {

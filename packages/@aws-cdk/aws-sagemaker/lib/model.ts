@@ -299,14 +299,15 @@ export class Model extends ModelBase {
     this.role = props.role || this.createSageMakerRole();
     this.grantPrincipal = this.role;
 
-    this.node.applyAspect(new cdk.Tag(NAME_TAG, this.node.path));
+    // apply a name tag to the model resource
+    cdk.Tags.of(this).add(NAME_TAG, this.node.path);
 
     const model = new CfnModel(this, 'Model', {
       executionRoleArn: this.role.roleArn,
       modelName: this.physicalName,
       primaryContainer: (containers.length === 1) ?
         this.renderContainer(containers[0]) : undefined,
-      vpcConfig: cdk.Lazy.anyValue({ produce: () => this.renderVpcConfig() }),
+      vpcConfig: cdk.Lazy.any({ produce: () => this.renderVpcConfig() }),
       containers: (containers.length === 1) ?
         undefined : containers.map(c => this.renderContainer(c)),
     });
