@@ -109,6 +109,7 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
         await installNpmPackages(fixture, {
           '@aws-cdk/core': installationVersion,
           '@aws-cdk/aws-sns': installationVersion,
+          '@aws-cdk/aws-sqs': installationVersion,
           '@aws-cdk/aws-iam': installationVersion,
           '@aws-cdk/aws-lambda': installationVersion,
           '@aws-cdk/aws-ssm': installationVersion,
@@ -297,7 +298,7 @@ export interface CdkModernBootstrapCommandOptions extends CommonCdkBootstrapComm
 }
 
 export class TestFixture {
-  public readonly qualifier = randomString().substr(0, 10);
+  public readonly qualifier = randomString().slice(0, 10);
   private readonly bucketsToDelete = new Array<string>();
 
   constructor(
@@ -722,9 +723,7 @@ const installNpm7 = memoize0(async (): Promise<string> => {
   await shell(['rm', '-rf', installDir]);
   await shell(['mkdir', '-p', installDir]);
 
-  await shell(['npm', 'install',
-    '--prefix', installDir,
-    'npm@7']);
+  await shell(['npm', 'install', 'npm@7'], { cwd: installDir });
 
   return path.join(installDir, 'node_modules', '.bin', 'npm');
 });

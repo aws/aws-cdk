@@ -1,0 +1,41 @@
+{
+ "Parameters": {
+  "TopicNamePrefix": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "topic096865AFD": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "TopicNamePrefix"
+       },
+       "-0"
+      ]
+     ]
+    }
+   }
+  },
+  "topic119487C5C": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "TopicNamePrefix"
+       },
+       "-1"
+      ]
+     ]
+    }
+   }
+  }
+ }
+}

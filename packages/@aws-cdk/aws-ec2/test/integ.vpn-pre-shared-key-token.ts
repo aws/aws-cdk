@@ -11,7 +11,7 @@ const vpc = new ec2.Vpc(stack, 'MyVpc', {
       ip: '52.85.255.164',
       tunnelOptions: [
         {
-          preSharedKey: cdk.SecretValue.ssmSecure('ssm-pw', '1').toString(),
+          preSharedKeySecret: cdk.SecretValue.unsafePlainText('ssmpwaaa'),
         },
       ],
     },
