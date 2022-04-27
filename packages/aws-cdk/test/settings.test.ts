@@ -145,6 +145,17 @@ test('should include outputs-file in settings', () => {
   expect(settings.get(['outputsFile'])).toEqual('my-outputs-file.json');
 });
 
+test('should include stacks-file in settings', () => {
+  // GIVEN
+  const settings = Settings.fromCommandLineArguments({
+    _: [Command.DEPLOY],
+    stacksFile: 'my-stacks-file.json',
+  });
+
+  // THEN
+  expect(settings.get(['stacks'])).toEqual('my-stacks-file.json');
+});
+
 test('providing a build arg', () => {
   // GIVEN
   const settings = Settings.fromCommandLineArguments({

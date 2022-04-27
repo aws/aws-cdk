@@ -337,7 +337,6 @@ When the stack finishes deployment, `stacks.json` would look like this:
 
 If multiple stacks are being deployed or the wild card `*` is used to deploy all stacks, array elements will be appended as necessary to the stacks file.
 
-
 ```console
 $ cdk deploy '*' --stacks-file "/Users/code/myproject/stacks.json"
 ```
