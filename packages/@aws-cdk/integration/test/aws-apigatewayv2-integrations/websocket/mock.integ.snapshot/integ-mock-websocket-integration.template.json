@@ -1,0 +1,108 @@
+{
+ "Resources": {
+  "mywsapi32E6CE11": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "mywsapi",
+    "ProtocolType": "WEBSOCKET",
+    "RouteSelectionExpression": "$request.body.action"
+   }
+  },
+  "mywsapidefaultRouteDefaultIntegrationFFCB3BA9": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "IntegrationType": "MOCK",
+    "IntegrationUri": ""
+   }
+  },
+  "mywsapidefaultRouteE9382DF8": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "RouteKey": "$default",
+    "AuthorizationType": "NONE",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "mywsapidefaultRouteDefaultIntegrationFFCB3BA9"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "mywsapisendmessageRouteSendMessageIntegrationD29E12F9": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "IntegrationType": "MOCK",
+    "IntegrationUri": ""
+   }
+  },
+  "mywsapisendmessageRouteAE873328": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "RouteKey": "sendmessage",
+    "AuthorizationType": "NONE",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "mywsapisendmessageRouteSendMessageIntegrationD29E12F9"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "mystage114C35EC": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "StageName": "dev",
+    "AutoDeploy": true
+   }
+  }
+ },
+ "Outputs": {
+  "ApiEndpoint": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "wss://",
+      {
+       "Ref": "mywsapi32E6CE11"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/dev"
+     ]
+    ]
+   }
+  }
+ }
+}

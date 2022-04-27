@@ -1,0 +1,52 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "test-kinesis-stream-action-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "test-kinesis-stream-action-stack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/test-kinesis-stream-action-stack/TopicRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicRule40A4EA44"
+          }
+        ],
+        "/test-kinesis-stream-action-stack/TopicRule/TopicRuleActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicRuleTopicRuleActionRole246C4F77"
+          }
+        ],
+        "/test-kinesis-stream-action-stack/TopicRule/TopicRuleActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687"
+          }
+        ],
+        "/test-kinesis-stream-action-stack/MyStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyStream5C050E93"
+          }
+        ],
+        "/test-kinesis-stream-action-stack/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+          }
+        ]
+      },
+      "displayName": "test-kinesis-stream-action-stack"
+    }
+  }
+}

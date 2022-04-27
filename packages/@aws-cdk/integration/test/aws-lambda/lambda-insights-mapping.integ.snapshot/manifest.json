@@ -1,0 +1,100 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "stack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/stack/MyFunc1/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc1ServiceRoleF96C5B5C"
+          }
+        ],
+        "/stack/MyFunc1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc11BE70A62"
+          }
+        ],
+        "/stack/MyFunc2/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc2ServiceRole68E50443"
+          }
+        ],
+        "/stack/MyFunc2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc242557A97"
+          }
+        ],
+        "/stack/MyFunc3/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc3ServiceRoleA69795ED"
+          }
+        ],
+        "/stack/MyFunc3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc3666B7A2F"
+          }
+        ],
+        "/stack/MyFunc4/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc4ServiceRole93C4DEFF"
+          }
+        ],
+        "/stack/MyFunc4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc4B88F85C6"
+          }
+        ],
+        "/stack/Cloudwatch-lambda-insights-versionMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudwatchlambdainsightsversionMap"
+          }
+        ],
+        "/stack/MyFunc5/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc5ServiceRoleFE4CE92B"
+          }
+        ],
+        "/stack/MyFunc5/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc586573B53"
+          }
+        ],
+        "/stack/MyFunc6/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc6ServiceRoleCDDBC2C6"
+          }
+        ],
+        "/stack/MyFunc6/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc60D944984"
+          }
+        ]
+      },
+      "displayName": "stack"
+    }
+  }
+}

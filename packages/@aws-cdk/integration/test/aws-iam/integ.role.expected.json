@@ -1,0 +1,122 @@
+{
+  "Resources": {
+    "TestRole6C9272DF": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "sqs.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "TestRoleDefaultPolicyD1C92014": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:SendMessage",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "TestRoleDefaultPolicyD1C92014",
+        "Roles": [
+          {
+            "Ref": "TestRole6C9272DF"
+          }
+        ]
+      }
+    },
+    "HelloPolicyD59007DF": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "ec2:*",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "Default",
+        "Roles": [
+          {
+            "Ref": "TestRole6C9272DF"
+          }
+        ]
+      }
+    },
+    "TestRole25D98AB21": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "StringEquals": {
+                  "sts:ExternalId": "supply-me"
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "TestRole3C1F30727": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "StringEquals": {
+                  "aws:PrincipalOrgID": "o-1234"
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "*"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    }
+  }
+}
