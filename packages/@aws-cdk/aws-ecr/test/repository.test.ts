@@ -20,11 +20,6 @@ describe('repository', () => {
       Resources: {
         Repo02AC86CF: {
           Type: 'AWS::ECR::Repository',
-          Properties: {
-            ImageScanningConfiguration: {
-              ScanOnPush: false,
-            },
-          },
           DeletionPolicy: 'Retain',
           UpdateReplacePolicy: 'Retain',
         },
@@ -34,13 +29,20 @@ describe('repository', () => {
 
   test('repository creation with imageScanOnPush', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const noScanStack = new cdk.Stack();
+    const scanStack = new cdk.Stack();
 
     // WHEN
-    new ecr.Repository(stack, 'Repo', { imageScanOnPush: true });
+    new ecr.Repository(noScanStack, 'NoScanRepo', { imageScanOnPush: false });
+    new ecr.Repository(scanStack, 'ScanRepo', { imageScanOnPush: true });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+    Template.fromStack(noScanStack).hasResourceProperties('AWS::ECR::Repository', {
+      ImageScanningConfiguration: {
+        ScanOnPush: false,
+      },
+    });
+    Template.fromStack(scanStack).hasResourceProperties('AWS::ECR::Repository', {
       ImageScanningConfiguration: {
         ScanOnPush: true,
       },
