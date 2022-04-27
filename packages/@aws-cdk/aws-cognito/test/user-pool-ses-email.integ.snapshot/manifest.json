@@ -1,0 +1,35 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      },
+      "metadata": {}
+    },
+    "integ-user-pool-signup-code": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-user-pool-signup-code.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-user-pool-signup-code/myuserpool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpool01998219"
+          }
+        ],
+        "/integ-user-pool-signup-code/user-pool-id": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "userpoolid"
+          }
+        ]
+      },
+      "displayName": "integ-user-pool-signup-code"
+    }
+  }
+}

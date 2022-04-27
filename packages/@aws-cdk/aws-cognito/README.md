@@ -364,6 +364,21 @@ new cognito.UserPool(this, 'myuserpool', {
 
 ```
 
+When sending emails from an SES verified domain, `sesVerifiedDomain` can be used to specify the domain.
+The email address does not need to be verified when sending emails from a verified domain, because the identity of the email configuration is can be determined from the domain alone.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  email: cognito.UserPoolEmail.withSES({
+    sesRegion: 'us-east-1',
+    fromEmail: 'noreply@myawesomeapp.com',
+    fromName: 'Awesome App',
+    replyTo: 'support@myawesomeapp.com',
+    sesVerifiedDomain: 'myawesomeapp.com',
+  }),
+});
+```
+
 ### Device Tracking
 
 User pools can be configured to track devices that users have logged in to.
