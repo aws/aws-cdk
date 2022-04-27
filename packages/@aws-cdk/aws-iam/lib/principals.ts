@@ -368,6 +368,17 @@ export class ArnPrincipal extends PrincipalBase {
   public toString() {
     return `ArnPrincipal(${this.arn})`;
   }
+
+  /**
+   * If specified, the account must belong to the organization for permissions to be granted.
+   */
+  public inOrganization(organizationId: string) {
+    return this.withConditions({
+      StringEquals: {
+        'aws:PrincipalOrgID': organizationId,
+      },
+    });
+  }
 }
 
 /**
@@ -397,7 +408,7 @@ export interface ServicePrincipalOpts {
   /**
    * The region in which the service is operating.
    *
-   * @default the current Stack's region.
+   * @default - the current Stack's region.
    * @deprecated You should not need to set this. The stack's region is always correct.
    */
   readonly region?: string;
