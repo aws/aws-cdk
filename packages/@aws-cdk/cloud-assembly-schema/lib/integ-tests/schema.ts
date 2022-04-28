@@ -19,6 +19,15 @@ export interface IntegManifest {
   readonly enableLookups?: boolean;
 
   /**
+   * Additional context to use when performing
+   * a synth. Any context provided here will override
+   * any default context
+   *
+   * @default - no additional context
+   */
+  readonly synthContext?: { [name: string]: string };
+
+  /**
    * test cases
    */
   readonly testCases: { [testName: string]: TestCase };
