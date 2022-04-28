@@ -259,11 +259,11 @@ interface DatabaseClusterBaseProps {
   readonly storageEncrypted?: boolean
 
   /**
-  * The KMS key for storage encryption.
-  * If specified, {@link storageEncrypted} will be set to `true`.
-  *
-  * @default - if storageEncrypted is true then the default master key, no key otherwise
-  */
+   * The KMS key for storage encryption.
+   * If specified, {@link storageEncrypted} will be set to `true`.
+   *
+   * @default - if storageEncrypted is true then the default master key, no key otherwise
+   */
   readonly storageEncryptionKey?: kms.IKey;
 
   /**
@@ -272,6 +272,13 @@ interface DatabaseClusterBaseProps {
    * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
    */
   readonly credentials?: Credentials;
+
+  /**
+   * Whether to copy tags to the snapshot when a snapshot is created.
+   *
+   * @default - true
+   */
+  readonly copyTagsToSnapshot?: boolean;
 }
 
 /**
@@ -461,6 +468,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       // Encryption
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
+      // Tags
+      copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
     };
   }
 
@@ -572,12 +581,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
  * Properties for a new database cluster
  */
 export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
-  /**
-   * Whether to copy tags to the snapshot when a snapshot is created.
-   *
-   * @default: true
-   */
-  readonly copyTagsToSnapshot?: boolean;
+
 }
 
 /**
@@ -613,8 +617,6 @@ export class DatabaseCluster extends DatabaseClusterNew {
       // Admin
       masterUsername: credentials.username,
       masterUserPassword: credentials.password?.unsafeUnwrap(),
-      // Tags
-      copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
     });
 
     this.clusterIdentifier = cluster.ref;
