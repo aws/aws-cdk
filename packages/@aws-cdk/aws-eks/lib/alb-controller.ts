@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from 'constructs';
+import * as yaml from 'yaml';
 import { Cluster } from './cluster';
 import { HelmChart } from './helm-chart';
 import { ServiceAccount } from './service-account';
@@ -219,6 +220,15 @@ export class AlbController extends CoreConstruct {
       serviceAccount.addToPrincipalPolicy(iam.PolicyStatement.fromJson(statement));
     }
 
+    const eksChartsIndex = yaml.parse(fs.readFileSync(path.resolve(__dirname, 'addons', 'eks-charts-index.yaml'), 'utf-8'));
+    const albAppToHelmChartVersionMapping = new Map<string, string>();
+    for (const albControllerChart of eksChartsIndex.entries['aws-load-balancer-controller']) {
+      if (!albAppToHelmChartVersionMapping.has(albControllerChart.appVersion)) {
+        // only use the latest helm chart version
+        albAppToHelmChartVersionMapping.set(albControllerChart.appVersion, albControllerChart.version);
+      }
+    }
+
     // https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/deploy/installation/#add-controller-to-cluster
     const chart = new HelmChart(this, 'Resource', {
       cluster: props.cluster,
@@ -231,7 +241,7 @@ export class AlbController extends CoreConstruct {
       // want to expose this since helm here is just an implementation detail
       // for installing a specific version of the controller itself.
       // https://github.com/aws/eks-charts/blob/v0.0.65/stable/aws-load-balancer-controller/Chart.yaml
-      version: '1.2.7',
+      version: albAppToHelmChartVersionMapping.get(props.version.version),
 
       wait: true,
       timeout: Duration.minutes(15),
