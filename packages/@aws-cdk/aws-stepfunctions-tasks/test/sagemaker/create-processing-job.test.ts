@@ -87,8 +87,8 @@ test('create complex processing job', () => {
       trialName: 'test-one',
     },
     networkConfig: {
-      enableInterContainerTrafficEncryption: true,
-      enableNetworkIsolation: true,
+      enableTraffic: true,
+      enableIsolation: true,
       vpcConfig: {
         vpc: vpc,
       },

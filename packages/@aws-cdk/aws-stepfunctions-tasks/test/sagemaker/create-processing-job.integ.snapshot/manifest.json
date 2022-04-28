@@ -1,0 +1,77 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-stepfunctions-integ-sagemaker": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-stepfunctions-integ-sagemaker.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-stepfunctions-integ-sagemaker": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "repositoryName": "aws-cdk/assets",
+              "imageTag": "329ec6c01b63ce901238b8b7b7dac5c1ec6aed1f4af1d042c39d7cd5edface3a",
+              "id": "329ec6c01b63ce901238b8b7b7dac5c1ec6aed1f4af1d042c39d7cd5edface3a",
+              "packaging": "container-image",
+              "path": "asset.329ec6c01b63ce901238b8b7b7dac5c1ec6aed1f4af1d042c39d7cd5edface3a",
+              "sourceHash": "329ec6c01b63ce901238b8b7b7dac5c1ec6aed1f4af1d042c39d7cd5edface3a"
+            }
+          }
+        ],
+        "/aws-stepfunctions-integ-sagemaker/Process Task/SagemakerRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProcessTaskSagemakerRole469AF742"
+          }
+        ],
+        "/aws-stepfunctions-integ-sagemaker/Process Task/SagemakerRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProcessTaskSagemakerRoleDefaultPolicy1D9B23FE"
+          }
+        ],
+        "/aws-stepfunctions-integ-sagemaker/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/aws-stepfunctions-integ-sagemaker/StateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+          }
+        ],
+        "/aws-stepfunctions-integ-sagemaker/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/aws-stepfunctions-integ-sagemaker/StateMachineArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineArn"
+          }
+        ],
+        "/aws-stepfunctions-integ-sagemaker/Service-principalMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceprincipalMap"
+          }
+        ]
+      },
+      "displayName": "aws-stepfunctions-integ-sagemaker"
+    }
+  }
+}

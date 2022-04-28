@@ -103,7 +103,7 @@ export interface SageMakerCreateProcessingJobProps extends sfn.TaskStateBaseProp
   /**
    * The KMS key that Amazon SageMaker users to encrypt the processing job output.
    *
-   * @default None
+   * @default - No key
    */
   readonly processingOutputKey?: kms.IKey,
 
@@ -183,14 +183,14 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
     this.jobName = props.processingJobName ?? this.generateName();
 
     // set the default processing resources if not defined.
-    this.processingCluster = props.processingCluster || {
+    this.processingCluster = props.processingCluster ?? {
       instanceCount: 1,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE),
       volumeSize: Size.gibibytes(10),
     };
 
     // set the stopping condition if not defined
-    this.stoppingCondition = props.stoppingCondition || {
+    this.stoppingCondition = props.stoppingCondition ?? {
       maxRuntime: Duration.hours(1),
     };
 
@@ -262,7 +262,7 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
   /**
    * Add the security group to all instances via the launch configuration security groups array.
    *
-   * @param securityGroup: The security group to add
+   * @param securityGroup The security group to add
    */
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
     this.securityGroups.push(securityGroup);
@@ -327,42 +327,43 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
   }
 
   private renderNetworkConfig(config: NetworkConfig | undefined): { [key: string]: any } {
-    return (config) ? {
+    if (config === undefined) { return {}; }
+    return {
       NetworkConfig: {
-        EnableInterContainerTrafficEncryption: config.enableInterContainerTrafficEncryption || false,
-        EnableNetworkIsolation: config.enableNetworkIsolation || false,
-        ...(config.vpcConfig) ? {
+        EnableInterContainerTrafficEncryption: config.enableTraffic ?? false,
+        EnableNetworkIsolation: config.enableIsolation ?? false,
+        ...(config.vpcConfig ? {
           VpcConfig: {
             SecurityGroupIds: Lazy.list({ produce: () => (this.securityGroups.map(sg => (sg.securityGroupId))) }),
             Subnets: this.subnets,
           },
-        } : {},
+        } : {}),
       },
-    } : {};
+    };
   }
 
   private renderProcessingInputs(config: ProcessingInput[] | undefined): { [key: string]: any } {
     return (config) ? {
       ProcessingInputs: config.map((input, index) => {
-        const inputName = input.inputName || `input${index}`;
+        const inputName = input.inputName ?? `input${index}`;
         return {
-          AppManaged: input.appManaged || false,
+          AppManaged: input.appManaged ?? false,
           InputName: inputName,
           ...(input.datasetDefinition) ? {
             DatasetDefinition: {
               ...this.renderAthenaDatasetDefinition(input.datasetDefinition),
-              DataDistributionType: input.datasetDefinition.dataDistributionType || S3DataDistributionType.SHARDED_BY_S3_KEY,
-              InputMode: input.datasetDefinition.inputMode || InputMode.FILE,
+              DataDistributionType: input.datasetDefinition.dataDistributionType ?? S3DataDistributionType.SHARDED_BY_S3_KEY,
+              InputMode: input.datasetDefinition.inputMode ?? InputMode.FILE,
               LocalPath: `/opt/ml/processing/inputs/datasetDefinition/${input.datasetDefinition.localPathPrefix || inputName}/`,
               ...this.renderRedshiftDatasetDefinition(input.datasetDefinition),
             },
           } : {},
           S3Input: {
-            LocalPath: `/opt/ml/processing/inputs/s3/${input.s3Input?.localPathPrefix || inputName}/`,
-            S3CompressionType: input.s3Input?.s3CompressionType || CompressionType.NONE,
-            S3DataDistributionType: input.s3Input?.s3DataDistributionType || S3DataDistributionType.FULLY_REPLICATED,
-            S3DataType: input.s3Input?.s3DataType || S3DataType.S3_PREFIX,
-            S3InputMode: input.s3Input?.s3InputMode || InputMode.FILE,
+            LocalPath: `/opt/ml/processing/inputs/s3/${input.s3Input?.localPathPrefix ?? inputName}/`,
+            S3CompressionType: input.s3Input?.s3CompressionType ?? CompressionType.NONE,
+            S3DataDistributionType: input.s3Input?.s3DataDistributionType ?? S3DataDistributionType.FULLY_REPLICATED,
+            S3DataType: input.s3Input?.s3DataType ?? S3DataType.S3_PREFIX,
+            S3InputMode: input.s3Input?.s3InputMode ?? InputMode.FILE,
             S3Uri: input.s3Input?.s3Location.bind(this, { forReading: true }).uri,
           },
         };
@@ -372,33 +373,35 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
 
   private renderAthenaDatasetDefinition(datasetDefinition: DatasetDefinition | undefined): { [key: string]: any } {
     const athenaDatasetDefinition = datasetDefinition?.athenaDatasetDefinition;
-    return (athenaDatasetDefinition) ? {
+    if (athenaDatasetDefinition === undefined) { return {}; }
+
+    return {
       DatasetDefinition: {
-        ...(athenaDatasetDefinition) ? {
-          AthenaDatasetDefinition: {
-            Catalog: athenaDatasetDefinition.catalog,
-            Database: athenaDatasetDefinition.database,
-            ...(athenaDatasetDefinition.encryptionKey) ? {
-              KmsKeyId: athenaDatasetDefinition.encryptionKey.keyId,
-            } : {},
-            ...(athenaDatasetDefinition.outputCompression) ? {
-              OutputCompression: athenaDatasetDefinition.outputCompression,
-            } : {},
-            OutputFormat: athenaDatasetDefinition.outputFormat || AthenaOutputFormat.TEXTFILE,
-            OutputS3Uri: athenaDatasetDefinition.s3Location.bind(this, { forReading: true }).uri,
-            QueryString: athenaDatasetDefinition.queryString,
-            ...(athenaDatasetDefinition.workGroup) ? {
-              WorkGroup: athenaDatasetDefinition.workGroup,
-            } : {},
-          },
-        } : {},
+        AthenaDatasetDefinition: {
+          Catalog: athenaDatasetDefinition.catalog,
+          Database: athenaDatasetDefinition.database,
+          ...(athenaDatasetDefinition.encryptionKey) ? {
+            KmsKeyId: athenaDatasetDefinition.encryptionKey.keyId,
+          } : {},
+          ...(athenaDatasetDefinition.outputCompression) ? {
+            OutputCompression: athenaDatasetDefinition.outputCompression,
+          } : {},
+          OutputFormat: athenaDatasetDefinition.outputFormat ?? AthenaOutputFormat.TEXTFILE,
+          OutputS3Uri: athenaDatasetDefinition.s3Location.bind(this, { forReading: true }).uri,
+          QueryString: athenaDatasetDefinition.queryString,
+          ...(athenaDatasetDefinition.workGroup) ? {
+            WorkGroup: athenaDatasetDefinition.workGroup,
+          } : {},
+        },
       },
-    } : {};
+    };
   }
 
   private renderRedshiftDatasetDefinition(datasetDefinition: DatasetDefinition | undefined): { [key: string]: any } {
     const redshiftDatasetDefinition = datasetDefinition?.redshiftDatasetDefinition;
-    return (redshiftDatasetDefinition) ? {
+    if (redshiftDatasetDefinition === undefined) { return {}; }
+
+    return {
       RedshiftDatasetDefinition: {
         ClusterId: redshiftDatasetDefinition.clusterId,
         ClusterRoleArn: redshiftDatasetDefinition.clusterRole.roleArn,
@@ -410,11 +413,11 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
         ...(redshiftDatasetDefinition.outputCompression) ? {
           OutputCompression: redshiftDatasetDefinition.outputCompression,
         } : {},
-        OutputFormat: redshiftDatasetDefinition.outputFormat || RedshiftOutputFormat.CSV,
+        OutputFormat: redshiftDatasetDefinition.outputFormat ?? RedshiftOutputFormat.CSV,
         OutputS3Uri: redshiftDatasetDefinition.s3Location.bind(this, { forReading: true }).uri,
         QueryString: redshiftDatasetDefinition.queryString,
       },
-    } : {};
+    };
   }
 
   private renderProcessingOutputConfig(props: SageMakerCreateProcessingJobProps): { [key: string]: any } {
@@ -443,13 +446,14 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
   }
 
   private renderExperimentConfig(config: ExperimentConfig | undefined): { [key: string]: any } {
-    return (config) ? {
+    if (config === undefined) { return {}; }
+    return {
       ExperimentConfig: {
         ...(config.experimentName) ? { ExperimentName: config.experimentName } : {},
         ...(config.trialComponentDisplayName) ? { TrialComponentDisplayName: config.trialComponentDisplayName } : {},
         ...(config.trialName) ? { TrialName: config.trialName } : {},
       },
-    } : {};
+    };
   }
 
   private makePolicyStatements(): iam.PolicyStatement[] {

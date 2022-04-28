@@ -666,14 +666,14 @@ export interface DatasetDefinition {
   /**
    * Configuration for Athena Dataset Definition input.
    *
-   * @default None
+   * @default - no definition
    */
   readonly athenaDatasetDefinition?: AthenaDatasetDefinition;
 
   /**
    * Whether the generated dataset is FullyReplicated or ShardedByS3Key (default when unspecified).
    *
-   * @default 'ShardedByS3Key'
+   * @default S3DataDistributionType.SHARDED_BY_S3_KEY
    */
   readonly dataDistributionType?: S3DataDistributionType;
 
@@ -699,7 +699,7 @@ export interface DatasetDefinition {
   /**
    * Configuration for Redshift Dataset Definition input.
    *
-   * @default None
+   * @default - no dataset definition
    */
   readonly redshiftDatasetDefinition?: RedshiftDatasetDefinition;
 }
@@ -721,21 +721,21 @@ export interface AthenaDatasetDefinition {
   /**
    * The AWS Key Management Service (AWS KMS) key that Amazon SageMaker uses to encrypt data generated from an Athena query execution.
    *
-   * @default None
+   * @default - no encryption key
    */
   readonly encryptionKey?: kms.IKey;
 
   /**
    * The compression used for Athena query results.
    *
-   * @default None
+   * @default AthenaOutputCompressionType.NONE
    */
   readonly outputCompression?: AthenaOutputCompressionType;
 
   /**
    * The data storage format for Athena query results.
    *
-   * @default 'TEXTFILE'
+   * @default AthenaOutputFormat.TEXTFILE
    */
   readonly outputFormat?: AthenaOutputFormat;
 

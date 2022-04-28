@@ -212,7 +212,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
    * Add the security group to all instances via the launch configuration
    * security groups array.
    *
-   * @param securityGroup: The security group to add
+   * @param securityGroup The security group to add
    */
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
     this.securityGroups.push(securityGroup);
