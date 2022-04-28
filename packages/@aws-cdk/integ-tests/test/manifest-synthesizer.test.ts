@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import { App, Stack } from '@aws-cdk/core';
 import { CloudAssemblyBuilder } from '@aws-cdk/cx-api';
 import { IntegTestCase } from '../lib';
@@ -31,7 +32,7 @@ describe(IntegManifestSynthesizer, () => {
     });
 
     expect(write).toHaveBeenCalledWith({
-      version: '17.0.0',
+      version: Manifest.version(),
       testCases: {
         case1: {
           stacks: ['stack-under-test-1'],

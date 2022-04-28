@@ -23,26 +23,24 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
         AWS_REGION: request.region,
       },
     }, test.destructiveChanges);
-    const start = Date.now();
-    try {
-      if (!runner.hasSnapshot()) {
-        runner.generateSnapshot();
-      }
 
-      if (!runner.tests || Object.keys(runner.tests).length === 0) {
+    const start = Date.now();
+    const tests = runner.actualTests();
+    try {
+      if (!tests || Object.keys(tests).length === 0) {
         throw new Error(`No tests defined for ${runner.testName}`);
       }
-      for (const [testName, testCase] of Object.entries(runner.tests)) {
+      for (const testCaseName of Object.keys(tests)) {
         try {
           runner.runIntegTestCase({
-            testCase: testCase,
+            testCaseName,
             clean: request.clean,
             dryRun: request.dryRun,
             updateWorkflow: request.updateWorkflow,
           });
           workerpool.workerEmit({
             reason: DiagnosticReason.TEST_SUCCESS,
-            testName: testName,
+            testName: testCaseName,
             message: 'Success',
             duration: (Date.now() - start) / 1000,
           });
@@ -50,7 +48,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
           failures.push(test);
           workerpool.workerEmit({
             reason: DiagnosticReason.TEST_FAILED,
-            testName: testName,
+            testName: testCaseName,
             message: `Integration test failed: ${e}`,
             duration: (Date.now() - start) / 1000,
           });

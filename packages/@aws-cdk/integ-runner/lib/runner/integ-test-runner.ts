@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { TestCase, RequireApproval } from '@aws-cdk/cloud-assembly-schema';
+import { RequireApproval } from '@aws-cdk/cloud-assembly-schema';
 import { DeployOptions, DestroyOptions } from 'cdk-cli-wrapper';
 import * as logger from '../logger';
 import { chain, exec } from '../utils';
@@ -11,9 +11,9 @@ import { IntegRunnerOptions, IntegRunner, DEFAULT_SYNTH_OPTIONS } from './runner
  */
 export interface RunOptions {
   /**
-   * The test case to execute
+   * The name of the test case
    */
-  readonly testCase: TestCase;
+  readonly testCaseName: string;
 
   /**
    * Whether or not to run `cdk destroy` and cleanup the
@@ -126,23 +126,20 @@ export class IntegTestRunner extends IntegRunner {
    * a failure to an existing stack, but not for a newly created stack.
    */
   public runIntegTestCase(options: RunOptions): void {
+    const actualTestCase = this.actualTestSuite.testSuite[options.testCaseName];
     const clean = options.clean ?? true;
-    const updateWorkflowEnabled = (options.updateWorkflow ?? true) && (options.testCase.stackUpdateWorkflow ?? true);
+    const updateWorkflowEnabled = (options.updateWorkflow ?? true)
+      && (actualTestCase.stackUpdateWorkflow ?? true);
     try {
-      if (!options.dryRun && (options.testCase.cdkCommandOptions?.deploy?.enabled ?? true)) {
+      if (!options.dryRun && (actualTestCase.cdkCommandOptions?.deploy?.enabled ?? true)) {
         this.deploy(
           {
             ...this.defaultArgs,
             profile: this.profile,
-            stacks: options.testCase.stacks,
             requireApproval: RequireApproval.NEVER,
-            output: this.cdkOutDir,
-            lookups: this.testSuite?.enableLookups,
-            ...options.testCase.cdkCommandOptions?.deploy?.args,
-            context: this.getContext(options.testCase.cdkCommandOptions?.deploy?.args?.context),
           },
           updateWorkflowEnabled,
-          options.testCase,
+          options.testCaseName,
         );
       } else {
         const env: Record<string, any> = {
@@ -160,16 +157,16 @@ export class IntegTestRunner extends IntegRunner {
       throw e;
     } finally {
       if (!options.dryRun) {
-        if (clean && (options.testCase.cdkCommandOptions?.destroy?.enabled ?? true)) {
-          this.destroy(options.testCase, {
+        if (clean && (actualTestCase.cdkCommandOptions?.destroy?.enabled ?? true)) {
+          this.destroy(options.testCaseName, {
             ...this.defaultArgs,
             profile: this.profile,
-            stacks: options.testCase.stacks,
+            all: true,
             force: true,
             app: this.cdkApp,
             output: this.cdkOutDir,
-            ...options.testCase.cdkCommandOptions?.destroy?.args,
-            context: this.getContext(options.testCase.cdkCommandOptions?.destroy?.args?.context),
+            ...actualTestCase.cdkCommandOptions?.destroy?.args,
+            context: this.getContext(actualTestCase.cdkCommandOptions?.destroy?.args?.context),
           });
         }
       }
@@ -180,10 +177,11 @@ export class IntegTestRunner extends IntegRunner {
   /**
    * Perform a integ test case stack destruction
    */
-  private destroy(testCase: TestCase, destroyArgs: DestroyOptions) {
+  private destroy(testCaseName: string, destroyArgs: DestroyOptions) {
+    const actualTestCase = this.actualTestSuite.testSuite[testCaseName];
     try {
-      if (testCase.hooks?.preDestroy) {
-        exec([chain(testCase.hooks.preDestroy)], {
+      if (actualTestCase.hooks?.preDestroy) {
+        exec([chain(actualTestCase.hooks.preDestroy)], {
           cwd: path.dirname(this.snapshotDir),
         });
       }
@@ -191,15 +189,15 @@ export class IntegTestRunner extends IntegRunner {
         ...destroyArgs,
       });
 
-      if (testCase.hooks?.postDestroy) {
-        exec([chain(testCase.hooks.postDestroy)], {
+      if (actualTestCase.hooks?.postDestroy) {
+        exec([chain(actualTestCase.hooks.postDestroy)], {
           cwd: path.dirname(this.snapshotDir),
         });
       }
     } catch (e) {
       this.parseError(e,
-        testCase.cdkCommandOptions?.destroy?.expectError ?? false,
-        testCase.cdkCommandOptions?.destroy?.expectedMessage,
+        actualTestCase.cdkCommandOptions?.destroy?.expectError ?? false,
+        actualTestCase.cdkCommandOptions?.destroy?.expectedMessage,
       );
     }
   }
@@ -211,11 +209,12 @@ export class IntegTestRunner extends IntegRunner {
   private deploy(
     deployArgs: DeployOptions,
     updateWorkflowEnabled: boolean,
-    testCase: TestCase,
+    testCaseName: string,
   ): void {
+    const actualTestCase = this.actualTestSuite.testSuite[testCaseName];
     try {
-      if (testCase.hooks?.preDeploy) {
-        exec([chain(testCase.hooks?.preDeploy)], {
+      if (actualTestCase.hooks?.preDeploy) {
+        exec([chain(actualTestCase.hooks?.preDeploy)], {
           cwd: path.dirname(this.snapshotDir),
         });
       }
@@ -225,27 +224,38 @@ export class IntegTestRunner extends IntegRunner {
       // with the current integration test
       // We also only want to run the update workflow if there is an existing
       // snapshot (otherwise there is nothing to update)
-      if (updateWorkflowEnabled && this.hasSnapshot()) {
+      if (updateWorkflowEnabled && this.hasSnapshot() &&
+        (this.expectedTestSuite && testCaseName in this.expectedTestSuite?.testSuite)) {
         // make sure the snapshot is the latest from 'origin'
         this.checkoutSnapshot();
+        const expectedTestCase = this.expectedTestSuite.testSuite[testCaseName];
         this.cdk.deploy({
           ...deployArgs,
+          stacks: expectedTestCase.stacks,
+          ...expectedTestCase?.cdkCommandOptions?.deploy?.args,
+          context: this.getContext(expectedTestCase?.cdkCommandOptions?.deploy?.args?.context),
           app: this.relativeSnapshotDir,
+          lookups: this.expectedTestSuite?.enableLookups,
         });
       }
       this.cdk.deploy({
         ...deployArgs,
-        app: this.cdkApp,
+        lookups: this.actualTestSuite.enableLookups,
+        stacks: actualTestCase.stacks,
+        output: this.cdkOutDir,
+        ...actualTestCase?.cdkCommandOptions?.deploy?.args,
+        context: this.getContext(actualTestCase?.cdkCommandOptions?.deploy?.args?.context),
+        app: this.hasTmpActualSnapshot() ? this.cdkOutDir : this.cdkApp,
       });
-      if (testCase.hooks?.postDeploy) {
-        exec([chain(testCase.hooks?.postDeploy)], {
+      if (actualTestCase.hooks?.postDeploy) {
+        exec([chain(actualTestCase.hooks?.postDeploy)], {
           cwd: path.dirname(this.snapshotDir),
         });
       }
     } catch (e) {
       this.parseError(e,
-        testCase.cdkCommandOptions?.deploy?.expectError ?? false,
-        testCase.cdkCommandOptions?.deploy?.expectedMessage,
+        actualTestCase.cdkCommandOptions?.deploy?.expectError ?? false,
+        actualTestCase.cdkCommandOptions?.deploy?.expectedMessage,
       );
     }
   }
@@ -264,26 +274,6 @@ export class IntegTestRunner extends IntegRunner {
     } else {
       throw e;
     }
-  }
-
-  /**
-   * Generate a snapshot if one does not exist
-   * This will synth and then load the integration test manifest
-   */
-  public generateSnapshot(): void {
-    if (this.hasSnapshot()) {
-      throw new Error(`${this.testName} already has a snapshot: ${this.snapshotDir}`);
-    }
-
-    this.cdk.synthFast({
-      execCmd: this.cdkApp.split(' '),
-      env: {
-        ...DEFAULT_SYNTH_OPTIONS.env,
-        CDK_CONTEXT_JSON: JSON.stringify(this.getContext()),
-      },
-      output: this.cdkOutDir,
-    });
-    this.loadManifest(this.cdkOutDir);
   }
 }
 
