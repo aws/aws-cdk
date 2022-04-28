@@ -118,7 +118,7 @@ The `Model` construct associates container images with their optional model data
 In the event that a single container is sufficient for your inference use-case, you can define a
 single-container model:
 
-```typescript
+```typescript fixture=with-assets
 import * as sagemaker from '@aws-cdk/aws-sagemaker';
 
 const model = new sagemaker.Model(this, 'PrimaryContainerModel', {
@@ -139,7 +139,7 @@ preprocessing, predictions, and post-processing data science tasks. Inference pi
 managed. To define an inference pipeline, you can provide additional containers for your model via
 the `extraContainers` property:
 
-```typescript
+```typescript fixture=with-assets
 import * as sagemaker from '@aws-cdk/aws-sagemaker';
 
 const model = new sagemaker.Model(this, 'InferencePipelineModel', {
@@ -169,7 +169,7 @@ to each model. For example, suppose that you want to host two models, A and B, a
 traffic weight 2 for model A and 1 for model B. Amazon SageMaker distributes two-thirds of the
 traffic to Model A, and one-third to model B:
 
-```typescript
+```typescript fixture=with-assets
 import * as sagemaker from '@aws-cdk/aws-sagemaker';
 
 const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
@@ -195,7 +195,7 @@ more information about the API, see the
 [InvokeEndpoint](https://docs.aws.amazon.com/sagemaker/latest/dg/API_runtime_InvokeEndpoint.html)
 API. Defining an endpoint requires at minimum the associated endpoint configuration:
 
-```typescript
+```typescript fixture=with-endpoint-config
 import * as sagemaker from '@aws-cdk/aws-sagemaker';
 
 const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
@@ -207,10 +207,10 @@ const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
 The `autoScaleInstanceCount` method on the `IEndpointProductionVariant` interface can be used to
 enable Application Auto Scaling for the production variant:
 
-```typescript
+```typescript fixture=with-endpoint-config
 import * as sagemaker from '@aws-cdk/aws-sagemaker';
 
-const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
+const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
 const productionVariant = endpoint.findProductionVariant('variantName');
 const instanceCount = productionVariant.autoScaleInstanceCount({
   maxCapacity: 3
@@ -228,7 +228,7 @@ this [documentation](https://docs.aws.amazon.com/sagemaker/latest/dg/endpoint-sc
 The `IEndpointProductionVariant` interface also provides a set of APIs for referencing CloudWatch
 metrics associated with a production variant associated with an endpoint:
 
-```typescript
+```typescript fixture=with-endpoint-config
 import * as sagemaker from '@aws-cdk/aws-sagemaker';
 
 const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
