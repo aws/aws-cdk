@@ -558,7 +558,6 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   private parsePermissionPrincipal(principal: iam.IPrincipal) {
     // Try some specific common classes first.
     // use duck-typing, not instance of
-    // @deprecated: after v2, we can change these to 'instanceof'
     if ('wrapped' in principal) {
       // eslint-disable-next-line dot-notation
       principal = principal['wrapped'];
@@ -576,12 +575,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       return (principal as iam.ArnPrincipal).arn;
     }
 
-    if (principal instanceof iam.OrganizationPrincipal) {
+    if ('organizationId' in principal) {
       // we will move the organization id to the `principalOrgId` property of `Permissions`.
-      return '*';
-    }
-
-    if (principal instanceof iam.StarPrincipal) {
       return '*';
     }
 

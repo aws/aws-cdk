@@ -12,19 +12,6 @@ const fn = new lambda.Function(stack, 'MyLambda', {
   runtime: lambda.Runtime.NODEJS_14_X,
 });
 
-// 3 different ways to configure the same permission
-fn.addPermission('org', {
-  principal: new iam.OrganizationPrincipal('o-xxxxxxxxxx'),
-});
+fn.grantInvoke(new iam.AnyPrincipal());
 
-fn.addPermission('other-org', {
-  principal: new iam.StarPrincipal(),
-  principalOrg: new iam.OrganizationPrincipal('o-zzzzzzzzzz'),
-});
-
-fn.grantInvoke(new iam.AnyPrincipal().withConditions({
-  StringEquals: {
-    'aws:PrincipalOrgID': 'o-yyyyyyyyyy',
-  },
-}));
-
+fn.grantInvoke(new iam.OrganizationPrincipal('o-xxxxxxxxxx'));
