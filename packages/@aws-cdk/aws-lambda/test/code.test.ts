@@ -409,7 +409,7 @@ describe('code', () => {
       // then
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.dd84d39b518e69c0e62a55312372cdd9ab3ef901c74a4861d92e951215257b3c',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.8bf99f6d98d2ca190447817687f7b94cc5f1537085365305411d4b99bfaafda4',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: dockerfilePath,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY]: dockerBuildArgs,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SHELL_KEY]: dockerBuildShell,
