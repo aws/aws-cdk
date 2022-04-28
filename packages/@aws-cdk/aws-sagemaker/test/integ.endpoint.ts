@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
 import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -6,7 +7,7 @@ import * as sagemaker from '../lib';
 
 /*
  * Stack verification steps:
- * aws sagemaker-runtime invoke-endpoint --endpoint-name <deployed endpoint name> --body "any string" /tmp/inference.txt && cat /tmp/inference.txt
+ * aws sagemaker-runtime invoke-endpoint --endpoint-name <deployed endpoint name> --body "any string" --cli-binary-format raw-in-base64-out /tmp/inference.txt && cat /tmp/inference.txt
  *
  * The above command will result in one of the following outputs (based on relative variant weight).
  *

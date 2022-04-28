@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
 import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
