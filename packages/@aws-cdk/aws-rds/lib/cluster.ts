@@ -478,7 +478,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    */
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new Error('Cannot add single user rotation for a cluster without secret.');
+      throw new Error('Cannot add a single user rotation for a cluster without a secret.');
     }
 
     const id = 'RotationSingleUser';
