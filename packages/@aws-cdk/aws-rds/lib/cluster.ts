@@ -581,7 +581,6 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
  * Properties for a new database cluster
  */
 export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
-
 }
 
 /**
