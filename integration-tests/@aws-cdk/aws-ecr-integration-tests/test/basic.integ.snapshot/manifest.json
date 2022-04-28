@@ -1,0 +1,34 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-ecr-integ-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-ecr-integ-stack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-ecr-integ-stack/Repo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Repo02AC86CF"
+          }
+        ],
+        "/aws-ecr-integ-stack/RepositoryURI": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RepositoryURI"
+          }
+        ]
+      },
+      "displayName": "aws-ecr-integ-stack"
+    }
+  }
+}

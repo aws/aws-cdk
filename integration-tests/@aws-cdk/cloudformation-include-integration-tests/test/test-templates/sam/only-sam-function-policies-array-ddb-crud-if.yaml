@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Conditions:
+  SomeCondition:
+    Fn::Equals: [1, 2]
+Parameters:
+  TableNameParameter:
+    Type: String
+Resources:
+  MicroserviceHttpEndpoint:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs12.x
+      CodeUri:
+        Bucket: awsserverlessrepo-changesets-1f9ifp952i9h0
+        Key: 828671620168/arn:aws:serverlessrepo:us-east-1:077246666028:applications-microservice-http-endpoint-versions-1.0.4/dc38a8c1-d27f-44f3-b545-4cfff4f8b865
+      Policies:
+      - Fn::If:
+          - SomeCondition
+          - DynamoDBCrudPolicy:
+              TableName:
+                Ref: TableNameParameter
+          - DynamoDBCrudPolicy:
+              TableName:
+                Ref: TableNameParameter

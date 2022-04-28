@@ -1,0 +1,249 @@
+{
+  "name": "@aws-cdk/aws-codebuild-integration-tests",
+  "version": "0.0.0",
+  "description": "The CDK Construct Library for AWS::CodeBuild",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.codebuild",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "codebuild"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.CodeBuild",
+        "packageId": "Amazon.CDK.AWS.CodeBuild",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-codebuild",
+        "module": "aws_cdk.aws_codebuild",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-codebuild-integration-tests"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "integ-runner",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "compat": "cdk-compat",
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::CodeBuild",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "nyc": {
+    "statements": 74,
+    "lines": 74
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "codebuild"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/aws-codebuild": "0.0.0", 
+    "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/aws-sqs": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.4.1",
+    "aws-sdk": "^2.848.0",
+    "jest": "^27.5.1"
+  },
+  "dependencies": {
+    "@aws-cdk/assets": "0.0.0",
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-codecommit": "0.0.0",
+    "@aws-cdk/aws-codestarnotifications": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-ecr": "0.0.0",
+    "@aws-cdk/aws-ecr-assets": "0.0.0",
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-s3-assets": "0.0.0",
+    "@aws-cdk/aws-secretsmanager": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/region-info": "0.0.0",
+    "constructs": "^3.3.69",
+    "yaml": "1.10.2"
+  },
+  "bundledDependencies": [
+    "yaml"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/assets": "0.0.0",
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-codecommit": "0.0.0",
+    "@aws-cdk/aws-codestarnotifications": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-ecr": "0.0.0",
+    "@aws-cdk/aws-ecr-assets": "0.0.0",
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-s3-assets": "0.0.0",
+    "@aws-cdk/aws-secretsmanager": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/region-info": "0.0.0",
+    "constructs": "^3.3.69"
+  },
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "awslint": {
+    "exclude": [
+      "construct-ctor-props-optional:@aws-cdk/aws-codebuild-integration-tests.Project",
+      "duration-prop-type:@aws-cdk/aws-codebuild-integration-tests.PhaseChangeEvent.completedPhaseDurationSeconds",
+      "duration-prop-name:@aws-cdk/aws-codebuild-integration-tests.PhaseChangeEvent.completedPhaseDurationSeconds",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.Project.metric",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.ComputeType.X2_LARGE",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.ComputeType.LARGE",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.ComputeType.MEDIUM",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.ComputeType.SMALL",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.BuildEnvironmentVariableType",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.Artifacts.s3",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.BuildSpec.fromObject",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.Cache.none",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.AMAZON_LINUX_2",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.AMAZON_LINUX_2_2",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.AMAZON_LINUX_2_ARM",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.STANDARD_1_0",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.STANDARD_2_0",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.STANDARD_3_0",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_ANDROID_JAVA8_24_4_1",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_ANDROID_JAVA8_26_1_1",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_BASE",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_DOCKER_17_09_0",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_DOCKER_18_09_0",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_DOTNET_CORE_1_1",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_DOTNET_CORE_2_0",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_DOTNET_CORE_2_1",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_GOLANG_1_10",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_GOLANG_1_11",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_1_0",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_14_1",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_NODEJS_6_3_1",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_NODEJS_8_11_0",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_OPEN_JDK_11",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_OPEN_JDK_8",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_OPEN_JDK_9",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_PHP_5_6",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_PHP_7_0",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_PHP_7_1",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_PYTHON_2_7_12",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_PYTHON_3_3_6",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_PYTHON_3_4_5",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_PYTHON_3_5_2",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_PYTHON_3_6_5",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_PYTHON_3_7_1",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_RUBY_2_2_5",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_RUBY_2_3_1",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_RUBY_2_5_1",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.UBUNTU_14_04_RUBY_2_5_3",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.fromDockerRegistry",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.LinuxBuildImage.fromEcrRepository",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.Project.fromProjectArn",
+      "props-default-doc:@aws-cdk/aws-codebuild-integration-tests.SourceProps.identifier",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.Source.badgeSupported",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.Source.type",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.Source.identifier",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.Source.bitBucket",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.Source.codeCommit",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.Source.gitHub",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.Source.gitHubEnterprise",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.Source.s3",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.StateChangeEvent.currentPhase",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.WindowsBuildImage.fromDockerRegistry",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.WindowsBuildImage.fromEcrRepository",
+      "props-default-doc:@aws-cdk/aws-codebuild-integration-tests.ArtifactsProps.identifier",
+      "props-default-doc:@aws-cdk/aws-codebuild-integration-tests.BitBucketSourceProps.cloneDepth",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.BucketCacheOptions",
+      "props-default-doc:@aws-cdk/aws-codebuild-integration-tests.BucketCacheOptions.prefix",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.BuildEnvironment",
+      "props-default-doc:@aws-cdk/aws-codebuild-integration-tests.BuildEnvironment.environmentVariables",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.BuildEnvironmentVariable",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.CodeCommitSourceProps.repository",
+      "props-default-doc:@aws-cdk/aws-codebuild-integration-tests.CodeCommitSourceProps.cloneDepth",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.CommonProjectProps",
+      "props-default-doc:@aws-cdk/aws-codebuild-integration-tests.GitHubEnterpriseSourceProps.cloneDepth",
+      "props-default-doc:@aws-cdk/aws-codebuild-integration-tests.GitHubSourceProps.cloneDepth",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.IProject",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.IProject.addToRolePolicy",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.IProject.metric",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.ISource.badgeSupported",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.ISource.type",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.ISource.identifier",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.ISource.bind",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.PipelineProjectProps",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.ProjectProps",
+      "props-default-doc:@aws-cdk/aws-codebuild-integration-tests.S3ArtifactsProps.path",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.S3SourceProps.bucket",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.S3SourceProps.path",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.SourceConfig.sourceProperty",
+      "docs-public-apis:@aws-cdk/aws-codebuild-integration-tests.SourceConfig.buildTriggers",
+      "props-default-doc:@aws-cdk/aws-codebuild-integration-tests.SourceConfig.buildTriggers",
+      "props-physical-name:@aws-cdk/aws-codebuild-integration-tests.BitBucketSourceCredentialsProps",
+      "props-physical-name:@aws-cdk/aws-codebuild-integration-tests.GitHubSourceCredentialsProps",
+      "props-physical-name:@aws-cdk/aws-codebuild-integration-tests.GitHubEnterpriseSourceCredentialsProps"
+    ]
+  },
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  },
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
+}

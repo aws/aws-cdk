@@ -1,0 +1,170 @@
+{
+  "name": "@aws-cdk/aws-autoscaling-integration-tests",
+  "version": "0.0.0",
+  "description": "The CDK Construct Library for AWS::AutoScaling",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.autoscaling",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "autoscaling"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.AutoScaling",
+        "packageId": "Amazon.CDK.AWS.AutoScaling",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-autoscaling",
+        "module": "aws_cdk.aws_autoscaling",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-autoscaling-integration-tests"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "integ-runner",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "compat": "cdk-compat",
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::AutoScaling",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "autoscaling"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/aws-autoscaling": "0.0.0", 
+    "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.4.1",
+    "jest": "^27.5.1"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-autoscaling-common": "0.0.0",
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-elasticloadbalancing": "0.0.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.3.69"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-autoscaling-common": "0.0.0",
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-elasticloadbalancing": "0.0.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.3.69"
+  },
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "awslint": {
+    "exclude": [
+      "import-props-interface:@aws-cdk/aws-autoscaling-integration-tests.AutoScalingGroupImportProps",
+      "resource-interface-extends-construct:@aws-cdk/aws-autoscaling-integration-tests.IAutoScalingGroup",
+      "export:@aws-cdk/aws-autoscaling-integration-tests.IAutoScalingGroup",
+      "props-physical-name:@aws-cdk/aws-autoscaling-integration-tests.AutoScalingGroupProps",
+      "props-physical-name:@aws-cdk/aws-autoscaling-integration-tests.ScheduledActionProps",
+      "props-physical-name:@aws-cdk/aws-autoscaling-integration-tests.WarmPoolProps",
+      "props-default-doc:@aws-cdk/aws-autoscaling-integration-tests.EbsDeviceOptionsBase.iops",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.ScalingProcess.ADD_TO_LOAD_BALANCER",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.ScalingProcess.SCHEDULED_ACTIONS",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.ScalingProcess.ALARM_NOTIFICATION",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.ScalingProcess.AZ_REBALANCE",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.AutoScalingGroup.fromAutoScalingGroupName",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.BlockDeviceVolume.ebsDevice",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.BlockDeviceVolume.virtualName",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.HealthCheck.type",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.HealthCheck.gracePeriod",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.StepScalingPolicy.lowerAction",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.StepScalingPolicy.lowerAlarm",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.StepScalingPolicy.upperAction",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.StepScalingPolicy.upperAlarm",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.TargetTrackingScalingPolicy",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.BasicStepScalingPolicyProps",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.BlockDevice",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.EbsDeviceOptions",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.EbsDeviceOptionsBase",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.ScalingProcess.REPLACE_UNHEALTHY",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.EbsDeviceProps",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.EbsDeviceProps.snapshotId",
+      "props-default-doc:@aws-cdk/aws-autoscaling-integration-tests.EbsDeviceProps.snapshotId",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.EbsDeviceSnapshotOptions",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.StepScalingPolicyProps",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.TargetTrackingScalingPolicyProps.autoScalingGroup",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.DefaultResult",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.DefaultResult.CONTINUE",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.DefaultResult.ABANDON",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.ScalingProcess",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.ScalingProcess.LAUNCH",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.ScalingProcess.TERMINATE",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-integration-tests.ScalingProcess.HEALTH_CHECK"
+    ]
+  },
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  },
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
+}

@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  TableNameParameter:
+    Type: String
+Resources:
+  MicroserviceHttpEndpoint:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs12.x
+      CodeUri: my-code-uri
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: TableNameParameter

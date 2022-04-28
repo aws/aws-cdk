@@ -1,0 +1,180 @@
+{
+  "name": "@aws-cdk/aws-servicediscovery-integration-tests",
+  "version": "0.0.0",
+  "description": "The CDK Construct Library for AWS::ServiceDiscovery",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.servicediscovery",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "servicediscovery"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.ServiceDiscovery",
+        "packageId": "Amazon.CDK.AWS.ServiceDiscovery",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-servicediscovery",
+        "module": "aws_cdk.aws_servicediscovery",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-servicediscovery-integration-tests"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "integ-runner",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "compat": "cdk-compat",
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::ServiceDiscovery",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "nyc": {
+    "statements": 75
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "servicediscovery"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/aws-servicediscovery": "0.0.0", 
+    "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.4.1",
+    "jest": "^27.5.1"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
+    "@aws-cdk/aws-route53": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.3.69"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
+    "@aws-cdk/aws-route53": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.3.69"
+  },
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-servicediscovery-integration-tests.HttpNamespaceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery-integration-tests.PublicDnsNamespaceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery-integration-tests.PrivateDnsNamespaceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery-integration-tests.AliasTargetInstanceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery-integration-tests.CnameInstanceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery-integration-tests.IpInstanceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery-integration-tests.NonIpInstanceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery-integration-tests.ServiceProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.CnameInstanceProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.RoutingPolicy",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.NamespaceType",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.HealthCheckType",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.DnsRecordType",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.ServiceProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.ServiceAttributes.serviceName",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.ServiceAttributes.serviceId",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.ServiceAttributes.serviceArn",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.ServiceAttributes.routingPolicy",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.ServiceAttributes.namespace",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.ServiceAttributes.dnsRecordType",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.HttpNamespace.httpNamespaceArn",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.HttpNamespace.httpNamespaceId",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.HttpNamespace.httpNamespaceName",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.HttpNamespace.fromHttpNamespaceAttributes",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.InstanceBase",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.PrivateDnsNamespace.privateDnsNamespaceArn",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.PrivateDnsNamespace.privateDnsNamespaceId",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.PrivateDnsNamespace.privateDnsNamespaceName",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.PublicDnsNamespace.publicDnsNamespaceArn",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.PublicDnsNamespace.publicDnsNamespaceId",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.PublicDnsNamespace.publicDnsNamespaceName",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.PublicDnsNamespace.fromPublicDnsNamespaceAttributes",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.Service.fromServiceAttributes",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.AliasTargetInstanceProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.BaseNamespaceProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.CnameInstanceBaseProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.ServiceAttributes",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.HttpNamespaceAttributes",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.HttpNamespaceProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.IHttpNamespace",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.IInstance",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.INamespace",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.IPrivateDnsNamespace",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.IPublicDnsNamespace",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.IService",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.IpInstanceBaseProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.IpInstanceProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.NonIpInstanceBaseProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.NonIpInstanceProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.PrivateDnsNamespaceAttributes",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.PrivateDnsNamespaceProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.PublicDnsNamespaceAttributes",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery-integration-tests.PublicDnsNamespaceProps",
+      "resource-attribute:@aws-cdk/aws-servicediscovery-integration-tests.PrivateDnsNamespace.privateDnsNamespaceHostedZoneId",
+      "resource-attribute:@aws-cdk/aws-servicediscovery-integration-tests.PublicDnsNamespace.publicDnsNamespaceHostedZoneId"
+    ]
+  },
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  },
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
+}

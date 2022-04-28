@@ -1,0 +1,209 @@
+{
+ "Resources": {
+  "myStream547FAD7F": {
+   "Type": "AWS::Kinesis::Stream",
+   "Properties": {
+    "RetentionPeriodHours": 24,
+    "ShardCount": 1,
+    "StreamEncryption": {
+     "Fn::If": [
+      "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+      {
+       "Ref": "AWS::NoValue"
+      },
+      {
+       "EncryptionType": "KMS",
+       "KeyId": "alias/aws/kinesis"
+      }
+     ]
+    },
+    "StreamModeDetails": {
+     "StreamMode": "PROVISIONED"
+    }
+   }
+  },
+  "StreamDashboardAAF4FCF8": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Get records - sum (Bytes)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Kinesis\",\"GetRecords.Bytes\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":12,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Get records iterator age - maximum (Milliseconds)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Kinesis\",\"GetRecords.IteratorAgeMilliseconds\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\",{\"stat\":\"Maximum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":0,\"y\":5,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Get records latency - average (Milliseconds)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Kinesis\",\"GetRecords.Latency\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\"]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":12,\"y\":5,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Get records - sum (Count)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Kinesis\",\"GetRecords.Records\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":0,\"y\":10,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Get records success - average (Percent)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Kinesis\",\"GetRecords.Success\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\"]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":12,\"y\":10,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Incoming data - sum (Bytes)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Kinesis\",\"IncomingBytes\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":0,\"y\":15,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Incoming records - sum (Count)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Kinesis\",\"IncomingRecords\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":12,\"y\":15,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Put record - sum (Bytes)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Kinesis\",\"PutRecord.Bytes\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":0,\"y\":20,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Put record latency - average (Milliseconds)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Kinesis\",\"PutRecord.Latency\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\"]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":12,\"y\":20,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Put record success - average (Percent)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Kinesis\",\"PutRecord.Success\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\"]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":0,\"y\":25,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Put records - sum (Bytes)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Kinesis\",\"PutRecords.Bytes\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":12,\"y\":25,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Put records latency - average (Milliseconds)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Kinesis\",\"PutRecords.Latency\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\"]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":0,\"y\":30,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Read throughput exceeded - average (Percent)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Kinesis\",\"ReadProvisionedThroughputExceeded\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\"]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":12,\"y\":30,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Write throughput exceeded - average (Count)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Kinesis\",\"WriteProvisionedThroughputExceeded\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\"]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":0,\"y\":35,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Put records successful records - average (Percent)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"( count / total ) * 100\",\"expression\":\"( count / total ) * 100\"}],[\"AWS/Kinesis\",\"PutRecords.SuccessfulRecords\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\",{\"visible\":false,\"id\":\"count\"}],[\"AWS/Kinesis\",\"PutRecords.TotalRecords\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\",{\"visible\":false,\"id\":\"total\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":12,\"y\":35,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Put records failed records - average (Percent)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"( count / total ) * 100\",\"expression\":\"( count / total ) * 100\"}],[\"AWS/Kinesis\",\"PutRecords.FailedRecords\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\",{\"visible\":false,\"id\":\"count\"}],[\"AWS/Kinesis\",\"PutRecords.TotalRecords\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\",{\"visible\":false,\"id\":\"total\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":0,\"y\":40,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Put records throttled records - average (Percent)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"( count / total ) * 100\",\"expression\":\"( count / total ) * 100\"}],[\"AWS/Kinesis\",\"PutRecords.ThrottledRecords\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\",{\"visible\":false,\"id\":\"count\"}],[\"AWS/Kinesis\",\"PutRecords.TotalRecords\",\"StreamName\",\"",
+       {
+        "Ref": "myStream547FAD7F"
+       },
+       "\",{\"visible\":false,\"id\":\"total\"}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    }
+   }
+  }
+ },
+ "Conditions": {
+  "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+   "Fn::Or": [
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-north-1"
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-northwest-1"
+     ]
+    }
+   ]
+  }
+ }
+}

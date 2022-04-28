@@ -1,0 +1,94 @@
+{
+  "Resources": {
+    "UserPool6BA7E5F2": {
+      "Type": "AWS::Cognito::UserPool",
+      "Properties": {
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
+              "Name": "verified_phone_number",
+              "Priority": 1
+            },
+            {
+              "Name": "verified_email",
+              "Priority": 2
+            }
+          ]
+        },
+        "AdminCreateUserConfig": {
+          "AllowAdminCreateUserOnly": true
+        },
+        "EmailVerificationMessage": "The verification code to your new account is {####}",
+        "EmailVerificationSubject": "Verify your new account",
+        "SmsVerificationMessage": "The verification code to your new account is {####}",
+        "VerificationMessageTemplate": {
+          "DefaultEmailOption": "CONFIRM_WITH_CODE",
+          "EmailMessage": "The verification code to your new account is {####}",
+          "EmailSubject": "Verify your new account",
+          "SmsMessage": "The verification code to your new account is {####}"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "UserPoolDomainD0EA232A": {
+      "Type": "AWS::Cognito::UserPoolDomain",
+      "Properties": {
+        "Domain": "cdk-integ-user-pool-domain",
+        "UserPoolId": {
+          "Ref": "UserPool6BA7E5F2"
+        }
+      }
+    },
+    "UserPoolUserPoolClient40176907": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "UserPoolId": {
+          "Ref": "UserPool6BA7E5F2"
+        },
+        "AllowedOAuthFlows": [
+          "implicit",
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "profile",
+          "phone",
+          "email",
+          "openid",
+          "aws.cognito.signin.user.admin"
+        ],
+        "CallbackURLs": [
+          "https://example.com"
+        ],
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "SignInUrl": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "UserPoolDomainD0EA232A"
+            },
+            ".auth.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".amazoncognito.com/login?client_id=",
+            {
+              "Ref": "UserPoolUserPoolClient40176907"
+            },
+            "&response_type=code&redirect_uri=https://example.com"
+          ]
+        ]
+      }
+    }
+  }
+}

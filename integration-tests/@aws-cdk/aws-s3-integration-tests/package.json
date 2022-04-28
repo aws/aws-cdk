@@ -1,0 +1,169 @@
+{
+  "name": "@aws-cdk/aws-s3-integration-tests",
+  "version": "0.0.0",
+  "description": "The CDK Construct Library for AWS::S3",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.s3",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "s3"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.S3",
+        "packageId": "Amazon.CDK.AWS.S3",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-s3",
+        "module": "aws_cdk.aws_s3",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-s3-integration-tests"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "integ-runner",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "compat": "cdk-compat",
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::S3",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "s3"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/aws-s3": "0.0.0", 
+    "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/aws-lambda": "^8.10.93",
+    "@types/jest": "^27.4.1",
+    "jest": "^27.5.1"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^3.3.69"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^3.3.69"
+  },
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-s3-integration-tests.BucketPolicyProps",
+      "no-unused-type:@aws-cdk/aws-s3-integration-tests.Location",
+      "props-default-doc:@aws-cdk/aws-s3-integration-tests.BucketAttributes.bucketDualStackDomainName",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.RedirectProtocol.HTTPS",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.RedirectProtocol.HTTP",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.BlockPublicAccess",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.BlockPublicAccess.BLOCK_ACLS",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.BlockPublicAccess.BLOCK_ALL",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.BlockPublicAccess.blockPublicAcls",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.BlockPublicAccess.blockPublicPolicy",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.BlockPublicAccess.ignorePublicAcls",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.BlockPublicAccess.restrictPublicBuckets",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.Bucket.fromBucketArn",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.Bucket.fromBucketName",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.ReplaceKey",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.ReplaceKey.prefixWithKey",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.ReplaceKey.withKey",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.StorageClass.value",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.StorageClass.toString",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.BlockPublicAccessOptions",
+      "props-default-doc:@aws-cdk/aws-s3-integration-tests.BlockPublicAccessOptions.blockPublicAcls",
+      "props-default-doc:@aws-cdk/aws-s3-integration-tests.BlockPublicAccessOptions.blockPublicPolicy",
+      "props-default-doc:@aws-cdk/aws-s3-integration-tests.BlockPublicAccessOptions.ignorePublicAcls",
+      "props-default-doc:@aws-cdk/aws-s3-integration-tests.BlockPublicAccessOptions.restrictPublicBuckets",
+      "props-default-doc:@aws-cdk/aws-s3-integration-tests.BucketAttributes.bucketArn",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.BucketNotificationDestinationType.TOPIC",
+      "props-default-doc:@aws-cdk/aws-s3-integration-tests.BucketAttributes.bucketName",
+      "props-default-doc:@aws-cdk/aws-s3-integration-tests.BucketAttributes.bucketRegionalDomainName",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.BucketAttributes.encryptionKey",
+      "props-default-doc:@aws-cdk/aws-s3-integration-tests.BucketAttributes.encryptionKey",
+      "props-default-doc:@aws-cdk/aws-s3-integration-tests.BucketMetrics.prefix",
+      "props-default-doc:@aws-cdk/aws-s3-integration-tests.BucketMetrics.tagFilters",
+      "props-default-doc:@aws-cdk/aws-s3-integration-tests.BucketNotificationDestinationConfig.dependencies",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.BucketPolicyProps",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.BucketProps",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.IBucket",
+      "props-default-doc:@aws-cdk/aws-s3-integration-tests.LifecycleRule.id",
+      "props-default-doc:@aws-cdk/aws-s3-integration-tests.LifecycleRule.noncurrentVersionTransitions",
+      "props-default-doc:@aws-cdk/aws-s3-integration-tests.Location.objectVersion",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.NotificationKeyFilter",
+      "props-default-doc:@aws-cdk/aws-s3-integration-tests.NotificationKeyFilter.prefix",
+      "props-default-doc:@aws-cdk/aws-s3-integration-tests.NotificationKeyFilter.suffix",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.RoutingRuleCondition",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.BucketNotificationDestinationType.LAMBDA",
+      "docs-public-apis:@aws-cdk/aws-s3-integration-tests.BucketNotificationDestinationType.QUEUE"
+    ]
+  },
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  },
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
+}
