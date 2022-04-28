@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { warning } from '../../logging';
 import { loadStructuredFile, toYAML } from '../../serialize';
+import { rootDir } from '../../util/directories';
 import { SdkProvider } from '../aws-auth';
 import { DeployStackResult } from '../deploy-stack';
 import { BootstrapEnvironmentOptions, BootstrappingParameters } from './bootstrap-props';
@@ -170,7 +171,7 @@ export class Bootstrapper {
       case 'custom':
         return loadStructuredFile(this.source.templateFile);
       case 'default':
-        return loadStructuredFile(path.join(__dirname, 'bootstrap-template.yaml'));
+        return loadStructuredFile(path.join(rootDir(), 'lib', 'api', 'bootstrap', 'bootstrap-template.yaml'));
       case 'legacy':
         return legacyBootstrapTemplate(params);
     }

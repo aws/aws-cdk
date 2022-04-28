@@ -338,26 +338,6 @@ describe('Product', () => {
 
       Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
       Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
-    }),
-
-    test('adding tag options to portfolio and product creates unique tag options and enumerated associations', () => {
-      const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
-        allowedValuesForTags: {
-          key1: ['value1', 'value2'],
-          key2: ['value1'],
-        },
-      });
-
-      const portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolio', {
-        displayName: 'testPortfolio',
-        providerName: 'testProvider',
-      });
-
-      portfolio.associateTagOptions(tagOptions);
-      product.associateTagOptions(tagOptions);
-
-      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
-      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 6);
     });
   });
 });

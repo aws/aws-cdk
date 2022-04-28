@@ -47,6 +47,12 @@ const fakeChokidarWatch = {
   },
 };
 
+const mockData = jest.fn();
+jest.mock('../lib/logging', () => ({
+  ...jest.requireActual('../lib/logging'),
+  data: mockData,
+}));
+
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Bootstrapper } from '../lib/api/bootstrap';
@@ -60,6 +66,7 @@ import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util
 
 let cloudExecutable: MockCloudExecutable;
 let bootstrapper: jest.Mocked<Bootstrapper>;
+let stderrMock: jest.SpyInstance;
 beforeEach(() => {
   jest.resetAllMocks();
 
@@ -80,6 +87,7 @@ beforeEach(() => {
     }],
   });
 
+  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
 });
 
 function defaultToolkitSetup() {
@@ -99,9 +107,7 @@ describe('readCurrentTemplate', () => {
   let template: any;
   let mockForEnvironment = jest.fn();
   let mockCloudExecutable: MockCloudExecutable;
-  let stderrMock: jest.SpyInstance;
   beforeEach(() => {
-    stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
 
     template = {
       Resources: {
@@ -403,7 +409,7 @@ describe('deploy', () => {
 
       // WHEN
       await cdkToolkit.deploy({
-        selector: { patterns: ['Test-Stack-A'] },
+        selector: { patterns: ['Test-Stack-A-Display-Name'] },
         requireApproval: RequireApproval.Never,
         hotswap: true,
       });
@@ -438,7 +444,7 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ selector: { patterns: ['Test-Stack-A'] } });
+      await toolkit.deploy({ selector: { patterns: ['Test-Stack-A-Display-Name'] } });
     });
 
     test('with stacks all stacks specified as wildcard', async () => {
@@ -671,12 +677,22 @@ describe('watch', () => {
 });
 
 describe('synth', () => {
+  test('successful synth outputs hierarchical stack ids', async () => {
+    const toolkit = defaultToolkitSetup();
+    await toolkit.synth([], false, false);
+
+    // Separate tests as colorizing hampers detection
+    expect(stderrMock.mock.calls[1][0]).toMatch('Test-Stack-A-Display-Name');
+    expect(stderrMock.mock.calls[1][0]).toMatch('Test-Stack-B');
+  });
+
   test('with no stdout option', async () => {
     // GIVE
     const toolkit = defaultToolkitSetup();
 
     // THEN
-    await expect(toolkit.synth(['Test-Stack-A'], false, true)).resolves.toBeUndefined();
+    await toolkit.synth(['Test-Stack-A-Display-Name'], false, true);
+    expect(mockData.mock.calls.length).toEqual(0);
   });
 
   afterEach(() => {
@@ -707,7 +723,8 @@ describe('synth', () => {
     test('causes synth to succeed if autoValidate=false', async() => {
       const toolkit = defaultToolkitSetup();
       const autoValidate = false;
-      await expect(toolkit.synth([], false, true, autoValidate)).resolves.toBeUndefined();
+      await toolkit.synth([], false, true, autoValidate);
+      expect(mockData.mock.calls.length).toEqual(0);
     });
   });
 
@@ -757,7 +774,10 @@ describe('synth', () => {
 
     const toolkit = defaultToolkitSetup();
 
-    await expect(toolkit.synth([MockStack.MOCK_STACK_D.stackName], true, false)).resolves.toBeDefined();
+    await toolkit.synth([MockStack.MOCK_STACK_D.stackName], true, false);
+
+    expect(mockData.mock.calls.length).toEqual(1);
+    expect(mockData.mock.calls[0][0]).toBeDefined();
   });
 });
 
@@ -776,6 +796,7 @@ class MockStack {
         },
       ],
     },
+    displayName: 'Test-Stack-A-Display-Name',
   };
   public static readonly MOCK_STACK_B: TestStackArtifact = {
     stackName: 'Test-Stack-B',

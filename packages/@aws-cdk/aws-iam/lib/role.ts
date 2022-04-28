@@ -274,6 +274,21 @@ export class Role extends Resource implements IRole {
       : new ImmutableRole(scope, `ImmutableRole${id}`, importedRole, options.addGrantsToResources ?? false);
   }
 
+  /**
+   * Import an external role by name.
+   *
+   * The imported role is assumed to exist in the same account as the account
+   * the scope's containing Stack is being deployed to.
+   */
+  public static fromRoleName(scope: Construct, id: string, roleName: string) {
+    return Role.fromRoleArn(scope, id, Stack.of(scope).formatArn({
+      region: '',
+      service: 'iam',
+      resource: 'role',
+      resourceName: roleName,
+    }));
+  }
+
   public readonly grantPrincipal: IPrincipal = this;
   public readonly principalAccount: string | undefined = this.env.account;
 
@@ -356,7 +371,8 @@ export class Role extends Resource implements IRole {
       region: '', // IAM is global in each partition
       service: 'iam',
       resource: 'role',
-      resourceName: this.physicalName,
+      // Removes leading slash from path
+      resourceName: `${props.path ? props.path.substr(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
     });
     this.roleName = this.getResourceNameAttribute(role.ref);
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;

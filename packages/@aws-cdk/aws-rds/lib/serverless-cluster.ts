@@ -10,7 +10,7 @@ import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
-import { defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS, renderCredentials } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials } from './private/util';
 import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { CfnDBCluster, CfnDBClusterProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -99,11 +99,14 @@ interface ServerlessClusterNewProps {
 
   /**
    * The VPC that this Aurora Serverless cluster has been created in.
+   *
+   * @default - the default VPC in the account and region will be used
    */
-  readonly vpc: ec2.IVpc;
+  readonly vpc?: ec2.IVpc;
 
   /**
-   * Where to place the instances within the VPC
+   * Where to place the instances within the VPC.
+   * If provided, the `vpc` property must also be specified.
    *
    * @default - the VPC default strategy if not specified.
    */
@@ -129,7 +132,8 @@ interface ServerlessClusterNewProps {
   /**
    * Security group.
    *
-   * @default - a new security group is created.
+   * @default - a new security group is created if `vpc` was provided.
+   *   If the `vpc` property was not provided, no VPC security groups will be associated with the DB cluster.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
@@ -143,7 +147,8 @@ interface ServerlessClusterNewProps {
   /**
    * Existing subnet group for the cluster.
    *
-   * @default - a new subnet group will be created.
+   * @default - a new subnet group is created if `vpc` was provided.
+   *   If the `vpc` property was not provided, no subnet group will be associated with the DB cluster
    */
   readonly subnetGroup?: ISubnetGroup;
 }
@@ -351,19 +356,42 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
   constructor(scope: Construct, id: string, props: ServerlessClusterNewProps) {
     super(scope, id);
 
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
-
-    // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
-    if (subnetIds.length < 2) {
-      Annotations.of(this).addError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
+    if (props.vpc === undefined) {
+      if (props.vpcSubnets !== undefined) {
+        throw new Error('A VPC is required to use vpcSubnets in ServerlessCluster. Please add a VPC or remove vpcSubnets');
+      }
+      if (props.subnetGroup !== undefined) {
+        throw new Error('A VPC is required to use subnetGroup in ServerlessCluster. Please add a VPC or remove subnetGroup');
+      }
+      if (props.securityGroups !== undefined) {
+        throw new Error('A VPC is required to use securityGroups in ServerlessCluster. Please add a VPC or remove securityGroups');
+      }
     }
 
-    const subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'Subnets', {
-      description: `Subnets for ${id} database`,
-      vpc: props.vpc,
-      vpcSubnets: props.vpcSubnets,
-      removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
-    });
+    let subnetGroup: ISubnetGroup | undefined = props.subnetGroup;
+    this.securityGroups = props.securityGroups ?? [];
+    if (props.vpc !== undefined) {
+      const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
+
+      // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
+      if (subnetIds.length < 2) {
+        Annotations.of(this).addError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
+      }
+
+      subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'Subnets', {
+        description: `Subnets for ${id} database`,
+        vpc: props.vpc,
+        vpcSubnets: props.vpcSubnets,
+        removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
+      });
+
+      this.securityGroups = props.securityGroups ?? [
+        new ec2.SecurityGroup(this, 'SecurityGroup', {
+          description: 'RDS security group',
+          vpc: props.vpc,
+        }),
+      ];
+    }
 
     if (props.backupRetention) {
       const backupRetentionDays = props.backupRetention.toDays();
@@ -379,12 +407,6 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
     const clusterParameterGroup = props.parameterGroup ?? clusterEngineBindConfig.parameterGroup;
     const clusterParameterGroupConfig = clusterParameterGroup?.bindToCluster({});
 
-    this.securityGroups = props.securityGroups ?? [
-      new ec2.SecurityGroup(this, 'SecurityGroup', {
-        description: 'RDS security group',
-        vpc: props.vpc,
-      }),
-    ];
 
     const clusterIdentifier = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER)
       ? props.clusterIdentifier?.toLowerCase()
@@ -395,7 +417,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       databaseName: props.defaultDatabaseName,
       dbClusterIdentifier: clusterIdentifier,
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
-      dbSubnetGroupName: subnetGroup.subnetGroupName,
+      dbSubnetGroupName: subnetGroup?.subnetGroupName,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       engine: props.engine.engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
@@ -476,7 +498,7 @@ export class ServerlessCluster extends ServerlessClusterNew {
 
   public readonly secret?: secretsmanager.ISecret;
 
-  private readonly vpc: ec2.IVpc;
+  private readonly vpc?: ec2.IVpc;
   private readonly vpcSubnets?: ec2.SubnetSelection;
 
   private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
@@ -499,7 +521,7 @@ export class ServerlessCluster extends ServerlessClusterNew {
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       masterUsername: credentials.username,
-      masterUserPassword: credentials.password?.toString(),
+      masterUserPassword: credentials.password?.unsafeUnwrap(),
       kmsKeyId: props.storageEncryptionKey?.keyArn,
     });
 
@@ -525,6 +547,10 @@ export class ServerlessCluster extends ServerlessClusterNew {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
     }
 
+    if (this.vpc === undefined) {
+      throw new Error('Cannot add single user rotation for a cluster without VPC.');
+    }
+
     const id = 'RotationSingleUser';
     const existing = this.node.tryFindChild(id);
     if (existing) {
@@ -532,13 +558,11 @@ export class ServerlessCluster extends ServerlessClusterNew {
     }
 
     return new secretsmanager.SecretRotation(this, id, {
+      ...applyDefaultRotationOptions(options, this.vpcSubnets),
       secret: this.secret,
       application: this.singleUserRotationApplication,
       vpc: this.vpc,
-      vpcSubnets: this.vpcSubnets,
       target: this,
-      ...options,
-      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
     });
   }
 
@@ -549,13 +573,17 @@ export class ServerlessCluster extends ServerlessClusterNew {
     if (!this.secret) {
       throw new Error('Cannot add multi user rotation for a cluster without secret.');
     }
+
+    if (this.vpc === undefined) {
+      throw new Error('Cannot add multi user rotation for a cluster without VPC.');
+    }
+
     return new secretsmanager.SecretRotation(this, id, {
-      ...options,
-      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
+      ...applyDefaultRotationOptions(options, this.vpcSubnets),
+      secret: options.secret,
       masterSecret: this.secret,
       application: this.multiUserRotationApplication,
       vpc: this.vpc,
-      vpcSubnets: this.vpcSubnets,
       target: this,
     });
   }
@@ -664,7 +692,7 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       snapshotIdentifier: props.snapshotIdentifier,
-      masterUserPassword: secret?.secretValueFromJson('password')?.toString() ?? credentials?.password?.toString(),
+      masterUserPassword: secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
     this.clusterIdentifier = cluster.ref;

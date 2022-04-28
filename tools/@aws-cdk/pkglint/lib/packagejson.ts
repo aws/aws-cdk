@@ -5,7 +5,7 @@ import * as fs from 'fs-extra';
 const bundled = require('npm-bundled');
 
 // do not descend into these directories when searching for `package.json` files.
-export const PKGLINT_IGNORES = ['node_modules', 'cdk.out', '.cdk.staging'];
+export const PKGLINT_IGNORES = ['node_modules', 'cdk.out', '.cdk.staging', 'test'];
 
 /**
  * Return all package JSONs in the root directory
@@ -346,7 +346,10 @@ export class PackageJson {
 }
 
 /**
- * Interface for validation rules
+ * Interface for validation rules.
+ *
+ * Do not validate any compiled code. pkglint will run pre-build
+ * on modules with just source code.
  */
 export abstract class ValidationRule {
   public abstract readonly name: string;

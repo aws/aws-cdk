@@ -1,6 +1,7 @@
 import { EOL } from 'os';
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import * as ecr from '../lib';
 
@@ -28,13 +29,20 @@ describe('repository', () => {
 
   test('repository creation with imageScanOnPush', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const noScanStack = new cdk.Stack();
+    const scanStack = new cdk.Stack();
 
     // WHEN
-    new ecr.Repository(stack, 'Repo', { imageScanOnPush: true });
+    new ecr.Repository(noScanStack, 'NoScanRepo', { imageScanOnPush: false });
+    new ecr.Repository(scanStack, 'ScanRepo', { imageScanOnPush: true });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+    Template.fromStack(noScanStack).hasResourceProperties('AWS::ECR::Repository', {
+      ImageScanningConfiguration: {
+        ScanOnPush: false,
+      },
+    });
+    Template.fromStack(scanStack).hasResourceProperties('AWS::ECR::Repository', {
       ImageScanningConfiguration: {
         ScanOnPush: true,
       },
@@ -361,6 +369,79 @@ describe('repository', () => {
 
     // THEN
     expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+  });
+
+  test('default encryption configuration', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+
+    // WHEN
+    new ecr.Repository(stack, 'Repo', { encryption: ecr.RepositoryEncryption.AES_256 });
+
+    // THEN
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        Repo02AC86CF: {
+          Type: 'AWS::ECR::Repository',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+        },
+      },
+    });
+  });
+
+  test('kms encryption configuration', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+
+    // WHEN
+    new ecr.Repository(stack, 'Repo', { encryption: ecr.RepositoryEncryption.KMS });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository',
+      {
+        EncryptionConfiguration: {
+          EncryptionType: 'KMS',
+        },
+      });
+  });
+
+  test('kms encryption with custom kms configuration', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+
+    // WHEN
+    const custom_key = new kms.Key(stack, 'Key');
+    new ecr.Repository(stack, 'Repo', { encryptionKey: custom_key });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository',
+      {
+        EncryptionConfiguration: {
+          EncryptionType: 'KMS',
+          KmsKey: {
+            'Fn::GetAtt': [
+              'Key961B73FD',
+              'Arn',
+            ],
+          },
+        },
+      });
+  });
+
+  test('fails if with custom kms key and AES256 as encryption', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const custom_key = new kms.Key(stack, 'Key');
+
+    // THEN
+    expect(() => {
+      new ecr.Repository(stack, 'Repo', { encryption: ecr.RepositoryEncryption.AES_256, encryptionKey: custom_key });
+    }).toThrow('encryptionKey is specified, so \'encryption\' must be set to KMS (value: AES256)');
   });
 
   describe('events', () => {

@@ -1,0 +1,58 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "lambda-event-source-kinesis": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-event-source-kinesis.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/lambda-event-source-kinesis/F/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRole3AC82EE1"
+          }
+        ],
+        "/lambda-event-source-kinesis/F/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRoleDefaultPolicy17A19BFA"
+          }
+        ],
+        "/lambda-event-source-kinesis/F/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FC4345940"
+          }
+        ],
+        "/lambda-event-source-kinesis/F/KinesisEventSource:lambdaeventsourcekinesisQ645CE7DB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FKinesisEventSourcelambdaeventsourcekinesisQ645CE7DB2D6BCCF5"
+          }
+        ],
+        "/lambda-event-source-kinesis/Q/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Q63C6E3AB"
+          }
+        ],
+        "/lambda-event-source-kinesis/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+          }
+        ]
+      },
+      "displayName": "lambda-event-source-kinesis"
+    }
+  }
+}

@@ -27,7 +27,7 @@ describe('cluster', () => {
     const cluster = new eks.Cluster(stack, 'Cluster', {
       version: CLUSTER_VERSION,
       albController: {
-        version: eks.AlbControllerVersion.V2_3_1,
+        version: eks.AlbControllerVersion.V2_4_1,
       },
     });
 
@@ -709,8 +709,26 @@ describe('cluster', () => {
         },
       },
     });
+  });
 
+  test('cluster handler gets created with STS regional endpoint configuration', () => {
+    // This is necessary to make aws-sdk-jsv2 work in opt-in regions
 
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+
+    // THEN
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
+    Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+      Environment: {
+        Variables: {
+          AWS_STS_REGIONAL_ENDPOINTS: 'regional',
+        },
+      },
+    });
   });
 
   test('if "vpc" is not specified, vpc with default configuration will be created', () => {
@@ -2107,7 +2125,41 @@ describe('cluster', () => {
         ],
       });
 
-
+      Template.fromStack(providerStack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'lambda.amazonaws.com' },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        ManagedPolicyArns: [
+          {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+            ]],
+          },
+          {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole',
+            ]],
+          },
+          {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
+            ]],
+          },
+        ],
+      });
     });
 
     test('coreDnsComputeType will patch the coreDNS configuration to use a "fargate" compute type and restore to "ec2" upon removal', () => {
@@ -2274,8 +2326,42 @@ describe('cluster', () => {
         },
       });
 
+      Template.fromStack(providerStack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'lambda.amazonaws.com' },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        ManagedPolicyArns: [
+          {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+            ]],
+          },
+          {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole',
+            ]],
+          },
+          {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
+            ]],
+          },
+        ],
+      });
     });
-
   });
 
   test('kubectl provider passes security group to provider', () => {

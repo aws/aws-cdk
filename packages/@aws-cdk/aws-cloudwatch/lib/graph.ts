@@ -256,6 +256,7 @@ export class GraphWidget extends ConcreteWidget {
     this.props = props;
     this.leftMetrics = props.left ?? [];
     this.rightMetrics = props.right ?? [];
+    this.copyMetricWarnings(...this.leftMetrics, ...this.rightMetrics);
   }
 
   /**
@@ -265,6 +266,7 @@ export class GraphWidget extends ConcreteWidget {
    */
   public addLeftMetric(metric: IMetric) {
     this.leftMetrics.push(metric);
+    this.copyMetricWarnings(metric);
   }
 
   /**
@@ -274,6 +276,7 @@ export class GraphWidget extends ConcreteWidget {
    */
   public addRightMetric(metric: IMetric) {
     this.rightMetrics.push(metric);
+    this.copyMetricWarnings(metric);
   }
 
   public toJson(): any[] {
@@ -343,6 +346,7 @@ export class SingleValueWidget extends ConcreteWidget {
   constructor(props: SingleValueWidgetProps) {
     super(props.width || 6, props.height || 3);
     this.props = props;
+    this.copyMetricWarnings(...props.metrics);
   }
 
   public toJson(): any[] {
@@ -450,6 +454,8 @@ export class Color {
 
   /** red - hex #d62728 */
   public static readonly RED = '#d62728';
+
+  private constructor() {}
 }
 
 /**
