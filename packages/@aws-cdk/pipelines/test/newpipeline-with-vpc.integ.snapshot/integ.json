@@ -1,0 +1,16 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "pipelines/test/integ.newpipeline-with-vpc": {
+      "stacks": [
+        "PipelineStack"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {
+    "@aws-cdk/core:newStyleStackSynthesis": "true"
+  },
+  "enableLookups": false
+}
