@@ -547,6 +547,18 @@ describe('function', () => {
         Annotations.fromStack(stack).hasNoWarning('/Default/MyLambda/$LATEST', Match.stringLikeRegexp(warningMessage));
       });
 
+      test('function.addAlias', () => {
+        // WHEN
+        fn.addAlias('prod');
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
+          Name: 'prod',
+          FunctionName: { Ref: 'MyLambdaCCE802FB' },
+          FunctionVersion: { 'Fn::GetAtt': ['MyLambdaCurrentVersionE7A382CC60ef151b20ae483ee1018f73f30bc10e', 'Version'] },
+        });
+      });
+
       describe('permission on alias', () => {
         test('of current version', () => {
           // GIVEN
