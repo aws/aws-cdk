@@ -1,6 +1,6 @@
 import * as workerpool from 'workerpool';
-import { IntegTestConfig } from '../../runner/integ-tests';
-import { IntegSnapshotRunner, IntegTestRunner } from '../../runner/runners';
+import { IntegSnapshotRunner, IntegTestRunner } from '../../runner';
+import { IntegTestConfig } from '../../runner/integration-tests';
 import { DiagnosticReason, IntegTestWorkerConfig } from '../common';
 import { IntegTestBatchRequest } from '../integ-test-worker';
 
@@ -16,32 +16,31 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
   const failures: IntegTestConfig[] = [];
   for (const test of request.tests) {
     const runner = new IntegTestRunner({
+      directory: test.directory,
       fileName: test.fileName,
       profile: request.profile,
       env: {
         AWS_REGION: request.region,
       },
     }, test.destructiveChanges);
-    const start = Date.now();
-    try {
-      if (!runner.hasSnapshot()) {
-        runner.generateSnapshot();
-      }
 
-      if (!runner.tests || Object.keys(runner.tests).length === 0) {
+    const start = Date.now();
+    const tests = runner.actualTests();
+    try {
+      if (!tests || Object.keys(tests).length === 0) {
         throw new Error(`No tests defined for ${runner.testName}`);
       }
-      for (const [testName, testCase] of Object.entries(runner.tests)) {
+      for (const testCaseName of Object.keys(tests)) {
         try {
           runner.runIntegTestCase({
-            testCase: testCase,
+            testCaseName,
             clean: request.clean,
             dryRun: request.dryRun,
             updateWorkflow: request.updateWorkflow,
           });
           workerpool.workerEmit({
             reason: DiagnosticReason.TEST_SUCCESS,
-            testName: testName,
+            testName: testCaseName,
             message: 'Success',
             duration: (Date.now() - start) / 1000,
           });
@@ -49,7 +48,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
           failures.push(test);
           workerpool.workerEmit({
             reason: DiagnosticReason.TEST_FAILED,
-            testName: testName,
+            testName: testCaseName,
             message: `Integration test failed: ${e}`,
             duration: (Date.now() - start) / 1000,
           });
@@ -77,7 +76,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
  */
 export function snapshotTestWorker(test: IntegTestConfig): IntegTestWorkerConfig[] {
   const failedTests = new Array<IntegTestWorkerConfig>();
-  const runner = new IntegSnapshotRunner({ fileName: test.fileName });
+  const runner = new IntegSnapshotRunner({ fileName: test.fileName, directory: test.directory });
   const start = Date.now();
   try {
     if (!runner.hasSnapshot()) {
@@ -97,6 +96,7 @@ export function snapshotTestWorker(test: IntegTestConfig): IntegTestWorkerConfig
         }));
         failedTests.push({
           fileName: test.fileName,
+          directory: test.directory,
           destructiveChanges,
         });
       } else {

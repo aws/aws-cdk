@@ -923,7 +923,6 @@
                           "maximumPercent": 200,
                           "minimumHealthyPercent": 50
                         },
-                        "desiredCount": 1,
                         "enableEcsManagedTags": false,
                         "healthCheckGracePeriodSeconds": 60,
                         "launchType": "FARGATE",

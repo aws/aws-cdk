@@ -17,6 +17,15 @@ export interface IntegTestConfig {
    * @default false
    */
   readonly enableLookups: boolean;
+
+  /**
+   * Additional context to use when performing
+   * a synth. Any context provided here will override
+   * any default context
+   *
+   * @default - no additional context
+   */
+  readonly synthContext?: { [name: string]: string };
 }
 
 /**
@@ -71,6 +80,7 @@ export class IntegManifestReader {
     return {
       testCases: this.manifest.testCases,
       enableLookups: this.manifest.enableLookups ?? false,
+      synthContext: this.manifest.synthContext,
     };
   }
 }

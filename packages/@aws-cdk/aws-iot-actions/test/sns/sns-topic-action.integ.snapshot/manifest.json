@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "sns-topic-action-test-stack": {
       "type": "aws:cloudformation:stack",

@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-cdk-athena-workgroup-tags": {
       "type": "aws:cloudformation:stack",

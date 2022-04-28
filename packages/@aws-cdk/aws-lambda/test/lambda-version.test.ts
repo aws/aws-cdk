@@ -1,6 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 
 describe('lambda version', () => {
   test('can import a Lambda version by ARN', () => {
@@ -103,7 +104,7 @@ describe('lambda version', () => {
     });
   });
 
-  test('addAlias can be used to add an alias that points to a version', () => {
+  testDeprecated('addAlias can be used to add an alias that points to a version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
