@@ -292,6 +292,7 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
    * Identifier of the cluster
    */
   public abstract readonly clusterIdentifier: string;
+
   /**
    * Identifiers of the replicas
    */
@@ -361,6 +362,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    * The VPC network to place the cluster in.
    */
   public readonly vpc: ec2.IVpc;
+
   /**
    * The cluster's subnets.
    */
@@ -370,6 +372,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    * Application for single user rotation of the master password to this cluster.
    */
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
+
   /**
    * Application for multi user rotation to this cluster.
    */
