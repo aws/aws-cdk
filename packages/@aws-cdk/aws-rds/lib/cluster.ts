@@ -267,13 +267,6 @@ interface DatabaseClusterBaseProps {
   readonly storageEncryptionKey?: kms.IKey;
 
   /**
-   * Credentials for the administrative user
-   *
-   * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
-   */
-  readonly credentials?: Credentials;
-
-  /**
    * Whether to copy tags to the snapshot when a snapshot is created.
    *
    * @default - true
@@ -584,6 +577,12 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
  * Properties for a new database cluster
  */
 export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
+  /**
+   * Credentials for the administrative user
+   *
+   * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
+   */
+  readonly credentials?: Credentials;
 }
 
 /**
@@ -658,6 +657,13 @@ export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBasePro
    * However, you can use only the ARN to specify a DB instance snapshot.
    */
   readonly snapshotIdentifier: string;
+
+  /**
+   * Credentials for the administrative user
+   *
+   * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
+   */
+  readonly credentials?: Credentials;
 }
 
 /**
