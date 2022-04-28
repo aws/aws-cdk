@@ -154,7 +154,6 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
   protected readonly taskPolicies?: iam.PolicyStatement[];
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
 
-
   /**
    * The processing resources for the task.
    */

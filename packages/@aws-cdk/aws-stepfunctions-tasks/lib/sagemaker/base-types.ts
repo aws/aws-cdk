@@ -199,7 +199,7 @@ export interface ResourceConfig {
   /**
    * The number of ML compute instances to use.
    *
-   * @default 1 instance.
+   * @default - 1 instance.
    */
   readonly instanceCount: number;
 
@@ -228,7 +228,7 @@ export interface ResourceConfig {
   /**
    * Size of the ML storage volume that you want to provision.
    *
-   * @default 10 GB EBS volume.
+   * @default - 10 GB EBS volume.
    */
   readonly volumeSize: Size;
 }
@@ -528,14 +528,14 @@ export interface NetworkConfig {
    *
    * @default False
    */
-  readonly enableInterContainerTrafficEncryption?: boolean;
+  readonly enableTraffic?: boolean;
 
   /**
    * Whether to allow inbound and outbound network calls to and from the containers used for the processing job.
    *
    * @default False
    */
-  readonly enableNetworkIsolation?: boolean;
+  readonly enableIsolation?: boolean;
 
   /**
    * Specifies a VPC that your training jobs and hosted models have access to. Control access to and from your
@@ -562,14 +562,14 @@ export interface S3Input {
   /**
    * The compression used for Amazon S3 storage.
    *
-   * @default None
+   * @default S3CompressionType.NONE
    */
   readonly s3CompressionType?: CompressionType;
 
   /**
    * Whether the data stored in Amazon S3 is FullyReplicated or ShardedByS3Key.
    *
-   * @default 'FullyReplicated'
+   * @default S3DataDistributionType.FULLY_REPLICATED
    */
   readonly s3DataDistributionType?: S3DataDistributionType;
 
@@ -579,7 +579,7 @@ export interface S3Input {
    * choose ManifestFile, S3Uri identifies an object that is a manifest file containing a list of object keys that you
    * want Amazon SageMaker to use for the processing job.
    *
-   * @default 'S3Prefix'
+   * @default S3DataType.S3_PREFIX
    */
   readonly s3DataType?: S3DataType;
 
@@ -589,7 +589,7 @@ export interface S3Input {
    * most commonly used input mode. In Pipe mode, Amazon SageMaker streams input data from the source directly to your
    * algorithm without using the EBS volume.
    *
-   * @default File
+   * @default InputMode.FILE
    */
   readonly s3InputMode?: InputMode;
 
