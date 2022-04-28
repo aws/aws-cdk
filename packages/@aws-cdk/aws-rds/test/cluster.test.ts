@@ -2072,6 +2072,26 @@ describe('cluster', () => {
     });
   });
 
+  test('throws when trying to add single user rotation multiple times on cluster from snapshot', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+    });
+
+    // WHEN
+    cluster.addRotationSingleUser();
+
+    // THEN
+    expect(() => cluster.addRotationSingleUser()).toThrow(/A single user rotation was already added to this cluster/);
+  });
+
   test('create a cluster from a snapshot with multi user secret rotation', () => {
     // GIVEN
     const stack = testStack();
