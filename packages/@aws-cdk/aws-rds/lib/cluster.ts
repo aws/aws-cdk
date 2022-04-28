@@ -501,7 +501,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    */
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new Error('Cannot add multi user rotation for a cluster without secret.');
+      throw new Error('Cannot add a multi user rotation for a cluster without a secret.');
     }
 
     return new secretsmanager.SecretRotation(this, id, {
