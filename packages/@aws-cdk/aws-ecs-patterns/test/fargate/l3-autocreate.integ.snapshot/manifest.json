@@ -1,0 +1,322 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-ecs-integ-l3-autocreate": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-ecs-integ-l3-autocreate.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-ecs-integ-l3-autocreate/ALBFargateService/LB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBFargateServiceLB64A0074E"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/ALBFargateService/LB/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBFargateServiceLBSecurityGroup5DC3060E"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/ALBFargateService/LB/SecurityGroup/to awsecsintegl3autocreateALBFargateServiceSecurityGroup6F9400B5:80": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBFargateServiceLBSecurityGrouptoawsecsintegl3autocreateALBFargateServiceSecurityGroup6F9400B580770A6C60"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/ALBFargateService/LB/PublicListener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBFargateServiceLBPublicListener3489002A"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/ALBFargateService/LB/PublicListener/ECSGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBFargateServiceLBPublicListenerECSGroup6871FB8C"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/ALBFargateService/LoadBalancerDNS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBFargateServiceLoadBalancerDNSAFB2EDDB"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/ALBFargateService/ServiceURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBFargateServiceServiceURL4A19CF25"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/ALBFargateService/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBFargateServiceTaskDefTaskRole11408723"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/ALBFargateService/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBFargateServiceTaskDefF69F17D6"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/ALBFargateService/TaskDef/web/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBFargateServiceTaskDefwebLogGroup7073A41D"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/ALBFargateService/TaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBFargateServiceTaskDefExecutionRole9E885E7B"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/ALBFargateService/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBFargateServiceTaskDefExecutionRoleDefaultPolicy574B9EAD"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/ALBFargateService/Service/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBFargateService90FDCE10"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/ALBFargateService/Service/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBFargateServiceSecurityGroup82F7A67E"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/ALBFargateService/Service/SecurityGroup/from awsecsintegl3autocreateALBFargateServiceLBSecurityGroupD565E0BF:80": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBFargateServiceSecurityGroupfromawsecsintegl3autocreateALBFargateServiceLBSecurityGroupD565E0BF802E7B8344"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYN926A5246"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1Subnet3C273B99"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1RouteTableA1FD6ACC"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1RouteTableAssociation8B583A17"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1DefaultRouteFF4E2178"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1EIP8704DB2F"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1NATGateway5E3732C1"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2Subnet95FF715A"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2RouteTable263DEAA5"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2RouteTableAssociation43E5803C"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteB1375520"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2EIPF0764873"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2NATGateway4C855E00"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet1Subnet075EFF4C"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet1RouteTable4F1D2E36"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet1RouteTableAssociation34B92275"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet1DefaultRouteA5ADF694"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet2SubnetE4CEDF73"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet2RouteTableDCE46591"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet2RouteTableAssociation111C622F"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet2DefaultRoute20CE2D89"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcIGW9C2C2B8F"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVpcVPCGW2447264E"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/NLBFargateService/LB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBFargateServiceLB659EC17C"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/NLBFargateService/LB/PublicListener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBFargateServiceLBPublicListenerB0DCA73C"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/NLBFargateService/LB/PublicListener/ECSGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBFargateServiceLBPublicListenerECSGroupC469CAA2"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/NLBFargateService/LoadBalancerDNS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBFargateServiceLoadBalancerDNSC2B2922F"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/NLBFargateService/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBFargateServiceTaskDefTaskRole6C88F40B"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/NLBFargateService/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBFargateServiceTaskDefB836FA89"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/NLBFargateService/TaskDef/web/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBFargateServiceTaskDefwebLogGroupC4A42FE2"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/NLBFargateService/TaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBFargateServiceTaskDefExecutionRoleF6D642D5"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/NLBFargateService/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBFargateServiceTaskDefExecutionRoleDefaultPolicy90080805"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/NLBFargateService/Service/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBFargateServiceB92AC095"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/NLBFargateService/Service/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBFargateServiceSecurityGroup9D81388B"
+          }
+        ]
+      },
+      "displayName": "aws-ecs-integ-l3-autocreate"
+    }
+  }
+}

@@ -37,13 +37,6 @@
         "distName": "aws-cdk.aws-panorama",
         "module": "aws_cdk.aws_panorama"
       }
-    },
-    "metadata": {
-      "jsii": {
-        "rosetta": {
-          "strict": true
-        }
-      }
     }
   },
   "repository": {
@@ -57,7 +50,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",

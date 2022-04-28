@@ -1,0 +1,1273 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "restapi-books-example": {
+        "id": "restapi-books-example",
+        "path": "restapi-books-example",
+        "children": {
+          "BooksHandler": {
+            "id": "BooksHandler",
+            "path": "restapi-books-example/BooksHandler",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "restapi-books-example/BooksHandler/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "restapi-books-example/BooksHandler/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "restapi-books-example/BooksHandler/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = function echoHandlerCode(event, _, callback) {\n    return callback(undefined, {\n        isBase64Encoded: false,\n        statusCode: 200,\n        headers: { 'content-type': 'application/json' },\n        body: JSON.stringify(event),\n    });\n}"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "BooksHandlerServiceRole5B6A8847",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs14.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "BookHandler": {
+            "id": "BookHandler",
+            "path": "restapi-books-example/BookHandler",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "restapi-books-example/BookHandler/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "restapi-books-example/BookHandler/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "restapi-books-example/BookHandler/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = function echoHandlerCode(event, _, callback) {\n    return callback(undefined, {\n        isBase64Encoded: false,\n        statusCode: 200,\n        headers: { 'content-type': 'application/json' },\n        body: JSON.stringify(event),\n    });\n}"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "BookHandlerServiceRole894768AD",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs14.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Hello": {
+            "id": "Hello",
+            "path": "restapi-books-example/Hello",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "restapi-books-example/Hello/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "restapi-books-example/Hello/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "restapi-books-example/Hello/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = function helloCode(_event, _context, callback) {\n    return callback(undefined, {\n        statusCode: 200,\n        body: 'hello, world!',\n    });\n}"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "HelloServiceRole1E55EA16",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs14.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "books-api": {
+            "id": "books-api",
+            "path": "restapi-books-example/books-api",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "restapi-books-example/books-api/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "books-api"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnRestApi",
+                  "version": "0.0.0"
+                }
+              },
+              "CloudWatchRole": {
+                "id": "CloudWatchRole",
+                "path": "restapi-books-example/books-api/CloudWatchRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "restapi-books-example/books-api/CloudWatchRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "apigateway.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Account": {
+                "id": "Account",
+                "path": "restapi-books-example/books-api/Account",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Account",
+                  "aws:cdk:cloudformation:props": {
+                    "cloudWatchRoleArn": {
+                      "Fn::GetAtt": [
+                        "booksapiCloudWatchRole089CB225",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnAccount",
+                  "version": "0.0.0"
+                }
+              },
+              "Deployment": {
+                "id": "Deployment",
+                "path": "restapi-books-example/books-api/Deployment",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "restapi-books-example/books-api/Deployment/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
+                      "aws:cdk:cloudformation:props": {
+                        "restApiId": {
+                          "Ref": "booksapiE1885304"
+                        },
+                        "description": "Automatically created by the RestApi construct"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnDeployment",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.Deployment",
+                  "version": "0.0.0"
+                }
+              },
+              "DeploymentStage.prod": {
+                "id": "DeploymentStage.prod",
+                "path": "restapi-books-example/books-api/DeploymentStage.prod",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "restapi-books-example/books-api/DeploymentStage.prod/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "restApiId": {
+                          "Ref": "booksapiE1885304"
+                        },
+                        "deploymentId": {
+                          "Ref": "booksapiDeployment308B08F132cc25cf8168bd5e99b9e6d4915866b5"
+                        },
+                        "stageName": "prod"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.Stage",
+                  "version": "0.0.0"
+                }
+              },
+              "Endpoint": {
+                "id": "Endpoint",
+                "path": "restapi-books-example/books-api/Endpoint",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Default": {
+                "id": "Default",
+                "path": "restapi-books-example/books-api/Default",
+                "children": {
+                  "ANY": {
+                    "id": "ANY",
+                    "path": "restapi-books-example/books-api/Default/ANY",
+                    "children": {
+                      "ApiPermission.restapibooksexamplebooksapi4538F335.ANY..": {
+                        "id": "ApiPermission.restapibooksexamplebooksapi4538F335.ANY..",
+                        "path": "restapi-books-example/books-api/Default/ANY/ApiPermission.restapibooksexamplebooksapi4538F335.ANY..",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                          "aws:cdk:cloudformation:props": {
+                            "action": "lambda:InvokeFunction",
+                            "functionName": {
+                              "Fn::GetAtt": [
+                                "Hello4A628BD4",
+                                "Arn"
+                              ]
+                            },
+                            "principal": "apigateway.amazonaws.com",
+                            "sourceArn": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":execute-api:",
+                                  {
+                                    "Ref": "AWS::Region"
+                                  },
+                                  ":",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":",
+                                  {
+                                    "Ref": "booksapiE1885304"
+                                  },
+                                  "/",
+                                  {
+                                    "Ref": "booksapiDeploymentStageprod55D8E03E"
+                                  },
+                                  "/*/"
+                                ]
+                              ]
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "ApiPermission.Test.restapibooksexamplebooksapi4538F335.ANY..": {
+                        "id": "ApiPermission.Test.restapibooksexamplebooksapi4538F335.ANY..",
+                        "path": "restapi-books-example/books-api/Default/ANY/ApiPermission.Test.restapibooksexamplebooksapi4538F335.ANY..",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                          "aws:cdk:cloudformation:props": {
+                            "action": "lambda:InvokeFunction",
+                            "functionName": {
+                              "Fn::GetAtt": [
+                                "Hello4A628BD4",
+                                "Arn"
+                              ]
+                            },
+                            "principal": "apigateway.amazonaws.com",
+                            "sourceArn": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":execute-api:",
+                                  {
+                                    "Ref": "AWS::Region"
+                                  },
+                                  ":",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":",
+                                  {
+                                    "Ref": "booksapiE1885304"
+                                  },
+                                  "/test-invoke-stage/*/"
+                                ]
+                              ]
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "restapi-books-example/books-api/Default/ANY/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                          "aws:cdk:cloudformation:props": {
+                            "httpMethod": "ANY",
+                            "resourceId": {
+                              "Fn::GetAtt": [
+                                "booksapiE1885304",
+                                "RootResourceId"
+                              ]
+                            },
+                            "restApiId": {
+                              "Ref": "booksapiE1885304"
+                            },
+                            "authorizationType": "NONE",
+                            "integration": {
+                              "type": "AWS_PROXY",
+                              "uri": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":apigateway:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":lambda:path/2015-03-31/functions/",
+                                    {
+                                      "Fn::GetAtt": [
+                                        "Hello4A628BD4",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "/invocations"
+                                  ]
+                                ]
+                              },
+                              "integrationHttpMethod": "POST"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.Method",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "books": {
+                    "id": "books",
+                    "path": "restapi-books-example/books-api/Default/books",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "restapi-books-example/books-api/Default/books/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                          "aws:cdk:cloudformation:props": {
+                            "parentId": {
+                              "Fn::GetAtt": [
+                                "booksapiE1885304",
+                                "RootResourceId"
+                              ]
+                            },
+                            "pathPart": "books",
+                            "restApiId": {
+                              "Ref": "booksapiE1885304"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "GET": {
+                        "id": "GET",
+                        "path": "restapi-books-example/books-api/Default/books/GET",
+                        "children": {
+                          "ApiPermission.restapibooksexamplebooksapi4538F335.GET..books": {
+                            "id": "ApiPermission.restapibooksexamplebooksapi4538F335.GET..books",
+                            "path": "restapi-books-example/books-api/Default/books/GET/ApiPermission.restapibooksexamplebooksapi4538F335.GET..books",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "BooksHandler3EB83358",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "booksapiE1885304"
+                                      },
+                                      "/",
+                                      {
+                                        "Ref": "booksapiDeploymentStageprod55D8E03E"
+                                      },
+                                      "/GET/books"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "ApiPermission.Test.restapibooksexamplebooksapi4538F335.GET..books": {
+                            "id": "ApiPermission.Test.restapibooksexamplebooksapi4538F335.GET..books",
+                            "path": "restapi-books-example/books-api/Default/books/GET/ApiPermission.Test.restapibooksexamplebooksapi4538F335.GET..books",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "BooksHandler3EB83358",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "booksapiE1885304"
+                                      },
+                                      "/test-invoke-stage/GET/books"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "restapi-books-example/books-api/Default/books/GET/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "httpMethod": "GET",
+                                "resourceId": {
+                                  "Ref": "booksapibooks97D84727"
+                                },
+                                "restApiId": {
+                                  "Ref": "booksapiE1885304"
+                                },
+                                "authorizationType": "AWS_IAM",
+                                "integration": {
+                                  "type": "AWS_PROXY",
+                                  "uri": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":apigateway:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":lambda:path/2015-03-31/functions/",
+                                        {
+                                          "Fn::GetAtt": [
+                                            "BooksHandler3EB83358",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/invocations"
+                                      ]
+                                    ]
+                                  },
+                                  "integrationHttpMethod": "POST"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.Method",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "POST": {
+                        "id": "POST",
+                        "path": "restapi-books-example/books-api/Default/books/POST",
+                        "children": {
+                          "ApiPermission.restapibooksexamplebooksapi4538F335.POST..books": {
+                            "id": "ApiPermission.restapibooksexamplebooksapi4538F335.POST..books",
+                            "path": "restapi-books-example/books-api/Default/books/POST/ApiPermission.restapibooksexamplebooksapi4538F335.POST..books",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "BooksHandler3EB83358",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "booksapiE1885304"
+                                      },
+                                      "/",
+                                      {
+                                        "Ref": "booksapiDeploymentStageprod55D8E03E"
+                                      },
+                                      "/POST/books"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "ApiPermission.Test.restapibooksexamplebooksapi4538F335.POST..books": {
+                            "id": "ApiPermission.Test.restapibooksexamplebooksapi4538F335.POST..books",
+                            "path": "restapi-books-example/books-api/Default/books/POST/ApiPermission.Test.restapibooksexamplebooksapi4538F335.POST..books",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "BooksHandler3EB83358",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "booksapiE1885304"
+                                      },
+                                      "/test-invoke-stage/POST/books"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "restapi-books-example/books-api/Default/books/POST/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "httpMethod": "POST",
+                                "resourceId": {
+                                  "Ref": "booksapibooks97D84727"
+                                },
+                                "restApiId": {
+                                  "Ref": "booksapiE1885304"
+                                },
+                                "authorizationType": "AWS_IAM",
+                                "integration": {
+                                  "type": "AWS_PROXY",
+                                  "uri": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":apigateway:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":lambda:path/2015-03-31/functions/",
+                                        {
+                                          "Fn::GetAtt": [
+                                            "BooksHandler3EB83358",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/invocations"
+                                      ]
+                                    ]
+                                  },
+                                  "integrationHttpMethod": "POST"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.Method",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "{book_id}": {
+                        "id": "{book_id}",
+                        "path": "restapi-books-example/books-api/Default/books/{book_id}",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "restapi-books-example/books-api/Default/books/{book_id}/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                              "aws:cdk:cloudformation:props": {
+                                "parentId": {
+                                  "Ref": "booksapibooks97D84727"
+                                },
+                                "pathPart": "{book_id}",
+                                "restApiId": {
+                                  "Ref": "booksapiE1885304"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "GET": {
+                            "id": "GET",
+                            "path": "restapi-books-example/books-api/Default/books/{book_id}/GET",
+                            "children": {
+                              "ApiPermission.restapibooksexamplebooksapi4538F335.GET..books.{book_id}": {
+                                "id": "ApiPermission.restapibooksexamplebooksapi4538F335.GET..books.{book_id}",
+                                "path": "restapi-books-example/books-api/Default/books/{book_id}/GET/ApiPermission.restapibooksexamplebooksapi4538F335.GET..books.{book_id}",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                                  "aws:cdk:cloudformation:props": {
+                                    "action": "lambda:InvokeFunction",
+                                    "functionName": {
+                                      "Fn::GetAtt": [
+                                        "BookHandlerF9638A7A",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "principal": "apigateway.amazonaws.com",
+                                    "sourceArn": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":execute-api:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "booksapiE1885304"
+                                          },
+                                          "/",
+                                          {
+                                            "Ref": "booksapiDeploymentStageprod55D8E03E"
+                                          },
+                                          "/GET/books/*"
+                                        ]
+                                      ]
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "ApiPermission.Test.restapibooksexamplebooksapi4538F335.GET..books.{book_id}": {
+                                "id": "ApiPermission.Test.restapibooksexamplebooksapi4538F335.GET..books.{book_id}",
+                                "path": "restapi-books-example/books-api/Default/books/{book_id}/GET/ApiPermission.Test.restapibooksexamplebooksapi4538F335.GET..books.{book_id}",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                                  "aws:cdk:cloudformation:props": {
+                                    "action": "lambda:InvokeFunction",
+                                    "functionName": {
+                                      "Fn::GetAtt": [
+                                        "BookHandlerF9638A7A",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "principal": "apigateway.amazonaws.com",
+                                    "sourceArn": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":execute-api:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "booksapiE1885304"
+                                          },
+                                          "/test-invoke-stage/GET/books/*"
+                                        ]
+                                      ]
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "restapi-books-example/books-api/Default/books/{book_id}/GET/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                                  "aws:cdk:cloudformation:props": {
+                                    "httpMethod": "GET",
+                                    "resourceId": {
+                                      "Ref": "booksapibooksbookid5264BCA2"
+                                    },
+                                    "restApiId": {
+                                      "Ref": "booksapiE1885304"
+                                    },
+                                    "authorizationType": "AWS_IAM",
+                                    "integration": {
+                                      "type": "AWS_PROXY",
+                                      "uri": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":apigateway:",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            },
+                                            ":lambda:path/2015-03-31/functions/",
+                                            {
+                                              "Fn::GetAtt": [
+                                                "BookHandlerF9638A7A",
+                                                "Arn"
+                                              ]
+                                            },
+                                            "/invocations"
+                                          ]
+                                        ]
+                                      },
+                                      "integrationHttpMethod": "POST"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.Method",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "DELETE": {
+                            "id": "DELETE",
+                            "path": "restapi-books-example/books-api/Default/books/{book_id}/DELETE",
+                            "children": {
+                              "ApiPermission.restapibooksexamplebooksapi4538F335.DELETE..books.{book_id}": {
+                                "id": "ApiPermission.restapibooksexamplebooksapi4538F335.DELETE..books.{book_id}",
+                                "path": "restapi-books-example/books-api/Default/books/{book_id}/DELETE/ApiPermission.restapibooksexamplebooksapi4538F335.DELETE..books.{book_id}",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                                  "aws:cdk:cloudformation:props": {
+                                    "action": "lambda:InvokeFunction",
+                                    "functionName": {
+                                      "Fn::GetAtt": [
+                                        "BookHandlerF9638A7A",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "principal": "apigateway.amazonaws.com",
+                                    "sourceArn": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":execute-api:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "booksapiE1885304"
+                                          },
+                                          "/",
+                                          {
+                                            "Ref": "booksapiDeploymentStageprod55D8E03E"
+                                          },
+                                          "/DELETE/books/*"
+                                        ]
+                                      ]
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "ApiPermission.Test.restapibooksexamplebooksapi4538F335.DELETE..books.{book_id}": {
+                                "id": "ApiPermission.Test.restapibooksexamplebooksapi4538F335.DELETE..books.{book_id}",
+                                "path": "restapi-books-example/books-api/Default/books/{book_id}/DELETE/ApiPermission.Test.restapibooksexamplebooksapi4538F335.DELETE..books.{book_id}",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                                  "aws:cdk:cloudformation:props": {
+                                    "action": "lambda:InvokeFunction",
+                                    "functionName": {
+                                      "Fn::GetAtt": [
+                                        "BookHandlerF9638A7A",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "principal": "apigateway.amazonaws.com",
+                                    "sourceArn": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":execute-api:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "booksapiE1885304"
+                                          },
+                                          "/test-invoke-stage/DELETE/books/*"
+                                        ]
+                                      ]
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "restapi-books-example/books-api/Default/books/{book_id}/DELETE/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                                  "aws:cdk:cloudformation:props": {
+                                    "httpMethod": "DELETE",
+                                    "resourceId": {
+                                      "Ref": "booksapibooksbookid5264BCA2"
+                                    },
+                                    "restApiId": {
+                                      "Ref": "booksapiE1885304"
+                                    },
+                                    "authorizationType": "AWS_IAM",
+                                    "integration": {
+                                      "type": "AWS_PROXY",
+                                      "uri": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":apigateway:",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            },
+                                            ":lambda:path/2015-03-31/functions/",
+                                            {
+                                              "Fn::GetAtt": [
+                                                "BookHandlerF9638A7A",
+                                                "Arn"
+                                              ]
+                                            },
+                                            "/invocations"
+                                          ]
+                                        ]
+                                      },
+                                      "integrationHttpMethod": "POST"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.Method",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.Resource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.Resource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.ResourceBase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigateway.RestApi",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

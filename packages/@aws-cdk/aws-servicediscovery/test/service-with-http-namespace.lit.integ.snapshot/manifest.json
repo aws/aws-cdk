@@ -1,0 +1,52 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-servicediscovery-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-servicediscovery-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-servicediscovery-integ/MyNamespace/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyNamespaceD0BB8558"
+          }
+        ],
+        "/aws-servicediscovery-integ/MyNamespace/NonIpService/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyNamespaceNonIpService3B425009"
+          }
+        ],
+        "/aws-servicediscovery-integ/MyNamespace/NonIpService/NonIpInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyNamespaceNonIpServiceNonIpInstanceFF8FB3DE"
+          }
+        ],
+        "/aws-servicediscovery-integ/MyNamespace/IpService/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyNamespaceIpService220F547F"
+          }
+        ],
+        "/aws-servicediscovery-integ/MyNamespace/IpService/IpInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyNamespaceIpServiceIpInstance8CD1B210"
+          }
+        ]
+      },
+      "displayName": "aws-servicediscovery-integ"
+    }
+  }
+}

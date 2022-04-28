@@ -35,7 +35,9 @@ export class DatabaseQuery<HandlerProps> extends CoreConstruct implements iam.IG
 
     const adminUser = this.getAdminUser(props);
     const handler = new lambda.SingletonFunction(this, 'Handler', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'database-query-provider')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'database-query-provider'), {
+        exclude: ['*.ts'],
+      }),
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.handler',
       timeout: cdk.Duration.minutes(1),

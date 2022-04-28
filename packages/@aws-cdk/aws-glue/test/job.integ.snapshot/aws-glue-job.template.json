@@ -1,0 +1,575 @@
+{
+ "Resources": {
+  "EtlJobServiceRole837F781B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "EtlJobServiceRoleDefaultPolicy8BFE343B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "EtlJobSparkUIBucketBF23744B",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "EtlJobSparkUIBucketBF23744B",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EtlJobServiceRoleDefaultPolicy8BFE343B",
+    "Roles": [
+     {
+      "Ref": "EtlJobServiceRole837F781B"
+     }
+    ]
+   }
+  },
+  "EtlJobSparkUIBucketBF23744B": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "EtlJob7FC88E45": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "glueetl",
+     "PythonVersion": "3",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+        },
+        "/",
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "EtlJobServiceRole837F781B",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--job-language": "python",
+     "--enable-continuous-cloudwatch-log": "true",
+     "--enable-continuous-log-filter": "true",
+     "--continuous-log-logStreamPrefix": "EtlJob",
+     "--enable-spark-ui": "true",
+     "--spark-event-logs-path": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Ref": "EtlJobSparkUIBucketBF23744B"
+        }
+       ]
+      ]
+     },
+     "arg1": "value1",
+     "arg2": "value2"
+    },
+    "ExecutionProperty": {
+     "MaxConcurrentRuns": 2
+    },
+    "GlueVersion": "2.0",
+    "MaxRetries": 2,
+    "Name": "EtlJob",
+    "NotificationProperty": {
+     "NotifyDelayAfter": 1
+    },
+    "NumberOfWorkers": 10,
+    "Tags": {
+     "key": "value"
+    },
+    "Timeout": 5,
+    "WorkerType": "G.2X"
+   }
+  },
+  "EtlJobSuccessMetricRuleA72A3EF6": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Rule triggered when Glue job ",
+       {
+        "Ref": "EtlJob7FC88E45"
+       },
+       " is in SUCCEEDED state"
+      ]
+     ]
+    },
+    "EventPattern": {
+     "source": [
+      "aws.glue"
+     ],
+     "detail-type": [
+      "Glue Job State Change",
+      "Glue Job Run Status"
+     ],
+     "detail": {
+      "jobName": [
+       {
+        "Ref": "EtlJob7FC88E45"
+       }
+      ],
+      "state": [
+       "SUCCEEDED"
+      ]
+     }
+    },
+    "State": "ENABLED"
+   }
+  },
+  "StreamingJobServiceRole1B4B8BF9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "StreamingJobServiceRoleDefaultPolicyA0CC4C68": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "StreamingJobServiceRoleDefaultPolicyA0CC4C68",
+    "Roles": [
+     {
+      "Ref": "StreamingJobServiceRole1B4B8BF9"
+     }
+    ]
+   }
+  },
+  "StreamingJob3783CC17": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "gluestreaming",
+     "PythonVersion": "3",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+        },
+        "/",
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "StreamingJobServiceRole1B4B8BF9",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--job-language": "python",
+     "arg1": "value1",
+     "arg2": "value2"
+    },
+    "GlueVersion": "2.0",
+    "Name": "StreamingJob",
+    "Tags": {
+     "key": "value"
+    }
+   }
+  },
+  "ShellJobServiceRoleCF97BC4B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ShellJobServiceRoleDefaultPolicy7F22D315": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ShellJobServiceRoleDefaultPolicy7F22D315",
+    "Roles": [
+     {
+      "Ref": "ShellJobServiceRoleCF97BC4B"
+     }
+    ]
+   }
+  },
+  "ShellJob42E81F95": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "pythonshell",
+     "PythonVersion": "3",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+        },
+        "/",
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "ShellJobServiceRoleCF97BC4B",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--job-language": "python",
+     "arg1": "value1",
+     "arg2": "value2"
+    },
+    "GlueVersion": "1.0",
+    "Name": "ShellJob",
+    "Tags": {
+     "key": "value"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855\""
+  },
+  "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855\""
+  },
+  "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855ArtifactHash0C610005": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855\""
+  }
+ }
+}
