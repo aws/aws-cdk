@@ -1,3 +1,5 @@
 *.d.ts
 *.js
 node_modules
+!test/integ-handlers/js-handler.js
+!test/function.test.handler2.js
