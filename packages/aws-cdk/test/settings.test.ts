@@ -153,7 +153,7 @@ test('should include stacks-file in settings', () => {
   });
 
   // THEN
-  expect(settings.get(['stacks'])).toEqual('my-stacks-file.json');
+  expect(settings.get(['stacksFile'])).toEqual('my-stacks-file.json');
 });
 
 test('providing a build arg', () => {
