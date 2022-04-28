@@ -50,34 +50,6 @@
     "MyLambdaServiceRole4539ECB6"
    ]
   },
-  "MyLambdaorgF85788CF": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "MyLambdaCCE802FB",
-      "Arn"
-     ]
-    },
-    "Principal": "*",
-    "PrincipalOrgID": "o-xxxxxxxxxx"
-   }
-  },
-  "MyLambdaotherorg9E5CFB3F": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "MyLambdaCCE802FB",
-      "Arn"
-     ]
-    },
-    "Principal": "*",
-    "PrincipalOrgID": "o-zzzzzzzzzz"
-   }
-  },
   "MyLambdaInvokeAnyPrincipal256ECDE1": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
@@ -90,6 +62,20 @@
     },
     "Principal": "*",
     "PrincipalOrgID": "o-yyyyyyyyyy"
+   }
+  },
+  "MyLambdaInvokeOrganizationPrincipaloxxxxxxxxxxEB282AD1": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MyLambdaCCE802FB",
+      "Arn"
+     ]
+    },
+    "Principal": "*",
+    "PrincipalOrgID": "o-xxxxxxxxxx"
    }
   }
  }

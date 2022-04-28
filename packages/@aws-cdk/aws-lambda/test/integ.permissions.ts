@@ -12,6 +12,6 @@ const fn = new lambda.Function(stack, 'MyLambda', {
   runtime: lambda.Runtime.NODEJS_14_X,
 });
 
-fn.grantInvoke(new iam.AnyPrincipal());
+fn.grantInvoke(new iam.AnyPrincipal().inOrganization('o-yyyyyyyyyy'));
 
 fn.grantInvoke(new iam.OrganizationPrincipal('o-xxxxxxxxxx'));

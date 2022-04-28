@@ -349,13 +349,6 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
     let { sourceArn, sourceAccount, principalOrgID } = this.validateConditionCombinations(permission.principal) ?? {};
 
-    // Lambda does not actually accept an organization principal here.
-    // so the principal becomes '*' and the organization ID will be sent to
-    // the 'principalOrgID' property.
-    if (permission.principal.toString().startsWith('OrganizationPrincipal')) {
-      principalOrgID = permission.principal.policyFragment.conditions.StringEquals['aws:PrincipalOrgID'];
-    }
-
     const action = permission.action ?? 'lambda:InvokeFunction';
     const scope = permission.scope ?? this;
 
@@ -668,7 +661,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   }
 
   private isPrincipalWithConditions(principal: iam.IPrincipal): principal is iam.PrincipalWithConditions {
-    return 'conditions' in principal;
+    return Object.keys(principal.policyFragment.conditions).length > 0;
   }
 }
 

@@ -93,50 +93,6 @@
                   "version": "0.0.0"
                 }
               },
-              "org": {
-                "id": "org",
-                "path": "lambda-permissions/MyLambda/org",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                  "aws:cdk:cloudformation:props": {
-                    "action": "lambda:InvokeFunction",
-                    "functionName": {
-                      "Fn::GetAtt": [
-                        "MyLambdaCCE802FB",
-                        "Arn"
-                      ]
-                    },
-                    "principal": "*",
-                    "principalOrgId": "o-xxxxxxxxxx"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
-                  "version": "0.0.0"
-                }
-              },
-              "other-org": {
-                "id": "other-org",
-                "path": "lambda-permissions/MyLambda/other-org",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                  "aws:cdk:cloudformation:props": {
-                    "action": "lambda:InvokeFunction",
-                    "functionName": {
-                      "Fn::GetAtt": [
-                        "MyLambdaCCE802FB",
-                        "Arn"
-                      ]
-                    },
-                    "principal": "*",
-                    "principalOrgId": "o-zzzzzzzzzz"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
-                  "version": "0.0.0"
-                }
-              },
               "InvokeAnyPrincipal()": {
                 "id": "InvokeAnyPrincipal()",
                 "path": "lambda-permissions/MyLambda/InvokeAnyPrincipal()",
@@ -152,6 +108,28 @@
                     },
                     "principal": "*",
                     "principalOrgId": "o-yyyyyyyyyy"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "InvokeOrganizationPrincipal(o-xxxxxxxxxx)": {
+                "id": "InvokeOrganizationPrincipal(o-xxxxxxxxxx)",
+                "path": "lambda-permissions/MyLambda/InvokeOrganizationPrincipal(o-xxxxxxxxxx)",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "MyLambdaCCE802FB",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "*",
+                    "principalOrgId": "o-xxxxxxxxxx"
                   }
                 },
                 "constructInfo": {

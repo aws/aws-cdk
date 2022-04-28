@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "18.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -27,22 +27,34 @@
             "data": "MyLambdaCCE802FB"
           }
         ],
-        "/lambda-permissions/MyLambda/org": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambdaorgF85788CF"
-          }
-        ],
-        "/lambda-permissions/MyLambda/other-org": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambdaotherorg9E5CFB3F"
-          }
-        ],
         "/lambda-permissions/MyLambda/InvokeAnyPrincipal()": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdaInvokeAnyPrincipal256ECDE1"
+          }
+        ],
+        "/lambda-permissions/MyLambda/InvokeOrganizationPrincipal(o-xxxxxxxxxx)": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaInvokeOrganizationPrincipaloxxxxxxxxxxEB282AD1"
+          }
+        ],
+        "MyLambdaorgF85788CF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaorgF85788CF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyLambdaotherorg9E5CFB3F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaotherorg9E5CFB3F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
