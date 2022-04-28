@@ -606,6 +606,9 @@ export class DatabaseCluster extends DatabaseClusterNew {
   public readonly instanceIdentifiers: string[];
   public readonly instanceEndpoints: Endpoint[];
 
+  /**
+   * The secret attached to this cluster
+   */
   public readonly secret?: secretsmanager.ISecret;
 
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
@@ -670,6 +673,9 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
   public readonly instanceIdentifiers: string[];
   public readonly instanceEndpoints: Endpoint[];
 
+  /**
+   * The secret attached to this cluster
+   */
   public readonly secret?: secretsmanager.ISecret;
 
   constructor(scope: Construct, id: string, props: DatabaseClusterFromSnapshotProps) {
