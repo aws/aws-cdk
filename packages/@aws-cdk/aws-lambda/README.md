@@ -79,7 +79,7 @@ new lambda.DockerImageFunction(this, 'ECRFunction', {
 ```
 
 The props for these docker image resources allow overriding the image's `CMD`, `ENTRYPOINT`, and `WORKDIR`
-configurations. See their docs for more information.
+configurations as well as choosing a specific tag or digest. See their docs for more information.
 
 ## Execution Role
 
@@ -337,6 +337,73 @@ const fn = new lambda.Function(this, 'MyFunction', {
 });
 
 fn.currentVersion.addAlias('live');
+```
+
+## Function URL
+
+A function URL is a dedicated HTTP(S) endpoint for your Lambda function. When you create a function URL, Lambda automatically generates a unique URL endpoint for you. Function URLs can be created for the latest version Lambda Functions, or Function Aliases (but not for Versions).
+
+Function URLs are dual stack-enabled, supporting IPv4 and IPv6, and cross-origin resource sharing (CORS) configuration. After you configure a function URL for your function, you can invoke your function through its HTTP(S) endpoint via a web browser, curl, Postman, or any HTTP client. To invoke a function using IAM authentication your HTTP client must support SigV4 signing.
+
+See the [Invoking Function URLs](https://docs.aws.amazon.com/lambda/latest/dg/urls-invocation.html) section of the AWS Lambda Developer Guide
+for more information on the input and output payloads of Functions invoked in this way.
+
+### IAM-authenticated Function URLs
+
+To create a Function URL which can be called by an IAM identity, call `addFunctionUrl()`, followed by `grantInvokeFunctionUrl()`:
+
+```ts
+// Can be a Function or an Alias
+declare const fn: lambda.Function;
+declare const myRole: iam.Role;
+
+const fnUrl = fn.addFunctionUrl();
+fnUrl.grantInvokeUrl(myRole);
+
+new CfnOutput(this, 'TheUrl', {
+  // The .url attributes will return the unique Function URL
+  value: fnUrl.url,
+});
+```
+
+Calls to this URL need to be signed with SigV4.
+
+### Anonymous Function URLs
+
+To create a Function URL which can be called anonymously, pass `authType: FunctionUrlAuthType.NONE` to `addFunctionUrl()`:
+
+```ts
+// Can be a Function or an Alias
+declare const fn: lambda.Function;
+
+const fnUrl = fn.addFunctionUrl({
+  authType: lambda.FunctionUrlAuthType.NONE,
+});
+
+new CfnOutput(this, 'TheUrl', {
+  value: fnUrl.url,
+});
+```
+
+### CORS configuration for Function URLs
+
+If you want your Function URLs to be invokable from a web page in browser, you
+will need to configure cross-origin resource sharing to allow the call (if you do
+not do this, your browser will refuse to make the call):
+
+```ts
+declare const fn: lambda.Function;
+
+fn.addFunctionUrl({
+  authType: lambda.FunctionUrlAuthType.NONE,
+  cors: {
+    // Allow this to be called from websites on https://example.com.
+    // Can also be ['*'] to allow all domain.
+    allowedOrigins: ['https://example.com'],
+
+    // More options are possible here, see the documentation for FunctionUrlCorsOptions
+  },
+});
 ```
 
 ## Layers
@@ -710,6 +777,24 @@ const fn = new lambda.Function(this, 'MyLambda', {
 });
 ```
 
+## Ephemeral Storage
+
+You can configure ephemeral storage on a function to control the amount of storage it gets for reading
+or writing data, allowing you to use AWS Lambda for ETL jobs, ML inference, or other data-intensive workloads.
+The ephemeral storage will be accessible in the functions' `/tmp` directory.
+
+```ts
+import { Size } from '@aws-cdk/core';
+
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_14_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  ephemeralStorageSize: Size.mebibytes(1024),
+});
+```
+
+Read more about using this feature in [this AWS blog post](https://aws.amazon.com/blogs/aws/aws-lambda-now-supports-up-to-10-gb-ephemeral-storage/).
 
 ## Singleton Function
 

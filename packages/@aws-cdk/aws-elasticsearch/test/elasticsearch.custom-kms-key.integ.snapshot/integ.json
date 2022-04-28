@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-elasticsearch/test/integ.elasticsearch.custom-kms-key": {
+      "stacks": [
+        "cdk-integ-elasticsearch-custom-kms-key"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

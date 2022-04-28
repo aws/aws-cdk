@@ -1,0 +1,40 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-iam-policy": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-iam-policy.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-iam-policy/MyUser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyUserDC45028B"
+          }
+        ],
+        "/aws-cdk-iam-policy/HelloPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HelloPolicyD59007DF"
+          }
+        ],
+        "/aws-cdk-iam-policy/GoodbyePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GoodbyePolicy739B8974"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-iam-policy"
+    }
+  }
+}

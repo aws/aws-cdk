@@ -1,0 +1,70 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "Integ-SecretsManager-Secret": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "Integ-SecretsManager-Secret.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/Integ-SecretsManager-Secret/TestRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRole6C9272DF"
+          }
+        ],
+        "/Integ-SecretsManager-Secret/TestRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRoleDefaultPolicyD1C92014"
+          }
+        ],
+        "/Integ-SecretsManager-Secret/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretA720EF05"
+          }
+        ],
+        "/Integ-SecretsManager-Secret/User/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "User00B015A1"
+          }
+        ],
+        "/Integ-SecretsManager-Secret/TemplatedSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TemplatedSecret3D98B577"
+          }
+        ],
+        "/Integ-SecretsManager-Secret/OtherUser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OtherUser6093621C"
+          }
+        ],
+        "/Integ-SecretsManager-Secret/AccessKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AccessKeyE6B25659"
+          }
+        ],
+        "/Integ-SecretsManager-Secret/PredefinedSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PredefinedSecret660AF4EC"
+          }
+        ]
+      },
+      "displayName": "Integ-SecretsManager-Secret"
+    }
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codepipeline-codecommit-codebuild": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codepipeline-codecommit-codebuild.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-codepipeline-codecommit-codebuild/MyRepo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRepoF4F48043"
+          }
+        ],
+        "/aws-cdk-codepipeline-codecommit-codebuild/MyBuildProject/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBuildProjectRole6B7E2258"
+          }
+        ],
+        "/aws-cdk-codepipeline-codecommit-codebuild/MyBuildProject/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBuildProjectRoleDefaultPolicy5604AA87"
+          }
+        ],
+        "/aws-cdk-codepipeline-codecommit-codebuild/MyBuildProject/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBuildProject30DB9D6E"
+          }
+        ],
+        "/aws-cdk-codepipeline-codecommit-codebuild/Pipeline/ArtifactsBucketEncryptionKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineArtifactsBucketEncryptionKey01D58D69"
+          }
+        ],
+        "/aws-cdk-codepipeline-codecommit-codebuild/Pipeline/ArtifactsBucketEncryptionKeyAlias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE"
+          }
+        ],
+        "/aws-cdk-codepipeline-codecommit-codebuild/Pipeline/ArtifactsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineArtifactsBucket22248F97"
+          }
+        ],
+        "/aws-cdk-codepipeline-codecommit-codebuild/Pipeline/ArtifactsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineArtifactsBucketPolicyD4F9712A"
+          }
+        ],
+        "/aws-cdk-codepipeline-codecommit-codebuild/Pipeline/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineRoleD68726F7"
+          }
+        ],
+        "/aws-cdk-codepipeline-codecommit-codebuild/Pipeline/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineRoleDefaultPolicyC7A05455"
+          }
+        ],
+        "/aws-cdk-codepipeline-codecommit-codebuild/Pipeline/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineC660917D"
+          }
+        ],
+        "/aws-cdk-codepipeline-codecommit-codebuild/Pipeline/source/source/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelinesourceCodePipelineActionRoleB7E0306A"
+          }
+        ],
+        "/aws-cdk-codepipeline-codecommit-codebuild/Pipeline/source/source/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelinesourceCodePipelineActionRoleDefaultPolicy9E69DE83"
+          }
+        ],
+        "/aws-cdk-codepipeline-codecommit-codebuild/Pipeline/build/build/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelinebuildCodePipelineActionRole11BCD4FF"
+          }
+        ],
+        "/aws-cdk-codepipeline-codecommit-codebuild/Pipeline/build/build/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelinebuildCodePipelineActionRoleDefaultPolicyDC80DBC3"
+          }
+        ],
+        "/aws-cdk-codepipeline-codecommit-codebuild/Pipeline/build/test/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelinebuildtestCodePipelineActionRole467D0DFA"
+          }
+        ],
+        "/aws-cdk-codepipeline-codecommit-codebuild/Pipeline/build/test/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelinebuildtestCodePipelineActionRoleDefaultPolicy319EA326"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codepipeline-codecommit-codebuild"
+    }
+  }
+}

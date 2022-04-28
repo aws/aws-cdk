@@ -25,6 +25,11 @@ export interface ICdk {
    * cdk list
    */
   list(options: ListOptions): string;
+
+  /**
+   * cdk synth fast
+   */
+  synthFast(options: SynthFastOptions): void;
 }
 
 /**
@@ -39,7 +44,7 @@ export interface SynthFastOptions {
    * e.g. "node 'bin/my-app.ts'"
    * or 'go run main.go'
    */
-  readonly execCmd: string;
+  readonly execCmd: string[];
 
   /**
    * Emits the synthesized cloud assembly into a directory
@@ -104,17 +109,22 @@ export class CdkCliWrapper implements ICdk {
     this.directory = options.directory;
     this.env = options.env;
     try {
-      this.cdk = require.resolve(options.cdkExecutable ?? 'aws-cdk/bin/cdk');
+      this.cdk = options.cdkExecutable ?? require.resolve('aws-cdk/bin/cdk');
     } catch (e) {
       throw new Error(`could not resolve path to cdk executable: "${options.cdkExecutable}"`);
     }
   }
 
+  private validateArgs(options: DefaultCdkOptions): void {
+    if (!options.stacks && !options.all) {
+      throw new Error('one of "app" or "stacks" must be provided');
+    }
+  }
+
   public list(options: ListOptions): string {
     const listCommandArgs: string[] = [
-      ...this.createDefaultArguments(options),
       ...renderBooleanArg('long', options.long),
-      ...options.stacks,
+      ...this.createDefaultArguments(options),
     ];
 
     return exec([this.cdk, 'ls', ...listCommandArgs], {
@@ -128,7 +138,6 @@ export class CdkCliWrapper implements ICdk {
    */
   public deploy(options: DeployOptions): void {
     const deployCommandArgs: string[] = [
-      ...this.createDefaultArguments(options),
       ...renderBooleanArg('ci', options.ci),
       ...renderBooleanArg('execute', options.execute),
       ...renderBooleanArg('exclusively', options.exclusively),
@@ -143,7 +152,7 @@ export class CdkCliWrapper implements ICdk {
       ...options.requireApproval ? ['--require-approval', options.requireApproval] : [],
       ...options.changeSetName ? ['--change-set-name', options.changeSetName] : [],
       ...options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : [],
-      ...options.stacks,
+      ...this.createDefaultArguments(options),
     ];
 
     exec([this.cdk, 'deploy', ...deployCommandArgs], {
@@ -158,10 +167,9 @@ export class CdkCliWrapper implements ICdk {
    */
   public destroy(options: DestroyOptions): void {
     const destroyCommandArgs: string[] = [
-      ...this.createDefaultArguments(options),
       ...renderBooleanArg('force', options.force),
       ...renderBooleanArg('exclusively', options.exclusively),
-      ...options.stacks,
+      ...this.createDefaultArguments(options),
     ];
 
     exec([this.cdk, 'destroy', ...destroyCommandArgs], {
@@ -176,11 +184,10 @@ export class CdkCliWrapper implements ICdk {
    */
   public synth(options: SynthOptions): void {
     const synthCommandArgs: string[] = [
-      ...this.createDefaultArguments(options),
       ...renderBooleanArg('validation', options.validation),
       ...renderBooleanArg('quiet', options.quiet),
       ...renderBooleanArg('exclusively', options.exclusively),
-      ...options.stacks,
+      ...this.createDefaultArguments(options),
     ];
 
     exec([this.cdk, 'synth', ...synthCommandArgs], {
@@ -197,18 +204,20 @@ export class CdkCliWrapper implements ICdk {
    * Bypass it to be quicker!
    */
   public synthFast(options: SynthFastOptions): void {
-    exec([`${options.execCmd}`], {
+    exec(options.execCmd, {
       cwd: this.directory,
       env: {
-        ...this.env,
-        ...options.env,
         CDK_CONTEXT_JSON: JSON.stringify(options.context),
         CDK_OUTDIR: options.output,
+        ...this.env,
+        ...options.env,
       },
     });
   }
 
   private createDefaultArguments(options: DefaultCdkOptions): string[] {
+    this.validateArgs(options);
+    const stacks = options.stacks ?? [];
     return [
       ...options.app ? ['--app', options.app] : [],
       ...renderBooleanArg('strict', options.strict),
@@ -230,6 +239,8 @@ export class CdkCliWrapper implements ICdk {
       ...options.caBundlePath ? ['--ca-bundle-path', options.caBundlePath] : [],
       ...options.roleArn ? ['--role-arn', options.roleArn] : [],
       ...options.output ? ['--output', options.output] : [],
+      ...stacks,
+      ...options.all ? ['--all'] : [],
     ];
   }
 }

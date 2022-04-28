@@ -8,7 +8,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'appsync-opensearch');
 const user = new User(stack, 'User');
 const domain = new opensearch.Domain(stack, 'Domain', {
-  version: opensearch.EngineVersion.OPENSEARCH_1_1,
+  version: opensearch.EngineVersion.OPENSEARCH_1_2,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   fineGrainedAccessControl: {
     masterUserArn: user.userArn,

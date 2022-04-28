@@ -413,7 +413,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    if (props.desiredCount !== undefined && props.desiredCount < 1) {
+    if (props.desiredCount !== undefined && !cdk.Token.isUnresolved(props.desiredCount) && props.desiredCount < 1) {
       throw new Error('You must specify a desiredCount greater than 0');
     }
 
