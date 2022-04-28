@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-kinesisfirehose-destinations/test/integ.s3-bucket.lit": {
+      "stacks": [
+        "aws-cdk-firehose-delivery-stream-s3-all-properties"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

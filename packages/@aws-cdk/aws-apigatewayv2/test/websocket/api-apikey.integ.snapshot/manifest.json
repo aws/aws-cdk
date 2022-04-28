@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-cdk-aws-apigatewayv2-websockets": {
       "type": "aws:cloudformation:stack",

@@ -810,8 +810,8 @@
                                     },
                                     {
                                       "Action": [
-                                        "ecs:DiscoverPollEndpoint",
                                         "ecr:GetAuthorizationToken",
+                                        "ecs:DiscoverPollEndpoint",
                                         "logs:CreateLogStream",
                                         "logs:PutLogEvents"
                                       ],
@@ -1010,10 +1010,10 @@
                                           "Statement": [
                                             {
                                               "Action": [
-                                                "ec2:DescribeInstances",
+                                                "ec2:DescribeHosts",
                                                 "ec2:DescribeInstanceAttribute",
                                                 "ec2:DescribeInstanceStatus",
-                                                "ec2:DescribeHosts"
+                                                "ec2:DescribeInstances"
                                               ],
                                               "Effect": "Allow",
                                               "Resource": "*"
@@ -1048,7 +1048,9 @@
                                             {
                                               "Action": [
                                                 "ecs:DescribeContainerInstances",
-                                                "ecs:DescribeTasks"
+                                                "ecs:DescribeTasks",
+                                                "ecs:ListTasks",
+                                                "ecs:UpdateContainerInstancesState"
                                               ],
                                               "Condition": {
                                                 "ArnEquals": {
@@ -1076,24 +1078,6 @@
                                                   "Arn"
                                                 ]
                                               }
-                                            },
-                                            {
-                                              "Action": [
-                                                "ecs:UpdateContainerInstancesState",
-                                                "ecs:ListTasks"
-                                              ],
-                                              "Condition": {
-                                                "ArnEquals": {
-                                                  "ecs:cluster": {
-                                                    "Fn::GetAtt": [
-                                                      "EcsCluster97242B84",
-                                                      "Arn"
-                                                    ]
-                                                  }
-                                                }
-                                              },
-                                              "Effect": "Allow",
-                                              "Resource": "*"
                                             }
                                           ],
                                           "Version": "2012-10-17"
@@ -1614,10 +1598,10 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "ecr:GetAuthorizationToken",
                                     "ecr:BatchCheckLayerAvailability",
-                                    "ecr:GetDownloadUrlForLayer",
-                                    "ecr:BatchGetImage"
+                                    "ecr:BatchGetImage",
+                                    "ecr:GetAuthorizationToken",
+                                    "ecr:GetDownloadUrlForLayer"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": "*"
