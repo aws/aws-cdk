@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.22.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.21.1-alpha.0...v2.22.0-alpha.0) (2022-04-27)
+
+
+### Features
+
+* **integ-tests:** add `IntegTest` to group test cases ([#20015](https://github.com/aws/aws-cdk/issues/20015)) ([b4f8d91](https://github.com/aws/aws-cdk/commit/b4f8d91318087135c5549c22b43a1e679d70b3ca))
+* **integ-tests:** make assertions on deployed infrastructure ([#20071](https://github.com/aws/aws-cdk/issues/20071)) ([8362efe](https://github.com/aws/aws-cdk/commit/8362efe8f1951289236034161d7560f20975b0ec))
+
+
+### Bug Fixes
+
+* **lambda-python:** handler path is incorrectly generated when using PythonFunction ([#20083](https://github.com/aws/aws-cdk/issues/20083)) ([6787376](https://github.com/aws/aws-cdk/commit/678737607cea769109aa8315520a71bc47eb50ef))
+* **lambda-python:** Pipenv projects no longer work for Python 3.6 ([#20019](https://github.com/aws/aws-cdk/issues/20019)) ([c5dcdeb](https://github.com/aws/aws-cdk/commit/c5dcdeb2742fc8f0d41a7211d74934e20a7442c2))
+* **lambda-python:** Pipenv projects no longer work for Python 3.6 ([#20019](https://github.com/aws/aws-cdk/issues/20019)) ([5024021](https://github.com/aws/aws-cdk/commit/5024021bec9952ca7b1e3d82e2c257f124c6300c))
+
 ## [2.21.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.21.0-alpha.0...v2.21.1-alpha.0) (2022-04-22)
 
 ## [2.21.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.20.0-alpha.0...v2.21.0-alpha.0) (2022-04-22)
