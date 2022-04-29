@@ -1,3 +1,38 @@
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Function Policies.ItemTypes (__deleted__)
+* AWS::Serverless::Function Policies.PrimitiveItemTypes (__deleted__)
+* AWS::Serverless::Function Policies.InclusiveItemTypes (__added__)
+* AWS::Serverless::Function Policies.InclusivePrimitiveItemTypes (__added__)
+* AWS::Serverless::StateMachine Policies.ItemTypes (__deleted__)
+* AWS::Serverless::StateMachine Policies.PrimitiveItemTypes (__deleted__)
+* AWS::Serverless::StateMachine Policies.InclusiveItemTypes (__added__)
+* AWS::Serverless::StateMachine Policies.InclusivePrimitiveItemTypes (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Function.RequestModel (__added__)
+* AWS::Serverless::Function.RequestParameter (__added__)
+* AWS::Serverless::Function.ApiEvent RequestModel (__added__)
+* AWS::Serverless::Function.ApiEvent RequestParameters (__added__)
+* AWS::Serverless::Function.IAMPolicyDocument Version (__added__)
+* AWS::Serverless::Function.IAMPolicyDocument Statement.PrimitiveType (__deleted__)
+* AWS::Serverless::Function.IAMPolicyDocument Statement.ItemType (__added__)
+* AWS::Serverless::Function.IAMPolicyDocument Statement.Type (__added__)
+* AWS::Serverless::StateMachine.IAMPolicyDocument Version (__added__)
+* AWS::Serverless::StateMachine.IAMPolicyDocument Statement.PrimitiveType (__deleted__)
+* AWS::Serverless::StateMachine.IAMPolicyDocument Statement.ItemType (__added__)
+* AWS::Serverless::StateMachine.IAMPolicyDocument Statement.Type (__added__)
+
 # CloudFormation Resource Specification v68.0.0
 
 ## New Resource Types
