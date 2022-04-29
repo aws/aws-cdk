@@ -4,8 +4,18 @@
 // implemented here.
 
 
+import { PolicyStatement } from '../policy-statement';
+import { IPrincipal } from '../principals';
 import { LITERAL_STRING_KEY } from '../util';
-import { StatementSchema, normalizeStatement, IamValue } from './postprocess-policy-document';
+
+
+/*
+ * Don't produce any merged statements larger than this.
+ *
+ * They will become impossible to divide across managed policies if we do,
+ * and this is the maximum size for User policies.
+ */
+const MAX_MERGE_SIZE = 2000;
 
 /**
  * Merge as many statements as possible to shrink the total policy doc, modifying the input array in place
@@ -15,12 +25,21 @@ import { StatementSchema, normalizeStatement, IamValue } from './postprocess-pol
  * Good Enough(tm). If it merges anything, it's at least going to produce a smaller output
  * than the input.
  */
-export function mergeStatements(statements: StatementSchema[]): StatementSchema[] {
+export function mergeStatements(statements: PolicyStatement[]): MergeStatementResult {
   const compStatements = statements.map(makeComparable);
 
   // Keep trying until nothing changes anymore
   while (onePass()) { /* again */ }
-  return compStatements.map(renderComparable);
+
+  const mergedStatements = new Array<PolicyStatement>();
+  const originsMap = new Map<PolicyStatement, PolicyStatement[]>();
+  for (const comp of compStatements) {
+    const statement = renderComparable(comp);
+    mergedStatements.push(statement);
+    originsMap.set(statement, comp.originals);
+  }
+
+  return { mergedStatements, originsMap };
 
   // Do one optimization pass, return 'true' if we merged anything
   function onePass() {
@@ -47,6 +66,18 @@ export function mergeStatements(statements: StatementSchema[]): StatementSchema[
   }
 }
 
+export interface MergeStatementResult {
+  /**
+   * The list of maximally merged statements
+   */
+  readonly mergedStatements: PolicyStatement[];
+
+  /**
+   * Mapping of old to new statements
+   */
+  readonly originsMap: Map<PolicyStatement, PolicyStatement[]>;
+}
+
 /**
  * Given two statements, return their merging (if possible)
  *
@@ -61,32 +92,40 @@ export function mergeStatements(statements: StatementSchema[]): StatementSchema[
  */
 function tryMerge(a: ComparableStatement, b: ComparableStatement): ComparableStatement | undefined {
   // Effects must be the same
-  if (a.effect !== b.effect) { return; }
+  if (a.statement.effect !== b.statement.effect) { return; }
   // We don't merge Sids (for now)
-  if (a.sid || b.sid) { return; }
+  if (a.statement.sid || b.statement.sid) { return; }
+  // Not if the combination grows too large
+  if (a.sizeEstimate + b.sizeEstimate > MAX_MERGE_SIZE) { return; }
 
   if (a.conditionString !== b.conditionString) { return; }
-  if (!setEqual(a.notAction, b.notAction) || !setEqual(a.notResource, b.notResource) || !setEqual(a.notPrincipal, b.notPrincipal)) { return; }
+  if (
+    !setEqual(a.statement.notActions, b.statement.notActions) ||
+    !setEqual(a.statement.notResources, b.statement.notResources) ||
+    !setEqual(a.notPrincipalStrings, b.notPrincipalStrings)
+  ) {
+    return;
+  }
 
   // We can merge these statements if 2 out of the 3 sets of Action, Resource, Principal
   // are the same.
-  const setsEqual = (setEqual(a.action, b.action) ? 1 : 0) +
-    (setEqual(a.resource, b.resource) ? 1 : 0) +
-    (setEqual(a.principal, b.principal) ? 1 : 0);
+  const setsEqual = (setEqual(a.statement.actions, b.statement.actions) ? 1 : 0) +
+    (setEqual(a.statement.resources, b.statement.resources) ? 1 : 0) +
+    (setEqual(a.principalStrings, b.principalStrings) ? 1 : 0);
 
   if (setsEqual < 2 || unmergeablePrincipals(a, b)) { return; }
 
   return {
-    effect: a.effect,
+    originals: [...a.originals, ...b.originals],
+    statement: a.statement.copy({
+      actions: setMerge(a.statement.actions, b.statement.actions),
+      resources: setMerge(a.statement.resources, b.statement.resources),
+      principals: setMerge(a.statement.principals, b.statement.principals),
+    }),
+    principalStrings: setMerge(a.principalStrings, b.principalStrings),
+    notPrincipalStrings: a.notPrincipalStrings,
     conditionString: a.conditionString,
-    conditionValue: b.conditionValue,
-    notAction: a.notAction,
-    notPrincipal: a.notPrincipal,
-    notResource: a.notResource,
-
-    action: setMerge(a.action, b.action),
-    resource: setMerge(a.resource, b.resource),
-    principal: setMerge(a.principal, b.principal),
+    sizeEstimate: a.sizeEstimate + b.sizeEstimate,
   };
 }
 
@@ -95,42 +134,18 @@ function tryMerge(a: ComparableStatement, b: ComparableStatement): ComparableSta
  *
  * This is to be able to do comparisons on these sets quickly.
  */
-function makeComparable(s: StatementSchema): ComparableStatement {
+function makeComparable(s: PolicyStatement): ComparableStatement {
   return {
-    effect: s.Effect,
-    sid: s.Sid,
-    action: iamSet(s.Action),
-    notAction: iamSet(s.NotAction),
-    resource: iamSet(s.Resource),
-    notResource: iamSet(s.NotResource),
-    principal: principalIamSet(s.Principal),
-    notPrincipal: principalIamSet(s.NotPrincipal),
-    conditionString: JSON.stringify(s.Condition),
-    conditionValue: s.Condition,
+    originals: [s],
+    statement: s,
+    conditionString: JSON.stringify(s.conditions),
+    principalStrings: s.principals.map(renderPrincipal),
+    notPrincipalStrings: s.notPrincipals.map(renderPrincipal),
+    sizeEstimate: s._estimateSize(),
   };
 
-  function forceArray<A>(x: A | Array<A>): Array<A> {
-    return Array.isArray(x) ? x : [x];
-  }
-
-  function iamSet(x: IamValue | undefined): IamValueSet {
-    if (x == undefined) { return {}; }
-    return mkdict(forceArray(x).map(e => [JSON.stringify(e), e]));
-  }
-
-  function principalIamSet(x: IamValue | Record<string, IamValue> | undefined): IamValueSet {
-    if (x === undefined) { return {}; }
-
-    if (Array.isArray(x) || typeof x === 'string') {
-      x = { [LITERAL_STRING_KEY]: x };
-    }
-
-    if (typeof x === 'object' && x !== null) {
-      // Turn { AWS: [a, b], Service: [c] } into [{ AWS: a }, { AWS: b }, { Service: c }]
-      const individualPrincipals = Object.entries(x).flatMap(([principalType, value]) => forceArray(value).map(v => ({ [principalType]: v })));
-      return iamSet(individualPrincipals);
-    }
-    return {};
+  function renderPrincipal(x: IPrincipal) {
+    return JSON.stringify(x.policyFragment.principalJson);
   }
 }
 
@@ -144,106 +159,41 @@ function makeComparable(s: StatementSchema): ComparableStatement {
  * therefore be preserved.
  */
 function unmergeablePrincipals(a: ComparableStatement, b: ComparableStatement) {
-  const aHasLiteral = Object.values(a.principal).some(v => LITERAL_STRING_KEY in v);
-  const bHasLiteral = Object.values(b.principal).some(v => LITERAL_STRING_KEY in v);
+  const aHasLiteral = a.statement.principals.some(v => LITERAL_STRING_KEY in v.policyFragment.principalJson);
+  const bHasLiteral = b.statement.principals.some(v => LITERAL_STRING_KEY in v.policyFragment.principalJson);
   return aHasLiteral !== bHasLiteral;
 }
 
 /**
- * Turn a ComparableStatement back into a StatementSchema
+ * Turn a ComparableStatement back into a Statement
  */
-function renderComparable(s: ComparableStatement): StatementSchema {
-  return normalizeStatement({
-    Effect: s.effect,
-    Sid: s.sid,
-    Condition: s.conditionValue,
-    Action: renderSet(s.action),
-    NotAction: renderSet(s.notAction),
-    Resource: renderSet(s.resource),
-    NotResource: renderSet(s.notResource),
-    Principal: renderPrincipalSet(s.principal),
-    NotPrincipal: renderPrincipalSet(s.notPrincipal),
-  });
-
-  function renderSet(x: IamValueSet): IamValue | undefined {
-    // Return as sorted array so that we normalize
-    const keys = Object.keys(x).sort();
-    return keys.length > 0 ? keys.map(key => x[key]) : undefined;
-  }
-
-  function renderPrincipalSet(x: IamValueSet): Record<string, IamValue> {
-    const keys = Object.keys(x).sort();
-    // The first level will be an object
-    const ret: Record<string, IamValue> = {};
-    for (const key of keys) {
-      const principal = x[key];
-      if (principal == null || typeof principal !== 'object') {
-        throw new Error(`Principal should be an object with a principal type, got: ${principal}`);
-      }
-      const principalKeys = Object.keys(principal);
-      if (principalKeys.length !== 1) {
-        throw new Error(`Principal should be an object with 1 key, found keys: ${principalKeys}`);
-      }
-      const pk = principalKeys[0];
-      if (!ret[pk]) {
-        ret[pk] = [];
-      }
-      (ret[pk] as IamValue[]).push(principal[pk]);
-    }
-    return ret;
-  }
+function renderComparable(s: ComparableStatement): PolicyStatement {
+  return s.statement;
 }
 
 /**
  * An analyzed version of a statement that makes it easier to do comparisons and merging on
- *
- * We will stringify parts of the statement: comparisons are done on the strings, the original
- * values are retained so we can stitch them back together into a real policy.
  */
 interface ComparableStatement {
-  readonly effect?: string;
-  readonly sid?: string;
-
-  readonly principal: IamValueSet;
-  readonly notPrincipal: IamValueSet;
-  readonly action: IamValueSet;
-  readonly notAction: IamValueSet;
-  readonly resource: IamValueSet;
-  readonly notResource: IamValueSet;
-
+  readonly statement: PolicyStatement;
+  readonly originals: PolicyStatement[];
+  readonly principalStrings: string[];
+  readonly notPrincipalStrings: string[];
   readonly conditionString: string;
-  readonly conditionValue: any;
+  readonly sizeEstimate: number;
 }
-
-/**
- * A collection of comparable IAM values
- *
- * Each value is indexed by its stringified value, mapping to its original value.
- * This allows us to compare values quickly and easily (even if they are complex),
- * while also being able to deduplicate the originals.
- */
-type IamValueSet = Record<string, any>;
 
 /**
  * Whether the given sets are equal
  */
-function setEqual(a: IamValueSet, b: IamValueSet) {
-  const keysA = Object.keys(a);
-  const keysB = Object.keys(b);
-  return keysA.length === keysB.length && keysA.every(k => k in b);
+function setEqual<A>(a: A[], b: A[]) {
+  const bSet = new Set(b);
+  return a.length === b.length && a.every(k => bSet.has(k));
 }
 
 /**
  * Merge two IAM value sets
  */
-function setMerge(x: IamValueSet, y: IamValueSet): IamValueSet {
-  return { ...x, ...y };
-}
-
-function mkdict<A>(xs: Array<[string, A]>): Record<string, A> {
-  const ret: Record<string, A> = {};
-  for (const x of xs) {
-    ret[x[0]] = x[1];
-  }
-  return ret;
+function setMerge<A>(x: A[], y: A[]): A[] {
+  return Array.from(new Set([...x, ...y])).sort();
 }

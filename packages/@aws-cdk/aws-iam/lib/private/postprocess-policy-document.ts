@@ -1,27 +1,22 @@
 import * as cdk from '@aws-cdk/core';
 import { LITERAL_STRING_KEY } from '../util';
-import { mergeStatements } from './merge-statements';
 
 /**
  * A Token postprocesser for policy documents
  *
- * Removes duplicate statements, merges statements, and assign Sids if necessary
+ * Removes duplicate statements, and assign Sids if necessary
  *
  * Because policy documents can contain all kinds of crazy things,
  * we do all the necessary work here after the document has been mostly resolved
  * into a predictable CloudFormation form.
  */
 export class PostProcessPolicyDocument implements cdk.IPostProcessor {
-  constructor(private readonly autoAssignSids: boolean, private readonly minimize: boolean) {
+  constructor(private readonly autoAssignSids: boolean) {
   }
 
   public postProcess(input: any, _context: cdk.IResolveContext): any {
     if (!input || !input.Statement) {
       return input;
-    }
-
-    if (this.minimize) {
-      input.Statement = mergeStatements(input.Statement);
     }
 
     // Also remove full-on duplicates (this will not be necessary if

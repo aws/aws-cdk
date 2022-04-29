@@ -1,6 +1,8 @@
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { IConstruct } from 'constructs';
 import { PolicyStatement } from './policy-statement';
+import { mergeStatements } from './private/merge-statements';
 import { PostProcessPolicyDocument } from './private/postprocess-policy-document';
 
 /**
@@ -64,6 +66,7 @@ export class PolicyDocument implements cdk.IResolvable {
   private readonly statements = new Array<PolicyStatement>();
   private readonly autoAssignSids: boolean;
   private readonly minimize?: boolean;
+  private _minimized = false;
 
   constructor(props: PolicyDocumentProps = {}) {
     this.creationStack = cdk.captureStackTrace();
@@ -74,10 +77,8 @@ export class PolicyDocument implements cdk.IResolvable {
   }
 
   public resolve(context: cdk.IResolveContext): any {
-    context.registerPostProcessor(new PostProcessPolicyDocument(
-      this.autoAssignSids,
-      this.minimize ?? cdk.FeatureFlags.of(context.scope).isEnabled(cxapi.IAM_MINIMIZE_POLICIES) ?? false,
-    ));
+    this._maybeMergeStatements(context.scope);
+    context.registerPostProcessor(new PostProcessPolicyDocument(this.autoAssignSids));
     return this.render();
   }
 
@@ -163,6 +164,98 @@ export class PolicyDocument implements cdk.IResolvable {
       errors.push(...statement.validateForIdentityPolicy());
     }
     return errors;
+  }
+
+  /**
+   * Perform statement merging (if enabled and not done yet)
+   *
+   * Returns a mapping of merged statements to original statements on the first invocation,
+   * `undefined` on subsequent invocations.
+   *
+   * @internal
+   */
+  public _maybeMergeStatements(scope: IConstruct): Map<PolicyStatement, PolicyStatement[]> | undefined {
+    const minimize = this.minimize ?? cdk.FeatureFlags.of(scope).isEnabled(cxapi.IAM_MINIMIZE_POLICIES) ?? false;
+    if (minimize) {
+      if (this._minimized) {
+        return undefined;
+      }
+      const result = mergeStatements(this.statements);
+      this.statements.splice(0, this.statements.length, ...result.mergedStatements);
+      this._minimized = true;
+      return result.originsMap;
+    }
+    return new Map(this.statements.map(s => [s, [s]]));
+  }
+
+  /**
+   * Split the statements of the PolicyDocument into multiple groups, limited by their size
+   *
+   * Returns the policy documents created to hold statements that were split off.
+   *
+   * @internal
+   */
+  public _splitDocument(selfMaximumSize: number, splitMaximumSize: number): PolicyDocument[] {
+    const self = this;
+    const newDocs: PolicyDocument[] = [];
+
+    // Cache statement sizes to avoid recomputing them based on the fields
+    const statementSizes = new Map<PolicyStatement, number>(this.statements.map(s => [s, s._estimateSize()]));
+
+    // Keep some size counters so we can avoid recomputing them based on the statements in each
+    let selfSize = 0;
+    const polSizes = new Map<PolicyDocument, number>();
+    // Getter with a default to save some syntactic noise
+    const polSize = (x: PolicyDocument) => polSizes.get(x) ?? 0;
+
+    let i = 0;
+    while (i < this.statements.length) {
+      const statement = this.statements[i];
+
+      const statementSize = statementSizes.get(statement) ?? 0;
+      if (selfSize + statementSize < selfMaximumSize) {
+        // Fits in self
+        selfSize += statementSize;
+        i++;
+        continue;
+      }
+
+      // Split off to new PolicyDocument. Find the PolicyDocument we can add this to,
+      // or add a fresh one.
+      const addToDoc = findDocWithSpace(statementSize);
+      addToDoc.addStatements(statement);
+      polSizes.set(addToDoc, polSize(addToDoc) + statementSize);
+      this.statements.splice(i, 1);
+    }
+
+    return newDocs;
+
+    function findDocWithSpace(size: number) {
+      let j = 0;
+      while (j < newDocs.length && polSize(newDocs[j]) + size > splitMaximumSize) {
+        j++;
+      }
+      if (j < newDocs.length) {
+        return newDocs[j];
+      }
+
+      const newDoc = new PolicyDocument({
+        assignSids: self.autoAssignSids,
+        // Minimizing has already been done
+        minimize: false,
+      });
+      newDocs.push(newDoc);
+      return newDoc;
+    }
+  }
+
+  /**
+   * The statements in this doc
+   *
+   * @internal
+   */
+  public _statements() {
+    return [...this.statements];
   }
 
   private render(): any {

@@ -1,9 +1,9 @@
-import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison } from '@aws-cdk/core';
+import { ArnFormat, IConstruct, Duration, Resource, Stack, Token, TokenComparison, Aspects, ConcreteDependable, Annotations } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
-import { IManagedPolicy } from './managed-policy';
+import { IManagedPolicy, ManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
@@ -12,6 +12,9 @@ import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { AttachedPolicies, UniqueStringSet } from './util';
+
+const MAX_INLINE_SIZE = 10000;
+const MAX_MANAGEDPOL_SIZE = 6000;
 
 /**
  * Properties for defining an IAM Role
@@ -247,6 +250,13 @@ export class Role extends Resource implements IRole {
       }
 
       /**
+       * Grant permissions to the given principal to pass this role.
+       */
+      public grantAssumeRole(identity: IPrincipal): Grant {
+        return this.grant(identity, 'sts:AssumeRole');
+      }
+
+      /**
        * Grant the actions defined in actions to the identity Principal on this resource.
        */
       public grant(grantee: IPrincipal, ...actions: string[]): Grant {
@@ -331,7 +341,9 @@ export class Role extends Resource implements IRole {
   private readonly managedPolicies: IManagedPolicy[] = [];
   private readonly attachedPolicies = new AttachedPolicies();
   private readonly inlinePolicies: { [name: string]: PolicyDocument };
+  private readonly dependables = new Map<PolicyStatement, ConcreteDependable>();
   private immutableRole?: IRole;
+  private _didSplit = false;
 
   constructor(scope: Construct, id: string, props: RoleProps) {
     super(scope, id, {
@@ -387,6 +399,14 @@ export class Role extends Resource implements IRole {
       }
       return result;
     }
+
+    Aspects.of(this).add({
+      visit: (c) => {
+        if (c === this) {
+          this.splitLargePolicy();
+        }
+      },
+    });
   }
 
   /**
@@ -400,7 +420,13 @@ export class Role extends Resource implements IRole {
       this.attachInlinePolicy(this.defaultPolicy);
     }
     this.defaultPolicy.addStatements(statement);
-    return { statementAdded: true, policyDependable: this.defaultPolicy };
+
+    // We might split this statement off into a different policy, so we'll need to
+    // late-bind the dependable.
+    const policyDependable = new ConcreteDependable();
+    this.dependables.set(statement, policyDependable);
+
+    return { statementAdded: true, policyDependable };
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
@@ -445,6 +471,14 @@ export class Role extends Resource implements IRole {
   }
 
   /**
+   * Grant permissions to the given principal to assume this role.
+   */
+  public grantAssumeRole(identity: IPrincipal) {
+    return this.grant(identity, 'sts:AssumeRole');
+  }
+
+
+  /**
    * Return a copy of this Role object whose Policies will not be updated
    *
    * Use the object returned by this method if you want this Role to be used by
@@ -468,6 +502,59 @@ export class Role extends Resource implements IRole {
       errors.push(...policy.validateForIdentityPolicy());
     }
     return errors;
+  }
+
+  /**
+   * Split large inline policies into managed policies
+   *
+   * This gets around the 10k bytes limit on role policies.
+   */
+  private splitLargePolicy() {
+    if (!this.defaultPolicy || this._didSplit) {
+      return;
+    }
+    this._didSplit = true;
+
+    const self = this;
+    const splitDocument = this.defaultPolicy.document;
+
+    const mergeMap = splitDocument._maybeMergeStatements(this);
+    if (mergeMap === undefined) {
+      throw new Error('Unexpected operation order: splitLargePolicy() called on already-merged policy document');
+    }
+    const splitOffDocs = splitDocument._splitDocument(MAX_INLINE_SIZE, MAX_MANAGEDPOL_SIZE);
+
+    const mpCount = this.managedPolicies.length + splitOffDocs.length;
+    if (mpCount > 20) {
+      Annotations.of(this).addWarning(`Policy too large: ${mpCount} exceeds the maximum of 20 managed policies attached to a Role`);
+    } else if (mpCount > 10) {
+      Annotations.of(this).addWarning(`Policy large: ${mpCount} exceeds 10 managed policies attached to a Role, this requires a quota increase`);
+    }
+
+    // Create the managed policies and fix up the dependencies
+    markDeclaringConstruct(splitDocument, this.defaultPolicy);
+
+    let i = 1;
+    for (const splitDoc of splitOffDocs) {
+      const mp = new ManagedPolicy(this, `OverflowPolicy${i++}`, {
+        description: `Part of the policies for ${this.node.path}`,
+        document: splitDoc,
+        roles: [this],
+      });
+      markDeclaringConstruct(splitDoc, mp);
+    }
+
+    /**
+     * Update the Dependables for the statements in the given PolicyDocument to point to the actual declaring construct
+     */
+    function markDeclaringConstruct(doc: PolicyDocument, declaringConstruct: IConstruct) {
+      for (const statement of doc._statements()) {
+        const originalStatements = mergeMap!.get(statement) ?? [];
+        for (const original of originalStatements) {
+          self.dependables.get(original)?.add(declaringConstruct);
+        }
+      }
+    }
   }
 }
 
@@ -498,6 +585,11 @@ export interface IRole extends IIdentity {
    * Grant permissions to the given principal to pass this role.
    */
   grantPassRole(grantee: IPrincipal): Grant;
+
+  /**
+   * Grant permissions to the given principal to assume this role.
+   */
+  grantAssumeRole(grantee: IPrincipal): Grant;
 }
 
 function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {

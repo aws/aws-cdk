@@ -708,13 +708,7 @@ export class Pipeline extends PipelineBase {
     }
 
     // the pipeline role needs assumeRole permissions to the action role
-    if (actionRole) {
-      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['sts:AssumeRole'],
-        resources: [actionRole.roleArn],
-      }));
-    }
-
+    actionRole?.grantAssumeRole(this.role);
     return actionRole;
   }
 
