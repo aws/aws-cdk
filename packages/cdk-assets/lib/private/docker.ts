@@ -158,7 +158,7 @@ export interface DockerFactoryOptions {
  * image publishing process.
  */
 export class DockerFactory {
-  private cacheCriticalSection = createCriticalSection();
+  private enterLoggedInDestinationsCriticalSection = createCriticalSection();
   private loggedInDestinations = new Set<string>();
 
   /**
@@ -195,13 +195,13 @@ export class DockerFactory {
     const repositoryDomain = options.repoUri.split('/')[0];
 
     // Ensure one-at-a-time access to loggedInDestinations.
-    await this.cacheCriticalSection(async () => {
+    await this.enterLoggedInDestinationsCriticalSection(async () => {
       if (this.loggedInDestinations.has(repositoryDomain)) {
         return;
       }
 
-      this.loggedInDestinations.add(repositoryDomain);
       await docker.login(options.ecr);
+      this.loggedInDestinations.add(repositoryDomain);
     });
   }
 }
