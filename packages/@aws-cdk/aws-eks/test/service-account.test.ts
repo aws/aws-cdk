@@ -155,7 +155,7 @@ describe('service account', () => {
               Condition: {
                 StringEquals: {
                   'Fn::GetAtt': [
-                    'ClusterMyServiceAccountWithRoleNameConditionJsonC885C25A',
+                    'MyServiceAccountConditionJson1ED3BC54',
                     'Value',
                   ],
                 },
