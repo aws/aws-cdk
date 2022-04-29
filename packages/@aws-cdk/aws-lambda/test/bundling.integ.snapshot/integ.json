@@ -1,14 +1,12 @@
 {
   "version": "18.0.0",
   "testCases": {
-    "aws-lambda/test/integ.bundling": {
+    "DefaultTestCase": {
       "stacks": [
         "cdk-integ-lambda-bundling"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": false
+      "stackUpdateWorkflow": false,
+      "assertionStack": "IntegTestDefaultTestCaseDeployAssert4F885E41"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

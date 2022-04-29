@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { CustomResourceHandler } from './base';
 import { SdkRequest, SdkResult } from './types';
+import { decode } from './utils';
 
 /**
  * Flattens a nested object
@@ -43,17 +44,4 @@ export class SdkHandler extends CustomResourceHandler<SdkRequest, SdkResult | { 
 
     return request.flattenResponse === 'true' ? flatData : respond;
   }
-}
-
-function decode(object: Record<string, unknown>) {
-  return JSON.parse(JSON.stringify(object), (_k, v) => {
-    switch (v) {
-      case 'TRUE:BOOLEAN':
-        return true;
-      case 'FALSE:BOOLEAN':
-        return false;
-      default:
-        return v;
-    }
-  });
 }

@@ -1,13 +1,12 @@
 import { Template, Match } from '@aws-cdk/assertions';
-import { App, Stack } from '@aws-cdk/core';
-import { DeployAssert, SdkQuery } from '../../lib/assertions';
+import { App, Stack, CfnOutput } from '@aws-cdk/core';
+import { DeployAssert, SdkQuery, LambdaInvokeFunction, LogType, InvocationType } from '../../lib/assertions';
 
 describe('SdkQuery', () => {
   test('default', () => {
     // GIVEN
     const app = new App();
-    const stack = new Stack(app);
-    const deplossert = new DeployAssert(stack);
+    const deplossert = new DeployAssert(app);
 
     // WHEN
     new SdkQuery(deplossert, 'SdkQuery', {
@@ -15,9 +14,8 @@ describe('SdkQuery', () => {
       api: 'MyApi',
     });
 
-
     // THEN
-    const template = Template.fromStack(stack);
+    const template = Template.fromStack(Stack.of(deplossert));
     template.resourceCountIs('AWS::Lambda::Function', 1);
     template.hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
       service: 'MyService',
@@ -29,8 +27,7 @@ describe('SdkQuery', () => {
   test('parameters', () => {
     // GIVEN
     const app = new App();
-    const stack = new Stack(app);
-    const deplossert = new DeployAssert(stack);
+    const deplossert = new DeployAssert(app);
 
     // WHEN
     new SdkQuery(deplossert, 'SdkQuery', {
@@ -42,9 +39,8 @@ describe('SdkQuery', () => {
       },
     });
 
-
     // THEN
-    const template = Template.fromStack(stack);
+    const template = Template.fromStack(Stack.of(deplossert));
     template.resourceCountIs('AWS::Lambda::Function', 1);
     template.hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
       service: 'MyService',
@@ -56,28 +52,94 @@ describe('SdkQuery', () => {
     });
   });
 
-  describe('assertEqual', () => {
-    test('default', () => {
+  describe('get attribute', () => {
+    test('getAttString', () => {
       // GIVEN
       const app = new App();
-      const stack = new Stack(app);
-      const deplossert = new DeployAssert(stack);
+      const deplossert = new DeployAssert(app);
 
       // WHEN
       const query = new SdkQuery(deplossert, 'SdkQuery', {
         service: 'MyService',
         api: 'MyApi',
       });
-      query.assertEqual({ foo: 'bar' });
 
+      new CfnOutput(deplossert, 'GetAttString', {
+        value: query.getAttString('att'),
+      }).overrideLogicalId('GetAtt');
 
       // THEN
-      const template = Template.fromStack(stack);
+      const template = Template.fromStack(Stack.of(deplossert));
+      template.hasOutput('GetAtt', {
+        Value: {
+          'Fn::GetAtt': [
+            'SdkQuery',
+            'apiCallResponse.att',
+          ],
+        },
+      });
+      template.resourceCountIs('AWS::Lambda::Function', 1);
+      template.hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
+        service: 'MyService',
+        api: 'MyApi',
+        flattenResponse: 'true',
+      });
+    });
+    test('getAtt', () => {
+      // GIVEN
+      const app = new App();
+      const deplossert = new DeployAssert(app);
+
+      // WHEN
+      const query = new SdkQuery(deplossert, 'SdkQuery', {
+        service: 'MyService',
+        api: 'MyApi',
+      });
+
+      new CfnOutput(deplossert, 'GetAttString', {
+        value: query.getAtt('att').toString(),
+      }).overrideLogicalId('GetAtt');
+
+      // THEN
+      const template = Template.fromStack(Stack.of(deplossert));
+      template.hasOutput('GetAtt', {
+        Value: {
+          'Fn::GetAtt': [
+            'SdkQuery',
+            'apiCallResponse.att',
+          ],
+        },
+      });
+      template.resourceCountIs('AWS::Lambda::Function', 1);
+      template.hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
+        service: 'MyService',
+        api: 'MyApi',
+        flattenResponse: 'true',
+      });
+    });
+
+  });
+
+  describe('assertEqual', () => {
+    test('objectEqual', () => {
+      // GIVEN
+      const app = new App();
+      const deplossert = new DeployAssert(app);
+
+      // WHEN
+      const query = new SdkQuery(deplossert, 'SdkQuery', {
+        service: 'MyService',
+        api: 'MyApi',
+      });
+      query.assertObjectEqual({ foo: 'bar' });
+
+      // THEN
+      const template = Template.fromStack(Stack.of(deplossert));
       template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
-        expected: { foo: 'bar' },
+        expected: JSON.stringify({ foo: 'bar' }),
         actual: {
           'Fn::GetAtt': [
-            'DeployAssertSdkQuery94650089',
+            'SdkQuery',
             'apiCallResponse',
           ],
         },
@@ -85,24 +147,159 @@ describe('SdkQuery', () => {
       });
     });
 
-    test('multiple asserts to the same query', () => {
+    test('objectLike', () => {
       // GIVEN
       const app = new App();
-      const stack = new Stack(app);
-      const deplossert = new DeployAssert(stack);
+      const deplossert = new DeployAssert(app);
 
       // WHEN
       const query = new SdkQuery(deplossert, 'SdkQuery', {
         service: 'MyService',
         api: 'MyApi',
       });
-      query.assertEqual({ foo: 'bar' });
-      query.assertEqual({ baz: 'zoo' });
-
+      query.assertObjectLike({ foo: 'bar' });
 
       // THEN
-      const template = Template.fromStack(stack);
-      template.resourceCountIs('Custom::DeployAssert@AssertEquals', 2);
+      const template = Template.fromStack(Stack.of(deplossert));
+      template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
+        expected: JSON.stringify({ foo: 'bar' }),
+        actual: {
+          'Fn::GetAtt': [
+            'SdkQuery',
+            'apiCallResponse',
+          ],
+        },
+        assertionType: 'objectLike',
+      });
+    });
+
+    test('string', () => {
+      // GIVEN
+      const app = new App();
+      const deplossert = new DeployAssert(app);
+
+      // WHEN
+      const query = new SdkQuery(deplossert, 'SdkQuery', {
+        service: 'MyService',
+        api: 'MyApi',
+      });
+      query.assertStringEqual('bar');
+
+      // THEN
+      const template = Template.fromStack(Stack.of(deplossert));
+      template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
+        expected: 'bar',
+        actual: {
+          'Fn::GetAtt': [
+            'SdkQuery',
+            'apiCallResponse',
+          ],
+        },
+        assertionType: 'equals',
+      });
+    });
+  });
+
+  describe('invoke lambda', () => {
+    test('default', () => {
+      // GIVEN
+      const app = new App();
+      const deplossert = new DeployAssert(app);
+
+      new LambdaInvokeFunction(deplossert, 'Invoke', {
+        functionName: 'my-func',
+        logType: LogType.TAIL,
+        payload: JSON.stringify({ key: 'val' }),
+        invocationType: InvocationType.EVENT,
+      });
+
+      const template = Template.fromStack(Stack.of(deplossert));
+      template.hasResourceProperties('Custom::DeployAssert@SdkCallLambdainvoke', {
+        service: 'Lambda',
+        api: 'invoke',
+        parameters: {
+          FunctionName: 'my-func',
+          InvocationType: 'Event',
+          LogType: 'Tail',
+          Payload: '{"key":"val"}',
+        },
+      });
+      template.hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: 'my-func',
+        Principal: {
+          'Fn::GetAtt': [
+            'SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73',
+            'Arn',
+          ],
+        },
+      });
+      template.hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'lambda.amazonaws.com',
+              },
+            },
+          ],
+        },
+        ManagedPolicyArns: [
+          {
+            'Fn::Sub': 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+          },
+        ],
+        Policies: [
+          {
+            PolicyName: 'Inline',
+            PolicyDocument: {
+              Version: '2012-10-17',
+              Statement: [
+                {
+                  Action: [
+                    'lambda:Invoke',
+                  ],
+                  Effect: 'Allow',
+                  Resource: [
+                    '*',
+                  ],
+                },
+                {
+                  Action: [
+                    'lambda:InvokeFunction',
+                  ],
+                  Effect: 'Allow',
+                  Resource: [
+                    {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          {
+                            Ref: 'AWS::Partition',
+                          },
+                          ':lambda:',
+                          {
+                            Ref: 'AWS::Region',
+                          },
+                          ':',
+                          {
+                            Ref: 'AWS::AccountId',
+                          },
+                          ':function:my-func',
+                        ],
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      });
     });
   });
 });

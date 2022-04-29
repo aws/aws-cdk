@@ -18,6 +18,56 @@ afterAll(() => {
 });
 
 describe('AssertionHandler', () => {
+  describe('objectLike', () => {
+    test('pass', async () => {
+      // GIVEN
+      const handler = assertionHandler() as any;
+      const request: AssertionRequest = {
+        assertionType: AssertionType.OBJECT_LIKE,
+        actual: {
+          stringParam: 'foo',
+          numberParam: 3,
+          booleanParam: true,
+        },
+        expected: JSON.stringify({
+          stringParam: 'foo',
+        }),
+      };
+
+      // WHEN
+      const response: AssertionResult = await handler.processEvent(request);
+
+      // THEN
+      expect(response.data).toEqual('{"status":"pass"}');
+    });
+
+    test('fail', async () => {
+      // GIVEN
+      const handler = assertionHandler() as any;
+      const request: AssertionRequest = {
+        assertionType: AssertionType.OBJECT_LIKE,
+        actual: {
+          stringParam: 'foo',
+          numberParam: 3,
+          booleanParam: true,
+        },
+        expected: JSON.stringify({
+          stringParam: 'bar',
+        }),
+      };
+
+      // WHEN
+      const response: AssertionResult = await handler.processEvent(request);
+
+      // THEN
+      expect(JSON.parse(response.data)).toEqual({
+        status: 'fail',
+        message: 'Expected bar but received foo at /stringParam (using objectLike matcher)\n' +
+          '{\n  \"stringParam\": \"foo\",\n  \"numberParam\": 3,\n  \"booleanParam\": true\n}',
+      });
+    });
+  });
+
   describe('equals', () => {
     test('pass', async () => {
       // GIVEN
@@ -29,18 +79,34 @@ describe('AssertionHandler', () => {
           numberParam: 3,
           booleanParam: true,
         },
-        expected: {
+        expected: JSON.stringify({
           stringParam: 'foo',
           numberParam: 3,
           booleanParam: true,
-        },
+        }),
       };
 
       // WHEN
       const response: AssertionResult = await handler.processEvent(request);
 
       // THEN
-      expect(response.data.status).toEqual('pass');
+      expect(response.data).toEqual('{"status":"pass"}');
+    });
+
+    test('string equals pass', async () => {
+      // GIVEN
+      const handler = assertionHandler() as any;
+      const request: AssertionRequest = {
+        assertionType: AssertionType.EQUALS,
+        actual: 'foo',
+        expected: 'foo',
+      };
+
+      // WHEN
+      const response: AssertionResult = await handler.processEvent(request);
+
+      // THEN
+      expect(response.data).toEqual('{"status":"pass"}');
     });
 
     test('fail', async () => {
@@ -51,16 +117,19 @@ describe('AssertionHandler', () => {
         actual: {
           stringParam: 'foo',
         },
-        expected: {
+        expected: JSON.stringify({
           stringParam: 'bar',
-        },
+        }),
       };
 
       // WHEN
       const response: AssertionResult = await handler.processEvent(request);
 
       // THEN
-      expect(response.data.status).toEqual('fail');
+      expect(JSON.parse(response.data)).toEqual({
+        status: 'fail',
+        message: 'Expected bar but received foo at /stringParam (using exact matcher)\n{\n  \"stringParam\": \"foo\"\n}',
+      });
     });
   });
 
@@ -71,7 +140,7 @@ describe('AssertionHandler', () => {
     const request: AssertionRequest = {
       assertionType,
       actual: 'foo',
-      expected: 'bar',
+      expected: JSON.stringify({ foo: 'bar' }),
     };
 
     // THEN

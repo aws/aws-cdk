@@ -1,24 +1,20 @@
-import { CfnOutput, CustomResource, Lazy } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import { Construct, IConstruct, Node } from 'constructs';
+import { EqualsAssertion } from './assertions';
+import { ExpectedResult, ActualResult } from './common';
 import { md5hash } from './private/hash';
-import { RESULTS_RESOURCE_TYPE, AssertionsProvider } from './providers';
-import { SdkQuery, SdkQueryOptions } from './sdk';
+import { AssertionType } from './providers';
+import { SdkQuery, LambdaInvokeFunction, LambdaInvokeFunctionProps } from './sdk';
 
 const DEPLOY_ASSERT_SYMBOL = Symbol.for('@aws-cdk/integ-tests.DeployAssert');
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
-/**
- * Represents a deploy time assertion
- */
-export interface IAssertion {
-  /**
-   * The result of the assertion
-   */
-  readonly result: string;
-}
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Options for DeployAssert
@@ -42,7 +38,7 @@ export class DeployAssert extends CoreConstruct {
    * Finds a DeployAssert construct in the given scope
    */
   public static of(construct: IConstruct): DeployAssert {
-    const scopes = Node.of(construct).scopes.reverse();
+    const scopes = Node.of(Node.of(construct).root).findAll();
     const deployAssert = scopes.find(s => DeployAssert.isDeployAssert(s));
     if (!deployAssert) {
       throw new Error('No DeployAssert construct found in scopes');
@@ -50,46 +46,76 @@ export class DeployAssert extends CoreConstruct {
     return deployAssert as DeployAssert;
   }
 
-  /** @internal */
-  public readonly _assertions: IAssertion[];
-
   constructor(scope: Construct) {
-    super(scope, 'DeployAssert');
+    scope = new Stack(scope, 'DeployAssert');
+    super(scope, 'Default');
 
     Object.defineProperty(this, DEPLOY_ASSERT_SYMBOL, { value: true });
-    this._assertions = [];
+  }
 
-    const provider = new AssertionsProvider(this, 'ResultsProvider');
-
-    const resource = new CustomResource(this, 'ResultsCollection', {
-      serviceToken: provider.serviceToken,
-      properties: {
-        assertionResults: Lazy.list({
-          produce: () => this._assertions.map(a => a.result),
-        }),
-      },
-      resourceType: RESULTS_RESOURCE_TYPE,
+  /**
+   * Query AWS using JavaScript SDK V2 API calls. This can be used to either
+   * trigger an action or to return a result that can then be asserted against
+   * an expected value
+   *
+   * @example
+   * declare const app: App;
+   * const assert = new DeployAssert(app);
+   * assert.awsApiCall('SQS', 'sendMessage', {
+   *   QueueUrl: 'url',
+   *   MessageBody: 'hello',
+   * });
+   * const message = assert.awsApiCall('SQS', 'receiveMessage', {
+   *   QueueUrl: 'url',
+   * });
+   * message.assertObjectLike({
+   *   Messages: [{ Body: 'hello' }],
+   * });
+   */
+  public awsApiCall(service: string, api: string, parameters?: any): SdkQuery {
+    return new SdkQuery(this, `SdkQuery${service}${api}`, {
+      api,
+      service,
+      parameters,
     });
-
-    // TODO: need to show/store this information
-    new CfnOutput(this, 'Results', {
-      value: `\n${resource.getAttString('message')}`,
-    }).overrideLogicalId('Results');
   }
 
   /**
-   * Query AWS using JavaScript SDK V2 API calls
+   * Assert that two values are strictly equal
    */
-  public queryAws(options: SdkQueryOptions): SdkQuery {
-    const id = md5hash(options);
-    return new SdkQuery(this, `SdkQuery${id}`, options);
+  public strictEquals(id: string, expected: ExpectedResult, actual: ActualResult): void {
+    new EqualsAssertion(this, `EqualsAssertion${id}`, {
+      actual,
+      expected,
+    });
   }
 
   /**
-   * Register an assertion that should be run as part of the
-   * deployment
+   * Invoke a lambda function and return the response which can be asserted
+   *
+   * @example
+   * declare const app: App;
+   * const assert = new DeployAssert(app);
+   * const invoke = assert.invokeFunction({
+   *   functionName: 'my-function',
+   * });
+   * invoke.assertObjectLike({
+   *   Payload: '200',
+   * });
    */
-  public registerAssertion(assertion: IAssertion) {
-    this._assertions.push(assertion);
+  public invokeFunction(props: LambdaInvokeFunctionProps): LambdaInvokeFunction {
+    const hash = md5hash(Stack.of(this).resolve(props));
+    return new LambdaInvokeFunction(this, `LambdaInvoke${hash}`, props);
+  }
+
+  /**
+   * Assert that an object is a subset of another
+   */
+  public objectLike(id: string, expected: { [key: string]: any }, actual: ActualResult): void {
+    new EqualsAssertion(this, `EqualsAssertion${id}`, {
+      actual,
+      expected: ExpectedResult.fromObject(expected),
+      assertionType: AssertionType.OBJECT_LIKE,
+    });
   }
 }

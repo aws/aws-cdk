@@ -63,6 +63,18 @@ export enum AssertionType {
    * Assert that two values are equal
    */
   EQUALS = 'equals',
+
+  /**
+   * The keys and their values must be present in the target but the target
+   * can be a superset.
+   */
+  OBJECT_LIKE = 'objectLike',
+
+  /**
+   * Matches the specified pattern with the array
+   * The set of elements must be in the same order as would be found
+   */
+  ARRAY_WITH = 'arrayWith',
 }
 
 /**
@@ -94,7 +106,7 @@ export interface AssertionResult {
 /**
  * The result of an assertion
  */
-  readonly data: AssertionResultData;
+  readonly data: string;
 }
 
 /**

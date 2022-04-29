@@ -205,14 +205,6 @@
               "version": "0.0.0"
             }
           },
-          "stateMachineArn": {
-            "id": "stateMachineArn",
-            "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ/stateMachineArn",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
-            }
-          },
           "Service-principalMap": {
             "id": "Service-principalMap",
             "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ/Service-principalMap",
@@ -220,10 +212,292 @@
               "fqn": "@aws-cdk/core.CfnMapping",
               "version": "0.0.0"
             }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ/Exports",
+            "children": {
+              "Output{\"Ref\":\"StateMachine2E01A3A5\"}": {
+                "id": "Output{\"Ref\":\"StateMachine2E01A3A5\"}",
+                "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Construct",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "IntegTest": {
+        "id": "IntegTest",
+        "path": "IntegTest",
+        "children": {
+          "DefaultTestCase": {
+            "id": "DefaultTestCase",
+            "path": "IntegTest/DefaultTestCase",
+            "children": {
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "IntegTest/DefaultTestCase/DeployAssert",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "IntegTest/DefaultTestCase/DeployAssert/Default",
+                    "children": {
+                      "SdkQueryStepFunctionsstartExecution": {
+                        "id": "SdkQueryStepFunctionsstartExecution",
+                        "path": "IntegTest/DefaultTestCase/DeployAssert/Default/SdkQueryStepFunctionsstartExecution",
+                        "children": {
+                          "SdkProvider": {
+                            "id": "SdkProvider",
+                            "path": "IntegTest/DefaultTestCase/DeployAssert/Default/SdkQueryStepFunctionsstartExecution/SdkProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "IntegTest/DefaultTestCase/DeployAssert/Default/SdkQueryStepFunctionsstartExecution/SdkProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.Construct",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Default": {
+                            "id": "Default",
+                            "path": "IntegTest/DefaultTestCase/DeployAssert/Default/SdkQueryStepFunctionsstartExecution/Default",
+                            "children": {
+                              "Default": {
+                                "id": "Default",
+                                "path": "IntegTest/DefaultTestCase/DeployAssert/Default/SdkQueryStepFunctionsstartExecution/Default/Default",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CustomResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.SdkQuery",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "SdkQueryStepFunctionsdescribeExecution": {
+                        "id": "SdkQueryStepFunctionsdescribeExecution",
+                        "path": "IntegTest/DefaultTestCase/DeployAssert/Default/SdkQueryStepFunctionsdescribeExecution",
+                        "children": {
+                          "SdkProvider": {
+                            "id": "SdkProvider",
+                            "path": "IntegTest/DefaultTestCase/DeployAssert/Default/SdkQueryStepFunctionsdescribeExecution/SdkProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "IntegTest/DefaultTestCase/DeployAssert/Default/SdkQueryStepFunctionsdescribeExecution/SdkProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.Construct",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Default": {
+                            "id": "Default",
+                            "path": "IntegTest/DefaultTestCase/DeployAssert/Default/SdkQueryStepFunctionsdescribeExecution/Default",
+                            "children": {
+                              "Default": {
+                                "id": "Default",
+                                "path": "IntegTest/DefaultTestCase/DeployAssert/Default/SdkQueryStepFunctionsdescribeExecution/Default/Default",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CustomResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "EqualsAssertionStepFunctionsdescribeExecution": {
+                            "id": "EqualsAssertionStepFunctionsdescribeExecution",
+                            "path": "IntegTest/DefaultTestCase/DeployAssert/Default/SdkQueryStepFunctionsdescribeExecution/EqualsAssertionStepFunctionsdescribeExecution",
+                            "children": {
+                              "AssertionProvider": {
+                                "id": "AssertionProvider",
+                                "path": "IntegTest/DefaultTestCase/DeployAssert/Default/SdkQueryStepFunctionsdescribeExecution/EqualsAssertionStepFunctionsdescribeExecution/AssertionProvider",
+                                "children": {
+                                  "AssertionsProvider": {
+                                    "id": "AssertionsProvider",
+                                    "path": "IntegTest/DefaultTestCase/DeployAssert/Default/SdkQueryStepFunctionsdescribeExecution/EqualsAssertionStepFunctionsdescribeExecution/AssertionProvider/AssertionsProvider",
+                                    "constructInfo": {
+                                      "fqn": "@aws-cdk/core.Construct",
+                                      "version": "0.0.0"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "Default": {
+                                "id": "Default",
+                                "path": "IntegTest/DefaultTestCase/DeployAssert/Default/SdkQueryStepFunctionsdescribeExecution/EqualsAssertionStepFunctionsdescribeExecution/Default",
+                                "children": {
+                                  "Default": {
+                                    "id": "Default",
+                                    "path": "IntegTest/DefaultTestCase/DeployAssert/Default/SdkQueryStepFunctionsdescribeExecution/EqualsAssertionStepFunctionsdescribeExecution/Default/Default",
+                                    "constructInfo": {
+                                      "fqn": "@aws-cdk/core.CfnResource",
+                                      "version": "0.0.0"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.CustomResource",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "AssertionResults": {
+                                "id": "AssertionResults",
+                                "path": "IntegTest/DefaultTestCase/DeployAssert/Default/SdkQueryStepFunctionsdescribeExecution/EqualsAssertionStepFunctionsdescribeExecution/AssertionResults",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.CfnOutput",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests.EqualsAssertion",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.SdkQuery",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.DeployAssert",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "IntegTest/DefaultTestCase/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "IntegTest/DefaultTestCase/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "IntegTest/DefaultTestCase/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "IntegTest/DefaultTestCase/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Construct",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetParameters": {
+                    "id": "AssetParameters",
+                    "path": "IntegTest/DefaultTestCase/DeployAssert/AssetParameters",
+                    "children": {
+                      "37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0": {
+                        "id": "37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0",
+                        "path": "IntegTest/DefaultTestCase/DeployAssert/AssetParameters/37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0",
+                        "children": {
+                          "S3Bucket": {
+                            "id": "S3Bucket",
+                            "path": "IntegTest/DefaultTestCase/DeployAssert/AssetParameters/37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0/S3Bucket",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnParameter",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "S3VersionKey": {
+                            "id": "S3VersionKey",
+                            "path": "IntegTest/DefaultTestCase/DeployAssert/AssetParameters/37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0/S3VersionKey",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnParameter",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "ArtifactHash": {
+                            "id": "ArtifactHash",
+                            "path": "IntegTest/DefaultTestCase/DeployAssert/AssetParameters/37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0/ArtifactHash",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnParameter",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Construct",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Construct",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }
