@@ -641,6 +641,9 @@ export class Function extends FunctionBase {
 
   protected readonly canCreatePermissions = true;
 
+  /**
+   * The lambda layers that this function depends on.
+   */
   public readonly layers: ILayerVersion[] = [];
 
   private _logGroup?: logs.ILogGroup;
