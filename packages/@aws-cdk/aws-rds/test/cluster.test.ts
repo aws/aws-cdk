@@ -1074,7 +1074,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(() => cluster.addRotationSingleUser()).toThrow(/without secret/);
+    expect(() => cluster.addRotationSingleUser()).toThrow(/without a secret/);
   });
 
   test('throws when trying to add single user rotation multiple times', () => {
