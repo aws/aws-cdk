@@ -16,6 +16,7 @@ import { Lazy, Size } from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import * as lambda from '../lib';
+import { calculateFunctionHash } from '../lib/function-hash';
 
 describe('function', () => {
   test('default function', () => {
@@ -1449,7 +1450,7 @@ describe('function', () => {
       handler: 'index.main',
     });
 
-    const version = fn.currentVersion;
+    const fnHash = calculateFunctionHash(fn);
 
     // WHEN
     const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
@@ -1459,10 +1460,10 @@ describe('function', () => {
 
     fn.addLayers(layer);
 
-    const newVersion = fn.currentVersion;
-    // eslint-disable-next-line no-console
-    console.log(version.version, newVersion.version);
-    expect(version).toEqual(newVersion);
+    const newFnHash = calculateFunctionHash(fn);
+
+    console.log(fnHash, newFnHash);
+    expect(fnHash).not.toEqual(newFnHash);
   });
 
   test('using an incompatible layer', () => {
