@@ -68,7 +68,7 @@ export class PythonFunction extends Function {
       throw new Error(`Cannot find index file at ${resolvedIndex}`);
     }
 
-    const resolvedHandler =`${index.slice(0, -3)}.${handler}`.replace('/', '.');
+    const resolvedHandler =`${index.slice(0, -3)}.${handler}`.replace(/\//g, '.');
 
     if (props.runtime && props.runtime.family !== RuntimeFamily.PYTHON) {
       throw new Error('Only `PYTHON` runtimes are supported.');

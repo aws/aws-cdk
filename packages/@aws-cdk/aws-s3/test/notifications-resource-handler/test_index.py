@@ -19,6 +19,8 @@ except ModuleNotFoundError as _:
     )
     sys.exit(1)
 
+EVENTBRIDGE_CONFIGURATION = 'EventBridgeConfiguration'
+
 CONFIGURATION_TYPES = ["TopicConfigurations", "QueueConfigurations", "LambdaFunctionConfigurations"]
 
 
@@ -33,6 +35,16 @@ def make_event(request_type: str, managed: bool):
         },
     }
 
+def make_event_with_eventbridge(request_type: str, managed: bool):
+    return {
+        "StackId": "StackId",
+        "RequestType": request_type,
+        "ResourceProperties": {
+            "Managed": str(managed),
+            "BucketName": "BucketName",
+            "NotificationConfiguration": make_notification_configuration_with_eventbridge(),
+        },
+    }
 
 def make_notification_configuration(id_prefix: str = None):
     def make_id():
@@ -43,6 +55,11 @@ def make_notification_configuration(id_prefix: str = None):
         config[t] = [{"Id": make_id()}]
     return config
 
+def make_notification_configuration_with_eventbridge(id_prefix: str = None):
+    return {**make_notification_configuration(id_prefix), **make_eventbridge_configuration()}
+
+def make_eventbridge_configuration():
+    return { EVENTBRIDGE_CONFIGURATION: {} }
 
 def make_empty_notification_configuration():
     config = {}
@@ -50,11 +67,21 @@ def make_empty_notification_configuration():
         config[t] = []
     return config
 
+def make_empty_notification_configuration_with_eventbridge():
+    return {**make_empty_notification_configuration(), **make_eventbridge_configuration()}
+
 
 def merge_notification_configurations(conf1: Dict, conf2: Dict):
     notifications = {}
     for t in CONFIGURATION_TYPES:
         notifications[t] = conf1.get(t, []) + conf2.get(t, [])
+
+    if EVENTBRIDGE_CONFIGURATION in conf1:
+        notifications[EVENTBRIDGE_CONFIGURATION] = conf1[EVENTBRIDGE_CONFIGURATION]
+
+    if EVENTBRIDGE_CONFIGURATION in conf2:
+        notifications[EVENTBRIDGE_CONFIGURATION] = conf2[EVENTBRIDGE_CONFIGURATION]
+
     return notifications
 
 
@@ -116,6 +143,22 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
     @patch("index.put_bucket_notification_configuration")
     @patch("index.get_bucket_notification_configuration")
     @patch("index.submit_response")
+    def test_create_with_eventbridge(self, _, get: MagicMock, put: MagicMock):
+
+        get.return_value = {}
+
+        event = make_event_with_eventbridge("Create", False)
+
+        index.handler(event, {})
+
+        put.assert_called_once_with(
+            event["ResourceProperties"]["BucketName"],
+            event["ResourceProperties"]["NotificationConfiguration"],
+        )
+
+    @patch("index.put_bucket_notification_configuration")
+    @patch("index.get_bucket_notification_configuration")
+    @patch("index.submit_response")
     def test_update(self, _, get: MagicMock, put: MagicMock):
 
         event = make_event("Update", False)
@@ -134,6 +177,46 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
     @patch("index.put_bucket_notification_configuration")
     @patch("index.get_bucket_notification_configuration")
     @patch("index.submit_response")
+    def test_update_with_eventbridge(self, _, get: MagicMock, put: MagicMock):
+
+        event = make_event_with_eventbridge("Update", False)
+
+        # simulate a previous create operation
+        current_notifications = make_notification_configuration(f"{event['StackId']}-")
+        get.return_value = current_notifications
+
+        index.handler(event, {})
+
+        put.assert_called_once_with(
+            event["ResourceProperties"]["BucketName"],
+            event["ResourceProperties"]["NotificationConfiguration"],
+        )
+
+
+    @patch("index.put_bucket_notification_configuration")
+    @patch("index.get_bucket_notification_configuration")
+    @patch("index.submit_response")
+    def test_update_with_existing_eventbridge(self, _, get: MagicMock, put: MagicMock):
+
+        event = make_event("Update", False)
+
+        # simulate a previous create operation
+        current_notifications = make_notification_configuration_with_eventbridge(f"{event['StackId']}-")
+        get.return_value = current_notifications
+
+        index.handler(event, {})
+
+        put.assert_called_once_with(
+            event["ResourceProperties"]["BucketName"],
+            merge_notification_configurations(
+                make_eventbridge_configuration(),
+                event["ResourceProperties"]["NotificationConfiguration"],
+            ),
+        )
+
+    @patch("index.put_bucket_notification_configuration")
+    @patch("index.get_bucket_notification_configuration")
+    @patch("index.submit_response")
     def test_delete(self, _, get: MagicMock, put: MagicMock):
 
         event = make_event("Delete", False)
@@ -147,6 +230,24 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
         put.assert_called_once_with(
             event["ResourceProperties"]["BucketName"],
             make_empty_notification_configuration(),
+        )
+
+    @patch("index.put_bucket_notification_configuration")
+    @patch("index.get_bucket_notification_configuration")
+    @patch("index.submit_response")
+    def test_delete_with_eventbridge_should_not_remove_eventbridge(self, _, get: MagicMock, put: MagicMock):
+
+        event = make_event_with_eventbridge("Delete", False)
+
+        # simulate a previous create operation
+        current_notifications = make_notification_configuration_with_eventbridge(f"{event['StackId']}-")
+        get.return_value = current_notifications
+
+        index.handler(event, {})
+
+        put.assert_called_once_with(
+            event["ResourceProperties"]["BucketName"],
+            make_empty_notification_configuration_with_eventbridge(),
         )
 
 
@@ -175,6 +276,48 @@ class UnmanagedDirtyBucketTest(unittest.TestCase):
     @patch("index.put_bucket_notification_configuration")
     @patch("index.get_bucket_notification_configuration")
     @patch("index.submit_response")
+    def test_create_with_eventbridge(self, _, get: MagicMock, put: MagicMock):
+
+        event = make_event_with_eventbridge("Create", False)
+
+        # simulate external notifications
+        current_notifications = make_notification_configuration()
+        get.return_value = current_notifications
+
+        index.handler(event, {})
+
+        put.assert_called_once_with(
+            event["ResourceProperties"]["BucketName"],
+            merge_notification_configurations(
+                current_notifications,
+                event["ResourceProperties"]["NotificationConfiguration"],
+            ),
+        )
+
+    @patch("index.put_bucket_notification_configuration")
+    @patch("index.get_bucket_notification_configuration")
+    @patch("index.submit_response")
+    def test_create_with_existing_eventbridge(self, _, get: MagicMock, put: MagicMock):
+
+        event = make_event("Create", False)
+
+        # simulate external notifications
+        current_notifications = make_notification_configuration_with_eventbridge()
+        get.return_value = current_notifications
+
+        index.handler(event, {})
+
+        put.assert_called_once_with(
+            event["ResourceProperties"]["BucketName"],
+            merge_notification_configurations(
+                current_notifications,
+                event["ResourceProperties"]["NotificationConfiguration"],
+            ),
+        )
+
+    @patch("index.put_bucket_notification_configuration")
+    @patch("index.get_bucket_notification_configuration")
+    @patch("index.submit_response")
     def test_update(self, _, get: MagicMock, put: MagicMock):
 
         event = make_event("Update", False)
@@ -196,12 +339,72 @@ class UnmanagedDirtyBucketTest(unittest.TestCase):
     @patch("index.put_bucket_notification_configuration")
     @patch("index.get_bucket_notification_configuration")
     @patch("index.submit_response")
+    def test_update_with_eventbridge(self, _, get: MagicMock, put: MagicMock):
+
+        event = make_event_with_eventbridge("Update", False)
+
+        # simulate external notifications
+        current_notifications = make_notification_configuration()
+        get.return_value = current_notifications
+
+        index.handler(event, {})
+
+        put.assert_called_once_with(
+            event["ResourceProperties"]["BucketName"],
+            merge_notification_configurations(
+                current_notifications,
+                event["ResourceProperties"]["NotificationConfiguration"],
+            ),
+        )
+
+    @patch("index.put_bucket_notification_configuration")
+    @patch("index.get_bucket_notification_configuration")
+    @patch("index.submit_response")
+    def test_update_without_eventbridge_should_not_remove_existing_eventbridge(self, _, get: MagicMock, put: MagicMock):
+
+        event = make_event("Update", False)
+
+        # simulate external notifications
+        current_notifications = make_notification_configuration_with_eventbridge()
+        get.return_value = current_notifications
+
+        index.handler(event, {})
+
+        put.assert_called_once_with(
+            event["ResourceProperties"]["BucketName"],
+            merge_notification_configurations(
+                current_notifications,
+                event["ResourceProperties"]["NotificationConfiguration"],
+            ),
+        )
+
+    @patch("index.put_bucket_notification_configuration")
+    @patch("index.get_bucket_notification_configuration")
+    @patch("index.submit_response")
     def test_delete(self, _, get: MagicMock, put: MagicMock):
 
         event = make_event("Delete", False)
 
         # simulate external notifications
         current_notifications = make_notification_configuration()
+        get.return_value = current_notifications
+
+        index.handler(event, {})
+
+        put.assert_called_once_with(
+            event["ResourceProperties"]["BucketName"],
+            current_notifications,
+        )
+
+    @patch("index.put_bucket_notification_configuration")
+    @patch("index.get_bucket_notification_configuration")
+    @patch("index.submit_response")
+    def test_delete_with_eventbridge_should_not_remove_eventbridge(self, _, get: MagicMock, put: MagicMock):
+
+        event = make_event_with_eventbridge("Delete", False)
+
+        # simulate external notifications
+        current_notifications = make_notification_configuration_with_eventbridge()
         get.return_value = current_notifications
 
         index.handler(event, {})
