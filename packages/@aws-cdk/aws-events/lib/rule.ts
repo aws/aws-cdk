@@ -4,6 +4,7 @@ import { Node, Construct } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
 import { CfnEventBusPolicy, CfnRule } from './events.generated';
+import { EventCommonOptions } from './on-event-options';
 import { IRule } from './rule-ref';
 import { Schedule } from './schedule';
 import { IRuleTarget } from './target';
@@ -12,22 +13,7 @@ import { mergeEventPattern, renderEventPattern, sameEnvDimension } from './util'
 /**
  * Properties for defining an EventBridge Rule
  */
-export interface RuleProps {
-  /**
-   * A description of the rule's purpose.
-   *
-   * @default - No description.
-   */
-  readonly description?: string;
-
-  /**
-   * A name for the rule.
-   *
-   * @default - AWS CloudFormation generates a unique physical ID and uses that ID
-   * for the rule name. For more information, see Name Type.
-   */
-  readonly ruleName?: string;
-
+export interface RuleProps extends EventCommonOptions {
   /**
    * Indicates whether the rule is enabled.
    *
@@ -47,23 +33,6 @@ export interface RuleProps {
    * @default - None.
    */
   readonly schedule?: Schedule;
-
-  /**
-   * Describes which events EventBridge routes to the specified target.
-   * These routed events are matched events. For more information, see Events
-   * and Event Patterns in the Amazon EventBridge User Guide.
-   *
-   * @see
-   * https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-and-event-patterns.html
-   *
-   * You must specify this property (either via props or via
-   * `addEventPattern`), the `scheduleExpression` property, or both. The
-   * method `addEventPattern` can be used to add filter values to the event
-   * pattern.
-   *
-   * @default - None.
-   */
-  readonly eventPattern?: EventPattern;
 
   /**
    * Targets to invoke when this rule matches an event.
@@ -119,7 +88,7 @@ export class Rule extends Resource implements IRule {
   private readonly _xEnvTargetsAdded = new Set<string>();
 
   constructor(scope: Construct, id: string, props: RuleProps = { }) {
-    super(scope, id, {
+    super(determineRuleScope(scope, props), id, {
       physicalName: props.ruleName,
     });
 
@@ -450,6 +419,17 @@ export class Rule extends Resource implements IRule {
 
     return role;
   }
+}
+
+function determineRuleScope(scope: Construct, props: RuleProps): Construct {
+  if (!props.scopeIfCrossStack) {
+    return scope;
+  }
+  const scopeStack = Stack.of(scope);
+  const targetStack = Stack.of(props.scopeIfCrossStack);
+  return scopeStack === targetStack
+    ? scope
+    : props.scopeIfCrossStack;
 }
 
 /**
