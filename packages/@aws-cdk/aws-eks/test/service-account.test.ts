@@ -129,6 +129,46 @@ describe('service account', () => {
       });
 
     });
+
+    test('it is possible to set the rolename', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        roleName: 'some-role-name',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(iam.CfnRole.CFN_RESOURCE_TYPE_NAME, {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRoleWithWebIdentity',
+              Effect: 'Allow',
+              Principal: {
+                Federated: {
+                  Ref: 'ClusterOpenIdConnectProviderE7EB0530',
+                },
+              },
+              Condition: {
+                StringEquals: {
+                  'Fn::GetAtt': [
+                    'ClusterMyServiceAccountWithRoleNameConditionJsonC885C25A',
+                    'Value',
+                  ],
+                },
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        roleName: 'some-role-name',
+      });
+
+    });
+
     test('should have allow multiple services accounts', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
