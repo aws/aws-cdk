@@ -33,8 +33,6 @@ describe('CodeCommit Source Action', () => {
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 1);
-
-
     });
 
     test('cross-account CodeCommit Repository Source does not use target role in source stack', () => {
@@ -118,8 +116,6 @@ describe('CodeCommit Source Action', () => {
           },
         ],
       });
-
-
     });
 
     test('does not poll for source changes and uses Events for CodeCommitTrigger.EVENTS', () => {
@@ -143,8 +139,6 @@ describe('CodeCommit Source Action', () => {
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 1);
-
-
     });
 
     test('polls for source changes and does not use Events for CodeCommitTrigger.POLL', () => {
@@ -168,8 +162,6 @@ describe('CodeCommit Source Action', () => {
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 0);
-
-
     });
 
     test('does not poll for source changes and does not use Events for CodeCommitTrigger.NONE', () => {
@@ -193,8 +185,6 @@ describe('CodeCommit Source Action', () => {
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 0);
-
-
     });
 
     test('cannot be created with an empty branch', () => {
@@ -211,8 +201,6 @@ describe('CodeCommit Source Action', () => {
           branch: '',
         });
       }).toThrow(/'branch' parameter cannot be an empty string/);
-
-
     });
 
     test('allows using the same repository multiple times with different branches when trigger=EVENTS', () => {
@@ -253,8 +241,6 @@ describe('CodeCommit Source Action', () => {
           },
         ],
       });
-
-
     });
 
     test('exposes variables for other actions to consume', () => {
@@ -308,8 +294,6 @@ describe('CodeCommit Source Action', () => {
           },
         ],
       });
-
-
     });
 
     test('allows using a Token for the branch name', () => {
@@ -351,8 +335,6 @@ describe('CodeCommit Source Action', () => {
           },
         },
       });
-
-
     });
 
     test('allows to enable full clone', () => {
@@ -456,8 +438,6 @@ describe('CodeCommit Source Action', () => {
           ]),
         },
       });
-
-
     });
 
     test('uses the role when passed', () => {
@@ -512,8 +492,6 @@ describe('CodeCommit Source Action', () => {
           },
         ],
       });
-
-
     });
 
     test('grants explicit s3:PutObjectAcl permissions when the Actions is cross-account', () => {
@@ -569,8 +547,49 @@ describe('CodeCommit Source Action', () => {
           }]),
         },
       });
+    });
 
+    test('allows using a new Repository from another Stack as a source of the Pipeline, with Events', () => {
+      const app = new App();
 
+      const repoStack = new Stack(app, 'RepositoryStack');
+      const repo = new codecommit.Repository(repoStack, 'Repository', {
+        repositoryName: 'my-repo',
+      });
+
+      const pipelineStack = new Stack(app, 'PipelineStack');
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'Source',
+                repository: repo,
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: codebuild.Project.fromProjectName(pipelineStack, 'Project', 'my-project'),
+                input: sourceOutput,
+              }),
+            ],
+          },
+        ],
+      });
+
+      // If the Event Rule was created in the repo's Stack,
+      // we would have a cycle
+      // (the repo's Stack would need the name of the CodePipeline to trigger through the Rule,
+      // while the pipeline's Stack would need the name of the Repository to use as a Source).
+      // By moving the Rule to pipeline's Stack, we get rid of the cycle.
+      Template.fromStack(pipelineStack).resourceCountIs('AWS::Events::Rule', 1);
     });
   });
 });
