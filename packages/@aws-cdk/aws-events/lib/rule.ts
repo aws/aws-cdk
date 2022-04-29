@@ -1,5 +1,5 @@
 import { IRole, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { App, IResource, Lazy, Names, Resource, Stack, Token, PhysicalName, ArnFormat } from '@aws-cdk/core';
+import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat } from '@aws-cdk/core';
 import { Node, Construct } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
@@ -427,9 +427,17 @@ function determineRuleScope(scope: Construct, props: RuleProps): Construct {
   }
   const scopeStack = Stack.of(scope);
   const targetStack = Stack.of(props.scopeIfCrossStack);
-  return scopeStack === targetStack
-    ? scope
-    : props.scopeIfCrossStack;
+  if (scopeStack === targetStack) {
+    return scope;
+  }
+  // cross-region/account Events require their own setup,
+  // so we use the base scope in that case
+  const regionComparison = Token.compareStrings(scopeStack.region, targetStack.region);
+  const accountComparison = Token.compareStrings(scopeStack.account, targetStack.account);
+  return (regionComparison === TokenComparison.SAME || regionComparison === TokenComparison.BOTH_UNRESOLVED) &&
+      (accountComparison === TokenComparison.SAME || accountComparison === TokenComparison.BOTH_UNRESOLVED)
+    ? props.scopeIfCrossStack
+    : scope;
 }
 
 /**
