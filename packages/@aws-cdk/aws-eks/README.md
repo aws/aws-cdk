@@ -918,6 +918,16 @@ const serviceAccount = cluster.addServiceAccount('MyServiceAccount', {
 });
 ```
 
+It is possible to set the rolename attached to the service account.
+
+```ts
+declare const cluster: eks.Cluster;
+// add service account with annotations and labels
+const serviceAccount = cluster.addServiceAccount('MyServiceAccount', {
+  roleName: 'some-rolename',
+});
+```
+
 You can also add service accounts to existing clusters.
 To do so, pass the `openIdConnectProvider` property when you import the cluster into the application.
 

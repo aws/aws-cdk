@@ -81,6 +81,8 @@ class EksClusterStack extends Stack {
 
     this.assertExtendedServiceAccount();
 
+    this.assertServiceAccountWithRoleName();
+
     new CfnOutput(this, 'ClusterEndpoint', { value: this.cluster.clusterEndpoint });
     new CfnOutput(this, 'ClusterArn', { value: this.cluster.clusterArn });
     new CfnOutput(this, 'ClusterCertificateAuthorityData', { value: this.cluster.clusterCertificateAuthorityData });
@@ -103,6 +105,13 @@ class EksClusterStack extends Stack {
       labels: {
         'some-label': 'with-some-value',
       },
+    });
+  }
+
+  private assertServiceAccountWithRoleName() {
+    // add a service account connected to a IAM role
+    this.cluster.addServiceAccount('MyServiceAccountWithRoleName', {
+      roleName: 'some-role-name',
     });
   }
 

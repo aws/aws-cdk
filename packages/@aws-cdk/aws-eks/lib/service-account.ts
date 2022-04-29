@@ -43,6 +43,16 @@ export interface ServiceAccountOptions {
    * @default - no additional labels
    */
   readonly labels?: {[key:string]: string};
+
+  /**
+   * Optional rolename to use for the service account.
+   * When this is set, you cannot perform updates that require replacment of this resource.
+   * If you must replace the resource, specify a new name.
+   *
+   * @default - If no name is given, it will use the id of the resource.
+   *
+   */
+  readonly roleName?: string | undefined
 }
 
 /**
@@ -107,8 +117,8 @@ export class ServiceAccount extends CoreConstruct implements IPrincipal {
     const principal = new OpenIdConnectPrincipal(cluster.openIdConnectProvider).withConditions({
       StringEquals: conditions,
     });
-    this.role = new Role(this, 'Role', { assumedBy: principal });
 
+    this.role = new Role(this, 'Role', { assumedBy: principal, roleName: props.roleName } );
     this.assumeRoleAction = this.role.assumeRoleAction;
     this.grantPrincipal = this.role.grantPrincipal;
     this.policyFragment = this.role.policyFragment;
