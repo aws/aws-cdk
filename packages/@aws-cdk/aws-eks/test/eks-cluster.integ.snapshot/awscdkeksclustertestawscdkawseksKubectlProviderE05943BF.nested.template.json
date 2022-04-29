@@ -212,7 +212,7 @@
    "Properties": {
     "Content": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksclustertestAssetParametersdb6b1b1d10ac786ce3eb5f326510da62c14c0e4477065964c4cdf7a54439f131S3BucketF401902DRef"
+      "Ref": "referencetoawscdkeksclustertestAssetParameters5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17S3BucketEFCBF041Ref"
      },
      "S3Key": {
       "Fn::Join": [
@@ -225,7 +225,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksclustertestAssetParametersdb6b1b1d10ac786ce3eb5f326510da62c14c0e4477065964c4cdf7a54439f131S3VersionKey4C2DA8A7Ref"
+             "Ref": "referencetoawscdkeksclustertestAssetParameters5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17S3VersionKeyE0371370Ref"
             }
            ]
           }
@@ -238,7 +238,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksclustertestAssetParametersdb6b1b1d10ac786ce3eb5f326510da62c14c0e4477065964c4cdf7a54439f131S3VersionKey4C2DA8A7Ref"
+             "Ref": "referencetoawscdkeksclustertestAssetParameters5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17S3VersionKeyE0371370Ref"
             }
            ]
           }
@@ -498,10 +498,10 @@
   "referencetoawscdkeksclustertestClusterD76DFF87ClusterSecurityGroupId": {
    "Type": "String"
   },
-  "referencetoawscdkeksclustertestAssetParametersdb6b1b1d10ac786ce3eb5f326510da62c14c0e4477065964c4cdf7a54439f131S3BucketF401902DRef": {
+  "referencetoawscdkeksclustertestAssetParameters5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17S3BucketEFCBF041Ref": {
    "Type": "String"
   },
-  "referencetoawscdkeksclustertestAssetParametersdb6b1b1d10ac786ce3eb5f326510da62c14c0e4477065964c4cdf7a54439f131S3VersionKey4C2DA8A7Ref": {
+  "referencetoawscdkeksclustertestAssetParameters5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17S3VersionKeyE0371370Ref": {
    "Type": "String"
   },
   "referencetoawscdkeksclustertestAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3Bucket1C5C92D4Ref": {
