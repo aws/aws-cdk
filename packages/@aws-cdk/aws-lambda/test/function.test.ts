@@ -13,6 +13,7 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import { Lazy, Size } from '@aws-cdk/core';
+import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import * as lambda from '../lib';
@@ -1445,7 +1446,7 @@ describe('function', () => {
     const code = new lambda.S3Code(bucket, 'ObjectKey');
 
     const fn = new lambda.Function(stack, 'fn', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
       handler: 'index.main',
     });
@@ -1455,14 +1456,49 @@ describe('function', () => {
     // WHEN
     const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NODEJS_10_X],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
     });
 
     fn.addLayers(layer);
 
     const newFnHash = calculateFunctionHash(fn);
 
-    console.log(fnHash, newFnHash);
+    expect(fnHash).not.toEqual(newFnHash);
+  });
+
+  test('with feature flag, layer version is baked into function version', () => {
+    // GIVEN
+    const app = new cdk.App({ context: { [LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
+    const stack = new cdk.Stack(app, 'TestStack');
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const code = new lambda.S3Code(bucket, 'ObjectKey');
+    const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
+      code,
+      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
+    });
+
+    // function with layer
+    const fn = new lambda.Function(stack, 'fn', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
+      handler: 'index.main',
+      layers: [layer],
+    });
+
+    const fnHash = calculateFunctionHash(fn);
+
+    // use escape hatch to change the content of the layer
+    // this simulates updating the layer code which changes the version.
+    const cfnLayer = layer.node.defaultChild as lambda.CfnLayerVersion;
+    const newCode = (new lambda.S3Code(bucket, 'NewObjectKey')).bind(layer);
+    cfnLayer.content = {
+      s3Bucket: newCode.s3Location!.bucketName,
+      s3Key: newCode.s3Location!.objectKey,
+      s3ObjectVersion: newCode.s3Location!.objectVersion,
+    };
+
+    const newFnHash = calculateFunctionHash(fn);
+
     expect(fnHash).not.toEqual(newFnHash);
   });
 
