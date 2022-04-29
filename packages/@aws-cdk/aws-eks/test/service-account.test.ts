@@ -164,7 +164,7 @@ describe('service account', () => {
           ],
           Version: '2012-10-17',
         },
-        roleName: 'some-role-name',
+        RoleName: 'some-role-name',
       });
 
     });
