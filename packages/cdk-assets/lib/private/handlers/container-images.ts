@@ -6,7 +6,6 @@ import { IAssetHandler, IHandlerHost } from '../asset-handler';
 import { Docker } from '../docker';
 import { replaceAwsPlaceholders } from '../placeholders';
 import { shell } from '../shell';
-import { createCriticalSection } from '../util';
 
 export class ContainerImageAssetHandler implements IAssetHandler {
   constructor(
@@ -36,7 +35,7 @@ export class ContainerImageAssetHandler implements IAssetHandler {
       ecr,
     };
 
-    const dockerForBuilding = await ContainerImageDocker.forBuild(containerImageDockerOptions);
+    const dockerForBuilding = await this.host.dockerFactory.forBuild(containerImageDockerOptions);
 
     const builder = new ContainerImageBuilder(dockerForBuilding, this.workDir, this.asset, this.host);
     const localTagName = await builder.build();
@@ -50,9 +49,8 @@ export class ContainerImageAssetHandler implements IAssetHandler {
 
     await dockerForBuilding.tag(localTagName, imageUri);
 
-    const pushDocker = await ContainerImageDocker.forEcrPush(containerImageDockerOptions);
-
-    await pushDocker.push(imageUri);
+    const dockerForPushing = await this.host.dockerFactory.forEcrPush(containerImageDockerOptions);
+    await dockerForPushing.push(imageUri);
   }
 
   /**
@@ -70,72 +68,6 @@ export class ContainerImageAssetHandler implements IAssetHandler {
     }
 
     return false;
-  }
-}
-
-interface ContainerImageDockerOptions {
-  readonly repoUri: string;
-  readonly ecr: AWS.ECR;
-  readonly logger: (m: string) => void;
-}
-
-/**
- * Helps get appropriately configured Docker instances during the container
- * image publishing process.
- */
-export class ContainerImageDocker {
-  /**
-   * Clear state.
-   */
-  static clearState() {
-    this.loggedInDestinations.clear();
-  }
-
-  /**
-   * Gets a Docker instance for building images.
-   */
-  static async forBuild(options: ContainerImageDockerOptions): Promise<Docker> {
-    const docker = new Docker(options.logger);
-
-    // Default behavior is to login before build so that the Dockerfile can reference images in the ECR repo
-    // However, if we're in a pipelines environment (for example),
-    // we may have alternative credentials to the default ones to use for the build itself.
-    // If the special config file is present, delay the login to the default credentials until the push.
-    // If the config file is present, we will configure and use those credentials for the build.
-    let cdkDockerCredentialsConfigured = docker.configureCdkCredentials();
-    if (!cdkDockerCredentialsConfigured) {
-      await this.loginOncePerDestination(docker, options);
-    }
-
-    return docker;
-  }
-
-  /**
-   * Gets a Docker instance for pushing images to ECR.
-   */
-  static async forEcrPush(options: ContainerImageDockerOptions) {
-    const docker = new Docker(options.logger);
-    await this.loginOncePerDestination(docker, options);
-    return docker;
-  }
-
-  private static cacheCriticalSection = createCriticalSection();
-  private static loggedInDestinations = new Set<string>();
-
-  private static async loginOncePerDestination(docker: Docker, options: ContainerImageDockerOptions) {
-    // Changes: 012345678910.dkr.ecr.us-west-2.amazonaws.com/tagging-test
-    // To this: 012345678910.dkr.ecr.us-west-2.amazonaws.com
-    const repositoryDomain = options.repoUri.split('/')[0];
-
-    // Ensure one-at-a-time access to loggedInDestinations.
-    await this.cacheCriticalSection(async () => {
-      if (this.loggedInDestinations.has(repositoryDomain)) {
-        return;
-      }
-
-      this.loggedInDestinations.add(repositoryDomain);
-      await docker.login(options.ecr);
-    });
   }
 }
 

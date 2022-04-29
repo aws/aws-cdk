@@ -5,7 +5,6 @@ import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as mockfs from 'mock-fs';
 import { AssetManifest, AssetPublishing } from '../lib';
 import * as dockercreds from '../lib/private/docker-credentials';
-import { ContainerImageDocker } from '../lib/private/handlers/container-images';
 import { mockAws, mockedApiFailure, mockedApiResult } from './mock-aws';
 import { mockSpawn } from './mock-child_process';
 
@@ -13,8 +12,6 @@ import { mockSpawn } from './mock-child_process';
 let aws: ReturnType<typeof mockAws>;
 const absoluteDockerPath = '/simple/cdk.out/dockerdir';
 beforeEach(() => {
-  ContainerImageDocker.clearState();
-
   jest.resetAllMocks();
 
   // By default, assume no externally-configured credentials.
