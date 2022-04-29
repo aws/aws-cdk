@@ -378,7 +378,7 @@ const fn = new lambda.Function(this, 'MyFunction', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
 
-fn.currentVersion.addAlias('live');
+fn.addAlias('live');
 ```
 
 ## Function URL
@@ -729,10 +729,7 @@ You can use Application AutoScaling to automatically configure the provisioned c
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 
 declare const fn: lambda.Function;
-const alias = new lambda.Alias(this, 'Alias', {
-  aliasName: 'prod',
-  version: fn.latestVersion,
-});
+const alias = fn.addAlias('prod');
 
 // Create AutoScaling target
 const as = alias.addAutoScaling({ maxCapacity: 50 });
