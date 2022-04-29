@@ -116,7 +116,7 @@ describe('function', () => {
     })).toThrow();
   });
 
-  describe('addToResourcePolicy', () => {
+  describe('addPermissions', () => {
     test('can be used to add permissions to the Lambda function', () => {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
@@ -250,6 +250,32 @@ describe('function', () => {
       });
     });
 
+    test('applies source arn condition if principal has conditions', () => {
+      const stack = new cdk.Stack();
+      const fn = newTestLambda(stack);
+      const sourceArn = 'some-arn';
+      const service = 'my-service';
+      const principal = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
+        ArnLike: {
+          'aws:SourceArn': sourceArn,
+        },
+      });
+
+      fn.addPermission('S1', { principal: principal });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'MyLambdaCCE802FB',
+            'Arn',
+          ],
+        },
+        Principal: service,
+        SourceArn: sourceArn,
+      });
+    });
+
     test('applies principal org id conditions if the principal has conditions', () => {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
@@ -306,14 +332,6 @@ describe('function', () => {
     test('fails if the principal has condition combinations that are not supported', () => {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
-
-      expect(() => fn.addPermission('F1', {
-        principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
-          StringEquals: {
-            'aws:SourceAccount': 'source-account',
-          },
-        }),
-      })).toThrow(/PrincipalWithConditions had unsupported condition combinations for Lambda permission statement/);
 
       expect(() => fn.addPermission('F2', {
         principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {

@@ -608,11 +608,6 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       throw new Error('PrincipalWithConditions had unsupported condition combinations for Lambda permission statement: principalOrgID cannot be set with other conditions.');
     }
 
-    // SourceArn and SourceAccount must be set together
-    if ((sourceArn && !sourceAccount) || (!sourceArn && sourceAccount)) {
-      throw new Error('PrincipalWithConditions had unsupported condition combinations for Lambda permission statement: you cannot set sourceAccount without sourceArn and vice versa');
-    }
-
     return {
       sourceArn,
       sourceAccount,
