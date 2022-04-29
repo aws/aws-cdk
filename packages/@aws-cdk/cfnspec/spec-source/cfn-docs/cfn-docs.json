@@ -11289,7 +11289,7 @@
         "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"MyResource\" }`\n\nFor the resource with the logical ID `myDynamoDBTable` , `Ref` will return the DynamoDB table name.",
         "StreamArn": "The ARN of the DynamoDB stream, such as `arn:aws:dynamodb:us-east-1:123456789012:table/testddbstack-myDynamoDBTable-012A1SL7SMP5Q/stream/2015-11-30T20:10:00.000` .\n\n> You must specify the `StreamSpecification` property to use this attribute."
       },
-      "description": "The `AWS::DynamoDB::Table` resource creates a DynamoDB table. For more information, see [CreateTable](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_CreateTable.html) in the *Amazon DynamoDB API Reference* .\n\nYou should be aware of the following behaviors when working with DynamoDB tables:\n\n- AWS CloudFormation typically creates DynamoDB tables in parallel. However, if your template includes multiple DynamoDB tables with indexes, you must declare dependencies so that the tables are created sequentially. Amazon DynamoDB limits the number of tables with secondary indexes that are in the creating state. If you create multiple tables with indexes at the same time, DynamoDB returns an error and the stack operation fails. For an example, see [DynamoDB Table with a DependsOn Attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-examples-dependson) .",
+      "description": "The `AWS::DynamoDB::Table` resource creates a DynamoDB table. For more information, see [CreateTable](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_CreateTable.html) in the *Amazon DynamoDB API Reference* .\n\nYou should be aware of the following behaviors when working with DynamoDB tables:\n\n- AWS CloudFormation typically creates DynamoDB tables in parallel. However, if your template includes multiple DynamoDB tables with indexes, you must declare dependencies so that the tables are created sequentially. Amazon DynamoDB limits the number of tables with secondary indexes that are in the creating state. If you create multiple tables with indexes at the same time, DynamoDB returns an error and the stack operation fails. For an example, see [DynamoDB Table with a DependsOn Attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#aws-resource-dynamodb-table--examples--DynamoDB_Table_with_a_DependsOn_Attribute) .",
       "properties": {
         "AttributeDefinitions": "A list of attributes that describe the key schema for the table and indexes.\n\nThis property is required to create a DynamoDB table.\n\nUpdate requires: [Some interruptions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-some-interrupt) . Replacement if you edit an existing AttributeDefinition.",
         "BillingMode": "Specify how you are charged for read and write throughput and how you manage capacity.\n\nValid values include:\n\n- `PROVISIONED` - We recommend using `PROVISIONED` for predictable workloads. `PROVISIONED` sets the billing mode to [Provisioned Mode](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html#HowItWorks.ProvisionedThroughput.Manual) .\n- `PAY_PER_REQUEST` - We recommend using `PAY_PER_REQUEST` for unpredictable workloads. `PAY_PER_REQUEST` sets the billing mode to [On-Demand Mode](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html#HowItWorks.OnDemand) .\n\nIf not specified, the default is `PROVISIONED` .",
@@ -14925,7 +14925,7 @@
         "EncryptionConfigKeyArn": "Amazon Resource Name (ARN) or alias of the customer master key (CMK).",
         "Endpoint": "The endpoint for your Kubernetes API server, such as `https://5E1D0CEXAMPLEA591B746AFC5AB30262.yl4.us-west-2.eks.amazonaws.com` .",
         "KubernetesNetworkConfig.ServiceIpv6Cidr": "The CIDR block that Kubernetes Service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified `ipv6` for *ipFamily* when you created the cluster. Kubernetes assigns Service addresses from the unique local address range ( `fc00::/7` ) because you can't specify a custom IPv6 CIDR block when you create the cluster.",
-        "OpenIdConnectIssuerUrl": "",
+        "OpenIdConnectIssuerUrl": "The issuer URL for the OIDC identity provider.",
         "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"myCluster\" }`\n\nFor the Amazon EKS cluster `myCluster` , `Ref` returns the name of the cluster."
       },
       "description": "Creates an Amazon EKS control plane.\n\nThe Amazon EKS control plane consists of control plane instances that run the Kubernetes software, such as `etcd` and the API server. The control plane runs in an account managed by AWS , and the Kubernetes API is exposed by the Amazon EKS API server endpoint. Each Amazon EKS cluster control plane is single tenant and unique. It runs on its own set of Amazon EC2 instances.\n\nThe cluster control plane is provisioned across multiple Availability Zones and fronted by an Elastic Load Balancing Network Load Balancer. Amazon EKS also provisions elastic network interfaces in your VPC subnets to provide connectivity from the control plane instances to the nodes (for example, to support `kubectl exec` , `logs` , and `proxy` data flows).\n\nAmazon EKS nodes run in your AWS account and connect to your cluster's control plane over the Kubernetes API server endpoint and a certificate file that is created for your cluster.\n\nIn most cases, it takes several minutes to create a cluster. After you create an Amazon EKS cluster, you must configure your Kubernetes tooling to communicate with the API server and launch nodes into your cluster. For more information, see [Managing Cluster Authentication](https://docs.aws.amazon.com/eks/latest/userguide/managing-auth.html) and [Launching Amazon EKS nodes](https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html) in the *Amazon EKS User Guide* .",
@@ -20845,18 +20845,18 @@
         "Encrypted": "Returns the encryption status of the component. For example `true` or `false` .",
         "Name": "Returns the name of the component.",
         "Ref": "`Ref` returns the resource ARN, such as `arn:aws:imagebuilder:us-west-2:123456789012:component/examplecomponent/2019.12.02/1` .",
-        "Type": "Returns the component type. For example, `BUILD` or `TEST` ."
+        "Type": "Image Builder determines the component type based on the phases that are defined in the component document. If there is only one phase, and its name is \"test\", then the type is `TEST` . For all other components, the type is `BUILD` ."
       },
-      "description": "Components are orchestration documents that define a sequence of steps for downloading, installing, and configuring software packages or for defining tests to run on software packages. They also define validation and security hardening steps. A component is defined using a YAML document format. For more information, see [Using Documents in Image Builder](https://docs.aws.amazon.com/imagebuilder/latest/userguide/image-builder-application-documents.html) .",
+      "description": "Creates a new component that can be used to build, validate, test, and assess your image. The component is based on a YAML document that you specify using exactly one of the following methods:\n\n- Inline, using the `data` property in the request body.\n- A URL that points to a YAML document file stored in Amazon S3, using the `uri` property in the request body.",
       "properties": {
-        "ChangeDescription": "A change description of the component. For example `initial version` .",
-        "Data": "The data of the component. For example, `name: HelloWorldTestingDocument\\ndescription: This is hello world testing document.\\nschemaVersion: 1.0\\n\\nphases:\\n - name: test\\n steps:\\n - name: HelloWorldStep\\n action: ExecuteBash\\n inputs:\\n commands:\\n - echo \\\"Hello World! Test.\\\"\\n` . See Examples below for the schema for creating a component using Data.",
-        "Description": "The description of the component.",
-        "KmsKeyId": "The KMS key identifier used to encrypt the component.",
+        "ChangeDescription": "The change description of the component. Describes what change has been made in this version, or what makes this version different from other versions of this component.",
+        "Data": "Component `data` contains inline YAML document content for the component. Alternatively, you can specify the `uri` of a YAML document file stored in Amazon S3. However, you cannot specify both properties.",
+        "Description": "The description of the component. Describes the contents of the component.",
+        "KmsKeyId": "The ID of the KMS key that should be used to encrypt this component.",
         "Name": "The name of the component.",
-        "Platform": "The platform of the component. For example, `Windows` .",
+        "Platform": "The platform of the component.",
         "SupportedOsVersions": "The operating system (OS) version supported by the component. If the OS information is available, a prefix match is performed against the base image OS version during image recipe creation.",
-        "Tags": "The tags associated with the component.",
+        "Tags": "The tags of the component.",
         "Uri": "The `uri` of a YAML component document file. This must be an S3 URL ( `s3://bucket/key` ), and the requester must have permission to access the S3 bucket it points to. If you use Amazon S3, you can specify component content up to your service quota.\n\nAlternatively, you can specify the YAML document inline, using the component `data` property. You cannot specify both properties.",
         "Version": "The component version. For example, `1.0.0` ."
       }
@@ -20874,12 +20874,12 @@
         "Description": "The description of the container recipe.",
         "DockerfileTemplateData": "Dockerfiles are text documents that are used to build Docker containers, and ensure that they contain all of the elements required by the application running inside. The template data consists of contextual variables where Image Builder places build information or scripts, based on your container image recipe.",
         "DockerfileTemplateUri": "The S3 URI for the Dockerfile that will be used to build your container image.",
-        "ImageOsVersionOverride": "Specifies the operating system version for the source image.",
+        "ImageOsVersionOverride": "Specifies the operating system version for the base image.",
         "InstanceConfiguration": "A group of options that can be used to configure an instance for building and testing container images.",
         "KmsKeyId": "Identifies which KMS key is used to encrypt the container image for distribution to the target Region.",
         "Name": "The name of the container recipe.",
         "ParentImage": "The base image for the container recipe.",
-        "PlatformOverride": "Specifies the operating system platform when you use a custom source image.",
+        "PlatformOverride": "Specifies the operating system platform when you use a custom base image.",
         "Tags": "Tags that are attached to the container recipe.",
         "TargetRepository": "The destination repository for the container image.",
         "Version": "The semantic version of the container recipe.\n\n> The semantic version has four nodes: <major>.<minor>.<patch>/<build>. You can assign values for the first three, and can filter on all of them.\n> \n> *Assignment:* For the first three nodes you can assign any positive integer value, including zero, with an upper limit of 2^30-1, or 1073741823 for each node. Image Builder automatically assigns the build number to the fourth node.\n> \n> *Patterns:* You can use any numeric pattern that adheres to the assignment requirements for the nodes that you can assign. For example, you might choose a software version pattern, such as 1.0.0, or a date, such as 2021.01.01.\n> \n> *Filtering:* With semantic versioning, you have the flexibility to use wildcards (x) to specify the most recent versions or nodes when selecting the base image or components for your recipe. When you use a wildcard in any node, all nodes to the right of the first wildcard must also be wildcards.",
@@ -20919,7 +20919,7 @@
     },
     "AWS::ImageBuilder::ContainerRecipe.InstanceConfiguration": {
       "attributes": {},
-      "description": "Defines a custom source AMI and block device mapping configurations of an instance used for building and testing container images.",
+      "description": "Defines a custom base AMI and block device mapping configurations of an instance used for building and testing container images.",
       "properties": {
         "BlockDeviceMappings": "Defines the block devices to attach for building an instance from this Image Builder AMI.",
         "Image": "The AMI ID to use as the base image for a container build and test instance. If not specified, Image Builder will use the appropriate ECS-optimized AMI as a base image."
@@ -20954,7 +20954,7 @@
         "AmiTags": "The tags to apply to AMIs distributed to this Region.",
         "Description": "The description of the AMI distribution configuration. Minimum and maximum length are in characters.",
         "KmsKeyId": "The KMS key identifier used to encrypt the distributed image.",
-        "LaunchPermissionConfiguration": "",
+        "LaunchPermissionConfiguration": "Launch permissions can be used to configure which AWS account s can use the AMI to launch instances.",
         "Name": "The name of the output AMI.",
         "TargetAccountIds": "The ID of an account to which you want to distribute an image."
       }
@@ -21009,8 +21009,8 @@
     "AWS::ImageBuilder::Image": {
       "attributes": {
         "Arn": "Returns the Amazon Resource Name (ARN) of the image. For example, `arn:aws:imagebuilder:us-west-2:123456789012:image/mybasicrecipe/2019.12.03/1` .",
-        "ImageId": "Returns the AMI ID of the Amazon EC2 AMI in the Region in which you are using Image Builder.",
-        "ImageUri": "",
+        "ImageId": "Returns the AMI ID of the Amazon EC2 AMI in the Region in which you are using Image Builder. Values are returned only for AMIs, and not for container images.",
+        "ImageUri": "Returns a list of URIs for container images created in the context Region. Values are returned only for container images, and not for AMIs.",
         "Name": "Returns the name of the image.",
         "Ref": "`Ref` returns the resource ARN, such as `arn:aws:imagebuilder:us-west-2:123456789012:image/my-example-image` ."
       },
@@ -21066,7 +21066,7 @@
       "attributes": {},
       "description": "A schedule configures how often and when a pipeline will automatically create a new image.",
       "properties": {
-        "PipelineExecutionStartCondition": "The condition configures when the pipeline should trigger a new image build. When the `pipelineExecutionStartCondition` is set to `EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE` , and you use semantic version filters on the source image or components in your image recipe, Image Builder will build a new image only when there are new versions of the image or components in your recipe that match the semantic version filter. When it is set to `EXPRESSION_MATCH_ONLY` , it will build a new image every time the CRON expression matches the current time. For semantic version syntax, see [CreateComponent](https://docs.aws.amazon.com/imagebuilder/latest/APIReference/API_CreateComponent.html) in the *Image Builder API Reference* .",
+        "PipelineExecutionStartCondition": "The condition configures when the pipeline should trigger a new image build. When the `pipelineExecutionStartCondition` is set to `EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE` , and you use semantic version filters on the base image or components in your image recipe, Image Builder will build a new image only when there are new versions of the image or components in your recipe that match the semantic version filter. When it is set to `EXPRESSION_MATCH_ONLY` , it will build a new image every time the CRON expression matches the current time. For semantic version syntax, see [CreateComponent](https://docs.aws.amazon.com/imagebuilder/latest/APIReference/API_CreateComponent.html) in the *Image Builder API Reference* .",
         "ScheduleExpression": "The cron expression determines how often EC2 Image Builder evaluates your `pipelineExecutionStartCondition` .\n\nFor information on how to format a cron expression in Image Builder, see [Use cron expressions in EC2 Image Builder](https://docs.aws.amazon.com/imagebuilder/latest/userguide/image-builder-cron.html) ."
       }
     },
@@ -21076,7 +21076,7 @@
         "Name": "The name of the image recipe.",
         "Ref": "`Ref` returns the resource ARN, such as `arn:aws:imagebuilder:us-east-1:123456789012:image-recipe/mybasicrecipe/2019.12.03` ."
       },
-      "description": "An Image Builder image recipe is a document that defines the source image and the components to be applied to the source image to produce the desired configuration for the output image. You can use an image recipe to duplicate builds. Image Builder image recipes can be shared, branched, and edited using the console wizard, the AWS CLI , or the API. You can use image recipes with your version control software to maintain shareable versioned image recipes.",
+      "description": "An Image Builder image recipe is a document that defines the base image and the components to be applied to the base image to produce the desired configuration for the output image. You can use an image recipe to duplicate builds. Image Builder image recipes can be shared, branched, and edited using the console wizard, the AWS CLI , or the API. You can use image recipes with your version control software to maintain shareable versioned image recipes.",
       "properties": {
         "AdditionalInstanceConfiguration": "Before you create a new AMI, Image Builder launches temporary Amazon EC2 instances to build and test your image configuration. Instance configuration adds a layer of control over those instances. You can define settings and add scripts to run when an instance is launched from your AMI.",
         "BlockDeviceMappings": "The block device mappings to apply when creating images from this recipe.",
@@ -27268,7 +27268,7 @@
       "attributes": {},
       "description": "Specifies the map tile style selected from an available provider.",
       "properties": {
-        "Style": "Specifies the map style selected from an available data provider.\n\nValid styles: `VectorEsriStreets` , `VectorEsriTopographic` , `VectorEsriNavigation` , `VectorEsriDarkGrayCanvas` , `VectorEsriLightGrayCanvas` , `VectorHereBerlin` .\n\n> When using HERE as your data provider, and selecting the Style `VectorHereBerlin` , you may not use HERE Technologies maps for Asset Management. See the [AWS Service Terms](https://docs.aws.amazon.com/service-terms/) for Amazon Location Service."
+        "Style": "Specifies the map style selected from an available data provider.\n\nValid [Esri map styles](https://docs.aws.amazon.com/location/latest/developerguide/esri.html) :\n\n- `VectorEsriDarkGrayCanvas` \u2013 The Esri Dark Gray Canvas map style. A vector basemap with a dark gray, neutral background with minimal colors, labels, and features that's designed to draw attention to your thematic content.\n- `RasterEsriImagery` \u2013 The Esri Imagery map style. A raster basemap that provides one meter or better satellite and aerial imagery in many parts of the world and lower resolution satellite imagery worldwide.\n- `VectorEsriLightGrayCanvas` \u2013 The Esri Light Gray Canvas map style, which provides a detailed vector basemap with a light gray, neutral background style with minimal colors, labels, and features that's designed to draw attention to your thematic content.\n- `VectorEsriTopographic` \u2013 The Esri Light map style, which provides a detailed vector basemap with a classic Esri map style.\n- `VectorEsriStreets` \u2013 The Esri World Streets map style, which provides a detailed vector basemap for the world symbolized with a classic Esri street map style. The vector tile layer is similar in content and style to the World Street Map raster map.\n- `VectorEsriNavigation` \u2013 The Esri World Navigation map style, which provides a detailed basemap for the world symbolized with a custom navigation map style that's designed for use during the day in mobile devices.\n\nValid [HERE Technologies map styles](https://docs.aws.amazon.com/location/latest/developerguide/HERE.html) :\n\n- `VectorHereBerlin` \u2013 The HERE Berlin map style is a high contrast detailed base map of the world that blends 3D and 2D rendering.\n- `VectorHereExplore` \u2013 A default HERE map style containing a neutral, global map and its features including roads, buildings, landmarks, and water features. It also now includes a fully designed map of Japan.\n- `VectorHereExploreTruck` \u2013 A global map containing truck restrictions and attributes (e.g. width / height / HAZMAT) symbolized with highlighted segments and icons on top of HERE Explore to support use cases within transport and logistics."
       }
     },
     "AWS::Location::PlaceIndex": {
@@ -30759,7 +30759,7 @@
         "RuleGroup": "An object that defines the rule group rules.",
         "RuleGroupName": "The descriptive name of the rule group. You can't change the name of a rule group after you create it.",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
-        "Type": "Indicates whether the rule group is stateless or stateful. If the rule group is stateless, it contains stateless rules. If it is stateful, it contains stateful rules."
+        "Type": "Indicates whether the rule group is stateless or stateful. If the rule group is stateless, it contains\nstateless rules. If it is stateful, it contains stateful rules."
       }
     },
     "AWS::NetworkFirewall::RuleGroup.ActionDefinition": {
@@ -33831,7 +33831,7 @@
       },
       "description": "The `AWS::RDS::DBParameterGroup` resource creates a custom parameter group for an RDS database family.\n\nThis type can be declared in a template and referenced in the `DBParameterGroupName` property of an `[AWS::RDS::DBInstance](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html)` resource.\n\nFor information about configuring parameters for Amazon RDS DB instances, see [Working with DB parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor information about configuring parameters for Amazon Aurora DB instances, see [Working with DB parameter groups and DB cluster parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> Applying a parameter group to a DB instance may require the DB instance to reboot, resulting in a database outage for the duration of the reboot.",
       "properties": {
-        "Description": "Provides the customer-specified description for this DB parameter group.",
+        "Description": "Provides the customer-specified description for this DB Parameter Group.",
         "Family": "The DB parameter group family name. A DB parameter group can be associated with one and only one DB parameter group family, and can be applied only to a DB instance running a DB engine and engine version compatible with that DB parameter group family.\n\n> The DB parameter group family can't be changed when updating a DB parameter group. \n\nTo list all of the available parameter group families, use the following command:\n\n`aws rds describe-db-engine-versions --query \"DBEngineVersions[].DBParameterGroupFamily\"`\n\nThe output contains duplicates.\n\nFor more information, see `[CreateDBParameterGroup](https://docs.aws.amazon.com//AmazonRDS/latest/APIReference/API_CreateDBParameterGroup.html)` .",
         "Parameters": "An array of parameter names and values for the parameter update. At least one parameter name and value must be supplied. Subsequent arguments are optional.\n\nFor more information about DB parameters and DB parameter groups for Amazon RDS DB engines, see [Working with DB Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor more information about DB cluster and DB instance parameters and parameter groups for Amazon Aurora DB engines, see [Working with DB Parameter Groups and DB Cluster Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> AWS CloudFormation doesn't support specifying an apply method for each individual parameter. The default apply method for each parameter is used.",
         "Tags": "Tags to assign to the DB parameter group."
@@ -33935,7 +33935,7 @@
       "properties": {
         "DBSecurityGroupIngress": "Ingress rules to be applied to the DB security group.",
         "EC2VpcId": "The identifier of an Amazon VPC. This property indicates the VPC that this DB security group belongs to.\n\n> The `EC2VpcId` property is for backward compatibility with older regions, and is no longer recommended for providing security information to an RDS DB instance.",
-        "GroupDescription": "Provides the description of the DB security group.",
+        "GroupDescription": "Provides the description of the DB Security Group.",
         "Tags": "Tags to assign to the DB security group."
       }
     },
@@ -37006,7 +37006,7 @@
       "attributes": {},
       "description": "Specifies the ARN's of a SageMaker image and SageMaker image version, and the instance type that the version runs on.",
       "properties": {
-        "InstanceType": "The instance type that the image version runs on.\n\n> JupyterServer Apps only support the `system` value.",
+        "InstanceType": "The instance type that the image version runs on.\n\n> JupyterServer Apps only support the `system` value. KernelGateway Apps do not support the `system` value, but support all other values for available instance types.",
         "SageMakerImageArn": "The ARN of the SageMaker image that the image version belongs to.",
         "SageMakerImageVersionArn": "The ARN of the image version created on the instance."
       }
@@ -37292,7 +37292,7 @@
       "attributes": {},
       "description": "The JupyterServer app settings.",
       "properties": {
-        "DefaultResourceSpec": "The default instance type and the Amazon Resource Name (ARN) of the default SageMaker image used by the JupyterServer app."
+        "DefaultResourceSpec": "The default instance type and the Amazon Resource Name (ARN) of the default SageMaker image used by the JupyterServer app. If you use the `LifecycleConfigArns` parameter, then this parameter is also required."
       }
     },
     "AWS::SageMaker::Domain.KernelGatewayAppSettings": {
@@ -37325,7 +37325,7 @@
       "attributes": {},
       "description": "Specifies the ARN's of a SageMaker image and SageMaker image version, and the instance type that the version runs on.",
       "properties": {
-        "InstanceType": "The instance type that the image version runs on.\n\n> JupyterServer Apps only support the `system` value.",
+        "InstanceType": "The instance type that the image version runs on.\n\n> JupyterServer Apps only support the `system` value. KernelGateway Apps do not support the `system` value, but support all other values for available instance types.",
         "SageMakerImageArn": "The ARN of the SageMaker image that the image version belongs to.",
         "SageMakerImageVersionArn": "The ARN of the image version created on the instance."
       }
@@ -38348,7 +38348,7 @@
       "attributes": {},
       "description": "The JupyterServer app settings.",
       "properties": {
-        "DefaultResourceSpec": "The default instance type and the Amazon Resource Name (ARN) of the default SageMaker image used by the JupyterServer app."
+        "DefaultResourceSpec": "The default instance type and the Amazon Resource Name (ARN) of the default SageMaker image used by the JupyterServer app. If you use the `LifecycleConfigArns` parameter, then this parameter is also required."
       }
     },
     "AWS::SageMaker::UserProfile.KernelGatewayAppSettings": {
@@ -38371,7 +38371,7 @@
       "attributes": {},
       "description": "Specifies the ARN's of a SageMaker image and SageMaker image version, and the instance type that the version runs on.",
       "properties": {
-        "InstanceType": "The instance type that the image version runs on.\n\n> JupyterServer Apps only support the `system` value.",
+        "InstanceType": "The instance type that the image version runs on.\n\n> JupyterServer Apps only support the `system` value. KernelGateway Apps do not support the `system` value, but support all other values for available instance types.",
         "SageMakerImageArn": "The ARN of the SageMaker image that the image version belongs to.",
         "SageMakerImageVersionArn": "The ARN of the image version created on the instance."
       }
