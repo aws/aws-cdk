@@ -347,7 +347,7 @@ export abstract class NetworkLoadBalancedServiceBase extends CoreConstruct {
     const loadBalancer = props.loadBalancer ?? new NetworkLoadBalancer(this, 'LB', lbProps);
     const listenerPort = props.listenerPort ?? 80;
     const targetProps = {
-      port: props.taskImageOptions?.containerPort ?? listenerPort,
+      port: props?.taskDefinition.defaultContainer?.containerPort ?? props.taskImageOptions?.containerPort ?? 80,
     };
 
     this.listener = loadBalancer.addListener('PublicListener', { port: listenerPort });
