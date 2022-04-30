@@ -530,9 +530,9 @@ function validateRolePath(path?: string) {
   const validRolePath = /^(\/|\/[\u0021-\u007F]+\/)$/;
 
   if (path.length == 0 || path.length > 512) {
-    throw new Error(`role path is set to ${path}, but the length must be >= 1 and <= 512.`);
+    throw new Error(`Role path must be between 1 and 512 characters. The provided role path is ${path.length} characters.`);
   } else if (!validRolePath.test(path)) {
-    throw new Error(`role path is set to ${path}, but must match ${validRolePath.toString()}.`);
+    throw new Error(`Role path must match (\\u002F)|(\\u002F[\\u0021-\\u007F]+\\u002F). ${path} is provided.`);
   }
 }
 
