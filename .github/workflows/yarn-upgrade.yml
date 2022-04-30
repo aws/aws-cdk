@@ -65,6 +65,10 @@ jobs:
           lerna exec --parallel ncu -- --upgrade --filter=@types/node,@types/fs-extra --target=minor
           lerna exec --parallel ncu -- --upgrade --filter=typescript --target=patch
           lerna exec --parallel ncu -- --upgrade --reject='@types/node,@types/fs-extra,constructs,typescript,aws-sdk,aws-sdk-mock,${{ steps.list-packages.outputs.list }}'  --target=minor
+          # Upgrade package.jsons in init templates
+          for pj in $(find packages/aws-cdk/lib/init-templates -name package.json); do
+            (cd $(dirname $pj) && ncu --upgrade --reject='@types/node,@types/fs-extra,constructs,typescript,aws-sdk,aws-sdk-mock,${{ steps.list-packages.outputs.list }}')
+          done
 
       # This will ensure the current lockfile is up-to-date with the dependency specifications (necessary for "yarn update" to run)
       - name: Run "yarn install"
@@ -85,7 +89,7 @@ jobs:
           git add .
           git diff --patch --staged > ${{ runner.temp }}/upgrade.patch
       - name: Upload Patch
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: upgrade.patch
           path: ${{ runner.temp }}/upgrade.patch
@@ -102,7 +106,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Download patch
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: upgrade.patch
           path: ${{ runner.temp }}

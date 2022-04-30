@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-s3-deployment/test/integ.bucket-deployment-cloudfront": {
+      "stacks": [
+        "test-bucket-deployments-1"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

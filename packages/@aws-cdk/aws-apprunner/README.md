@@ -65,7 +65,7 @@ new apprunner.Service(this, 'Service', {
   source: apprunner.Source.fromEcr({
     imageConfiguration: { port: 80 },
     repository: ecr.Repository.fromRepositoryName(this, 'NginxRepository', 'nginx'),
-    tag: 'latest',
+    tagOrDigest: 'latest',
   }),
 });
 ```

@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-cdk-codepipeline-s3-deploy": {
       "type": "aws:cloudformation:stack",
@@ -26,6 +25,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DeployBucket67E2C076"
+          }
+        ],
+        "/aws-cdk-codepipeline-s3-deploy/OtherDeployBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OtherDeployBucket7B0CCE57"
           }
         ],
         "/aws-cdk-codepipeline-s3-deploy/Pipeline/Role/Resource": [
@@ -68,6 +73,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineDeployDeployActionCodePipelineActionRoleDefaultPolicyE194961B"
+          }
+        ],
+        "/aws-cdk-codepipeline-s3-deploy/Pipeline/Disabled/DisabledDeployAction/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineDisabledDisabledDeployActionCodePipelineActionRole9CEF3915"
+          }
+        ],
+        "/aws-cdk-codepipeline-s3-deploy/Pipeline/Disabled/DisabledDeployAction/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineDisabledDisabledDeployActionCodePipelineActionRoleDefaultPolicyB1AF629C"
           }
         ]
       },

@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "MyStack": {
       "type": "aws:cloudformation:stack",
@@ -63,7 +62,7 @@
         "/MyStack/MyFunction/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunctionCurrentVersion197490AFd134f68e4774c24a4ca6cc78849e3dfd"
+            "data": "MyFunctionCurrentVersion197490AF776ea8de2edf446759649703b18110a4"
           }
         ],
         "/MyStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider/Role": [
