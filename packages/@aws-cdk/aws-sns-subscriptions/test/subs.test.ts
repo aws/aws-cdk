@@ -6,6 +6,10 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import { App, CfnParameter, Duration, RemovalPolicy, Stack, Token } from '@aws-cdk/core';
 import * as subs from '../lib';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /* eslint-disable quote-props */
 
 let stack: Stack;
@@ -1257,6 +1261,152 @@ test('lambda subscription, cross region env agnostic', () => {
             'Fn::GetAtt': [
               'MyFunc8A243A2C',
               'Arn',
+            ],
+          },
+        },
+      },
+    },
+  });
+});
+
+test('lambda subscription with same ids in different scopes', () => {
+  const fction = new lambda.Function(stack, 'MyFunc', {
+    runtime: lambda.Runtime.NODEJS_14_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+  });
+
+  const resource1 = new Construct(stack, 'scope1');
+  const topic1 = new sns.Topic(resource1, 'topic');
+  const resource2 = new Construct(stack, 'scope2');
+  const topic2 = new sns.Topic(resource2, 'topic');
+
+  topic1.addSubscription(new subs.LambdaSubscription(fction));
+  topic2.addSubscription(new subs.LambdaSubscription(fction));
+
+  Template.fromStack(stack).templateMatches({
+    'Resources': {
+      'scope1topicCD0AC840': {
+        'Type': 'AWS::SNS::Topic',
+      },
+      'scope2topic702EB635': {
+        'Type': 'AWS::SNS::Topic',
+      },
+      'MyFuncscope1topicB64F78A6D32D8A65': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': {
+            'Fn::GetAtt': [
+              'MyFunc8A243A2C',
+              'Arn',
+            ],
+          },
+          'Protocol': 'lambda',
+          'TopicArn': {
+            'Ref': 'scope1topicCD0AC840',
+          },
+        },
+      },
+      'MyFuncAllowInvokescope2topic0AF5778D1015F4AD': {
+        'Type': 'AWS::Lambda::Permission',
+        'Properties': {
+          'Action': 'lambda:InvokeFunction',
+          'FunctionName': {
+            'Fn::GetAtt': [
+              'MyFunc8A243A2C',
+              'Arn',
+            ],
+          },
+          'SourceArn': {
+            'Ref': 'scope2topic702EB635',
+          },
+          'Principal': 'sns.amazonaws.com',
+        },
+      },
+      'MyFuncscope2topic0AF5778DB533C080': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': {
+            'Fn::GetAtt': [
+              'MyFunc8A243A2C',
+              'Arn',
+            ],
+          },
+          'Protocol': 'lambda',
+          'TopicArn': {
+            'Ref': 'scope2topic702EB635',
+          },
+        },
+      },
+      'MyFuncAllowInvokescope1topicB64F78A64031ACAB': {
+        'Type': 'AWS::Lambda::Permission',
+        'Properties': {
+          'Action': 'lambda:InvokeFunction',
+          'FunctionName': {
+            'Fn::GetAtt': [
+              'MyFunc8A243A2C',
+              'Arn',
+            ],
+          },
+          'SourceArn': {
+            'Ref': 'scope1topicCD0AC840',
+          },
+          'Principal': 'sns.amazonaws.com',
+        },
+      },
+      'MyFunc8A243A2C': {
+        'Type': 'AWS::Lambda::Function',
+        'Properties': {
+          'Handler': 'index.handler',
+          'Code': {
+            'ZipFile': 'exports.handler = function(e, c, cb) { return cb() }',
+          },
+          'Role': {
+            'Fn::GetAtt': [
+              'MyFuncServiceRole54065130',
+              'Arn',
+            ],
+          },
+          'Runtime': 'nodejs14.x',
+        },
+        'DependsOn': [
+          'MyFuncServiceRole54065130',
+        ],
+      },
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName',
+        },
+      },
+      'MyFuncServiceRole54065130': {
+        'Type': 'AWS::IAM::Role',
+        'Properties': {
+          'ManagedPolicyArns': [
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    'Ref': 'AWS::Partition',
+                  },
+                  ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+                ],
+              ],
+            },
+          ],
+          'AssumeRolePolicyDocument': {
+            'Version': '2012-10-17',
+            'Statement': [
+              {
+                'Action': 'sts:AssumeRole',
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': 'lambda.amazonaws.com',
+                },
+              },
             ],
           },
         },
