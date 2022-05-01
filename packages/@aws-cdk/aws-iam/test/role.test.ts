@@ -245,37 +245,60 @@ describe('IAM role', () => {
     });
   });
 
-  test('role path must be between 1 chars and 512 chars', () => {
+  test('role path can be 1 character', () => {
     const stack = new Stack();
 
     const assumedBy = new ServicePrincipal('bla');
 
-    // valid test cases
-    expect(() => new Role(stack, 'MyRole1', { assumedBy, path: '/' })).not.toThrowError();
-    expect(() => new Role(stack, 'MyRole2', { assumedBy, path: '/p/a/t/h/' })).not.toThrowError();
-
-    // invalid test cases
-    const expected = (val: any) => `Role path must be between 1 and 512 characters. The provided role path is ${val} characters.`;
-    expect(() => new Role(stack, 'MyRole3', { assumedBy, path: '' }))
-      .toThrow(expected(0));
-    expect(() => new Role(stack, 'MyRole4', { assumedBy, path: '/' + Array(512).join('a') + '/' }))
-      .toThrow(expected(513));
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/' })).not.toThrowError();
   });
 
-  test('role path must match regular expression', () => {
+  test('role path cannot be empty', () => {
     const stack = new Stack();
 
     const assumedBy = new ServicePrincipal('bla');
 
-    const expected = (val: any) => `Role path must match (\\u002F)|(\\u002F[\\u0021-\\u007F]+\\u002F). ${val} is provided.`;
-    expect(() => new Role(stack, 'MyRole1', { assumedBy, path: 'aaa' }))
-      .toThrow(expected('aaa'));
-    expect(() => new Role(stack, 'MyRole2', { assumedBy, path: '/a' }))
-      .toThrow(expected('/a'));
-    expect(() => new Role(stack, 'MyRole3', { assumedBy, path: '/\u0020/' }))
-      .toThrow(expected('/\u0020/'));
-    expect(() => new Role(stack, 'MyRole4', { assumedBy, path: '/\u0080/' }))
-      .toThrow(expected('/\u0080/'));
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '' }))
+      .toThrow('Role path must be between 1 and 512 characters. The provided role path is 0 characters.');
+  });
+
+  test('role path must be less than or equal to 512', () => {
+    const stack = new Stack();
+
+    const assumedBy = new ServicePrincipal('bla');
+
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/' + Array(512).join('a') + '/' }))
+      .toThrow('Role path must be between 1 and 512 characters. The provided role path is 513 characters.');
+  });
+
+  test('role path must start with a forward slash', () => {
+    const stack = new Stack();
+
+    const assumedBy = new ServicePrincipal('bla');
+
+    const expected = (val: any) => 'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
+    + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${val} is provided.`;
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: 'aaa' })).toThrow(expected('aaa'));
+  });
+
+  test('role path must end with a forward slash', () => {
+    const stack = new Stack();
+
+    const assumedBy = new ServicePrincipal('bla');
+
+    const expected = (val: any) => 'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
+    + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${val} is provided.`;
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/a' })).toThrow(expected('/a'));
+  });
+
+  test('role path must contain unicode chars within [\\u0021-\\u007F]', () => {
+    const stack = new Stack();
+
+    const assumedBy = new ServicePrincipal('bla');
+
+    const expected = (val: any) => 'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
+    + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${val} is provided.`;
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/\u0020\u0080/' })).toThrow(expected('/\u0020\u0080/'));
   });
 
   describe('maxSessionDuration', () => {

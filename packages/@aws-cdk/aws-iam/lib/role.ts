@@ -532,7 +532,9 @@ function validateRolePath(path?: string) {
   if (path.length == 0 || path.length > 512) {
     throw new Error(`Role path must be between 1 and 512 characters. The provided role path is ${path.length} characters.`);
   } else if (!validRolePath.test(path)) {
-    throw new Error(`Role path must match (\\u002F)|(\\u002F[\\u0021-\\u007F]+\\u002F). ${path} is provided.`);
+    throw new Error(
+      'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
+      + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${path} is provided.`);
   }
 }
 
