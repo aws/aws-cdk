@@ -1,6 +1,7 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 
 describe('lambda version', () => {
   test('can import a Lambda version by ARN', () => {
@@ -14,7 +15,7 @@ describe('lambda version', () => {
     new cdk.CfnOutput(stack, 'Name', { value: version.functionName });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Outputs: {
         ARN: {
           Value: 'arn:aws:lambda:region:account-id:function:function-name:version',
@@ -43,7 +44,7 @@ describe('lambda version', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
       FunctionName: {
         Ref: 'Fn9270CBC0',
       },
@@ -91,19 +92,19 @@ describe('lambda version', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
       FunctionName: 'function-name',
       Qualifier: 'version1',
       MaximumRetryAttempts: 1,
     });
-    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
       FunctionName: 'function-name',
       Qualifier: 'version2',
       MaximumRetryAttempts: 0,
     });
   });
 
-  test('addAlias can be used to add an alias that points to a version', () => {
+  testDeprecated('addAlias can be used to add an alias that points to a version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
@@ -117,7 +118,7 @@ describe('lambda version', () => {
     version.addAlias('foo');
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
       FunctionName: {
         Ref: 'Fn9270CBC0',
       },
@@ -180,5 +181,25 @@ describe('lambda version', () => {
 
     // THEN
     expect(() => app.synth()).toThrow(/KEY1,KEY2/);
+  });
+
+  test('throws when adding FunctionUrl to a Version', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+    const version = new lambda.Version(stack, 'Version', {
+      lambda: fn,
+      maxEventAge: cdk.Duration.hours(1),
+      retryAttempts: 0,
+    });
+
+    // WHEN
+    expect(() => {
+      version.addFunctionUrl();
+    }).toThrow(/FunctionUrl cannot be used with a Version/);
   });
 });

@@ -351,6 +351,17 @@ export interface SelectedSubnets {
    * Whether any of the given subnets are from the VPC's public subnets.
    */
   readonly hasPublic: boolean;
+
+  /**
+   * The subnet selection is not actually real yet
+   *
+   * If this value is true, don't validate anything about the subnets. The count
+   * or identities are not known yet, and the validation will most likely fail
+   * which will prevent a successful lookup.
+   *
+   * @default false
+   */
+  readonly isPendingLookup?: boolean;
 }
 
 /**
@@ -430,6 +441,7 @@ abstract class VpcBase extends Resource implements IVpc {
       internetConnectivityEstablished: tap(new CompositeDependable(), d => subnets.forEach(s => d.add(s.internetConnectivityEstablished))),
       subnets,
       hasPublic: subnets.some(s => pubs.has(s)),
+      isPendingLookup: this.incompleteSubnetDefinition,
     };
   }
 
@@ -956,6 +968,8 @@ export interface VpcProps {
 
   /**
    * The VPC name.
+   *
+   * Since the VPC resource doesn't support providing a physical name, the value provided here will be recorded in the `Name` tag
    *
    * @default this.node.path
    */
@@ -2193,6 +2207,24 @@ const DUMMY_VPC_PROPS: cxapi.VpcContextResponse = {
     {
       name: 'Private',
       type: cxapi.VpcSubnetGroupType.PRIVATE,
+      subnets: [
+        {
+          availabilityZone: 'dummy1a',
+          subnetId: 'p-12345',
+          routeTableId: 'rtb-12345p',
+          cidr: '1.2.3.4/5',
+        },
+        {
+          availabilityZone: 'dummy1b',
+          subnetId: 'p-67890',
+          routeTableId: 'rtb-57890p',
+          cidr: '1.2.3.4/5',
+        },
+      ],
+    },
+    {
+      name: 'Isolated',
+      type: cxapi.VpcSubnetGroupType.ISOLATED,
       subnets: [
         {
           availabilityZone: 'dummy1a',

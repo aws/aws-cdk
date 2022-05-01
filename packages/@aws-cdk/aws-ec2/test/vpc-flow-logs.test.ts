@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -13,23 +13,21 @@ describe('vpc flow logs', () => {
       resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123455'),
     });
 
-    expect(stack).
-      toHaveResource('AWS::EC2::FlowLog', {
-        ResourceType: 'NetworkInterface',
-        TrafficType: 'ALL',
-        ResourceId: 'eni-123455',
-        DeliverLogsPermissionArn: {
-          'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
-        },
-        LogGroupName: {
-          Ref: 'FlowLogsLogGroup9853A85F',
-        },
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      ResourceType: 'NetworkInterface',
+      TrafficType: 'ALL',
+      ResourceId: 'eni-123455',
+      DeliverLogsPermissionArn: {
+        'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
       },
-      );
+      LogGroupName: {
+        Ref: 'FlowLogsLogGroup9853A85F',
+      },
+    });
 
-    expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
-    expect(stack).toCountResources('AWS::IAM::Role', 1);
-    expect(stack).not.toHaveResource('AWS::S3::Bucket');
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 0);
 
   });
   test('with cloudwatch logs as the destination, allows use of existing resources', () => {
@@ -48,13 +46,13 @@ describe('vpc flow logs', () => {
       ),
     });
 
-    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       RetentionInDays: 5,
     });
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       RoleName: 'TestName',
     });
-    expect(stack).not.toHaveResource('AWS::S3::Bucket');
+    Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 0);
 
   });
   test('with s3 as the destination, allows use of existing resources', () => {
@@ -69,9 +67,9 @@ describe('vpc flow logs', () => {
       ),
     });
 
-    expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
-    expect(stack).not.toHaveResource('AWS::IAM::Role');
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       BucketName: 'testbucket',
     });
 
@@ -89,9 +87,9 @@ describe('vpc flow logs', () => {
       ),
     });
 
-    expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
-    expect(stack).not.toHaveResource('AWS::IAM::Role');
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       BucketName: 'testbucket',
     });
 
@@ -104,19 +102,17 @@ describe('vpc flow logs', () => {
       destination: FlowLogDestination.toS3(),
     });
 
-    expect(stack).
-      toHaveResource('AWS::EC2::FlowLog', {
-        ResourceType: 'NetworkInterface',
-        TrafficType: 'ALL',
-        ResourceId: 'eni-123456',
-        LogDestination: {
-          'Fn::GetAtt': ['FlowLogsBucket87F67F60', 'Arn'],
-        },
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      ResourceType: 'NetworkInterface',
+      TrafficType: 'ALL',
+      ResourceId: 'eni-123456',
+      LogDestination: {
+        'Fn::GetAtt': ['FlowLogsBucket87F67F60', 'Arn'],
       },
-      );
-    expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
-    expect(stack).not.toHaveResource('AWS::IAM::Role');
-    expect(stack).toCountResources('AWS::S3::Bucket', 1);
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
 
   });
   test('create with vpc', () => {
@@ -128,22 +124,20 @@ describe('vpc flow logs', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::EC2::VPC');
-    expect(stack).
-      toHaveResource('AWS::EC2::FlowLog', {
-        ResourceType: 'VPC',
-        TrafficType: 'ALL',
-        ResourceId: {
-          Ref: 'VPCB9E5F0B4',
-        },
-        DeliverLogsPermissionArn: {
-          'Fn::GetAtt': ['VPCflowLogsIAMRole9D21E1A6', 'Arn'],
-        },
-        LogGroupName: {
-          Ref: 'VPCflowLogsLogGroupE900F980',
-        },
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::VPC', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      ResourceType: 'VPC',
+      TrafficType: 'ALL',
+      ResourceId: {
+        Ref: 'VPCB9E5F0B4',
       },
-      );
+      DeliverLogsPermissionArn: {
+        'Fn::GetAtt': ['VPCflowLogsIAMRole9D21E1A6', 'Arn'],
+      },
+      LogGroupName: {
+        Ref: 'VPCflowLogsLogGroupE900F980',
+      },
+    });
 
   });
   test('add to vpc', () => {
@@ -152,23 +146,20 @@ describe('vpc flow logs', () => {
     const vpc = new Vpc(stack, 'VPC');
     vpc.addFlowLog('FlowLogs');
 
-    expect(stack).toHaveResource('AWS::EC2::VPC');
-    expect(stack).
-      toHaveResource('AWS::EC2::FlowLog', {
-        ResourceType: 'VPC',
-        TrafficType: 'ALL',
-        ResourceId: {
-          Ref: 'VPCB9E5F0B4',
-        },
-        DeliverLogsPermissionArn: {
-          'Fn::GetAtt': ['VPCFlowLogsIAMRole55343234', 'Arn'],
-        },
-        LogGroupName: {
-          Ref: 'VPCFlowLogsLogGroupF48E1B0A',
-        },
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::VPC', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      ResourceType: 'VPC',
+      TrafficType: 'ALL',
+      ResourceId: {
+        Ref: 'VPCB9E5F0B4',
       },
-      );
-
+      DeliverLogsPermissionArn: {
+        'Fn::GetAtt': ['VPCFlowLogsIAMRole55343234', 'Arn'],
+      },
+      LogGroupName: {
+        Ref: 'VPCFlowLogsLogGroupF48E1B0A',
+      },
+    });
   });
 });
 

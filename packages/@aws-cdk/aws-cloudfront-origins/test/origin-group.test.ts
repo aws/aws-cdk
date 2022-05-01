@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
@@ -29,7 +29,7 @@ describe('Origin Groups', () => {
     const primaryOriginId = 'DistributionOrigin13547B94F';
     const failoverOriginId = 'DistributionOrigin2C85CC43B';
     const originGroupId = 'DistributionOriginGroup1A1A31B49';
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
           TargetOriginId: originGroupId,

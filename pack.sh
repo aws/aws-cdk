@@ -42,7 +42,6 @@ scripts/run-rosetta.sh --infuse --pkgs-from $TMPDIR/jsii.txt
 echo "Packaging jsii modules" >&2
 $PACMAK \
   --verbose \
-  --rosetta-tablet samples.tabl.json \
   $(cat $TMPDIR/jsii.txt)
 
 # Non-jsii packaging, which means running 'package' in every individual

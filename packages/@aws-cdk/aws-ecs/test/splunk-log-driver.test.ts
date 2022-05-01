@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
@@ -28,9 +28,9 @@ describe('splunk log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'splunk',
             Options: {
@@ -45,11 +45,9 @@ describe('splunk log driver', () => {
               },
             }],
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('create a splunk log driver using splunk with minimum options', () => {
@@ -64,9 +62,9 @@ describe('splunk log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'splunk',
             Options: {
@@ -81,11 +79,9 @@ describe('splunk log driver', () => {
               },
             }],
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('create a splunk log driver using splunk with sourcetype defined', () => {
@@ -101,9 +97,9 @@ describe('splunk log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'splunk',
             Options: {
@@ -119,11 +115,9 @@ describe('splunk log driver', () => {
               },
             }],
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('create a splunk log driver using secret splunk token from a new secret', () => {
@@ -139,9 +133,9 @@ describe('splunk log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'splunk',
             Options: {
@@ -156,11 +150,9 @@ describe('splunk log driver', () => {
               },
             ],
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('create a splunk log driver using secret splunk token from systems manager parameter store', () => {
@@ -179,9 +171,9 @@ describe('splunk log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'splunk',
             Options: {
@@ -213,11 +205,9 @@ describe('splunk log driver', () => {
               },
             ],
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('throws when neither token nor secret token are provided', () => {
@@ -230,7 +220,5 @@ describe('splunk log driver', () => {
         memoryLimitMiB: 128,
       });
     }).toThrow('Please provide either token or secretToken.');
-
-
   });
 });

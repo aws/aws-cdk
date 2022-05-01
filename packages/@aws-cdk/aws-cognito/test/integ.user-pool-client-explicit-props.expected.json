@@ -20,6 +20,16 @@
         },
         "EmailVerificationMessage": "The verification code to your new account is {####}",
         "EmailVerificationSubject": "Verify your new account",
+        "Schema": [
+          {
+            "AttributeDataType": "String",
+            "Name": "attribute_one"
+          },
+          {
+            "AttributeDataType": "String",
+            "Name": "attribute_two"
+          }
+        ],
         "SmsVerificationMessage": "The verification code to your new account is {####}",
         "VerificationMessageTemplate": {
           "DefaultEmailOption": "CONFIRM_WITH_CODE",

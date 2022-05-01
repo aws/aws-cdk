@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
@@ -34,7 +34,7 @@ describe('manual approval', () => {
         actions: [new cpactions.GitHubSourceAction({
           actionName: 'Source',
           output: new codepipeline.Artifact(),
-          oauthToken: SecretValue.plainText('secret'),
+          oauthToken: SecretValue.unsafePlainText('secret'),
           owner: 'aws',
           repo: 'aws-cdk',
         })],
@@ -48,7 +48,7 @@ describe('manual approval', () => {
 
       manualApprovalAction.grantManualApproval(role);
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
@@ -136,7 +136,7 @@ describe('manual approval', () => {
             actions: [new cpactions.GitHubSourceAction({
               actionName: 'Source',
               output: new codepipeline.Artifact(),
-              oauthToken: SecretValue.plainText('secret'),
+              oauthToken: SecretValue.unsafePlainText('secret'),
               owner: 'aws',
               repo: 'aws-cdk',
             })],
@@ -154,7 +154,7 @@ describe('manual approval', () => {
         ],
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',

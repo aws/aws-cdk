@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Bundle } from '@aws-cdk/node-bundle';
 import * as caseUtils from 'case';
 import * as glob from 'glob';
 import * as semver from 'semver';
@@ -129,7 +130,9 @@ export class RepositoryCorrect extends ValidationRule {
     expectJSON(this.name, pkg, 'repository.type', 'git');
     expectJSON(this.name, pkg, 'repository.url', 'https://github.com/aws/aws-cdk.git');
     const pkgDir = path.relative(monoRepoRoot(), pkg.packageRoot);
-    expectJSON(this.name, pkg, 'repository.directory', pkgDir);
+    // Enforcing '/' separator for builds to work in Windows.
+    const osPkgDir = pkgDir.split(path.sep).join('/');
+    expectJSON(this.name, pkg, 'repository.directory', osPkgDir);
   }
 }
 
@@ -166,6 +169,81 @@ export class LicenseFile extends ValidationRule {
   }
 }
 
+export class BundledCLI extends ValidationRule {
+
+  private static readonly ALLOWED_LICENSES = [
+    'Apache-2.0',
+    'MIT',
+    'BSD-3-Clause',
+    'ISC',
+    'BSD-2-Clause',
+    '0BSD',
+  ];
+
+  private static readonly DONT_ATTRIBUTE = '^@aws-cdk\/|^cdk-assets$|^cdk-cli-wrapper$';
+
+  public readonly name = 'bundle';
+
+  public validate(pkg: PackageJson): void {
+    const bundleProps = pkg.json['cdk-package']?.bundle;
+
+    if (!bundleProps) {
+      return;
+    }
+
+    const validConfig = this.validateConfig(pkg, bundleProps);
+    if (validConfig) {
+      this.validateBundle(pkg, bundleProps);
+    }
+  }
+
+  /**
+   * Validate package.json contains the necessary information for properly bundling the package.
+   * This will ensure that configuration can be safely used during packaging.
+   */
+  private validateConfig(pkg: PackageJson, bundleProps: any): boolean {
+    let valid = true;
+
+    if (bundleProps.allowedLicenses.join(',') !== BundledCLI.ALLOWED_LICENSES.join(',')) {
+      pkg.report({
+        message: `'cdk-package.bundle.licenses' must be set to "${BundledCLI.ALLOWED_LICENSES}"`,
+        ruleName: `${this.name}/configuration`,
+        fix: () => pkg.json['cdk-package'].bundle.licenses = BundledCLI.ALLOWED_LICENSES,
+      });
+      valid = false;
+    }
+
+    if (bundleProps.dontAttribute !== BundledCLI.DONT_ATTRIBUTE) {
+      pkg.report({
+        message: `'cdk-package.bundle.dontAttribute' must be set to "${BundledCLI.DONT_ATTRIBUTE}"`,
+        ruleName: `${this.name}/configuration`,
+        fix: () => pkg.json['cdk-package'].bundle.dontAttribute = BundledCLI.DONT_ATTRIBUTE,
+      });
+      valid = false;
+    }
+
+    return valid;
+
+  }
+
+  /**
+   * Validate the package is ready for bundling.
+   */
+  private validateBundle(pkg: PackageJson, bundleProps: any) {
+    const bundle = new Bundle({ packageDir: pkg.packageRoot, ...bundleProps });
+    const report = bundle.validate();
+
+    for (const violation of report.violations) {
+      pkg.report({
+        message: violation.message,
+        ruleName: `${this.name}/${violation.type}`,
+        fix: violation.fix,
+      });
+    }
+
+  }
+}
+
 /**
  * There must be a NOTICE file.
  */
@@ -184,6 +262,7 @@ export class ThirdPartyAttributions extends ValidationRule {
   public readonly name = 'license/3p-attributions';
 
   public validate(pkg: PackageJson): void {
+
     const alwaysCheck = ['monocdk', 'aws-cdk-lib'];
     if (pkg.json.private && !alwaysCheck.includes(pkg.json.name)) {
       return;
@@ -377,6 +456,12 @@ export class MaturitySetting extends ValidationRule {
   }
 
   private validateReadmeHasBanner(pkg: PackageJson, maturity: string, levelsPresent: string[]) {
+    if (pkg.packageName === '@aws-cdk/aws-elasticsearch') {
+      // Special case for elasticsearch, which is labeled as stable in package.json
+      // but all APIs are now marked 'deprecated'
+      return;
+    }
+
     const badge = this.readmeBadge(maturity, levelsPresent);
     if (!badge) {
       // Somehow, we don't have a badge for this stability level
@@ -726,7 +811,7 @@ export class JSIIPythonTarget extends ValidationRule {
 
     expectJSON(this.name, pkg, 'jsii.targets.python.distName', moduleName.python.distName);
     expectJSON(this.name, pkg, 'jsii.targets.python.module', moduleName.python.module);
-    expectJSON(this.name, pkg, 'jsii.targets.python.classifiers', ['Framework :: AWS CDK', 'Framework :: AWS CDK :: 1']);
+    expectJSON(this.name, pkg, 'jsii.targets.python.classifiers', ['Framework :: AWS CDK', `Framework :: AWS CDK :: ${cdkMajorVersion()}`]);
   }
 }
 
@@ -1179,14 +1264,14 @@ export class MustHaveIntegCommand extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!hasIntegTests(pkg)) { return; }
 
-    expectJSON(this.name, pkg, 'scripts.integ', 'cdk-integ');
+    expectJSON(this.name, pkg, 'scripts.integ', 'integ-runner');
 
     // We can't ACTUALLY require cdk-build-tools/package.json here,
     // because WE don't depend on cdk-build-tools and we don't know if
     // the package does.
     expectDevDependency(this.name,
       pkg,
-      '@aws-cdk/cdk-integ-tools',
+      '@aws-cdk/integ-runner',
       `${PKGLINT_VERSION}`); // eslint-disable-line @typescript-eslint/no-require-imports
   }
 }
@@ -1650,18 +1735,6 @@ export class UbergenPackageVisibility extends ValidationRule {
           },
         });
       }
-    } else {
-      if (pkg.json.private && !pkg.json.ubergen?.exclude) {
-        pkg.report({
-          ruleName: this.name,
-          message: 'ubergen.exclude must be configured for private packages',
-          fix: () => {
-            pkg.json.ubergen = {
-              exclude: true,
-            };
-          },
-        });
-      }
     }
   }
 }
@@ -1685,6 +1758,7 @@ export class NoExperimentalDependents extends ValidationRule {
     ['@aws-cdk/aws-events-targets', ['@aws-cdk/aws-kinesisfirehose']],
     ['@aws-cdk/aws-kinesisfirehose-destinations', ['@aws-cdk/aws-kinesisfirehose']],
     ['@aws-cdk/aws-iot-actions', ['@aws-cdk/aws-iot', '@aws-cdk/aws-kinesisfirehose']],
+    ['@aws-cdk/aws-iotevents-actions', ['@aws-cdk/aws-iotevents']],
   ]);
 
   private readonly excludedModules = ['@aws-cdk/cloudformation-include'];

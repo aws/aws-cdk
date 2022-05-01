@@ -7,6 +7,7 @@ const OWNER = 'aws';
 const REPO = 'aws-cdk';
 const EXEMPT_README = 'pr-linter/exempt-readme';
 const EXEMPT_TEST = 'pr-linter/exempt-test';
+const EXEMPT_INTEG_TEST = 'pr-linter/exempt-integ-test';
 const EXEMPT_BREAKING_CHANGE = 'pr-linter/exempt-breaking-change';
 
 class LinterError extends Error {
@@ -43,6 +44,10 @@ function testChanged(files: any[]) {
   return files.filter(f => f.filename.toLowerCase().includes("test")).length != 0;
 }
 
+function integTestChanged(files: any[]) {
+  return files.filter(f => f.filename.toLowerCase().match(/integ.*.ts$/)).length != 0;
+}
+
 function readmeChanged(files: any[]) {
   return files.filter(f => path.basename(f.filename) == "README.md").length != 0;
 }
@@ -65,12 +70,22 @@ function fixContainsTest(issue: any, files: any[]) {
   }
 };
 
+function featureContainsIntegTest(issue: any, files: any[]) {
+  if (isFeature(issue) && !integTestChanged(files)) {
+    throw new LinterError("Features must contain a change to an integration test file");
+  }
+};
+
 function shouldExemptReadme(issue: any) {
   return hasLabel(issue, EXEMPT_README);
 }
 
 function shouldExemptTest(issue: any) {
   return hasLabel(issue, EXEMPT_TEST);
+}
+
+function shouldExemptIntegTest(issue: any) {
+  return hasLabel(issue, EXEMPT_INTEG_TEST);
 }
 
 function shouldExemptBreakingChange(issue: any) {
@@ -97,7 +112,7 @@ function validateBreakingChangeFormat(title: string, body: string) {
     if (!m[0].startsWith('BREAKING CHANGE: ')) {
       throw new LinterError(`Breaking changes should be indicated by starting a line with 'BREAKING CHANGE: ', variations are not allowed. (found: '${m[0]}')`);
     }
-    if (m[0].substr('BREAKING CHANGE:'.length).trim().length === 0) {
+    if (m[0].slice('BREAKING CHANGE:'.length).trim().length === 0) {
       throw new LinterError("The description of the first breaking change should immediately follow the 'BREAKING CHANGE: ' clause");
     }
     const titleRe = /^[a-z]+\([0-9a-z-_]+\)/;
@@ -147,6 +162,12 @@ export async function validatePr(number: number) {
     featureContainsTest(issue, files);
     fixContainsTest(issue, files);
   }
+
+  if (shouldExemptIntegTest(issue)) {
+    console.log(`Not validating integration test changes since the PR is labeled with '${EXEMPT_INTEG_TEST}'`)
+  } else {
+    featureContainsIntegTest(issue, files);
+  }
  
   validateBreakingChangeFormat(issue.title, issue.body);
   if (shouldExemptBreakingChange(issue)) {
@@ -156,7 +177,6 @@ export async function validatePr(number: number) {
   }
 
   console.log("✅  Success");
-
 }
 
 require('make-runnable/custom')({

@@ -1,5 +1,4 @@
 import * as path from 'path';
-import '@aws-cdk/assert-internal/jest';
 import { Template } from '@aws-cdk/assertions';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';

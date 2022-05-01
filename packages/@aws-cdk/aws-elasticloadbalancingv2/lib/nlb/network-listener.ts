@@ -1,5 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { Duration, IResource, Resource, Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BaseListener, BaseListenerLookupOptions } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
@@ -7,6 +7,7 @@ import { AlpnPolicy, Protocol, SslPolicy } from '../shared/enums';
 import { IListenerCertificate } from '../shared/listener-certificate';
 import { validateNetworkProtocol } from '../shared/util';
 import { NetworkListenerAction } from './network-listener-action';
+import { NetworkListenerCertificate } from './network-listener-certificate';
 import { INetworkLoadBalancer } from './network-load-balancer';
 import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
 
@@ -161,6 +162,11 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   public readonly loadBalancer: INetworkLoadBalancer;
 
   /**
+   * ARNs of certificates added to this listener
+   */
+  private readonly certificateArns: string[];
+
+  /**
    * the protocol of the listener
    */
   private readonly protocol: Protocol;
@@ -188,13 +194,17 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       protocol: proto,
       port: props.port,
       sslPolicy: props.sslPolicy,
-      certificates: props.certificates,
+      certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
       alpnPolicy: props.alpnPolicy ? [props.alpnPolicy] : undefined,
     });
 
+    this.certificateArns = [];
     this.loadBalancer = props.loadBalancer;
     this.protocol = proto;
 
+    if (certs.length > 0) {
+      this.addCertificates('DefaultCertificates', certs);
+    }
     if (props.defaultAction && props.defaultTargetGroups) {
       throw new Error('Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'');
     }
@@ -205,6 +215,29 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 
     if (props.defaultTargetGroups) {
       this.setDefaultAction(NetworkListenerAction.forward(props.defaultTargetGroups));
+    }
+  }
+
+  /**
+   * Add one or more certificates to this listener.
+   *
+   * After the first certificate, this creates NetworkListenerCertificates
+   * resources since cloudformation requires the certificates array on the
+   * listener resource to have a length of 1.
+   */
+  public addCertificates(id: string, certificates: IListenerCertificate[]): void {
+    const additionalCerts = [...certificates];
+    if (this.certificateArns.length === 0 && additionalCerts.length > 0) {
+      const first = additionalCerts.splice(0, 1)[0];
+      this.certificateArns.push(first.certificateArn);
+    }
+    // Only one certificate can be specified per resource, even though
+    // `certificates` is of type Array
+    for (let i = 0; i < additionalCerts.length; i++) {
+      new NetworkListenerCertificate(this, `${id}${i + 1}`, {
+        listener: this,
+        certificates: [additionalCerts[i]],
+      });
     }
   }
 
@@ -361,7 +394,8 @@ export interface AddNetworkTargetsProps {
   /**
    * Health check configuration
    *
-   * @default No health check
+   * @default - The default value for each property in this configuration varies depending on the target.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-targetgroup.html#aws-resource-elasticloadbalancingv2-targetgroup-properties
    */
   readonly healthCheck?: HealthCheck;
 }

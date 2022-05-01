@@ -1,12 +1,7 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
-import { CloudFormation } from 'aws-sdk';
 import { ISDK } from '../aws-auth';
-import { CfnEvaluationException, EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 export const ICON = '✨';
-export interface ListStackResources {
-  listStackResources(): Promise<CloudFormation.StackResourceSummary[]>;
-}
 
 /**
  * An interface that represents a change that can be deployed in a short-circuit manner.
@@ -66,23 +61,6 @@ export class HotswappableChangeCandidate {
   }
 }
 
-export async function establishResourcePhysicalName(
-  logicalId: string, physicalNameInCfnTemplate: any, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
-): Promise<string | undefined> {
-  if (physicalNameInCfnTemplate != null) {
-    try {
-      return await evaluateCfnTemplate.evaluateCfnExpression(physicalNameInCfnTemplate);
-    } catch (e) {
-      // If we can't evaluate the resource's name CloudFormation expression,
-      // just look it up in the currently deployed Stack
-      if (!(e instanceof CfnEvaluationException)) {
-        throw e;
-      }
-    }
-  }
-  return evaluateCfnTemplate.findPhysicalNameFor(logicalId);
-}
-
 /**
  * This function transforms all keys (recursively) in the provided `val` object.
  *
@@ -108,5 +86,5 @@ export function transformObjectKeys(val: any, transform: (str: string) => string
  * This function lower cases the first character of the string provided.
  */
 export function lowerCaseFirstCharacter(str: string): string {
-  return str.length > 0 ? `${str[0].toLowerCase()}${str.substr(1)}` : str;
+  return str.length > 0 ? `${str[0].toLowerCase()}${str.slice(1)}` : str;
 }

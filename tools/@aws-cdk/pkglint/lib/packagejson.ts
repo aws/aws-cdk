@@ -1,11 +1,11 @@
 import * as path from 'path';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const bundled = require('npm-bundled');
 
 // do not descend into these directories when searching for `package.json` files.
-export const PKGLINT_IGNORES = ['node_modules', 'cdk.out', '.cdk.staging'];
+export const PKGLINT_IGNORES = ['node_modules', 'cdk.out', '.cdk.staging', 'test'];
 
 /**
  * Return all package JSONs in the root directory
@@ -137,9 +137,9 @@ export class PackageJson {
 
   public displayReports(relativeTo: string) {
     if (this.hasReports) {
-      process.stderr.write(`In package ${colors.blue(path.relative(relativeTo, this.fullPath))}\n`);
+      process.stderr.write(`In package ${chalk.blue(path.relative(relativeTo, this.fullPath))}\n`);
       this._reports.forEach(report => {
-        process.stderr.write(`- [${colors.yellow(report.ruleName)}] ${report.message}${report.fix ? colors.green(' (fixable)') : ''}\n`);
+        process.stderr.write(`- [${chalk.yellow(report.ruleName)}] ${report.message}${report.fix ? chalk.green(' (fixable)') : ''}\n`);
       });
     }
   }
@@ -346,7 +346,10 @@ export class PackageJson {
 }
 
 /**
- * Interface for validation rules
+ * Interface for validation rules.
+ *
+ * Do not validate any compiled code. pkglint will run pre-build
+ * on modules with just source code.
  */
 export abstract class ValidationRule {
   public abstract readonly name: string;

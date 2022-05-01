@@ -79,6 +79,13 @@ export abstract class Match {
   public static anyValue(): Matcher {
     return new AnyMatch('anyValue');
   }
+
+  /**
+   * Matches targets according to a regular expression
+   */
+  public static stringLikeRegexp(pattern: string): Matcher {
+    return new StringLikeRegexpMatch('stringLikeRegexp', pattern);
+  }
 }
 
 /**
@@ -115,7 +122,7 @@ class LiteralMatch extends Matcher {
 
   public test(actual: any): MatchResult {
     if (Array.isArray(this.pattern)) {
-      return new ArrayMatch(this.name, this.pattern, { subsequence: false }).test(actual);
+      return new ArrayMatch(this.name, this.pattern, { subsequence: false, partialObjects: this.partialObjects }).test(actual);
     }
 
     if (typeof this.pattern === 'object') {
@@ -155,6 +162,13 @@ interface ArrayMatchOptions {
    * @default true
    */
   readonly subsequence?: boolean;
+
+  /**
+   * Whether to continue matching objects inside the array partially
+   *
+   * @default false
+   */
+  readonly partialObjects?: boolean;
 }
 
 /**
@@ -162,6 +176,7 @@ interface ArrayMatchOptions {
  */
 class ArrayMatch extends Matcher {
   private readonly subsequence: boolean;
+  private readonly partialObjects: boolean;
 
   constructor(
     public readonly name: string,
@@ -170,6 +185,7 @@ class ArrayMatch extends Matcher {
 
     super();
     this.subsequence = options.subsequence ?? true;
+    this.partialObjects = options.partialObjects ?? false;
   }
 
   public test(actual: any): MatchResult {
@@ -195,7 +211,10 @@ class ArrayMatch extends Matcher {
     while (patternIdx < this.pattern.length && actualIdx < actual.length) {
       const patternElement = this.pattern[patternIdx];
 
-      const matcher = Matcher.isMatcher(patternElement) ? patternElement : new LiteralMatch(this.name, patternElement);
+      const matcher = Matcher.isMatcher(patternElement)
+        ? patternElement
+        : new LiteralMatch(this.name, patternElement, { partialObjects: this.partialObjects });
+
       const matcherName = matcher.name;
       if (this.subsequence && (matcherName == 'absent' || matcherName == 'anyValue')) {
         // array subsequence matcher is not compatible with anyValue() or absent() matcher. They don't make sense to be used together.
@@ -281,7 +300,7 @@ class ObjectMatch extends Matcher {
         result.recordFailure({
           matcher: this,
           path: [`/${patternKey}`],
-          message: 'Missing key',
+          message: `Missing key '${patternKey}' among {${Object.keys(actual).join(',')}}`,
         });
         continue;
       }
@@ -377,4 +396,38 @@ class AnyMatch extends Matcher {
     }
     return result;
   }
+}
+
+class StringLikeRegexpMatch extends Matcher {
+  constructor(
+    public readonly name: string,
+    private readonly pattern: string) {
+
+    super();
+  }
+
+  test(actual: any): MatchResult {
+    const result = new MatchResult(actual);
+
+    const regex = new RegExp(this.pattern, 'gm');
+
+    if (typeof actual !== 'string') {
+      result.recordFailure({
+        matcher: this,
+        path: [],
+        message: `Expected a string, but got '${typeof actual}'`,
+      });
+    }
+
+    if (!regex.test(actual)) {
+      result.recordFailure({
+        matcher: this,
+        path: [],
+        message: `String '${actual}' did not match pattern '${this.pattern}'`,
+      });
+    }
+
+    return result;
+  }
+
 }

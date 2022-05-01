@@ -1,5 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
+import { Annotations, Template } from '@aws-cdk/assertions';
 import { Protocol } from '@aws-cdk/aws-ec2';
 import { Repository } from '@aws-cdk/aws-ecr';
 import * as iam from '@aws-cdk/aws-iam';
@@ -16,13 +16,11 @@ describe('external task definition', () => {
       new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'ExternalTaskDef',
         NetworkMode: ecs.NetworkMode.BRIDGE,
         RequiresCompatibilities: ['EXTERNAL'],
       });
-
-
     });
 
     test('with all properties set', () => {
@@ -43,7 +41,7 @@ describe('external task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
@@ -62,8 +60,6 @@ describe('external task definition', () => {
           ],
         },
       });
-
-
     });
 
     test('correctly sets containers', () => {
@@ -93,7 +89,7 @@ describe('external task definition', () => {
       }));
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'ExternalTaskDef',
         NetworkMode: ecs.NetworkMode.BRIDGE,
         RequiresCompatibilities: ['EXTERNAL'],
@@ -117,7 +113,7 @@ describe('external task definition', () => {
         }],
       });
 
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Version: '2012-10-17',
           Statement: [
@@ -129,8 +125,6 @@ describe('external task definition', () => {
           ],
         },
       });
-
-
     });
 
     test('all container definition options defined', () => {
@@ -180,7 +174,7 @@ describe('external task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'ExternalTaskDef',
         NetworkMode: ecs.NetworkMode.BRIDGE,
         RequiresCompatibilities: ['EXTERNAL'],
@@ -218,7 +212,11 @@ describe('external task definition', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:s3:::',
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':s3:::',
                     {
                       Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
                     },
@@ -328,8 +326,6 @@ describe('external task definition', () => {
           },
         ],
       });
-
-
     });
 
     test('correctly sets containers from ECR repository using all props', () => {
@@ -353,7 +349,7 @@ describe('external task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECR::Repository', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
         LifecyclePolicy: {
           // eslint-disable-next-line max-len
           LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
@@ -362,7 +358,7 @@ describe('external task definition', () => {
         RepositoryName: 'project-a/amazon-ecs-sample',
       });
 
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'ExternalTaskDef',
         NetworkMode: ecs.NetworkMode.BRIDGE,
         RequiresCompatibilities: ['EXTERNAL'],
@@ -421,8 +417,6 @@ describe('external task definition', () => {
           Name: 'web',
         }],
       });
-
-
     });
   });
 
@@ -437,7 +431,7 @@ describe('external task definition', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       Family: 'ExternalTaskDef',
       NetworkMode: ecs.NetworkMode.BRIDGE,
       RequiresCompatibilities: ['EXTERNAL'],
@@ -496,8 +490,6 @@ describe('external task definition', () => {
         Name: 'web',
       }],
     });
-
-
   });
 
   test('correctly sets containers from ECR repository using an image digest', () => {
@@ -510,7 +502,7 @@ describe('external task definition', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       Family: 'ExternalTaskDef',
       NetworkMode: ecs.NetworkMode.BRIDGE,
       RequiresCompatibilities: ['EXTERNAL'],
@@ -569,8 +561,6 @@ describe('external task definition', () => {
         Name: 'web',
       }],
     });
-
-
   });
 
   test('correctly sets containers from ECR repository using default props', () => {
@@ -585,9 +575,7 @@ describe('external task definition', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECR::Repository', {});
-
-
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {});
   });
 
   test('warns when setting containers from ECR repository using fromRegistry method', () => {
@@ -595,31 +583,41 @@ describe('external task definition', () => {
     const stack = new cdk.Stack();
 
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
+
     // WHEN
-    const container = taskDefinition.addContainer('web', {
+    taskDefinition.addContainer('web', {
       image: ecs.ContainerImage.fromRegistry('ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY'),
       memoryLimitMiB: 512,
     });
 
     // THEN
-    expect(container.node.metadataEntry[0].data).toEqual("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
-
-
+    Annotations.fromStack(stack).hasWarning('/Default/ExternalTaskDef/web', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
   });
 
-  test('correctly sets volumes from', () => {
+  test('correctly sets volumes', () => {
+    // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef', {});
 
-    // THEN
-    expect(() => taskDefinition.addVolume({
+    // WHEN
+    taskDefinition.addVolume({
       host: {
         sourcePath: '/tmp/cache',
       },
       name: 'scratch',
-    })).toThrow('External task definitions doesnt support volumes' );
+    });
 
-
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      Volumes: [
+        {
+          Host: {
+            SourcePath: '/tmp/cache',
+          },
+          Name: 'scratch',
+        },
+      ],
+    });
   });
 
   test('error when interferenceAccelerators set', () => {
@@ -631,7 +629,5 @@ describe('external task definition', () => {
       deviceName: 'device1',
       deviceType: 'eia2.medium',
     })).toThrow('Cannot use inference accelerators on tasks that run on External service');
-
-
   });
 });

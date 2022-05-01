@@ -3,7 +3,14 @@
 ARG IMAGE=public.ecr.aws/sam/build-python3.7
 FROM $IMAGE
 
-# Ensure rsync is installed
-RUN yum -q list installed rsync &>/dev/null || yum install -y rsync
+ARG PIP_INDEX_URL
+ARG PIP_EXTRA_INDEX_URL
+ARG HTTPS_PROXY
+
+# Upgrade pip (required by cryptography v3.4 and above, which is a dependency of poetry)
+RUN pip install --upgrade pip
+
+# pipenv 2022.4.8 is the last version with Python 3.6 support
+RUN pip install pipenv==2022.4.8 poetry
 
 CMD [ "python" ]

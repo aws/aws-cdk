@@ -9,6 +9,11 @@
 
 <!--END STABILITY BANNER-->
 
+> ⚠️ v2 of this library is now available! It is compatible with AWS CDK v2 and available in
+> multiple languages.
+> The source code for v2 lives [here](https://github.com/cdklabs/cdk-ecs-service-extensions).
+> To migrate from this library to v2, see the [Migration Guide](https://github.com/cdklabs/cdk-ecs-service-extensions/blob/main/MIGRATING.md).
+
 This library provides a high level, extensible pattern for constructing services
 deployed using Amazon ECS.
 
@@ -109,7 +114,43 @@ nameDescription.add(new Container({
 Every `ServiceDescription` requires at minimum that you add a `Container` extension
 which defines the main application (essential) container to run for the service.
 
-After that, you can optionally enable additional features for the service using the `ServiceDescription.add()` method:
+### Logging using `awslogs` log driver
+
+If no observability extensions have been configured for a service, the ECS Service Extensions configures an `awslogs` log driver for the application container of the service to send the container logs to CloudWatch Logs.
+
+You can either provide a log group to the `Container` extension or one will be created for you by the CDK.
+
+Following is an example of an application with an `awslogs` log driver configured for the application container:
+
+```ts
+const environment = new Environment(stack, 'production');
+
+const nameDescription = new ServiceDescription();
+nameDescription.add(new Container({
+  cpu: 1024,
+  memoryMiB: 2048,
+  trafficPort: 80,
+  image: ContainerImage.fromRegistry('nathanpeck/name'),
+  environment: {
+    PORT: '80',
+  },
+  logGroup: new awslogs.LogGroup(stack, 'MyLogGroup'),
+}));
+```
+
+If a log group is not provided, no observability extensions have been created, and the `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` feature flag is enabled, then logging will be configured by default and a log group will be created for you.
+ 
+The `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` feature flag is enabled by default in any CDK apps that are created with CDK v1.140.0 or v2.8.0 and later.
+
+To enable default logging for previous versions, ensure that the `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` flag within the application stack context is set to true, like so:
+
+```ts
+stack.node.setContext(cxapi.ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER, true);
+```
+
+Alternatively, you can also set the feature flag in the `cdk.json` file. For more information, refer the [docs](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html).  
+
+After adding the `Container` extension, you can optionally enable additional features for the service using the `ServiceDescription.add()` method:
 
 ```ts
 nameDescription.add(new AppMeshExtension({ mesh }));

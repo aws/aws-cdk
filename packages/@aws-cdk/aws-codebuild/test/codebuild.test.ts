@@ -1,5 +1,4 @@
-import { ABSENT, SynthUtils } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
@@ -17,7 +16,7 @@ describe('default properties', () => {
 
     new codebuild.PipelineProject(stack, 'MyProject');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyProjectRole9BBE5233': {
           'Type': 'AWS::IAM::Role',
@@ -155,6 +154,9 @@ describe('default properties', () => {
               'ComputeType': 'BUILD_GENERAL1_SMALL',
             },
             'EncryptionKey': 'alias/aws/s3',
+            'Cache': {
+              'Type': 'NO_CACHE',
+            },
           },
         },
       },
@@ -174,7 +176,7 @@ describe('default properties', () => {
       source,
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyRepoF4F48043': {
           'Type': 'AWS::CodeCommit::Repository',
@@ -335,6 +337,9 @@ describe('default properties', () => {
               'Type': 'CODECOMMIT',
             },
             'EncryptionKey': 'alias/aws/s3',
+            'Cache': {
+              'Type': 'NO_CACHE',
+            },
           },
         },
       },
@@ -355,7 +360,7 @@ describe('default properties', () => {
       },
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
@@ -539,6 +544,9 @@ describe('default properties', () => {
               'Type': 'S3',
             },
             'EncryptionKey': 'alias/aws/s3',
+            'Cache': {
+              'Type': 'NO_CACHE',
+            },
           },
         },
       },
@@ -563,7 +571,7 @@ describe('default properties', () => {
       }),
     });
 
-    expect(stack).toHaveResource('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       Source: {
         Type: 'GITHUB',
         Location: 'https://github.com/testowner/testrepo.git',
@@ -575,7 +583,7 @@ describe('default properties', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       Triggers: {
         Webhook: true,
         FilterGroups: [
@@ -611,7 +619,7 @@ describe('default properties', () => {
       }),
     });
 
-    expect(stack).toHaveResource('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       Source: {
         Type: 'GITHUB_ENTERPRISE',
         InsecureSsl: true,
@@ -621,7 +629,7 @@ describe('default properties', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       Triggers: {
         Webhook: true,
         FilterGroups: [
@@ -663,7 +671,7 @@ describe('default properties', () => {
       }),
     });
 
-    expect(stack).toHaveResource('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       Source: {
         Type: 'BITBUCKET',
         Location: 'https://bitbucket.org/testowner/testrepo.git',
@@ -672,7 +680,7 @@ describe('default properties', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       Triggers: {
         Webhook: true,
         FilterGroups: [
@@ -701,7 +709,7 @@ describe('default properties', () => {
       }),
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       Triggers: {
         Webhook: true,
         BuildType: 'BUILD_BATCH',
@@ -716,7 +724,7 @@ describe('default properties', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -731,7 +739,7 @@ describe('default properties', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -800,7 +808,7 @@ describe('default properties', () => {
       securityGroups: [securityGroup],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       'VpcConfig': {
         'SecurityGroupIds': [
           {
@@ -891,7 +899,7 @@ describe('default properties', () => {
     new codebuild.PipelineProject(stack, 'MyProject');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       EncryptionKey: 'alias/aws/s3',
     });
   });
@@ -906,7 +914,7 @@ describe('default properties', () => {
       grantReportGroupPermissions: false,
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {}, // CloudWatch logs
@@ -951,7 +959,7 @@ test('using timeout and path in S3 artifacts sets it correctly', () => {
     timeout: cdk.Duration.minutes(123),
   });
 
-  expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
     'Artifacts': {
       'Path': 'some/path',
       'Name': 'some_name',
@@ -990,7 +998,7 @@ describe('secondary sources', () => {
       identifier: 'id',
     }));
 
-    expect(() => SynthUtils.synthesize(stack)).toThrow(/secondary sources/);
+    expect(() => Template.fromStack(stack)).toThrow(/secondary sources/);
   });
 
   test('added with an identifer after the Project has been created are rendered in the template', () => {
@@ -1009,13 +1017,85 @@ describe('secondary sources', () => {
       identifier: 'source1',
     }));
 
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       'SecondarySources': [
         {
           'SourceIdentifier': 'source1',
           'Type': 'S3',
         },
       ],
+    });
+  });
+});
+
+describe('sources with customised build status configuration', () => {
+  test('GitHub', () => {
+    const context = 'My custom CodeBuild worker!';
+    const stack = new cdk.Stack();
+    const source = codebuild.Source.gitHub({
+      owner: 'awslabs',
+      repo: 'aws-cdk',
+      buildStatusContext: context,
+    });
+
+    new codebuild.Project(stack, 'MyProject', { source });
+    Template.fromStack(stack).findParameters('AWS::CodeBuild::Project', {
+      Source: {
+        buildStatusConfig: {
+          context: context,
+        },
+      },
+    });
+  });
+
+  test('GitHub Enterprise', () => {
+    const context = 'My custom CodeBuild worker!';
+    const stack = new cdk.Stack();
+    const source = codebuild.Source.gitHubEnterprise({
+      httpsCloneUrl: 'url',
+      buildStatusContext: context,
+    });
+    new codebuild.Project(stack, 'MyProject', { source });
+    Template.fromStack(stack).findParameters('AWS::CodeBuild::Project', {
+      Source: {
+        buildStatusConfig: {
+          context: context,
+        },
+      },
+    });
+  });
+
+  test('BitBucket', () => {
+    const context = 'My custom CodeBuild worker!';
+    const stack = new cdk.Stack();
+    const source = codebuild.Source.bitBucket({ owner: 'awslabs', repo: 'aws-cdk' });
+    new codebuild.Project(stack, 'MyProject', { source });
+    Template.fromStack(stack).findParameters('AWS::CodeBuild::Project', {
+      Source: {
+        buildStatusConfig: {
+          context: context,
+        },
+      },
+    });
+  });
+});
+
+describe('sources with customised build status configuration', () => {
+  test('GitHub with targetUrl', () => {
+    const targetUrl = 'https://example.com';
+    const stack = new cdk.Stack();
+    const source = codebuild.Source.gitHub({
+      owner: 'awslabs',
+      repo: 'aws-cdk',
+      buildStatusUrl: targetUrl,
+    });
+    new codebuild.Project(stack, 'MyProject', { source });
+    Template.fromStack(stack).findParameters('AWS::CodeBuild::Project', {
+      Source: {
+        buildStatusConfig: {
+          targetUrl: targetUrl,
+        },
+      },
     });
   });
 });
@@ -1038,7 +1118,7 @@ describe('secondary source versions', () => {
       version: 'someversion',
     }));
 
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       'SecondarySources': [
         {
           'SourceIdentifier': 'source1',
@@ -1070,7 +1150,7 @@ describe('secondary source versions', () => {
       identifier: 'source1',
     }));
 
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       'SecondarySources': [
         {
           'SourceIdentifier': 'source1',
@@ -1096,7 +1176,7 @@ describe('fileSystemLocations', () => {
       })],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       'FileSystemLocations': [
         {
           'Identifier': 'myidentifier2',
@@ -1123,7 +1203,7 @@ describe('fileSystemLocations', () => {
       mountOptions: 'opts',
     }));
 
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       'FileSystemLocations': [
         {
           'Identifier': 'myidentifier3',
@@ -1168,7 +1248,7 @@ describe('secondary artifacts', () => {
       identifier: 'id',
     }));
 
-    expect(() => SynthUtils.synthesize(stack)).toThrow(/secondary artifacts/);
+    expect(() => Template.fromStack(stack)).toThrow(/secondary artifacts/);
   });
 
   test('added with an identifier after the Project has been created are rendered in the template', () => {
@@ -1188,7 +1268,7 @@ describe('secondary artifacts', () => {
       identifier: 'artifact1',
     }));
 
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       'SecondaryArtifacts': [
         {
           'ArtifactIdentifier': 'artifact1',
@@ -1216,7 +1296,7 @@ describe('secondary artifacts', () => {
       encryption: false,
     }));
 
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       'SecondaryArtifacts': [
         {
           'ArtifactIdentifier': 'artifact1',
@@ -1234,7 +1314,7 @@ describe('artifacts', () => {
 
       new codebuild.PipelineProject(stack, 'MyProject');
 
-      expect(stack).toHaveResource('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Source': {
           'Type': 'CODEPIPELINE',
         },
@@ -1274,9 +1354,9 @@ describe('artifacts', () => {
         }),
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Artifacts': {
-          'Name': ABSENT,
+          'Name': Match.absent(),
           'ArtifactIdentifier': 'artifact1',
           'OverrideArtifactName': true,
         },
@@ -1299,11 +1379,11 @@ describe('artifacts', () => {
         }),
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Artifacts': {
           'ArtifactIdentifier': 'artifact1',
           'Name': 'specificname',
-          'OverrideArtifactName': ABSENT,
+          'OverrideArtifactName': Match.absent(),
         },
       });
     });
@@ -1325,7 +1405,7 @@ test('events', () => {
   project.onStateChange('OnStateChange', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) } });
   project.onBuildStarted('OnBuildStarted', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) } });
 
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     'EventPattern': {
       'source': [
         'aws.codebuild',
@@ -1347,7 +1427,7 @@ test('events', () => {
     'State': 'ENABLED',
   });
 
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     'EventPattern': {
       'source': [
         'aws.codebuild',
@@ -1369,7 +1449,7 @@ test('events', () => {
     'State': 'ENABLED',
   });
 
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     'EventPattern': {
       'source': [
         'aws.codebuild',
@@ -1388,7 +1468,7 @@ test('events', () => {
     'State': 'ENABLED',
   });
 
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     'EventPattern': {
       'source': [
         'aws.codebuild',
@@ -1407,7 +1487,7 @@ test('events', () => {
     'State': 'ENABLED',
   });
 
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     'EventPattern': {
       'source': [
         'aws.codebuild',
@@ -1446,7 +1526,7 @@ test('environment variables can be overridden at the project level', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::CodeBuild::Project', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
     'Source': {
       'Type': 'CODEPIPELINE',
     },
@@ -1545,7 +1625,7 @@ test('fromCodebuildImage', () => {
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
     'Environment': {
       'Image': 'aws/codebuild/standard:4.0',
     },
@@ -1562,7 +1642,7 @@ describe('Windows2019 image', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Environment': {
           'Type': 'WINDOWS_SERVER_2019_CONTAINER',
           'ComputeType': 'BUILD_GENERAL1_MEDIUM',
@@ -1582,7 +1662,7 @@ describe('ARM image', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Environment': {
           'Type': 'ARM_CONTAINER',
           'ComputeType': 'BUILD_GENERAL1_LARGE',
@@ -1599,7 +1679,7 @@ describe('ARM image', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Environment': {
           'Type': 'ARM_CONTAINER',
           'ComputeType': 'BUILD_GENERAL1_SMALL',
@@ -1629,7 +1709,7 @@ describe('ARM image', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Environment': {
           'Type': 'ARM_CONTAINER',
           'ComputeType': 'BUILD_GENERAL1_LARGE',
@@ -1858,7 +1938,7 @@ test('enableBatchBuilds()', () => {
     throw new Error('Expecting return value with role');
   }
 
-  expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
     BuildBatchConfig: {
       ServiceRole: {
         'Fn::GetAtt': [
@@ -1869,7 +1949,7 @@ test('enableBatchBuilds()', () => {
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [
         {
@@ -1884,7 +1964,7 @@ test('enableBatchBuilds()', () => {
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {

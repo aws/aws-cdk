@@ -66,6 +66,21 @@ export interface StageProps {
    * You can always add more Actions later by calling {@link IStage#addAction}.
    */
   readonly actions?: IAction[];
+
+  /**
+   * Whether to enable transition to this stage.
+   *
+   * @default true
+   */
+  readonly transitionToEnabled?: boolean;
+
+  /**
+   * The reason for disabling transition to this stage. Only applicable
+   * if `transitionToEnabled` is set to `false`.
+   *
+   * @default 'Transition disabled'
+   */
+  readonly transitionDisabledReason?: string;
 }
 
 export interface StageOptions extends StageProps {
@@ -399,6 +414,7 @@ export class Pipeline extends PipelineBase {
         bucketName: PhysicalName.GENERATE_IF_NEEDED,
         encryptionKey,
         encryption: encryptionKey ? s3.BucketEncryption.KMS : s3.BucketEncryption.KMS_MANAGED,
+        enforceSSL: true,
         blockPublicAccess: new s3.BlockPublicAccess(s3.BlockPublicAccess.BLOCK_ALL),
         removalPolicy: RemovalPolicy.RETAIN,
       });
@@ -414,6 +430,7 @@ export class Pipeline extends PipelineBase {
       artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
       artifactStores: Lazy.any({ produce: () => this.renderArtifactStoresProperty() }),
       stages: Lazy.any({ produce: () => this.renderStages() }),
+      disableInboundStageTransitions: Lazy.any({ produce: () => this.renderDisabledTransitions() }, { omitEmptyArray: true }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       name: this.physicalName,
@@ -1036,6 +1053,15 @@ export class Pipeline extends PipelineBase {
 
   private renderStages(): CfnPipeline.StageDeclarationProperty[] {
     return this._stages.map(stage => stage.render());
+  }
+
+  private renderDisabledTransitions(): CfnPipeline.StageTransitionProperty[] {
+    return this._stages
+      .filter(stage => !stage.transitionToEnabled)
+      .map(stage => ({
+        reason: stage.transitionDisabledReason,
+        stageName: stage.stageName,
+      }));
   }
 
   private requireRegion(): string {

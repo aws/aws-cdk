@@ -12,12 +12,7 @@ export function toYAML(obj: any): string {
  * Parse either YAML or JSON
  */
 export function deserializeStructure(str: string): any {
-  try {
-    return yaml_cfn.deserialize(str);
-  } catch (e) {
-    // This shouldn't really ever happen I think, but it's the code we had so I'm leaving it.
-    return JSON.parse(str);
-  }
+  return yaml_cfn.deserialize(str);
 }
 
 /**

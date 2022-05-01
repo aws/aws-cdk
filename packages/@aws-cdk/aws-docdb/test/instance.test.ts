@@ -1,8 +1,7 @@
-import { expect as expectCDK, haveOutput, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
-
 import { DatabaseCluster, DatabaseInstance } from '../lib';
 
 const CLUSTER_INSTANCE_TYPE = ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE);
@@ -21,7 +20,7 @@ describe('DatabaseInstance', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBInstance', {
+    Template.fromStack(stack).hasResource('AWS::DocDB::DBInstance', {
       Properties: {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
         DBInstanceClass: EXPECTED_SYNTH_INSTANCE_TYPE,
@@ -29,7 +28,7 @@ describe('DatabaseInstance', () => {
       },
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition));
+    });
   });
 
   test.each([
@@ -48,7 +47,7 @@ describe('DatabaseInstance', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBInstance', {
+    Template.fromStack(stack).hasResource('AWS::DocDB::DBInstance', {
       Properties: {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
         DBInstanceClass: EXPECTED_SYNTH_INSTANCE_TYPE,
@@ -56,7 +55,7 @@ describe('DatabaseInstance', () => {
       },
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition));
+    });
   });
 
   test('check that the endpoint works', () => {
@@ -75,9 +74,11 @@ describe('DatabaseInstance', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveOutput({
-      exportName,
-      outputValue: {
+    Template.fromStack(stack).hasOutput(exportName, {
+      Export: {
+        Name: exportName,
+      },
+      Value: {
         'Fn::Join': [
           '',
           [
@@ -87,7 +88,7 @@ describe('DatabaseInstance', () => {
           ],
         ],
       },
-    }));
+    });
   });
 
   test('check that instanceArn property works', () => {
@@ -106,20 +107,22 @@ describe('DatabaseInstance', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveOutput({
-      exportName,
-      outputValue: {
+    Template.fromStack(stack).hasOutput(exportName, {
+      Export: {
+        Name: exportName,
+      },
+      Value: {
         'Fn::Join': [
           '',
           [
             'arn:',
             { Ref: 'AWS::Partition' },
-            ':docdb:us-test-1:12345:db:',
+            ':rds:us-test-1:12345:db:',
             { Ref: 'InstanceC1063A87' },
           ],
         ],
       },
-    }));
+    });
   });
 
   test('check importing works as expected', () => {
@@ -147,23 +150,27 @@ describe('DatabaseInstance', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveOutput({
-      exportName: arnExportName,
-      outputValue: {
+    Template.fromStack(stack).hasOutput('ArnOutput', {
+      Export: {
+        Name: arnExportName,
+      },
+      Value: {
         'Fn::Join': [
           '',
           [
             'arn:',
             { Ref: 'AWS::Partition' },
-            `:docdb:us-test-1:12345:db:${instanceIdentifier}`,
+            `:rds:us-test-1:12345:db:${instanceIdentifier}`,
           ],
         ],
       },
-    }));
-    expectCDK(stack).to(haveOutput({
-      exportName: endpointExportName,
-      outputValue: `${instanceEndpointAddress}:${port}`,
-    }));
+    });
+    Template.fromStack(stack).hasOutput('EndpointOutput', {
+      Export: {
+        Name: endpointExportName,
+      },
+      Value: `${instanceEndpointAddress}:${port}`,
+    });
   });
 });
 
@@ -180,7 +187,7 @@ class TestStack extends cdk.Stack {
     this.cluster = new DatabaseCluster(this, 'Database', {
       masterUser: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceType: CLUSTER_INSTANCE_TYPE,
       vpc: this.vpc,

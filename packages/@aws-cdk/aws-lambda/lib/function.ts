@@ -4,8 +4,9 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
+import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
+import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Size, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
@@ -25,6 +26,8 @@ import { Runtime } from './runtime';
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line
 import { LogRetentionRetryOptions } from './log-retention';
+import { AliasOptions, Alias } from './alias';
+import { addAlias } from './util';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -93,6 +96,13 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default 128
    */
   readonly memorySize?: number;
+
+  /**
+   * The size of the function’s /tmp directory in MiB.
+   *
+   * @default 512 MiB
+   */
+  readonly ephemeralStorageSize?: Size;
 
   /**
    * Initial policy statements to add to the created Lambda Role.
@@ -188,10 +198,20 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
 
   /**
    * The SQS queue to use if DLQ is enabled.
+   * If SNS topic is desired, specify `deadLetterTopic` property instead.
    *
    * @default - SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
    */
   readonly deadLetterQueue?: sqs.IQueue;
+
+  /**
+   * The SNS topic to use as a DLQ.
+   * Note that if `deadLetterQueueEnabled` is set to `true`, an SQS queue will be created
+   * rather than an SNS topic. Using an SNS topic as a DLQ requires this property to be set explicitly.
+   *
+   * @default - no SNS topic
+   */
+  readonly deadLetterTopic?: sns.ITopic;
 
   /**
    * Enable AWS X-Ray Tracing for Lambda Function.
@@ -388,6 +408,10 @@ export class Function extends FunctionBase {
       return this._currentVersion;
     }
 
+    if (this._warnIfCurrentVersionCalled) {
+      this.warnInvokeFunctionPermissions(this);
+    };
+
     this._currentVersion = new Version(this, 'CurrentVersion', {
       lambda: this,
       ...this.currentVersionOptions,
@@ -410,6 +434,10 @@ export class Function extends FunctionBase {
     return this._currentVersion;
   }
 
+  public get resourceArnsForGrantInvoke() {
+    return [this.functionArn, `${this.functionArn}:*`];
+  }
+
   /** @internal */
   public static _VER_PROPS: { [key: string]: boolean } = {};
 
@@ -422,6 +450,20 @@ export class Function extends FunctionBase {
    */
   public static classifyVersionProperty(propertyName: string, locked: boolean) {
     this._VER_PROPS[propertyName] = locked;
+  }
+
+  /**
+   * Import a lambda function into the CDK using its name
+   */
+  public static fromFunctionName(scope: Construct, id: string, functionName: string): IFunction {
+    return Function.fromFunctionAttributes(scope, id, {
+      functionArn: Stack.of(scope).formatArn({
+        service: 'lambda',
+        resource: 'function',
+        resourceName: functionName,
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      }),
+    });
   }
 
   /**
@@ -451,11 +493,15 @@ export class Function extends FunctionBase {
       public readonly role = role;
       public readonly permissionsNode = this.node;
       public readonly architecture = attrs.architecture ?? Architecture.X86_64;
+      public readonly resourceArnsForGrantInvoke = [this.functionArn, `${this.functionArn}:*`];
 
       protected readonly canCreatePermissions = attrs.sameEnvironment ?? this._isStackAccount();
+      protected readonly _skipPermissions = attrs.skipPermissions ?? false;
 
       constructor(s: Construct, i: string) {
-        super(s, i);
+        super(s, i, {
+          environmentFromArn: functionArn,
+        });
 
         this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this });
 
@@ -570,9 +616,14 @@ export class Function extends FunctionBase {
   public readonly grantPrincipal: iam.IPrincipal;
 
   /**
-   * The DLQ associated with this Lambda Function (this is an optional attribute).
+   * The DLQ (as queue) associated with this Lambda Function (this is an optional attribute).
    */
   public readonly deadLetterQueue?: sqs.IQueue;
+
+  /**
+   * The DLQ (as topic) associated with this Lambda Function (this is an optional attribute).
+   */
+  public readonly deadLetterTopic?: sns.ITopic;
 
   /**
    * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
@@ -607,6 +658,15 @@ export class Function extends FunctionBase {
     super(scope, id, {
       physicalName: props.functionName,
     });
+
+    if (props.functionName && !Token.isUnresolved(props.functionName)) {
+      if (props.functionName.length > 64) {
+        throw new Error(`Function name can not be longer than 64 characters but has ${props.functionName.length} characters.`);
+      }
+      if (!/^[a-zA-Z0-9-_]+$/.test(props.functionName)) {
+        throw new Error(`Function name ${props.functionName} can contain only letters, numbers, hyphens, or underscores with no spaces.`);
+      }
+    }
 
     const managedPolicies = new Array<iam.IManagedPolicy>();
 
@@ -670,7 +730,15 @@ export class Function extends FunctionBase {
       this.addEnvironment(key, value);
     }
 
-    this.deadLetterQueue = this.buildDeadLetterQueue(props);
+    // DLQ can be either sns.ITopic or sqs.IQueue
+    const dlqTopicOrQueue = this.buildDeadLetterQueue(props);
+    if (dlqTopicOrQueue !== undefined) {
+      if (this.isQueue(dlqTopicOrQueue)) {
+        this.deadLetterQueue = dlqTopicOrQueue;
+      } else {
+        this.deadLetterTopic = dlqTopicOrQueue;
+      }
+    }
 
     let fileSystemConfigs: CfnFunction.FileSystemConfigProperty[] | undefined = undefined;
     if (props.filesystem) {
@@ -687,6 +755,11 @@ export class Function extends FunctionBase {
       throw new Error('Only one architecture must be specified.');
     }
     this._architecture = props.architecture ?? (props.architectures && props.architectures[0]);
+
+    if (props.ephemeralStorageSize && !props.ephemeralStorageSize.isUnresolved()
+      && (props.ephemeralStorageSize.toMebibytes() < 512 || props.ephemeralStorageSize.toMebibytes() > 10240)) {
+      throw new Error(`Ephemeral storage size must be between 512 and 10240 MB, received ${props.ephemeralStorageSize}.`);
+    }
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
@@ -708,8 +781,11 @@ export class Function extends FunctionBase {
       // Token, actually *modifies* the 'environment' map.
       environment: Lazy.uncachedAny({ produce: () => this.renderEnvironment() }),
       memorySize: props.memorySize,
+      ephemeralStorage: props.ephemeralStorageSize ? {
+        size: props.ephemeralStorageSize.toMebibytes(),
+      } : undefined,
       vpcConfig: this.configureVpc(props),
-      deadLetterConfig: this.buildDeadLetterConfig(this.deadLetterQueue),
+      deadLetterConfig: this.buildDeadLetterConfig(dlqTopicOrQueue),
       tracingConfig: this.buildTracingConfig(props),
       reservedConcurrentExecutions: props.reservedConcurrentExecutions,
       imageConfig: undefinedIfNoKeys({
@@ -886,6 +962,31 @@ export class Function extends FunctionBase {
   }
 
   /**
+   * Defines an alias for this function.
+   *
+   * The alias will automatically be updated to point to the latest version of
+   * the function as it is being updated during a deployment.
+   *
+   * ```ts
+   * declare const fn: lambda.Function;
+   *
+   * fn.addAlias('Live');
+   *
+   * // Is equivalent to
+   *
+   * new lambda.Alias(this, 'AliasLive', {
+   *   aliasName: 'Live',
+   *   version: fn.currentVersion,
+   * });
+   *
+   * @param aliasName The name of the alias
+   * @param options Alias options
+   */
+  public addAlias(aliasName: string, options?: AliasOptions): Alias {
+    return addAlias(this, this.currentVersion, aliasName, options);
+  }
+
+  /**
    * The LogGroup where the Lambda function's logs are made available.
    *
    * If either `logRetention` is set or this property is called, a CloudFormation custom resource is added to the stack that
@@ -1028,31 +1129,45 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     };
   }
 
-  private buildDeadLetterQueue(props: FunctionProps) {
+  private isQueue(deadLetterQueue: sqs.IQueue | sns.ITopic): deadLetterQueue is sqs.IQueue {
+    return (<sqs.IQueue>deadLetterQueue).queueArn !== undefined;
+  }
+
+  private buildDeadLetterQueue(props: FunctionProps): sqs.IQueue | sns.ITopic | undefined {
+    if (!props.deadLetterQueue && !props.deadLetterQueueEnabled && !props.deadLetterTopic) {
+      return undefined;
+    }
     if (props.deadLetterQueue && props.deadLetterQueueEnabled === false) {
       throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
     }
-
-    if (!props.deadLetterQueue && !props.deadLetterQueueEnabled) {
-      return undefined;
+    if (props.deadLetterTopic && (props.deadLetterQueue || props.deadLetterQueueEnabled !== undefined)) {
+      throw new Error('deadLetterQueue and deadLetterTopic cannot be specified together at the same time');
     }
 
-    const deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
-      retentionPeriod: Duration.days(14),
-    });
-
-    this.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['sqs:SendMessage'],
-      resources: [deadLetterQueue.queueArn],
-    }));
+    let deadLetterQueue: sqs.IQueue | sns.ITopic;
+    if (props.deadLetterTopic) {
+      deadLetterQueue = props.deadLetterTopic;
+      this.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['sns:Publish'],
+        resources: [deadLetterQueue.topicArn],
+      }));
+    } else {
+      deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
+        retentionPeriod: Duration.days(14),
+      });
+      this.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: [deadLetterQueue.queueArn],
+      }));
+    }
 
     return deadLetterQueue;
   }
 
-  private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue) {
+  private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue | sns.ITopic) {
     if (deadLetterQueue) {
       return {
-        targetArn: deadLetterQueue.queueArn,
+        targetArn: this.isQueue(deadLetterQueue) ? deadLetterQueue.queueArn : deadLetterQueue.topicArn,
       };
     } else {
       return undefined;

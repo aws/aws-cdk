@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
@@ -20,7 +20,7 @@ describe('vpc link', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApiGateway::VpcLink', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::VpcLink', {
       Name: 'MyLink',
       TargetArns: [{ Ref: 'NLB55158F82' }],
     });
@@ -43,7 +43,7 @@ describe('vpc link', () => {
     link.addTargets(nlb3);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApiGateway::VpcLink', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::VpcLink', {
       Name: 'VpcLink',
       TargetArns: [
         { Ref: 'NLB03D178991' },
@@ -62,7 +62,7 @@ describe('vpc link', () => {
     apigateway.VpcLink.fromVpcLinkId(stack, 'ImportedVpcLink', 'vpclink-id');
 
     // THEN
-    expect(stack).not.toHaveResource('AWS::ApiGateway::VpcLink');
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::VpcLink', 0);
   });
 
   test('validation error if vpc link is created and no targets are added', () => {

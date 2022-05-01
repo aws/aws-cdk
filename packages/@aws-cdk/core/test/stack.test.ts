@@ -20,6 +20,19 @@ describe('stack', () => {
     expect(toCloudFormation(stack)).toEqual({ });
   });
 
+  test('stack name cannot exceed 128 characters', () => {
+    // GIVEN
+    const app = new App({});
+    const reallyLongStackName = 'LookAtMyReallyLongStackNameThisStackNameIsLongerThan128CharactersThatIsNutsIDontThinkThereIsEnoughAWSAvailableToLetEveryoneHaveStackNamesThisLong';
+
+    // THEN
+    expect(() => {
+      new Stack(app, 'MyStack', {
+        stackName: reallyLongStackName,
+      });
+    }).toThrow(`Stack name must be <= 128 characters. Stack name: '${reallyLongStackName}'`);
+  });
+
   test('stack objects have some template-level propeties, such as Description, Version, Transform', () => {
     const stack = new Stack();
     stack.templateOptions.templateFormatVersion = 'MyTemplateVersion';
@@ -1189,6 +1202,38 @@ describe('stack', () => {
   test('version reporting can be configured on the stack', () => {
     const app = new App();
     expect(new Stack(app, 'Stack', { analyticsReporting: true })._versionReportingEnabled).toBeDefined();
+
+  });
+
+  test('requires bundling when wildcard is specified in BUNDLING_STACKS', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    stack.node.setContext(cxapi.BUNDLING_STACKS, ['*']);
+    expect(stack.bundlingRequired).toBe(true);
+
+  });
+
+  test('requires bundling when stackName has an exact match in BUNDLING_STACKS', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    stack.node.setContext(cxapi.BUNDLING_STACKS, ['Stack']);
+    expect(stack.bundlingRequired).toBe(true);
+
+  });
+
+  test('does not require bundling when no item from BUILDING_STACKS matches stackName', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    stack.node.setContext(cxapi.BUNDLING_STACKS, ['Stac']);
+    expect(stack.bundlingRequired).toBe(false);
+
+  });
+
+  test('does not require bundling when BUNDLING_STACKS is empty', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    stack.node.setContext(cxapi.BUNDLING_STACKS, []);
+    expect(stack.bundlingRequired).toBe(false);
 
   });
 });

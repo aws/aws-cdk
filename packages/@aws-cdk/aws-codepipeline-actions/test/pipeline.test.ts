@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { SynthUtils } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
@@ -45,7 +44,7 @@ describe('pipeline', () => {
       ],
     });
 
-    expect(SynthUtils.toCloudFormation(stack)).not.toEqual({});
+    expect(Template.fromStack(stack).toJSON()).not.toEqual({});
     expect([]).toEqual(ConstructNode.validate(pipeline.node));
 
   });
@@ -64,7 +63,7 @@ describe('pipeline', () => {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText('secret'),
+          oauthToken: SecretValue.unsafePlainText('secret'),
           owner: 'foo',
           repo: 'bar',
           trigger: cpactions.GitHubTrigger.POLL,
@@ -79,7 +78,7 @@ describe('pipeline', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Name': {
         'Ref': 'AWS::StackName',
       },
@@ -103,7 +102,7 @@ describe('pipeline', () => {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.valueAsString),
+          oauthToken: SecretValue.unsafePlainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
           trigger: cpactions.GitHubTrigger.POLL,
@@ -118,9 +117,9 @@ describe('pipeline', () => {
       ],
     });
 
-    expect(stack).not.toHaveResourceLike('AWS::CodePipeline::Webhook');
+    Template.fromStack(stack).resourceCountIs('AWS::CodePipeline::Webhook', 0);
 
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         {
           'Actions': [
@@ -162,7 +161,7 @@ describe('pipeline', () => {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.valueAsString),
+          oauthToken: SecretValue.unsafePlainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
           trigger: cpactions.GitHubTrigger.NONE,
@@ -177,9 +176,9 @@ describe('pipeline', () => {
       ],
     });
 
-    expect(stack).not.toHaveResourceLike('AWS::CodePipeline::Webhook');
+    Template.fromStack(stack).resourceCountIs('AWS::CodePipeline::Webhook', 0);
 
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         {
           'Actions': [
@@ -221,7 +220,7 @@ describe('pipeline', () => {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.valueAsString),
+          oauthToken: SecretValue.unsafePlainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
         }),
@@ -235,9 +234,9 @@ describe('pipeline', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Webhook');
+    Template.fromStack(stack).resourceCountIs('AWS::CodePipeline::Webhook', 1);
 
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'ArtifactStore': {
         'Location': {
           'Ref': 'PArtifactsBucket5E711C12',
@@ -338,7 +337,7 @@ describe('pipeline', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       'Description': 'desc',
       'EventPattern': {
         'detail': {
@@ -402,7 +401,7 @@ describe('pipeline', () => {
           projectName: 'MyProject',
         });
 
-        expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
           'Name': 'MyProject',
           'Source': {
             'Type': 'CODEPIPELINE',
@@ -481,7 +480,7 @@ describe('pipeline', () => {
       actions: [lambdaAction],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'ArtifactStore': {
         'Location': {
           'Ref': 'PipelineArtifactsBucket22248F97',
@@ -532,7 +531,7 @@ describe('pipeline', () => {
 
     expect((lambdaAction.actionProperties.outputs || []).length).toEqual(3);
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -616,7 +615,7 @@ describe('pipeline', () => {
         ],
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'ArtifactStores': [
           {
             'Region': 'us-west-1',
@@ -733,9 +732,9 @@ describe('pipeline', () => {
         ],
       });
 
-      expect(stack).toCountResources('AWS::S3::Bucket', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'ArtifactStores': [
           {
             'Region': pipelineRegion,
@@ -786,7 +785,7 @@ describe('pipeline', () => {
         ],
       });
 
-      expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'ArtifactStores': [
           {
             'Region': replicationRegion,
@@ -833,7 +832,7 @@ describe('pipeline', () => {
         ],
       });
 
-      expect(replicationStack).toHaveResourceLike('AWS::S3::Bucket', {
+      Template.fromStack(replicationStack).hasResourceProperties('AWS::S3::Bucket', {
         'BucketName': 'replicationstackeplicationbucket2464cd5c33b386483b66',
       });
 
@@ -895,7 +894,7 @@ describe('pipeline', () => {
         ],
       });
 
-      expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -926,7 +925,7 @@ describe('pipeline', () => {
         ],
       });
 
-      expect(buildStack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(buildStack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
@@ -1038,7 +1037,7 @@ describe('pipeline', () => {
         ],
       });
 
-      expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -1122,7 +1121,7 @@ describe('pipeline', () => {
         ],
       });
 
-      expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',

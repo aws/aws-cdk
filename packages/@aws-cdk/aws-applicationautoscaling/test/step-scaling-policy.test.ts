@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { SynthUtils } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
 import * as fc from 'fast-check';
@@ -132,7 +131,7 @@ describe('step scaling policy', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'StepScaling',
       ScalingTargetId: {
         Ref: 'Target3191CF44',
@@ -169,14 +168,14 @@ describe('step scaling policy', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'StepScaling',
       StepScalingPolicyConfiguration: {
         AdjustmentType: 'ChangeInCapacity',
         MetricAggregationType: 'Average',
       },
     });
-    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       EvaluationPeriods: 1,
       AlarmActions: [
@@ -209,14 +208,14 @@ describe('step scaling policy', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'StepScaling',
       StepScalingPolicyConfiguration: {
         AdjustmentType: 'ChangeInCapacity',
         MetricAggregationType: 'Maximum',
       },
     });
-    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       EvaluationPeriods: 10,
       ExtendedStatistic: 'p99',
@@ -247,14 +246,14 @@ describe('step scaling policy', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'StepScaling',
       StepScalingPolicyConfiguration: {
         AdjustmentType: 'ChangeInCapacity',
         MetricAggregationType: 'Maximum',
       },
     });
-    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       EvaluationPeriods: 10,
       DatapointsToAlarm: 6,
@@ -297,7 +296,7 @@ function setupStepScaling(intervals: appscaling.ScalingInterval[]) {
     scalingSteps: intervals,
   });
 
-  return new ScalingStackTemplate(SynthUtils.synthesize(stack).template);
+  return new ScalingStackTemplate(Template.fromStack(stack).toJSON());
 }
 
 class ScalingStackTemplate {

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as codedeploy from '@aws-cdk/aws-codedeploy';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cdk from '@aws-cdk/core';
@@ -111,7 +111,7 @@ describe('CodeDeploy ECS Deploy Action', () => {
         appSpecTemplateInput: new codepipeline.Artifact('AppSpecArtifact'),
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: [
           {},
           {
@@ -162,7 +162,7 @@ describe('CodeDeploy ECS Deploy Action', () => {
         ],
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: [
           {},
           {
@@ -218,14 +218,14 @@ function addCodeDeployECSCodePipeline(stack: cdk.Stack, props: cpactions.CodeDep
           new cpactions.GitHubSourceAction({
             actionName: 'GitHub',
             output: props.taskDefinitionTemplateInput || props.taskDefinitionTemplateFile!.artifact,
-            oauthToken: cdk.SecretValue.plainText('secret'),
+            oauthToken: cdk.SecretValue.unsafePlainText('secret'),
             owner: 'awslabs',
             repo: 'aws-cdk',
           }),
           new cpactions.GitHubSourceAction({
             actionName: 'GitHub2',
             output: props.appSpecTemplateInput || props.appSpecTemplateFile!.artifact,
-            oauthToken: cdk.SecretValue.plainText('secret'),
+            oauthToken: cdk.SecretValue.unsafePlainText('secret'),
             owner: 'awslabs',
             repo: 'aws-cdk-2',
           }),

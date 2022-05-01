@@ -599,7 +599,7 @@ behavior('can supply pre-install scripts to asset upload', (suite) => {
         BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             install: {
-              commands: ['npm config set registry https://registry.com', 'npm install -g cdk-assets'],
+              commands: ['npm config set registry https://registry.com', 'npm install -g cdk-assets@1'],
             },
           },
         })),
