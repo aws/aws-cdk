@@ -102,5 +102,9 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   metrics: [sentMessageSizeMetric],
   fullPrecision: true,
 }));
+dashboard.addWidgets(new cloudwatch.CustomWidget({
+  title: 'My custom alarm',
+  functionArn: 'arn:aws:lambda:us-west-2:123456789012:function:my-function',
+}));
 
 app.synth();
