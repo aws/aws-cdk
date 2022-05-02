@@ -1,0 +1,48 @@
+{
+    "ResourceTypes": {
+      "AWS::Serverless::Api": {
+        "Properties": {
+          "GatewayResponses": {
+            "patch": {
+              "description": "Make the GatewayResponses property of AWS::Serverless::Api accept JSON",
+              "operations": [
+                {
+                  "op": "remove",
+                  "path": "/PrimitiveItemType"
+                },
+                {
+                  "op": "remove",
+                  "path": "/Type"
+                },
+                {
+                  "op": "add",
+                  "path": "/PrimitiveType",
+                  "value": "Json"
+                }
+              ]
+            }
+          },
+          "Models": {
+            "patch": {
+              "description": "Make the Models property of AWS::Serverless::Api accept JSON",
+              "operations": [
+                {
+                  "op": "remove",
+                  "path": "/PrimitiveItemType"
+                },
+                {
+                  "op": "remove",
+                  "path": "/Type"
+                },
+                {
+                  "op": "add",
+                  "path": "/PrimitiveType",
+                  "value": "Json"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }

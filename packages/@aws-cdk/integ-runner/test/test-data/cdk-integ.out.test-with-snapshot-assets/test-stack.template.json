@@ -50,5 +50,19 @@
         "MyFunction1ServiceRole9852B06B"
       ]
     }
+  },
+  "Parameters": {
+    "AssetParametersDec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509S3BucketBF50F97C": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"Dec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509\""
+    },
+    "AssetParametersDec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509S3VersionKeyF21AC8C1": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"Dec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509\""
+    },
+    "AssetParametersDec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509ArtifactHash5D8C129B": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"Dec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509\""
+    }
   }
 }

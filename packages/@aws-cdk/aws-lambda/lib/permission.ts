@@ -1,4 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
+import { FunctionUrlAuthType } from './function-url';
+
 import { Construct } from 'constructs';
 
 /**
@@ -64,4 +66,11 @@ export interface Permission {
    * can invoke the function.
    */
   readonly sourceArn?: string;
+
+  /**
+   * The authType for the function URL that you are granting permissions for.
+   *
+   * @default - No functionUrlAuthType
+   */
+  readonly functionUrlAuthType?: FunctionUrlAuthType;
 }

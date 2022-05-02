@@ -259,12 +259,19 @@ interface DatabaseClusterBaseProps {
   readonly storageEncrypted?: boolean
 
   /**
-  * The KMS key for storage encryption.
-  * If specified, {@link storageEncrypted} will be set to `true`.
-  *
-  * @default - if storageEncrypted is true then the default master key, no key otherwise
-  */
+   * The KMS key for storage encryption.
+   * If specified, {@link storageEncrypted} will be set to `true`.
+   *
+   * @default - if storageEncrypted is true then the default master key, no key otherwise
+   */
   readonly storageEncryptionKey?: kms.IKey;
+
+  /**
+   * Whether to copy tags to the snapshot when a snapshot is created.
+   *
+   * @default - true
+   */
+  readonly copyTagsToSnapshot?: boolean;
 }
 
 /**
@@ -362,7 +369,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       }),
     ];
 
-    let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props, /* combineRoles */ false);
+    const combineRoles = props.engine.combineImportAndExportRoles ?? false;
+    let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props, combineRoles);
 
     if (props.parameterGroup && props.parameters) {
       throw new Error('You cannot specify both parameterGroup and parameters');
@@ -386,7 +394,11 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     if (s3ImportRole) {
       clusterAssociatedRoles.push({ roleArn: s3ImportRole.roleArn, featureName: clusterEngineBindConfig.features?.s3Import });
     }
-    if (s3ExportRole) {
+    if (s3ExportRole &&
+        // only add the second associated Role if it's different than the first
+        // (duplicates in the associated Roles array are not allowed by the RDS service)
+        (s3ExportRole !== s3ImportRole ||
+        clusterEngineBindConfig.features?.s3Import !== clusterEngineBindConfig.features?.s3Export)) {
       clusterAssociatedRoles.push({ roleArn: s3ExportRole.roleArn, featureName: clusterEngineBindConfig.features?.s3Export });
     }
 
@@ -420,6 +432,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       // Encryption
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
+      // Tags
+      copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
     };
   }
 }
@@ -496,13 +510,6 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
    * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
    */
   readonly credentials?: Credentials;
-
-  /**
-   * Whether to copy tags to the snapshot when a snapshot is created.
-   *
-   * @default: true
-   */
-  readonly copyTagsToSnapshot?: boolean;
 }
 
 /**
@@ -552,9 +559,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       ...this.newCfnProps,
       // Admin
       masterUsername: credentials.username,
-      masterUserPassword: credentials.password?.toString(),
-      // Tags
-      copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
+      masterUserPassword: credentials.password?.unsafeUnwrap(),
     });
 
     this.clusterIdentifier = cluster.ref;

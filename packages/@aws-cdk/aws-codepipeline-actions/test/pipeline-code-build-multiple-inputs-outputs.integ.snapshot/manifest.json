@@ -1,0 +1,88 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codepipeline-codebuild-multiple-inputs-outputs": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codepipeline-codebuild-multiple-inputs-outputs.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/MyRepo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRepoF4F48043"
+          }
+        ],
+        "/aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/MyRepo/awscdkcodepipelinecodebuildmultipleinputsoutputsPipeline314D3A85EventRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRepoawscdkcodepipelinecodebuildmultipleinputsoutputsPipeline314D3A85EventRule9F75D675"
+          }
+        ],
+        "/aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/MyBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucketF68F3FF0"
+          }
+        ],
+        "/aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/Pipeline/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineRoleD68726F7"
+          }
+        ],
+        "/aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/Pipeline/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineRoleDefaultPolicyC7A05455"
+          }
+        ],
+        "/aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/Pipeline/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineC660917D"
+          }
+        ],
+        "/aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/Pipeline/EventsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineEventsRole46BEEA7C"
+          }
+        ],
+        "/aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/Pipeline/EventsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineEventsRoleDefaultPolicyFF4FCCE0"
+          }
+        ],
+        "/aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/MyBuildProject/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBuildProjectRole6B7E2258"
+          }
+        ],
+        "/aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/MyBuildProject/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBuildProjectRoleDefaultPolicy5604AA87"
+          }
+        ],
+        "/aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/MyBuildProject/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBuildProject30DB9D6E"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codepipeline-codebuild-multiple-inputs-outputs"
+    }
+  }
+}

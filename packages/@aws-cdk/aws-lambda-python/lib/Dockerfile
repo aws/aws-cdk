@@ -9,6 +9,8 @@ ARG HTTPS_PROXY
 
 # Upgrade pip (required by cryptography v3.4 and above, which is a dependency of poetry)
 RUN pip install --upgrade pip
-RUN pip install pipenv poetry
+
+# pipenv 2022.4.8 is the last version with Python 3.6 support
+RUN pip install pipenv==2022.4.8 poetry
 
 CMD [ "python" ]

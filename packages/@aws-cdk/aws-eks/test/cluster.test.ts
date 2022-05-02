@@ -27,7 +27,7 @@ describe('cluster', () => {
     const cluster = new eks.Cluster(stack, 'Cluster', {
       version: CLUSTER_VERSION,
       albController: {
-        version: eks.AlbControllerVersion.V2_3_1,
+        version: eks.AlbControllerVersion.V2_4_1,
       },
     });
 
@@ -709,8 +709,26 @@ describe('cluster', () => {
         },
       },
     });
+  });
 
+  test('cluster handler gets created with STS regional endpoint configuration', () => {
+    // This is necessary to make aws-sdk-jsv2 work in opt-in regions
 
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+
+    // THEN
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
+    Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+      Environment: {
+        Variables: {
+          AWS_STS_REGIONAL_ENDPOINTS: 'regional',
+        },
+      },
+    });
   });
 
   test('if "vpc" is not specified, vpc with default configuration will be created', () => {
