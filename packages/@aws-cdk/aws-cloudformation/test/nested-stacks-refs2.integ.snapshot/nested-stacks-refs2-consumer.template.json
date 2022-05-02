@@ -1,0 +1,30 @@
+{
+ "Resources": {
+  "ConsumerTopic6F402371": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": {
+     "Fn::Join": [
+      "",
+      [
+       "Consuming ",
+       {
+        "Fn::Select": [
+         2,
+         {
+          "Fn::Split": [
+           "-",
+           {
+            "Fn::ImportValue": "nested-stacks-refs2-parent-with-producer:ExportsOutputFnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsnestedstacksrefs2parentwithproducerNested1MyTopic9E26C363TopicNameF4BCEDAF"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     ]
+    }
+   }
+  }
+ }
+}

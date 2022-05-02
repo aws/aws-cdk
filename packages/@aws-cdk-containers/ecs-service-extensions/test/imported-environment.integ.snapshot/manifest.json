@@ -1,0 +1,351 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "imported-environment-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "imported-environment-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/imported-environment-integ": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "importedenvironmentintegResourcesAB23EBEF.nested.template.json",
+              "id": "78cd13b88474241c9844c0c939b6fca0f485ffbba32f35718002319e7ab73a01",
+              "packaging": "file",
+              "sourceHash": "78cd13b88474241c9844c0c939b6fca0f485ffbba32f35718002319e7ab73a01",
+              "s3BucketParameter": "AssetParameters78cd13b88474241c9844c0c939b6fca0f485ffbba32f35718002319e7ab73a01S3Bucket64585C1B",
+              "s3KeyParameter": "AssetParameters78cd13b88474241c9844c0c939b6fca0f485ffbba32f35718002319e7ab73a01S3VersionKey41670582",
+              "artifactHashParameter": "AssetParameters78cd13b88474241c9844c0c939b6fca0f485ffbba32f35718002319e7ab73a01ArtifactHashF1155D65"
+            }
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Environmentenvironmentvpc02635CAD"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPublicSubnet1Subnet90FA3050"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPublicSubnet1RouteTableF562A242"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPublicSubnet1RouteTableAssociationFDE85030"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPublicSubnet1DefaultRoute4171CB3F"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPublicSubnet1EIP0B5752AE"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPublicSubnet1NATGateway65E8E64D"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPublicSubnet2Subnet80565813"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPublicSubnet2RouteTableCC311A3A"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPublicSubnet2RouteTableAssociation54B3A48A"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPublicSubnet2DefaultRouteCA3995A5"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPublicSubnet2EIP54A162E2"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPublicSubnet2NATGatewayEDDF81A3"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPrivateSubnet1SubnetE66B59C1"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPrivateSubnet1RouteTable2FAF7412"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPrivateSubnet1RouteTableAssociation46A426C7"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPrivateSubnet1DefaultRoute1AFA55BA"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPrivateSubnet2SubnetD38DAD67"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPrivateSubnet2RouteTable244FED3F"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPrivateSubnet2RouteTableAssociation9FE6BFCD"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcPrivateSubnet2DefaultRouteF5A23DA3"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcIGWD3352EF8"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentvpcVPCGWD59F3C86"
+          }
+        ],
+        "/imported-environment-integ/Resources/Environment-environment-cluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvironmentenvironmentclusterA67A8E69"
+          }
+        ],
+        "/imported-environment-integ/Resources/importedenvironmentintegResourcesEnvironmentenvironmentvpcPublicSubnet1Subnet0D15D382Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "importedenvironmentintegResourcesEnvironmentenvironmentvpcPublicSubnet1Subnet0D15D382Ref"
+          }
+        ],
+        "/imported-environment-integ/Resources/importedenvironmentintegResourcesEnvironmentenvironmentvpcPublicSubnet2Subnet68645ACARef": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "importedenvironmentintegResourcesEnvironmentenvironmentvpcPublicSubnet2Subnet68645ACARef"
+          }
+        ],
+        "/imported-environment-integ/Resources/importedenvironmentintegResourcesEnvironmentenvironmentvpcDC34D4D3Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "importedenvironmentintegResourcesEnvironmentenvironmentvpcDC34D4D3Ref"
+          }
+        ],
+        "/imported-environment-integ/Resources/importedenvironmentintegResourcesEnvironmentenvironmentcluster594A3DCARef": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "importedenvironmentintegResourcesEnvironmentenvironmentcluster594A3DCARef"
+          }
+        ],
+        "/imported-environment-integ/Resources/importedenvironmentintegResourcesEnvironmentenvironmentvpcPrivateSubnet1Subnet7309E967Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "importedenvironmentintegResourcesEnvironmentenvironmentvpcPrivateSubnet1Subnet7309E967Ref"
+          }
+        ],
+        "/imported-environment-integ/Resources/importedenvironmentintegResourcesEnvironmentenvironmentvpcPrivateSubnet2Subnet55014443Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "importedenvironmentintegResourcesEnvironmentenvironmentvpcPrivateSubnet2Subnet55014443Ref"
+          }
+        ],
+        "/imported-environment-integ/Resources.NestedStack/Resources.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ResourcesNestedStackResourcesNestedStackResourceCDA26E60"
+          }
+        ],
+        "/imported-environment-integ/Vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "No routeTableId was provided to the subnet at 'imported-environment-integ/Vpc/PublicSubnet1'. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)"
+          }
+        ],
+        "/imported-environment-integ/Vpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "No routeTableId was provided to the subnet at 'imported-environment-integ/Vpc/PublicSubnet2'. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)"
+          }
+        ],
+        "/imported-environment-integ/Vpc/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "No routeTableId was provided to the subnet at 'imported-environment-integ/Vpc/PrivateSubnet1'. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)"
+          }
+        ],
+        "/imported-environment-integ/Vpc/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "No routeTableId was provided to the subnet at 'imported-environment-integ/Vpc/PrivateSubnet2'. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)"
+          }
+        ],
+        "/imported-environment-integ/Service-load-balancer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceloadbalancerD5D60894"
+          }
+        ],
+        "/imported-environment-integ/Service-load-balancer/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceloadbalancerSecurityGroup2DA3E8D6"
+          }
+        ],
+        "/imported-environment-integ/Service-load-balancer/SecurityGroup/to importedenvironmentintegServiceserviceSecurityGroup2BE90F74:80": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceloadbalancerSecurityGrouptoimportedenvironmentintegServiceserviceSecurityGroup2BE90F7480B17EB7CA"
+          }
+        ],
+        "/imported-environment-integ/Service-load-balancer/Service-listener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceloadbalancerServicelistenerC862F722"
+          }
+        ],
+        "/imported-environment-integ/Service-load-balancer/Service-listener/ServiceGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceloadbalancerServicelistenerServiceGroup844B51E6"
+          }
+        ],
+        "/imported-environment-integ/Service-load-balancer-dns-output": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Serviceloadbalancerdnsoutput"
+          }
+        ],
+        "/imported-environment-integ/Service-task-definition/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServicetaskdefinitionTaskRole5B4B60A4"
+          }
+        ],
+        "/imported-environment-integ/Service-task-definition/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Servicetaskdefinition0CEAD834",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/imported-environment-integ/Service-task-definition/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServicetaskdefinitionExecutionRoleD09F4578"
+          }
+        ],
+        "/imported-environment-integ/Service-task-definition/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServicetaskdefinitionExecutionRoleDefaultPolicy25CEAFC5"
+          }
+        ],
+        "/imported-environment-integ/Service-logs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Servicelogs9F4E1F70"
+          }
+        ],
+        "/imported-environment-integ/Service-service/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceserviceService6A153CB8"
+          }
+        ],
+        "/imported-environment-integ/Service-service/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceserviceSecurityGroup1915660F"
+          }
+        ],
+        "/imported-environment-integ/Service-service/SecurityGroup/from importedenvironmentintegServiceloadbalancerSecurityGroup68EE533C:80": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceserviceSecurityGroupfromimportedenvironmentintegServiceloadbalancerSecurityGroup68EE533C8070FCF629"
+          }
+        ],
+        "/imported-environment-integ/AssetParameters/78cd13b88474241c9844c0c939b6fca0f485ffbba32f35718002319e7ab73a01/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters78cd13b88474241c9844c0c939b6fca0f485ffbba32f35718002319e7ab73a01S3Bucket64585C1B"
+          }
+        ],
+        "/imported-environment-integ/AssetParameters/78cd13b88474241c9844c0c939b6fca0f485ffbba32f35718002319e7ab73a01/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters78cd13b88474241c9844c0c939b6fca0f485ffbba32f35718002319e7ab73a01S3VersionKey41670582"
+          }
+        ],
+        "/imported-environment-integ/AssetParameters/78cd13b88474241c9844c0c939b6fca0f485ffbba32f35718002319e7ab73a01/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters78cd13b88474241c9844c0c939b6fca0f485ffbba32f35718002319e7ab73a01ArtifactHashF1155D65"
+          }
+        ]
+      },
+      "displayName": "imported-environment-integ"
+    }
+  }
+}
