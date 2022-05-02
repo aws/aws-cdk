@@ -13,7 +13,6 @@ beforeEach(() => {
     authorizationConfig: {},
     name: 'api',
     schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
-    logConfig: {},
   });
 });
 
@@ -125,6 +124,7 @@ test('appsync GraphqlApi should be configured with custom CloudWatch Logs role w
     schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
     logConfig: {
       role: cloudWatchLogRole,
+      fieldLogLevel: appsync.FieldLogLevel.ALL,
     },
   });
 
