@@ -242,17 +242,13 @@ export interface LogConfig {
   readonly excludeVerboseContent?: boolean | IResolvable;
   /**
    * log level for fields
-   *
-   * @default - Use AppSync default
    */
-  readonly fieldLogLevel?: FieldLogLevel;
+  readonly fieldLogLevel: FieldLogLevel;
 
   /**
    * The role for CloudWatch Logs
-   *
-   * @default - None
    */
-  readonly role?: IRole;
+  readonly role: IRole;
 }
 
 /**
