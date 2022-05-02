@@ -579,7 +579,7 @@ declare const vpc: ec2.Vpc;
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_21,
   vpc,
-  vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }],
+  vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }],
 });
 ```
 

@@ -265,8 +265,8 @@
                           "Ref": "MyVpcIsolatedSubnet1RouteTable67AEA7B8"
                         },
                         "destinationCidrBlock": "8.8.8.8/32",
-                        "gatewayId": {
-                          "Ref": "MyVpcIGW5C4A4F63"
+                        "transitGatewayId": {
+                          "Ref": "MyTransitGateway"
                         }
                       }
                     },
@@ -322,6 +322,28 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-ec2.Vpc",
+              "version": "0.0.0"
+            }
+          },
+          "MyTransitGateway": {
+            "id": "MyTransitGateway",
+            "path": "aws-cdk-ec2-vpc-gateway/MyTransitGateway",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::EC2::TransitGateway",
+              "aws:cdk:cloudformation:props": {
+                "associationDefaultRouteTableId": {
+                  "Ref": "MyVpcPublicSubnet1RouteTableC46AB2F4"
+                },
+                "propagationDefaultRouteTableId": {
+                  "Ref": "MyVpcPublicSubnet1RouteTableC46AB2F4"
+                },
+                "transitGatewayCidrBlocks": [
+                  "8.8.8.9/32"
+                ]
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ec2.CfnTransitGateway",
               "version": "0.0.0"
             }
           }
