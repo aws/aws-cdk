@@ -93,6 +93,16 @@ export interface ReportGroupProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: cdk.RemovalPolicy;
+
+  /**
+   * The type of report group. This can be one of the following values:
+   *
+   * - **TEST** - The report group contains test reports.
+   * - **CODE_COVERAGE** - The report group contains code coverage reports.
+   *
+   * @default - TEST
+   */
+  readonly type?: 'TEST' | 'CODE_COVERAGE'
 }
 
 /**
@@ -125,7 +135,7 @@ export class ReportGroup extends ReportGroupBase {
     });
 
     const resource = new CfnReportGroup(this, 'Resource', {
-      type: 'TEST',
+      type: props.type ? props.type : 'TEST',
       exportConfig: {
         exportConfigType: props.exportBucket ? 'S3' : 'NO_EXPORT',
         s3Destination: props.exportBucket

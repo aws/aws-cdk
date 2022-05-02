@@ -142,4 +142,16 @@ describe('Test Reports Groups', () => {
       "UpdateReplacePolicy": "Delete",
     });
   });
+
+  test('can be created with type=CODE_COVERAGE', () => {
+    const stack = new cdk.Stack();
+
+    new codebuild.ReportGroup(stack, 'ReportGroup', {
+      type: 'CODE_COVERAGE',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
+      "Type": "CODE_COVERAGE",
+    });
+  });
 });
