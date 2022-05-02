@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "dynamodb-v2/integ.dynamodb-v2-put-item-action": {
+      "stacks": [
+        "test-kinesis-stream-action-stack"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}
