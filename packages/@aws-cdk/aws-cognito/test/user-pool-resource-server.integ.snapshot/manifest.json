@@ -1,0 +1,52 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-user-pool-resource-server": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-user-pool-resource-server.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-user-pool-resource-server/myuserpool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpool01998219"
+          }
+        ],
+        "/integ-user-pool-resource-server/myuserpool/myserver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolmyserver50C4D8E9"
+          }
+        ],
+        "/integ-user-pool-resource-server/myuserpool/client/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolclientC5FA41EC"
+          }
+        ],
+        "/integ-user-pool-resource-server/pool-id": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "poolid"
+          }
+        ],
+        "/integ-user-pool-resource-server/client-id": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "clientid"
+          }
+        ]
+      },
+      "displayName": "integ-user-pool-resource-server"
+    }
+  }
+}

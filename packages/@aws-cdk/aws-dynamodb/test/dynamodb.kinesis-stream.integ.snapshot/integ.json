@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-dynamodb/test/integ.dynamodb.kinesis-stream": {
+      "stacks": [
+        "aws-cdk-dynamodb-kinesis-stream"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

@@ -117,7 +117,7 @@ describe('DatabaseInstance', () => {
           [
             'arn:',
             { Ref: 'AWS::Partition' },
-            ':docdb:us-test-1:12345:db:',
+            ':rds:us-test-1:12345:db:',
             { Ref: 'InstanceC1063A87' },
           ],
         ],
@@ -160,7 +160,7 @@ describe('DatabaseInstance', () => {
           [
             'arn:',
             { Ref: 'AWS::Partition' },
-            `:docdb:us-test-1:12345:db:${instanceIdentifier}`,
+            `:rds:us-test-1:12345:db:${instanceIdentifier}`,
           ],
         ],
       },
@@ -187,7 +187,7 @@ class TestStack extends cdk.Stack {
     this.cluster = new DatabaseCluster(this, 'Database', {
       masterUser: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceType: CLUSTER_INSTANCE_TYPE,
       vpc: this.vpc,

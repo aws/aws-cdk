@@ -25,8 +25,6 @@ export function integTest(
   const runner = shouldSkip(name) ? testKind.skip : testKind;
 
   runner(name, async () => {
-    // eslint-disable-next-line no-console
-    console.log(`running test ${name} using ${runner.name}`);
     const output = new MemoryStream();
 
     output.write('================================================================\n');
