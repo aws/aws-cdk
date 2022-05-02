@@ -71,5 +71,5 @@
     #set($inputString = "$inputString}")
     #set($inputString = $inputString.replaceAll("@@",'"'))
     #set($len = $inputString.length() - 1)
-    "input": "{$util.escapeJavaScript($inputString.substring(1,$len))}"
+    "input": "{$util.escapeJavaScript($inputString.substring(1,$len)).replaceAll("\\'","'")}"
 }
