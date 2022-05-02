@@ -419,6 +419,13 @@ export interface CommonClusterOptions {
   readonly role?: iam.IRole;
 
   /**
+   * Role for defaultNodeGroup.
+   *
+   * @default - A nodeGroupRole is automatically created for you
+   */
+  readonly defaultNodeGroupRole?: iam.IRole;
+
+  /**
    * Name for the cluster.
    *
    * @default - Automatically generated name
@@ -1521,7 +1528,7 @@ export class Cluster extends ClusterBase {
         this.addAutoScalingGroupCapacity('DefaultCapacity', { instanceType, minCapacity }) : undefined;
 
       this.defaultNodegroup = props.defaultCapacityType !== DefaultCapacityType.EC2 ?
-        this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity }) : undefined;
+        this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity, nodeRole: props?.defaultNodeGroupRole }) : undefined;
     }
 
     const outputConfigCommand = props.outputConfigCommand ?? true;
