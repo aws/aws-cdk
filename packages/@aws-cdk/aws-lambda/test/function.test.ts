@@ -2823,7 +2823,6 @@ describe('function', () => {
         SourceArn: sourceArnB,
       },
     });
-
   });
 });
 

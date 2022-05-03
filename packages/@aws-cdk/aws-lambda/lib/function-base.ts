@@ -421,7 +421,6 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
         conditions: grantee.grantPrincipal.policyFragment.conditions,
       }), 'utf8')
       .digest('base64');
-
     const identifier = `Invoke${hash}`;
 
     // Memoize the result so subsequent grantInvoke() calls are idempotent
