@@ -6,6 +6,37 @@ import { CompositePrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Duration, Stack } from '@aws-cdk/core';
 import { ApplicationLoadBalancedFargateService, ApplicationMultipleTargetGroupsFargateService, NetworkLoadBalancedFargateService, NetworkMultipleTargetGroupsFargateService } from '../../lib';
 
+
+const enableExecuteCommandPermissions = {
+  Statement: [
+    {
+      Action: [
+        'ssmmessages:CreateControlChannel',
+        'ssmmessages:CreateDataChannel',
+        'ssmmessages:OpenControlChannel',
+        'ssmmessages:OpenDataChannel',
+      ],
+      Effect: 'Allow',
+      Resource: '*',
+    },
+    {
+      Action: 'logs:DescribeLogGroups',
+      Effect: 'Allow',
+      Resource: '*',
+    },
+    {
+      Action: [
+        'logs:CreateLogStream',
+        'logs:DescribeLogStreams',
+        'logs:PutLogEvents',
+      ],
+      Effect: 'Allow',
+      Resource: '*',
+    },
+  ],
+  Version: '2012-10-17',
+};
+
 describe('When Application Load Balancer', () => {
   test('test Fargate loadbalanced construct with default settings', () => {
     // GIVEN
@@ -186,35 +217,7 @@ describe('When Application Load Balancer', () => {
 
     // ECS Exec
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'ssmmessages:CreateControlChannel',
-              'ssmmessages:CreateDataChannel',
-              'ssmmessages:OpenControlChannel',
-              'ssmmessages:OpenDataChannel',
-            ],
-            Effect: 'Allow',
-            Resource: '*',
-          },
-          {
-            Action: 'logs:DescribeLogGroups',
-            Effect: 'Allow',
-            Resource: '*',
-          },
-          {
-            Action: [
-              'logs:CreateLogStream',
-              'logs:DescribeLogStreams',
-              'logs:PutLogEvents',
-            ],
-            Effect: 'Allow',
-            Resource: '*',
-          },
-        ],
-        Version: '2012-10-17',
-      },
+      PolicyDocument: enableExecuteCommandPermissions,
       PolicyName: 'TaskRoleDefaultPolicy07FC53DE',
       Roles: [
         {
@@ -588,44 +591,6 @@ describe('When Network Load Balancer', () => {
       ServiceName: 'myService',
     });
 
-    // ECS Exec
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'ssmmessages:CreateControlChannel',
-              'ssmmessages:CreateDataChannel',
-              'ssmmessages:OpenControlChannel',
-              'ssmmessages:OpenDataChannel',
-            ],
-            Effect: 'Allow',
-            Resource: '*',
-          },
-          {
-            Action: 'logs:DescribeLogGroups',
-            Effect: 'Allow',
-            Resource: '*',
-          },
-          {
-            Action: [
-              'logs:CreateLogStream',
-              'logs:DescribeLogStreams',
-              'logs:PutLogEvents',
-            ],
-            Effect: 'Allow',
-            Resource: '*',
-          },
-        ],
-        Version: '2012-10-17',
-      },
-      PolicyName: 'TaskRoleDefaultPolicy07FC53DE',
-      Roles: [
-        {
-          Ref: 'TaskRole30FC0FBB',
-        },
-      ],
-    });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
@@ -690,6 +655,72 @@ describe('When Network Load Balancer', () => {
           'Arn',
         ],
       },
+    });
+  });
+
+  test('EnableExecuteCommand generates correct IAM Permissions', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new NetworkMultipleTargetGroupsFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        containerName: 'hello',
+        containerPorts: [80, 90],
+        enableLogging: false,
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+        },
+        logDriver: new ecs.AwsLogDriver({
+          streamPrefix: 'TestStream',
+        }),
+        family: 'Ec2TaskDef',
+        executionRole: new Role(stack, 'ExecutionRole', {
+          path: '/',
+          assumedBy: new CompositePrincipal(
+            new ServicePrincipal('ecs.amazonaws.com'),
+            new ServicePrincipal('ecs-tasks.amazonaws.com'),
+          ),
+        }),
+        taskRole: new Role(stack, 'TaskRole', {
+          assumedBy: new ServicePrincipal('ecs-tasks.amazonaws.com'),
+        }),
+        dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
+      },
+      cpu: 256,
+      assignPublicIp: true,
+      memoryLimitMiB: 512,
+      desiredCount: 3,
+      enableECSManagedTags: true,
+      enableExecuteCommand: true,
+      healthCheckGracePeriod: Duration.millis(2000),
+      propagateTags: ecs.PropagatedTagSource.SERVICE,
+      serviceName: 'myService',
+      targetGroups: [
+        {
+          containerPort: 80,
+        },
+        {
+          containerPort: 90,
+        },
+      ],
+    });
+
+
+    // ECS Exec
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: enableExecuteCommandPermissions,
+      PolicyName: 'TaskRoleDefaultPolicy07FC53DE',
+      Roles: [
+        {
+          Ref: 'TaskRole30FC0FBB',
+        },
+      ],
     });
   });
 

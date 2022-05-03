@@ -757,6 +757,7 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   },
   enableExecuteCommand: true
 });
+```
 
 Please note, ECS Exec leverages AWS Systems Manager (SSM). So as a prerequisite for the exec command
 to work, you need to have the SSM plugin for the AWS CLI installed locally. For more information, see

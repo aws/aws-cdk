@@ -175,6 +175,7 @@ describe('When Application Load Balancer', () => {
       DesiredCount: 3,
       LaunchType: 'EC2',
       EnableECSManagedTags: true,
+      EnableExecuteCommand: true,
       HealthCheckGracePeriodSeconds: 2,
       LoadBalancers: [
         {
@@ -1058,6 +1059,7 @@ describe('When Network Load Balancer', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DesiredCount: 3,
       EnableECSManagedTags: true,
+      EnableExecuteCommand: true,
       HealthCheckGracePeriodSeconds: 2,
       LaunchType: 'EC2',
       LoadBalancers: [
@@ -1081,45 +1083,6 @@ describe('When Network Load Balancer', () => {
       ServiceName: 'myService',
       PlacementConstraints: [{ Type: 'memberOf', Expression: 'attribute:ecs.instance-type =~ m5a.*' }],
       PlacementStrategies: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'cpu', Type: 'binpack' }, { Type: 'random' }],
-    });
-
-    // ECS Exec
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'ssmmessages:CreateControlChannel',
-              'ssmmessages:CreateDataChannel',
-              'ssmmessages:OpenControlChannel',
-              'ssmmessages:OpenDataChannel',
-            ],
-            Effect: 'Allow',
-            Resource: '*',
-          },
-          {
-            Action: 'logs:DescribeLogGroups',
-            Effect: 'Allow',
-            Resource: '*',
-          },
-          {
-            Action: [
-              'logs:CreateLogStream',
-              'logs:DescribeLogStreams',
-              'logs:PutLogEvents',
-            ],
-            Effect: 'Allow',
-            Resource: '*',
-          },
-        ],
-        Version: '2012-10-17',
-      },
-      PolicyName: 'TaskRoleDefaultPolicy07FC53DE',
-      Roles: [
-        {
-          Ref: 'TaskRole30FC0FBB',
-        },
-      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
@@ -1188,6 +1151,132 @@ describe('When Network Load Balancer', () => {
           'Arn',
         ],
       },
+    });
+  });
+
+  test('EnableExecuteCommand flag generated IAM Permissions', () => {
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const cluster = new Cluster(stack, 'Cluster', { vpc });
+    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }));
+    const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
+
+    // WHEN
+    new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 256,
+      taskImageOptions: {
+        image: ContainerImage.fromRegistry('test'),
+        containerName: 'myContainer',
+        containerPorts: [80, 90],
+        enableLogging: false,
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+        },
+        logDriver: new AwsLogDriver({
+          streamPrefix: 'TestStream',
+        }),
+        family: 'Ec2TaskDef',
+        executionRole: new Role(stack, 'ExecutionRole', {
+          path: '/',
+          assumedBy: new CompositePrincipal(
+            new ServicePrincipal('ecs.amazonaws.com'),
+            new ServicePrincipal('ecs-tasks.amazonaws.com'),
+          ),
+        }),
+        taskRole: new Role(stack, 'TaskRole', {
+          assumedBy: new ServicePrincipal('ecs-tasks.amazonaws.com'),
+        }),
+        dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
+      },
+      cpu: 256,
+      desiredCount: 3,
+      enableECSManagedTags: true,
+      enableExecuteCommand: true,
+      healthCheckGracePeriod: Duration.millis(2000),
+      loadBalancers: [
+        {
+          name: 'lb1',
+          domainName: 'api.example.com',
+          domainZone: zone,
+          publicLoadBalancer: false,
+          listeners: [
+            {
+              name: 'listener1',
+            },
+          ],
+        },
+        {
+          name: 'lb2',
+          listeners: [
+            {
+              name: 'listener2',
+              port: 81,
+            },
+          ],
+        },
+      ],
+      propagateTags: PropagatedTagSource.SERVICE,
+      memoryReservationMiB: 256,
+      serviceName: 'myService',
+      targetGroups: [
+        {
+          containerPort: 80,
+          listener: 'listener1',
+        },
+        {
+          containerPort: 90,
+          listener: 'listener2',
+        },
+      ],
+      placementStrategies: [PlacementStrategy.spreadAcrossInstances(), PlacementStrategy.packedByCpu(), PlacementStrategy.randomly()],
+      placementConstraints: [PlacementConstraint.memberOf('attribute:ecs.instance-type =~ m5a.*')],
+    });
+
+    // ECS Exec
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'ssmmessages:CreateControlChannel',
+              'ssmmessages:CreateDataChannel',
+              'ssmmessages:OpenControlChannel',
+              'ssmmessages:OpenDataChannel',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: 'logs:DescribeLogGroups',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: [
+              'logs:CreateLogStream',
+              'logs:DescribeLogStreams',
+              'logs:PutLogEvents',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'TaskRoleDefaultPolicy07FC53DE',
+      Roles: [
+        {
+          Ref: 'TaskRole30FC0FBB',
+        },
+      ],
     });
   });
 
