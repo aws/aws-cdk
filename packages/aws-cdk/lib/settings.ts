@@ -280,6 +280,9 @@ export class Settings {
         bucketName: argv.bootstrapBucketName,
         kmsKeyId: argv.bootstrapKmsKeyId,
       },
+      toolkitRepository: {
+        kmsKeyId: argv.bootstrapEcrKey,
+      },
       versionReporting: argv.versionReporting,
       staging: argv.staging,
       output: argv.output,

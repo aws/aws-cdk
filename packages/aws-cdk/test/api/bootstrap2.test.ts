@@ -67,6 +67,21 @@ describe('Bootstrapping v2', () => {
     }));
   });
 
+  test('passes the ecr KMS key ID as a CFN parameter', async () => {
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        cloudFormationExecutionPolicies: ['arn:policy'],
+        ecrKey: 'my-kms-ecr-key-id',
+      },
+    });
+
+    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+      parameters: expect.objectContaining({
+        ImageAssetsEcrKmsKeyId: 'my-kms-ecr-key-id',
+      }),
+    }));
+  });
+
   test('passes false to PublicAccessBlockConfiguration', async () => {
     await bootstrapper.bootstrapEnvironment(env, sdk, {
       parameters: {
@@ -293,6 +308,32 @@ describe('Bootstrapping v2', () => {
     });
 
     test.each([
+      // Default case
+      [undefined, 'AWS_DEFAULT_KEY'],
+      // Create a new key
+      ['', ''],
+      // Use given key
+      ['my-key-id', 'my-key-id'],
+    ])('(new stack) ecrKey=%p => parameter becomes %p ', async (ecrKey, paramKeyId) => {
+      // GIVEN: no existing stack
+
+      // WHEN
+      await bootstrapper.bootstrapEnvironment(env, sdk, {
+        parameters: {
+          ecrKey,
+          cloudFormationExecutionPolicies: ['arn:booh'],
+        },
+      });
+
+      // THEN
+      expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+        parameters: expect.objectContaining({
+          ImageAssetsEcrKmsKeyId: paramKeyId,
+        }),
+      }));
+    });
+
+    test.each([
       // Old bootstrap stack being upgraded to new one
       [undefined, undefined, 'AWS_MANAGED_KEY'],
       // There is a value, user doesn't request a change
@@ -326,6 +367,16 @@ describe('Bootstrapping v2', () => {
           FileAssetsBucketKmsKeyId: paramKeyId,
         }),
       }));
+    });
+
+    test('throws error if kms key id and createCustomerMasterKey in parameters ', async () => {
+      await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
+        parameters: {
+          cloudFormationExecutionPolicies: ['arn:policy'],
+          kmsKeyId: 'my-kms-key-id',
+          createCustomerMasterKey: true,
+        },
+      })).rejects.toThrowError();
     });
   });
 });

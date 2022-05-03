@@ -134,11 +134,25 @@ export class Bootstrapper {
         params.createCustomerMasterKey === false || currentKmsKeyId === undefined ? USE_AWS_MANAGED_KEY :
           undefined);
 
+    let kmsEcrKeyId = undefined;
+
+    if (params.ecrKey) {
+      // key is given
+      kmsEcrKeyId = params.ecrKey;
+    } else if (params.ecrKey === CREATE_NEW_KEY) {
+      // key shall be created
+      kmsEcrKeyId = CREATE_NEW_KEY;
+    } else if (params.ecrKey === undefined) {
+      // use an AWS managed key
+      kmsEcrKeyId = USE_DEFAULT_KEY;
+    }
+
     return current.update(
       bootstrapTemplate,
       {
         FileAssetsBucketName: params.bucketName,
         FileAssetsBucketKmsKeyId: kmsKeyId,
+        ImageAssetsEcrKmsKeyId: kmsEcrKeyId,
         // Empty array becomes empty string
         TrustedAccounts: trustedAccounts.join(','),
         TrustedAccountsForLookup: trustedAccountsForLookup.join(','),
@@ -182,6 +196,11 @@ export class Bootstrapper {
  * Magic parameter value that will cause the bootstrap-template.yml to NOT create a CMK but use the default keyo
  */
 const USE_AWS_MANAGED_KEY = 'AWS_MANAGED_KEY';
+
+/**
+ * Magic parameter value that will cause the bootstrap-template.yml to NOT create a CMK but use the default key
+ */
+const USE_DEFAULT_KEY = 'AWS_DEFAULT_KEY';
 
 /**
  * Magic parameter value that will cause the bootstrap-template.yml to create a CMK

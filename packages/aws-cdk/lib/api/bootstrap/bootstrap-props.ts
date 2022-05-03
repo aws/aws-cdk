@@ -55,6 +55,13 @@ export interface BootstrappingParameters {
   readonly kmsKeyId?: string;
 
   /**
+   * The ID of an existing KMS key to be used for encrypting images in the repository.
+   *
+   * @default - use the default KMS key or create a custom one
+   */
+  readonly ecrKey?: string;
+
+  /**
    * Whether or not to create a new customer master key (CMK)
    *
    * Only applies to modern bootstrapping. Legacy bootstrapping will never create

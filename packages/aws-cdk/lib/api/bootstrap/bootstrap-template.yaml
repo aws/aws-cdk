@@ -25,6 +25,11 @@ Parameters:
       S3 key, or the ID/ARN of an existing key.
     Default: ''
     Type: String
+  ImageAssetsEcrKmsKeyId:
+    Description: Empty to create a new key, 'AWS_DEFAULT_KEY' to use default
+      ecr encryption, or the ID/ARN of an existing key.
+    Default: ''
+    Type: String
   ContainerAssetsRepositoryName:
     Description: A user-provided custom name to use for the container assets ECR repository
     Default: ''
@@ -73,10 +78,22 @@ Conditions:
     Fn::Equals:
       - ''
       - Ref: FileAssetsBucketKmsKeyId
+  CreateNewEcrKey:
+    Fn::Equals:
+      - ''
+      - Ref: ImageAssetsEcrKmsKeyId
+  CreateCustomerMasterKey:
+    Fn::Or:
+      - !Condition CreateNewKey
+      - !Condition CreateNewEcrKey
   UseAwsManagedKey:
     Fn::Equals:
       - 'AWS_MANAGED_KEY'
       - Ref: FileAssetsBucketKmsKeyId
+  UseAwsDefaultKey:
+    Fn::Equals:
+      - 'AWS_DEFAULT_KEY'
+      - Ref: ImageAssetsEcrKmsKeyId
   HasCustomContainerAssetsRepositoryName:
     Fn::Not:
       - Fn::Equals:
@@ -137,16 +154,42 @@ Resources:
               - kms:GenerateDataKey*
             Effect: Allow
             Principal:
+              # Not actually everyone -- see below for Conditions
+              AWS: "*"
+            Resource: "*"
+            Condition:
+              StringEquals:
+                # See https://docs.aws.amazon.com/kms/latest/developerguide/policy-conditions.html#conditions-kms-caller-account
+                kms:CallerAccount:
+                  Ref: AWS::AccountId
+                kms:ViaService:
+                  - Fn::Sub: ecr.${AWS::Region}.amazonaws.com
+          - Action:
+              - kms:Decrypt
+              - kms:DescribeKey
+              - kms:Encrypt
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+            Effect: Allow
+            Principal:
               AWS:
                 Fn::Sub: "${FilePublishingRole.Arn}"
             Resource: "*"
-    Condition: CreateNewKey
+    Condition: CreateCustomerMasterKey
   FileAssetsBucketEncryptionKeyAlias:
     Condition: CreateNewKey
     Type: AWS::KMS::Alias
     Properties:
       AliasName:
-        Fn::Sub: "alias/cdk-${Qualifier}-assets-key"
+        Fn::Sub: "alias/cdk-${Qualifier}-bucket-assets-key"
+      TargetKeyId:
+        Ref: FileAssetsBucketEncryptionKey
+  FileAssetsEcrEncryptionKeyAlias:
+    Condition: CreateNewEcrKey
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName:
+        Fn::Sub: "alias/cdk-${Qualifier}-ecr-assets-key"
       TargetKeyId:
         Ref: FileAssetsBucketEncryptionKey
   StagingBucket:
@@ -222,6 +265,16 @@ Resources:
             Condition:
               StringLike:
                 "aws:sourceArn": { "Fn::Sub": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:*" }
+      EncryptionConfiguration:
+        Fn::If:
+          - CreateNewEcrKey
+          - EncryptionType: KMS
+            KmsKey: { Fn::Sub: "${FileAssetsBucketEncryptionKey.Arn}" }
+          - Fn::If:
+              - UseAwsDefaultKey
+              - EncryptionType: AES256
+              - EncryptionType: KMS
+                KmsKey: { Fn::Sub: "${ImageAssetsEcrKmsKeyId}" }
   FilePublishingRole:
     Type: AWS::IAM::Role
     Properties:
@@ -367,6 +420,18 @@ Resources:
               - ecr:GetAuthorizationToken
             Resource: "*"
             Effect: Allow
+          - Action:
+              - kms:Decrypt
+              - kms:DescribeKey
+              - kms:Encrypt
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+            Effect: Allow
+            Resource:
+              Fn::If:
+                - CreateNewEcrKey
+                - Fn::Sub: "${FileAssetsBucketEncryptionKey.Arn}"
+                - Fn::Sub: arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/${ImageAssetsEcrKmsKeyId}
         Version: '2012-10-17'
       Roles:
         - Ref: ImagePublishingRole
