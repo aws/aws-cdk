@@ -222,12 +222,10 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "s3:PutBucketNotification",
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": "s3:GetBucketNotification",
+       "Action": [
+        "s3:GetBucketNotification",
+        "s3:PutBucketNotification"
+       ],
        "Effect": "Allow",
        "Resource": "*"
       }

@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-stepfunctions-aws-sdk-integ": {
       "type": "aws:cloudformation:stack",
