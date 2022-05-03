@@ -156,7 +156,7 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
     }
 
     return {
-      imageUri: `${this.env.account}.dkr.ecr.${this.env.region}.${this.stack.urlSuffix}/${repositoryName}:${imageTag}`,
+      imageUri: `${this.stack.account}.dkr.ecr.${this.stack.region}.${this.stack.urlSuffix}/${repositoryName}:${imageTag}`,
       repositoryName,
     };
   }
@@ -195,7 +195,7 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
     const s3Filename = Fn.select(1, Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, encodedKey));
     const objectKey = `${s3Prefix}${s3Filename}`;
 
-    const httpUrl = `https://s3.${this.env.region}.${this.stack.urlSuffix}/${bucketName}/${objectKey}`;
+    const httpUrl = `https://s3.${this.stack.region}.${this.stack.urlSuffix}/${bucketName}/${objectKey}`;
     const s3ObjectUrl = `s3://${bucketName}/${objectKey}`;
 
     return { bucketName, objectKey, httpUrl, s3ObjectUrl, s3Url: httpUrl };
