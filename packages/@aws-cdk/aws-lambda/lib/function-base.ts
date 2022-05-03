@@ -488,10 +488,10 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * @internal
    */
   protected _isStackAccount(): boolean {
-    if (Token.isUnresolved(this.env.account) || Token.isUnresolved(this.functionArn)) {
+    if (Token.isUnresolved(this.stack.account) || Token.isUnresolved(this.functionArn)) {
       return false;
     }
-    return this.stack.splitArn(this.functionArn, ArnFormat.SLASH_RESOURCE_NAME).account === this.env.account;
+    return this.stack.splitArn(this.functionArn, ArnFormat.SLASH_RESOURCE_NAME).account === this.stack.account;
   }
 
   private grant(
