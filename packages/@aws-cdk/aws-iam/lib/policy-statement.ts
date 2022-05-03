@@ -310,6 +310,27 @@ export class PolicyStatement {
 
   /**
    * Add a condition to the Policy
+   *
+   * If multiple calls are made to add a condition with the same operator and field, only
+   * the last one wins. For example:
+   *
+   * ```ts
+   * declare const stmt: iam.PolicyStatement;
+   *
+   * stmt.addCondition('StringEquals', { 'aws:SomeField': '1' });
+   * stmt.addCondition('StringEquals', { 'aws:SomeField': '2' });
+   * ```
+   *
+   * Will end up with the single condition `StringEquals: { 'aws:SomeField': '2' }`.
+   *
+   * If you meant to add a condition to say that the field can be *either* `1` or `2`, write
+   * this:
+   *
+   * ```ts
+   * declare const stmt: iam.PolicyStatement;
+   *
+   * stmt.addCondition('StringEquals', { 'aws:SomeField': ['1', '2'] });
+   * ```
    */
   public addCondition(key: string, value: Condition) {
     const existingValue = this.condition[key];
@@ -318,6 +339,8 @@ export class PolicyStatement {
 
   /**
    * Add multiple conditions to the Policy
+   *
+   * See the `addCondition` function for a caveat on calling this method multiple times.
    */
   public addConditions(conditions: Conditions) {
     Object.keys(conditions).map(key => {
@@ -327,6 +350,8 @@ export class PolicyStatement {
 
   /**
    * Add a condition that limits to a given account
+   *
+   * This method can only be called once: subsequent calls will overwrite earlier calls.
    */
   public addAccountCondition(accountId: string) {
     this.addCondition('StringEquals', { 'sts:ExternalId': accountId });
