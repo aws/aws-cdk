@@ -317,7 +317,7 @@ function copySubmoduleExports(targetExports: Record<string, string>, library: Li
     }
   }
 
-  if (visibleName === 'core') {
+  if (visibleName !== 'core') {
     // If there was an export for '.' in the original submodule, this assignment will overwrite it,
     // which is exactly what we want.
     targetExports[`./${unixPath(visibleName)}`] = `./${unixPath(subdirectory)}/index.js`;
