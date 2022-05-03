@@ -1,9 +1,8 @@
 # AWS::Timestream Construct Library
-<!--BEGIN STABILITY BANNER-->
 
----
+Constructs for creating Timestream databases, tables, and scheduled queries.
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
+## Database
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
@@ -24,7 +23,15 @@
 
 ---
 
-<!--END STABILITY BANNER-->
+new Database(scope, "TimestreamDatabase", {
+  databaseName: "iot_data",
+  kmsKey: key,
+});
+```
+
+## Table
+
+Creating a simple table can be done with just a database reference.
 
 
 Constructs for creating Timestream databases, tables, and scheduled queries.
@@ -94,6 +101,7 @@ new Table(scope, "TimestreamTable", {
 ```
 
 ### Retention Properties
+
 
 The retention duration for the memory store and magnetic store.
 
