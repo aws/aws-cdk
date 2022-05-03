@@ -1,10 +1,8 @@
 /* eslint-disable no-console */
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { Match } from '@aws-cdk/assertions/lib/helpers-internal';
 import { CustomResourceHandler } from './base';
 import { AssertionResult, AssertionRequest } from './types';
-
-// this is needed for esbuild to work correctly
-// eslint-disable-next-line @typescript-eslint/no-require-imports,import/no-extraneous-dependencies
-const { Match } = require('@aws-cdk/assertions/lib/match');
 
 export class AssertionHandler extends CustomResourceHandler<AssertionRequest, AssertionResult> {
   protected async processEvent(request: AssertionRequest): Promise<AssertionResult | undefined> {
