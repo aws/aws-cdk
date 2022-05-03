@@ -151,8 +151,8 @@ export class StringSpecializer {
   public specialize(s: string): string {
     s = replaceAll(s, '${Qualifier}', this.qualifier);
     return cxapi.EnvironmentPlaceholders.replace(s, {
-      region: resolvedOr(this.stack.region, cxapi.EnvironmentPlaceholders.CURRENT_REGION),
-      accountId: resolvedOr(this.stack.account, cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT),
+      region: resolvedOr(this.env.region, cxapi.EnvironmentPlaceholders.CURRENT_REGION),
+      accountId: resolvedOr(this.env.account, cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT),
       partition: cxapi.EnvironmentPlaceholders.CURRENT_PARTITION,
     });
   }

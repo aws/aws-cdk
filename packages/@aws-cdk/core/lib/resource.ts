@@ -163,8 +163,8 @@ export abstract class Resource extends CoreConstruct implements IResource {
       this.stack.splitArn(props.environmentFromArn, ArnFormat.NO_RESOURCE_NAME)
       : undefined;
     this.env = {
-      account: props.account ?? parsedArn?.account ?? this.stack.account,
-      region: props.region ?? parsedArn?.region ?? this.stack.region,
+      account: props.account ?? parsedArn?.account ?? this.env.account,
+      region: props.region ?? parsedArn?.region ?? this.env.region,
     };
 
     let physicalName = props.physicalName;
