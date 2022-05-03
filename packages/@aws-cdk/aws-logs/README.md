@@ -306,6 +306,23 @@ const pattern = logs.FilterPattern.spaceDelimited('time', 'component', '...', 'r
   .whereNumber('result_code', '!=', 200);
 ```
 
+## Logs Insights Query Definition
+
+Creates a query definition for CloudWatch Logs Insights.
+
+Example:
+
+```ts
+new logs.QueryDefinition(this, 'QueryDefinition', {
+  queryDefinitionName: 'MyQuery',
+  queryString: new logs.QueryString({
+    fields: ['@timestamp', '@message'],
+    sort: '@timestamp desc',
+    limit: 20,
+  }),
+});
+```
+
 ## Notes
 
 Be aware that Log Group ARNs will always have the string `:*` appended to

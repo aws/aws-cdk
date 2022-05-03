@@ -1,0 +1,16 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-secretsmanager/test/integ.secret-name-parsed": {
+      "stacks": [
+        "Integ-SecretsManager-ParsedSecretName"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {
+    "@aws-cdk/aws-secretsmanager:parseOwnedSecretName": "true"
+  },
+  "enableLookups": false
+}
