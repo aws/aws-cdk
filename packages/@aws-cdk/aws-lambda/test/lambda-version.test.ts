@@ -181,4 +181,24 @@ describe('lambda version', () => {
     // THEN
     expect(() => app.synth()).toThrow(/KEY1,KEY2/);
   });
+
+  test('throws when adding FunctionUrl to a Version', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+    const version = new lambda.Version(stack, 'Version', {
+      lambda: fn,
+      maxEventAge: cdk.Duration.hours(1),
+      retryAttempts: 0,
+    });
+
+    // WHEN
+    expect(() => {
+      version.addFunctionUrl();
+    }).toThrow(/FunctionUrl cannot be used with a Version/);
+  });
 });

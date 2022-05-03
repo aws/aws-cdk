@@ -1,0 +1,46 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-distribution-policies": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-distribution-policies.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-distribution-policies/CachePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CachePolicy26D8A535"
+          }
+        ],
+        "/integ-distribution-policies/OriginRequestPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OriginRequestPolicy3EFDB4FA"
+          }
+        ],
+        "/integ-distribution-policies/ResponseHeadersPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ResponseHeadersPolicy13DBF9E0"
+          }
+        ],
+        "/integ-distribution-policies/Dist/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DistB3B78991"
+          }
+        ]
+      },
+      "displayName": "integ-distribution-policies"
+    }
+  }
+}

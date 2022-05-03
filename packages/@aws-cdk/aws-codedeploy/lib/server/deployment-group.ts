@@ -8,7 +8,7 @@ import { ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
-import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
+import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration, validateName } from '../utils';
 import { IServerApplication, ServerApplication } from './application';
 import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-config';
 import { LoadBalancer, LoadBalancerGeneration } from './load-balancer';
@@ -314,6 +314,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       resourceName: `${this.application.applicationName}/${this.physicalName}`,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+
+    this.node.addValidation({ validate: () => validateName('Deployment group', this.physicalName) });
   }
 
   /**

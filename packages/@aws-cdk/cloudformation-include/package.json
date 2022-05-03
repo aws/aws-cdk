@@ -24,7 +24,8 @@
         "distName": "aws-cdk.cloudformation-include",
         "module": "aws_cdk.cloudformation_include",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -47,7 +48,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -201,6 +202,7 @@
     "@aws-cdk/aws-medialive": "0.0.0",
     "@aws-cdk/aws-mediapackage": "0.0.0",
     "@aws-cdk/aws-mediastore": "0.0.0",
+    "@aws-cdk/aws-mediatailor": "0.0.0",
     "@aws-cdk/aws-memorydb": "0.0.0",
     "@aws-cdk/aws-msk": "0.0.0",
     "@aws-cdk/aws-mwaa": "0.0.0",
@@ -393,6 +395,7 @@
     "@aws-cdk/aws-medialive": "0.0.0",
     "@aws-cdk/aws-mediapackage": "0.0.0",
     "@aws-cdk/aws-mediastore": "0.0.0",
+    "@aws-cdk/aws-mediatailor": "0.0.0",
     "@aws-cdk/aws-memorydb": "0.0.0",
     "@aws-cdk/aws-msk": "0.0.0",
     "@aws-cdk/aws-mwaa": "0.0.0",
@@ -458,7 +461,7 @@
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.4.1",
     "jest": "^27.5.1",

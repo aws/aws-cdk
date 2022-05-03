@@ -23,7 +23,8 @@
         "distName": "aws-cdk.cx-api",
         "module": "aws_cdk.cx_api",
         "classifiers": [
-          "Framework :: AWS CDK"
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -58,7 +59,7 @@
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "semver": "^7.3.5"
+    "semver": "^7.3.6"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0"

@@ -1,0 +1,280 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-appsync-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-appsync-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-appsync-integ/Pool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PoolD3F588B8"
+          }
+        ],
+        "/aws-appsync-integ/Api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiF70053CD"
+          }
+        ],
+        "/aws-appsync-integ/Api/Schema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiSchema510EECD7"
+          }
+        ],
+        "/aws-appsync-integ/Api/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiDefaultApiKeyF991C37B"
+          }
+        ],
+        "/aws-appsync-integ/Api/none/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Apinone1F55F3F3"
+          }
+        ],
+        "/aws-appsync-integ/Api/none/QuerygetServiceVersionResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApinoneQuerygetServiceVersionResolver336A3C2C"
+          }
+        ],
+        "/aws-appsync-integ/Api/customerDs/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApicustomerDsServiceRole76CAD539"
+          }
+        ],
+        "/aws-appsync-integ/Api/customerDs/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApicustomerDsServiceRoleDefaultPolicyF8E72AE7"
+          }
+        ],
+        "/aws-appsync-integ/Api/customerDs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApicustomerDsFE73DAC5"
+          }
+        ],
+        "/aws-appsync-integ/Api/customerDs/QuerygetCustomersResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApicustomerDsQuerygetCustomersResolverA74C8A2E"
+          }
+        ],
+        "/aws-appsync-integ/Api/customerDs/QuerygetCustomerResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApicustomerDsQuerygetCustomerResolver3649A130"
+          }
+        ],
+        "/aws-appsync-integ/Api/customerDs/MutationaddCustomerResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApicustomerDsMutationaddCustomerResolver4DE5B517"
+          }
+        ],
+        "/aws-appsync-integ/Api/customerDs/MutationsaveCustomerResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApicustomerDsMutationsaveCustomerResolver241DD231"
+          }
+        ],
+        "/aws-appsync-integ/Api/customerDs/MutationsaveCustomerWithFirstOrderResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApicustomerDsMutationsaveCustomerWithFirstOrderResolver7DE2CBC8"
+          }
+        ],
+        "/aws-appsync-integ/Api/customerDs/MutationremoveCustomerResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApicustomerDsMutationremoveCustomerResolverAD3AE7F5"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsServiceRoleCC2040C0"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsServiceRoleDefaultPolicy3315FCF4"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsB50C8AAD"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersEqResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetCustomerOrdersEqResolverEF9D5350"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersEqResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetOrderCustomersEqResolverE58570FF"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersLtResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetCustomerOrdersLtResolver909F3D8F"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersLtResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetOrderCustomersLtResolver77468800"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersLeResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetCustomerOrdersLeResolverF230A8BE"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersLeResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetOrderCustomersLeResolver836A0389"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersGtResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetCustomerOrdersGtResolverF01F806B"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersGtResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetOrderCustomersGtResolver3197CCFE"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersGeResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetCustomerOrdersGeResolver63CAD303"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersGeResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetOrderCustomersGeResolver0B78B0B4"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersFilterResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetCustomerOrdersFilterResolverCD2B8747"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersBetweenResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetCustomerOrdersBetweenResolver7DEE368E"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersFilterResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetOrderCustomersFilterResolver628CC68D"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersBetweenResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetOrderCustomersBetweenResolver2048F3CB"
+          }
+        ],
+        "/aws-appsync-integ/Api/paymentDs/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApipaymentDsServiceRole0DAC58D6"
+          }
+        ],
+        "/aws-appsync-integ/Api/paymentDs/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApipaymentDsServiceRoleDefaultPolicy528E42B0"
+          }
+        ],
+        "/aws-appsync-integ/Api/paymentDs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApipaymentDs95C7AC36"
+          }
+        ],
+        "/aws-appsync-integ/Api/paymentDs/QuerygetPaymentResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApipaymentDsQuerygetPaymentResolverD172BFC9"
+          }
+        ],
+        "/aws-appsync-integ/Api/paymentDs/MutationsavePaymentResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApipaymentDsMutationsavePaymentResolverE09FE5BB"
+          }
+        ],
+        "/aws-appsync-integ/Api/ds/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApidsServiceRoleADC7D124"
+          }
+        ],
+        "/aws-appsync-integ/Api/ds/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Apids0DB53FEA"
+          }
+        ],
+        "/aws-appsync-integ/Api/ds/MutationdoPostOnAwsResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApidsMutationdoPostOnAwsResolver9583D8A3"
+          }
+        ],
+        "/aws-appsync-integ/CustomerTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomerTable260DCC08"
+          }
+        ],
+        "/aws-appsync-integ/OrderTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OrderTable416EB896"
+          }
+        ],
+        "/aws-appsync-integ/PaymentTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PaymentTableE140D25E"
+          }
+        ]
+      },
+      "displayName": "aws-appsync-integ"
+    }
+  }
+}

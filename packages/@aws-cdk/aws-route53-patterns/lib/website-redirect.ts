@@ -97,7 +97,7 @@ export class HttpsRedirect extends Construct {
     });
 
     domainNames.forEach((domainName) => {
-      const hash = crypto.createHash('md5').update(domainName).digest('hex').substr(0, 6);
+      const hash = crypto.createHash('md5').update(domainName).digest('hex').slice(0, 6);
       const aliasProps = {
         recordName: domainName,
         zone: props.zone,

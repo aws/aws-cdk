@@ -1,0 +1,120 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "FirstStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "FirstStack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/FirstStack/firstLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "firstLambdaServiceRoleB6408C31"
+          }
+        ],
+        "/FirstStack/firstLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "firstLambda395F9ADE"
+          }
+        ],
+        "/FirstStack/Exports/Output{\"Fn::GetAtt\":[\"firstLambda395F9ADE\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttfirstLambda395F9ADEArn1A9B3BC3"
+          }
+        ]
+      },
+      "displayName": "FirstStack"
+    },
+    "SecondStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SecondStack.template.json",
+        "validateOnSynth": false
+      },
+      "dependencies": [
+        "FirstStack"
+      ],
+      "metadata": {
+        "/SecondStack/BooksApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApi60AC975F"
+          }
+        ],
+        "/SecondStack/BooksApi/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApiCloudWatchRoleB120ADBA"
+          }
+        ],
+        "/SecondStack/BooksApi/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApiAccount9C44AF8E"
+          }
+        ],
+        "/SecondStack/BooksApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApiDeployment86CA39AF4ff82f86c127f53c9de94d266b1906be"
+          }
+        ],
+        "/SecondStack/BooksApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApiDeploymentStageprod0693B760"
+          }
+        ],
+        "/SecondStack/BooksApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApiEndpointF2AA70A2"
+          }
+        ],
+        "/SecondStack/BooksApi/Default/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApiANY0C4EABE3"
+          }
+        ],
+        "/SecondStack/BooksApi/Default/books/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApibooks1F745538"
+          }
+        ],
+        "/SecondStack/BooksApi/Default/books/GET/ApiPermission.SecondStackBooksApi2660DEC5.GET..books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApibooksGETApiPermissionSecondStackBooksApi2660DEC5GETbooksE54B6E9B"
+          }
+        ],
+        "/SecondStack/BooksApi/Default/books/GET/ApiPermission.Test.SecondStackBooksApi2660DEC5.GET..books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApibooksGETApiPermissionTestSecondStackBooksApi2660DEC5GETbooks0B7ED39D"
+          }
+        ],
+        "/SecondStack/BooksApi/Default/books/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApibooksGET6066BF7E"
+          }
+        ]
+      },
+      "displayName": "SecondStack"
+    }
+  }
+}

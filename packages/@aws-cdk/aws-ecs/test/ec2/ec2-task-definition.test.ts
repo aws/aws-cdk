@@ -452,9 +452,6 @@ describe('ec2 task definition', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
-        ImageScanningConfiguration: {
-          ScanOnPush: false,
-        },
         LifecyclePolicy: {
           // eslint-disable-next-line max-len
           LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
@@ -675,11 +672,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
-        ImageScanningConfiguration: {
-          ScanOnPush: false,
-        },
-      });
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {});
     });
 
     test('warns when setting containers from ECR repository using fromRegistry method', () => {
@@ -759,7 +752,7 @@ describe('ec2 task definition', () => {
                   {
                     Ref: 'AWS::URLSuffix',
                   },
-                  '/aws-cdk/assets:8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48',
+                  '/aws-cdk/assets:0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
                 ],
               ],
             },
@@ -1165,8 +1158,8 @@ describe('ec2 task definition', () => {
         Family: 'Ec2TaskDef',
         Volumes: [{
           Name: 'scratch',
-          EfsVolumeConfiguration: {
-            FileSystemId: 'local',
+          EFSVolumeConfiguration: {
+            FilesystemId: 'local',
           },
         }],
       });

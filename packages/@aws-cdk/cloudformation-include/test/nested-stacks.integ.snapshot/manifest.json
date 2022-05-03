@@ -1,0 +1,84 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "ParentStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ParentStack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/ParentStack": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "ParentStackChildStack26957E6F.nested.template.json",
+              "id": "5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50",
+              "packaging": "file",
+              "sourceHash": "5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50",
+              "s3BucketParameter": "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0C",
+              "s3KeyParameter": "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2",
+              "artifactHashParameter": "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50ArtifactHash9C417847"
+            }
+          }
+        ],
+        "/ParentStack/ParentStack": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParentStack"
+          }
+        ],
+        "/ParentStack/ParentStack/ChildStack/ChildStack": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChildStack"
+          }
+        ],
+        "/ParentStack/ParentStack/ChildStack/ChildStack/MyBucketParameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucketParameter"
+          }
+        ],
+        "/ParentStack/ParentStack/ChildStack/ChildStack/BucketImport": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketImport"
+          }
+        ],
+        "/ParentStack/ParentStack/ChildStack.NestedStack/ChildStack.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChildStack"
+          }
+        ],
+        "/ParentStack/AssetParameters/5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0C"
+          }
+        ],
+        "/ParentStack/AssetParameters/5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2"
+          }
+        ],
+        "/ParentStack/AssetParameters/5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50ArtifactHash9C417847"
+          }
+        ]
+      },
+      "displayName": "ParentStack"
+    }
+  }
+}

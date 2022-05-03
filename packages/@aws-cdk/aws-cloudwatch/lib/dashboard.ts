@@ -1,4 +1,4 @@
-import { Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Lazy, Resource, Stack, Token, Annotations } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from './layout';
@@ -75,6 +75,13 @@ export interface DashboardProps {
  * A CloudWatch dashboard
  */
 export class Dashboard extends Resource {
+  /**
+   * ARN of this dashboard
+   *
+   * @attribute
+   */
+  public readonly dashboardArn: string;
+
   private readonly rows: IWidget[] = [];
 
   constructor(scope: Construct, id: string, props: DashboardProps = {}) {
@@ -111,6 +118,12 @@ export class Dashboard extends Resource {
     (props.widgets || []).forEach(row => {
       this.addWidgets(...row);
     });
+
+    this.dashboardArn = Stack.of(this).formatArn({
+      service: 'cloudwatch',
+      resource: 'dashboard',
+      resourceName: this.physicalName,
+    });
   }
 
   /**
@@ -127,7 +140,29 @@ export class Dashboard extends Resource {
       return;
     }
 
+    const warnings = allWidgetsDeep(widgets).flatMap(w => w.warnings ?? []);
+    for (const w of warnings) {
+      Annotations.of(this).addWarning(w);
+    }
+
     const w = widgets.length > 1 ? new Row(...widgets) : widgets[0];
     this.rows.push(w);
   }
+}
+
+function allWidgetsDeep(ws: IWidget[]) {
+  const ret = new Array<IWidget>();
+  ws.forEach(recurse);
+  return ret;
+
+  function recurse(w: IWidget) {
+    ret.push(w);
+    if (hasSubWidgets(w)) {
+      w.widgets.forEach(recurse);
+    }
+  }
+}
+
+function hasSubWidgets(w: IWidget): w is IWidget & { widgets: IWidget[] } {
+  return 'widgets' in w;
 }
