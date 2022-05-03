@@ -124,7 +124,7 @@ export class InitTemplate {
         for (const fileName of fileNames) {
           const fullPath = path.join(targetDirectory, fileName);
           const template = await fs.readFile(fullPath, { encoding: 'utf-8' });
-          await fs.writeFile(fullPath, this.expand(template, projectInfo));
+          await fs.writeFile(fullPath, this.expand(template, language, projectInfo));
         }
       },
     };
