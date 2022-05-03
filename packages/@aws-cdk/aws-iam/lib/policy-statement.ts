@@ -320,7 +320,7 @@ export class PolicyStatement {
    * stmt.addCondition('StringEquals', { 'aws:SomeField': '1' });
    * stmt.addCondition('StringEquals', { 'aws:SomeField': '2' });
    * ```
-   * 
+   *
    * Will end up with the single condition `StringEquals: { 'aws:SomeField': '2' }`.
    *
    * If you meant to add a condition to say that the field can be *either* `1` or `2`, write
