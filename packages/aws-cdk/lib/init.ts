@@ -137,7 +137,7 @@ export class InitTemplate {
     await this.invokeHooks(hookTempDirectory, targetDirectory, hookContext);
     await fs.remove(hookTempDirectory);
   }
- 
+
   private async installFiles(sourceDirectory: string, targetDirectory: string, language:string, project: ProjectInfo) {
     for (const file of await fs.readdir(sourceDirectory)) {
       const fromFile = path.join(sourceDirectory, file);
