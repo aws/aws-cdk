@@ -1,11 +1,10 @@
 import { CustomResource } from '@aws-cdk/core';
-import { Construct } from 'constructs';
 import { IAssertion } from './deploy-assert';
 import { AssertionRequest, AssertionsProvider, ASSERT_RESOURCE_TYPE, AssertionType } from './providers';
-//
+
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Options for an EqualsAssertion
@@ -31,7 +30,7 @@ export interface EqualsAssertionProps {
  * Construct that creates a CustomResource to assert that two
  * values are equal
  */
-export class EqualsAssertion extends CoreConstruct implements IAssertion {
+export class EqualsAssertion extends Construct implements IAssertion {
   public readonly result: string;
 
   constructor(scope: Construct, id: string, props: EqualsAssertionProps) {
