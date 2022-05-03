@@ -32,7 +32,7 @@ test('Given property', () => {
   });
   // WHEN
   new NetFW.StatelessRuleGroup(stack, 'MyStatelessRuleGroup', {
-    ruleGroupName: 'MyNamedStatelesssRuleGroup',
+    ruleGroupName: 'MyNamedStatelessRuleGroup',
     capacity: 100,
     rules: [statelessRule],
     customActions: [
@@ -63,7 +63,7 @@ test('Given property', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::NetworkFirewall::RuleGroup', {
     Capacity: 100,
-    RuleGroupName: 'MyNamedStatelesssRuleGroup',
+    RuleGroupName: 'MyNamedStatelessRuleGroup',
     Type: 'STATELESS',
     RuleGroup: {
       RuleVariables: {
@@ -172,7 +172,7 @@ test('Calculate Capacity of rules', () => {
   });
   // WHEN
   const statelessRuleGroup = new NetFW.StatelessRuleGroup(stack, 'MyStatelessRuleGroup', {
-    ruleGroupName: 'MyNamedStatelesssRuleGroup',
+    ruleGroupName: 'MyNamedStatelessRuleGroup',
     rules: [statelessRule1, statelessRule2],
   });
 

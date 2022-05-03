@@ -9,9 +9,11 @@ import { IStatefulRuleGroup, IStatelessRuleGroup } from './rule-group';
  */
 export interface StatefulRuleGroupList {
   /**
-   * The priority of the rule group in the policy
+   * The priority of the rule group in the policy.
+   *
+   * @default - Priority is only use when Strict order is set.
    */
-  readonly priority: number;
+  readonly priority?: number;
 
   /**
    * The stateful rule
@@ -94,9 +96,8 @@ export interface FirewallPolicyProps {
 
   /**
    * The default actions to take on a packet that doesn't match any stateful rules.
-   * The stateful default action is optional, and is only valid when using the strict rule order
    *
-   * @default - undefined
+   * @default - Stateful default action is optional and is only valid when using the strict rule order
    */
   readonly statefulDefaultActions?: (StatefulStrictAction | string)[];
 
@@ -104,14 +105,14 @@ export interface FirewallPolicyProps {
    * Additional options governing how Network Firewall handles stateful rules.
    * The stateful rule groups that you use in your policy must have stateful rule options settings that are compatible with these settings
    *
-   * @default - undefined
+   * @default - Stateful rule groups options are optional.
    */
   readonly statefulEngineOptions?: CfnFirewallPolicy.StatefulEngineOptionsProperty;
 
   /**
    * The stateful rule groups that are used in the policy.
    *
-   * @default - undefined
+   * @default - stateful rule groups to be applied. No stateful rules are applied if left undefined.
    */
   readonly statefulRuleGroups?: StatefulRuleGroupList[];
 
@@ -271,7 +272,7 @@ export class FirewallPolicy extends FirewallPolicyBase {
       if (!this.validateUniquePriority(props.statelessRuleGroups)) {
         throw new Error('Priority must be unique, recieved duplicate priority on stateless group');
       }
-      statelessRuleGroupReferences = this.buildRuleGroupReferences(props.statelessRuleGroups);
+      statelessRuleGroupReferences = this.buildStatelessRuleGroupReferences(props.statelessRuleGroups);
     }
 
     /**
@@ -282,7 +283,7 @@ export class FirewallPolicy extends FirewallPolicyBase {
       if (!this.validateUniquePriority(props.statefulRuleGroups)) {
         throw new Error('Priority must be unique, recieved duplicate priority on stateful group');
       }
-      statefulRuleGroupReferences = this.buildRuleGroupReferences(props.statefulRuleGroups);
+      statefulRuleGroupReferences = this.buildStatefulRuleGroupReferences(props.statefulRuleGroups);
     }
 
     // Auto define stateless default actions?
@@ -332,11 +333,11 @@ export class FirewallPolicy extends FirewallPolicyBase {
 
 
   /**
-   * Converts a Stateful(less)RuleGroupList to a Stateful(less)RuleGroupReferenceProperty
+   * Converts a StatelessRuleGroupList to a StatelessRuleGroupReferenceProperty
    */
-  private buildRuleGroupReferences(ruleGroups:(StatefulRuleGroupList|StatelessRuleGroupList)[]) {
-    let ruleGroupReferences:CfnFirewallPolicy.StatelessRuleGroupReferenceProperty[]|CfnFirewallPolicy.StatefulRuleGroupReferenceProperty = [];
-    let ruleGroup:StatefulRuleGroupList|StatelessRuleGroupList;
+  private buildStatelessRuleGroupReferences(ruleGroups:(StatelessRuleGroupList)[]) {
+    let ruleGroupReferences:CfnFirewallPolicy.StatelessRuleGroupReferenceProperty[] = [];
+    let ruleGroup:StatelessRuleGroupList;
     for (ruleGroup of ruleGroups) {
       ruleGroupReferences.push({
         priority: ruleGroup.priority,
@@ -347,16 +348,40 @@ export class FirewallPolicy extends FirewallPolicyBase {
   }
 
   /**
+   * Converts a StatefulRuleGroupList to a StatefulRuleGroupReferenceProperty
+   */
+  private buildStatefulRuleGroupReferences(ruleGroups:(StatefulRuleGroupList)[]) {
+    let ruleGroupReferences:CfnFirewallPolicy.StatefulRuleGroupReferenceProperty[] = [];
+    let ruleGroup:StatefulRuleGroupList;
+    for (ruleGroup of ruleGroups) {
+      if (ruleGroup.priority !== undefined) {
+        ruleGroupReferences.push({
+          priority: ruleGroup.priority,
+          resourceArn: ruleGroup.ruleGroup.ruleGroupArn,
+        });
+      } else {
+        ruleGroupReferences.push({
+          resourceArn: ruleGroup.ruleGroup.ruleGroupArn,
+        });
+      }
+    }
+    return ruleGroupReferences;
+  }
+
+
+  /**
    * To validate a set of rule groups to ensure they have unqiue priorities
    */
   private validateUniquePriority(ruleGroups:any):boolean {
     let priorities:number[] = [];
-    let tempRuleGroup:StatefulRuleGroupList;
+    let tempRuleGroup:StatefulRuleGroupList|StatelessRuleGroupList;
     for (tempRuleGroup of ruleGroups) {
-      if (priorities.includes(tempRuleGroup.priority)) {
-        return false;
+      if (tempRuleGroup.priority !== undefined) {
+        if (priorities.includes(tempRuleGroup.priority)) {
+          return false;
+        }
+        priorities.push(tempRuleGroup.priority);
       }
-      priorities.push(tempRuleGroup.priority);
     }
     return true;
   }
