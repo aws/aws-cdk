@@ -501,6 +501,28 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
 }));
 ```
 
+### Custom widget
+
+A `CustomWidget` shows the result of an AWS Lambda function:
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+// Import or create a lambda function
+const fn = lambda.Function.fromFunctionArn(
+  dashboard,
+  'Function',
+  'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+);
+
+dashboard.addWidgets(new cloudwatch.CustomWidget({
+  functionArn: fn.functionArn,
+  title: 'My lambda baked widget',
+}));
+```
+
+You can learn more about custom widgets in the [Amazon Cloudwatch User Guide](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/add_custom_widget_dashboard.html).
+
 ### Dashboard Layout
 
 The widgets on a dashboard are visually laid out in a grid that is 24 columns
