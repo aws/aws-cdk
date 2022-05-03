@@ -340,7 +340,6 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
     QueueName: 'ecs-test-sqs-queue',
   });
 
-
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
       Match.objectLike({

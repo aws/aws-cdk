@@ -238,7 +238,6 @@ export interface NetworkLoadBalancerProps {
    * @default - No Route53 hosted domain zone.
    */
   readonly domainZone?: IHostedZone;
-
 }
 
 /**
