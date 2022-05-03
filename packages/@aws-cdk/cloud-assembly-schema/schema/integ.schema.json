@@ -45,6 +45,10 @@
                         "type": "string"
                     }
                 },
+                "assertionStack": {
+                    "description": "The name of the stack that contains assertions (Default - no assertion stack)",
+                    "type": "string"
+                },
                 "stackUpdateWorkflow": {
                     "description": "Run update workflow on this test case\nThis should only be set to false to test scenarios\nthat are not possible to test as part of the update workflow (Default true)",
                     "type": "boolean"
