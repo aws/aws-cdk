@@ -164,7 +164,7 @@ declare const myLaunchTemplate: ec2.CfnLaunchTemplate;
 const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
   computeResources: {
     launchTemplate: {
-      launchTemplateId: myLaunchTemplate.launchTemplateId as string,
+      launchTemplateId: myLaunchTemplate.ref as string,
     },
     vpc,
   },
