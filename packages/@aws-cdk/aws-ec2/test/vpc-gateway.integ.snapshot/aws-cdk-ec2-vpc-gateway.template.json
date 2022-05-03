@@ -151,8 +151,8 @@
      "Ref": "MyVpcIsolatedSubnet1RouteTable67AEA7B8"
     },
     "DestinationCidrBlock": "8.8.8.8/32",
-    "TransitGatewayId": {
-     "Ref": "MyTransitGateway"
+    "GatewayId": {
+     "Ref": "MyVpcIGW5C4A4F63"
     }
    }
   },
@@ -176,20 +176,6 @@
     "InternetGatewayId": {
      "Ref": "MyVpcIGW5C4A4F63"
     }
-   }
-  },
-  "MyTransitGateway": {
-   "Type": "AWS::EC2::TransitGateway",
-   "Properties": {
-    "AssociationDefaultRouteTableId": {
-     "Ref": "MyVpcPublicSubnet1RouteTableC46AB2F4"
-    },
-    "PropagationDefaultRouteTableId": {
-     "Ref": "MyVpcPublicSubnet1RouteTableC46AB2F4"
-    },
-    "TransitGatewayCidrBlocks": [
-     "8.8.8.9/32"
-    ]
    }
   }
  }
