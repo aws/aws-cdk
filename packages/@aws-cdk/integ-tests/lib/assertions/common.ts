@@ -32,22 +32,37 @@ export abstract class ActualResult {
  * Represents the "expected" results to compare
  */
 export abstract class ExpectedResult {
-  /**
-   * Expected result is a string
-   */
-  public static fromString(expected: string): ExpectedResult {
+  public static exact(expected: any): ExpectedResult {
     return {
-      result: expected,
+      result: JSON.stringify({
+        $Exact: expected,
+      }),
     };
   }
 
-  /**
-   * Expected result is an object. The object will
-   * be stringified before being sent to the customResource
-   */
-  public static fromObject(expected: { [key: string]: any }): ExpectedResult {
+  public static objectLike(expected: { [key: string]: any }): ExpectedResult {
     return {
-      result: JSON.stringify(expected),
+      result: JSON.stringify({
+        $ObjectLike: expected,
+      }),
+    };
+  }
+
+  public static arrayWith(expected: any[]): ExpectedResult {
+    return {
+      result: JSON.stringify({
+        $ArrayWith: expected,
+      }),
+    };
+  }
+  /**
+   * Expected result is a string
+   */
+  public static stringLikeRegexp(expected: string): ExpectedResult {
+    return {
+      result: JSON.stringify({
+        $StringLike: expected,
+      }),
     };
   }
 

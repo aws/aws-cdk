@@ -1,6 +1,6 @@
 import { Template, Match } from '@aws-cdk/assertions';
 import { App, Stack, CfnOutput } from '@aws-cdk/core';
-import { DeployAssert, AwsApiCall, LambdaInvokeFunction, LogType, InvocationType } from '../../lib/assertions';
+import { DeployAssert, AwsApiCall, LambdaInvokeFunction, LogType, InvocationType, ExpectedResult } from '../../lib/assertions';
 
 describe('AwsApiCall', () => {
   test('default', () => {
@@ -131,19 +131,18 @@ describe('AwsApiCall', () => {
         service: 'MyService',
         api: 'MyApi',
       });
-      query.assertObjectEqual({ foo: 'bar' });
+      query.assert(ExpectedResult.exact({ foo: 'bar' }));
 
       // THEN
       const template = Template.fromStack(Stack.of(deplossert));
       template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
-        expected: JSON.stringify({ foo: 'bar' }),
+        expected: JSON.stringify({ $Exact: { foo: 'bar' } }),
         actual: {
           'Fn::GetAtt': [
             'AwsApiCall',
             'apiCallResponse',
           ],
         },
-        assertionType: 'equals',
       });
     });
 
@@ -157,19 +156,18 @@ describe('AwsApiCall', () => {
         service: 'MyService',
         api: 'MyApi',
       });
-      query.assertObjectLike({ foo: 'bar' });
+      query.assert(ExpectedResult.objectLike({ foo: 'bar' }));
 
       // THEN
       const template = Template.fromStack(Stack.of(deplossert));
       template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
-        expected: JSON.stringify({ foo: 'bar' }),
+        expected: JSON.stringify({ $ObjectLike: { foo: 'bar' } }),
         actual: {
           'Fn::GetAtt': [
             'AwsApiCall',
             'apiCallResponse',
           ],
         },
-        assertionType: 'objectLike',
       });
     });
 
@@ -183,19 +181,18 @@ describe('AwsApiCall', () => {
         service: 'MyService',
         api: 'MyApi',
       });
-      query.assertStringEqual('bar');
+      query.assert(ExpectedResult.exact('bar'));
 
       // THEN
       const template = Template.fromStack(Stack.of(deplossert));
       template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
-        expected: 'bar',
+        expected: JSON.stringify({ $Exact: 'bar' }),
         actual: {
           'Fn::GetAtt': [
             'AwsApiCall',
             'apiCallResponse',
           ],
         },
-        assertionType: 'equals',
       });
     });
   });

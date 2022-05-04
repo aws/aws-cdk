@@ -1,7 +1,7 @@
 import { CustomResource, CfnOutput } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ExpectedResult, ActualResult } from './common';
-import { AssertionRequest, AssertionsProvider, ASSERT_RESOURCE_TYPE, AssertionType } from './providers';
+import { AssertionRequest, AssertionsProvider, ASSERT_RESOURCE_TYPE } from './providers';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -21,13 +21,6 @@ export interface EqualsAssertionProps {
    * The expected result to assert
    */
   readonly expected: ExpectedResult;
-
-  /**
-   * The type of assertion to make
-   *
-   * @default - AssertionType.DEFAULT
-   */
-  readonly assertionType?: AssertionType;
 }
 
 /**
@@ -47,7 +40,6 @@ export class EqualsAssertion extends CoreConstruct {
     const properties: AssertionRequest = {
       actual: props.actual.result,
       expected: props.expected.result,
-      assertionType: props.assertionType ?? AssertionType.EQUALS,
     };
     const resource = new CustomResource(this, 'Default', {
       serviceToken: assertionProvider.serviceToken,

@@ -1,11 +1,14 @@
 {
   "version": "18.0.0",
   "testCases": {
-    "DefaultTestCase": {
+    "aws-lambda-destinations/test/integ.destinations": {
       "stacks": [
         "aws-cdk-lambda-destinations"
       ],
-      "assertionStack": "IntegDefaultTestCaseDeployAssert175C057C"
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
     }
-  }
+  },
+  "synthContext": {},
+  "enableLookups": false
 }

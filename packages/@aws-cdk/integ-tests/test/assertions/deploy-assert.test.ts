@@ -58,24 +58,23 @@ describe('DeployAssert', () => {
   });
 
   describe('assertions', () => {
-    test('strictEquals', () => {
+    test('stringLike', () => {
       // GIVEN
       const app = new App();
       const deplossert = new DeployAssert(app);
       const query = deplossert.awsApiCall('MyService', 'MyApi');
 
       // WHEN
-      deplossert.strictEquals(
+      deplossert.assert(
         'MyAssertion',
-        ExpectedResult.fromString('foo'),
+        ExpectedResult.stringLikeRegexp('foo'),
         ActualResult.fromAwsApiCall(query, 'att'),
       );
 
       // THEN
       const template = Template.fromStack(Stack.of(deplossert));
       template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
-        expected: 'foo',
-        assertionType: 'equals',
+        expected: JSON.stringify({ $StringLike: 'foo' }),
         actual: {
           'Fn::GetAtt': [
             'AwsApiCallMyServiceMyApi',
@@ -92,16 +91,16 @@ describe('DeployAssert', () => {
       const query = deplossert.awsApiCall('MyService', 'MyApi');
 
       // WHEN
-      deplossert.objectLike(
+      deplossert.assert(
         'MyAssertion',
-        { foo: 'bar' },
+        ExpectedResult.objectLike({ foo: 'bar' }),
         ActualResult.fromAwsApiCall(query, 'att'),
       );
 
       // THEN
       const template = Template.fromStack(Stack.of(deplossert));
       template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
-        expected: JSON.stringify({ foo: 'bar' }),
+        expected: JSON.stringify({ $ObjectLike: { foo: 'bar' } }),
         actual: {
           'Fn::GetAtt': [
             'AwsApiCallMyServiceMyApi',

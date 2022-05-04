@@ -2,7 +2,7 @@ import { CustomResource, Reference, Lazy, CfnResource, Stack, ArnFormat } from '
 import { Construct } from 'constructs';
 import { EqualsAssertion } from './assertions';
 import { ExpectedResult, ActualResult } from './common';
-import { AssertionsProvider, SDK_RESOURCE_TYPE_PREFIX, AssertionType } from './providers';
+import { AssertionsProvider, SDK_RESOURCE_TYPE_PREFIX } from './providers';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -96,42 +96,58 @@ export class AwsApiCall extends CoreConstruct {
     return this.sdkCallResource.getAttString(`apiCallResponse.${attributeName}`);
   }
 
-  /**
-   * Asserts that the expected value is strictly equal to
-   * the result of the AwsApiCall. Missing fields will result in
-   * a failure.
-   */
-  public assertObjectEqual(expected: { [key: string]: any }): void {
+  public assert(expected: ExpectedResult): void {
     new EqualsAssertion(this, `AssertEquals${this.name}`, {
-      expected: ExpectedResult.fromObject(expected),
+      expected,
       actual: ActualResult.fromCustomResource(this.sdkCallResource, 'apiCallResponse'),
     });
   }
 
-  /**
-   * Asserts that the expected value is a subset of
-   * the result of the AwsApiCall
-   */
-  public assertObjectLike(expected: { [key: string]: any }): void {
-    new EqualsAssertion(this, `EqualsAssertion${this.name}`, {
-      actual: ActualResult.fromCustomResource(this.sdkCallResource, 'apiCallResponse'),
-      expected: ExpectedResult.fromObject(expected),
-      assertionType: AssertionType.OBJECT_LIKE,
+  public assertAtPath(path: string, expected: ExpectedResult): void {
+    new EqualsAssertion(this, `AssertEquals${this.name}`, {
+      expected,
+      actual: ActualResult.fromAwsApiCall(this, path),
     });
   }
 
-  /**
-   * Asserts that the expected value is equal to the
-   * results of the AwsApiCall. The result of the SdkQuery
-   * must be a string value.
-   */
-  public assertStringEqual(expected: string): void {
-    new EqualsAssertion(this, `EqualsAssertion${this.name}`, {
-      actual: ActualResult.fromCustomResource(this.sdkCallResource, 'apiCallResponse'),
-      expected: ExpectedResult.fromString(expected),
-      assertionType: AssertionType.EQUALS,
-    });
-  }
+  // /**
+  //  * Asserts that the expected value is strictly equal to
+  //  * the result of the AwsApiCall. Missing fields will result in
+  //  * a failure.
+  //  */
+  // public assertObjectEqual(expected: { [key: string]: any }): void {
+  //   new EqualsAssertion(this, `AssertEquals${this.name}`, {
+  //     expected: ExpectedResult.fromObject(expected),
+  //     actual: ActualResult.fromCustomResource(this.sdkCallResource, 'apiCallResponse'),
+  //   });
+  // }
+
+  // /**
+  //  * Asserts that the expected value is a subset of
+  //  * the result of the AwsApiCall
+  //  */
+  // public assertObjectLike(expected: { [key: string]: any }): void {
+  //   new EqualsAssertion(this, `EqualsAssertion${this.name}`, {
+  //     actual: ActualResult.fromCustomResource(this.sdkCallResource, 'apiCallResponse'),
+  //     expected: ExpectedResult.fromObject({
+  //       $ObjectLike: expected,
+  //     }),
+  //     assertionType: AssertionType.OBJECT_LIKE,
+  //   });
+  // }
+
+  // /**
+  //  * Asserts that the expected value is equal to the
+  //  * results of the AwsApiCall. The result of the SdkQuery
+  //  * must be a string value.
+  //  */
+  // public assertStringEqual(expected: string): void {
+  //   new EqualsAssertion(this, `EqualsAssertion${this.name}`, {
+  //     actual: ActualResult.fromCustomResource(this.sdkCallResource, 'apiCallResponse'),
+  //     expected: ExpectedResult.fromString(expected),
+  //     assertionType: AssertionType.EQUALS,
+  //   });
+  // }
 }
 
 /**

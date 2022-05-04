@@ -3,7 +3,6 @@ import { Construct, IConstruct, Node } from 'constructs';
 import { EqualsAssertion } from './assertions';
 import { ExpectedResult, ActualResult } from './common';
 import { md5hash } from './private/hash';
-import { AssertionType } from './providers';
 import { AwsApiCall, LambdaInvokeFunction, LambdaInvokeFunctionProps } from './sdk';
 
 const DEPLOY_ASSERT_SYMBOL = Symbol.for('@aws-cdk/integ-tests.DeployAssert');
@@ -81,16 +80,6 @@ export class DeployAssert extends CoreConstruct {
   }
 
   /**
-   * Assert that two values are strictly equal
-   */
-  public strictEquals(id: string, expected: ExpectedResult, actual: ActualResult): void {
-    new EqualsAssertion(this, `EqualsAssertion${id}`, {
-      actual,
-      expected,
-    });
-  }
-
-  /**
    * Invoke a lambda function and return the response which can be asserted
    *
    * @example
@@ -108,14 +97,10 @@ export class DeployAssert extends CoreConstruct {
     return new LambdaInvokeFunction(this, `LambdaInvoke${hash}`, props);
   }
 
-  /**
-   * Assert that an object is a subset of another
-   */
-  public objectLike(id: string, expected: { [key: string]: any }, actual: ActualResult): void {
+  public assert(id: string, expected: ExpectedResult, actual: ActualResult): void {
     new EqualsAssertion(this, `EqualsAssertion${id}`, {
+      expected,
       actual,
-      expected: ExpectedResult.fromObject(expected),
-      assertionType: AssertionType.OBJECT_LIKE,
     });
   }
 }

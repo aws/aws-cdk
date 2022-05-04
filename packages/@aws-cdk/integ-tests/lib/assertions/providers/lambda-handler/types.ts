@@ -83,11 +83,6 @@ export enum AssertionType {
  */
 export interface AssertionRequest {
   /**
-   * The type of assertion to perform
-   */
-  readonly assertionType: AssertionType;
-
-  /**
    * The expected value to assert
    */
   readonly expected: any;

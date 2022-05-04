@@ -1,7 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { IntegTest } from '@aws-cdk/integ-tests';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests';
 import { EventBridgePutEvents } from '../../lib';
 
 /*
@@ -56,8 +56,8 @@ const describe = testCase.assert.awsApiCall('StepFunctions', 'describeExecution'
 });
 
 // assert the results
-describe.assertObjectLike({
+describe.assert(ExpectedResult.objectLike({
   status: 'SUCCEEDED',
-});
+}));
 
 app.synth();
