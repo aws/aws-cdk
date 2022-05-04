@@ -11,7 +11,7 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 /**
  * Options to perform an AWS JavaScript V2 API call
  */
-export interface SdkQueryOptions {
+export interface AwsApiCallOptions {
   /**
    * The AWS service, i.e. S3
    */
@@ -33,20 +33,20 @@ export interface SdkQueryOptions {
 /**
  * Options for creating an SDKQuery provider
  */
-export interface SdkQueryProps extends SdkQueryOptions {}
+export interface AwsApiCallProps extends AwsApiCallOptions {}
 
 /**
  * Construct that creates a custom resource that will perform
  * a query using the AWS SDK
  */
-export class SdkQuery extends CoreConstruct {
+export class AwsApiCall extends CoreConstruct {
   private readonly sdkCallResource: CustomResource;
   private flattenResponse: string = 'false';
   private readonly name: string;
 
   protected provider: AssertionsProvider;
 
-  constructor(scope: Construct, id: string, props: SdkQueryProps) {
+  constructor(scope: Construct, id: string, props: AwsApiCallProps) {
     super(scope, id);
 
     this.provider = new AssertionsProvider(this, 'SdkProvider');
@@ -98,7 +98,7 @@ export class SdkQuery extends CoreConstruct {
 
   /**
    * Asserts that the expected value is strictly equal to
-   * the result of the SdkQuery. Missing fields will result in
+   * the result of the AwsApiCall. Missing fields will result in
    * a failure.
    */
   public assertObjectEqual(expected: { [key: string]: any }): void {
@@ -110,7 +110,7 @@ export class SdkQuery extends CoreConstruct {
 
   /**
    * Asserts that the expected value is a subset of
-   * the result of the SdkQuery
+   * the result of the AwsApiCall
    */
   public assertObjectLike(expected: { [key: string]: any }): void {
     new EqualsAssertion(this, `EqualsAssertion${this.name}`, {
@@ -122,7 +122,7 @@ export class SdkQuery extends CoreConstruct {
 
   /**
    * Asserts that the expected value is equal to the
-   * results of the SdkQuery. The result of the SdkQuery
+   * results of the AwsApiCall. The result of the SdkQuery
    * must be a string value.
    */
   public assertStringEqual(expected: string): void {
@@ -209,11 +209,11 @@ export interface LambdaInvokeFunctionProps {
 
 /**
  * An AWS Lambda Invoke function API call.
- * Use this istead of the generic SdkQuery in order to
+ * Use this istead of the generic AwsApiCall in order to
  * invoke a lambda function. This will automatically create
  * the correct permissions to invoke the function
  */
-export class LambdaInvokeFunction extends SdkQuery {
+export class LambdaInvokeFunction extends AwsApiCall {
   constructor(scope: Construct, id: string, props: LambdaInvokeFunctionProps) {
     super(scope, id, {
       api: 'invoke',

@@ -8,7 +8,7 @@ export const SDK_RESOURCE_TYPE_PREFIX = 'Custom::DeployAssert@SdkCall';
 /**
  * A AWS JavaScript SDK V2 request
  */
-export interface SdkRequest {
+export interface AwsApiCallRequest {
   /**
    * The AWS service i.e. S3
    */
@@ -48,7 +48,7 @@ export interface SdkRequest {
 /**
  * The result from a SdkQuery
  */
-export interface SdkResult {
+export interface AwsApiCallResult {
   /**
    * The full api response
    */

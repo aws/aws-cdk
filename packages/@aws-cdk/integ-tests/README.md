@@ -199,7 +199,7 @@ Any assertions that you create should be created in the scope of `DeployAssert`.
 declare const app: App;
 
 const assert = new DeployAssert(app);
-new SdkQuery(assert, 'GetObject', {
+new AwsApiCall(assert, 'GetObject', {
   service: 'S3',
   api: 'getObject',
 });
@@ -221,7 +221,7 @@ assert.strictEquals(
 In the above example an assertion is created that will trigger a user defined `CustomResource`
 and assert that the `data` attribute is equal to `{ foo: 'bar' }`.
 
-### SdkQuery
+### AwsApiCall
 
 A common method to retrieve the "actual" results to compare with what is expected is to make an
 AWS API call to receive some data. This library does this by utilizing CloudFormation custom resources
@@ -233,7 +233,7 @@ This can be done by using the class directory:
 ```ts
 declare const assert: DeployAssert;
 
-new SdkQuery(assert, 'MyAssertion', {
+new AwsApiCall(assert, 'MyAssertion', {
   service: 'SQS',
   api: 'receiveMessage',
   parameters: {
@@ -282,7 +282,7 @@ const message = integ.assert.awsApiCall('SQS', 'receiveMessage', {
 });
 
 new EqualsAssertion(integ.assert, 'ReceiveMessage', {
-  actual: ActualResult.fromSdkQuery(message, 'Messages.0.Body'),
+  actual: ActualResult.fromAwsApiCall(message, 'Messages.0.Body'),
   expected: ExpectedResult.fromObject({
     requestContext: {
       condition: 'Success',

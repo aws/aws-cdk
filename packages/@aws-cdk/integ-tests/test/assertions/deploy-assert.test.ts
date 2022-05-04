@@ -68,7 +68,7 @@ describe('DeployAssert', () => {
       deplossert.strictEquals(
         'MyAssertion',
         ExpectedResult.fromString('foo'),
-        ActualResult.fromSdkQuery(query, 'att'),
+        ActualResult.fromAwsApiCall(query, 'att'),
       );
 
       // THEN
@@ -78,7 +78,7 @@ describe('DeployAssert', () => {
         assertionType: 'equals',
         actual: {
           'Fn::GetAtt': [
-            'SdkQueryMyServiceMyApi',
+            'AwsApiCallMyServiceMyApi',
             'apiCallResponse.att',
           ],
         },
@@ -95,7 +95,7 @@ describe('DeployAssert', () => {
       deplossert.objectLike(
         'MyAssertion',
         { foo: 'bar' },
-        ActualResult.fromSdkQuery(query, 'att'),
+        ActualResult.fromAwsApiCall(query, 'att'),
       );
 
       // THEN
@@ -104,7 +104,7 @@ describe('DeployAssert', () => {
         expected: JSON.stringify({ foo: 'bar' }),
         actual: {
           'Fn::GetAtt': [
-            'SdkQueryMyServiceMyApi',
+            'AwsApiCallMyServiceMyApi',
             'apiCallResponse.att',
           ],
         },

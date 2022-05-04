@@ -4,7 +4,7 @@ import { EqualsAssertion } from './assertions';
 import { ExpectedResult, ActualResult } from './common';
 import { md5hash } from './private/hash';
 import { AssertionType } from './providers';
-import { SdkQuery, LambdaInvokeFunction, LambdaInvokeFunctionProps } from './sdk';
+import { AwsApiCall, LambdaInvokeFunction, LambdaInvokeFunctionProps } from './sdk';
 
 const DEPLOY_ASSERT_SYMBOL = Symbol.for('@aws-cdk/integ-tests.DeployAssert');
 
@@ -72,8 +72,8 @@ export class DeployAssert extends CoreConstruct {
    *   Messages: [{ Body: 'hello' }],
    * });
    */
-  public awsApiCall(service: string, api: string, parameters?: any): SdkQuery {
-    return new SdkQuery(this, `SdkQuery${service}${api}`, {
+  public awsApiCall(service: string, api: string, parameters?: any): AwsApiCall {
+    return new AwsApiCall(this, `AwsApiCall${service}${api}`, {
       api,
       service,
       parameters,

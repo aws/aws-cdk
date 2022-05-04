@@ -1,15 +1,15 @@
 import { Template, Match } from '@aws-cdk/assertions';
 import { App, Stack, CfnOutput } from '@aws-cdk/core';
-import { DeployAssert, SdkQuery, LambdaInvokeFunction, LogType, InvocationType } from '../../lib/assertions';
+import { DeployAssert, AwsApiCall, LambdaInvokeFunction, LogType, InvocationType } from '../../lib/assertions';
 
-describe('SdkQuery', () => {
+describe('AwsApiCall', () => {
   test('default', () => {
     // GIVEN
     const app = new App();
     const deplossert = new DeployAssert(app);
 
     // WHEN
-    new SdkQuery(deplossert, 'SdkQuery', {
+    new AwsApiCall(deplossert, 'AwsApiCall', {
       service: 'MyService',
       api: 'MyApi',
     });
@@ -30,7 +30,7 @@ describe('SdkQuery', () => {
     const deplossert = new DeployAssert(app);
 
     // WHEN
-    new SdkQuery(deplossert, 'SdkQuery', {
+    new AwsApiCall(deplossert, 'AwsApiCall', {
       service: 'MyService',
       api: 'MyApi',
       parameters: {
@@ -59,7 +59,7 @@ describe('SdkQuery', () => {
       const deplossert = new DeployAssert(app);
 
       // WHEN
-      const query = new SdkQuery(deplossert, 'SdkQuery', {
+      const query = new AwsApiCall(deplossert, 'AwsApiCall', {
         service: 'MyService',
         api: 'MyApi',
       });
@@ -73,7 +73,7 @@ describe('SdkQuery', () => {
       template.hasOutput('GetAtt', {
         Value: {
           'Fn::GetAtt': [
-            'SdkQuery',
+            'AwsApiCall',
             'apiCallResponse.att',
           ],
         },
@@ -91,7 +91,7 @@ describe('SdkQuery', () => {
       const deplossert = new DeployAssert(app);
 
       // WHEN
-      const query = new SdkQuery(deplossert, 'SdkQuery', {
+      const query = new AwsApiCall(deplossert, 'AwsApiCall', {
         service: 'MyService',
         api: 'MyApi',
       });
@@ -105,7 +105,7 @@ describe('SdkQuery', () => {
       template.hasOutput('GetAtt', {
         Value: {
           'Fn::GetAtt': [
-            'SdkQuery',
+            'AwsApiCall',
             'apiCallResponse.att',
           ],
         },
@@ -127,7 +127,7 @@ describe('SdkQuery', () => {
       const deplossert = new DeployAssert(app);
 
       // WHEN
-      const query = new SdkQuery(deplossert, 'SdkQuery', {
+      const query = new AwsApiCall(deplossert, 'AwsApiCall', {
         service: 'MyService',
         api: 'MyApi',
       });
@@ -139,7 +139,7 @@ describe('SdkQuery', () => {
         expected: JSON.stringify({ foo: 'bar' }),
         actual: {
           'Fn::GetAtt': [
-            'SdkQuery',
+            'AwsApiCall',
             'apiCallResponse',
           ],
         },
@@ -153,7 +153,7 @@ describe('SdkQuery', () => {
       const deplossert = new DeployAssert(app);
 
       // WHEN
-      const query = new SdkQuery(deplossert, 'SdkQuery', {
+      const query = new AwsApiCall(deplossert, 'AwsApiCall', {
         service: 'MyService',
         api: 'MyApi',
       });
@@ -165,7 +165,7 @@ describe('SdkQuery', () => {
         expected: JSON.stringify({ foo: 'bar' }),
         actual: {
           'Fn::GetAtt': [
-            'SdkQuery',
+            'AwsApiCall',
             'apiCallResponse',
           ],
         },
@@ -179,7 +179,7 @@ describe('SdkQuery', () => {
       const deplossert = new DeployAssert(app);
 
       // WHEN
-      const query = new SdkQuery(deplossert, 'SdkQuery', {
+      const query = new AwsApiCall(deplossert, 'AwsApiCall', {
         service: 'MyService',
         api: 'MyApi',
       });
@@ -191,7 +191,7 @@ describe('SdkQuery', () => {
         expected: 'bar',
         actual: {
           'Fn::GetAtt': [
-            'SdkQuery',
+            'AwsApiCall',
             'apiCallResponse',
           ],
         },

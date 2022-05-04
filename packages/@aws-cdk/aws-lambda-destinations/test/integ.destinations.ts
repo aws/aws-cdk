@@ -2,9 +2,9 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { App, Duration, Stack, StackProps } from '@aws-cdk/core';
+import { IntegTest, InvocationType, EqualsAssertion, AssertionType, ActualResult, ExpectedResult } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as destinations from '../lib';
-import { IntegTest, InvocationType, EqualsAssertion, AssertionType, ActualResult, ExpectedResult } from '@aws-cdk/integ-tests';
 
 /*
  * Stack verification steps:
@@ -85,7 +85,7 @@ const message = integ.assert.awsApiCall('SQS', 'receiveMessage', {
 });
 
 new EqualsAssertion(integ.assert, 'ReceiveMessage', {
-  actual: ActualResult.fromSdkQuery(message, 'Messages.0.Body'),
+  actual: ActualResult.fromAwsApiCall(message, 'Messages.0.Body'),
   expected: ExpectedResult.fromObject({
     requestContext: {
       condition: 'Success',

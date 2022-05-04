@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { CustomResourceHandler } from './base';
-import { SdkRequest, SdkResult } from './types';
+import { AwsApiCallRequest, AwsApiCallResult } from './types';
 import { decode } from './utils';
 
 /**
@@ -25,8 +25,8 @@ export function flatten(object: object): { [key: string]: any } {
 }
 
 
-export class SdkHandler extends CustomResourceHandler<SdkRequest, SdkResult | { [key: string]: string }> {
-  protected async processEvent(request: SdkRequest): Promise<SdkResult | { [key: string]: string } | undefined> {
+export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, AwsApiCallResult | { [key: string]: string }> {
+  protected async processEvent(request: AwsApiCallRequest): Promise<AwsApiCallResult | { [key: string]: string } | undefined> {
     // eslint-disable-next-line
     const AWS: any = require('aws-sdk');
     console.log(`AWS SDK VERSION: ${AWS.VERSION}`);

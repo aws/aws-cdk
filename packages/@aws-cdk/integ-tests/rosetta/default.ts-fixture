@@ -4,7 +4,7 @@ import {
   IntegTest,
   IntegTestCaseStack,
   DeployAssert,
-  SdkQuery,
+  AwsApiCall,
   EqualsAssertion,
   ActualResult,
   ExpectedResult,
