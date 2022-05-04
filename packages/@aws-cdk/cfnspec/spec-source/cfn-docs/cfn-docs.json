@@ -1918,7 +1918,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.AmplitudeConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `AmplitudeConnectorProfileCredentials` property type specifies the connector-specific credentials required when using Amplitude.",
+      "description": "The connector-specific credentials required when using Amplitude.",
       "properties": {
         "ApiKey": "A unique alphanumeric identifier used to authenticate a user, developer, or calling program to your API.",
         "SecretKey": "The Secret Access Key portion of the credentials."
@@ -1926,7 +1926,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.ConnectorOAuthRequest": {
       "attributes": {},
-      "description": "The `ConnectorOAuthRequest` property type specifies the select connectors for which the OAuth workflow is supported, such as Salesforce, Google Analytics, Marketo, Zendesk, and Slack.",
+      "description": "Used by select connectors for which the OAuth workflow is supported, such as Salesforce, Google Analytics, Marketo, Zendesk, and Slack.",
       "properties": {
         "AuthCode": "The code provided by the connector when it has been authenticated via the connected app.",
         "RedirectUri": "The URL to which the authentication server redirects the browser after authorization has been granted."
@@ -1942,7 +1942,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.ConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `ConnectorProfileCredentials` property type specifies the connector-specific credentials required by a given connector.",
+      "description": "The connector-specific credentials required by a connector.",
       "properties": {
         "Amplitude": "The connector-specific credentials required when using Amplitude.",
         "Datadog": "The connector-specific credentials required when using Datadog.",
@@ -1951,7 +1951,7 @@
         "InforNexus": "The connector-specific credentials required when using Infor Nexus.",
         "Marketo": "The connector-specific credentials required when using Marketo.",
         "Redshift": "The connector-specific credentials required when using Amazon Redshift.",
-        "SAPOData": "",
+        "SAPOData": "The connector-specific profile credentials required when using SAPOData.",
         "Salesforce": "The connector-specific credentials required when using Salesforce.",
         "ServiceNow": "The connector-specific credentials required when using ServiceNow.",
         "Singular": "The connector-specific credentials required when using Singular.",
@@ -1964,14 +1964,14 @@
     },
     "AWS::AppFlow::ConnectorProfile.ConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `ConnectorProfileProperties` property type specifies the connector-specific profile properties required by each connector.",
+      "description": "The connector-specific profile properties required by each connector.",
       "properties": {
         "Datadog": "The connector-specific properties required by Datadog.",
         "Dynatrace": "The connector-specific properties required by Dynatrace.",
         "InforNexus": "The connector-specific properties required by Infor Nexus.",
         "Marketo": "The connector-specific properties required by Marketo.",
         "Redshift": "The connector-specific properties required by Amazon Redshift.",
-        "SAPOData": "",
+        "SAPOData": "The connector-specific profile properties required when using SAPOData.",
         "Salesforce": "The connector-specific properties required by Salesforce.",
         "ServiceNow": "The connector-specific properties required by serviceNow.",
         "Slack": "The connector-specific properties required by Slack.",
@@ -1982,7 +1982,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.DatadogConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `DatadogConnectorProfileCredentials` property type specifies the connector-specific credentials required by Datadog.",
+      "description": "The connector-specific credentials required by Datadog.",
       "properties": {
         "ApiKey": "A unique alphanumeric identifier used to authenticate a user, developer, or calling program to your API.",
         "ApplicationKey": "Application keys, in conjunction with your API key, give you full access to Datadog\u2019s programmatic API. Application keys are associated with the user account that created them. The application key is used to log all requests made to the API."
@@ -1990,28 +1990,28 @@
     },
     "AWS::AppFlow::ConnectorProfile.DatadogConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `DatadogConnectorProfileProperties` property type specifies the connector-specific profile properties required by Datadog.",
+      "description": "The connector-specific profile properties required by Datadog.",
       "properties": {
         "InstanceUrl": "The location of the Datadog resource."
       }
     },
     "AWS::AppFlow::ConnectorProfile.DynatraceConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `DynatraceConnectorProfileCredentials` property type specifies the connector-specific profile credentials required by Dynatrace.",
+      "description": "The connector-specific profile credentials required by Dynatrace.",
       "properties": {
         "ApiToken": "The API tokens used by Dynatrace API to authenticate various API calls."
       }
     },
     "AWS::AppFlow::ConnectorProfile.DynatraceConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `DynatraceConnectorProfileProperties` property type specifies the connector-specific profile properties required by Dynatrace.",
+      "description": "The connector-specific profile properties required by Dynatrace.",
       "properties": {
         "InstanceUrl": "The location of the Dynatrace resource."
       }
     },
     "AWS::AppFlow::ConnectorProfile.GoogleAnalyticsConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `GoogleAnalyticsConnectorProfileCredentials` property type specifies the connector-specific profile credentials required by Google Analytics.",
+      "description": "The connector-specific profile credentials required by Google Analytics.",
       "properties": {
         "AccessToken": "The credentials used to access protected Google Analytics resources.",
         "ClientId": "The identifier for the desired client.",
@@ -2022,7 +2022,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.InforNexusConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `InforNexusConnectorProfileCredentials` property type specifies the connector-specific profile credentials required by Infor Nexus.",
+      "description": "The connector-specific profile credentials required by Infor Nexus.",
       "properties": {
         "AccessKeyId": "The Access Key portion of the credentials.",
         "Datakey": "The encryption keys used to encrypt data.",
@@ -2032,14 +2032,14 @@
     },
     "AWS::AppFlow::ConnectorProfile.InforNexusConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `InforNexusConnectorProfileProperties` property type specifies the connector-specific profile properties required by Infor Nexus.",
+      "description": "The connector-specific profile properties required by Infor Nexus.",
       "properties": {
         "InstanceUrl": "The location of the Infor Nexus resource."
       }
     },
     "AWS::AppFlow::ConnectorProfile.MarketoConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `MarketoConnectorProfileCredentials` property type specifies the connector-specific profile credentials required by Marketo.",
+      "description": "The connector-specific profile credentials required by Marketo.",
       "properties": {
         "AccessToken": "The credentials used to access protected Marketo resources.",
         "ClientId": "The identifier for the desired client.",
@@ -2049,23 +2049,23 @@
     },
     "AWS::AppFlow::ConnectorProfile.MarketoConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `MarketoConnectorProfileProperties` property type specifies the connector-specific profile properties required when using Marketo.",
+      "description": "The connector-specific profile properties required when using Marketo.",
       "properties": {
         "InstanceUrl": "The location of the Marketo resource."
       }
     },
     "AWS::AppFlow::ConnectorProfile.OAuthProperties": {
       "attributes": {},
-      "description": "",
+      "description": "The OAuth properties required for OAuth type authentication.",
       "properties": {
-        "AuthCodeUrl": "",
-        "OAuthScopes": "",
-        "TokenUrl": ""
+        "AuthCodeUrl": "The authorization code url required to redirect to SAP Login Page to fetch authorization code for OAuth type authentication.",
+        "OAuthScopes": "The OAuth scopes required for OAuth type authentication.",
+        "TokenUrl": "The token url required to fetch access/refresh tokens using authorization code and also to refresh expired access token using refresh token."
       }
     },
     "AWS::AppFlow::ConnectorProfile.RedshiftConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `RedshiftConnectorProfileCredentials` property type specifies the connector-specific profile credentials required when using Amazon Redshift.",
+      "description": "The connector-specific profile credentials required when using Amazon Redshift.",
       "properties": {
         "Password": "The password that corresponds to the user name.",
         "Username": "The name of the user."
@@ -2073,7 +2073,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.RedshiftConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `RedshiftConnectorProfileProperties` property type specifies the connector-specific profile properties when using Amazon Redshift.",
+      "description": "The connector-specific profile properties when using Amazon Redshift.",
       "properties": {
         "BucketName": "A name for the associated Amazon S3 bucket.",
         "BucketPrefix": "The object key for the destination bucket in which Amazon AppFlow places the files.",
@@ -2083,28 +2083,28 @@
     },
     "AWS::AppFlow::ConnectorProfile.SAPODataConnectorProfileCredentials": {
       "attributes": {},
-      "description": "",
+      "description": "The connector-specific profile credentials required when using SAPOData.",
       "properties": {
-        "BasicAuthCredentials": "",
-        "OAuthCredentials": ""
+        "BasicAuthCredentials": "The SAPOData basic authentication credentials.",
+        "OAuthCredentials": "The SAPOData OAuth type authentication credentials."
       }
     },
     "AWS::AppFlow::ConnectorProfile.SAPODataConnectorProfileProperties": {
       "attributes": {},
-      "description": "",
+      "description": "The connector-specific profile properties required when using SAPOData.",
       "properties": {
-        "ApplicationHostUrl": "",
-        "ApplicationServicePath": "",
-        "ClientNumber": "",
-        "LogonLanguage": "",
-        "OAuthProperties": "",
-        "PortNumber": "",
-        "PrivateLinkServiceName": ""
+        "ApplicationHostUrl": "The location of the SAPOData resource.",
+        "ApplicationServicePath": "The application path to catalog service.",
+        "ClientNumber": "The client number for the client creating the connection.",
+        "LogonLanguage": "The logon language of SAPOData instance.",
+        "OAuthProperties": "The SAPOData OAuth properties required for OAuth type authentication.",
+        "PortNumber": "The port number of the SAPOData instance.",
+        "PrivateLinkServiceName": "The SAPOData Private Link service name to be used for private data transfers."
       }
     },
     "AWS::AppFlow::ConnectorProfile.SalesforceConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `SalesforceConnectorProfileCredentials` property type specifies the connector-specific profile credentials required when using Salesforce.",
+      "description": "The connector-specific profile credentials required when using Salesforce.",
       "properties": {
         "AccessToken": "The credentials used to access protected Salesforce resources.",
         "ClientCredentialsArn": "The secret manager ARN, which contains the client ID and client secret of the connected app.",
@@ -2114,7 +2114,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.SalesforceConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `SalesforceConnectorProfileProperties` property type specifies the connector-specific profile properties required when using Salesforce.",
+      "description": "The connector-specific profile properties required when using Salesforce.",
       "properties": {
         "InstanceUrl": "The location of the Salesforce resource.",
         "isSandboxEnvironment": "Indicates whether the connector profile applies to a sandbox or production environment."
@@ -2122,7 +2122,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.ServiceNowConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `ServiceNowConnectorProfileCredentials` property type specifies the connector-specific profile credentials required when using ServiceNow.",
+      "description": "The connector-specific profile credentials required when using ServiceNow.",
       "properties": {
         "Password": "The password that corresponds to the user name.",
         "Username": "The name of the user."
@@ -2130,21 +2130,21 @@
     },
     "AWS::AppFlow::ConnectorProfile.ServiceNowConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `ServiceNowConnectorProfileProperties` property type specifies the connector-specific profile properties required when using ServiceNow.",
+      "description": "The connector-specific profile properties required when using ServiceNow.",
       "properties": {
         "InstanceUrl": "The location of the ServiceNow resource."
       }
     },
     "AWS::AppFlow::ConnectorProfile.SingularConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `SingularConnectorProfileCredentials` property type specifies the connector-specific profile credentials required when using Singular.",
+      "description": "The connector-specific profile credentials required when using Singular.",
       "properties": {
         "ApiKey": "A unique alphanumeric identifier used to authenticate a user, developer, or calling program to your API."
       }
     },
     "AWS::AppFlow::ConnectorProfile.SlackConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `SlackConnectorProfileCredentials` property type specifies the connector-specific profile credentials required when using Slack.",
+      "description": "The connector-specific profile credentials required when using Slack.",
       "properties": {
         "AccessToken": "The credentials used to access protected Slack resources.",
         "ClientId": "The identifier for the client.",
@@ -2154,14 +2154,14 @@
     },
     "AWS::AppFlow::ConnectorProfile.SlackConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `SlackConnectorProfileProperties` property type specifies the connector-specific profile properties required when using Slack.",
+      "description": "The connector-specific profile properties required when using Slack.",
       "properties": {
         "InstanceUrl": "The location of the Slack resource."
       }
     },
     "AWS::AppFlow::ConnectorProfile.SnowflakeConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `SnowflakeConnectorProfileCredentials` property type specifies the connector-specific profile credentials required when using Snowflake.",
+      "description": "The connector-specific profile credentials required when using Snowflake.",
       "properties": {
         "Password": "The password that corresponds to the user name.",
         "Username": "The name of the user."
@@ -2169,7 +2169,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.SnowflakeConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `SnowflakeConnectorProfileProperties` property type specifies the connector-specific profile properties required when using Snowflake.",
+      "description": "The connector-specific profile properties required when using Snowflake.",
       "properties": {
         "AccountName": "The name of the account.",
         "BucketName": "The name of the Amazon S3 bucket associated with Snowflake.",
@@ -2182,14 +2182,14 @@
     },
     "AWS::AppFlow::ConnectorProfile.TrendmicroConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `TrendmicroConnectorProfileCredentials` property type specifies the connector-specific profile credentials required when using Trend Micro.",
+      "description": "The connector-specific profile credentials required when using Trend Micro.",
       "properties": {
         "ApiSecretKey": "The Secret Access Key portion of the credentials."
       }
     },
     "AWS::AppFlow::ConnectorProfile.VeevaConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `VeevaConnectorProfileCredentials` property type specifies the connector-specific profile credentials required when using Veeva.",
+      "description": "The connector-specific profile credentials required when using Veeva.",
       "properties": {
         "Password": "The password that corresponds to the user name.",
         "Username": "The name of the user."
@@ -2197,14 +2197,14 @@
     },
     "AWS::AppFlow::ConnectorProfile.VeevaConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `VeevaConnectorProfileProperties` property type specifies the connector-specific profile properties required when using Veeva.",
+      "description": "The connector-specific profile properties required when using Veeva.",
       "properties": {
         "InstanceUrl": "The location of the Veeva resource."
       }
     },
     "AWS::AppFlow::ConnectorProfile.ZendeskConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `ZendeskConnectorProfileCredentials` property type specifies the connector-specific profile credentials required when using Zendesk.",
+      "description": "The connector-specific profile credentials required when using Zendesk.",
       "properties": {
         "AccessToken": "The credentials used to access protected Zendesk resources.",
         "ClientId": "The identifier for the desired client.",
@@ -2214,7 +2214,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.ZendeskConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `ZendeskConnectorProfileProperties` property type specifies the connector-specific profile properties required when using Zendesk.",
+      "description": "The connector-specific profile properties required when using Zendesk.",
       "properties": {
         "InstanceUrl": "The location of the Zendesk resource."
       }
@@ -2261,7 +2261,7 @@
         "InforNexus": "The operation to be performed on the provided Infor Nexus source fields.",
         "Marketo": "The operation to be performed on the provided Marketo source fields.",
         "S3": "The operation to be performed on the provided Amazon S3 source fields.",
-        "SAPOData": "",
+        "SAPOData": "The operation to be performed on the provided SAPOData source fields.",
         "Salesforce": "The operation to be performed on the provided Salesforce source fields.",
         "ServiceNow": "The operation to be performed on the provided ServiceNow source fields.",
         "Singular": "The operation to be performed on the provided Singular source fields.",
@@ -2291,12 +2291,12 @@
         "Salesforce": "The properties required to query Salesforce.",
         "Snowflake": "The properties required to query Snowflake.",
         "Upsolver": "The properties required to query Upsolver.",
-        "Zendesk": ""
+        "Zendesk": "The properties required to query Zendesk."
       }
     },
     "AWS::AppFlow::Flow.DestinationFlowConfig": {
       "attributes": {},
-      "description": "The `DestinationFlowConfig` property type specifies information about the configuration of destination connectors present in the flow.",
+      "description": "Contains information about the configuration of destination connectors present in the flow.",
       "properties": {
         "ConnectorProfileName": "The name of the connector profile. This name must be unique for each connector profile in the AWS account .",
         "ConnectorType": "The type of destination connector, such as Sales force, Amazon S3, and so on.\n\n*Allowed Values* : `EventBridge | Redshift | S3 | Salesforce | Snowflake`",
@@ -2359,7 +2359,7 @@
       "attributes": {},
       "description": "The properties that Amazon AppFlow applies when you use Marketo as a flow destination.",
       "properties": {
-        "ErrorHandlingConfig": "",
+        "ErrorHandlingConfig": "The settings that determine how Amazon AppFlow handles an error when placing data in the destination. For example, this setting would determine if the flow should fail after one insertion error, or continue and attempt to insert every record regardless of the initial failure. `ErrorHandlingConfig` is a part of the destination connector details.",
         "Object": "The object specified in the Marketo flow destination."
       }
     },
@@ -2399,9 +2399,9 @@
     },
     "AWS::AppFlow::Flow.S3InputFormatConfig": {
       "attributes": {},
-      "description": "",
+      "description": "When you use Amazon S3 as the source, the configuration format that you provide the flow input data.",
       "properties": {
-        "S3InputFileType": ""
+        "S3InputFileType": "The file type that Amazon AppFlow gets from your Amazon S3 bucket."
       }
     },
     "AWS::AppFlow::Flow.S3OutputFormatConfig": {
@@ -2419,25 +2419,25 @@
       "properties": {
         "BucketName": "The Amazon S3 bucket name where the source files are stored.",
         "BucketPrefix": "The object key for the Amazon S3 bucket in which the source files are stored.",
-        "S3InputFormatConfig": ""
+        "S3InputFormatConfig": "When you use Amazon S3 as the source, the configuration format that you provide the flow input data."
       }
     },
     "AWS::AppFlow::Flow.SAPODataDestinationProperties": {
       "attributes": {},
       "description": "The properties that are applied when using SAPOData as a flow destination",
       "properties": {
-        "ErrorHandlingConfig": "",
-        "IdFieldNames": "",
+        "ErrorHandlingConfig": "The settings that determine how Amazon AppFlow handles an error when placing data in the destination. For example, this setting would determine if the flow should fail after one insertion error, or continue and attempt to insert every record regardless of the initial failure. `ErrorHandlingConfig` is a part of the destination connector details.",
+        "IdFieldNames": "A list of field names that can be used as an ID field when performing a write operation.",
         "ObjectPath": "The object path specified in the SAPOData flow destination.",
         "SuccessResponseHandlingConfig": "Determines how Amazon AppFlow handles the success response that it gets from the connector after placing data.\n\nFor example, this setting would determine where to write the response from a destination connector upon a successful insert operation.",
-        "WriteOperationType": ""
+        "WriteOperationType": "The possible write operations in the destination connector. When this value is not provided, this defaults to the `INSERT` operation."
       }
     },
     "AWS::AppFlow::Flow.SAPODataSourceProperties": {
       "attributes": {},
-      "description": "",
+      "description": "The properties that are applied when using SAPOData as a flow source.",
       "properties": {
-        "ObjectPath": ""
+        "ObjectPath": "The object path specified in the SAPOData flow source."
       }
     },
     "AWS::AppFlow::Flow.SalesforceDestinationProperties": {
@@ -2465,7 +2465,7 @@
       "properties": {
         "DataPullMode": "Specifies whether a scheduled flow has an incremental data transfer or a complete data transfer for each flow run.",
         "ScheduleEndTime": "Specifies the scheduled end time for a schedule-triggered flow.",
-        "ScheduleExpression": "The scheduling expression that determines the rate at which the scheduled flow will run, for example: `rate(5minutes)` .",
+        "ScheduleExpression": "The scheduling expression that determines the rate at which the schedule will run, for example `rate(5minutes)` .",
         "ScheduleOffset": "Specifies the optional offset that is added to the time interval for a schedule-triggered flow.",
         "ScheduleStartTime": "Specifies the scheduled start time for a schedule-triggered flow.",
         "TimeZone": "Specifies the time zone used when referring to the date and time of a scheduled-triggered flow, such as `America/New_York` ."
@@ -2513,7 +2513,7 @@
         "InforNexus": "Specifies the information that is required for querying Infor Nexus.",
         "Marketo": "Specifies the information that is required for querying Marketo.",
         "S3": "Specifies the information that is required for querying Amazon S3.",
-        "SAPOData": "",
+        "SAPOData": "The properties that are applied when using SAPOData as a flow source.",
         "Salesforce": "Specifies the information that is required for querying Salesforce.",
         "ServiceNow": "Specifies the information that is required for querying ServiceNow.",
         "Singular": "Specifies the information that is required for querying Singular.",
@@ -2543,7 +2543,7 @@
     },
     "AWS::AppFlow::Flow.Task": {
       "attributes": {},
-      "description": "The `Task` property type specifies the class for modeling different type of tasks. Task implementation varies based on the `TaskType` .",
+      "description": "A class for modeling different type of tasks. Task implementation varies based on the `TaskType` .",
       "properties": {
         "ConnectorOperator": "The operation to be performed on the provided source fields.",
         "DestinationField": "A field in a destination connector, or a field value against which Amazon AppFlow validates a source field.",
@@ -2597,21 +2597,21 @@
       "attributes": {},
       "description": "The properties that are applied when using Veeva as a flow source.",
       "properties": {
-        "DocumentType": "",
-        "IncludeAllVersions": "",
-        "IncludeRenditions": "",
-        "IncludeSourceFiles": "",
+        "DocumentType": "The document type specified in the Veeva document extract flow.",
+        "IncludeAllVersions": "Boolean value to include All Versions of files in Veeva document extract flow.",
+        "IncludeRenditions": "Boolean value to include file renditions in Veeva document extract flow.",
+        "IncludeSourceFiles": "Boolean value to include source files in Veeva document extract flow.",
         "Object": "The object specified in the Veeva flow source."
       }
     },
     "AWS::AppFlow::Flow.ZendeskDestinationProperties": {
       "attributes": {},
-      "description": "",
+      "description": "The properties that are applied when Zendesk is used as a destination.",
       "properties": {
-        "ErrorHandlingConfig": "",
-        "IdFieldNames": "",
-        "Object": "",
-        "WriteOperationType": ""
+        "ErrorHandlingConfig": "The settings that determine how Amazon AppFlow handles an error when placing data in the destination. For example, this setting would determine if the flow should fail after one insertion error, or continue and attempt to insert every record regardless of the initial failure. `ErrorHandlingConfig` is a part of the destination connector details.",
+        "IdFieldNames": "A list of field names that can be used as an ID field when performing a write operation.",
+        "Object": "The object specified in the Zendesk flow destination.",
+        "WriteOperationType": "The possible write operations in the destination connector. When this value is not provided, this defaults to the `INSERT` operation."
       }
     },
     "AWS::AppFlow::Flow.ZendeskSourceProperties": {
@@ -8834,7 +8834,7 @@
       },
       "description": "The `AWS::Cognito::UserPoolClient` resource specifies an Amazon Cognito user pool client.\n\n> If you don't specify a value for a parameter, Amazon Cognito sets it to a default value.",
       "properties": {
-        "AccessTokenValidity": "The time limit after which the access token is no longer valid and can't be used. If you supply a TokenValidityUnits value, you override the default time unit of *hours* . The default time unit for AccessTokenValidity in an API request is hours.",
+        "AccessTokenValidity": "The access token time limit. After this limit expires, your user can't use their access token. To specify the time unit for `AccessTokenValidity` as `seconds` , `minutes` , `hours` , or `days` , set a `TokenValidityUnits` value in your API request.\n\nFor example, when you set `AccessTokenValidity` to `10` and `TokenValidityUnits` to `hours` , your user can authorize access with their access token for 10 hours.\n\nThe default time unit for `AccessTokenValidity` in an API request is hours.",
         "AllowedOAuthFlows": "The allowed OAuth flows.\n\n- **code** - Use a code grant flow, which provides an authorization code as the response. This code can be exchanged for access tokens with the `/oauth2/token` endpoint.\n- **implicit** - Issue the access token (and, optionally, ID token, based on scopes) directly to your user.\n- **client_credentials** - Issue the access token from the `/oauth2/token` endpoint directly to a non-person user using a combination of the client ID and client secret.",
         "AllowedOAuthFlowsUserPoolClient": "Set to true if the client is allowed to follow the OAuth protocol when interacting with Amazon Cognito user pools.",
         "AllowedOAuthScopes": "The allowed OAuth scopes. Possible values provided by OAuth are `phone` , `email` , `openid` , and `profile` . Possible values provided by AWS are `aws.cognito.signin.user.admin` . Custom scopes created in Resource Servers are also supported.",
@@ -8845,12 +8845,12 @@
         "EnableTokenRevocation": "Activates or deactivates token revocation. For more information about revoking tokens, see [RevokeToken](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_RevokeToken.html) .\n\nIf you don't include this parameter, token revocation is automatically activated for the new user pool client.",
         "ExplicitAuthFlows": "The authentication flows that are supported by the user pool clients. Flow names without the `ALLOW_` prefix are no longer supported, in favor of new names with the `ALLOW_` prefix.\n\n> Values with `ALLOW_` prefix must be used only along with the `ALLOW_` prefix. \n\nValid values include:\n\n- `ALLOW_ADMIN_USER_PASSWORD_AUTH` : Enable admin based user password authentication flow `ADMIN_USER_PASSWORD_AUTH` . This setting replaces the `ADMIN_NO_SRP_AUTH` setting. With this authentication flow, Amazon Cognito receives the password in the request instead of using the Secure Remote Password (SRP) protocol to verify passwords.\n- `ALLOW_CUSTOM_AUTH` : Enable AWS Lambda trigger based authentication.\n- `ALLOW_USER_PASSWORD_AUTH` : Enable user password-based authentication. In this flow, Amazon Cognito receives the password in the request instead of using the SRP protocol to verify passwords.\n- `ALLOW_USER_SRP_AUTH` : Enable SRP-based authentication.\n- `ALLOW_REFRESH_TOKEN_AUTH` : Enable authflow to refresh tokens.\n\nIf you don't specify a value for `ExplicitAuthFlows` , your app client activates the `ALLOW_USER_SRP_AUTH` and `ALLOW_CUSTOM_AUTH` authentication flows.",
         "GenerateSecret": "Boolean to specify whether you want to generate a secret for the user pool client being created.",
-        "IdTokenValidity": "The time limit after which the access token is no longer valid and can't be used. If you supply a TokenValidityUnits value, you override the default time unit of *hours* . The default time unit for AccessTokenValidity in an API request is hours.",
+        "IdTokenValidity": "The ID token time limit. After this limit expires, your user can't use their ID token. To specify the time unit for `IdTokenValidity` as `seconds` , `minutes` , `hours` , or `days` , set a `TokenValidityUnits` value in your API request.\n\nFor example, when you set `IdTokenValidity` as `10` and `TokenValidityUnits` as `hours` , your user can authenticate their session with their ID token for 10 hours.\n\nThe default time unit for `AccessTokenValidity` in an API request is hours.",
         "LogoutURLs": "A list of allowed logout URLs for the IdPs.",
         "PreventUserExistenceErrors": "Use this setting to choose which errors and responses are returned by Cognito APIs during authentication, account confirmation, and password recovery when the user does not exist in the user pool. When set to `ENABLED` and the user does not exist, authentication returns an error indicating either the username or password was incorrect, and account confirmation and password recovery return a response indicating a code was sent to a simulated destination. When set to `LEGACY` , those APIs will return a `UserNotFoundException` exception if the user does not exist in the user pool.",
         "ReadAttributes": "The read attributes.",
-        "RefreshTokenValidity": "The time limit after which the refresh token is no longer valid and can't be used. The default time unit for RefreshTokenValidity in an API request is days.",
-        "SupportedIdentityProviders": "A list of provider names for the identity providers that are supported on this client. The following are supported: `COGNITO` , `Facebook` , `SignInWithApple` , `Google` and `LoginWithAmazon` .",
+        "RefreshTokenValidity": "The refresh token time limit. After this limit expires, your user can't use their refresh token. To specify the time unit for `RefreshTokenValidity` as `seconds` , `minutes` , `hours` , or `days` , set a `TokenValidityUnits` value in your API request.\n\nFor example, when you set `RefreshTokenValidity` as `10` and `TokenValidityUnits` as `days` , your user can refresh their session and retrieve new access and ID tokens for 10 days.\n\nThe default time unit for `RefreshTokenValidity` in an API request is days. You can't set `RefreshTokenValidity` to 0. If you do, Amazon Cognito overrides the value with the default value of 30 days.",
+        "SupportedIdentityProviders": "A list of provider names for the IdPs that this client supports. The following are supported: `COGNITO` , `Facebook` , `Google` `LoginWithAmazon` , and the names of your own SAML and OIDC providers.",
         "TokenValidityUnits": "The units in which the validity times are represented. The default unit for RefreshToken is days, and default for ID and access tokens are hours.",
         "UserPoolId": "The user pool ID for the user pool where you want to create a user pool client.",
         "WriteAttributes": "The user pool attributes that the app client can write to.\n\nIf your app client allows users to sign in through an IdP, this array must include all attributes that you have mapped to IdP attributes. Amazon Cognito updates mapped attributes when users sign in to your application through an IdP. If your app client does not have write access to a mapped attribute, Amazon Cognito throws an error when it tries to update the attribute. For more information, see [Specifying IdP Attribute Mappings for Your user pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-specifying-attribute-mapping.html) ."
@@ -25769,7 +25769,7 @@
       },
       "description": "The `AWS::Lambda::EventSourceMapping` resource creates a mapping between an event source and an AWS Lambda function. Lambda reads items from the event source and triggers the function.\n\nFor details about each event source type, see the following topics. In particular, each of the topics describes the required and optional parameters for the specific event source.\n\n- [Configuring a Dynamo DB stream as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-dynamodb-eventsourcemapping)\n- [Configuring a Kinesis stream as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html#services-kinesis-eventsourcemapping)\n- [Configuring an SQS queue as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-eventsource)\n- [Configuring an MQ broker as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-mq.html#services-mq-eventsourcemapping)\n- [Configuring MSK as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html)\n- [Configuring Self-Managed Apache Kafka as an event source](https://docs.aws.amazon.com/lambda/latest/dg/kafka-smaa.html)",
       "properties": {
-        "BatchSize": "The maximum number of records in each batch that Lambda pulls from your stream or queue and sends to your function. Lambda passes all of the records in the batch to the function in a single call, up to the payload limit for synchronous invocation (6 MB).\n\n- *Amazon Kinesis* - Default 100. Max 10,000.\n- *Amazon DynamoDB Streams* - Default 100. Max 1,000.\n- *Amazon Simple Queue Service* - Default 10. For standard queues the max is 10,000. For FIFO queues the max is 10.\n- *Amazon Managed Streaming for Apache Kafka* - Default 100. Max 10,000.\n- *Self-Managed Apache Kafka* - Default 100. Max 10,000.\n- *Amazon MQ (ActiveMQ and RabbitMQ)* - Default 100. Max 10,000.",
+        "BatchSize": "The maximum number of records in each batch that Lambda pulls from your stream or queue and sends to your function. Lambda passes all of the records in the batch to the function in a single call, up to the payload limit for synchronous invocation (6 MB).\n\n- *Amazon Kinesis* - Default 100. Max 10,000.\n- *Amazon DynamoDB Streams* - Default 100. Max 10,000.\n- *Amazon Simple Queue Service* - Default 10. For standard queues the max is 10,000. For FIFO queues the max is 10.\n- *Amazon Managed Streaming for Apache Kafka* - Default 100. Max 10,000.\n- *Self-Managed Apache Kafka* - Default 100. Max 10,000.\n- *Amazon MQ (ActiveMQ and RabbitMQ)* - Default 100. Max 10,000.",
         "BisectBatchOnFunctionError": "(Streams only) If the function returns an error, split the batch in two and retry. The default value is false.",
         "DestinationConfig": "(Streams only) An Amazon SQS queue or Amazon SNS topic destination for discarded records.",
         "Enabled": "When true, the event source mapping is active. When false, Lambda pauses polling and invocation.\n\nDefault: True",
@@ -25879,7 +25879,7 @@
         "S3Bucket": "An Amazon S3 bucket in the same AWS Region as your function. The bucket can be in a different AWS account.",
         "S3Key": "The Amazon S3 key of the deployment package.",
         "S3ObjectVersion": "For versioned objects, the version of the deployment package object to use.",
-        "ZipFile": "(Node.js and Python) The source code of your Lambda function. If you include your function source inline with this parameter, AWS CloudFormation places it in a file named `index` and zips it to create a [deployment package](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-package.html) . For the `Handler` property, the first part of the handler identifier must be `index` . For example, `index.handler` .\n\nYour source code can contain up to 4096 characters. For JSON, you must escape quotes and special characters such as newline ( `\\n` ) with a backslash.\n\nIf you specify a function that interacts with an AWS CloudFormation custom resource, you don't have to write your own functions to send responses to the custom resource that invoked the function. AWS CloudFormation provides a response module ( [cfn-response](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-lambda-function-code-cfnresponsemodule.html) ) that simplifies sending responses. See [Using AWS Lambda with AWS CloudFormation](https://docs.aws.amazon.com/lambda/latest/dg/services-cloudformation.html) for details."
+        "ZipFile": "(Node.js and Python) The source code of your Lambda function. If you include your function source inline with this parameter, AWS CloudFormation places it in a file named `index` and zips it to create a [deployment package](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-package.html) . This zip file cannot exceed 4MB. For the `Handler` property, the first part of the handler identifier must be `index` . For example, `index.handler` .\n\nFor JSON, you must escape quotes and special characters such as newline ( `\\n` ) with a backslash.\n\nIf you specify a function that interacts with an AWS CloudFormation custom resource, you don't have to write your own functions to send responses to the custom resource that invoked the function. AWS CloudFormation provides a response module ( [cfn-response](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-lambda-function-code-cfnresponsemodule.html) ) that simplifies sending responses. See [Using AWS Lambda with AWS CloudFormation](https://docs.aws.amazon.com/lambda/latest/dg/services-cloudformation.html) for details."
       }
     },
     "AWS::Lambda::Function.DeadLetterConfig": {
@@ -27375,7 +27375,7 @@
       "properties": {
         "KmsKeyId": "The Amazon Resource Name (ARN) of the AWS KMS key to use when encrypting log data.\n\nTo associate an AWS KMS key with the log group, specify the ARN of that KMS key here. If you do so, ingested data is encrypted using this key. This association is stored as long as the data encrypted with the KMS key is still within CloudWatch Logs . This enables CloudWatch Logs to decrypt this data whenever it is requested.\n\nIf you attempt to associate a KMS key with the log group but the KMS key doesn't exist or is deactivated, you will receive an `InvalidParameterException` error.\n\nLog group data is always encrypted in CloudWatch Logs . If you omit this key, the encryption does not use AWS KMS . For more information, see [Encrypt log data in CloudWatch Logs using AWS Key Management Service](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html)",
         "LogGroupName": "The name of the log group. If you don't specify a name, AWS CloudFormation generates a unique ID for the log group.",
-        "RetentionInDays": "The number of days to retain the log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653.\n\nTo set a log group to never have log events expire, use [DeleteRetentionPolicy](https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_DeleteRetentionPolicy.html) .",
+        "RetentionInDays": "The number of days to retain the log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 2192, 2557, 2922, 3288, and 3653.\n\nTo set a log group to never have log events expire, use [DeleteRetentionPolicy](https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_DeleteRetentionPolicy.html) .",
         "Tags": "An array of key-value pairs to apply to the log group.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
       }
     },
@@ -33773,7 +33773,7 @@
         "AllowMajorVersionUpgrade": "A value that indicates whether major version upgrades are allowed. Changing this parameter doesn't result in an outage and the change is asynchronously applied as soon as possible.\n\nConstraints: Major version upgrades must be allowed when specifying a value for the `EngineVersion` parameter that is a different major version than the DB instance's current version.",
         "AssociatedRoles": "The AWS Identity and Access Management (IAM) roles associated with the DB instance.\n\n*Amazon Aurora*\n\nNot applicable. The associated roles are managed by the DB cluster.",
         "AutoMinorVersionUpgrade": "A value that indicates whether minor engine upgrades are applied automatically to the DB instance during the maintenance window. By default, minor engine upgrades are applied automatically.",
-        "AvailabilityZone": "The Availability Zone (AZ) where the database will be created. For information on AWS Regions and Availability Zones, see [Regions and Availability Zones](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) .\n\n*Amazon Aurora*\n\nEach Aurora DB cluster hosts copies of its storage in three separate Availability Zones. Specify one of these Availability Zones. Aurora automatically chooses an appropriate Availability Zone if you don't specify one.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's AWS Region .\n\nExample: `us-east-1d`\n\nConstraint: The `AvailabilityZone` parameter can't be specified if the DB instance is a Multi-AZ deployment. The specified Availability Zone must be in the same AWS Region as the current endpoint.\n\n> If you're creating a DB instance in an RDS on VMware environment, specify the identifier of the custom Availability Zone to create the DB instance in.\n> \n> For more information about RDS on VMware, see the [RDS on VMware User Guide.](https://docs.aws.amazon.com/AmazonRDS/latest/RDSonVMwareUserGuide/rds-on-vmware.html)",
+        "AvailabilityZone": "The Availability Zone that the database instance will be created in.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's region.\n\nExample: `us-east-1d`\n\nConstraint: The AvailabilityZone parameter cannot be specified if the MultiAZ parameter is set to `true` . The specified Availability Zone must be in the same region as the current endpoint.",
         "BackupRetentionPeriod": "The number of days for which automated backups are retained. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.\n\n*Amazon Aurora*\n\nNot applicable. The retention period for automated backups is managed by the DB cluster.\n\nDefault: 1\n\nConstraints:\n\n- Must be a value from 0 to 35\n- Can't be set to 0 if the DB instance is a source to read replicas",
         "CACertificateIdentifier": "The identifier of the CA certificate for this DB instance.\n\n> Specifying or updating this property triggers a reboot. \n\nFor more information about CA certificate identifiers for RDS DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon RDS User Guide* .\n\nFor more information about CA certificate identifiers for Aurora DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon Aurora User Guide* .",
         "CharacterSetName": "For supported engines, indicates that the DB instance should be associated with the specified character set.\n\n*Amazon Aurora*\n\nNot applicable. The character set is managed by the DB cluster. For more information, see [AWS::RDS::DBCluster](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html) .",
@@ -33845,7 +33845,7 @@
       },
       "description": "The `AWS::RDS::DBParameterGroup` resource creates a custom parameter group for an RDS database family.\n\nThis type can be declared in a template and referenced in the `DBParameterGroupName` property of an `[AWS::RDS::DBInstance](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html)` resource.\n\nFor information about configuring parameters for Amazon RDS DB instances, see [Working with DB parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor information about configuring parameters for Amazon Aurora DB instances, see [Working with DB parameter groups and DB cluster parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> Applying a parameter group to a DB instance may require the DB instance to reboot, resulting in a database outage for the duration of the reboot.",
       "properties": {
-        "Description": "Provides the customer-specified description for this DB parameter group.",
+        "Description": "Provides the customer-specified description for this DB Parameter Group.",
         "Family": "The DB parameter group family name. A DB parameter group can be associated with one and only one DB parameter group family, and can be applied only to a DB instance running a DB engine and engine version compatible with that DB parameter group family.\n\n> The DB parameter group family can't be changed when updating a DB parameter group. \n\nTo list all of the available parameter group families, use the following command:\n\n`aws rds describe-db-engine-versions --query \"DBEngineVersions[].DBParameterGroupFamily\"`\n\nThe output contains duplicates.\n\nFor more information, see `[CreateDBParameterGroup](https://docs.aws.amazon.com//AmazonRDS/latest/APIReference/API_CreateDBParameterGroup.html)` .",
         "Parameters": "An array of parameter names and values for the parameter update. At least one parameter name and value must be supplied. Subsequent arguments are optional.\n\nFor more information about DB parameters and DB parameter groups for Amazon RDS DB engines, see [Working with DB Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor more information about DB cluster and DB instance parameters and parameter groups for Amazon Aurora DB engines, see [Working with DB Parameter Groups and DB Cluster Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> AWS CloudFormation doesn't support specifying an apply method for each individual parameter. The default apply method for each parameter is used.",
         "Tags": "Tags to assign to the DB parameter group."
@@ -33949,7 +33949,7 @@
       "properties": {
         "DBSecurityGroupIngress": "Ingress rules to be applied to the DB security group.",
         "EC2VpcId": "The identifier of an Amazon VPC. This property indicates the VPC that this DB security group belongs to.\n\n> The `EC2VpcId` property is for backward compatibility with older regions, and is no longer recommended for providing security information to an RDS DB instance.",
-        "GroupDescription": "Provides the description of the DB security group.",
+        "GroupDescription": "Provides the description of the DB Security Group.",
         "Tags": "Tags to assign to the DB security group."
       }
     },
@@ -33958,9 +33958,9 @@
       "description": "The `Ingress` property type specifies an individual ingress rule within an `AWS::RDS::DBSecurityGroup` resource.",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSecurityGroupIngress": {
@@ -33970,10 +33970,10 @@
       "description": "The `AWS::RDS::DBSecurityGroupIngress` resource enables ingress to a DB security group using one of two forms of authorization. First, you can add EC2 or VPC security groups to the DB security group if the application using the database is running on EC2 or VPC instances. Second, IP ranges are available if the application accessing your database is running on the Internet.\n\nThis type supports updates. For more information about updating stacks, see [AWS CloudFormation Stacks Updates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks.html) .\n\nFor details about the settings for DB security group ingress, see [AuthorizeDBSecurityGroupIngress](https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_AuthorizeDBSecurityGroupIngress.html) .",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "DBSecurityGroupName": "The name of the DB security group to add authorization to.",
-        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "DBSecurityGroupName": "The name of the DB Security Group to add authorization to.",
+        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSubnetGroup": {
@@ -33982,9 +33982,9 @@
       },
       "description": "The `AWS::RDS::DBSubnetGroup` resource creates a database subnet group. Subnet groups must contain at least two subnets in two different Availability Zones in the same region.\n\nFor more information, see [Working with DB subnet groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html#USER_VPC.Subnets) in the *Amazon RDS User Guide* .",
       "properties": {
-        "DBSubnetGroupDescription": "The description for the DB subnet group.",
+        "DBSubnetGroupDescription": "The description for the DB Subnet Group.",
         "DBSubnetGroupName": "The name for the DB subnet group. This value is stored as a lowercase string.\n\nConstraints: Must contain no more than 255 lowercase alphanumeric characters or hyphens. Must not be \"Default\".\n\nExample: `mysubnetgroup`",
-        "SubnetIds": "The EC2 Subnet IDs for the DB subnet group.",
+        "SubnetIds": "The EC2 Subnet IDs for the DB Subnet Group.",
         "Tags": "Tags to assign to the DB subnet group."
       }
     },
@@ -33994,8 +33994,8 @@
       },
       "description": "The `AWS::RDS::EventSubscription` resource allows you to receive notifications for Amazon Relational Database Service events through the Amazon Simple Notification Service (Amazon SNS). For more information, see [Using Amazon RDS Event Notification](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) in the *Amazon RDS User Guide* .",
       "properties": {
-        "Enabled": "A value that indicates whether to activate the subscription. If the event notification subscription isn't activated, the subscription is created but not active.",
-        "EventCategories": "A list of event categories for a particular source type ( `SourceType` ) that you want to subscribe to. You can see a list of the categories for a given source type in the \"Amazon RDS event categories and event messages\" section of the [*Amazon RDS User Guide*](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.Messages.html) or the [*Amazon Aurora User Guide*](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_Events.Messages.html) . You can also see this list by using the `DescribeEventCategories` operation.",
+        "Enabled": "A Boolean value; set to *true* to activate the subscription, set to *false* to create the subscription but not active it.",
+        "EventCategories": "A list of event categories for a SourceType that you want to subscribe to. You can see a list of the categories for a given SourceType in the [Events](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) topic in the Amazon RDS User Guide or by using the *DescribeEventCategories* action.",
         "SnsTopicArn": "The Amazon Resource Name (ARN) of the SNS topic created for event notification. The ARN is created by Amazon SNS when you create a topic and subscribe to it.",
         "SourceIds": "The list of identifiers of the event sources for which events are returned. If not specified, then all sources are included in the response. An identifier must begin with a letter and must contain only ASCII letters, digits, and hyphens. It can't end with a hyphen or contain two consecutive hyphens.\n\nConstraints:\n\n- If a `SourceIds` value is supplied, `SourceType` must also be provided.\n- If the source type is a DB instance, a `DBInstanceIdentifier` value must be supplied.\n- If the source type is a DB cluster, a `DBClusterIdentifier` value must be supplied.\n- If the source type is a DB parameter group, a `DBParameterGroupName` value must be supplied.\n- If the source type is a DB security group, a `DBSecurityGroupName` value must be supplied.\n- If the source type is a DB snapshot, a `DBSnapshotIdentifier` value must be supplied.\n- If the source type is a DB cluster snapshot, a `DBClusterSnapshotIdentifier` value must be supplied.",
         "SourceType": "The type of source that is generating the events. For example, if you want to be notified of events generated by a DB instance, set this parameter to `db-instance` . If this value isn't specified, all events are returned.\n\nValid values: `db-instance` | `db-cluster` | `db-parameter-group` | `db-security-group` | `db-snapshot` | `db-cluster-snapshot`"
