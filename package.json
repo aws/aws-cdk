@@ -16,11 +16,11 @@
   },
   "devDependencies": {
     "@yarnpkg/lockfile": "^1.1.0",
-    "cdk-generate-synthetic-examples": "^0.1.8",
+    "cdk-generate-synthetic-examples": "^0.1.10",
     "conventional-changelog-cli": "^2.2.2",
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.10",
-    "jest-junit": "^13.1.0",
+    "jest-junit": "^13.2.0",
     "jsii-diff": "^1.57.0",
     "jsii-pacmak": "^1.57.0",
     "jsii-reflect": "^1.57.0",
