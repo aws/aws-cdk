@@ -19,6 +19,24 @@ afterAll(() => {
 });
 
 describe('AssertionHandler', () => {
+  test('report failure', async () => {
+    // GIVEN
+    const handler = assertionHandler() as any;
+    const request: AssertionRequest = {
+      actual: 'this is the actual results',
+      expected: ExpectedResult.stringLikeRegexp('abcd').result,
+      reportFailure: true,
+    };
+
+    // THEN
+    let failed: Error = new Error();
+    try {
+      await handler.processEvent(request);
+    } catch (e) {
+      failed = e;
+    }
+    expect(failed.message).toMatch(/String 'this is the actual results' did not match pattern 'abcd' (using stringLikeRegexp matcher)*/);
+  });
   describe('stringLike', () => {
     test('pass', async () => {
       // GIVEN

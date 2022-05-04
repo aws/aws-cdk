@@ -24,6 +24,9 @@ export class AssertionHandler extends CustomResourceHandler<AssertionRequest, As
           ].join('\n'),
         }),
       };
+      if (request.reportFailure) {
+        throw new Error(result.data);
+      }
     } else {
       result = {
         data: JSON.stringify({

@@ -21,6 +21,17 @@ export interface EqualsAssertionProps {
    * The expected result to assert
    */
   readonly expected: ExpectedResult;
+
+  /**
+   * Set this to true if a failed assertion should
+   * result in a CloudFormation deployment failure
+   *
+   * This is only necessary if assertions are being
+   * executed outside of `integ-runner`.
+   *
+   * @default false
+   */
+  readonly reportFailure?: boolean;
 }
 
 /**
@@ -40,6 +51,7 @@ export class EqualsAssertion extends CoreConstruct {
     const properties: AssertionRequest = {
       actual: props.actual.result,
       expected: props.expected.result,
+      reportFailure: props.reportFailure,
     };
     const resource = new CustomResource(this, 'Default', {
       serviceToken: assertionProvider.serviceToken,

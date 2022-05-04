@@ -91,6 +91,17 @@ export interface AssertionRequest {
    * The actual value received
    */
   readonly actual: any;
+
+  /**
+   * Set this to true if a failed assertion should
+   * result in a CloudFormation deployment failure
+   *
+   * This is only necessary if assertions are being
+   * executed outside of `integ-runner`.
+   *
+   * @default false
+   */
+  readonly reportFailure?: boolean;
 }
 /**
  * The result of an Assertion
@@ -102,6 +113,8 @@ export interface AssertionResult {
  * The result of an assertion
  */
   readonly data: string;
+
+  readonly failed?: boolean;
 }
 
 /**
