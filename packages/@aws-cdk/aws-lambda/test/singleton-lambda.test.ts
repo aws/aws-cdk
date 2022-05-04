@@ -2,9 +2,9 @@ import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 
 describe('singleton lambda', () => {
   test('can add same singleton Lambda multiple times, only instantiated once in template', () => {
