@@ -121,6 +121,15 @@
             "type": "aws:cdk:logicalId",
             "data": "LambdaAliaslive79C8A712"
           }
+        ],
+        "LambdaCurrentVersionDF706F6A8cedba3e8e1b3bbf7614644bfafda118": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaCurrentVersionDF706F6A8cedba3e8e1b3bbf7614644bfafda118",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6"
@@ -161,6 +170,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Lambda2Aliaslive77F6085F"
+          }
+        ],
+        "Lambda2CurrentVersion72012B74f573e76ebc7c7027f95b6b63cc2c7d0f": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambda2CurrentVersion72012B74f573e76ebc7c7027f95b6b63cc2c7d0f",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

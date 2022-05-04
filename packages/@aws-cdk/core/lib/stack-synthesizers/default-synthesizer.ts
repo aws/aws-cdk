@@ -3,12 +3,12 @@ import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, Fi
 import { Fn } from '../cfn-fn';
 import { CfnParameter } from '../cfn-parameter';
 import { CfnRule } from '../cfn-rule';
-import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { Token } from '../token';
 import { AssetManifestBuilder } from './_asset-manifest-builder';
 import { assertBound, StringSpecializer, stackTemplateFileAsset } from './_shared';
 import { StackSynthesizer } from './stack-synthesizer';
+import { ISynthesisSession } from './types';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
@@ -487,4 +487,3 @@ function range(startIncl: number, endExcl: number) {
   }
   return ret;
 }
-
