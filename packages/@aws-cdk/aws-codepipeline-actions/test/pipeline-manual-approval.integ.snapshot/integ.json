@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-codepipeline-actions/test/integ.pipeline-manual-approval": {
+      "stacks": [
+        "aws-cdk-codepipeline-manual-approval"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

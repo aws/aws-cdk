@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-ecs-patterns/test/fargate/integ.alb-fargate-service-https": {
+      "stacks": [
+        "aws-ecs-integ-alb-fg-https"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

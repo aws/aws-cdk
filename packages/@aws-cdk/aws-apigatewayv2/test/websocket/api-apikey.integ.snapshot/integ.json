@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-apigatewayv2/test/websocket/integ.api-apikey": {
+      "stacks": [
+        "aws-cdk-aws-apigatewayv2-websockets"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

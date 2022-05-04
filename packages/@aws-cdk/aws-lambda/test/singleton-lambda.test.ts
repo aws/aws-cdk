@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 
 describe('singleton lambda', () => {
   test('can add same singleton Lambda multiple times, only instantiated once in template', () => {
@@ -241,7 +242,7 @@ describe('singleton lambda', () => {
     expect(singleton.runtime).toStrictEqual(lambda.Runtime.PYTHON_3_9);
   });
 
-  test('current version of a singleton function', () => {
+  testDeprecated('current version of a singleton function', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {

@@ -1,0 +1,19 @@
+{
+  "version": "v1.0.0",
+  "testCases": {
+    "integ.test-with-snapshot-assets": {
+      "stacks": ["test-stack"],
+      "stackUpdateWorkflow": false,
+      "diffAssets": true,
+      "hooks": {
+        "preDeploy": ["echo \"preDeploy\""],
+        "postDeploy": ["echo \"postDeploy\""],
+        "preDestroy": ["echo \"preDestroy\""],
+        "postDestroy": ["echo \"postDestroy\""]
+      },
+      "allowDestroy": [
+        "AWS::IAM::Role"
+      ]
+    }
+  }
+}

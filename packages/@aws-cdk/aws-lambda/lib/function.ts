@@ -26,6 +26,8 @@ import { Runtime } from './runtime';
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line
 import { LogRetentionRetryOptions } from './log-retention';
+import { AliasOptions, Alias } from './alias';
+import { addAlias } from './util';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -957,6 +959,31 @@ export class Function extends FunctionBase {
       provisionedConcurrentExecutions: provisionedExecutions,
       ...asyncInvokeConfig,
     });
+  }
+
+  /**
+   * Defines an alias for this function.
+   *
+   * The alias will automatically be updated to point to the latest version of
+   * the function as it is being updated during a deployment.
+   *
+   * ```ts
+   * declare const fn: lambda.Function;
+   *
+   * fn.addAlias('Live');
+   *
+   * // Is equivalent to
+   *
+   * new lambda.Alias(this, 'AliasLive', {
+   *   aliasName: 'Live',
+   *   version: fn.currentVersion,
+   * });
+   *
+   * @param aliasName The name of the alias
+   * @param options Alias options
+   */
+  public addAlias(aliasName: string, options?: AliasOptions): Alias {
+    return addAlias(this, this.currentVersion, aliasName, options);
   }
 
   /**

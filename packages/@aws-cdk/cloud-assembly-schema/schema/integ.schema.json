@@ -14,6 +14,13 @@
                     "default": false,
                     "type": "boolean"
                 },
+                "synthContext": {
+                    "description": "Additional context to use when performing\na synth. Any context provided here will override\nany default context (Default - no additional context)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "testCases": {
                     "description": "test cases",
                     "type": "object",
@@ -28,7 +35,7 @@
             ]
         },
         "TestCase": {
-            "description": "Represents an integration test test case",
+            "description": "Represents an integration test case",
             "type": "object",
             "properties": {
                 "stacks": {
