@@ -1,0 +1,19 @@
+{
+  "version": "17.0.0",
+  "files": {
+    "f17bdffaacbd3b417df6d11e7687462d0cca85fed4632d15bebdb42c055ef36c": {
+      "source": {
+        "path": "SSM-Parameter.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f17bdffaacbd3b417df6d11e7687462d0cca85fed4632d15bebdb42c055ef36c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

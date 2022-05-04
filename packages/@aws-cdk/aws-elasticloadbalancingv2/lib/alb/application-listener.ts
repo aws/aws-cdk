@@ -10,7 +10,7 @@ import { IListenerCertificate, ListenerCertificate } from '../shared/listener-ce
 import { determineProtocolAndPort } from '../shared/util';
 import { ListenerAction } from './application-listener-action';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
-import { ApplicationListenerRule, FixedResponse, RedirectResponse, validateFixedResponse, validateRedirectResponse } from './application-listener-rule';
+import { ApplicationListenerRule, FixedResponse, RedirectResponse } from './application-listener-rule';
 import { IApplicationLoadBalancer } from './application-load-balancer';
 import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
 import { ListenerCondition } from './conditions';
@@ -377,7 +377,18 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       messageBody: props.messageBody,
     };
 
-    validateFixedResponse(fixedResponse);
+    /**
+     * NOTE - Copy/pasted from `application-listener-rule.ts#validateFixedResponse`.
+     * This was previously a deprecated, exported function, which caused issues with jsii's strip-deprecated functionality.
+     * Inlining the duplication functionality in v2 only (for now).
+     */
+    if (fixedResponse.statusCode && !/^(2|4|5)\d\d$/.test(fixedResponse.statusCode)) {
+      throw new Error('`statusCode` must be 2XX, 4XX or 5XX.');
+    }
+
+    if (fixedResponse.messageBody && fixedResponse.messageBody.length > 1024) {
+      throw new Error('`messageBody` cannot have more than 1024 characters.');
+    }
 
     if (props.priority) {
       new ApplicationListenerRule(this, id + 'Rule', {
@@ -410,7 +421,18 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       statusCode: props.statusCode,
     };
 
-    validateRedirectResponse(redirectResponse);
+    /**
+     * NOTE - Copy/pasted from `application-listener-rule.ts#validateRedirectResponse`.
+     * This was previously a deprecated, exported function, which caused issues with jsii's strip-deprecated functionality.
+     * Inlining the duplication functionality in v2 only (for now).
+     */
+    if (redirectResponse.protocol && !/^(HTTPS?|#\{protocol\})$/i.test(redirectResponse.protocol)) {
+      throw new Error('`protocol` must be HTTP, HTTPS, or #{protocol}.');
+    }
+
+    if (!redirectResponse.statusCode || !/^HTTP_30[12]$/.test(redirectResponse.statusCode)) {
+      throw new Error('`statusCode` must be HTTP_301 or HTTP_302.');
+    }
 
     if (props.priority) {
       new ApplicationListenerRule(this, id + 'Rule', {
@@ -443,8 +465,8 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   /**
    * Validate this listener.
    */
-  protected validate(): string[] {
-    const errors = super.validate();
+  protected validateListener(): string[] {
+    const errors = super.validateListener();
     if (this.protocol === ApplicationProtocol.HTTPS && this.certificateArns.length === 0) {
       errors.push('HTTPS Listener needs at least one certificate (call addCertificates)');
     }
