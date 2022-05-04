@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 
 describe('lambda version', () => {
   test('can import a Lambda version by ARN', () => {
