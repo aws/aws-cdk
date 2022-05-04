@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-codecommit/test/integ.repository-notification": {
+      "stacks": [
+        "aws-cdk-codecommit"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

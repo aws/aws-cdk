@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-codebuild/test/integ.project-vpc": {
+      "stacks": [
+        "aws-cdk-codebuild-project-vpc"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

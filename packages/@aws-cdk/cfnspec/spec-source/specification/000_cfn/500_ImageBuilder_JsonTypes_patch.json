@@ -1,0 +1,29 @@
+{
+  "PropertyTypes": {
+    "AWS::ImageBuilder::DistributionConfiguration.Distribution": {
+      "patch": {
+        "description": "These types were once typed as Json, and adding types now is a breaking change. Keep them as Json forever.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/AmiDistributionConfiguration/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/AmiDistributionConfiguration/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/ContainerDistributionConfiguration/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/ContainerDistributionConfiguration/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    }
+  }
+}

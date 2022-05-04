@@ -1918,7 +1918,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.AmplitudeConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `AmplitudeConnectorProfileCredentials` property type specifies the connector-specific credentials required when using Amplitude.",
+      "description": "The connector-specific credentials required when using Amplitude.",
       "properties": {
         "ApiKey": "A unique alphanumeric identifier used to authenticate a user, developer, or calling program to your API.",
         "SecretKey": "The Secret Access Key portion of the credentials."
@@ -1926,7 +1926,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.ConnectorOAuthRequest": {
       "attributes": {},
-      "description": "The `ConnectorOAuthRequest` property type specifies the select connectors for which the OAuth workflow is supported, such as Salesforce, Google Analytics, Marketo, Zendesk, and Slack.",
+      "description": "Used by select connectors for which the OAuth workflow is supported, such as Salesforce, Google Analytics, Marketo, Zendesk, and Slack.",
       "properties": {
         "AuthCode": "The code provided by the connector when it has been authenticated via the connected app.",
         "RedirectUri": "The URL to which the authentication server redirects the browser after authorization has been granted."
@@ -1942,7 +1942,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.ConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `ConnectorProfileCredentials` property type specifies the connector-specific credentials required by a given connector.",
+      "description": "The connector-specific credentials required by a connector.",
       "properties": {
         "Amplitude": "The connector-specific credentials required when using Amplitude.",
         "Datadog": "The connector-specific credentials required when using Datadog.",
@@ -1951,7 +1951,7 @@
         "InforNexus": "The connector-specific credentials required when using Infor Nexus.",
         "Marketo": "The connector-specific credentials required when using Marketo.",
         "Redshift": "The connector-specific credentials required when using Amazon Redshift.",
-        "SAPOData": "",
+        "SAPOData": "The connector-specific profile credentials required when using SAPOData.",
         "Salesforce": "The connector-specific credentials required when using Salesforce.",
         "ServiceNow": "The connector-specific credentials required when using ServiceNow.",
         "Singular": "The connector-specific credentials required when using Singular.",
@@ -1964,14 +1964,14 @@
     },
     "AWS::AppFlow::ConnectorProfile.ConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `ConnectorProfileProperties` property type specifies the connector-specific profile properties required by each connector.",
+      "description": "The connector-specific profile properties required by each connector.",
       "properties": {
         "Datadog": "The connector-specific properties required by Datadog.",
         "Dynatrace": "The connector-specific properties required by Dynatrace.",
         "InforNexus": "The connector-specific properties required by Infor Nexus.",
         "Marketo": "The connector-specific properties required by Marketo.",
         "Redshift": "The connector-specific properties required by Amazon Redshift.",
-        "SAPOData": "",
+        "SAPOData": "The connector-specific profile properties required when using SAPOData.",
         "Salesforce": "The connector-specific properties required by Salesforce.",
         "ServiceNow": "The connector-specific properties required by serviceNow.",
         "Slack": "The connector-specific properties required by Slack.",
@@ -1982,7 +1982,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.DatadogConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `DatadogConnectorProfileCredentials` property type specifies the connector-specific credentials required by Datadog.",
+      "description": "The connector-specific credentials required by Datadog.",
       "properties": {
         "ApiKey": "A unique alphanumeric identifier used to authenticate a user, developer, or calling program to your API.",
         "ApplicationKey": "Application keys, in conjunction with your API key, give you full access to Datadog\u2019s programmatic API. Application keys are associated with the user account that created them. The application key is used to log all requests made to the API."
@@ -1990,28 +1990,28 @@
     },
     "AWS::AppFlow::ConnectorProfile.DatadogConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `DatadogConnectorProfileProperties` property type specifies the connector-specific profile properties required by Datadog.",
+      "description": "The connector-specific profile properties required by Datadog.",
       "properties": {
         "InstanceUrl": "The location of the Datadog resource."
       }
     },
     "AWS::AppFlow::ConnectorProfile.DynatraceConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `DynatraceConnectorProfileCredentials` property type specifies the connector-specific profile credentials required by Dynatrace.",
+      "description": "The connector-specific profile credentials required by Dynatrace.",
       "properties": {
         "ApiToken": "The API tokens used by Dynatrace API to authenticate various API calls."
       }
     },
     "AWS::AppFlow::ConnectorProfile.DynatraceConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `DynatraceConnectorProfileProperties` property type specifies the connector-specific profile properties required by Dynatrace.",
+      "description": "The connector-specific profile properties required by Dynatrace.",
       "properties": {
         "InstanceUrl": "The location of the Dynatrace resource."
       }
     },
     "AWS::AppFlow::ConnectorProfile.GoogleAnalyticsConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `GoogleAnalyticsConnectorProfileCredentials` property type specifies the connector-specific profile credentials required by Google Analytics.",
+      "description": "The connector-specific profile credentials required by Google Analytics.",
       "properties": {
         "AccessToken": "The credentials used to access protected Google Analytics resources.",
         "ClientId": "The identifier for the desired client.",
@@ -2022,7 +2022,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.InforNexusConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `InforNexusConnectorProfileCredentials` property type specifies the connector-specific profile credentials required by Infor Nexus.",
+      "description": "The connector-specific profile credentials required by Infor Nexus.",
       "properties": {
         "AccessKeyId": "The Access Key portion of the credentials.",
         "Datakey": "The encryption keys used to encrypt data.",
@@ -2032,14 +2032,14 @@
     },
     "AWS::AppFlow::ConnectorProfile.InforNexusConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `InforNexusConnectorProfileProperties` property type specifies the connector-specific profile properties required by Infor Nexus.",
+      "description": "The connector-specific profile properties required by Infor Nexus.",
       "properties": {
         "InstanceUrl": "The location of the Infor Nexus resource."
       }
     },
     "AWS::AppFlow::ConnectorProfile.MarketoConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `MarketoConnectorProfileCredentials` property type specifies the connector-specific profile credentials required by Marketo.",
+      "description": "The connector-specific profile credentials required by Marketo.",
       "properties": {
         "AccessToken": "The credentials used to access protected Marketo resources.",
         "ClientId": "The identifier for the desired client.",
@@ -2049,23 +2049,23 @@
     },
     "AWS::AppFlow::ConnectorProfile.MarketoConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `MarketoConnectorProfileProperties` property type specifies the connector-specific profile properties required when using Marketo.",
+      "description": "The connector-specific profile properties required when using Marketo.",
       "properties": {
         "InstanceUrl": "The location of the Marketo resource."
       }
     },
     "AWS::AppFlow::ConnectorProfile.OAuthProperties": {
       "attributes": {},
-      "description": "",
+      "description": "The OAuth properties required for OAuth type authentication.",
       "properties": {
-        "AuthCodeUrl": "",
-        "OAuthScopes": "",
-        "TokenUrl": ""
+        "AuthCodeUrl": "The authorization code url required to redirect to SAP Login Page to fetch authorization code for OAuth type authentication.",
+        "OAuthScopes": "The OAuth scopes required for OAuth type authentication.",
+        "TokenUrl": "The token url required to fetch access/refresh tokens using authorization code and also to refresh expired access token using refresh token."
       }
     },
     "AWS::AppFlow::ConnectorProfile.RedshiftConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `RedshiftConnectorProfileCredentials` property type specifies the connector-specific profile credentials required when using Amazon Redshift.",
+      "description": "The connector-specific profile credentials required when using Amazon Redshift.",
       "properties": {
         "Password": "The password that corresponds to the user name.",
         "Username": "The name of the user."
@@ -2073,7 +2073,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.RedshiftConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `RedshiftConnectorProfileProperties` property type specifies the connector-specific profile properties when using Amazon Redshift.",
+      "description": "The connector-specific profile properties when using Amazon Redshift.",
       "properties": {
         "BucketName": "A name for the associated Amazon S3 bucket.",
         "BucketPrefix": "The object key for the destination bucket in which Amazon AppFlow places the files.",
@@ -2083,28 +2083,28 @@
     },
     "AWS::AppFlow::ConnectorProfile.SAPODataConnectorProfileCredentials": {
       "attributes": {},
-      "description": "",
+      "description": "The connector-specific profile credentials required when using SAPOData.",
       "properties": {
-        "BasicAuthCredentials": "",
-        "OAuthCredentials": ""
+        "BasicAuthCredentials": "The SAPOData basic authentication credentials.",
+        "OAuthCredentials": "The SAPOData OAuth type authentication credentials."
       }
     },
     "AWS::AppFlow::ConnectorProfile.SAPODataConnectorProfileProperties": {
       "attributes": {},
-      "description": "",
+      "description": "The connector-specific profile properties required when using SAPOData.",
       "properties": {
-        "ApplicationHostUrl": "",
-        "ApplicationServicePath": "",
-        "ClientNumber": "",
-        "LogonLanguage": "",
-        "OAuthProperties": "",
-        "PortNumber": "",
-        "PrivateLinkServiceName": ""
+        "ApplicationHostUrl": "The location of the SAPOData resource.",
+        "ApplicationServicePath": "The application path to catalog service.",
+        "ClientNumber": "The client number for the client creating the connection.",
+        "LogonLanguage": "The logon language of SAPOData instance.",
+        "OAuthProperties": "The SAPOData OAuth properties required for OAuth type authentication.",
+        "PortNumber": "The port number of the SAPOData instance.",
+        "PrivateLinkServiceName": "The SAPOData Private Link service name to be used for private data transfers."
       }
     },
     "AWS::AppFlow::ConnectorProfile.SalesforceConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `SalesforceConnectorProfileCredentials` property type specifies the connector-specific profile credentials required when using Salesforce.",
+      "description": "The connector-specific profile credentials required when using Salesforce.",
       "properties": {
         "AccessToken": "The credentials used to access protected Salesforce resources.",
         "ClientCredentialsArn": "The secret manager ARN, which contains the client ID and client secret of the connected app.",
@@ -2114,7 +2114,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.SalesforceConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `SalesforceConnectorProfileProperties` property type specifies the connector-specific profile properties required when using Salesforce.",
+      "description": "The connector-specific profile properties required when using Salesforce.",
       "properties": {
         "InstanceUrl": "The location of the Salesforce resource.",
         "isSandboxEnvironment": "Indicates whether the connector profile applies to a sandbox or production environment."
@@ -2122,7 +2122,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.ServiceNowConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `ServiceNowConnectorProfileCredentials` property type specifies the connector-specific profile credentials required when using ServiceNow.",
+      "description": "The connector-specific profile credentials required when using ServiceNow.",
       "properties": {
         "Password": "The password that corresponds to the user name.",
         "Username": "The name of the user."
@@ -2130,21 +2130,21 @@
     },
     "AWS::AppFlow::ConnectorProfile.ServiceNowConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `ServiceNowConnectorProfileProperties` property type specifies the connector-specific profile properties required when using ServiceNow.",
+      "description": "The connector-specific profile properties required when using ServiceNow.",
       "properties": {
         "InstanceUrl": "The location of the ServiceNow resource."
       }
     },
     "AWS::AppFlow::ConnectorProfile.SingularConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `SingularConnectorProfileCredentials` property type specifies the connector-specific profile credentials required when using Singular.",
+      "description": "The connector-specific profile credentials required when using Singular.",
       "properties": {
         "ApiKey": "A unique alphanumeric identifier used to authenticate a user, developer, or calling program to your API."
       }
     },
     "AWS::AppFlow::ConnectorProfile.SlackConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `SlackConnectorProfileCredentials` property type specifies the connector-specific profile credentials required when using Slack.",
+      "description": "The connector-specific profile credentials required when using Slack.",
       "properties": {
         "AccessToken": "The credentials used to access protected Slack resources.",
         "ClientId": "The identifier for the client.",
@@ -2154,14 +2154,14 @@
     },
     "AWS::AppFlow::ConnectorProfile.SlackConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `SlackConnectorProfileProperties` property type specifies the connector-specific profile properties required when using Slack.",
+      "description": "The connector-specific profile properties required when using Slack.",
       "properties": {
         "InstanceUrl": "The location of the Slack resource."
       }
     },
     "AWS::AppFlow::ConnectorProfile.SnowflakeConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `SnowflakeConnectorProfileCredentials` property type specifies the connector-specific profile credentials required when using Snowflake.",
+      "description": "The connector-specific profile credentials required when using Snowflake.",
       "properties": {
         "Password": "The password that corresponds to the user name.",
         "Username": "The name of the user."
@@ -2169,7 +2169,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.SnowflakeConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `SnowflakeConnectorProfileProperties` property type specifies the connector-specific profile properties required when using Snowflake.",
+      "description": "The connector-specific profile properties required when using Snowflake.",
       "properties": {
         "AccountName": "The name of the account.",
         "BucketName": "The name of the Amazon S3 bucket associated with Snowflake.",
@@ -2182,14 +2182,14 @@
     },
     "AWS::AppFlow::ConnectorProfile.TrendmicroConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `TrendmicroConnectorProfileCredentials` property type specifies the connector-specific profile credentials required when using Trend Micro.",
+      "description": "The connector-specific profile credentials required when using Trend Micro.",
       "properties": {
         "ApiSecretKey": "The Secret Access Key portion of the credentials."
       }
     },
     "AWS::AppFlow::ConnectorProfile.VeevaConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `VeevaConnectorProfileCredentials` property type specifies the connector-specific profile credentials required when using Veeva.",
+      "description": "The connector-specific profile credentials required when using Veeva.",
       "properties": {
         "Password": "The password that corresponds to the user name.",
         "Username": "The name of the user."
@@ -2197,14 +2197,14 @@
     },
     "AWS::AppFlow::ConnectorProfile.VeevaConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `VeevaConnectorProfileProperties` property type specifies the connector-specific profile properties required when using Veeva.",
+      "description": "The connector-specific profile properties required when using Veeva.",
       "properties": {
         "InstanceUrl": "The location of the Veeva resource."
       }
     },
     "AWS::AppFlow::ConnectorProfile.ZendeskConnectorProfileCredentials": {
       "attributes": {},
-      "description": "The `ZendeskConnectorProfileCredentials` property type specifies the connector-specific profile credentials required when using Zendesk.",
+      "description": "The connector-specific profile credentials required when using Zendesk.",
       "properties": {
         "AccessToken": "The credentials used to access protected Zendesk resources.",
         "ClientId": "The identifier for the desired client.",
@@ -2214,7 +2214,7 @@
     },
     "AWS::AppFlow::ConnectorProfile.ZendeskConnectorProfileProperties": {
       "attributes": {},
-      "description": "The `ZendeskConnectorProfileProperties` property type specifies the connector-specific profile properties required when using Zendesk.",
+      "description": "The connector-specific profile properties required when using Zendesk.",
       "properties": {
         "InstanceUrl": "The location of the Zendesk resource."
       }
@@ -2261,7 +2261,7 @@
         "InforNexus": "The operation to be performed on the provided Infor Nexus source fields.",
         "Marketo": "The operation to be performed on the provided Marketo source fields.",
         "S3": "The operation to be performed on the provided Amazon S3 source fields.",
-        "SAPOData": "",
+        "SAPOData": "The operation to be performed on the provided SAPOData source fields.",
         "Salesforce": "The operation to be performed on the provided Salesforce source fields.",
         "ServiceNow": "The operation to be performed on the provided ServiceNow source fields.",
         "Singular": "The operation to be performed on the provided Singular source fields.",
@@ -2291,12 +2291,12 @@
         "Salesforce": "The properties required to query Salesforce.",
         "Snowflake": "The properties required to query Snowflake.",
         "Upsolver": "The properties required to query Upsolver.",
-        "Zendesk": ""
+        "Zendesk": "The properties required to query Zendesk."
       }
     },
     "AWS::AppFlow::Flow.DestinationFlowConfig": {
       "attributes": {},
-      "description": "The `DestinationFlowConfig` property type specifies information about the configuration of destination connectors present in the flow.",
+      "description": "Contains information about the configuration of destination connectors present in the flow.",
       "properties": {
         "ConnectorProfileName": "The name of the connector profile. This name must be unique for each connector profile in the AWS account .",
         "ConnectorType": "The type of destination connector, such as Sales force, Amazon S3, and so on.\n\n*Allowed Values* : `EventBridge | Redshift | S3 | Salesforce | Snowflake`",
@@ -2359,7 +2359,7 @@
       "attributes": {},
       "description": "The properties that Amazon AppFlow applies when you use Marketo as a flow destination.",
       "properties": {
-        "ErrorHandlingConfig": "",
+        "ErrorHandlingConfig": "The settings that determine how Amazon AppFlow handles an error when placing data in the destination. For example, this setting would determine if the flow should fail after one insertion error, or continue and attempt to insert every record regardless of the initial failure. `ErrorHandlingConfig` is a part of the destination connector details.",
         "Object": "The object specified in the Marketo flow destination."
       }
     },
@@ -2399,9 +2399,9 @@
     },
     "AWS::AppFlow::Flow.S3InputFormatConfig": {
       "attributes": {},
-      "description": "",
+      "description": "When you use Amazon S3 as the source, the configuration format that you provide the flow input data.",
       "properties": {
-        "S3InputFileType": ""
+        "S3InputFileType": "The file type that Amazon AppFlow gets from your Amazon S3 bucket."
       }
     },
     "AWS::AppFlow::Flow.S3OutputFormatConfig": {
@@ -2419,25 +2419,25 @@
       "properties": {
         "BucketName": "The Amazon S3 bucket name where the source files are stored.",
         "BucketPrefix": "The object key for the Amazon S3 bucket in which the source files are stored.",
-        "S3InputFormatConfig": ""
+        "S3InputFormatConfig": "When you use Amazon S3 as the source, the configuration format that you provide the flow input data."
       }
     },
     "AWS::AppFlow::Flow.SAPODataDestinationProperties": {
       "attributes": {},
       "description": "The properties that are applied when using SAPOData as a flow destination",
       "properties": {
-        "ErrorHandlingConfig": "",
-        "IdFieldNames": "",
+        "ErrorHandlingConfig": "The settings that determine how Amazon AppFlow handles an error when placing data in the destination. For example, this setting would determine if the flow should fail after one insertion error, or continue and attempt to insert every record regardless of the initial failure. `ErrorHandlingConfig` is a part of the destination connector details.",
+        "IdFieldNames": "A list of field names that can be used as an ID field when performing a write operation.",
         "ObjectPath": "The object path specified in the SAPOData flow destination.",
         "SuccessResponseHandlingConfig": "Determines how Amazon AppFlow handles the success response that it gets from the connector after placing data.\n\nFor example, this setting would determine where to write the response from a destination connector upon a successful insert operation.",
-        "WriteOperationType": ""
+        "WriteOperationType": "The possible write operations in the destination connector. When this value is not provided, this defaults to the `INSERT` operation."
       }
     },
     "AWS::AppFlow::Flow.SAPODataSourceProperties": {
       "attributes": {},
-      "description": "",
+      "description": "The properties that are applied when using SAPOData as a flow source.",
       "properties": {
-        "ObjectPath": ""
+        "ObjectPath": "The object path specified in the SAPOData flow source."
       }
     },
     "AWS::AppFlow::Flow.SalesforceDestinationProperties": {
@@ -2465,7 +2465,7 @@
       "properties": {
         "DataPullMode": "Specifies whether a scheduled flow has an incremental data transfer or a complete data transfer for each flow run.",
         "ScheduleEndTime": "Specifies the scheduled end time for a schedule-triggered flow.",
-        "ScheduleExpression": "The scheduling expression that determines the rate at which the scheduled flow will run, for example: `rate(5minutes)` .",
+        "ScheduleExpression": "The scheduling expression that determines the rate at which the schedule will run, for example `rate(5minutes)` .",
         "ScheduleOffset": "Specifies the optional offset that is added to the time interval for a schedule-triggered flow.",
         "ScheduleStartTime": "Specifies the scheduled start time for a schedule-triggered flow.",
         "TimeZone": "Specifies the time zone used when referring to the date and time of a scheduled-triggered flow, such as `America/New_York` ."
@@ -2513,7 +2513,7 @@
         "InforNexus": "Specifies the information that is required for querying Infor Nexus.",
         "Marketo": "Specifies the information that is required for querying Marketo.",
         "S3": "Specifies the information that is required for querying Amazon S3.",
-        "SAPOData": "",
+        "SAPOData": "The properties that are applied when using SAPOData as a flow source.",
         "Salesforce": "Specifies the information that is required for querying Salesforce.",
         "ServiceNow": "Specifies the information that is required for querying ServiceNow.",
         "Singular": "Specifies the information that is required for querying Singular.",
@@ -2543,7 +2543,7 @@
     },
     "AWS::AppFlow::Flow.Task": {
       "attributes": {},
-      "description": "The `Task` property type specifies the class for modeling different type of tasks. Task implementation varies based on the `TaskType` .",
+      "description": "A class for modeling different type of tasks. Task implementation varies based on the `TaskType` .",
       "properties": {
         "ConnectorOperator": "The operation to be performed on the provided source fields.",
         "DestinationField": "A field in a destination connector, or a field value against which Amazon AppFlow validates a source field.",
@@ -2597,21 +2597,21 @@
       "attributes": {},
       "description": "The properties that are applied when using Veeva as a flow source.",
       "properties": {
-        "DocumentType": "",
-        "IncludeAllVersions": "",
-        "IncludeRenditions": "",
-        "IncludeSourceFiles": "",
+        "DocumentType": "The document type specified in the Veeva document extract flow.",
+        "IncludeAllVersions": "Boolean value to include All Versions of files in Veeva document extract flow.",
+        "IncludeRenditions": "Boolean value to include file renditions in Veeva document extract flow.",
+        "IncludeSourceFiles": "Boolean value to include source files in Veeva document extract flow.",
         "Object": "The object specified in the Veeva flow source."
       }
     },
     "AWS::AppFlow::Flow.ZendeskDestinationProperties": {
       "attributes": {},
-      "description": "",
+      "description": "The properties that are applied when Zendesk is used as a destination.",
       "properties": {
-        "ErrorHandlingConfig": "",
-        "IdFieldNames": "",
-        "Object": "",
-        "WriteOperationType": ""
+        "ErrorHandlingConfig": "The settings that determine how Amazon AppFlow handles an error when placing data in the destination. For example, this setting would determine if the flow should fail after one insertion error, or continue and attempt to insert every record regardless of the initial failure. `ErrorHandlingConfig` is a part of the destination connector details.",
+        "IdFieldNames": "A list of field names that can be used as an ID field when performing a write operation.",
+        "Object": "The object specified in the Zendesk flow destination.",
+        "WriteOperationType": "The possible write operations in the destination connector. When this value is not provided, this defaults to the `INSERT` operation."
       }
     },
     "AWS::AppFlow::Flow.ZendeskSourceProperties": {
@@ -8703,7 +8703,7 @@
       "description": "The email configuration of your user pool. The email configuration type sets your preferred sending method, AWS Region, and sender for messages from your user pool.",
       "properties": {
         "ConfigurationSet": "The set of configuration rules that can be applied to emails sent using Amazon SES. A configuration set is applied to an email by including a reference to the configuration set in the headers of the email. Once applied, all of the rules in that configuration set are applied to the email. Configuration sets can be used to apply the following types of rules to emails:\n\n- Event publishing \u2013 Amazon SES can track the number of send, delivery, open, click, bounce, and complaint events for each email sent. Use event publishing to send information about these events to other AWS services such as SNS and CloudWatch.\n- IP pool management \u2013 When leasing dedicated IP addresses with Amazon SES, you can create groups of IP addresses, called dedicated IP pools. You can then associate the dedicated IP pools with configuration sets.",
-        "EmailSendingAccount": "Specifies whether Amazon Cognito uses its built-in functionality to send your users email messages, or uses your Amazon Simple Email Service email configuration. Specify one of the following values:\n\n- **COGNITO_DEFAULT** - When Amazon Cognito emails your users, it uses its built-in email functionality. When you use the default option, Amazon Cognito allows only a limited number of emails each day for your user pool. For typical production environments, the default email limit is less than the required delivery volume. To achieve a higher delivery volume, specify DEVELOPER to use your Amazon SES email configuration.\n\nTo look up the email delivery limit for the default option, see [Limits in](https://docs.aws.amazon.com/cognito/latest/developerguide/limits.html) in the *Developer Guide* .\n\nThe default FROM address is `no-reply@verificationemail.com` . To customize the FROM address, provide the Amazon Resource Name (ARN) of an Amazon SES verified email address for the `SourceArn` parameter.\n\nIf EmailSendingAccount is COGNITO_DEFAULT, you can't use the following parameters:\n\n- EmailVerificationMessage\n- EmailVerificationSubject\n- InviteMessageTemplate.EmailMessage\n- InviteMessageTemplate.EmailSubject\n- VerificationMessageTemplate.EmailMessage\n- VerificationMessageTemplate.EmailMessageByLink\n- VerificationMessageTemplate.EmailSubject,\n- VerificationMessageTemplate.EmailSubjectByLink\n\n> DEVELOPER EmailSendingAccount is required.\n- **DEVELOPER** - When Amazon Cognito emails your users, it uses your Amazon SES configuration. Amazon Cognito calls Amazon SES on your behalf to send email from your verified email address. When you use this option, the email delivery limits are the same limits that apply to your Amazon SES verified email address in your AWS account .\n\nIf you use this option, you must provide the ARN of an Amazon SES verified email address for the `SourceArn` parameter.\n\nBefore Amazon Cognito can email your users, it requires additional permissions to call Amazon SES on your behalf. When you update your user pool with this option, Amazon Cognito creates a *service-linked role* , which is a type of role, in your AWS account . This role contains the permissions that allow to access Amazon SES and send email messages with your address. For more information about the service-linked role that Amazon Cognito creates, see [Using Service-Linked Roles for Amazon Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/using-service-linked-roles.html) in the *Amazon Cognito Developer Guide* .",
+        "EmailSendingAccount": "Specifies whether Amazon Cognito uses its built-in functionality to send your users email messages, or uses your Amazon Simple Email Service email configuration. Specify one of the following values:\n\n- **COGNITO_DEFAULT** - When Amazon Cognito emails your users, it uses its built-in email functionality. When you use the default option, Amazon Cognito allows only a limited number of emails each day for your user pool. For typical production environments, the default email limit is less than the required delivery volume. To achieve a higher delivery volume, specify DEVELOPER to use your Amazon SES email configuration.\n\nTo look up the email delivery limit for the default option, see [Limits in](https://docs.aws.amazon.com/cognito/latest/developerguide/limits.html) in the *Developer Guide* .\n\nThe default FROM address is `no-reply@verificationemail.com` . To customize the FROM address, provide the Amazon Resource Name (ARN) of an Amazon SES verified email address for the `SourceArn` parameter.\n- **DEVELOPER** - When Amazon Cognito emails your users, it uses your Amazon SES configuration. Amazon Cognito calls Amazon SES on your behalf to send email from your verified email address. When you use this option, the email delivery limits are the same limits that apply to your Amazon SES verified email address in your AWS account .\n\nIf you use this option, provide the ARN of an Amazon SES verified email address for the `SourceArn` parameter.\n\nBefore Amazon Cognito can email your users, it requires additional permissions to call Amazon SES on your behalf. When you update your user pool with this option, Amazon Cognito creates a *service-linked role* , which is a type of role, in your AWS account . This role contains the permissions that allow to access Amazon SES and send email messages with your address. For more information about the service-linked role that Amazon Cognito creates, see [Using Service-Linked Roles for Amazon Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/using-service-linked-roles.html) in the *Amazon Cognito Developer Guide* .",
         "From": "Identifies either the sender's email address or the sender's name with their email address. For example, `testuser@example.com` or `Test User <testuser@example.com>` . This address appears before the body of the email.",
         "ReplyToEmailAddress": "The destination to which the receiver of the email should reply.",
         "SourceArn": "The ARN of a verified email address in Amazon SES. Amazon Cognito uses this email address in one of the following ways, depending on the value that you specify for the `EmailSendingAccount` parameter:\n\n- If you specify `COGNITO_DEFAULT` , Amazon Cognito uses this address as the custom FROM address when it emails your users using its built-in email account.\n- If you specify `DEVELOPER` , Amazon Cognito emails your users with this address by calling Amazon SES on your behalf.\n\nThe Region value of the `SourceArn` parameter must indicate a supported AWS Region of your user pool. Typically, the Region in the `SourceArn` and the user pool Region are the same. For more information, see [Amazon SES email configuration regions](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html#user-pool-email-developer-region-mapping) in the [Amazon Cognito Developer Guide](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html) ."
@@ -8754,7 +8754,7 @@
         "RequireNumbers": "In the password policy that you have set, refers to whether you have required users to use at least one number in their password.",
         "RequireSymbols": "In the password policy that you have set, refers to whether you have required users to use at least one symbol in their password.",
         "RequireUppercase": "In the password policy that you have set, refers to whether you have required users to use at least one uppercase letter in their password.",
-        "TemporaryPasswordValidityDays": "The number of days a temporary password is valid in the password policy. If the user doesn't sign in during this time, an administrator must reset their password.\n\n> When you set `TemporaryPasswordValidityDays` for a user pool, you can no longer set the deprecated `UnusedAccountValidityDays` value for that user pool."
+        "TemporaryPasswordValidityDays": "The number of days a temporary password is valid in the password policy. If the user doesn't sign in during this time, an administrator must reset their password.\n\n> When you set `TemporaryPasswordValidityDays` for a user pool, you can no longer set a value for the legacy `UnusedAccountValidityDays` parameter in that user pool."
       }
     },
     "AWS::Cognito::UserPool.Policies": {
@@ -8778,7 +8778,7 @@
       "properties": {
         "AttributeDataType": "The attribute data type.",
         "DeveloperOnlyAttribute": "> We recommend that you use [WriteAttributes](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_UserPoolClientType.html#CognitoUserPools-Type-UserPoolClientType-WriteAttributes) in the user pool client to control how attributes can be mutated for new use cases instead of using `DeveloperOnlyAttribute` . \n\nSpecifies whether the attribute type is developer only. This attribute can only be modified by an administrator. Users will not be able to modify this attribute using their access token.",
-        "Mutable": "Specifies whether the value of the attribute can be changed.\n\nFor any user pool attribute that is mapped to an identity provider attribute, you must set this parameter to `true` . Amazon Cognito updates mapped attributes when users sign in to your application through an identity provider. If an attribute is immutable, Amazon Cognito throws an error when it attempts to update the attribute. For more information, see [Specifying Identity Provider Attribute Mappings for Your User Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-specifying-attribute-mapping.html) .",
+        "Mutable": "Specifies whether the value of the attribute can be changed.\n\nFor any user pool attribute that is mapped to an IdP attribute, you must set this parameter to `true` . Amazon Cognito updates mapped attributes when users sign in to your application through an IdP. If an attribute is immutable, Amazon Cognito throws an error when it attempts to update the attribute. For more information, see [Specifying Identity Provider Attribute Mappings for Your User Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-specifying-attribute-mapping.html) .",
         "Name": "A schema attribute of the name type.",
         "NumberAttributeConstraints": "Specifies the constraints for an attribute of the number type.",
         "Required": "Specifies whether a user pool attribute is required. If the attribute is required and the user doesn't provide a value, registration or sign-in will fail.",
@@ -8813,7 +8813,7 @@
       "attributes": {},
       "description": "The `UsernameConfiguration` property type specifies case sensitivity on the username input for the selected sign-in option.",
       "properties": {
-        "CaseSensitive": "Specifies whether username case sensitivity will be applied for all users in the user pool through Amazon Cognito APIs.\n\nValid values include:\n\n- **True** - Enables case sensitivity for all username input. When this option is set to `True` , users must sign in using the exact capitalization of their given username, such as \u201cUserName\u201d. This is the default value.\n- **False** - Enables case insensitivity for all username input. For example, when this option is set to `False` , users can sign in using either \"username\" or \"Username\". This option also enables both `preferred_username` and `email` alias to be case insensitive, in addition to the `username` attribute."
+        "CaseSensitive": "Specifies whether user name case sensitivity will be applied for all users in the user pool through Amazon Cognito APIs.\n\nValid values include:\n\n- **True** - Enables case sensitivity for all username input. When this option is set to `True` , users must sign in using the exact capitalization of their given username, such as \u201cUserName\u201d. This is the default value.\n- **False** - Enables case insensitivity for all username input. For example, when this option is set to `False` , users can sign in using either \"username\" or \"Username\". This option also enables both `preferred_username` and `email` alias to be case insensitive, in addition to the `username` attribute."
       }
     },
     "AWS::Cognito::UserPool.VerificationMessageTemplate": {
@@ -8834,37 +8834,37 @@
       },
       "description": "The `AWS::Cognito::UserPoolClient` resource specifies an Amazon Cognito user pool client.\n\n> If you don't specify a value for a parameter, Amazon Cognito sets it to a default value.",
       "properties": {
-        "AccessTokenValidity": "The time limit after which the access token is no longer valid and can't be used. If you supply a TokenValidityUnits value, you override the default time unit of *hours* . The default time unit for AccessTokenValidity in an API request is hours.",
-        "AllowedOAuthFlows": "The allowed OAuth flows.\n\nSet to `code` to initiate a code grant flow, which provides an authorization code as the response. This code can be exchanged for access tokens with the token endpoint.\n\nSet to `implicit` to specify that the client should get the access token (and, optionally, ID token, based on scopes) directly.\n\nSet to `client_credentials` to specify that the client should get the access token (and, optionally, ID token, based on scopes) from the token endpoint using a combination of client and client_secret.",
+        "AccessTokenValidity": "The access token time limit. After this limit expires, your user can't use their access token. To specify the time unit for `AccessTokenValidity` as `seconds` , `minutes` , `hours` , or `days` , set a `TokenValidityUnits` value in your API request.\n\nFor example, when you set `AccessTokenValidity` to `10` and `TokenValidityUnits` to `hours` , your user can authorize access with their access token for 10 hours.\n\nThe default time unit for `AccessTokenValidity` in an API request is hours.",
+        "AllowedOAuthFlows": "The allowed OAuth flows.\n\n- **code** - Use a code grant flow, which provides an authorization code as the response. This code can be exchanged for access tokens with the `/oauth2/token` endpoint.\n- **implicit** - Issue the access token (and, optionally, ID token, based on scopes) directly to your user.\n- **client_credentials** - Issue the access token from the `/oauth2/token` endpoint directly to a non-person user using a combination of the client ID and client secret.",
         "AllowedOAuthFlowsUserPoolClient": "Set to true if the client is allowed to follow the OAuth protocol when interacting with Amazon Cognito user pools.",
-        "AllowedOAuthScopes": "The allowed OAuth scopes. Possible values provided by OAuth are: `phone` , `email` , `openid` , and `profile` . Possible values provided by AWS are: `aws.cognito.signin.user.admin` . Custom scopes created in Resource Servers are also supported.",
+        "AllowedOAuthScopes": "The allowed OAuth scopes. Possible values provided by OAuth are `phone` , `email` , `openid` , and `profile` . Possible values provided by AWS are `aws.cognito.signin.user.admin` . Custom scopes created in Resource Servers are also supported.",
         "AnalyticsConfiguration": "The user pool analytics configuration for collecting metrics and sending them to your Amazon Pinpoint campaign.\n\n> In AWS Regions where Amazon Pinpoint isn't available, user pools only support sending events to Amazon Pinpoint projects in AWS Region us-east-1. In Regions where Amazon Pinpoint is available, user pools support sending events to Amazon Pinpoint projects within that same Region.",
-        "CallbackURLs": "A list of allowed redirect (callback) URLs for the identity providers.\n\nA redirect URI must:\n\n- Be an absolute URI.\n- Be registered with the authorization server.\n- Not include a fragment component.\n\nSee [OAuth 2.0 - Redirection Endpoint](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6749#section-3.1.2) .\n\nAmazon Cognito requires HTTPS over HTTP except for http://localhost for testing purposes only.\n\nApp callback URLs such as myapp://example are also supported.",
+        "CallbackURLs": "A list of allowed redirect (callback) URLs for the IdPs.\n\nA redirect URI must:\n\n- Be an absolute URI.\n- Be registered with the authorization server.\n- Not include a fragment component.\n\nSee [OAuth 2.0 - Redirection Endpoint](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6749#section-3.1.2) .\n\nAmazon Cognito requires HTTPS over HTTP except for http://localhost for testing purposes only.\n\nApp callback URLs such as myapp://example are also supported.",
         "ClientName": "The client name for the user pool client you would like to create.",
         "DefaultRedirectURI": "The default redirect URI. Must be in the `CallbackURLs` list.\n\nA redirect URI must:\n\n- Be an absolute URI.\n- Be registered with the authorization server.\n- Not include a fragment component.\n\nSee [OAuth 2.0 - Redirection Endpoint](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6749#section-3.1.2) .\n\nAmazon Cognito requires HTTPS over HTTP except for http://localhost for testing purposes only.\n\nApp callback URLs such as myapp://example are also supported.",
         "EnableTokenRevocation": "Activates or deactivates token revocation. For more information about revoking tokens, see [RevokeToken](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_RevokeToken.html) .\n\nIf you don't include this parameter, token revocation is automatically activated for the new user pool client.",
-        "ExplicitAuthFlows": "The authentication flows that are supported by the user pool clients. Flow names without the `ALLOW_` prefix are no longer supported, in favor of new names with the `ALLOW_` prefix.\n\n> Values with `ALLOW_` prefix must be used only along with the `ALLOW_` prefix. \n\nValid values include:\n\n- `ALLOW_ADMIN_USER_PASSWORD_AUTH` : Enable admin based user password authentication flow `ADMIN_USER_PASSWORD_AUTH` . This setting replaces the `ADMIN_NO_SRP_AUTH` setting. With this authentication flow, Amazon Cognito receives the password in the request instead of using the Secure Remote Password (SRP) protocol to verify passwords.\n- `ALLOW_CUSTOM_AUTH` : Enable AWS Lambda trigger based authentication.\n- `ALLOW_USER_PASSWORD_AUTH` : Enable user password-based authentication. In this flow, Amazon Cognito receives the password in the request instead of using the SRP protocol to verify passwords.\n- `ALLOW_USER_SRP_AUTH` : Enable SRP-based authentication.\n- `ALLOW_REFRESH_TOKEN_AUTH` : Enable authflow to refresh tokens.",
+        "ExplicitAuthFlows": "The authentication flows that are supported by the user pool clients. Flow names without the `ALLOW_` prefix are no longer supported, in favor of new names with the `ALLOW_` prefix.\n\n> Values with `ALLOW_` prefix must be used only along with the `ALLOW_` prefix. \n\nValid values include:\n\n- `ALLOW_ADMIN_USER_PASSWORD_AUTH` : Enable admin based user password authentication flow `ADMIN_USER_PASSWORD_AUTH` . This setting replaces the `ADMIN_NO_SRP_AUTH` setting. With this authentication flow, Amazon Cognito receives the password in the request instead of using the Secure Remote Password (SRP) protocol to verify passwords.\n- `ALLOW_CUSTOM_AUTH` : Enable AWS Lambda trigger based authentication.\n- `ALLOW_USER_PASSWORD_AUTH` : Enable user password-based authentication. In this flow, Amazon Cognito receives the password in the request instead of using the SRP protocol to verify passwords.\n- `ALLOW_USER_SRP_AUTH` : Enable SRP-based authentication.\n- `ALLOW_REFRESH_TOKEN_AUTH` : Enable authflow to refresh tokens.\n\nIf you don't specify a value for `ExplicitAuthFlows` , your app client activates the `ALLOW_USER_SRP_AUTH` and `ALLOW_CUSTOM_AUTH` authentication flows.",
         "GenerateSecret": "Boolean to specify whether you want to generate a secret for the user pool client being created.",
-        "IdTokenValidity": "The time limit after which the access token is no longer valid and can't be used. If you supply a TokenValidityUnits value, you override the default time unit of *hours* . The default time unit for AccessTokenValidity in an API request is hours.",
-        "LogoutURLs": "A list of allowed logout URLs for the identity providers.",
+        "IdTokenValidity": "The ID token time limit. After this limit expires, your user can't use their ID token. To specify the time unit for `IdTokenValidity` as `seconds` , `minutes` , `hours` , or `days` , set a `TokenValidityUnits` value in your API request.\n\nFor example, when you set `IdTokenValidity` as `10` and `TokenValidityUnits` as `hours` , your user can authenticate their session with their ID token for 10 hours.\n\nThe default time unit for `AccessTokenValidity` in an API request is hours.",
+        "LogoutURLs": "A list of allowed logout URLs for the IdPs.",
         "PreventUserExistenceErrors": "Use this setting to choose which errors and responses are returned by Cognito APIs during authentication, account confirmation, and password recovery when the user does not exist in the user pool. When set to `ENABLED` and the user does not exist, authentication returns an error indicating either the username or password was incorrect, and account confirmation and password recovery return a response indicating a code was sent to a simulated destination. When set to `LEGACY` , those APIs will return a `UserNotFoundException` exception if the user does not exist in the user pool.",
         "ReadAttributes": "The read attributes.",
-        "RefreshTokenValidity": "The time limit after which the refresh token is no longer valid and can't be used. The default time unit for RefreshTokenValidity in an API request is days.",
-        "SupportedIdentityProviders": "A list of provider names for the identity providers that are supported on this client. The following are supported: `COGNITO` , `Facebook` , `SignInWithApple` , `Google` and `LoginWithAmazon` .",
+        "RefreshTokenValidity": "The refresh token time limit. After this limit expires, your user can't use their refresh token. To specify the time unit for `RefreshTokenValidity` as `seconds` , `minutes` , `hours` , or `days` , set a `TokenValidityUnits` value in your API request.\n\nFor example, when you set `RefreshTokenValidity` as `10` and `TokenValidityUnits` as `days` , your user can refresh their session and retrieve new access and ID tokens for 10 days.\n\nThe default time unit for `RefreshTokenValidity` in an API request is days. You can't set `RefreshTokenValidity` to 0. If you do, Amazon Cognito overrides the value with the default value of 30 days.",
+        "SupportedIdentityProviders": "A list of provider names for the IdPs that this client supports. The following are supported: `COGNITO` , `Facebook` , `Google` `LoginWithAmazon` , and the names of your own SAML and OIDC providers.",
         "TokenValidityUnits": "The units in which the validity times are represented. The default unit for RefreshToken is days, and default for ID and access tokens are hours.",
         "UserPoolId": "The user pool ID for the user pool where you want to create a user pool client.",
-        "WriteAttributes": "The user pool attributes that the app client can write to.\n\nIf your app client allows users to sign in through an identity provider, this array must include all attributes that you have mapped to identity provider attributes. Amazon Cognito updates mapped attributes when users sign in to your application through an identity provider. If your app client does not have write access to a mapped attribute, Amazon Cognito throws an error when it tries to update the attribute. For more information, see [Specifying Identity Provider Attribute Mappings for Your user pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-specifying-attribute-mapping.html) ."
+        "WriteAttributes": "The user pool attributes that the app client can write to.\n\nIf your app client allows users to sign in through an IdP, this array must include all attributes that you have mapped to IdP attributes. Amazon Cognito updates mapped attributes when users sign in to your application through an IdP. If your app client does not have write access to a mapped attribute, Amazon Cognito throws an error when it tries to update the attribute. For more information, see [Specifying IdP Attribute Mappings for Your user pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-specifying-attribute-mapping.html) ."
       }
     },
     "AWS::Cognito::UserPoolClient.AnalyticsConfiguration": {
       "attributes": {},
-      "description": "The Amazon Pinpoint analytics configuration for collecting metrics for a user pool.\n\n> In Regions where Amazon Pinpointisn't available, user pools only support sending events to Amazon Pinpoint projects in us-east-1. In Regions where Amazon Pinpoint is available, user pools support sending events to Amazon Pinpoint projects within that same Region.",
+      "description": "The Amazon Pinpoint analytics configuration necessary to collect metrics for a user pool.\n\n> In Regions where Amazon Pinpointisn't available, user pools only support sending events to Amazon Pinpoint projects in us-east-1. In Regions where Amazon Pinpoint is available, user pools support sending events to Amazon Pinpoint projects within that same Region.",
       "properties": {
         "ApplicationArn": "The Amazon Resource Name (ARN) of an Amazon Pinpoint project. You can use the Amazon Pinpoint project for integration with the chosen user pool client. Amazon Cognito publishes events to the Amazon Pinpoint project that the app ARN declares.",
         "ApplicationId": "The application ID for an Amazon Pinpoint application.",
         "ExternalId": "The external ID.",
         "RoleArn": "The ARN of an AWS Identity and Access Management role that authorizes Amazon Cognito to publish events to Amazon Pinpoint analytics.",
-        "UserDataShared": "If `UserDataShared` is `true` , Amazon Cognito will include user data in the events it publishes to Amazon Pinpoint analytics."
+        "UserDataShared": "If `UserDataShared` is `true` , Amazon Cognito includes user data in the events that it publishes to Amazon Pinpoint analytics."
       }
     },
     "AWS::Cognito::UserPoolClient.TokenValidityUnits": {
@@ -8902,7 +8902,7 @@
       "properties": {
         "Description": "A string containing the description of the group.",
         "GroupName": "The name of the group. Must be unique.",
-        "Precedence": "A non-negative integer value that specifies the precedence of this group relative to the other groups that a user can belong to in the user pool. Zero is the highest precedence value. Groups with lower `Precedence` values take precedence over groups with higher ornull `Precedence` values. If a user belongs to two or more groups, it is the group with the lowest precedence value whose role ARN is given in the user's tokens for the `cognito:roles` and `cognito:preferred_role` claims.\n\nTwo groups can have the same `Precedence` value. If this happens, neither group takes precedence over the other. If two groups with the same `Precedence` have the same role ARN, that role is used in the `cognito:preferred_role` claim in tokens for users in each group. If the two groups have different role ARNs, the `cognito:preferred_role` claim isn't set in users' tokens.\n\nThe default `Precedence` value is null.",
+        "Precedence": "A non-negative integer value that specifies the precedence of this group relative to the other groups that a user can belong to in the user pool. Zero is the highest precedence value. Groups with lower `Precedence` values take precedence over groups with higher or null `Precedence` values. If a user belongs to two or more groups, it is the group with the lowest precedence value whose role ARN is given in the user's tokens for the `cognito:roles` and `cognito:preferred_role` claims.\n\nTwo groups can have the same `Precedence` value. If this happens, neither group takes precedence over the other. If two groups with the same `Precedence` have the same role ARN, that role is used in the `cognito:preferred_role` claim in tokens for users in each group. If the two groups have different role ARNs, the `cognito:preferred_role` claim isn't set in users' tokens.\n\nThe default `Precedence` value is null. The maximum `Precedence` value is `2^31-1` .",
         "RoleArn": "The role Amazon Resource Name (ARN) for the group.",
         "UserPoolId": "The user pool ID for the user pool."
       }
@@ -8913,11 +8913,11 @@
       },
       "description": "The `AWS::Cognito::UserPoolIdentityProvider` resource creates an identity provider for a user pool.",
       "properties": {
-        "AttributeMapping": "A mapping of identity provider attributes to standard and custom user pool attributes.",
-        "IdpIdentifiers": "A list of identity provider identifiers.",
-        "ProviderDetails": "The identity provider details. The following list describes the provider detail keys for each identity provider type.\n\n- For Google and Login with Amazon:\n\n- client_id\n- client_secret\n- authorize_scopes\n- For Facebook:\n\n- client_id\n- client_secret\n- authorize_scopes\n- api_version\n- For Sign in with Apple:\n\n- client_id\n- team_id\n- key_id\n- private_key\n- authorize_scopes\n- For OpenID Connect (OIDC) providers:\n\n- client_id\n- client_secret\n- attributes_request_method\n- oidc_issuer\n- authorize_scopes\n- authorize_url *if not available from discovery URL specified by oidc_issuer key*\n- token_url *if not available from discovery URL specified by oidc_issuer key*\n- attributes_url *if not available from discovery URL specified by oidc_issuer key*\n- jwks_uri *if not available from discovery URL specified by oidc_issuer key*\n- attributes_url_add_attributes *a read-only property that is set automatically*\n- For SAML providers:\n\n- MetadataFile OR MetadataURL\n- IDPSignout (optional)",
-        "ProviderName": "The identity provider name.",
-        "ProviderType": "The identity provider type.",
+        "AttributeMapping": "A mapping of IdP attributes to standard and custom user pool attributes.",
+        "IdpIdentifiers": "A list of IdP identifiers.",
+        "ProviderDetails": "The IdP details. The following list describes the provider detail keys for each IdP type.\n\n- For Google and Login with Amazon:\n\n- client_id\n- client_secret\n- authorize_scopes\n- For Facebook:\n\n- client_id\n- client_secret\n- authorize_scopes\n- api_version\n- For Sign in with Apple:\n\n- client_id\n- team_id\n- key_id\n- private_key\n- authorize_scopes\n- For OpenID Connect (OIDC) providers:\n\n- client_id\n- client_secret\n- attributes_request_method\n- oidc_issuer\n- authorize_scopes\n- The following keys are only present if Amazon Cognito didn't discover them at the `oidc_issuer` URL.\n\n- authorize_url\n- token_url\n- attributes_url\n- jwks_uri\n- Amazon Cognito sets the value of the following keys automatically. They are read-only.\n\n- attributes_url_add_attributes\n- For SAML providers:\n\n- MetadataFile or MetadataURL\n- IDPSignout *optional*",
+        "ProviderName": "The IdP name.",
+        "ProviderType": "The IdP type.",
         "UserPoolId": "The user pool ID."
       }
     },
@@ -8958,7 +8958,7 @@
       "attributes": {},
       "description": "Account takeover action type.",
       "properties": {
-        "EventAction": "The action to take in response to the account takeover action. Valid values are:\n\n- `BLOCK` Choosing this action will block the request.\n- `MFA_IF_CONFIGURED` Present an MFA challenge if user has configured it, else allow the request.\n- `MFA_REQUIRED` Present an MFA challenge if user has configured it, else block the request.\n- `NO_ACTION` Allow the user to sign in.",
+        "EventAction": "The action to take in response to the account takeover action. Valid values are as follows:\n\n- `BLOCK` Choosing this action will block the request.\n- `MFA_IF_CONFIGURED` Present an MFA challenge if user has configured it, else allow the request.\n- `MFA_REQUIRED` Present an MFA challenge if user has configured it, else block the request.\n- `NO_ACTION` Allow the user to sign in.",
         "Notify": "Flag specifying whether to send a notification."
       }
     },
@@ -11201,7 +11201,7 @@
       "attributes": {},
       "description": "Represents attributes that are copied (projected) from the table into an index. These are in addition to the primary key attributes and index key attributes, which are automatically projected.",
       "properties": {
-        "NonKeyAttributes": "Represents the non-key attribute names which will be projected into the index.\n\nFor local secondary indexes, the total count of `NonKeyAttributes` summed across all of the local secondary indexes, must not exceed 20. If you project the same attribute into two different indexes, this counts as two distinct attributes when determining the total.",
+        "NonKeyAttributes": "Represents the non-key attribute names which will be projected into the index.\n\nFor local secondary indexes, the total count of `NonKeyAttributes` summed across all of the local secondary indexes, must not exceed 100. If you project the same attribute into two different indexes, this counts as two distinct attributes when determining the total.",
         "ProjectionType": "The set of attributes that are projected into the index:\n\n- `KEYS_ONLY` - Only the index and primary keys are projected into the index.\n- `INCLUDE` - In addition to the attributes described in `KEYS_ONLY` , the secondary index will include other non-key attributes that you specify.\n- `ALL` - All of the table attributes are projected into the index."
       }
     },
@@ -11289,7 +11289,7 @@
         "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"MyResource\" }`\n\nFor the resource with the logical ID `myDynamoDBTable` , `Ref` will return the DynamoDB table name.",
         "StreamArn": "The ARN of the DynamoDB stream, such as `arn:aws:dynamodb:us-east-1:123456789012:table/testddbstack-myDynamoDBTable-012A1SL7SMP5Q/stream/2015-11-30T20:10:00.000` .\n\n> You must specify the `StreamSpecification` property to use this attribute."
       },
-      "description": "The `AWS::DynamoDB::Table` resource creates a DynamoDB table. For more information, see [CreateTable](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_CreateTable.html) in the *Amazon DynamoDB API Reference* .\n\nYou should be aware of the following behaviors when working with DynamoDB tables:\n\n- AWS CloudFormation typically creates DynamoDB tables in parallel. However, if your template includes multiple DynamoDB tables with indexes, you must declare dependencies so that the tables are created sequentially. Amazon DynamoDB limits the number of tables with secondary indexes that are in the creating state. If you create multiple tables with indexes at the same time, DynamoDB returns an error and the stack operation fails. For an example, see [DynamoDB Table with a DependsOn Attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-examples-dependson) .",
+      "description": "The `AWS::DynamoDB::Table` resource creates a DynamoDB table. For more information, see [CreateTable](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_CreateTable.html) in the *Amazon DynamoDB API Reference* .\n\nYou should be aware of the following behaviors when working with DynamoDB tables:\n\n- AWS CloudFormation typically creates DynamoDB tables in parallel. However, if your template includes multiple DynamoDB tables with indexes, you must declare dependencies so that the tables are created sequentially. Amazon DynamoDB limits the number of tables with secondary indexes that are in the creating state. If you create multiple tables with indexes at the same time, DynamoDB returns an error and the stack operation fails. For an example, see [DynamoDB Table with a DependsOn Attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#aws-resource-dynamodb-table--examples--DynamoDB_Table_with_a_DependsOn_Attribute) .",
       "properties": {
         "AttributeDefinitions": "A list of attributes that describe the key schema for the table and indexes.\n\nThis property is required to create a DynamoDB table.\n\nUpdate requires: [Some interruptions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-some-interrupt) . Replacement if you edit an existing AttributeDefinition.",
         "BillingMode": "Specify how you are charged for read and write throughput and how you manage capacity.\n\nValid values include:\n\n- `PROVISIONED` - We recommend using `PROVISIONED` for predictable workloads. `PROVISIONED` sets the billing mode to [Provisioned Mode](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html#HowItWorks.ProvisionedThroughput.Manual) .\n- `PAY_PER_REQUEST` - We recommend using `PAY_PER_REQUEST` for unpredictable workloads. `PAY_PER_REQUEST` sets the billing mode to [On-Demand Mode](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html#HowItWorks.OnDemand) .\n\nIf not specified, the default is `PROVISIONED` .",
@@ -11369,7 +11369,7 @@
       "attributes": {},
       "description": "Represents attributes that are copied (projected) from the table into an index. These are in addition to the primary key attributes and index key attributes, which are automatically projected.",
       "properties": {
-        "NonKeyAttributes": "Represents the non-key attribute names which will be projected into the index.\n\nFor local secondary indexes, the total count of `NonKeyAttributes` summed across all of the local secondary indexes, must not exceed 20. If you project the same attribute into two different indexes, this counts as two distinct attributes when determining the total.",
+        "NonKeyAttributes": "Represents the non-key attribute names which will be projected into the index.\n\nFor local secondary indexes, the total count of `NonKeyAttributes` summed across all of the local secondary indexes, must not exceed 100. If you project the same attribute into two different indexes, this counts as two distinct attributes when determining the total.",
         "ProjectionType": "The set of attributes that are projected into the index:\n\n- `KEYS_ONLY` - Only the index and primary keys are projected into the index.\n- `INCLUDE` - In addition to the attributes described in `KEYS_ONLY` , the secondary index will include other non-key attributes that you specify.\n- `ALL` - All of the table attributes are projected into the index."
       }
     },
@@ -12260,6 +12260,20 @@
       "description": "Allocates an internet gateway for use with a VPC. After creating the Internet gateway, you then attach it to a VPC.",
       "properties": {
         "Tags": "Any tags to assign to the internet gateway."
+      }
+    },
+    "AWS::EC2::KeyPair": {
+      "attributes": {
+        "KeyFingerprint": "If you created the key pair using Amazon EC2:\n\n- For RSA key pairs, the key fingerprint is the SHA-1 digest of the DER encoded private key.\n- For ED25519 key pairs, the key fingerprint is the base64-encoded SHA-256 digest, which is the default for OpenSSH, starting with [OpenSSH 6.8](https://docs.aws.amazon.com/http://www.openssh.com/txt/release-6.8) .\n\nIf you imported the key pair to Amazon EC2:\n\n- For RSA key pairs, the key fingerprint is the MD5 public key fingerprint as specified in section 4 of RFC 4716.\n- For ED25519 key pairs, the key fingerprint is the base64-encoded SHA-256 digest, which is the default for OpenSSH, starting with [OpenSSH 6.8](https://docs.aws.amazon.com/http://www.openssh.com/txt/release-6.8) .",
+        "KeyPairId": "The ID of the key pair.",
+        "Ref": "`Ref` returns the name of the key pair."
+      },
+      "description": "Specifies a key pair for an Amazon EC2 instance. The key pair can either be imported or created by Amazon EC2, as follows:\n\n- To import an existing key pair, include the `PublicKeyMaterial` property in the template.\n- To have Amazon EC2 create a new key pair, omit the `PublicKeyMaterial` property. When Amazon EC2 creates a new key pair, the private key is saved to an AWS Systems Manager Parameter Store. The name of the Systems Manager parameter follows the format `/ec2/keypair/{key_pair_id}` . For more information, see [AWS Systems Manager Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html) in the *AWS Systems Manager User Guide* .\n\nFor more information, see [Amazon EC2 key pairs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html) in the *Amazon EC2 User Guide* .",
+      "properties": {
+        "KeyName": "A unique name for the key pair.\n\nConstraints: Up to 255 ASCII characters",
+        "KeyType": "The type of key pair. Note that ED25519 keys are not supported for Windows instances.\n\nIf the `PublicKeyMaterial` property is specified, the `KeyType` property is ignored, and the key type is inferred from the `PublicKeyMaterial` value.\n\nDefault: `rsa`",
+        "PublicKeyMaterial": "The public key material. The `PublicKeyMaterial` property is used to import a key pair. If this property is not specified, then a new key pair will be created.",
+        "Tags": "The tags to apply to the key pair."
       }
     },
     "AWS::EC2::LaunchTemplate": {
@@ -13544,14 +13558,14 @@
       },
       "description": "Specifies a subnet for a VPC.\n\nWhen you create each subnet, you provide the VPC ID and IPv4 CIDR block for the subnet. After you create a subnet, you can't change its CIDR block. The size of the subnet's IPv4 CIDR block can be the same as a VPC's IPv4 CIDR block, or a subset of a VPC's IPv4 CIDR block. If you create more than one subnet in a VPC, the subnets' CIDR blocks must not overlap. The smallest IPv4 subnet (and VPC) you can create uses a /28 netmask (16 IPv4 addresses), and the largest uses a /16 netmask (65,536 IPv4 addresses).\n\nIf you've associated an IPv6 CIDR block with your VPC, you can create a subnet with an IPv6 CIDR block that uses a /64 prefix length.",
       "properties": {
-        "AssignIpv6AddressOnCreation": "Indicates whether a network interface created in this subnet receives an IPv6 address. The default value is `false` .\n\nIf you specify `AssignIpv6AddressOnCreation` , you must also specify `Ipv6CidrBlock` .\n\nIf you specify `AssignIpv6AddressOnCreation` , you cannot specify `MapPublicIpOnLaunch` .",
+        "AssignIpv6AddressOnCreation": "Indicates whether a network interface created in this subnet receives an IPv6 address. The default value is `false` .\n\nIf you specify `AssignIpv6AddressOnCreation` , you must also specify `Ipv6CidrBlock` .",
         "AvailabilityZone": "The Availability Zone of the subnet.\n\nIf you update this property, you must also update the `CidrBlock` property.",
         "AvailabilityZoneId": "The AZ ID of the subnet.",
         "CidrBlock": "The IPv4 CIDR block assigned to the subnet.\n\nIf you update this property, we create a new subnet, and then delete the existing one.",
         "EnableDns64": "Indicates whether DNS queries made to the Amazon-provided DNS Resolver in this subnet should return synthetic IPv6 addresses for IPv4-only destinations. For more information, see [DNS64 and NAT64](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-nat64-dns64) in the *Amazon Virtual Private Cloud User Guide* .",
         "Ipv6CidrBlock": "The IPv6 CIDR block.\n\nIf you specify `AssignIpv6AddressOnCreation` , you must also specify `Ipv6CidrBlock` .",
         "Ipv6Native": "Indicates whether this is an IPv6 only subnet. For more information, see [Subnet basics](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html#subnet-basics) in the *Amazon Virtual Private Cloud User Guide* .",
-        "MapPublicIpOnLaunch": "Indicates whether instances launched in this subnet receive a public IPv4 address. The default value is `false` .\n\nIf you specify `MapPublicIpOnLaunch` , you cannot specify `AssignIpv6AddressOnCreation` .",
+        "MapPublicIpOnLaunch": "Indicates whether instances launched in this subnet receive a public IPv4 address. The default value is `false` .",
         "OutpostArn": "The Amazon Resource Name (ARN) of the Outpost.",
         "PrivateDnsNameOptionsOnLaunch": "The hostname type for EC2 instances launched into this subnet and how DNS A and AAAA record queries to the instances should be handled. For more information, see [Amazon EC2 instance hostname types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-naming.html) in the *Amazon Elastic Compute Cloud User Guide* .",
         "Tags": "Any tags assigned to the subnet.",
@@ -14925,7 +14939,7 @@
         "EncryptionConfigKeyArn": "Amazon Resource Name (ARN) or alias of the customer master key (CMK).",
         "Endpoint": "The endpoint for your Kubernetes API server, such as `https://5E1D0CEXAMPLEA591B746AFC5AB30262.yl4.us-west-2.eks.amazonaws.com` .",
         "KubernetesNetworkConfig.ServiceIpv6Cidr": "The CIDR block that Kubernetes Service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified `ipv6` for *ipFamily* when you created the cluster. Kubernetes assigns Service addresses from the unique local address range ( `fc00::/7` ) because you can't specify a custom IPv6 CIDR block when you create the cluster.",
-        "OpenIdConnectIssuerUrl": "",
+        "OpenIdConnectIssuerUrl": "The issuer URL for the OIDC identity provider.",
         "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"myCluster\" }`\n\nFor the Amazon EKS cluster `myCluster` , `Ref` returns the name of the cluster."
       },
       "description": "Creates an Amazon EKS control plane.\n\nThe Amazon EKS control plane consists of control plane instances that run the Kubernetes software, such as `etcd` and the API server. The control plane runs in an account managed by AWS , and the Kubernetes API is exposed by the Amazon EKS API server endpoint. Each Amazon EKS cluster control plane is single tenant and unique. It runs on its own set of Amazon EC2 instances.\n\nThe cluster control plane is provisioned across multiple Availability Zones and fronted by an Elastic Load Balancing Network Load Balancer. Amazon EKS also provisions elastic network interfaces in your VPC subnets to provide connectivity from the control plane instances to the nodes (for example, to support `kubectl exec` , `logs` , and `proxy` data flows).\n\nAmazon EKS nodes run in your AWS account and connect to your cluster's control plane over the Kubernetes API server endpoint and a certificate file that is created for your cluster.\n\nIn most cases, it takes several minutes to create a cluster. After you create an Amazon EKS cluster, you must configure your Kubernetes tooling to communicate with the API server and launch nodes into your cluster. For more information, see [Managing Cluster Authentication](https://docs.aws.amazon.com/eks/latest/userguide/managing-auth.html) and [Launching Amazon EKS nodes](https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html) in the *Amazon EKS User Guide* .",
@@ -16298,7 +16312,7 @@
         "ListenerArn": "The Amazon Resource Name (ARN) of the listener.",
         "Ref": "`Ref` returns the Amazon Resource Name (ARN) of the listener."
       },
-      "description": "Specifies a listener for an Application Load Balancer or Network Load Balancer.",
+      "description": "Specifies a listener for an Application Load Balancer, Network Load Balancer, or Gateway Load Balancer.",
       "properties": {
         "AlpnPolicy": "[TLS listener] The name of the Application-Layer Protocol Negotiation (ALPN) policy.",
         "Certificates": "The default SSL server certificate for a secure listener. You must provide exactly one certificate if the listener protocol is HTTPS or TLS.\n\nTo create a certificate list for a secure listener, use [AWS::ElasticLoadBalancingV2::ListenerCertificate](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-listenercertificate.html) .",
@@ -16427,7 +16441,7 @@
         "Ref": "`Ref` returns the Amazon Resource Name (ARN) of the listener rule.",
         "RuleArn": "The Amazon Resource Name (ARN) of the rule."
       },
-      "description": "Specifies a listener rule. The listener must be associated with an Application Load Balancer. Each rule consists of a priority, one or more actions, and one or more conditions.",
+      "description": "Specifies a listener rule. The listener must be associated with an Application Load Balancer. Each rule consists of a priority, one or more actions, and one or more conditions.\n\nFor more information, see [Quotas for your Application Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-limits.html) in the *User Guide for Application Load Balancers* .",
       "properties": {
         "Actions": "The actions.\n\nThe rule must include exactly one of the following types of actions: `forward` , `fixed-response` , or `redirect` , and it must be the last action to be performed. If the rule is for an HTTPS listener, it can also optionally include an authentication action.",
         "Conditions": "The conditions.\n\nThe rule can optionally include up to one of each of the following conditions: `http-request-method` , `host-header` , `path-pattern` , and `source-ip` . A rule can also optionally include one or more of each of the following conditions: `http-header` and `query-string` .",
@@ -16524,7 +16538,7 @@
       "attributes": {},
       "description": "Information about a path pattern condition.",
       "properties": {
-        "Values": "One or more path patterns to compare against the request URL. The maximum size of each string is 128 characters. The comparison is case sensitive. The following wildcard characters are supported: * (matches 0 or more characters) and ? (matches exactly 1 character).\n\nIf you specify multiple strings, the condition is satisfied if one of them matches the request URL. The path pattern is compared only to the path of the URL, not to its query string."
+        "Values": "The path patterns to compare against the request URL. The maximum size of each string is 128 characters. The comparison is case sensitive. The following wildcard characters are supported: * (matches 0 or more characters) and ? (matches exactly 1 character).\n\nIf you specify multiple strings, the condition is satisfied if one of them matches the request URL. The path pattern is compared only to the path of the URL, not to its query string."
       }
     },
     "AWS::ElasticLoadBalancingV2::ListenerRule.QueryStringConfig": {
@@ -16572,7 +16586,7 @@
       "attributes": {},
       "description": "Information about a source IP condition.\n\nYou can use this condition to route based on the IP address of the source that connects to the load balancer. If a client is behind a proxy, this is the IP address of the proxy not the IP address of the client.",
       "properties": {
-        "Values": "One or more source IP addresses, in CIDR format. You can use both IPv4 and IPv6 addresses. Wildcards are not supported.\n\nIf you specify multiple addresses, the condition is satisfied if the source IP address of the request matches one of the CIDR blocks. This condition is not satisfied by the addresses in the X-Forwarded-For header."
+        "Values": "The source IP addresses, in CIDR format. You can use both IPv4 and IPv6 addresses. Wildcards are not supported.\n\nIf you specify multiple addresses, the condition is satisfied if the source IP address of the request matches one of the CIDR blocks. This condition is not satisfied by the addresses in the X-Forwarded-For header."
       }
     },
     "AWS::ElasticLoadBalancingV2::ListenerRule.TargetGroupStickinessConfig": {
@@ -16638,7 +16652,7 @@
         "TargetGroupFullName": "The full name of the target group. For example, `targetgroup/my-target-group/cbf133c568e0d028` .",
         "TargetGroupName": "The name of the target group. For example, `my-target-group` ."
       },
-      "description": "Specifies a target group for a load balancer.\n\nIf the protocol of the target group is TCP, TLS, UDP, or TCP_UDP, you can't modify the health check protocol, interval, timeout, or success codes.\n\nBefore you register a Lambda function as a target, you must create a `AWS::Lambda::Permission` resource that grants the Elastic Load Balancing service principal permission to invoke the Lambda function.",
+      "description": "Specifies a target group for an Application Load Balancer, a Network Load Balancer, or a Gateway Load Balancer.\n\nIf the protocol of the target group is TCP, TLS, UDP, or TCP_UDP, you can't modify the health check protocol, interval, timeout, or success codes.\n\nBefore you register a Lambda function as a target, you must create a `AWS::Lambda::Permission` resource that grants the Elastic Load Balancing service principal permission to invoke the Lambda function.",
       "properties": {
         "HealthCheckEnabled": "Indicates whether health checks are enabled. If the target type is `lambda` , health checks are disabled by default but can be enabled. If the target type is `instance` , `ip` , or `alb` , health checks are always enabled and cannot be disabled.",
         "HealthCheckIntervalSeconds": "The approximate amount of time, in seconds, between health checks of an individual target. If the target group protocol is HTTP or HTTPS, the default is 30 seconds. If the target group protocol is TCP, TLS, UDP, or TCP_UDP, the supported values are 10 and 30 seconds and the default is 30 seconds. If the target group protocol is GENEVE, the default is 10 seconds. If the target type is `lambda` , the default is 35 seconds.",
@@ -17029,7 +17043,7 @@
       "description": "A global endpoint used to improve your application's availability by making it regional-fault tolerant. For more information about global endpoints, see [Making applications Regional-fault tolerant with global endpoints and event replication](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-global-endpoints.html) in the Amazon EventBridge User Guide.",
       "properties": {
         "Description": "A description for the endpoint.",
-        "EventBuses": "The event buses being used by the endpoint.",
+        "EventBuses": "The event buses being used by the endpoint.\n\n*Exactly* : `2`",
         "Name": "The name of the endpoint.",
         "ReplicationConfig": "Whether event replication was enabled or disabled for this endpoint.",
         "RoleArn": "The ARN of the role used by event replication for the endpoint.",
@@ -20845,18 +20859,18 @@
         "Encrypted": "Returns the encryption status of the component. For example `true` or `false` .",
         "Name": "Returns the name of the component.",
         "Ref": "`Ref` returns the resource ARN, such as `arn:aws:imagebuilder:us-west-2:123456789012:component/examplecomponent/2019.12.02/1` .",
-        "Type": "Returns the component type. For example, `BUILD` or `TEST` ."
+        "Type": "Image Builder determines the component type based on the phases that are defined in the component document. If there is only one phase, and its name is \"test\", then the type is `TEST` . For all other components, the type is `BUILD` ."
       },
-      "description": "Components are orchestration documents that define a sequence of steps for downloading, installing, and configuring software packages or for defining tests to run on software packages. They also define validation and security hardening steps. A component is defined using a YAML document format. For more information, see [Using Documents in Image Builder](https://docs.aws.amazon.com/imagebuilder/latest/userguide/image-builder-application-documents.html) .",
+      "description": "Creates a new component that can be used to build, validate, test, and assess your image. The component is based on a YAML document that you specify using exactly one of the following methods:\n\n- Inline, using the `data` property in the request body.\n- A URL that points to a YAML document file stored in Amazon S3, using the `uri` property in the request body.",
       "properties": {
-        "ChangeDescription": "A change description of the component. For example `initial version` .",
-        "Data": "The data of the component. For example, `name: HelloWorldTestingDocument\\ndescription: This is hello world testing document.\\nschemaVersion: 1.0\\n\\nphases:\\n - name: test\\n steps:\\n - name: HelloWorldStep\\n action: ExecuteBash\\n inputs:\\n commands:\\n - echo \\\"Hello World! Test.\\\"\\n` . See Examples below for the schema for creating a component using Data.",
-        "Description": "The description of the component.",
-        "KmsKeyId": "The KMS key identifier used to encrypt the component.",
+        "ChangeDescription": "The change description of the component. Describes what change has been made in this version, or what makes this version different from other versions of this component.",
+        "Data": "Component `data` contains inline YAML document content for the component. Alternatively, you can specify the `uri` of a YAML document file stored in Amazon S3. However, you cannot specify both properties.",
+        "Description": "The description of the component. Describes the contents of the component.",
+        "KmsKeyId": "The ID of the KMS key that should be used to encrypt this component.",
         "Name": "The name of the component.",
-        "Platform": "The platform of the component. For example, `Windows` .",
+        "Platform": "The platform of the component.",
         "SupportedOsVersions": "The operating system (OS) version supported by the component. If the OS information is available, a prefix match is performed against the base image OS version during image recipe creation.",
-        "Tags": "The tags associated with the component.",
+        "Tags": "The tags of the component.",
         "Uri": "The `uri` of a YAML component document file. This must be an S3 URL ( `s3://bucket/key` ), and the requester must have permission to access the S3 bucket it points to. If you use Amazon S3, you can specify component content up to your service quota.\n\nAlternatively, you can specify the YAML document inline, using the component `data` property. You cannot specify both properties.",
         "Version": "The component version. For example, `1.0.0` ."
       }
@@ -20874,12 +20888,12 @@
         "Description": "The description of the container recipe.",
         "DockerfileTemplateData": "Dockerfiles are text documents that are used to build Docker containers, and ensure that they contain all of the elements required by the application running inside. The template data consists of contextual variables where Image Builder places build information or scripts, based on your container image recipe.",
         "DockerfileTemplateUri": "The S3 URI for the Dockerfile that will be used to build your container image.",
-        "ImageOsVersionOverride": "Specifies the operating system version for the source image.",
+        "ImageOsVersionOverride": "Specifies the operating system version for the base image.",
         "InstanceConfiguration": "A group of options that can be used to configure an instance for building and testing container images.",
         "KmsKeyId": "Identifies which KMS key is used to encrypt the container image for distribution to the target Region.",
         "Name": "The name of the container recipe.",
         "ParentImage": "The base image for the container recipe.",
-        "PlatformOverride": "Specifies the operating system platform when you use a custom source image.",
+        "PlatformOverride": "Specifies the operating system platform when you use a custom base image.",
         "Tags": "Tags that are attached to the container recipe.",
         "TargetRepository": "The destination repository for the container image.",
         "Version": "The semantic version of the container recipe.\n\n> The semantic version has four nodes: <major>.<minor>.<patch>/<build>. You can assign values for the first three, and can filter on all of them.\n> \n> *Assignment:* For the first three nodes you can assign any positive integer value, including zero, with an upper limit of 2^30-1, or 1073741823 for each node. Image Builder automatically assigns the build number to the fourth node.\n> \n> *Patterns:* You can use any numeric pattern that adheres to the assignment requirements for the nodes that you can assign. For example, you might choose a software version pattern, such as 1.0.0, or a date, such as 2021.01.01.\n> \n> *Filtering:* With semantic versioning, you have the flexibility to use wildcards (x) to specify the most recent versions or nodes when selecting the base image or components for your recipe. When you use a wildcard in any node, all nodes to the right of the first wildcard must also be wildcards.",
@@ -20919,7 +20933,7 @@
     },
     "AWS::ImageBuilder::ContainerRecipe.InstanceConfiguration": {
       "attributes": {},
-      "description": "Defines a custom source AMI and block device mapping configurations of an instance used for building and testing container images.",
+      "description": "Defines a custom base AMI and block device mapping configurations of an instance used for building and testing container images.",
       "properties": {
         "BlockDeviceMappings": "Defines the block devices to attach for building an instance from this Image Builder AMI.",
         "Image": "The AMI ID to use as the base image for a container build and test instance. If not specified, Image Builder will use the appropriate ECS-optimized AMI as a base image."
@@ -20954,7 +20968,7 @@
         "AmiTags": "The tags to apply to AMIs distributed to this Region.",
         "Description": "The description of the AMI distribution configuration. Minimum and maximum length are in characters.",
         "KmsKeyId": "The KMS key identifier used to encrypt the distributed image.",
-        "LaunchPermissionConfiguration": "",
+        "LaunchPermissionConfiguration": "Launch permissions can be used to configure which AWS account s can use the AMI to launch instances.",
         "Name": "The name of the output AMI.",
         "TargetAccountIds": "The ID of an account to which you want to distribute an image."
       }
@@ -21009,8 +21023,8 @@
     "AWS::ImageBuilder::Image": {
       "attributes": {
         "Arn": "Returns the Amazon Resource Name (ARN) of the image. For example, `arn:aws:imagebuilder:us-west-2:123456789012:image/mybasicrecipe/2019.12.03/1` .",
-        "ImageId": "Returns the AMI ID of the Amazon EC2 AMI in the Region in which you are using Image Builder.",
-        "ImageUri": "",
+        "ImageId": "Returns the AMI ID of the Amazon EC2 AMI in the Region in which you are using Image Builder. Values are returned only for AMIs, and not for container images.",
+        "ImageUri": "Returns a list of URIs for container images created in the context Region. Values are returned only for container images, and not for AMIs.",
         "Name": "Returns the name of the image.",
         "Ref": "`Ref` returns the resource ARN, such as `arn:aws:imagebuilder:us-west-2:123456789012:image/my-example-image` ."
       },
@@ -21066,7 +21080,7 @@
       "attributes": {},
       "description": "A schedule configures how often and when a pipeline will automatically create a new image.",
       "properties": {
-        "PipelineExecutionStartCondition": "The condition configures when the pipeline should trigger a new image build. When the `pipelineExecutionStartCondition` is set to `EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE` , and you use semantic version filters on the source image or components in your image recipe, Image Builder will build a new image only when there are new versions of the image or components in your recipe that match the semantic version filter. When it is set to `EXPRESSION_MATCH_ONLY` , it will build a new image every time the CRON expression matches the current time. For semantic version syntax, see [CreateComponent](https://docs.aws.amazon.com/imagebuilder/latest/APIReference/API_CreateComponent.html) in the *Image Builder API Reference* .",
+        "PipelineExecutionStartCondition": "The condition configures when the pipeline should trigger a new image build. When the `pipelineExecutionStartCondition` is set to `EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE` , and you use semantic version filters on the base image or components in your image recipe, Image Builder will build a new image only when there are new versions of the image or components in your recipe that match the semantic version filter. When it is set to `EXPRESSION_MATCH_ONLY` , it will build a new image every time the CRON expression matches the current time. For semantic version syntax, see [CreateComponent](https://docs.aws.amazon.com/imagebuilder/latest/APIReference/API_CreateComponent.html) in the *Image Builder API Reference* .",
         "ScheduleExpression": "The cron expression determines how often EC2 Image Builder evaluates your `pipelineExecutionStartCondition` .\n\nFor information on how to format a cron expression in Image Builder, see [Use cron expressions in EC2 Image Builder](https://docs.aws.amazon.com/imagebuilder/latest/userguide/image-builder-cron.html) ."
       }
     },
@@ -21076,7 +21090,7 @@
         "Name": "The name of the image recipe.",
         "Ref": "`Ref` returns the resource ARN, such as `arn:aws:imagebuilder:us-east-1:123456789012:image-recipe/mybasicrecipe/2019.12.03` ."
       },
-      "description": "An Image Builder image recipe is a document that defines the source image and the components to be applied to the source image to produce the desired configuration for the output image. You can use an image recipe to duplicate builds. Image Builder image recipes can be shared, branched, and edited using the console wizard, the AWS CLI , or the API. You can use image recipes with your version control software to maintain shareable versioned image recipes.",
+      "description": "An Image Builder image recipe is a document that defines the base image and the components to be applied to the base image to produce the desired configuration for the output image. You can use an image recipe to duplicate builds. Image Builder image recipes can be shared, branched, and edited using the console wizard, the AWS CLI , or the API. You can use image recipes with your version control software to maintain shareable versioned image recipes.",
       "properties": {
         "AdditionalInstanceConfiguration": "Before you create a new AMI, Image Builder launches temporary Amazon EC2 instances to build and test your image configuration. Instance configuration adds a layer of control over those instances. You can define settings and add scripts to run when an instance is launched from your AMI.",
         "BlockDeviceMappings": "The block device mappings to apply when creating images from this recipe.",
@@ -23781,7 +23795,7 @@
         "Description": "A description of the KMS key. Use a description that helps you to distinguish this KMS key from others in the account, such as its intended use.",
         "EnableKeyRotation": "Enables automatic rotation of the key material for the specified KMS key. By default, automatic key rotation is not enabled.\n\nAWS KMS supports automatic rotation only for symmetric encryption KMS keys ( `KeySpec` = `SYMMETRIC_DEFAULT` ). For asymmetric KMS keys and HMAC KMS keys, omit the `EnableKeyRotation` property or set it to `false` .\n\nTo enable automatic key rotation of the key material for a multi-Region KMS key, set `EnableKeyRotation` to `true` on the primary key (created by using `AWS::KMS::Key` ). AWS KMS copies the rotation status to all replica keys. For details, see [Rotating multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-manage.html#multi-region-rotate) in the *AWS Key Management Service Developer Guide* .\n\nWhen you enable automatic rotation, AWS KMS automatically creates new key material for the KMS key one year after the enable date and every year thereafter. AWS KMS retains all key material until you delete the KMS key. For detailed information about automatic key rotation, see [Rotating KMS keys](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html) in the *AWS Key Management Service Developer Guide* .",
         "Enabled": "Specifies whether the KMS key is enabled. Disabled KMS keys cannot be used in cryptographic operations.\n\nWhen `Enabled` is `true` , the *key state* of the KMS key is `Enabled` . When `Enabled` is `false` , the key state of the KMS key is `Disabled` . The default value is `true` .\n\nThe actual key state of the KMS key might be affected by actions taken outside of CloudFormation, such as running the [EnableKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_EnableKey.html) , [DisableKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_DisableKey.html) , or [ScheduleKeyDeletion](https://docs.aws.amazon.com/kms/latest/APIReference/API_ScheduleKeyDeletion.html) operations.\n\nFor information about the key states of a KMS key, see [Key state: Effect on your KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html) in the *AWS Key Management Service Developer Guide* .",
-        "KeyPolicy": "The key policy that authorizes use of the KMS key. The key policy must conform to the following rules.\n\n- The key policy must allow the caller to make a subsequent [PutKeyPolicy](https://docs.aws.amazon.com/kms/latest/APIReference/API_PutKeyPolicy.html) request on the KMS key. This reduces the risk that the KMS key becomes unmanageable. For more information, refer to the scenario in the [Default key policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam) section of the **AWS Key Management Service Developer Guide** .\n- Each statement in the key policy must contain one or more principals. The principals in the key policy must exist and be visible to AWS KMS . When you create a new AWS principal (for example, an IAM user or role), you might need to enforce a delay before including the new principal in a key policy because the new principal might not be immediately visible to AWS KMS . For more information, see [Changes that I make are not always immediately visible](https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_general.html#troubleshoot_general_eventual-consistency) in the *AWS Identity and Access Management User Guide* .\n- The key policy size limit is 32 kilobytes (32768 bytes).\n\nIf you are unsure of which policy to use, consider the *default key policy* . This is the key policy that AWS KMS applies to KMS keys that are created by using the CreateKey API with no specified key policy. It gives the AWS account that owns the key permission to perform all operations on the key. It also allows you write IAM policies to authorize access to the key. For details, see [Default key policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default) in the *AWS Key Management Service Developer Guide* .\n\n*Minimum* : `1`\n\n*Maximum* : `32768`",
+        "KeyPolicy": "The key policy that authorizes use of the KMS key. The key policy must conform to the following rules.\n\n- The key policy must allow the caller to make a subsequent [PutKeyPolicy](https://docs.aws.amazon.com/kms/latest/APIReference/API_PutKeyPolicy.html) request on the KMS key. This reduces the risk that the KMS key becomes unmanageable. For more information, refer to the scenario in the [Default key policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam) section of the **AWS Key Management Service Developer Guide** .\n- Each statement in the key policy must contain one or more principals. The principals in the key policy must exist and be visible to AWS KMS . When you create a new AWS principal (for example, an IAM user or role), you might need to enforce a delay before including the new principal in a key policy because the new principal might not be immediately visible to AWS KMS . For more information, see [Changes that I make are not always immediately visible](https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_general.html#troubleshoot_general_eventual-consistency) in the *AWS Identity and Access Management User Guide* .\n\nA key policy document must conform to the following rules.\n\n- Up to 32 kilobytes (32768 bytes)\n- Must be UTF-8 encoded\n- The only Unicode characters that are permitted in a key policy document are the horizontal tab (U+0009), linefeed (U+000A), carriage return (U+000D), and characters in the range U+0020 to U+00FF.\n- The `Sid` element in a key policy statement can include spaces. (Spaces are prohibited in the `Sid` element of an IAM policy document.)\n\nIf you are unsure of which policy to use, consider the *default key policy* . This is the key policy that AWS KMS applies to KMS keys that are created by using the CreateKey API with no specified key policy. It gives the AWS account that owns the key permission to perform all operations on the key. It also allows you write IAM policies to authorize access to the key. For details, see [Default key policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default) in the *AWS Key Management Service Developer Guide* .\n\n*Minimum* : `1`\n\n*Maximum* : `32768`",
         "KeySpec": "Specifies the type of KMS key to create. The default value, `SYMMETRIC_DEFAULT` , creates a KMS key with a 256-bit symmetric key for encryption and decryption. You can't change the `KeySpec` value after the KMS key is created. For help choosing a key spec for your KMS key, see [Choosing a KMS key type](https://docs.aws.amazon.com/kms/latest/developerguide/symm-asymm-choose.html) in the *AWS Key Management Service Developer Guide* .\n\nThe `KeySpec` property determines the type of key material in the KMS key and the algorithms that the KMS key supports. To further restrict the algorithms that can be used with the KMS key, use a condition key in its key policy or IAM policy. For more information, see [AWS KMS condition keys](https://docs.aws.amazon.com/kms/latest/developerguide/policy-conditions.html#conditions-kms) in the *AWS Key Management Service Developer Guide* .\n\n> If you change the `KeySpec` value of an existing KMS key, the existing KMS key is scheduled for deletion and a new KMS key is created with the specified `KeySpec` value. While the scheduled deletion is pending, you can't use the existing KMS key. Unless you [cancel the scheduled deletion](https://docs.aws.amazon.com/kms/latest/developerguide/deleting-keys.html#deleting-keys-scheduling-key-deletion) of the KMS key outside of CloudFormation, all data encrypted under the existing KMS key becomes unrecoverable when the KMS key is deleted. > [AWS services that are integrated with AWS KMS](https://docs.aws.amazon.com/kms/features/#AWS_Service_Integration) use symmetric encryption KMS keys to protect your data. These services do not support encryption with asymmetric KMS keys. For help determining whether a KMS key is asymmetric, see [Identifying asymmetric KMS keys](https://docs.aws.amazon.com/kms/latest/developerguide/find-symm-asymm.html) in the *AWS Key Management Service Developer Guide* . \n\nAWS KMS supports the following key specs for KMS keys:\n\n- Symmetric encryption key (default)\n\n- `SYMMETRIC_DEFAULT` (AES-256-GCM)\n- HMAC keys (symmetric)\n\n- `HMAC_224`\n- `HMAC_256`\n- `HMAC_384`\n- `HMAC_512`\n- Asymmetric RSA key pairs\n\n- `RSA_2048`\n- `RSA_3072`\n- `RSA_4096`\n- Asymmetric NIST-recommended elliptic curve key pairs\n\n- `ECC_NIST_P256` (secp256r1)\n- `ECC_NIST_P384` (secp384r1)\n- `ECC_NIST_P521` (secp521r1)\n- Other asymmetric elliptic curve key pairs\n\n- `ECC_SECG_P256K1` (secp256k1), commonly used for cryptocurrencies.",
         "KeyUsage": "Determines the [cryptographic operations](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#cryptographic-operations) for which you can use the KMS key. The default value is `ENCRYPT_DECRYPT` . This property is required for asymmetric KMS keys and HMAC KMS keys. You can't change the `KeyUsage` value after the KMS key is created.\n\n> If you change the `KeyUsage` value of an existing KMS key, the existing KMS key is scheduled for deletion and a new KMS key is created with the specified `KeyUsage` value. While the scheduled deletion is pending, you can't use the existing KMS key. Unless you [cancel the scheduled deletion](https://docs.aws.amazon.com/kms/latest/developerguide/deleting-keys.html#deleting-keys-scheduling-key-deletion) of the KMS key outside of CloudFormation, all data encrypted under the existing KMS key becomes unrecoverable when the KMS key is deleted. \n\nSelect only one valid value.\n\n- For symmetric encryption KMS keys, omit the property or specify `ENCRYPT_DECRYPT` .\n- For asymmetric KMS keys with RSA key material, specify `ENCRYPT_DECRYPT` or `SIGN_VERIFY` .\n- For asymmetric KMS keys with ECC key material, specify `SIGN_VERIFY` .\n- For HMAC KMS keys, specify `GENERATE_VERIFY_MAC` .",
         "MultiRegion": "Creates a multi-Region primary key that you can replicate in other AWS Regions . You can't change the `MultiRegion` value after the KMS key is created.\n\n> If you change the `MultiRegion` value of an existing KMS key, the existing KMS key is scheduled for deletion and a new KMS key is created with the specified `Multi-Region` value. While the scheduled deletion is pending, you can't use the existing KMS key. Unless you [cancel the scheduled deletion](https://docs.aws.amazon.com/kms/latest/developerguide/deleting-keys.html#deleting-keys-scheduling-key-deletion) of the KMS key outside of CloudFormation, all data encrypted under the existing KMS key becomes unrecoverable when the KMS key is deleted. \n\nFor a multi-Region key, set to this property to `true` . For a single-Region key, omit this property or set it to `false` . The default value is `false` .\n\n*Multi-Region keys* are an AWS KMS feature that lets you create multiple interoperable KMS keys in different AWS Regions . Because these KMS keys have the same key ID, key material, and other metadata, you can use them to encrypt data in one AWS Region and decrypt it in a different AWS Region without making a cross-Region call or exposing the plaintext data. For more information, see [Multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the *AWS Key Management Service Developer Guide* .\n\nYou can create a symmetric encryption, HMAC, or asymmetric multi-Region KMS key, and you can create a multi-Region key with imported key material. However, you cannot create a multi-Region key in a custom key store.\n\nTo create a replica of this primary key in a different AWS Region , create an [AWS::KMS::ReplicaKey](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html) resource in a CloudFormation stack in the replica Region. Specify the key ARN of this primary key.",
@@ -23799,7 +23813,7 @@
       "properties": {
         "Description": "A description of the KMS key.\n\nThe default value is an empty string (no description).\n\nThe description is not a shared property of multi-Region keys. You can specify the same description or a different description for each key in a set of related multi-Region keys. AWS Key Management Service does not synchronize this property.",
         "Enabled": "Specifies whether the replica key is enabled. Disabled KMS keys cannot be used in cryptographic operations.\n\nWhen `Enabled` is `true` , the *key state* of the KMS key is `Enabled` . When `Enabled` is `false` , the key state of the KMS key is `Disabled` . The default value is `true` .\n\nThe actual key state of the replica might be affected by actions taken outside of CloudFormation, such as running the [EnableKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_EnableKey.html) , [DisableKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_DisableKey.html) , or [ScheduleKeyDeletion](https://docs.aws.amazon.com/kms/latest/APIReference/API_ScheduleKeyDeletion.html) operations. Also, while the replica key is being created, its key state is `Creating` . When the process is complete, the key state of the replica key changes to `Enabled` .\n\nFor information about the key states of a KMS key, see [Key state: Effect on your KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html) in the *AWS Key Management Service Developer Guide* .",
-        "KeyPolicy": "The key policy that authorizes use of the replica key.\n\nThe key policy is not a shared property of multi-Region keys. You can specify the same key policy or a different key policy for each key in a set of related multi-Region keys. AWS KMS does not synchronize this property.\n\nThe key policy must conform to the following rules.\n\n- The key policy must give the caller [PutKeyPolicy](https://docs.aws.amazon.com/kms/latest/APIReference/API_PutKeyPolicy.html) permission on the KMS key. This reduces the risk that the KMS key becomes unmanageable. For more information, refer to the scenario in the [Default key policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam) section of the **AWS Key Management Service Developer Guide** .\n- Each statement in the key policy must contain one or more principals. The principals in the key policy must exist and be visible to AWS KMS . When you create a new AWS principal (for example, an IAM user or role), you might need to enforce a delay before including the new principal in a key policy because the new principal might not be immediately visible to AWS KMS . For more information, see [Changes that I make are not always immediately visible](https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_general.html#troubleshoot_general_eventual-consistency) in the *AWS Identity and Access Management User Guide* .\n- The key policy size limit is 32 kilobytes (32768 bytes).\n\n*Minimum* : `1`\n\n*Maximum* : `32768`",
+        "KeyPolicy": "The key policy that authorizes use of the replica key.\n\nThe key policy is not a shared property of multi-Region keys. You can specify the same key policy or a different key policy for each key in a set of related multi-Region keys. AWS KMS does not synchronize this property.\n\nThe key policy must conform to the following rules.\n\n- The key policy must give the caller [PutKeyPolicy](https://docs.aws.amazon.com/kms/latest/APIReference/API_PutKeyPolicy.html) permission on the KMS key. This reduces the risk that the KMS key becomes unmanageable. For more information, refer to the scenario in the [Default key policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam) section of the **AWS Key Management Service Developer Guide** .\n- Each statement in the key policy must contain one or more principals. The principals in the key policy must exist and be visible to AWS KMS . When you create a new AWS principal (for example, an IAM user or role), you might need to enforce a delay before including the new principal in a key policy because the new principal might not be immediately visible to AWS KMS . For more information, see [Changes that I make are not always immediately visible](https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_general.html#troubleshoot_general_eventual-consistency) in the *AWS Identity and Access Management User Guide* .\n\nA key policy document must conform to the following rules.\n\n- Up to 32 kilobytes (32768 bytes)\n- Must be UTF-8 encoded\n- The only Unicode characters that are permitted in a key policy document are the horizontal tab (U+0009), linefeed (U+000A), carriage return (U+000D), and characters in the range U+0020 to U+00FF.\n- The `Sid` element in a key policy statement can include spaces. (Spaces are prohibited in the `Sid` element of an IAM policy document.)\n\n*Minimum* : `1`\n\n*Maximum* : `32768`",
         "PendingWindowInDays": "Specifies the number of days in the waiting period before AWS KMS deletes a replica key that has been removed from a CloudFormation stack. Enter a value between 7 and 30 days. The default value is 30 days.\n\nWhen you remove a replica key from a CloudFormation stack, AWS KMS schedules the replica key for deletion and starts the mandatory waiting period. The `PendingWindowInDays` property determines the length of waiting period. During the waiting period, the key state of replica key is `Pending Deletion` , which prevents it from being used in cryptographic operations. When the waiting period expires, AWS KMS permanently deletes the replica key.\n\nIf the KMS key is a multi-Region primary key with replica keys, the waiting period begins when the last of its replica keys is deleted. Otherwise, the waiting period begins immediately.\n\nYou cannot use a CloudFormation template to cancel deletion of the replica after you remove it from the stack, regardless of the waiting period. However, if you specify a replica key in your template that is based on the same primary key as the original replica key, CloudFormation creates a new replica key with the same key ID, key material, and other shared properties of the original replica key. This new replica key can decrypt ciphertext that was encrypted under the original replica key, or any related multi-Region key.\n\nFor detailed information about deleting multi-Region keys, see [Deleting multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-delete.html) in the *AWS Key Management Service Developer Guide* .\n\nFor information about the `PendingDeletion` key state, see [Key state: Effect on your KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html) in the *AWS Key Management Service Developer Guide* . For more information about deleting KMS keys, see the [ScheduleKeyDeletion](https://docs.aws.amazon.com/kms/latest/APIReference/API_ScheduleKeyDeletion.html) operation in the *AWS Key Management Service API Reference* and [Deleting KMS keys](https://docs.aws.amazon.com/kms/latest/developerguide/deleting-keys.html) in the *AWS Key Management Service Developer Guide* .\n\n*Minimum* : 7\n\n*Maximum* : 30",
         "PrimaryKeyArn": "Specifies the multi-Region primary key to replicate. The primary key must be in a different AWS Region of the same AWS partition. You can create only one replica of a given primary key in each AWS Region .\n\n> If you change the `PrimaryKeyArn` value of a replica key, the existing replica key is scheduled for deletion and a new replica key is created based on the specified primary key. While it is scheduled for deletion, the existing replica key becomes unusable. You can cancel the scheduled deletion of the key outside of CloudFormation.\n> \n> However, if you inadvertently delete a replica key, you can decrypt ciphertext encrypted by that replica key by using any related multi-Region key. If necessary, you can recreate the replica in the same Region after the previous one is completely deleted. For details, see [Deleting multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-delete.html) in the *AWS Key Management Service Developer Guide* \n\nSpecify the key ARN of an existing multi-Region primary key. For example, `arn:aws:kms:us-east-2:111122223333:key/mrk-1234abcd12ab34cd56ef1234567890ab` .",
         "Tags": "Assigns one or more tags to the replica key.\n\n> Tagging or untagging a KMS key can allow or deny permission to the KMS key. For details, see [ABAC for AWS KMS](https://docs.aws.amazon.com/kms/latest/developerguide/abac.html) in the *AWS Key Management Service Developer Guide* . \n\nTags are not a shared property of multi-Region keys. You can specify the same tags or different tags for each key in a set of related multi-Region keys. AWS KMS does not synchronize this property.\n\nEach tag consists of a tag key and a tag value. Both the tag key and the tag value are required, but the tag value can be an empty (null) string. You cannot have more than one tag on a KMS key with the same tag key. If you specify an existing tag key with a different tag value, AWS KMS replaces the current tag value with the specified one.\n\nWhen you assign tags to an AWS resource, AWS generates a cost allocation report with usage and costs aggregated by tags. Tags can also be used to control access to a KMS key. For details, see [Tagging keys](https://docs.aws.amazon.com/kms/latest/developerguide/tagging-keys.html) ."
@@ -25755,7 +25769,7 @@
       },
       "description": "The `AWS::Lambda::EventSourceMapping` resource creates a mapping between an event source and an AWS Lambda function. Lambda reads items from the event source and triggers the function.\n\nFor details about each event source type, see the following topics. In particular, each of the topics describes the required and optional parameters for the specific event source.\n\n- [Configuring a Dynamo DB stream as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-dynamodb-eventsourcemapping)\n- [Configuring a Kinesis stream as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html#services-kinesis-eventsourcemapping)\n- [Configuring an SQS queue as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-eventsource)\n- [Configuring an MQ broker as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-mq.html#services-mq-eventsourcemapping)\n- [Configuring MSK as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html)\n- [Configuring Self-Managed Apache Kafka as an event source](https://docs.aws.amazon.com/lambda/latest/dg/kafka-smaa.html)",
       "properties": {
-        "BatchSize": "The maximum number of records in each batch that Lambda pulls from your stream or queue and sends to your function. Lambda passes all of the records in the batch to the function in a single call, up to the payload limit for synchronous invocation (6 MB).\n\n- *Amazon Kinesis* - Default 100. Max 10,000.\n- *Amazon DynamoDB Streams* - Default 100. Max 1,000.\n- *Amazon Simple Queue Service* - Default 10. For standard queues the max is 10,000. For FIFO queues the max is 10.\n- *Amazon Managed Streaming for Apache Kafka* - Default 100. Max 10,000.\n- *Self-Managed Apache Kafka* - Default 100. Max 10,000.\n- *Amazon MQ (ActiveMQ and RabbitMQ)* - Default 100. Max 10,000.",
+        "BatchSize": "The maximum number of records in each batch that Lambda pulls from your stream or queue and sends to your function. Lambda passes all of the records in the batch to the function in a single call, up to the payload limit for synchronous invocation (6 MB).\n\n- *Amazon Kinesis* - Default 100. Max 10,000.\n- *Amazon DynamoDB Streams* - Default 100. Max 10,000.\n- *Amazon Simple Queue Service* - Default 10. For standard queues the max is 10,000. For FIFO queues the max is 10.\n- *Amazon Managed Streaming for Apache Kafka* - Default 100. Max 10,000.\n- *Self-Managed Apache Kafka* - Default 100. Max 10,000.\n- *Amazon MQ (ActiveMQ and RabbitMQ)* - Default 100. Max 10,000.",
         "BisectBatchOnFunctionError": "(Streams only) If the function returns an error, split the batch in two and retry. The default value is false.",
         "DestinationConfig": "(Streams only) An Amazon SQS queue or Amazon SNS topic destination for discarded records.",
         "Enabled": "When true, the event source mapping is active. When false, Lambda pauses polling and invocation.\n\nDefault: True",
@@ -25865,7 +25879,7 @@
         "S3Bucket": "An Amazon S3 bucket in the same AWS Region as your function. The bucket can be in a different AWS account.",
         "S3Key": "The Amazon S3 key of the deployment package.",
         "S3ObjectVersion": "For versioned objects, the version of the deployment package object to use.",
-        "ZipFile": "(Node.js and Python) The source code of your Lambda function. If you include your function source inline with this parameter, AWS CloudFormation places it in a file named `index` and zips it to create a [deployment package](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-package.html) . For the `Handler` property, the first part of the handler identifier must be `index` . For example, `index.handler` .\n\nYour source code can contain up to 4096 characters. For JSON, you must escape quotes and special characters such as newline ( `\\n` ) with a backslash.\n\nIf you specify a function that interacts with an AWS CloudFormation custom resource, you don't have to write your own functions to send responses to the custom resource that invoked the function. AWS CloudFormation provides a response module ( [cfn-response](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-lambda-function-code-cfnresponsemodule.html) ) that simplifies sending responses. See [Using AWS Lambda with AWS CloudFormation](https://docs.aws.amazon.com/lambda/latest/dg/services-cloudformation.html) for details."
+        "ZipFile": "(Node.js and Python) The source code of your Lambda function. If you include your function source inline with this parameter, AWS CloudFormation places it in a file named `index` and zips it to create a [deployment package](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-package.html) . This zip file cannot exceed 4MB. For the `Handler` property, the first part of the handler identifier must be `index` . For example, `index.handler` .\n\nFor JSON, you must escape quotes and special characters such as newline ( `\\n` ) with a backslash.\n\nIf you specify a function that interacts with an AWS CloudFormation custom resource, you don't have to write your own functions to send responses to the custom resource that invoked the function. AWS CloudFormation provides a response module ( [cfn-response](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-lambda-function-code-cfnresponsemodule.html) ) that simplifies sending responses. See [Using AWS Lambda with AWS CloudFormation](https://docs.aws.amazon.com/lambda/latest/dg/services-cloudformation.html) for details."
       }
     },
     "AWS::Lambda::Function.DeadLetterConfig": {
@@ -27268,7 +27282,7 @@
       "attributes": {},
       "description": "Specifies the map tile style selected from an available provider.",
       "properties": {
-        "Style": "Specifies the map style selected from an available data provider.\n\nValid styles: `VectorEsriStreets` , `VectorEsriTopographic` , `VectorEsriNavigation` , `VectorEsriDarkGrayCanvas` , `VectorEsriLightGrayCanvas` , `VectorHereBerlin` .\n\n> When using HERE as your data provider, and selecting the Style `VectorHereBerlin` , you may not use HERE Technologies maps for Asset Management. See the [AWS Service Terms](https://docs.aws.amazon.com/service-terms/) for Amazon Location Service."
+        "Style": "Specifies the map style selected from an available data provider.\n\nValid [Esri map styles](https://docs.aws.amazon.com/location/latest/developerguide/esri.html) :\n\n- `VectorEsriDarkGrayCanvas` \u2013 The Esri Dark Gray Canvas map style. A vector basemap with a dark gray, neutral background with minimal colors, labels, and features that's designed to draw attention to your thematic content.\n- `RasterEsriImagery` \u2013 The Esri Imagery map style. A raster basemap that provides one meter or better satellite and aerial imagery in many parts of the world and lower resolution satellite imagery worldwide.\n- `VectorEsriLightGrayCanvas` \u2013 The Esri Light Gray Canvas map style, which provides a detailed vector basemap with a light gray, neutral background style with minimal colors, labels, and features that's designed to draw attention to your thematic content.\n- `VectorEsriTopographic` \u2013 The Esri Light map style, which provides a detailed vector basemap with a classic Esri map style.\n- `VectorEsriStreets` \u2013 The Esri World Streets map style, which provides a detailed vector basemap for the world symbolized with a classic Esri street map style. The vector tile layer is similar in content and style to the World Street Map raster map.\n- `VectorEsriNavigation` \u2013 The Esri World Navigation map style, which provides a detailed basemap for the world symbolized with a custom navigation map style that's designed for use during the day in mobile devices.\n\nValid [HERE Technologies map styles](https://docs.aws.amazon.com/location/latest/developerguide/HERE.html) :\n\n- `VectorHereBerlin` \u2013 The HERE Berlin map style is a high contrast detailed base map of the world that blends 3D and 2D rendering.\n- `VectorHereExplore` \u2013 A default HERE map style containing a neutral, global map and its features including roads, buildings, landmarks, and water features. It also now includes a fully designed map of Japan.\n- `VectorHereExploreTruck` \u2013 A global map containing truck restrictions and attributes (e.g. width / height / HAZMAT) symbolized with highlighted segments and icons on top of HERE Explore to support use cases within transport and logistics."
       }
     },
     "AWS::Location::PlaceIndex": {
@@ -27361,7 +27375,7 @@
       "properties": {
         "KmsKeyId": "The Amazon Resource Name (ARN) of the AWS KMS key to use when encrypting log data.\n\nTo associate an AWS KMS key with the log group, specify the ARN of that KMS key here. If you do so, ingested data is encrypted using this key. This association is stored as long as the data encrypted with the KMS key is still within CloudWatch Logs . This enables CloudWatch Logs to decrypt this data whenever it is requested.\n\nIf you attempt to associate a KMS key with the log group but the KMS key doesn't exist or is deactivated, you will receive an `InvalidParameterException` error.\n\nLog group data is always encrypted in CloudWatch Logs . If you omit this key, the encryption does not use AWS KMS . For more information, see [Encrypt log data in CloudWatch Logs using AWS Key Management Service](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html)",
         "LogGroupName": "The name of the log group. If you don't specify a name, AWS CloudFormation generates a unique ID for the log group.",
-        "RetentionInDays": "The number of days to retain the log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653.\n\nTo set a log group to never have log events expire, use [DeleteRetentionPolicy](https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_DeleteRetentionPolicy.html) .",
+        "RetentionInDays": "The number of days to retain the log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 2192, 2557, 2922, 3288, and 3653.\n\nTo set a log group to never have log events expire, use [DeleteRetentionPolicy](https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_DeleteRetentionPolicy.html) .",
         "Tags": "An array of key-value pairs to apply to the log group.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
       }
     },
@@ -30759,7 +30773,7 @@
         "RuleGroup": "An object that defines the rule group rules.",
         "RuleGroupName": "The descriptive name of the rule group. You can't change the name of a rule group after you create it.",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
-        "Type": "Indicates whether the rule group is stateless or stateful. If the rule group is stateless, it contains stateless rules. If it is stateful, it contains stateful rules."
+        "Type": "Indicates whether the rule group is stateless or stateful. If the rule group is stateless, it contains\nstateless rules. If it is stateful, it contains stateful rules."
       }
     },
     "AWS::NetworkFirewall::RuleGroup.ActionDefinition": {
@@ -33708,10 +33722,10 @@
         "ReplicationSourceIdentifier": "The Amazon Resource Name (ARN) of the source DB instance or DB cluster if this DB cluster is created as a read replica.",
         "RestoreType": "The type of restore to be performed. You can specify one of the following values:\n\n- `full-copy` - The new DB cluster is restored as a full copy of the source DB cluster.\n- `copy-on-write` - The new DB cluster is restored as a clone of the source DB cluster.\n\nConstraints: You can't specify `copy-on-write` if the engine version of the source DB cluster is earlier than 1.11.\n\nIf you don't specify a `RestoreType` value, then the new DB cluster is restored as a full copy of the source DB cluster.",
         "ScalingConfiguration": "The `ScalingConfiguration` property type specifies the scaling configuration of an Aurora Serverless DB cluster.",
-        "SnapshotIdentifier": "The identifier for the DB snapshot or DB cluster snapshot to restore from.\n\nYou can use either the name or the Amazon Resource Name (ARN) to specify a DB cluster snapshot. However, you can use only the ARN to specify a DB snapshot.\n\nAfter you restore a DB cluster with a `SnapshotIdentifier` property, you must specify the same `SnapshotIdentifier` property for any future updates to the DB cluster. When you specify this property for an update, the DB cluster is not restored from the snapshot again, and the data in the database is not changed. However, if you don't specify the `SnapshotIdentifier` property, an empty DB cluster is created, and the original DB cluster is deleted. If you specify a property that is different from the previous snapshot restore property, a new DB cluster is restored from the specified `SnapshotIdentifier` property, and the original DB cluster is deleted.\n\nIf you specify the `SnapshotIdentifier` property to restore a DB cluster (as opposed to specifying it for DB cluster updates), then don't specify the following properties:\n\n- `GlobalClusterIdentifier`\n- `MasterUsername`\n- `ReplicationSourceIdentifier`\n- `RestoreType`\n- `SourceDBClusterIdentifier`\n- `SourceRegion`\n- `StorageEncrypted`\n- `UseLatestRestorableTime`\n\nConstraints:\n\n- Must match the identifier of an existing Snapshot.",
+        "SnapshotIdentifier": "The identifier for the DB snapshot or DB cluster snapshot to restore from.\n\nYou can use either the name or the Amazon Resource Name (ARN) to specify a DB cluster snapshot. However, you can use only the ARN to specify a DB snapshot.\n\nAfter you restore a DB cluster with a `SnapshotIdentifier` property, you must specify the same `SnapshotIdentifier` property for any future updates to the DB cluster. When you specify this property for an update, the DB cluster is not restored from the snapshot again, and the data in the database is not changed. However, if you don't specify the `SnapshotIdentifier` property, an empty DB cluster is created, and the original DB cluster is deleted. If you specify a property that is different from the previous snapshot restore property, a new DB cluster is restored from the specified `SnapshotIdentifier` property, and the original DB cluster is deleted.\n\nIf you specify the `SnapshotIdentifier` property to restore a DB cluster (as opposed to specifying it for DB cluster updates), then don't specify the following properties:\n\n- `GlobalClusterIdentifier`\n- `MasterUsername`\n- `MasterUserPassword`\n- `ReplicationSourceIdentifier`\n- `RestoreType`\n- `SourceDBClusterIdentifier`\n- `SourceRegion`\n- `StorageEncrypted` (for an encrypted snapshot)\n- `UseLatestRestorableTime`\n\nConstraints:\n\n- Must match the identifier of an existing Snapshot.",
         "SourceDBClusterIdentifier": "When restoring a DB cluster to a point in time, the identifier of the source DB cluster from which to restore.\n\nConstraints:\n\n- Must match the identifier of an existing DBCluster.",
         "SourceRegion": "The AWS Region which contains the source DB cluster when replicating a DB cluster. For example, `us-east-1` .",
-        "StorageEncrypted": "Indicates whether the DB cluster is encrypted.\n\nIf you specify the `KmsKeyId` property, then you must enable encryption.\n\nIf you specify the `SnapshotIdentifier` or `SourceDBClusterIdentifier` property, don't specify this property. The value is inherited from the snapshot or source DB cluster, and if the DB cluster is encrypted, the specified `KmsKeyId` property is used.",
+        "StorageEncrypted": "Indicates whether the DB cluster is encrypted.\n\nIf you specify the `KmsKeyId` property, then you must enable encryption.\n\nIf you specify the `SourceDBClusterIdentifier` property, don't specify this property. The value is inherited from the source DB cluster, and if the DB cluster is encrypted, the specified `KmsKeyId` property is used.\n\nIf you specify the `SnapshotIdentifier` and the specified snapshot is encrypted, don't specify this property. The value is inherited from the snapshot, and the specified `KmsKeyId` property is used.\n\nIf you specify the `SnapshotIdentifier` and the specified snapshot isn't encrypted, you can use this property to specify that the restored DB cluster is encrypted. Specify the `KmsKeyId` property for the KMS key to use for encryption. If you don't want the restored DB cluster to be encrypted, then don't set this property or set it to `false` .",
         "Tags": "Tags to assign to the DB cluster.",
         "UseLatestRestorableTime": "A value that indicates whether to restore the DB cluster to the latest restorable backup time. By default, the DB cluster is not restored to the latest restorable backup time.",
         "VpcSecurityGroupIds": "A list of EC2 VPC security groups to associate with this DB cluster.\n\nIf you plan to update the resource, don't specify VPC security groups in a shared VPC."
@@ -33759,7 +33773,7 @@
         "AllowMajorVersionUpgrade": "A value that indicates whether major version upgrades are allowed. Changing this parameter doesn't result in an outage and the change is asynchronously applied as soon as possible.\n\nConstraints: Major version upgrades must be allowed when specifying a value for the `EngineVersion` parameter that is a different major version than the DB instance's current version.",
         "AssociatedRoles": "The AWS Identity and Access Management (IAM) roles associated with the DB instance.\n\n*Amazon Aurora*\n\nNot applicable. The associated roles are managed by the DB cluster.",
         "AutoMinorVersionUpgrade": "A value that indicates whether minor engine upgrades are applied automatically to the DB instance during the maintenance window. By default, minor engine upgrades are applied automatically.",
-        "AvailabilityZone": "The Availability Zone (AZ) where the database will be created. For information on AWS Regions and Availability Zones, see [Regions and Availability Zones](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) .\n\n*Amazon Aurora*\n\nEach Aurora DB cluster hosts copies of its storage in three separate Availability Zones. Specify one of these Availability Zones. Aurora automatically chooses an appropriate Availability Zone if you don't specify one.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's AWS Region .\n\nExample: `us-east-1d`\n\nConstraint: The `AvailabilityZone` parameter can't be specified if the DB instance is a Multi-AZ deployment. The specified Availability Zone must be in the same AWS Region as the current endpoint.\n\n> If you're creating a DB instance in an RDS on VMware environment, specify the identifier of the custom Availability Zone to create the DB instance in.\n> \n> For more information about RDS on VMware, see the [RDS on VMware User Guide.](https://docs.aws.amazon.com/AmazonRDS/latest/RDSonVMwareUserGuide/rds-on-vmware.html)",
+        "AvailabilityZone": "The Availability Zone that the database instance will be created in.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's region.\n\nExample: `us-east-1d`\n\nConstraint: The AvailabilityZone parameter cannot be specified if the MultiAZ parameter is set to `true` . The specified Availability Zone must be in the same region as the current endpoint.",
         "BackupRetentionPeriod": "The number of days for which automated backups are retained. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.\n\n*Amazon Aurora*\n\nNot applicable. The retention period for automated backups is managed by the DB cluster.\n\nDefault: 1\n\nConstraints:\n\n- Must be a value from 0 to 35\n- Can't be set to 0 if the DB instance is a source to read replicas",
         "CACertificateIdentifier": "The identifier of the CA certificate for this DB instance.\n\n> Specifying or updating this property triggers a reboot. \n\nFor more information about CA certificate identifiers for RDS DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon RDS User Guide* .\n\nFor more information about CA certificate identifiers for Aurora DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon Aurora User Guide* .",
         "CharacterSetName": "For supported engines, indicates that the DB instance should be associated with the specified character set.\n\n*Amazon Aurora*\n\nNot applicable. The character set is managed by the DB cluster. For more information, see [AWS::RDS::DBCluster](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html) .",
@@ -33767,10 +33781,10 @@
         "DBClusterIdentifier": "The identifier of the DB cluster that the instance will belong to.",
         "DBInstanceClass": "The compute and memory capacity of the DB instance, for example, `db.m4.large` . Not all DB instance classes are available in all AWS Regions, or for all database engines.\n\nFor the full list of DB instance classes, and availability for your engine, see [DB Instance Class](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html) in the *Amazon RDS User Guide.* For more information about DB instance class pricing and AWS Region support for DB instance classes, see [Amazon RDS Pricing](https://docs.aws.amazon.com/rds/pricing/) .",
         "DBInstanceIdentifier": "A name for the DB instance. If you specify a name, AWS CloudFormation converts it to lowercase. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the DB instance. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\nFor information about constraints that apply to DB instance identifiers, see [Naming constraints in Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Limits.html#RDS_Limits.Constraints) in the *Amazon RDS User Guide* .\n\n> If you specify a name, you can't perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
-        "DBName": "The meaning of this parameter differs according to the database engine you use.\n\n> If you specify the `[DBSnapshotIdentifier](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-dbsnapshotidentifier)` property, AWS CloudFormation ignores this property.\n> \n> If you restore DB instances from snapshots, this property doesn't apply to the MySQL, PostgreSQL, or MariaDB engines. \n\n*Amazon Aurora*\n\nNot applicable. The database name is managed by the DB cluster.\n\n*MySQL*\n\nThe name of the database to create when the DB instance is created. If this parameter is not specified, no database is created in the DB instance.\n\nConstraints:\n\n- Must contain 1 to 64 letters or numbers.\n- Can't be a word reserved by the specified database engine\n\n*MariaDB*\n\nThe name of the database to create when the DB instance is created. If this parameter is not specified, no database is created in the DB instance.\n\nConstraints:\n\n- Must contain 1 to 64 letters or numbers.\n- Can't be a word reserved by the specified database engine\n\n*PostgreSQL*\n\nThe name of the database to create when the DB instance is created. If this parameter is not specified, the default `postgres` database is created in the DB instance.\n\nConstraints:\n\n- Must contain 1 to 63 letters, numbers, or underscores.\n- Must begin with a letter or an underscore. Subsequent characters can be letters, underscores, or digits (0-9).\n- Can't be a word reserved by the specified database engine\n\n*Oracle*\n\nThe Oracle System ID (SID) of the created DB instance. If you specify `null` , the default value `ORCL` is used. You can't specify the string NULL, or any other reserved word, for `DBName` .\n\nDefault: `ORCL`\n\nConstraints:\n\n- Can't be longer than 8 characters\n\n*SQL Server*\n\nNot applicable. Must be null.",
+        "DBName": "The meaning of this parameter differs according to the database engine you use.\n\n> If you specify the `[DBSnapshotIdentifier](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-dbsnapshotidentifier)` property, this property only applies to RDS for Oracle. \n\n*Amazon Aurora*\n\nNot applicable. The database name is managed by the DB cluster.\n\n*MySQL*\n\nThe name of the database to create when the DB instance is created. If this parameter is not specified, no database is created in the DB instance.\n\nConstraints:\n\n- Must contain 1 to 64 letters or numbers.\n- Can't be a word reserved by the specified database engine\n\n*MariaDB*\n\nThe name of the database to create when the DB instance is created. If this parameter is not specified, no database is created in the DB instance.\n\nConstraints:\n\n- Must contain 1 to 64 letters or numbers.\n- Can't be a word reserved by the specified database engine\n\n*PostgreSQL*\n\nThe name of the database to create when the DB instance is created. If this parameter is not specified, the default `postgres` database is created in the DB instance.\n\nConstraints:\n\n- Must contain 1 to 63 letters, numbers, or underscores.\n- Must begin with a letter or an underscore. Subsequent characters can be letters, underscores, or digits (0-9).\n- Can't be a word reserved by the specified database engine\n\n*Oracle*\n\nThe Oracle System ID (SID) of the created DB instance. If you specify `null` , the default value `ORCL` is used. You can't specify the string NULL, or any other reserved word, for `DBName` .\n\nDefault: `ORCL`\n\nConstraints:\n\n- Can't be longer than 8 characters\n\n*SQL Server*\n\nNot applicable. Must be null.",
         "DBParameterGroupName": "The name of an existing DB parameter group or a reference to an [AWS::RDS::DBParameterGroup](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html) resource created in the template.\n\nTo list all of the available DB parameter group names, use the following command:\n\n`aws rds describe-db-parameter-groups --query \"DBParameterGroups[].DBParameterGroupName\" --output text`\n\n> If any of the data members of the referenced parameter group are changed during an update, the DB instance might need to be restarted, which causes some interruption. If the parameter group contains static parameters, whether they were changed or not, an update triggers a reboot. \n\nIf you don't specify a value for the `DBParameterGroupName` property, the default DB parameter group for the specified engine and engine version is used.",
         "DBSecurityGroups": "A list of the DB security groups to assign to the DB instance. The list can include both the name of existing DB security groups or references to AWS::RDS::DBSecurityGroup resources created in the template.\n\nIf you set DBSecurityGroups, you must not set VPCSecurityGroups, and vice versa. Also, note that the DBSecurityGroups property exists only for backwards compatibility with older regions and is no longer recommended for providing security information to an RDS DB instance. Instead, use VPCSecurityGroups.\n\n> If you specify this property, AWS CloudFormation sends only the following properties (if specified) to Amazon RDS during create operations:\n> \n> - `AllocatedStorage`\n> - `AutoMinorVersionUpgrade`\n> - `AvailabilityZone`\n> - `BackupRetentionPeriod`\n> - `CharacterSetName`\n> - `DBInstanceClass`\n> - `DBName`\n> - `DBParameterGroupName`\n> - `DBSecurityGroups`\n> - `DBSubnetGroupName`\n> - `Engine`\n> - `EngineVersion`\n> - `Iops`\n> - `LicenseModel`\n> - `MasterUsername`\n> - `MasterUserPassword`\n> - `MultiAZ`\n> - `OptionGroupName`\n> - `PreferredBackupWindow`\n> - `PreferredMaintenanceWindow`\n> \n> All other properties are ignored. Specify a virtual private cloud (VPC) security group if you want to submit other properties, such as `StorageType` , `StorageEncrypted` , or `KmsKeyId` . If you're already using the `DBSecurityGroups` property, you can't use these other properties by updating your DB instance to use a VPC security group. You must recreate the DB instance.",
-        "DBSnapshotIdentifier": "The name or Amazon Resource Name (ARN) of the DB snapshot that's used to restore the DB instance. If you're restoring from a shared manual DB snapshot, you must specify the ARN of the snapshot.\n\nBy specifying this property, you can create a DB instance from the specified DB snapshot. If the `DBSnapshotIdentifier` property is an empty string or the `AWS::RDS::DBInstance` declaration has no `DBSnapshotIdentifier` property, AWS CloudFormation creates a new database. If the property contains a value (other than an empty string), AWS CloudFormation creates a database from the specified snapshot. If a snapshot with the specified name doesn't exist, AWS CloudFormation can't create the database and it rolls back the stack.\n\nSome DB instance properties aren't valid when you restore from a snapshot, such as the `MasterUsername` and `MasterUserPassword` properties. For information about the properties that you can specify, see the `RestoreDBInstanceFromDBSnapshot` action in the *Amazon RDS API Reference* .\n\nAfter you restore a DB instance with a `DBSnapshotIdentifier` property, you must specify the same `DBSnapshotIdentifier` property for any future updates to the DB instance. When you specify this property for an update, the DB instance is not restored from the DB snapshot again, and the data in the database is not changed. However, if you don't specify the `DBSnapshotIdentifier` property, an empty DB instance is created, and the original DB instance is deleted. If you specify a property that is different from the previous snapshot restore property, a new DB instance is restored from the specified `DBSnapshotIdentifier` property, and the original DB instance is deleted.\n\nIf you specify the `DBSnapshotIdentifier` property to restore a DB instance (as opposed to specifying it for DB instance updates), then don't specify the following properties:\n\n- `CharacterSetName`\n- `DBClusterIdentifier`\n- `DBName`\n- `DeleteAutomatedBackups`\n- `EnablePerformanceInsights`\n- `KmsKeyId`\n- `MasterUsername`\n- `PerformanceInsightsKMSKeyId`\n- `PerformanceInsightsRetentionPeriod`\n- `PromotionTier`\n- `SourceDBInstanceIdentifier`\n- `SourceRegion`\n- `StorageEncrypted`\n- `Timezone`\n\n*Amazon Aurora*\n\nNot applicable. Snapshot restore is managed by the DB cluster.",
+        "DBSnapshotIdentifier": "The name or Amazon Resource Name (ARN) of the DB snapshot that's used to restore the DB instance. If you're restoring from a shared manual DB snapshot, you must specify the ARN of the snapshot.\n\nBy specifying this property, you can create a DB instance from the specified DB snapshot. If the `DBSnapshotIdentifier` property is an empty string or the `AWS::RDS::DBInstance` declaration has no `DBSnapshotIdentifier` property, AWS CloudFormation creates a new database. If the property contains a value (other than an empty string), AWS CloudFormation creates a database from the specified snapshot. If a snapshot with the specified name doesn't exist, AWS CloudFormation can't create the database and it rolls back the stack.\n\nSome DB instance properties aren't valid when you restore from a snapshot, such as the `MasterUsername` and `MasterUserPassword` properties. For information about the properties that you can specify, see the `RestoreDBInstanceFromDBSnapshot` action in the *Amazon RDS API Reference* .\n\nAfter you restore a DB instance with a `DBSnapshotIdentifier` property, you must specify the same `DBSnapshotIdentifier` property for any future updates to the DB instance. When you specify this property for an update, the DB instance is not restored from the DB snapshot again, and the data in the database is not changed. However, if you don't specify the `DBSnapshotIdentifier` property, an empty DB instance is created, and the original DB instance is deleted. If you specify a property that is different from the previous snapshot restore property, a new DB instance is restored from the specified `DBSnapshotIdentifier` property, and the original DB instance is deleted.\n\nIf you specify the `DBSnapshotIdentifier` property to restore a DB instance (as opposed to specifying it for DB instance updates), then don't specify the following properties:\n\n- `CharacterSetName`\n- `DBClusterIdentifier`\n- `DBName`\n- `DeleteAutomatedBackups`\n- `EnablePerformanceInsights`\n- `KmsKeyId`\n- `MasterUsername`\n- `MasterUserPassword`\n- `PerformanceInsightsKMSKeyId`\n- `PerformanceInsightsRetentionPeriod`\n- `PromotionTier`\n- `SourceDBInstanceIdentifier`\n- `SourceRegion`\n- `StorageEncrypted` (for an encrypted snapshot)\n- `Timezone`\n\n*Amazon Aurora*\n\nNot applicable. Snapshot restore is managed by the DB cluster.",
         "DBSubnetGroupName": "A DB subnet group to associate with the DB instance. If you update this value, the new subnet group must be a subnet group in a new VPC.\n\nIf there's no DB subnet group, then the DB instance isn't a VPC DB instance.\n\nFor more information about using Amazon RDS in a VPC, see [Using Amazon RDS with Amazon Virtual Private Cloud (VPC)](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html) in the *Amazon RDS User Guide* .\n\n*Amazon Aurora*\n\nNot applicable. The DB subnet group is managed by the DB cluster. If specified, the setting must match the DB cluster setting.",
         "DeleteAutomatedBackups": "A value that indicates whether to remove automated backups immediately after the DB instance is deleted. This parameter isn't case-sensitive. The default is to remove automated backups immediately after the DB instance is deleted.",
         "DeletionProtection": "A value that indicates whether the DB instance has deletion protection enabled. The database can't be deleted when deletion protection is enabled. By default, deletion protection is disabled. For more information, see [Deleting a DB Instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_DeleteInstance.html) .\n\n*Amazon Aurora*\n\nNot applicable. You can enable or disable deletion protection for the DB cluster. For more information, see `CreateDBCluster` . DB instances in a DB cluster can be deleted even when deletion protection is enabled for the DB cluster.",
@@ -33801,7 +33815,7 @@
         "PubliclyAccessible": "Indicates whether the DB instance is an internet-facing instance. If you specify `true` , AWS CloudFormation creates an instance with a publicly resolvable DNS name, which resolves to a public IP address. If you specify false, AWS CloudFormation creates an internal instance with a DNS name that resolves to a private IP address.\n\nThe default behavior value depends on your VPC setup and the database subnet group. For more information, see the `PubliclyAccessible` parameter in [`CreateDBInstance`](https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_CreateDBInstance.html) in the *Amazon RDS API Reference* .\n\nIf this resource has a public IP address and is also in a VPC that is defined in the same template, you must use the *DependsOn* attribute to declare a dependency on the VPC-gateway attachment. For more information, see [DependsOn Attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html) .\n\n> If you specify DBSecurityGroups, AWS CloudFormation ignores this property. To specify a security group and this property, you must use a VPC security group. For more information about Amazon RDS and VPC, see [Using Amazon RDS with Amazon VPC](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html) in the *Amazon RDS User Guide* .",
         "SourceDBInstanceIdentifier": "If you want to create a read replica DB instance, specify the ID of the source DB instance. Each DB instance can have a limited number of read replicas. For more information, see [Working with Read Replicas](https://docs.aws.amazon.com/AmazonRDS/latest/DeveloperGuide/USER_ReadRepl.html) in the *Amazon RDS User Guide* .\n\nFor information about constraints that apply to DB instance identifiers, see [Naming constraints in Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Limits.html#RDS_Limits.Constraints) in the *Amazon RDS User Guide* .\n\nThe `SourceDBInstanceIdentifier` property determines whether a DB instance is a read replica. If you remove the `SourceDBInstanceIdentifier` property from your template and then update your stack, AWS CloudFormation deletes the Read Replica and creates a new DB instance (not a read replica).\n\n> - If you specify a source DB instance that uses VPC security groups, we recommend that you specify the `VPCSecurityGroups` property. If you don't specify the property, the read replica inherits the value of the `VPCSecurityGroups` property from the source DB when you create the replica. However, if you update the stack, AWS CloudFormation reverts the replica's `VPCSecurityGroups` property to the default value because it's not defined in the stack's template. This change might cause unexpected issues.\n> - Read replicas don't support deletion policies. AWS CloudFormation ignores any deletion policy that's associated with a read replica.\n> - If you specify `SourceDBInstanceIdentifier` , don't specify the `DBSnapshotIdentifier` property. You can't create a read replica from a snapshot.\n> - Don't set the `BackupRetentionPeriod` , `DBName` , `MasterUsername` , `MasterUserPassword` , and `PreferredBackupWindow` properties. The database attributes are inherited from the source DB instance, and backups are disabled for read replicas.\n> - If the source DB instance is in a different region than the read replica, specify the source region in `SourceRegion` , and specify an ARN for a valid DB instance in `SourceDBInstanceIdentifier` . For more information, see [Constructing a Amazon RDS Amazon Resource Name (ARN)](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Tagging.html#USER_Tagging.ARN) in the *Amazon RDS User Guide* .\n> - For DB instances in Amazon Aurora clusters, don't specify this property. Amazon RDS automatically assigns writer and reader DB instances.",
         "SourceRegion": "The ID of the region that contains the source DB instance for the read replica.",
-        "StorageEncrypted": "A value that indicates whether the DB instance is encrypted. By default, it isn't encrypted.\n\nIf you specify the `KmsKeyId` property, then you must enable encryption.\n\nIf you specify the `SnapshotIdentifier` or `SourceDBInstanceIdentifier` property, don't specify this property. The value is inherited from the snapshot or source DB instance, and if the DB instance is encrypted, the specified `KmsKeyId` property is used.\n\n*Amazon Aurora*\n\nNot applicable. The encryption for DB instances is managed by the DB cluster.",
+        "StorageEncrypted": "A value that indicates whether the DB instance is encrypted. By default, it isn't encrypted.\n\nIf you specify the `KmsKeyId` property, then you must enable encryption.\n\nIf you specify the `SourceDBInstanceIdentifier` property, don't specify this property. The value is inherited from the source DB instance, and if the DB instance is encrypted, the specified `KmsKeyId` property is used.\n\nIf you specify the `SnapshotIdentifier` and the specified snapshot is encrypted, don't specify this property. The value is inherited from the snapshot, and the specified `KmsKeyId` property is used.\n\nIf you specify the `SnapshotIdentifier` and the specified snapshot isn't encrypted, you can use this property to specify that the restored DB instance is encrypted. Specify the `KmsKeyId` property for the KMS key to use for encryption. If you don't want the restored DB instance to be encrypted, then don't set this property or set it to `false` .\n\n*Amazon Aurora*\n\nNot applicable. The encryption for DB instances is managed by the DB cluster.",
         "StorageType": "Specifies the storage type to be associated with the DB instance.\n\nValid values: `standard | gp2 | io1`\n\nThe `standard` value is also known as magnetic.\n\nIf you specify `io1` , you must also include a value for the `Iops` parameter.\n\nDefault: `io1` if the `Iops` parameter is specified, otherwise `standard`\n\nFor more information, see [Amazon RDS DB Instance Storage](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html) in the *Amazon RDS User Guide* .\n\n*Amazon Aurora*\n\nNot applicable. Aurora data is stored in the cluster volume, which is a single, virtual volume that uses solid state drives (SSDs).",
         "Tags": "Tags to assign to the DB instance.",
         "Timezone": "The time zone of the DB instance. The time zone parameter is currently supported only by [Microsoft SQL Server](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_SQLServer.html#SQLServer.Concepts.General.TimeZone) .",
@@ -33944,9 +33958,9 @@
       "description": "The `Ingress` property type specifies an individual ingress rule within an `AWS::RDS::DBSecurityGroup` resource.",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSecurityGroupIngress": {
@@ -33956,10 +33970,10 @@
       "description": "The `AWS::RDS::DBSecurityGroupIngress` resource enables ingress to a DB security group using one of two forms of authorization. First, you can add EC2 or VPC security groups to the DB security group if the application using the database is running on EC2 or VPC instances. Second, IP ranges are available if the application accessing your database is running on the Internet.\n\nThis type supports updates. For more information about updating stacks, see [AWS CloudFormation Stacks Updates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks.html) .\n\nFor details about the settings for DB security group ingress, see [AuthorizeDBSecurityGroupIngress](https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_AuthorizeDBSecurityGroupIngress.html) .",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "DBSecurityGroupName": "The name of the DB security group to add authorization to.",
-        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "DBSecurityGroupName": "The name of the DB Security Group to add authorization to.",
+        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSubnetGroup": {
@@ -33968,9 +33982,9 @@
       },
       "description": "The `AWS::RDS::DBSubnetGroup` resource creates a database subnet group. Subnet groups must contain at least two subnets in two different Availability Zones in the same region.\n\nFor more information, see [Working with DB subnet groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html#USER_VPC.Subnets) in the *Amazon RDS User Guide* .",
       "properties": {
-        "DBSubnetGroupDescription": "The description for the DB subnet group.",
+        "DBSubnetGroupDescription": "The description for the DB Subnet Group.",
         "DBSubnetGroupName": "The name for the DB subnet group. This value is stored as a lowercase string.\n\nConstraints: Must contain no more than 255 lowercase alphanumeric characters or hyphens. Must not be \"Default\".\n\nExample: `mysubnetgroup`",
-        "SubnetIds": "The EC2 Subnet IDs for the DB subnet group.",
+        "SubnetIds": "The EC2 Subnet IDs for the DB Subnet Group.",
         "Tags": "Tags to assign to the DB subnet group."
       }
     },
@@ -33980,8 +33994,8 @@
       },
       "description": "The `AWS::RDS::EventSubscription` resource allows you to receive notifications for Amazon Relational Database Service events through the Amazon Simple Notification Service (Amazon SNS). For more information, see [Using Amazon RDS Event Notification](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) in the *Amazon RDS User Guide* .",
       "properties": {
-        "Enabled": "A value that indicates whether to activate the subscription. If the event notification subscription isn't activated, the subscription is created but not active.",
-        "EventCategories": "A list of event categories for a particular source type ( `SourceType` ) that you want to subscribe to. You can see a list of the categories for a given source type in the \"Amazon RDS event categories and event messages\" section of the [*Amazon RDS User Guide*](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.Messages.html) or the [*Amazon Aurora User Guide*](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_Events.Messages.html) . You can also see this list by using the `DescribeEventCategories` operation.",
+        "Enabled": "A Boolean value; set to *true* to activate the subscription, set to *false* to create the subscription but not active it.",
+        "EventCategories": "A list of event categories for a SourceType that you want to subscribe to. You can see a list of the categories for a given SourceType in the [Events](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) topic in the Amazon RDS User Guide or by using the *DescribeEventCategories* action.",
         "SnsTopicArn": "The Amazon Resource Name (ARN) of the SNS topic created for event notification. The ARN is created by Amazon SNS when you create a topic and subscribe to it.",
         "SourceIds": "The list of identifiers of the event sources for which events are returned. If not specified, then all sources are included in the response. An identifier must begin with a letter and must contain only ASCII letters, digits, and hyphens. It can't end with a hyphen or contain two consecutive hyphens.\n\nConstraints:\n\n- If a `SourceIds` value is supplied, `SourceType` must also be provided.\n- If the source type is a DB instance, a `DBInstanceIdentifier` value must be supplied.\n- If the source type is a DB cluster, a `DBClusterIdentifier` value must be supplied.\n- If the source type is a DB parameter group, a `DBParameterGroupName` value must be supplied.\n- If the source type is a DB security group, a `DBSecurityGroupName` value must be supplied.\n- If the source type is a DB snapshot, a `DBSnapshotIdentifier` value must be supplied.\n- If the source type is a DB cluster snapshot, a `DBClusterSnapshotIdentifier` value must be supplied.",
         "SourceType": "The type of source that is generating the events. For example, if you want to be notified of events generated by a DB instance, set this parameter to `db-instance` . If this value isn't specified, all events are returned.\n\nValid values: `db-instance` | `db-cluster` | `db-parameter-group` | `db-security-group` | `db-snapshot` | `db-cluster-snapshot`"
@@ -36144,7 +36158,7 @@
       "description": "Contains the dimension configuration to use when you publish email sending events to Amazon CloudWatch.\n\nFor information about publishing email sending events to Amazon CloudWatch, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity.html) .",
       "properties": {
         "DefaultDimensionValue": "The default value of the dimension that is published to Amazon CloudWatch if you do not provide the value of the dimension when you send an email. The default value must meet the following requirements:\n\n- Contain only ASCII letters (a-z, A-Z), numbers (0-9), underscores (_), dashes (-), at signs (@), or periods (.).\n- Contain 256 characters or fewer.",
-        "DimensionName": "The name of an Amazon CloudWatch dimension associated with an email sending metric. The name must meet the following requirements:\n\n- Contain only ASCII letters (a-z, A-Z), numbers (0-9), underscores (_), or dashes (-).\n- Contain 256 characters or fewer.",
+        "DimensionName": "The name of an Amazon CloudWatch dimension associated with an email sending metric. The name must meet the following requirements:\n\n- Contain only ASCII letters (a-z, A-Z), numbers (0-9), underscores (_), dashes (-), or colons (:).\n- Contain 256 characters or fewer.",
         "DimensionValueSource": "The place where Amazon SES finds the value of a dimension to publish to Amazon CloudWatch. To use the message tags that you specify using an `X-SES-MESSAGE-TAGS` header or a parameter to the `SendEmail` / `SendRawEmail` API, specify `messageTag` . To use your own email headers, specify `emailHeader` . To put a custom tag on any link included in your email, specify `linkTag` ."
       }
     },
@@ -37006,7 +37020,7 @@
       "attributes": {},
       "description": "Specifies the ARN's of a SageMaker image and SageMaker image version, and the instance type that the version runs on.",
       "properties": {
-        "InstanceType": "The instance type that the image version runs on.\n\n> JupyterServer Apps only support the `system` value.",
+        "InstanceType": "The instance type that the image version runs on.\n\n> JupyterServer Apps only support the `system` value. KernelGateway Apps do not support the `system` value, but support all other values for available instance types.",
         "SageMakerImageArn": "The ARN of the SageMaker image that the image version belongs to.",
         "SageMakerImageVersionArn": "The ARN of the image version created on the instance."
       }
@@ -37292,7 +37306,7 @@
       "attributes": {},
       "description": "The JupyterServer app settings.",
       "properties": {
-        "DefaultResourceSpec": "The default instance type and the Amazon Resource Name (ARN) of the default SageMaker image used by the JupyterServer app."
+        "DefaultResourceSpec": "The default instance type and the Amazon Resource Name (ARN) of the default SageMaker image used by the JupyterServer app. If you use the `LifecycleConfigArns` parameter, then this parameter is also required."
       }
     },
     "AWS::SageMaker::Domain.KernelGatewayAppSettings": {
@@ -37325,7 +37339,7 @@
       "attributes": {},
       "description": "Specifies the ARN's of a SageMaker image and SageMaker image version, and the instance type that the version runs on.",
       "properties": {
-        "InstanceType": "The instance type that the image version runs on.\n\n> JupyterServer Apps only support the `system` value.",
+        "InstanceType": "The instance type that the image version runs on.\n\n> JupyterServer Apps only support the `system` value. KernelGateway Apps do not support the `system` value, but support all other values for available instance types.",
         "SageMakerImageArn": "The ARN of the SageMaker image that the image version belongs to.",
         "SageMakerImageVersionArn": "The ARN of the image version created on the instance."
       }
@@ -38348,7 +38362,7 @@
       "attributes": {},
       "description": "The JupyterServer app settings.",
       "properties": {
-        "DefaultResourceSpec": "The default instance type and the Amazon Resource Name (ARN) of the default SageMaker image used by the JupyterServer app."
+        "DefaultResourceSpec": "The default instance type and the Amazon Resource Name (ARN) of the default SageMaker image used by the JupyterServer app. If you use the `LifecycleConfigArns` parameter, then this parameter is also required."
       }
     },
     "AWS::SageMaker::UserProfile.KernelGatewayAppSettings": {
@@ -38371,7 +38385,7 @@
       "attributes": {},
       "description": "Specifies the ARN's of a SageMaker image and SageMaker image version, and the instance type that the version runs on.",
       "properties": {
-        "InstanceType": "The instance type that the image version runs on.\n\n> JupyterServer Apps only support the `system` value.",
+        "InstanceType": "The instance type that the image version runs on.\n\n> JupyterServer Apps only support the `system` value. KernelGateway Apps do not support the `system` value, but support all other values for available instance types.",
         "SageMakerImageArn": "The ARN of the SageMaker image that the image version belongs to.",
         "SageMakerImageVersionArn": "The ARN of the image version created on the instance."
       }
@@ -39943,13 +39957,13 @@
     },
     "AWS::WAFv2::LoggingConfiguration.FieldToMatch": {
       "attributes": {},
-      "description": "The part of a web request that you want AWS WAF to inspect. Include the single `FieldToMatch` type that you want to inspect, with additional specifications as needed, according to the type. You specify a single request component in `FieldToMatch` for each rule statement that requires it. To inspect more than one component of a web request, create a separate rule statement for each component.\n\nJSON specification for a `QueryString` field to match:\n\n`\"FieldToMatch\": { \"QueryString\": {} }`\n\nExample JSON for a `Method` field to match specification:\n\n`\"FieldToMatch\": { \"Method\": { \"Name\": \"DELETE\" } }`",
+      "description": "The part of the web request that you want AWS WAF to inspect. Include the single `FieldToMatch` type that you want to inspect, with additional specifications as needed, according to the type. You specify a single request component in `FieldToMatch` for each rule statement that requires it. To inspect more than one component of the web request, create a separate rule statement for each component.\n\nExample JSON for a `QueryString` field to match:\n\n`\"FieldToMatch\": { \"QueryString\": {} }`\n\nExample JSON for a `Method` field to match specification:\n\n`\"FieldToMatch\": { \"Method\": { \"Name\": \"DELETE\" } }`",
       "properties": {
-        "JsonBody": "Inspect the request body as JSON. The request body immediately follows the request headers. This is the part of a request that contains any additional data that you want to send to your web server as the HTTP request body, such as data from a form.\n\nNote that only the first 8 KB (8192 bytes) of the request body are forwarded to AWS WAF for inspection by the underlying host service. If you don't need to inspect more than 8 KB, you can guarantee that you don't allow additional bytes in by combining a statement that inspects the body of the web request, such as `ByteMatchStatement` or `RegexPatternSetReferenceStatement` , with a `SizeConstraintStatement` that enforces an 8 KB size limit on the body of the request. AWS WAF doesn't support inspecting the entire contents of web requests whose bodies exceed the 8 KB limit.",
+        "JsonBody": "Inspect the request body as JSON. The request body immediately follows the request headers. This is the part of a request that contains any additional data that you want to send to your web server as the HTTP request body, such as data from a form.\n\nOnly the first 8 KB (8192 bytes) of the request body are forwarded to AWS WAF for inspection by the underlying host service. For information about how to handle oversized request bodies, see the `JsonBody` object configuration.",
         "Method": "Inspect the HTTP method. The method indicates the type of operation that the request is asking the origin to perform.",
         "QueryString": "Inspect the query string. This is the part of a URL that appears after a `?` character, if any.",
-        "SingleHeader": "Inspect a single header. Provide the name of the header to inspect, for example, `User-Agent` or `Referer` . This setting isn't case sensitive.\n\nExample JSON: `\"SingleHeader\": { \"Name\": \"haystack\" }`",
-        "UriPath": "Inspect the request URI path. This is the part of a web request that identifies a resource, for example, `/images/daily-ad.jpg` ."
+        "SingleHeader": "Inspect a single header. Provide the name of the header to inspect, for example, `User-Agent` or `Referer` . This setting isn't case sensitive.\n\nExample JSON: `\"SingleHeader\": { \"Name\": \"haystack\" }`\n\nAlternately, you can filter and inspect all headers with the `Headers` `FieldToMatch` setting.",
+        "UriPath": "Inspect the request URI path. This is the part of the web request that identifies a resource, for example, `/images/daily-ad.jpg` ."
       }
     },
     "AWS::WAFv2::RegexPatternSet": {

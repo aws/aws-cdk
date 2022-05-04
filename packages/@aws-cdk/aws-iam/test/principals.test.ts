@@ -245,6 +245,55 @@ test('PrincipalWithConditions inherits principalAccount from AccountPrincipal ',
   expect(principalWithConditions.principalAccount).toStrictEqual('123456789012');
 });
 
+test('AccountPrincipal can specify an organization', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const pol = new iam.PolicyDocument({
+    statements: [
+      new iam.PolicyStatement({
+        actions: ['service:action'],
+        resources: ['*'],
+        principals: [
+          new iam.AccountPrincipal('123456789012').inOrganization('o-xxxxxxxxxx'),
+        ],
+      }),
+    ],
+  });
+
+  // THEN
+  expect(stack.resolve(pol)).toEqual({
+    Statement: [
+      {
+        Action: 'service:action',
+        Effect: 'Allow',
+        Principal: {
+          AWS: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':iam::123456789012:root',
+              ],
+            ],
+          },
+        },
+        Condition: {
+          StringEquals: {
+            'aws:PrincipalOrgID': 'o-xxxxxxxxxx',
+          },
+        },
+        Resource: '*',
+      },
+    ],
+    Version: '2012-10-17',
+  });
+});
+
 test('ServicePrincipal in agnostic stack generates lookup table', () => {
   // GIVEN
   const stack = new Stack();

@@ -850,9 +850,9 @@
                   "version": "0.0.0"
                 }
               },
-              "InvokeServicePrincipal(elasticloadbalancing.amazonaws.com)": {
-                "id": "InvokeServicePrincipal(elasticloadbalancing.amazonaws.com)",
-                "path": "TestStack/Fun/InvokeServicePrincipal(elasticloadbalancing.amazonaws.com)",
+              "Invoke2UTWxhlfyqbT5FTn--5jvgbLgj+FfJwzswGk55DU1H--Y=": {
+                "id": "Invoke2UTWxhlfyqbT5FTn--5jvgbLgj+FfJwzswGk55DU1H--Y=",
+                "path": "TestStack/Fun/Invoke2UTWxhlfyqbT5FTn--5jvgbLgj+FfJwzswGk55DU1H--Y=",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {

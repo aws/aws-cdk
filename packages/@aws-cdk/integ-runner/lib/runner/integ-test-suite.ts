@@ -1,4 +1,5 @@
-import { TestCase, TestOptions } from '@aws-cdk/cloud-assembly-schema';
+import * as osPath from 'path';
+import { TestCase, TestOptions, Manifest, IntegManifest } from '@aws-cdk/cloud-assembly-schema';
 import { ICdk, ListOptions } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import { IntegManifestReader } from './private/integ-manifest';
@@ -15,6 +16,8 @@ const ENABLE_LOOKUPS_PRAGMA = 'pragma:enable-lookups';
  */
 export type TestSuite = { [testName: string]: TestCase };
 
+export type TestSuiteType = 'test-suite' | 'legacy-test-suite';
+
 /**
  * Helper class for working with Integration tests
  * This requires an `integ.json` file in the snapshot
@@ -30,13 +33,18 @@ export class IntegTestSuite {
     return new IntegTestSuite(
       reader.tests.enableLookups,
       reader.tests.testCases,
+      reader.tests.synthContext,
     );
   }
+
+  public readonly type: TestSuiteType = 'test-suite';
 
   constructor(
     public readonly enableLookups: boolean,
     public readonly testSuite: TestSuite,
+    public readonly synthContext?: { [name: string]: string },
   ) {}
+
 
   /**
    * Returns a list of stacks that have stackUpdateWorkflow disabled
@@ -64,6 +72,13 @@ export class IntegTestSuite {
       }
     }
     return undefined;
+  }
+
+  /**
+   * Get a list of stacks in the test suite
+   */
+  public get stacks(): string[] {
+    return Object.values(this.testSuite).flatMap(testCase => testCase.stacks);
   }
 }
 
@@ -143,6 +158,7 @@ export class LegacyIntegTestSuite extends IntegTestSuite {
       {
         [config.testName]: tests,
       },
+      LegacyIntegTestSuite.getPragmaContext(config.integSourceFilePath),
     );
   }
 
@@ -216,10 +232,26 @@ export class LegacyIntegTestSuite extends IntegTestSuite {
     return (this.readIntegPragma(integSourceFilePath)).filter(p => p.startsWith(PRAGMA_PREFIX));
   }
 
+  public readonly type: TestSuiteType = 'legacy-test-suite';
+
   constructor(
     public readonly enableLookups: boolean,
     public readonly testSuite: TestSuite,
+    public readonly synthContext?: { [name: string]: string },
   ) {
     super(enableLookups, testSuite);
+  }
+
+  /**
+   * Save the integ manifest to a directory
+   */
+  public saveManifest(directory: string, context?: Record<string, any>): void {
+    const manifest: IntegManifest = {
+      version: Manifest.version(),
+      testCases: this.testSuite,
+      synthContext: context,
+      enableLookups: this.enableLookups,
+    };
+    Manifest.saveIntegManifest(manifest, osPath.join(directory, IntegManifestReader.DEFAULT_FILENAME));
   }
 }

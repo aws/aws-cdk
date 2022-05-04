@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-servicecatalogappregistry/test/integ.attribute-group": {
+      "stacks": [
+        "integ-servicecatalogappregistry-attribute-group"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "integ.lambda-target": {
+      "stacks": [
+        "TestStack"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

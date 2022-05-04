@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-events-targets/test/kinesis-firehose/integ.kinesis-firehose-stream": {
+      "stacks": [
+        "aws-cdk-firehose-event-target"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

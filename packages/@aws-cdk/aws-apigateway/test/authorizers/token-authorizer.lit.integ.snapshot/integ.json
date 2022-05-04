@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-apigateway/test/authorizers/integ.token-authorizer.lit": {
+      "stacks": [
+        "TokenAuthorizerInteg"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

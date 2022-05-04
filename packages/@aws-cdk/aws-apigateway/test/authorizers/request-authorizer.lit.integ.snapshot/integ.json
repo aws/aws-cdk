@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-apigateway/test/authorizers/integ.request-authorizer.lit": {
+      "stacks": [
+        "RequestAuthorizerInteg"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

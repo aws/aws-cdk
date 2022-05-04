@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-lambda-python/test/integ.function.project": {
+      "stacks": [
+        "cdk-integ-lambda-function-project"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": false
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

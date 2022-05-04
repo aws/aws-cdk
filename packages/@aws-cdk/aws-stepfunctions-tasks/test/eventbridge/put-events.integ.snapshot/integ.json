@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-stepfunctions-tasks/test/eventbridge/integ.put-events": {
+      "stacks": [
+        "aws-stepfunctions-tasks-eventbridge-put-events-integ"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

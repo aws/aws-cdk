@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-events-targets/test/ecs/integ.event-ec2-task.lit": {
+      "stacks": [
+        "aws-ecs-integ-ecs"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

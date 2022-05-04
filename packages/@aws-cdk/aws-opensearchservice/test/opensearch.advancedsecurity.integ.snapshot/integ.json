@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-opensearchservice/test/integ.opensearch.advancedsecurity": {
+      "stacks": [
+        "cdk-integ-opensearch-advancedsecurity"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}
