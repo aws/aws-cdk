@@ -2761,6 +2761,75 @@ describe('function', () => {
       });
     });
   });
+
+  test('called twice for the same service principal but with different conditions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.fromInline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_14_X,
+    });
+    const sourceArnA = 'some-arn-a';
+    const sourceArnB = 'some-arn-b';
+    const service = 's3.amazonaws.com';
+    const conditionalPrincipalA = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
+      ArnLike: {
+        'aws:SourceArn': sourceArnA,
+      },
+      StringEquals: {
+        'aws:SourceAccount': stack.account,
+      },
+    });
+    const conditionalPrincipalB = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
+      ArnLike: {
+        'aws:SourceArn': sourceArnB,
+      },
+      StringEquals: {
+        'aws:SourceAccount': stack.account,
+      },
+    });
+
+    // WHEN
+    fn.grantInvoke(conditionalPrincipalA);
+    fn.grantInvoke(conditionalPrincipalB);
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 2);
+    Template.fromStack(stack).hasResource('AWS::Lambda::Permission', {
+      Properties: {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: service,
+        SourceAccount: {
+          Ref: 'AWS::AccountId',
+        },
+        SourceArn: sourceArnA,
+      },
+    });
+
+    Template.fromStack(stack).hasResource('AWS::Lambda::Permission', {
+      Properties: {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: service,
+        SourceAccount: {
+          Ref: 'AWS::AccountId',
+        },
+        SourceArn: sourceArnB,
+      },
+    });
+  });
 });
 
 test('throws if ephemeral storage size is out of bound', () => {
