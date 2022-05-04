@@ -9,8 +9,6 @@
       "stackUpdateWorkflow": true
     }
   },
-  "synthContext": {
-    "@aws-cdk/aws-secretsmanager:parseOwnedSecretName": "true"
-  },
+  "synthContext": {},
   "enableLookups": false
 }
