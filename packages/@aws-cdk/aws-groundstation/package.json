@@ -105,8 +105,8 @@
   "engines": {
     "node": ">= 14.15.0"
   },
-  "stability": "stable",
-  "maturity": "stable",
+  "stability": "experimental",
+  "maturity": "experimental",
   "awscdkio": {
     "announce": false
   },
