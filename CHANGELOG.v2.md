@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.23.0](https://github.com/aws/aws-cdk/compare/v2.22.0...v2.23.0) (2022-05-04)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v68.0.0 ([#20065](https://github.com/aws/aws-cdk/issues/20065)) ([f199fad](https://github.com/aws/aws-cdk/commit/f199faddc0b8e565aa413e480e51d25fed5321bf))
+* **cloudwatch:** Add CustomWidget ([#19327](https://github.com/aws/aws-cdk/issues/19327)) ([489340e](https://github.com/aws/aws-cdk/commit/489340ea383c9130c315853afae0137b1fa03eb0)), closes [#17579](https://github.com/aws/aws-cdk/issues/17579)
+* **cloudwatch:** expose dashboardName property on the L2 Dashboard construct ([#17721](https://github.com/aws/aws-cdk/issues/17721)) ([8cb5dff](https://github.com/aws/aws-cdk/commit/8cb5dff400e0143b86494f11c565d981c74f875a)), closes [#17648](https://github.com/aws/aws-cdk/issues/17648)
+* **ec2:** add i4i instance type ([#20134](https://github.com/aws/aws-cdk/issues/20134)) ([64c5064](https://github.com/aws/aws-cdk/commit/64c50640e7f5897f08af3f86cd28a1dab3cd2430))
+* **iam:** add convenience method `inOrganization` to ArnPrincipal ([#20109](https://github.com/aws/aws-cdk/issues/20109)) ([c545bfe](https://github.com/aws/aws-cdk/commit/c545bfe2a3ccb53fa5ae2eb725a1696677703c0a)), closes [/github.com/aws/aws-cdk/pull/19975#discussion_r857385168](https://github.com/aws//github.com/aws/aws-cdk/pull/19975/issues/discussion_r857385168) [#19975](https://github.com/aws/aws-cdk/issues/19975)
+* **lambda:** `function.addAlias()` simplifies Alias creation ([#20034](https://github.com/aws/aws-cdk/issues/20034)) ([a79bc47](https://github.com/aws/aws-cdk/commit/a79bc47aaa6737628562c251e2f1990b2c7b88ef))
+* **rds:** add secret rotation to `DatabaseClusterFromSnapshot` ([#20020](https://github.com/aws/aws-cdk/issues/20020)) ([abc3502](https://github.com/aws/aws-cdk/commit/abc3502eef9b1b950f4e9d2c3f5f44b7e2f6476d)), closes [#12877](https://github.com/aws/aws-cdk/issues/12877)
+* **servicecatalog:** graduate to stable 🚀 ([#19515](https://github.com/aws/aws-cdk/issues/19515)) ([4764591](https://github.com/aws/aws-cdk/commit/4764591a59d63026584f1898046974a1a166e166))
+
+
+### Bug Fixes
+
+* **lambda:** grant invoke twice with different principals ([#20174](https://github.com/aws/aws-cdk/issues/20174)) ([bb4c950](https://github.com/aws/aws-cdk/commit/bb4c9506c7395fc3c84725fb8e6054ac23ca2bf7))
+* **ubergen:** expose exports in core module for v2 ([#20176](https://github.com/aws/aws-cdk/issues/20176)) ([fc2cd48](https://github.com/aws/aws-cdk/commit/fc2cd48a3aabaf0d5214b322794c6a49d9c700c9)), closes [#19773](https://github.com/aws/aws-cdk/issues/19773)
+
 ## [2.22.0](https://github.com/aws/aws-cdk/compare/v2.21.1...v2.22.0) (2022-04-27)
 
 
