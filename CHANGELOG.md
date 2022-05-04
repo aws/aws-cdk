@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.154.0](https://github.com/aws/aws-cdk/compare/v1.153.1...v1.154.0) (2022-04-27)
+
+
+### Features
+
+* **aws-cognito:** send emails with a verified domain ([#19790](https://github.com/aws/aws-cdk/issues/19790)) ([1d2b1d3](https://github.com/aws/aws-cdk/commit/1d2b1d30b4357961ef72fd275a58038dd755de17)), closes [#19762](https://github.com/aws/aws-cdk/issues/19762)
+* **aws-eks:** add annotations and labels to service accounts ([#19609](https://github.com/aws/aws-cdk/issues/19609)) ([82aec9d](https://github.com/aws/aws-cdk/commit/82aec9db1fcd23f0c39c75c950c5b2a165d0f99a)), closes [#19607](https://github.com/aws/aws-cdk/issues/19607)
+* **cloudwatch:** expose dashboardArn for CloudWatch dashboard L2 construct ([#20059](https://github.com/aws/aws-cdk/issues/20059)) ([df9814f](https://github.com/aws/aws-cdk/commit/df9814f48b6d94a2c2297cacd9e7cea958993766))
+* **cloudwatch:** expose dashboardName property on the L2 Dashboard construct ([#17721](https://github.com/aws/aws-cdk/issues/17721)) ([8cb5dff](https://github.com/aws/aws-cdk/commit/8cb5dff400e0143b86494f11c565d981c74f875a)), closes [#17648](https://github.com/aws/aws-cdk/issues/17648)
+* **integ-tests:** add `IntegTest` to group test cases ([#20015](https://github.com/aws/aws-cdk/issues/20015)) ([b4f8d91](https://github.com/aws/aws-cdk/commit/b4f8d91318087135c5549c22b43a1e679d70b3ca))
+* **integ-tests:** make assertions on deployed infrastructure ([#20071](https://github.com/aws/aws-cdk/issues/20071)) ([8362efe](https://github.com/aws/aws-cdk/commit/8362efe8f1951289236034161d7560f20975b0ec))
+* **rds:** allow `DatabaseClusterFromSnapshot` to set `copyTagsToSnapshot` property ([#19932](https://github.com/aws/aws-cdk/issues/19932)) ([40a6ceb](https://github.com/aws/aws-cdk/commit/40a6ceb9983694a3645edd78167e93825a9049e9)), closes [#19884](https://github.com/aws/aws-cdk/issues/19884)
+* **redshift:** expose user.secret as property ([#17520](https://github.com/aws/aws-cdk/issues/17520)) ([#20078](https://github.com/aws/aws-cdk/issues/20078)) ([8da006a](https://github.com/aws/aws-cdk/commit/8da006ab551213ecbdb6dc26860fe90c1d2e95e2))
+* **servicecatalog:** graduate to stable 🚀 ([#19515](https://github.com/aws/aws-cdk/issues/19515)) ([4764591](https://github.com/aws/aws-cdk/commit/4764591a59d63026584f1898046974a1a166e166))
+
+
+### Bug Fixes
+
+* **eks:** cluster cannot be created in opt-in regions ([#20009](https://github.com/aws/aws-cdk/issues/20009)) ([ec06f48](https://github.com/aws/aws-cdk/commit/ec06f4893d62f371ef92fccaa52d38f4350d6712)), closes [#13748](https://github.com/aws/aws-cdk/issues/13748) [#15579](https://github.com/aws/aws-cdk/issues/15579)
+* **eks:** remove incomplete support for k8s v1.22 ([#20000](https://github.com/aws/aws-cdk/issues/20000)) ([d38a9e4](https://github.com/aws/aws-cdk/commit/d38a9e44af184e6e7fa8cde14a84ff2c72cec5f9)), closes [#19756](https://github.com/aws/aws-cdk/issues/19756) [#19919](https://github.com/aws/aws-cdk/issues/19919)
+* **integ-runner:** disable-update-workflow default is 'false' instead of false ([#20073](https://github.com/aws/aws-cdk/issues/20073)) ([9f7aa65](https://github.com/aws/aws-cdk/commit/9f7aa654ab92c16743b015f7121a3dc542a7e01a))
+* **integ-runner:** only diff registered stacks ([#20100](https://github.com/aws/aws-cdk/issues/20100)) ([721bd4b](https://github.com/aws/aws-cdk/commit/721bd4b24de8e410fd9181eff7e5431c13bad208))
+* **lambda-python:** handler path is incorrectly generated when using PythonFunction ([#20083](https://github.com/aws/aws-cdk/issues/20083)) ([6787376](https://github.com/aws/aws-cdk/commit/678737607cea769109aa8315520a71bc47eb50ef))
+* **tooling:** container user's uid does not match host's uid ([#20082](https://github.com/aws/aws-cdk/issues/20082)) ([e9670c8](https://github.com/aws/aws-cdk/commit/e9670c85819203069ca597b71e305b6a20313d1f)), closes [#19979](https://github.com/aws/aws-cdk/issues/19979)
+* deploy monitor count is off if there are > 100 changes ([#20067](https://github.com/aws/aws-cdk/issues/20067)) ([fd306ee](https://github.com/aws/aws-cdk/commit/fd306ee05cfa7ebaa8d997007500d89d62868897)), closes [#11805](https://github.com/aws/aws-cdk/issues/11805)
+* **imagebuilder:** AmiDistributionConfiguration renders empty ([#20045](https://github.com/aws/aws-cdk/issues/20045)) ([7bd7139](https://github.com/aws/aws-cdk/commit/7bd7139abafa0f36d0494be2fa6f03b5149702ef))
+* **lambda-python:** Pipenv projects no longer work for Python 3.6 ([#20019](https://github.com/aws/aws-cdk/issues/20019)) ([5024021](https://github.com/aws/aws-cdk/commit/5024021bec9952ca7b1e3d82e2c257f124c6300c))
+* **region-info:** EMR service principal incorrect in China ([#20014](https://github.com/aws/aws-cdk/issues/20014)) ([84649b8](https://github.com/aws/aws-cdk/commit/84649b87aec769be690c627832f73a8472fb785f)), closes [#19867](https://github.com/aws/aws-cdk/issues/19867)
+
 ## [1.153.1](https://github.com/aws/aws-cdk/compare/v1.153.0...v1.153.1) (2022-04-22)
 
 

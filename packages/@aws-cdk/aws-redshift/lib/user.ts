@@ -1,4 +1,5 @@
 import * as kms from '@aws-cdk/aws-kms';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import { ICluster } from './cluster';
 import { DatabaseOptions } from './database-options';
@@ -136,6 +137,12 @@ export class User extends UserBase {
   readonly databaseName: string;
   protected databaseProps: DatabaseOptions;
 
+  /**
+   * The Secrets Manager secret of the user.
+   * @attribute
+   */
+  public readonly secret: secretsmanager.ISecret;
+
   private resource: DatabaseQuery<UserHandlerProps>;
 
   constructor(scope: Construct, id: string, props: UserProps) {
@@ -164,6 +171,7 @@ export class User extends UserBase {
     attachedSecret.grantRead(this.resource);
 
     this.username = this.resource.getAttString('username');
+    this.secret = secret;
   }
 
   /**
