@@ -156,5 +156,7 @@ function sortByJson<T>(xs: T | T[] | undefined) {
   for (const x of xs) {
     intermediate.set(JSON.stringify(x), x);
   }
-  return Array.from(intermediate.keys()).sort().map(k => intermediate.get(k)!);
+
+  const sorted = Array.from(intermediate.keys()).sort().map(k => intermediate.get(k)!);
+  xs.splice(0, xs.length, ...sorted);
 }

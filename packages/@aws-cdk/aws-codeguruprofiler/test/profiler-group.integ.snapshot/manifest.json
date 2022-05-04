@@ -1,11 +1,12 @@
 {
-  "version": "17.0.0",
+  "version": "18.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "ProfilerGroupIntegrationTest": {
       "type": "aws:cloudformation:stack",
