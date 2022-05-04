@@ -78,7 +78,16 @@ export class PolicyDocument implements cdk.IResolvable {
 
   public resolve(context: cdk.IResolveContext): any {
     this._maybeMergeStatements(context.scope);
-    context.registerPostProcessor(new PostProcessPolicyDocument(this.autoAssignSids));
+
+    // In the previous implementation of 'merge', sorting was always done, even
+    // on singular statements. In the new implementation of 'merge', sorting is
+    // only done when actually merging statements.
+    //
+    // - To avoid having to update all unit tests, only sort when merging
+    // - To do sorting in a way compatible with the previous implementation of merging,
+    //   do it after render time.
+    const sort = this.shouldMerge(context.scope);
+    context.registerPostProcessor(new PostProcessPolicyDocument(this.autoAssignSids, sort));
     return this.render();
   }
 
@@ -175,8 +184,7 @@ export class PolicyDocument implements cdk.IResolvable {
    * @internal
    */
   public _maybeMergeStatements(scope: IConstruct): Map<PolicyStatement, PolicyStatement[]> | undefined {
-    const minimize = this.minimize ?? cdk.FeatureFlags.of(scope).isEnabled(cxapi.IAM_MINIMIZE_POLICIES) ?? false;
-    if (minimize) {
+    if (this.shouldMerge(scope)) {
       if (this._minimized) {
         return undefined;
       }
@@ -247,6 +255,7 @@ export class PolicyDocument implements cdk.IResolvable {
       newDocs.push(newDoc);
       return newDoc;
     }
+
   }
 
   /**
@@ -269,5 +278,9 @@ export class PolicyDocument implements cdk.IResolvable {
     };
 
     return doc;
+  }
+
+  private shouldMerge(scope: IConstruct) {
+    return this.minimize ?? cdk.FeatureFlags.of(scope).isEnabled(cxapi.IAM_MINIMIZE_POLICIES) ?? false;
   }
 }

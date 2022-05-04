@@ -11,7 +11,7 @@ import { LITERAL_STRING_KEY } from '../util';
  * into a predictable CloudFormation form.
  */
 export class PostProcessPolicyDocument implements cdk.IPostProcessor {
-  constructor(private readonly autoAssignSids: boolean) {
+  constructor(private readonly autoAssignSids: boolean, private readonly sort: boolean) {
   }
 
   public postProcess(input: any, _context: cdk.IResolveContext): any {
@@ -24,7 +24,7 @@ export class PostProcessPolicyDocument implements cdk.IPostProcessor {
     // minimize like 'Deny' statements, and definitely is still necessary
     // if we didn't minimize)
     const jsonStatements = new Set<string>();
-    const uniqueStatements: any[] = [];
+    const uniqueStatements: StatementSchema[] = [];
 
     for (const statement of input.Statement) {
       const jsonStatement = JSON.stringify(statement);
@@ -38,6 +38,12 @@ export class PostProcessPolicyDocument implements cdk.IPostProcessor {
     const statements = uniqueStatements.map((s, i) => {
       if (this.autoAssignSids && !s.Sid) {
         s.Sid = i.toString();
+      }
+
+      if (this.sort) {
+        sortByJson(s.Action);
+        sortByJson(s.Resource);
+        sortByJson(s.Principal);
       }
 
       return s;
@@ -54,15 +60,15 @@ export class PostProcessPolicyDocument implements cdk.IPostProcessor {
 export type IamValue = string | Record<string, any> | Array<string | Record<string, any>>;
 
 export interface StatementSchema {
-  readonly Sid?: string;
-  readonly Effect?: string;
-  readonly Principal?: Record<string, IamValue>;
-  readonly NotPrincipal?: Record<string, IamValue>;
-  readonly Resource?: IamValue;
-  readonly NotResource?: IamValue;
-  readonly Action?: IamValue;
-  readonly NotAction?: IamValue;
-  readonly Condition?: unknown;
+  Sid?: string;
+  Effect?: string;
+  Principal?: Record<string, IamValue>;
+  NotPrincipal?: Record<string, IamValue>;
+  Resource?: IamValue;
+  NotResource?: IamValue;
+  Action?: IamValue;
+  NotAction?: IamValue;
+  Condition?: unknown;
 }
 
 
@@ -141,4 +147,14 @@ function noUndef(x: any): any {
     }
   }
   return ret;
+}
+
+function sortByJson<T>(xs: T | T[] | undefined) {
+  if (!Array.isArray(xs)) { return; }
+
+  const intermediate = new Map<string, T>();
+  for (const x of xs) {
+    intermediate.set(JSON.stringify(x), x);
+  }
+  return Array.from(intermediate.keys()).sort().map(k => intermediate.get(k)!);
 }
