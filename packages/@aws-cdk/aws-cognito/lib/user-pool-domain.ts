@@ -153,7 +153,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
   /**
    * The URL to the hosted UI associated with this domain
    *
-   * @param options options to customize the behaviour of this method
+   * @param options options to customize baseUrl
    */
   public baseUrl(options?: BaseUrlOptions): string {
     if (this.isCognitoDomain) {
@@ -166,7 +166,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
   /**
    * The URL to the sign in page in this domain using a specific UserPoolClient
    * @param client [disable-awslint:ref-via-interface] the user pool client that the UI will use to interact with the UserPool
-   * @param options options to customize the behaviour of this method.
+   * @param options options to customize signInUrl.
    */
   public signInUrl(client: UserPoolClient, options: SignInUrlOptions): string {
     let responseType: string;
