@@ -1,12 +1,12 @@
 {
-  "version": "18.0.0",
+  "version": "19.0.0",
   "testCases": {
-    "DefaultTestCase": {
+    "Bundling/DefaultTest": {
       "stacks": [
         "cdk-integ-lambda-bundling"
       ],
       "stackUpdateWorkflow": false,
-      "assertionStack": "IntegTestDefaultTestCaseDeployAssert4F885E41"
+      "assertionStack": "BundlingDefaultTestDeployAssertAACA0CAF"
     }
   }
 }

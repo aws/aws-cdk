@@ -228,33 +228,33 @@
           "version": "0.0.0"
         }
       },
-      "IntegTest": {
-        "id": "IntegTest",
-        "path": "IntegTest",
+      "Bundling": {
+        "id": "Bundling",
+        "path": "Bundling",
         "children": {
-          "DefaultTestCase": {
-            "id": "DefaultTestCase",
-            "path": "IntegTest/DefaultTestCase",
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "Bundling/DefaultTest",
             "children": {
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "IntegTest/DefaultTestCase/DeployAssert",
+                "path": "Bundling/DefaultTest/DeployAssert",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "IntegTest/DefaultTestCase/DeployAssert/Default",
+                    "path": "Bundling/DefaultTest/DeployAssert/Default",
                     "children": {
                       "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8": {
                         "id": "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8",
-                        "path": "IntegTest/DefaultTestCase/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8",
+                        "path": "Bundling/DefaultTest/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8",
                         "children": {
                           "SdkProvider": {
                             "id": "SdkProvider",
-                            "path": "IntegTest/DefaultTestCase/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/SdkProvider",
+                            "path": "Bundling/DefaultTest/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/SdkProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "IntegTest/DefaultTestCase/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/SdkProvider/AssertionsProvider",
+                                "path": "Bundling/DefaultTest/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/SdkProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "@aws-cdk/core.Construct",
                                   "version": "0.0.0"
@@ -268,11 +268,11 @@
                           },
                           "Default": {
                             "id": "Default",
-                            "path": "IntegTest/DefaultTestCase/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Default",
+                            "path": "Bundling/DefaultTest/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Default",
                             "children": {
                               "Default": {
                                 "id": "Default",
-                                "path": "IntegTest/DefaultTestCase/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Default/Default",
+                                "path": "Bundling/DefaultTest/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Default/Default",
                                 "constructInfo": {
                                   "fqn": "@aws-cdk/core.CfnResource",
                                   "version": "0.0.0"
@@ -286,23 +286,23 @@
                           },
                           "Invoke": {
                             "id": "Invoke",
-                            "path": "IntegTest/DefaultTestCase/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Invoke",
+                            "path": "Bundling/DefaultTest/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Invoke",
                             "constructInfo": {
                               "fqn": "@aws-cdk/core.CfnResource",
                               "version": "0.0.0"
                             }
                           },
-                          "EqualsAssertionLambdainvoke": {
-                            "id": "EqualsAssertionLambdainvoke",
-                            "path": "IntegTest/DefaultTestCase/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/EqualsAssertionLambdainvoke",
+                          "AssertEqualsLambdainvoke": {
+                            "id": "AssertEqualsLambdainvoke",
+                            "path": "Bundling/DefaultTest/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/AssertEqualsLambdainvoke",
                             "children": {
                               "AssertionProvider": {
                                 "id": "AssertionProvider",
-                                "path": "IntegTest/DefaultTestCase/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/EqualsAssertionLambdainvoke/AssertionProvider",
+                                "path": "Bundling/DefaultTest/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/AssertEqualsLambdainvoke/AssertionProvider",
                                 "children": {
                                   "AssertionsProvider": {
                                     "id": "AssertionsProvider",
-                                    "path": "IntegTest/DefaultTestCase/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/EqualsAssertionLambdainvoke/AssertionProvider/AssertionsProvider",
+                                    "path": "Bundling/DefaultTest/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/AssertEqualsLambdainvoke/AssertionProvider/AssertionsProvider",
                                     "constructInfo": {
                                       "fqn": "@aws-cdk/core.Construct",
                                       "version": "0.0.0"
@@ -316,11 +316,11 @@
                               },
                               "Default": {
                                 "id": "Default",
-                                "path": "IntegTest/DefaultTestCase/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/EqualsAssertionLambdainvoke/Default",
+                                "path": "Bundling/DefaultTest/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/AssertEqualsLambdainvoke/Default",
                                 "children": {
                                   "Default": {
                                     "id": "Default",
-                                    "path": "IntegTest/DefaultTestCase/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/EqualsAssertionLambdainvoke/Default/Default",
+                                    "path": "Bundling/DefaultTest/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/AssertEqualsLambdainvoke/Default/Default",
                                     "constructInfo": {
                                       "fqn": "@aws-cdk/core.CfnResource",
                                       "version": "0.0.0"
@@ -334,7 +334,7 @@
                               },
                               "AssertionResults": {
                                 "id": "AssertionResults",
-                                "path": "IntegTest/DefaultTestCase/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/EqualsAssertionLambdainvoke/AssertionResults",
+                                "path": "Bundling/DefaultTest/DeployAssert/Default/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/AssertEqualsLambdainvoke/AssertionResults",
                                 "constructInfo": {
                                   "fqn": "@aws-cdk/core.CfnOutput",
                                   "version": "0.0.0"
@@ -360,11 +360,11 @@
                   },
                   "SingletonFunction1488541a7b23466481b69b4408076b81": {
                     "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
-                    "path": "IntegTest/DefaultTestCase/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "Bundling/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "IntegTest/DefaultTestCase/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "path": "Bundling/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
                           "fqn": "@aws-cdk/core.AssetStaging",
                           "version": "0.0.0"
@@ -372,7 +372,7 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "IntegTest/DefaultTestCase/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "path": "Bundling/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
                           "fqn": "@aws-cdk/core.CfnResource",
                           "version": "0.0.0"
@@ -380,7 +380,7 @@
                       },
                       "Handler": {
                         "id": "Handler",
-                        "path": "IntegTest/DefaultTestCase/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "path": "Bundling/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
                           "fqn": "@aws-cdk/core.CfnResource",
                           "version": "0.0.0"
@@ -394,15 +394,15 @@
                   },
                   "AssetParameters": {
                     "id": "AssetParameters",
-                    "path": "IntegTest/DefaultTestCase/DeployAssert/AssetParameters",
+                    "path": "Bundling/DefaultTest/DeployAssert/AssetParameters",
                     "children": {
-                      "37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0": {
-                        "id": "37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0",
-                        "path": "IntegTest/DefaultTestCase/DeployAssert/AssetParameters/37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0",
+                      "1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b": {
+                        "id": "1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b",
+                        "path": "Bundling/DefaultTest/DeployAssert/AssetParameters/1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b",
                         "children": {
                           "S3Bucket": {
                             "id": "S3Bucket",
-                            "path": "IntegTest/DefaultTestCase/DeployAssert/AssetParameters/37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0/S3Bucket",
+                            "path": "Bundling/DefaultTest/DeployAssert/AssetParameters/1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b/S3Bucket",
                             "constructInfo": {
                               "fqn": "@aws-cdk/core.CfnParameter",
                               "version": "0.0.0"
@@ -410,7 +410,7 @@
                           },
                           "S3VersionKey": {
                             "id": "S3VersionKey",
-                            "path": "IntegTest/DefaultTestCase/DeployAssert/AssetParameters/37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0/S3VersionKey",
+                            "path": "Bundling/DefaultTest/DeployAssert/AssetParameters/1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b/S3VersionKey",
                             "constructInfo": {
                               "fqn": "@aws-cdk/core.CfnParameter",
                               "version": "0.0.0"
@@ -418,7 +418,7 @@
                           },
                           "ArtifactHash": {
                             "id": "ArtifactHash",
-                            "path": "IntegTest/DefaultTestCase/DeployAssert/AssetParameters/37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0/ArtifactHash",
+                            "path": "Bundling/DefaultTest/DeployAssert/AssetParameters/1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b/ArtifactHash",
                             "constructInfo": {
                               "fqn": "@aws-cdk/core.CfnParameter",
                               "version": "0.0.0"
@@ -444,13 +444,13 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/core.Construct",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/core.Construct",
           "version": "0.0.0"
         }
       }

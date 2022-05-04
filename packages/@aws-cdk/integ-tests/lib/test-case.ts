@@ -33,7 +33,7 @@ export class IntegTestCase extends CoreConstruct {
    */
   public readonly assert: DeployAssert;
 
-  constructor(scope: Construct, private readonly id: string, private readonly props: IntegTestCaseProps) {
+  constructor(scope: Construct, id: string, private readonly props: IntegTestCaseProps) {
     super(scope, id);
 
     this.assert = new DeployAssert(this);
@@ -46,7 +46,7 @@ export class IntegTestCase extends CoreConstruct {
   get manifest(): IntegManifest {
     return {
       version: Manifest.version(),
-      testCases: { [this.id]: this.toTestCase(this.props) },
+      testCases: { [this.node.path]: this.toTestCase(this.props) },
     };
   }
 
@@ -129,7 +129,7 @@ export class IntegTest extends CoreConstruct {
   constructor(scope: Construct, id: string, props: IntegTestProps) {
     super(scope, id);
 
-    const defaultTestCase = new IntegTestCase(this, 'DefaultTestCase', {
+    const defaultTestCase = new IntegTestCase(this, 'DefaultTest', {
       stacks: props.testCases.filter(stack => !IntegTestCaseStack.isIntegTestCaseStack(stack)),
       hooks: props.hooks,
       regions: props.regions,

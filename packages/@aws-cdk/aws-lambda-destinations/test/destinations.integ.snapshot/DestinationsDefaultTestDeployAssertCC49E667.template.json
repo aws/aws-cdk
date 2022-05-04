@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8": {
+  "LambdaInvoked12df417a1b74909abb3ea643735a310": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -13,21 +13,23 @@
     "api": "invoke",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "cdk-integ-lambda-bundling:ExportsOutputRefFunction76856677C48862D5"
-     }
+      "Fn::ImportValue": "aws-cdk-lambda-destinations:ExportsOutputRefSnsSqsC4810B27404A5AFF"
+     },
+     "InvocationType": "Event",
+     "Payload": "{\"status\":\"OK\"}"
     },
     "flattenResponse": "false",
-    "salt": "1651497936527"
+    "salt": "1651691787842"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8InvokeA3F6E40A": {
+  "LambdaInvoked12df417a1b74909abb3ea643735a310InvokeF590C289": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "cdk-integ-lambda-bundling:ExportsOutputRefFunction76856677C48862D5"
+     "Fn::ImportValue": "aws-cdk-lambda-destinations:ExportsOutputRefSnsSqsC4810B27404A5AFF"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -37,7 +39,30 @@
     }
    }
   },
-  "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8EqualsAssertionLambdainvoke4FA91B10": {
+  "AwsApiCallSQSreceiveMessage": {
+   "Type": "Custom::DeployAssert@SdkCallSQSreceiveMessage",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SQS",
+    "api": "receiveMessage",
+    "parameters": {
+     "QueueUrl": {
+      "Fn::ImportValue": "aws-cdk-lambda-destinations:ExportsOutputRefQueue4A7E3555425E8BD3"
+     },
+     "WaitTimeSeconds": 20
+    },
+    "flattenResponse": "true",
+    "salt": "1651691787842"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallSQSreceiveMessageAssertEqualsSQSreceiveMessage56120636": {
    "Type": "Custom::DeployAssert@AssertEquals",
    "Properties": {
     "ServiceToken": {
@@ -48,13 +73,12 @@
     },
     "actual": {
      "Fn::GetAtt": [
-      "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8",
-      "apiCallResponse"
+      "AwsApiCallSQSreceiveMessage",
+      "apiCallResponse.Messages.0.Body"
      ]
     },
-    "expected": "{\"Payload\":\"200\"}",
-    "assertionType": "objectLike",
-    "salt": "1651497936528"
+    "expected": "{\"$ObjectLike\":{\"requestContext\":{\"condition\":\"Success\"},\"requestPayload\":{\"status\":\"OK\"},\"responseContext\":{\"statusCode\":200},\"responsePayload\":\"success\"}}",
+    "salt": "1651691787843"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -118,11 +142,20 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "cdk-integ-lambda-bundling:ExportsOutputRefFunction76856677C48862D5"
+              "Fn::ImportValue": "aws-cdk-lambda-destinations:ExportsOutputRefSnsSqsC4810B27404A5AFF"
              }
             ]
            ]
           }
+         ]
+        },
+        {
+         "Action": [
+          "sqs:ReceiveMessage"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
          ]
         }
        ]
@@ -137,7 +170,7 @@
     "Runtime": "nodejs14.x",
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0S3BucketD8E6ACBB"
+      "Ref": "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bS3BucketF7210344"
      },
      "S3Key": {
       "Fn::Join": [
@@ -150,7 +183,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0S3VersionKey4EA626F4"
+             "Ref": "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bS3VersionKey1E71961C"
             }
            ]
           }
@@ -163,7 +196,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0S3VersionKey4EA626F4"
+             "Ref": "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bS3VersionKey1E71961C"
             }
            ]
           }
@@ -185,27 +218,27 @@
   }
  },
  "Outputs": {
-  "AssertionResultsEqualsAssertionLambdainvoke": {
+  "AssertionResultsAssertEqualsSQSreceiveMessage": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8EqualsAssertionLambdainvoke4FA91B10",
+     "AwsApiCallSQSreceiveMessageAssertEqualsSQSreceiveMessage56120636",
      "data"
     ]
    }
   }
  },
  "Parameters": {
-  "AssetParameters37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0S3BucketD8E6ACBB": {
+  "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bS3BucketF7210344": {
    "Type": "String",
-   "Description": "S3 bucket for asset \"37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0\""
+   "Description": "S3 bucket for asset \"1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b\""
   },
-  "AssetParameters37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0S3VersionKey4EA626F4": {
+  "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bS3VersionKey1E71961C": {
    "Type": "String",
-   "Description": "S3 key for asset version \"37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0\""
+   "Description": "S3 key for asset version \"1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b\""
   },
-  "AssetParameters37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0ArtifactHash4C05AFBC": {
+  "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bArtifactHash4F8362F2": {
    "Type": "String",
-   "Description": "Artifact hash for asset \"37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0\""
+   "Description": "Artifact hash for asset \"1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b\""
   }
  }
 }

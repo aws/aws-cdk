@@ -69,7 +69,7 @@ class TestStack extends Stack {
 const app = new App();
 
 const stack = new TestStack(app, 'aws-cdk-lambda-destinations');
-const integ = new IntegTest(app, 'Integ', {
+const integ = new IntegTest(app, 'Destinations', {
   testCases: [stack],
 });
 

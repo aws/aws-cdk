@@ -7,9 +7,6 @@ import { AwsApiCall, LambdaInvokeFunction, LambdaInvokeFunctionProps } from './s
 
 const DEPLOY_ASSERT_SYMBOL = Symbol.for('@aws-cdk/integ-tests.DeployAssert');
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -67,9 +64,9 @@ export class DeployAssert extends CoreConstruct {
    * const message = assert.awsApiCall('SQS', 'receiveMessage', {
    *   QueueUrl: 'url',
    * });
-   * message.assertObjectLike({
+   * message.assert(ExpectedResult.objectLike({
    *   Messages: [{ Body: 'hello' }],
-   * });
+   * }));
    */
   public awsApiCall(service: string, api: string, parameters?: any): AwsApiCall {
     return new AwsApiCall(this, `AwsApiCall${service}${api}`, {
@@ -88,15 +85,28 @@ export class DeployAssert extends CoreConstruct {
    * const invoke = assert.invokeFunction({
    *   functionName: 'my-function',
    * });
-   * invoke.assertObjectLike({
+   * invoke.assert(ExpectedResult.objectLike({
    *   Payload: '200',
-   * });
+   * }));
    */
   public invokeFunction(props: LambdaInvokeFunctionProps): LambdaInvokeFunction {
     const hash = md5hash(Stack.of(this).resolve(props));
     return new LambdaInvokeFunction(this, `LambdaInvoke${hash}`, props);
   }
 
+  /**
+   * Assert that the ExpectedResult is equal
+   * to the ActualResult
+   *
+   * @example
+   * declare const deployAssert: DeployAssert;
+   * declare const apiCall: AwsApiCall;
+   * deployAssert.assert(
+   *   'invoke',
+   *   ExpectedResult.objectLike({ Payload: 'OK' }),
+   *   ActualResult.fromAwsApiCall(apiCall, 'Body'),
+   * );
+   */
   public assert(id: string, expected: ExpectedResult, actual: ActualResult): void {
     new EqualsAssertion(this, `EqualsAssertion${id}`, {
       expected,

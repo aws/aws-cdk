@@ -96,6 +96,17 @@ export class AwsApiCall extends CoreConstruct {
     return this.sdkCallResource.getAttString(`apiCallResponse.${attributeName}`);
   }
 
+  /**
+   * Assert that the ExpectedResult is equal
+   * to the result of the AwsApiCall
+   *
+   * @example
+   * declare const assert: DeployAssert;
+   * const invoke = new LambdaInvokeFunction(assert, 'Invoke', {
+   *   functionName: 'my-func',
+   * });
+   * invoke.assert(ExpectedResult.objectLike({ Payload: 'OK' }));
+   */
   public assert(expected: ExpectedResult): void {
     new EqualsAssertion(this, `AssertEquals${this.name}`, {
       expected,
@@ -103,51 +114,43 @@ export class AwsApiCall extends CoreConstruct {
     });
   }
 
+  /**
+   * Assert that the ExpectedResult is equal
+   * to the result of the AwsApiCall at the given path.
+   *
+   * For example the SQS.receiveMessage api response would look
+   * like:
+   *
+   * If you wanted to assert the value of `Body` you could do
+   *
+   * @example
+   * const actual = {
+   *   Messages: [{
+   *     MessageId: '',
+   *     ReceiptHandle: '',
+   *     MD5OfBody: '',
+   *     Body: 'hello',
+   *     Attributes: {},
+   *     MD5OfMessageAttributes: {},
+   *     MessageAttributes: {}
+   *   }]
+   * };
+   *
+   *
+   * declare const assert: DeployAssert;
+   * const message = new AwsApiCall(assert, 'ReceiveMessage', {
+   *   service:  'SQS',
+   *   api: 'receiveMessage'
+   * });
+   *
+   * message.assertAtPath('Messages.0.Body', ExpectedResult.stringLikeRegexp('hello'));
+   */
   public assertAtPath(path: string, expected: ExpectedResult): void {
     new EqualsAssertion(this, `AssertEquals${this.name}`, {
       expected,
       actual: ActualResult.fromAwsApiCall(this, path),
     });
   }
-
-  // /**
-  //  * Asserts that the expected value is strictly equal to
-  //  * the result of the AwsApiCall. Missing fields will result in
-  //  * a failure.
-  //  */
-  // public assertObjectEqual(expected: { [key: string]: any }): void {
-  //   new EqualsAssertion(this, `AssertEquals${this.name}`, {
-  //     expected: ExpectedResult.fromObject(expected),
-  //     actual: ActualResult.fromCustomResource(this.sdkCallResource, 'apiCallResponse'),
-  //   });
-  // }
-
-  // /**
-  //  * Asserts that the expected value is a subset of
-  //  * the result of the AwsApiCall
-  //  */
-  // public assertObjectLike(expected: { [key: string]: any }): void {
-  //   new EqualsAssertion(this, `EqualsAssertion${this.name}`, {
-  //     actual: ActualResult.fromCustomResource(this.sdkCallResource, 'apiCallResponse'),
-  //     expected: ExpectedResult.fromObject({
-  //       $ObjectLike: expected,
-  //     }),
-  //     assertionType: AssertionType.OBJECT_LIKE,
-  //   });
-  // }
-
-  // /**
-  //  * Asserts that the expected value is equal to the
-  //  * results of the AwsApiCall. The result of the SdkQuery
-  //  * must be a string value.
-  //  */
-  // public assertStringEqual(expected: string): void {
-  //   new EqualsAssertion(this, `EqualsAssertion${this.name}`, {
-  //     actual: ActualResult.fromCustomResource(this.sdkCallResource, 'apiCallResponse'),
-  //     expected: ExpectedResult.fromString(expected),
-  //     assertionType: AssertionType.EQUALS,
-  //   });
-  // }
 }
 
 /**

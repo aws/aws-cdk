@@ -10,6 +10,8 @@ import {
   ExpectedResult,
   InvocationType,
   AssertionType,
+  LambdaInvokeFunction,
+  Match,
 } from '@aws-cdk/integ-tests';
 import {
   App,

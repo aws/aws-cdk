@@ -42,7 +42,7 @@ class TestStack extends Stack {
 const app = new App();
 const stack = new TestStack(app, 'cdk-integ-lambda-bundling');
 
-const integ = new IntegTest(app, 'IntegTest', {
+const integ = new IntegTest(app, 'Bundling', {
   testCases: [stack],
   stackUpdateWorkflow: false,
 });

@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "SdkQueryStepFunctionsstartExecution": {
+  "AwsApiCallStepFunctionsstartExecution": {
    "Type": "Custom::DeployAssert@SdkCallStepFunctionsstartExecution",
    "Properties": {
     "ServiceToken": {
@@ -17,12 +17,12 @@
      }
     },
     "flattenResponse": "true",
-    "salt": "1651498056105"
+    "salt": "1651691787968"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "SdkQueryStepFunctionsdescribeExecution": {
+  "AwsApiCallStepFunctionsdescribeExecution": {
    "Type": "Custom::DeployAssert@SdkCallStepFunctionsdescribeExecution",
    "Properties": {
     "ServiceToken": {
@@ -36,18 +36,18 @@
     "parameters": {
      "executionArn": {
       "Fn::GetAtt": [
-       "SdkQueryStepFunctionsstartExecution",
+       "AwsApiCallStepFunctionsstartExecution",
        "apiCallResponse.executionArn"
       ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1651498056106"
+    "salt": "1651691787969"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "SdkQueryStepFunctionsdescribeExecutionEqualsAssertionStepFunctionsdescribeExecutionA4C8D5D7": {
+  "AwsApiCallStepFunctionsdescribeExecutionAssertEqualsStepFunctionsdescribeExecution58E75A69": {
    "Type": "Custom::DeployAssert@AssertEquals",
    "Properties": {
     "ServiceToken": {
@@ -58,13 +58,12 @@
     },
     "actual": {
      "Fn::GetAtt": [
-      "SdkQueryStepFunctionsdescribeExecution",
+      "AwsApiCallStepFunctionsdescribeExecution",
       "apiCallResponse"
      ]
     },
-    "expected": "{\"status\":\"SUCCEEDED\"}",
-    "assertionType": "objectLike",
-    "salt": "1651498056107"
+    "expected": "{\"$ObjectLike\":{\"status\":\"SUCCEEDED\"}}",
+    "salt": "1651691787970"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -125,7 +124,7 @@
     "Runtime": "nodejs14.x",
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0S3BucketD8E6ACBB"
+      "Ref": "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bS3BucketF7210344"
      },
      "S3Key": {
       "Fn::Join": [
@@ -138,7 +137,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0S3VersionKey4EA626F4"
+             "Ref": "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bS3VersionKey1E71961C"
             }
            ]
           }
@@ -151,7 +150,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0S3VersionKey4EA626F4"
+             "Ref": "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bS3VersionKey1E71961C"
             }
            ]
           }
@@ -173,27 +172,27 @@
   }
  },
  "Outputs": {
-  "AssertionResultsEqualsAssertionStepFunctionsdescribeExecution": {
+  "AssertionResultsAssertEqualsStepFunctionsdescribeExecution": {
    "Value": {
     "Fn::GetAtt": [
-     "SdkQueryStepFunctionsdescribeExecutionEqualsAssertionStepFunctionsdescribeExecutionA4C8D5D7",
+     "AwsApiCallStepFunctionsdescribeExecutionAssertEqualsStepFunctionsdescribeExecution58E75A69",
      "data"
     ]
    }
   }
  },
  "Parameters": {
-  "AssetParameters37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0S3BucketD8E6ACBB": {
+  "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bS3BucketF7210344": {
    "Type": "String",
-   "Description": "S3 bucket for asset \"37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0\""
+   "Description": "S3 bucket for asset \"1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b\""
   },
-  "AssetParameters37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0S3VersionKey4EA626F4": {
+  "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bS3VersionKey1E71961C": {
    "Type": "String",
-   "Description": "S3 key for asset version \"37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0\""
+   "Description": "S3 key for asset version \"1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b\""
   },
-  "AssetParameters37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0ArtifactHash4C05AFBC": {
+  "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bArtifactHash4F8362F2": {
    "Type": "String",
-   "Description": "Artifact hash for asset \"37ffa65dc0e0569fbdcfa87537a30e1bb540e93a747030a1074829694dedd7b0\""
+   "Description": "Artifact hash for asset \"1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b\""
   }
  }
 }

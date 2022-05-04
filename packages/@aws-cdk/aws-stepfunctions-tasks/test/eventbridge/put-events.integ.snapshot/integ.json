@@ -1,11 +1,11 @@
 {
-  "version": "18.0.0",
+  "version": "19.0.0",
   "testCases": {
-    "DefaultTestCase": {
+    "PutEvents/DefaultTest": {
       "stacks": [
         "aws-stepfunctions-tasks-eventbridge-put-events-integ"
       ],
-      "assertionStack": "IntegTestDefaultTestCaseDeployAssert4F885E41"
+      "assertionStack": "PutEventsDefaultTestDeployAssert1A6BA3F3"
     }
   }
 }

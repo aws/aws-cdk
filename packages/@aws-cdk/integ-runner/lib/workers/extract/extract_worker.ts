@@ -42,14 +42,14 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
             failures.push(test);
             workerpool.workerEmit({
               reason: DiagnosticReason.ASSERTION_FAILED,
-              testName: testCaseName,
+              testName: `${runner.testName}-${testCaseName} (${request.profile}/${request.region})`,
               message: formatAssertionResults(results),
               duration: (Date.now() - start) / 1000,
             });
           } else {
             workerpool.workerEmit({
               reason: DiagnosticReason.TEST_SUCCESS,
-              testName: testCaseName,
+              testName: `${runner.testName}-${testCaseName}`,
               message: 'Success',
               duration: (Date.now() - start) / 1000,
             });
@@ -58,7 +58,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
           failures.push(test);
           workerpool.workerEmit({
             reason: DiagnosticReason.TEST_FAILED,
-            testName: testCaseName,
+            testName: `${runner.testName}-${testCaseName} (${request.profile}/${request.region})`,
             message: `Integration test failed: ${e}`,
             duration: (Date.now() - start) / 1000,
           });
@@ -68,7 +68,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
       failures.push(test);
       workerpool.workerEmit({
         reason: DiagnosticReason.TEST_FAILED,
-        testName: test.fileName,
+        testName: `${test.fileName} (${request.profile}/${request.region})`,
         message: `Integration test failed: ${e}`,
         duration: (Date.now() - start) / 1000,
       });

@@ -211,9 +211,9 @@ new AwsApiCall(assert, 'GetObject', {
 declare const myCustomResource: CustomResource;
 declare const app: App;
 const assert = new DeployAssert(app);
-assert.strictEquals(
+assert.assert(
   'CustomAssertion',
-  ExpectedResult.fromObject({ foo: 'bar' }),
+  ExpectedResult.objectLike({ foo: 'bar' }),
   ActualResult.fromCustomResource(myCustomResource, 'data'),
 );
 ```
@@ -283,7 +283,7 @@ const message = integ.assert.awsApiCall('SQS', 'receiveMessage', {
 
 new EqualsAssertion(integ.assert, 'ReceiveMessage', {
   actual: ActualResult.fromAwsApiCall(message, 'Messages.0.Body'),
-  expected: ExpectedResult.fromObject({
+  expected: ExpectedResult.objectLike({
     requestContext: {
       condition: 'Success',
     },
@@ -295,8 +295,28 @@ new EqualsAssertion(integ.assert, 'ReceiveMessage', {
     },
     responsePayload: 'success',
   }),
-  assertionType: AssertionType.OBJECT_LIKE,
 });
+```
+
+#### Match
+
+`integ-tests` also provides a `Match` utility similar to the `@aws-cdk/assertions` module. `Match`
+can be used to construct the `ExpectedResult`.
+
+```ts
+declare const message: AwsApiCall;
+declare const assert: DeployAssert;
+
+message.assert(ExpectedResult.objectLike({
+  Messages: Match.arrayWith([
+    {
+	  Body: {
+	    Values: Match.arrayWith([{ Asdf: 3 }]),
+		Message: Match.stringLikeRegexp('message'),
+	  },
+    },
+  ]),
+}));
 ```
 
 ### Examples
@@ -319,9 +339,9 @@ const integ = new IntegTest(app, 'IntegTest', {
 const invoke = integ.assert.invokeFunction({
   functionName: lambdaFunction.functionName,
 });
-invoke.assertObjectLike({
+invoke.assert(ExpectedResult.objectLike({
   Payload: '200',
-});
+}));
 ```
 
 #### Make an AWS API Call
@@ -349,8 +369,8 @@ const describe = testCase.assert.awsApiCall('StepFunctions', 'describeExecution'
 });
 
 // assert the results
-describe.assertObjectLike({
+describe.assert(ExpectedResult.objectLike({
   status: 'SUCCEEDED',
-});
+}));
 ```
 

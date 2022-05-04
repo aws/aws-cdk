@@ -41,7 +41,7 @@ const sm = new sfn.StateMachine(stack, 'StateMachine', {
 });
 
 
-const testCase = new IntegTest(app, 'IntegTest', {
+const testCase = new IntegTest(app, 'PutEvents', {
   testCases: [stack],
 });
 

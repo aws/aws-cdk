@@ -43,11 +43,11 @@ describe(IntegManifestSynthesizer, () => {
     expect(write).toHaveBeenCalledWith({
       version: Manifest.version(),
       testCases: {
-        case1: {
+        ['stack/case1']: {
           assertionStack: expect.stringMatching(/DeployAssert/),
           stacks: ['stack-under-test-1'],
         },
-        case2: {
+        ['stack/case2']: {
           assertionStack: expect.stringMatching(/DeployAssert/),
           stacks: ['stack-under-test-2'],
         },
@@ -71,7 +71,7 @@ describe(IntegManifestSynthesizer, () => {
     expect(integManifest).toEqual({
       version: Manifest.version(),
       testCases: {
-        DefaultTestCase: {
+        ['Integ/DefaultTest']: {
           assertionStack: expect.stringMatching(/DeployAssert/),
           stacks: ['stack'],
         },
@@ -98,11 +98,11 @@ describe(IntegManifestSynthesizer, () => {
     expect(integManifest).toEqual({
       version: Manifest.version(),
       testCases: {
-        DefaultTestCase: {
+        ['Integ/DefaultTest']: {
           assertionStack: expect.stringMatching(/DeployAssert/),
           stacks: ['stack'],
         },
-        CaseTestCase: {
+        ['Case/CaseTestCase']: {
           assertionStack: expect.stringMatching(/DeployAssert/),
           diffAssets: true,
           stacks: ['Case'],
