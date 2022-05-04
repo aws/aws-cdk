@@ -188,15 +188,13 @@ describe('fn', () => {
       // THEN
       const template = app.synth().getStackByName('Stack2').template;
 
-      expect(template).toEqual({
-        Outputs: {
-          Stack1Id: {
-            Value: {
-              'Fn::Join': [' = ', [
-                'Stack1Id',
-                { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' },
-              ]],
-            },
+      expect(template?.Outputs).toEqual({
+        Stack1Id: {
+          Value: {
+            'Fn::Join': [' = ', [
+              'Stack1Id',
+              { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' },
+            ]],
           },
         },
       });

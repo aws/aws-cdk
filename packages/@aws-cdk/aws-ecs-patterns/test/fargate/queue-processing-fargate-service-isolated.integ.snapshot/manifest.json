@@ -241,7 +241,10 @@
         "/aws-ecs-patterns-queue-isolated/IsolatedQueueService/QueueProcessingTaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IsolatedQueueServiceQueueProcessingTaskDef0F0CE105"
+            "data": "IsolatedQueueServiceQueueProcessingTaskDef0F0CE105",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-patterns-queue-isolated/IsolatedQueueService/QueueProcessingTaskDef/QueueProcessingContainer/LogGroup/Resource": [
