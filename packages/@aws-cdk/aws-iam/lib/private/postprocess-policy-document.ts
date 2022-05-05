@@ -41,9 +41,9 @@ export class PostProcessPolicyDocument implements cdk.IPostProcessor {
       }
 
       if (this.sort) {
-        sortByJson(s.Action);
-        sortByJson(s.Resource);
-        sortByJson(s.Principal);
+        s.Action = sortByJson(s.Action);
+        s.Resource = sortByJson(s.Resource);
+        s.Principal = sortPrincipals(s.Principal);
       }
 
       return s;
@@ -62,8 +62,8 @@ export type IamValue = string | Record<string, any> | Array<string | Record<stri
 export interface StatementSchema {
   Sid?: string;
   Effect?: string;
-  Principal?: Record<string, IamValue>;
-  NotPrincipal?: Record<string, IamValue>;
+  Principal?: string | string[] | Record<string, IamValue>;
+  NotPrincipal?: string | string[] | Record<string, IamValue>;
   Resource?: IamValue;
   NotResource?: IamValue;
   Action?: IamValue;
@@ -116,8 +116,8 @@ export function normalizeStatement(s: StatementSchema) {
     return values;
   }
 
-  function _normPrincipal(principal?: { [key: string]: any }) {
-    if (!principal) { return undefined; }
+  function _normPrincipal(principal?: string | string[] | { [key: string]: any }) {
+    if (!principal || Array.isArray(principal) || typeof principal !== 'object') { return undefined; }
 
     const keys = Object.keys(principal);
     if (keys.length === 0) { return undefined; }
@@ -149,14 +149,31 @@ function noUndef(x: any): any {
   return ret;
 }
 
-function sortByJson<T>(xs: T | T[] | undefined) {
-  if (!Array.isArray(xs)) { return; }
+function sortPrincipals<A>(xs?: string | string[] | Record<string, A | A[]>): typeof xs {
+  if (!xs || Array.isArray(xs) || typeof xs !== 'object') { return xs; }
 
-  const intermediate = new Map<string, T>();
+  const ret: NonNullable<typeof xs> = {};
+  for (const k of Object.keys(xs).sort()) {
+    ret[k] = sortByJson(xs[k]);
+  }
+
+  return ret;
+}
+
+/**
+ * Sort the values in the list
+ *
+ * Mutates in place AND returns the mutated list.
+ */
+function sortByJson<B, A extends B | B[] | undefined>(xs: A): A {
+  if (!Array.isArray(xs)) { return xs; }
+
+  const intermediate = new Map<string, A>();
   for (const x of xs) {
     intermediate.set(JSON.stringify(x), x);
   }
 
   const sorted = Array.from(intermediate.keys()).sort().map(k => intermediate.get(k)!);
   xs.splice(0, xs.length, ...sorted);
+  return xs;
 }
