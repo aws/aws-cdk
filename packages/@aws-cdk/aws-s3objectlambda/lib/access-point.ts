@@ -101,14 +101,14 @@ abstract class AccessPointBase extends core.Resource implements IAccessPoint {
   /** Implement the {@link IAccessPoint.domainName} field. */
   get domainName(): string {
     const urlSuffix = this.stack.urlSuffix;
-    return `${this.accessPointName}-${this.stack.account}.s3-object-lambda.${urlSuffix}`;
+    return `${this.accessPointName}-${this.env.account}.s3-object-lambda.${urlSuffix}`;
   }
 
   /** Implement the {@link IAccessPoint.regionalDomainName} field. */
   get regionalDomainName(): string {
     const urlSuffix = this.stack.urlSuffix;
-    const region = this.stack.region;
-    return `${this.accessPointName}-${this.stack.account}.s3-object-lambda.${region}.${urlSuffix}`;
+    const region = this.env.region;
+    return `${this.accessPointName}-${this.env.account}.s3-object-lambda.${region}.${urlSuffix}`;
   }
 
   /** Implement the {@link IAccessPoint.virtualHostedUrlForObject} method. */
