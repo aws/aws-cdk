@@ -4,8 +4,12 @@ import { IOpenIdConnectProvider } from './oidc-provider';
 import { PolicyDocument } from './policy-document';
 import { Condition, Conditions, PolicyStatement } from './policy-statement';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
+import { IComparablePrincipal, equalPrincipals } from './private/comparable-principal';
+import { makeTypeChecker } from './private/type-checker';
 import { ISamlProvider } from './saml-provider';
 import { LITERAL_STRING_KEY, mergePrincipal } from './util';
+
+const PRINCIPALTYPE_SYM = Symbol.for('@aws-cdk/aws-iam.PrincipalType');
 
 /**
  * Any object that has an associated principal that a permission can be granted to
@@ -110,7 +114,7 @@ export interface AddToPrincipalPolicyResult {
 /**
  * Base class for policy principals
  */
-export abstract class PrincipalBase implements IAssumeRolePrincipal {
+export abstract class PrincipalBase implements IAssumeRolePrincipal, IComparablePrincipal {
   public readonly grantPrincipal: IPrincipal = this;
   public readonly principalAccount: string | undefined = undefined;
 
@@ -179,12 +183,17 @@ export abstract class PrincipalBase implements IAssumeRolePrincipal {
   public withSessionTags(): PrincipalBase {
     return new SessionTagsPrincipal(this);
   }
+
+  /**
+   * Return whether or not this principal is equal to the given principal
+   */
+  public abstract equalTo(other: IPrincipal): boolean;
 }
 
 /**
  * Base class for Principals that wrap other principals
  */
-class PrincipalAdapter extends PrincipalBase {
+abstract class PrincipalAdapter extends PrincipalBase {
   public readonly assumeRoleAction = this.wrapped.assumeRoleAction;
   public readonly principalAccount = this.wrapped.principalAccount;
 
@@ -262,6 +271,12 @@ export class PrincipalWithConditions extends PrincipalAdapter {
     return this.policyFragment.principalJson;
   }
 
+  public equalTo(other: IPrincipal): boolean {
+    return isPrincipalWithConditions(other)
+      && equalPrincipals(this.wrapped, other.wrapped)
+      && JSON.stringify(this.conditions) === JSON.stringify(other.conditions);
+  }
+
   private mergeConditions(principalConditions: Conditions, additionalConditions: Conditions): Conditions {
     const mergedConditions: Conditions = {};
     Object.entries(principalConditions).forEach(([operator, condition]) => {
@@ -290,6 +305,8 @@ export class PrincipalWithConditions extends PrincipalAdapter {
   }
 }
 
+const isPrincipalWithConditions = makeTypeChecker(PrincipalWithConditions, PRINCIPALTYPE_SYM);
+
 /**
  * Enables session tags on role assumptions from a principal
  *
@@ -312,7 +329,14 @@ export class SessionTagsPrincipal extends PrincipalAdapter {
       return statement;
     }));
   }
+
+  public equalTo(other: IPrincipal): boolean {
+    return isSessionTagsPrincipal(other)
+      && equalPrincipals(this.wrapped, other.wrapped);
+  }
 }
+const isSessionTagsPrincipal = makeTypeChecker(SessionTagsPrincipal, PRINCIPALTYPE_SYM);
+
 
 /**
  * A collection of the fields in a PolicyStatement that can be used to identify a principal.
@@ -380,7 +404,13 @@ export class ArnPrincipal extends PrincipalBase {
       },
     });
   }
+
+  public equalTo(other: IPrincipal): boolean {
+    return isArnPrincipal(other)
+      && this.arn === other.arn;
+  }
 }
+const isArnPrincipal = makeTypeChecker(ArnPrincipal, PRINCIPALTYPE_SYM);
 
 /**
  * Specify AWS account ID as the principal entity in a policy to delegate authority to the account.
@@ -445,7 +475,14 @@ export class ServicePrincipal extends PrincipalBase {
   public toString() {
     return `ServicePrincipal(${this.service})`;
   }
+
+  public equalTo(other: IPrincipal): boolean {
+    return isServicePrincipal(other)
+      && this.service === other.service
+      && JSON.stringify(this.opts) === JSON.stringify(other.opts);
+  }
 }
+const isServicePrincipal = makeTypeChecker(ServicePrincipal, PRINCIPALTYPE_SYM);
 
 /**
  * A principal that represents an AWS Organization
@@ -469,7 +506,13 @@ export class OrganizationPrincipal extends PrincipalBase {
   public toString() {
     return `OrganizationPrincipal(${this.organizationId})`;
   }
+
+  public equalTo(other: IPrincipal): boolean {
+    return isOrganizationPrincipal(other)
+      && this.organizationId === other.organizationId;
+  }
 }
+const isOrganizationPrincipal = makeTypeChecker(OrganizationPrincipal, PRINCIPALTYPE_SYM);
 
 /**
  * A policy principal for canonicalUserIds - useful for S3 bucket policies that use
@@ -502,7 +545,13 @@ export class CanonicalUserPrincipal extends PrincipalBase {
   public toString() {
     return `CanonicalUserPrincipal(${this.canonicalUserId})`;
   }
+
+  public equalTo(other: IPrincipal): boolean {
+    return isCanonicalUserPrincipal(other)
+      && this.canonicalUserId === other.canonicalUserId;
+  }
 }
+const isCanonicalUserPrincipal = makeTypeChecker(CanonicalUserPrincipal, PRINCIPALTYPE_SYM);
 
 /**
  * Principal entity that represents a federated identity provider such as Amazon Cognito,
@@ -538,7 +587,15 @@ export class FederatedPrincipal extends PrincipalBase {
   public toString() {
     return `FederatedPrincipal(${this.federated})`;
   }
+
+  public equalTo(other: IPrincipal): boolean {
+    return isFederatedPrincipal(other)
+      && this.federated === other.federated
+      && this.assumeRoleAction === other.assumeRoleAction
+      && JSON.stringify(this.conditions) === JSON.stringify(other.conditions);
+  }
 }
+const isFederatedPrincipal = makeTypeChecker(FederatedPrincipal, PRINCIPALTYPE_SYM);
 
 /**
  * A principal that represents a federated identity provider as Web Identity such as Cognito, Amazon,
@@ -679,7 +736,12 @@ export class StarPrincipal extends PrincipalBase {
   public toString() {
     return 'StarPrincipal()';
   }
+
+  public equalTo(other: IPrincipal) {
+    return isStarPrincipal(other);
+  }
 }
+const isStarPrincipal = makeTypeChecker(StarPrincipal, PRINCIPALTYPE_SYM);
 
 /**
  * Represents a principal that has multiple types of principals. A composite principal cannot
@@ -739,7 +801,15 @@ export class CompositePrincipal extends PrincipalBase {
   public toString() {
     return `CompositePrincipal(${this.principals})`;
   }
+
+  public equalTo(other: IPrincipal) {
+    return isCompositePrincipal(other)
+      && this.assumeRoleAction === other.assumeRoleAction
+      && this.principals.length === other.principals.length
+      && this.principals.every((p, i) => equalPrincipals(p, other.principals[i]));
+  }
 }
+const isCompositePrincipal = makeTypeChecker(CompositePrincipal, PRINCIPALTYPE_SYM);
 
 /**
  * A lazy token that requires an instance of Stack to evaluate

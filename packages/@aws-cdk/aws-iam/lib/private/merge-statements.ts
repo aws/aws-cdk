@@ -7,6 +7,7 @@
 import { PolicyStatement } from '../policy-statement';
 import { IPrincipal } from '../principals';
 import { LITERAL_STRING_KEY } from '../util';
+import { equalPrincipals } from './comparable-principal';
 
 
 /*
@@ -120,7 +121,7 @@ function tryMerge(a: ComparableStatement, b: ComparableStatement): ComparableSta
     statement: a.statement.copy({
       actions: setMerge(a.statement.actions, b.statement.actions),
       resources: setMerge(a.statement.resources, b.statement.resources),
-      principals: setMerge(a.statement.principals, b.statement.principals),
+      principals: setMergePrincipals(a.statement.principals, b.statement.principals),
     }),
     principalStrings: setMerge(a.principalStrings, b.principalStrings),
     notPrincipalStrings: a.notPrincipalStrings,
@@ -192,8 +193,19 @@ function setEqual<A>(a: A[], b: A[]) {
 }
 
 /**
- * Merge two IAM value sets
+ * Merge two value sets
  */
 function setMerge<A>(x: A[], y: A[]): A[] {
   return Array.from(new Set([...x, ...y])).sort();
+}
+
+function setMergePrincipals(xs: IPrincipal[], ys: IPrincipal[]): IPrincipal[] {
+  const ret = [...xs];
+  for (const y of ys) {
+    if (ret.some(r => equalPrincipals(r, y))) {
+      continue;
+    }
+    ret.push(y);
+  }
+  return ret;
 }

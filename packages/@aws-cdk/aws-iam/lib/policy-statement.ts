@@ -5,7 +5,10 @@ import {
   FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts,
 } from './principals';
 import { normalizeStatement } from './private/postprocess-policy-document';
+import { makeTypeChecker } from './private/type-checker';
 import { LITERAL_STRING_KEY, mergePrincipal, sum } from './util';
+
+const PRINCIPALTYPE_SYM = Symbol.for('@aws-cdk/aws-iam.PrincipalType');
 
 const ensureArrayOrUndefined = (field: any) => {
   if (field === undefined) {
@@ -698,4 +701,10 @@ class JsonPrincipal extends PrincipalBase {
       conditions: {},
     };
   }
+
+  public equalTo(other: IPrincipal) {
+    return isJsonPrincipal(other)
+      && JSON.stringify(this.policyFragment) === JSON.stringify(other.policyFragment);
+  }
 }
+const isJsonPrincipal = makeTypeChecker(JsonPrincipal, PRINCIPALTYPE_SYM);
