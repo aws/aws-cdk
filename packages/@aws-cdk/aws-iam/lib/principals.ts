@@ -4,7 +4,7 @@ import { IOpenIdConnectProvider } from './oidc-provider';
 import { PolicyDocument } from './policy-document';
 import { Condition, Conditions, PolicyStatement } from './policy-statement';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
-import { IComparablePrincipal, equalPrincipals } from './private/comparable-principal';
+import { equalPrincipals } from './private/comparable-principal';
 import { makeTypeChecker } from './private/type-checker';
 import { ISamlProvider } from './saml-provider';
 import { LITERAL_STRING_KEY, mergePrincipal } from './util';
@@ -114,7 +114,7 @@ export interface AddToPrincipalPolicyResult {
 /**
  * Base class for policy principals
  */
-export abstract class PrincipalBase implements IAssumeRolePrincipal, IComparablePrincipal {
+export abstract class PrincipalBase implements IAssumeRolePrincipal /*, IComparablePrincipal (not allowed by jsii) */ {
   public readonly grantPrincipal: IPrincipal = this;
   public readonly principalAccount: string | undefined = undefined;
 
