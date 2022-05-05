@@ -114,6 +114,11 @@ export interface AssertionResult {
  */
   readonly data: string;
 
+  /**
+   * Whether or not the assertion failed
+   *
+   * @default false
+   */
   readonly failed?: boolean;
 }
 
