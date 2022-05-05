@@ -498,7 +498,7 @@ describe('', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties(kmsAliasResource, {
-        AliasName: 'alias/codepipeline-actualstacknamepipeline0a412eb5',
+        AliasName: 'alias/codepipeline-actual-stack-name-pipeline-0a412eb5',
       });
     });
 
@@ -514,7 +514,7 @@ describe('', () => {
       });
     });
 
-    testFutureBehavior('cross account key alias is named with stack ID when stack name is not present and feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID]: true }, cdk.App, (app) => {
+    testFutureBehavior('cross account key alias is named with generated stack name when stack name is undefined and feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID]: true }, cdk.App, (app) => {
       const stack = createPipelineStack({
         context: app,
         suffix: 'Name',
@@ -523,7 +523,7 @@ describe('', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties(kmsAliasResource, {
-        AliasName: 'alias/codepipeline-pipelinestackpipeline9db740af',
+        AliasName: 'alias/codepipeline-pipelinestack-pipeline-9db740af',
       });
     });
 
@@ -540,7 +540,7 @@ describe('', () => {
       });
     });
 
-    testFutureBehavior('cross account key alias is named with stack name and nested stack ID for nested stacks when stack name is present and feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID]: true }, cdk.App, (app) => {
+    testFutureBehavior('cross account key alias is named with stack name and nested stack ID when feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID]: true }, cdk.App, (app) => {
       const stack = createPipelineStack({
         context: app,
         suffix: 'Name',
@@ -550,7 +550,7 @@ describe('', () => {
       });
 
       Template.fromStack(stack.nestedStack!).hasResourceProperties(kmsAliasResource, {
-        AliasName: 'alias/codepipeline-actualstacknamenestedpipelinestackactualpipeline23a98110',
+        AliasName: 'alias/codepipeline-actual-stack-name-nestedpipelinestack-actualpipeline-23a98110',
       });
     });
 
@@ -568,7 +568,7 @@ describe('', () => {
       });
     });
 
-    testFutureBehavior('cross account key alias is named with stack ID and nested stack ID for nested stacks when stack name is not present and feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID]: true }, cdk.App, (app) => {
+    testFutureBehavior('cross account key alias is named with generated stack name and nested stack ID when stack name is undefined and feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID]: true }, cdk.App, (app) => {
       const stack = createPipelineStack({
         context: app,
         suffix: 'Name',
@@ -579,7 +579,7 @@ describe('', () => {
       });
 
       Template.fromStack(stack.nestedStack!).hasResourceProperties(kmsAliasResource, {
-        AliasName: 'alias/codepipeline-toplevelstacknestedpipelinestackactualpipeline3161a537',
+        AliasName: 'alias/codepipeline-toplevelstack-nestedpipelinestack-actualpipeline-3161a537',
       });
     });
 
@@ -601,13 +601,13 @@ describe('', () => {
     testFutureBehavior('cross account key alias is properly shortened to 256 characters when stack name is too long and feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID]: true }, cdk.App, (app) => {
       const stack = createPipelineStack({
         context: app,
-        suffix: 'PipelineStackWithSuperExtraLongNameThatWillNeedToBeShortenedDueToTheLengthOfThisAbsurdNameThatNoOneShouldEverNameAStackButItStillMightHappenSoWeMustTestForTheTestCase-WithSomeOtherCharactersAdded',
+        suffix: 'NeedsToBeShortenedDueToTheLengthOfThisAbsurdNameThatNoOneShouldUseButItStillMightHappenSoWeMustTestForTheTestCase',
         stackId: 'too-long',
         pipelineId: 'ActualPipelineWithExtraSuperLongNameThatWillNeedToBeShortenedDueToTheAlsoVerySuperExtraLongNameOfTheStack-AlsoWithSomeDifferentCharactersAddedToTheEnd',
       });
 
       Template.fromStack(stack).hasResourceProperties(kmsAliasResource, {
-        AliasName: 'alias/codepipeline-pipelinestackwithsuperextralongnamethatwillneedtobeshortenedduetothelengthofthisabsurdnamethatnooneshouldevernameastackbutitstillmighthappensowemusttestforthetestcasewithsomeothercharactersaddedactualpipelinewithextrasuperlongnam19ca9ad6',
+        AliasName: 'alias/codepipeline-actual-stack-needstobeshortenedduetothelengthofthisabsurdnamethatnooneshouldusebutitstillmighthappensowemusttestfohatwillneedtobeshortenedduetothealsoverysuperextralongnameofthestack-alsowithsomedifferentcharactersaddedtotheend-384b9343',
       });
     });
 
@@ -615,12 +615,12 @@ describe('', () => {
       const stack = createPipelineStack({
         context: app,
         suffix: 'too-long',
-        stackId: 'PipelineStackWithSuperExtraLongIdThatWillNeedToBeShortenedDueToTheLengthOfThisAbsurdNameThatNoOneShouldEverNameAStackButItStillMightHappenSoWeMustTestForTheTestCase',
+        stackId: 'NeedsToBeShortenedDueToTheLengthOfThisAbsurdNameThatNoOneShouldUseButItStillMightHappenSoWeMustTestForTheTestCase',
         pipelineId: 'ActualPipelineWithExtraSuperLongNameThatWillNeedToBeShortenedDueToTheAlsoVerySuperExtraLongNameOfTheStack-AlsoWithSomeDifferentCharactersAddedToTheEnd',
       });
 
       Template.fromStack(stack).hasResourceProperties(kmsAliasResource, {
-        AliasName: 'alias/codepipeline-ckwithsuperextralongidthatwillneedtobeshortenedduetothelengthofthisabsurdnamethatnooneshouldevernameastackbutitstillmighthappensowemusttestforthetestcaseactualpipelinewithextrasuperlongnamethatwillneedtobeshortenedduetothealsover0fc5396a',
+        AliasName: 'alias/codepipeline-ortenedduetothelengthofthisabsurdnamethatnooneshouldusebutitstillmighthappensowemusttestforthetestcaseactualpipelinewithextrasuperlongnamethatwillneedtobeshortenedduetothealsoverysuperextralongnameofthestackalsowithsomedifferentc498e0672',
       });
     });
 
@@ -641,11 +641,11 @@ describe('', () => {
       expect(Template.fromStack(stack1).findResources(kmsAliasResource)).not.toEqual(Template.fromStack(stack2).findResources(kmsAliasResource));
 
       Template.fromStack(stack1).hasResourceProperties(kmsAliasResource, {
-        AliasName: 'alias/codepipeline-actualstack1pipelineb09fefee',
+        AliasName: 'alias/codepipeline-actual-stack-1-pipeline-b09fefee',
       });
 
       Template.fromStack(stack2).hasResourceProperties(kmsAliasResource, {
-        AliasName: 'alias/codepipeline-actualstack2pipelinef46258fe',
+        AliasName: 'alias/codepipeline-actual-stack-2-pipeline-f46258fe',
       });
     });
 
@@ -695,11 +695,11 @@ describe('', () => {
         .not.toEqual(Template.fromStack(stack2.nestedStack!).findResources(kmsAliasResource));
 
       Template.fromStack(stack1.nestedStack!).hasResourceProperties(kmsAliasResource, {
-        AliasName: 'alias/codepipeline-actualstackname1nestedpipelineidc8c9f252',
+        AliasName: 'alias/codepipeline-actual-stack-name-1-nested-pipeline-id-c8c9f252',
       });
 
       Template.fromStack(stack2.nestedStack!).hasResourceProperties(kmsAliasResource, {
-        AliasName: 'alias/codepipeline-actualstackname2nestedpipelineidaff6dd63',
+        AliasName: 'alias/codepipeline-actual-stack-name-2-nested-pipeline-id-aff6dd63',
       });
     });
 
@@ -741,17 +741,17 @@ describe('', () => {
         pipelineId: 'PIPELINE-ID',
       });
       const nestedStack2 = new cdk.NestedStack(stack, 'Second');
-      createPipeline(nestedStack2, 'Actual-Pipeline-Name-2', 'PIPELINE-ID');
+      createPipelineWithSourceAndBuildStages(nestedStack2, 'Actual-Pipeline-Name-2', 'PIPELINE-ID');
 
       expect(Template.fromStack(stack.nestedStack!).findResources(kmsAliasResource))
         .not.toEqual(Template.fromStack(nestedStack2).findResources(kmsAliasResource));
 
       Template.fromStack(stack.nestedStack!).hasResourceProperties(kmsAliasResource, {
-        AliasName: 'alias/codepipeline-actualstackname1firstpipelineid3c59cb88',
+        AliasName: 'alias/codepipeline-actual-stack-name-1-first-pipeline-id-3c59cb88',
       });
 
       Template.fromStack(nestedStack2).hasResourceProperties(kmsAliasResource, {
-        AliasName: 'alias/codepipeline-actualstackname1secondpipelineid16143d12',
+        AliasName: 'alias/codepipeline-actual-stack-name-1-second-pipeline-id-16143d12',
       });
     });
 
@@ -764,7 +764,7 @@ describe('', () => {
         pipelineId: 'PIPELINE-ID',
       });
       const nestedStack2 = new cdk.NestedStack(stack, 'Second');
-      createPipeline(nestedStack2, 'Actual-Pipeline-Name-2', 'PIPELINE-ID');
+      createPipelineWithSourceAndBuildStages(nestedStack2, 'Actual-Pipeline-Name-2', 'PIPELINE-ID');
 
       expect(Template.fromStack(stack.nestedStack!).findResources(kmsAliasResource))
         .not.toEqual(Template.fromStack(nestedStack2).findResources(kmsAliasResource));
@@ -860,7 +860,25 @@ class ReusePipelineStack extends cdk.Stack {
   }
 }
 
-const createPipeline = (scope: Construct, pipelineName?: string, pipelineId: string = 'Pipeline') => {
+interface PipelineStackProps extends cdk.StackProps {
+  readonly nestedStackId?: string;
+  readonly pipelineName: string;
+  readonly pipelineId?: string;
+}
+
+class PipelineStack extends cdk.Stack {
+  nestedStack?: cdk.NestedStack;
+  pipeline: codepipeline.Pipeline;
+
+  constructor(scope?: Construct, id?: string, props?: PipelineStackProps) {
+    super (scope, id, props);
+
+    props?.nestedStackId ? this.nestedStack = new cdk.NestedStack(this, props!.nestedStackId!) : undefined;
+    this.pipeline = createPipelineWithSourceAndBuildStages(this.nestedStack || this, props?.pipelineName, props?.pipelineId);
+  }
+}
+
+function createPipelineWithSourceAndBuildStages(scope: Construct, pipelineName?: string, pipelineId: string = 'Pipeline') {
   const artifact = new codepipeline.Artifact();
   return new codepipeline.Pipeline(scope, pipelineId, {
     pipelineName,
@@ -880,15 +898,15 @@ const createPipeline = (scope: Construct, pipelineName?: string, pipelineId: str
 };
 
 interface CreatePipelineStackOptions {
-  context: cdk.App,
-  suffix: string,
-  stackId?: string,
-  pipelineId?: string,
-  undefinedStackName?: boolean,
-  nestedStackId?: string,
+  readonly context: cdk.App,
+  readonly suffix: string,
+  readonly stackId?: string,
+  readonly pipelineId?: string,
+  readonly undefinedStackName?: boolean,
+  readonly nestedStackId?: string,
 }
 
-const createPipelineStack = (options: CreatePipelineStackOptions): PipelineStack => {
+function createPipelineStack(options: CreatePipelineStackOptions): PipelineStack {
   return new PipelineStack(options.context, options.stackId, {
     stackName: options.undefinedStackName ? undefined : `Actual-Stack-${options.suffix}`,
     nestedStackId: options.nestedStackId,
@@ -896,20 +914,3 @@ const createPipelineStack = (options: CreatePipelineStackOptions): PipelineStack
     pipelineId: options.pipelineId,
   });
 };
-
-interface PipelineStackProps extends cdk.StackProps {
-  nestedStackId?: string;
-  pipelineName: string;
-  pipelineId?: string;
-}
-
-class PipelineStack extends cdk.Stack {
-  nestedStack?: cdk.NestedStack;
-
-  constructor(scope?: Construct, id?: string, props?: PipelineStackProps) {
-    super (scope, id, props);
-
-    props?.nestedStackId ? this.nestedStack = new cdk.NestedStack(this, props!.nestedStackId!) : undefined;
-    createPipeline(this.nestedStack || this, props?.pipelineName, props?.pipelineId);
-  }
-}

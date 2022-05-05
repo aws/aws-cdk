@@ -1,8 +1,37 @@
 import { Construct, Node } from 'constructs';
 import { ConstructNode } from './construct-compat';
 import { unresolved } from './private/encoding';
+import { makeUniqueResourceName } from './private/unique-resource-name';
 import { makeUniqueId } from './private/uniqueid';
 import { Stack } from './stack';
+
+
+/**
+ * Options for creating a unique resource name.
+*/
+export interface UniqueResourceNameOptions {
+
+  /**
+   * The maximum length of the unique resource name.
+   *
+   * @default - 256
+   */
+  readonly maxLength?: number;
+
+  /**
+   * The separator used between the path components.
+   *
+   * @default - none
+   */
+  readonly separator?: string;
+
+  /**
+   * Non-alphanumeric characters allowed in the unique resource name.
+   *
+   * @default - none
+   */
+  readonly allowedSpecialCharacters?: string;
+}
 
 /**
  * Functions for devising unique names for constructs. For example, those can be
@@ -13,7 +42,7 @@ export class Names {
    * Returns a CloudFormation-compatible unique identifier for a construct based
    * on its path. The identifier includes a human readable portion rendered
    * from the path components and a hash suffix. uniqueId is not unique if multiple
-   * copies of the stack are deployed. Prefer using stackSafeUniqueId().
+   * copies of the stack are deployed. Prefer using uniqueResourceName().
    *
    * @param construct The construct
    * @returns a unique id based on the construct path
@@ -41,23 +70,26 @@ export class Names {
 
   /**
    * Returns a CloudFormation-compatible unique identifier for a construct based
-   * on its path. If the node is a Stack, the stack name is used for that path component instead.
-   * The identifier includes a human readable portion rendered from the path components and a hash suffix.
+   * on its path. This function finds the stackName of the parent stack (non-nested)
+   * to the construct, and the ids of the components in the construct path.
+   *
+   * The user can define allowed special characters, a separator between the elements,
+   * and the maximum length of the resource name. The name includes a human readable portion rendered
+   * from the path components, with or without user defined separators, and a hash suffix.
+   * If the resource name is longer than the maximum length, it is trimmed in the middle.
+   *
    * @param construct The construct
-   * @param maxUniqueIdLength The maximum length of the unique id
-   * @returns a unique id based on the construct path
+   * @param options Options for defining the unique resource name
+   * @returns a unique resource name based on the construct path
    */
-  public static stackSafeUniqueId(construct: Construct, maxUniqueIdLength: number = 256): string {
+  public static uniqueResourceName(construct: Construct, options: UniqueResourceNameOptions) {
     const node = Node.of(construct);
-    const components = node.scopes.slice(1).map(component => {
-      if (Stack.isStack(component) && !unresolved(component.stackName)) {
-        return component.stackName;
-      }
-      return Node.of(component).id;
-    });
-    const uniqueId = components.length > 0 ? makeUniqueId(components) : '';
-    const startIndex = Math.max(0, uniqueId.length - (maxUniqueIdLength));
-    return uniqueId.substring(startIndex);
+
+    const componentsPath = node.scopes.slice(node.scopes.indexOf(node.scopes.reverse()
+      .find(component => (Stack.isStack(component) && !unresolved(component.stackName)))!,
+    )).map(component => Stack.isStack(component) && !unresolved(component.stackName) ? component.stackName : Node.of(component).id);
+
+    return makeUniqueResourceName(componentsPath, options);
   }
 
   private constructor() {}
