@@ -455,14 +455,6 @@ describe('deploy', () => {
       await toolkit.deploy({ selector: { patterns: ['*'] } });
     });
 
-    test('with concurrency', async () => {
-      // GIVEN
-      const toolkit = defaultToolkitSetup();
-
-      // WHEN
-      await toolkit.deploy({ concurrency: 2, selector: { patterns: ['Test-Stack-A', 'Test-Stack-B'] } });
-    });
-
     test('with sns notification arns', async () => {
       // GIVEN
       const notificationArns = ['arn:aws:sns:::cfn-notifications', 'arn:aws:sns:::my-cool-topic'];
