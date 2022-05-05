@@ -633,7 +633,7 @@ export class GraphqlApi extends GraphqlApiBase {
     if (!config) return undefined;
     return {
       userPoolId: config.userPool.userPoolId,
-      awsRegion: config.userPool.stack.region,
+      awsRegion: config.userPool.env.region,
       appIdClientRegex: config.appIdClientRegex,
       defaultAction: config.defaultAction || UserPoolDefaultAction.ALLOW,
     };
