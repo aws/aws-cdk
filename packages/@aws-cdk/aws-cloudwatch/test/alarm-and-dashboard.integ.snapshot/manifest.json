@@ -1,0 +1,40 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-cloudwatch-alarms": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-cloudwatch-alarms.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-cloudwatch-alarms/queue": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "queue"
+          }
+        ],
+        "/aws-cdk-cloudwatch-alarms/Alarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm7103F465"
+          }
+        ],
+        "/aws-cdk-cloudwatch-alarms/Dash/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DashCCD7F836"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-cloudwatch-alarms"
+    }
+  }
+}

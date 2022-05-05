@@ -56,6 +56,7 @@ async function parseCommandLineArguments() {
     .env('CDK')
     .usage('Usage: cdk -a <cdk-app> COMMAND')
     .option('app', { type: 'string', alias: 'a', desc: 'REQUIRED: command-line for executing your app or a cloud assembly directory (e.g. "node bin/my-app.js")', requiresArg: true })
+    .option('build', { type: 'string', desc: 'Command-line for a pre-synth build' })
     .option('context', { type: 'array', alias: 'c', desc: 'Add contextual string parameter (KEY=VALUE)', nargs: 1, requiresArg: true })
     .option('plugin', { type: 'array', alias: 'p', desc: 'Name or path of a node package that extend the CDK features. Can be specified multiple times', nargs: 1 })
     .option('trace', { type: 'boolean', desc: 'Print trace for stack warnings' })
@@ -147,6 +148,35 @@ async function parseCommandLineArguments() {
           "Only in effect if specified alongside the '--watch' option",
       })
       .option('concurrency', { type: 'number', desc: 'Maximum number of simulatenous deployments (dependency permitting) to execute.', default: 1, requiresArg: true }),
+    )
+    .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) => yargs
+      .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
+      .option('change-set-name', { type: 'string', desc: 'Name of the CloudFormation change set to create' })
+      .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack to create', requiresArg: true })
+      .option('rollback', {
+        type: 'boolean',
+        desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. " +
+          'Note: do **not** disable this flag for deployments with resource replacements, as that will always fail',
+      })
+      .option('force', {
+        alias: 'f',
+        type: 'boolean',
+        desc: 'Do not abort if the template diff includes updates or deletes. This is probably safe but we\'re not sure, let us know how it goes.',
+      })
+      .option('record-resource-mapping', {
+        type: 'string',
+        alias: 'r',
+        requiresArg: true,
+        desc: 'If specified, CDK will generate a mapping of existing physical resources to CDK resources to be imported as. The mapping ' +
+          'will be written in the given file path. No actual import operation will be performed',
+      })
+      .option('resource-mapping', {
+        type: 'string',
+        alias: 'm',
+        requiresArg: true,
+        desc: 'If specified, CDK will use the given file to map physical resources to CDK resources for import, instead of interactively ' +
+          'asking the user. Can be run from scripts',
+      }),
     )
     .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", (yargs: Argv) => yargs
       // I'm fairly certain none of these options, present for 'deploy', make sense for 'watch':
@@ -253,8 +283,7 @@ async function initCommandLine() {
 
   if (shouldDisplayNotices()) {
     void refreshNotices()
-      .then(_ => debug('Notices refreshed'))
-      .catch(e => debug(`Notices refresh failed: ${e}`));
+      .catch(e => debug(`Could not refresh notices: ${e}`));
   }
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
@@ -343,8 +372,8 @@ async function initCommandLine() {
       throw new Error('You must either specify a list of Stacks or the `--all` argument');
     }
 
-    args.STACKS = args.STACKS || [];
-    args.ENVIRONMENTS = args.ENVIRONMENTS || [];
+    args.STACKS = args.STACKS ?? (args.STACK ? [args.STACK] : []);
+    args.ENVIRONMENTS = args.ENVIRONMENTS ?? [];
 
     const selector: StackSelector = {
       allTopLevel: args.all,
@@ -445,6 +474,20 @@ async function initCommandLine() {
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,
+        });
+
+      case 'import':
+        return cli.import({
+          selector,
+          toolkitStackName,
+          roleArn: args.roleArn,
+          execute: args.execute,
+          changeSetName: args.changeSetName,
+          progress: configuration.settings.get(['progress']),
+          rollback: configuration.settings.get(['rollback']),
+          recordResourceMapping: args['record-resource-mapping'],
+          resourceMappingFile: args['resource-mapping'],
+          force: args.force,
         });
 
       case 'watch':

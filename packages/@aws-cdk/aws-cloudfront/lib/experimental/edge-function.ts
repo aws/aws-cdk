@@ -55,7 +55,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     super(scope, id);
 
     // Create a simple Function if we're already in us-east-1; otherwise create a cross-region stack.
-    const regionIsUsEast1 = !Token.isUnresolved(this.stack.region) && this.stack.region === 'us-east-1';
+    const regionIsUsEast1 = !Token.isUnresolved(this.env.region) && this.env.region === 'us-east-1';
     const { edgeFunction, edgeArn } = regionIsUsEast1
       ? this.createInRegionFunction(props)
       : this.createCrossRegionFunction(id, props);
@@ -115,6 +115,9 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public grantInvoke(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvoke(identity);
   }
+  public grantInvokeUrl(identity: iam.IGrantable): iam.Grant {
+    return this.lambda.grantInvokeUrl(identity);
+  }
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.lambda.metric(metricName, { ...props, region: EdgeFunction.EDGE_REGION });
   }
@@ -136,6 +139,9 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   }
   public configureAsyncInvoke(options: lambda.EventInvokeConfigOptions): void {
     return this.lambda.configureAsyncInvoke(options);
+  }
+  public addFunctionUrl(options?: lambda.FunctionUrlOptions): lambda.FunctionUrl {
+    return this.lambda.addFunctionUrl(options);
   }
 
   /** Create a function in-region */

@@ -1,0 +1,90 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "FlinkAppCodeFromBucketTest": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "FlinkAppCodeFromBucketTest.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/FlinkAppCodeFromBucketTest": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577",
+              "id": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577",
+              "packaging": "zip",
+              "sourceHash": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577",
+              "s3BucketParameter": "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3BucketEBA17A67",
+              "s3KeyParameter": "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3VersionKey5922697E",
+              "artifactHashParameter": "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577ArtifactHash211A4F2F"
+            }
+          }
+        ],
+        "/FlinkAppCodeFromBucketTest/AssetParameters/8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3BucketEBA17A67"
+          }
+        ],
+        "/FlinkAppCodeFromBucketTest/AssetParameters/8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3VersionKey5922697E"
+          }
+        ],
+        "/FlinkAppCodeFromBucketTest/AssetParameters/8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577ArtifactHash211A4F2F"
+          }
+        ],
+        "/FlinkAppCodeFromBucketTest/App/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppRole1AF9B530"
+          }
+        ],
+        "/FlinkAppCodeFromBucketTest/App/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppRoleDefaultPolicy9CADBAA1"
+          }
+        ],
+        "/FlinkAppCodeFromBucketTest/App/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppF1B96344"
+          }
+        ],
+        "/FlinkAppCodeFromBucketTest/App/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppLogGroupC72EEC8C"
+          }
+        ],
+        "/FlinkAppCodeFromBucketTest/App/LogStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppLogStream3CAF66A7"
+          }
+        ],
+        "/FlinkAppCodeFromBucketTest/App/LoggingOption": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppLoggingOption75BE995E"
+          }
+        ]
+      },
+      "displayName": "FlinkAppCodeFromBucketTest"
+    }
+  }
+}

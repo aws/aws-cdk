@@ -1,0 +1,58 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "lambda-invoke-action-test-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-invoke-action-test-stack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/lambda-invoke-action-test-stack/MyInput/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyInput08947B23"
+          }
+        ],
+        "/lambda-invoke-action-test-stack/MyFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionServiceRole3C357FF2"
+          }
+        ],
+        "/lambda-invoke-action-test-stack/MyFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction3BAA72D1"
+          }
+        ],
+        "/lambda-invoke-action-test-stack/MyDetectorModel/DetectorModelRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDetectorModelDetectorModelRoleF2FB4D88"
+          }
+        ],
+        "/lambda-invoke-action-test-stack/MyDetectorModel/DetectorModelRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDetectorModelDetectorModelRoleDefaultPolicy82887422"
+          }
+        ],
+        "/lambda-invoke-action-test-stack/MyDetectorModel/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDetectorModel559C0B0E"
+          }
+        ]
+      },
+      "displayName": "lambda-invoke-action-test-stack"
+    }
+  }
+}
