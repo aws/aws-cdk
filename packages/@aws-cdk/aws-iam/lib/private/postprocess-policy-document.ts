@@ -161,7 +161,7 @@ function sortPrincipals<A>(xs?: string | string[] | Record<string, A | A[]>): ty
 }
 
 /**
- * Sort the values in the list
+ * Sort the values in the list by the JSON representation, removing duplicates.
  *
  * Mutates in place AND returns the mutated list.
  */
