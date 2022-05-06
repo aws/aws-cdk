@@ -2,16 +2,12 @@
 
 Constructs for creating Timestream databases, tables, and scheduled queries.
 
-## Database
-
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-
 
 > **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always
 > stable and safe to use.
 >
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
+> [cfn resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
 
 <!-- -->
 
@@ -23,16 +19,12 @@ Constructs for creating Timestream databases, tables, and scheduled queries.
 
 ---
 
+```ts
 new Database(scope, "TimestreamDatabase", {
   databaseName: "iot_data",
   kmsKey: key,
 });
 ```
-
-## Table
-
-Creating a simple table can be done with just a database reference.
-
 
 Constructs for creating Timestream databases, tables, and scheduled queries.
 
@@ -102,7 +94,6 @@ new Table(scope, "TimestreamTable", {
 
 ### Retention Properties
 
-
 The retention duration for the memory store and magnetic store.
 
 ```ts
@@ -120,7 +111,7 @@ new Table(scope, "TimestreamTable", {
 Create a scheduled query that will be run on your behalf at the configured schedule. Timestream assumes the execution role provided as part of the ScheduledQueryExecutionRoleArn parameter to run the query. You can use the NotificationTopic parameter for notifications for your scheduled query operations.
 
 ```ts
-import * as events from '@aws-cdk/aws-events';
+import * as events from "@aws-cdk/aws-events";
 declare const table: Table;
 declare const topic: sns.Topic;
 declare const bucket: s3.Bucket;
@@ -134,23 +125,23 @@ new ScheduledQuery(scope, "ScheduledQuery", {
   scheduledQueryName: "Test_Query",
   notificationTopic: topic,
   targetConfiguration: {
-      dimensionMappings: [
+    dimensionMappings: [
+      {
+        name: "name",
+        dimensionValueType: "VARCHAR",
+      },
+    ],
+    multiMeasureMappings: {
+      targetMultiMeasureName: "test",
+      multiMeasureAttributeMappings: [
         {
-          name: "name",
-          dimensionValueType: "VARCHAR",
+          measureValueType: "VARCHAR",
+          sourceColumn: "amount",
         },
       ],
-      multiMeasureMappings: {
-        targetMultiMeasureName: "test",
-        multiMeasureAttributeMappings: [
-          {
-            measureValueType: "VARCHAR",
-            sourceColumn: "amount",
-          },
-        ],
-      },
-      table: table,
-      timeColumn: "time",
+    },
+    table: table,
+    timeColumn: "time",
   },
   schedule: events.Schedule.rate(Duration.days(1)),
   executionRole: role,
