@@ -431,6 +431,39 @@ test('setting NLB deployment controller', () => {
   });
 });
 
+test('setting custom healthcheck in NLBFargateService', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+  // WHEN
+  new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+    cluster,
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+    },
+    healthCheck: {
+      command: ['CMD-SHELL', 'curl -f http://localhost:8080/ping || exit 1'],
+      interval: cdk.Duration.minutes(1),
+      retries: 3,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+    ContainerDefinitions: [
+      Match.objectLike({
+        HealthCheck: {
+          Command: ['CMD-SHELL', 'curl -f http://localhost:8080/ping || exit 1'],
+          Interval: 60,
+          Retries: 3,
+        },
+      }),
+    ],
+  });
+});
+
 test('setting ALB circuitBreaker works', () => {
   // GIVEN
   const stack = new cdk.Stack();
