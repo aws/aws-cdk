@@ -1,6 +1,7 @@
-import * as crypto from 'crypto';
+import { CfnResourceShare } from '@aws-cdk/aws-ram';
 import * as cdk from '@aws-cdk/core';
 import { IAttributeGroup } from './attribute-group';
+import { getPrincipalsforSharing, hashValues, ShareOptions } from './common';
 import { InputValidator } from './private/validation';
 import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } from './servicecatalogappregistry.generated';
 
@@ -35,6 +36,12 @@ export interface IApplication extends cdk.IResource {
    * @param stack a CFN stack
    */
   associateStack(stack: cdk.Stack): void;
+
+  /**
+   * Share this resource with other IAM entities, accounts, or OUs.
+   * @param shareOptions The options for the share.
+   */
+   shareResource(shareOptions: ShareOptions): void;
 }
 
 /**
@@ -89,6 +96,22 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
       });
       this.associatedResources.add(stack.node.addr);
     }
+  }
+
+  /**
+   * Share application resource with target accounts.
+   * The application will become available to end users within targetss.
+   * @param shareOptions 
+   */
+  public shareResource(shareOptions: ShareOptions): void {
+    const principals = getPrincipalsforSharing(shareOptions);
+    const shareName = `RAMShare${hashValues(this.node.addr,...principals)}`;
+    new CfnResourceShare(this, shareName, {
+      name: shareName,
+      allowExternalPrincipals: shareOptions.allowExternalPrincipals ?? true,
+      principals: principals,
+      resourceArns: [this.applicationArn],
+    });
   }
 
   /**
@@ -158,13 +181,4 @@ export class Application extends ApplicationBase {
     InputValidator.validateRegex(this.node.path, 'application name', /^[a-zA-Z0-9-_]+$/, props.applicationName);
     InputValidator.validateLength(this.node.path, 'application description', 0, 1024, props.description);
   }
-}
-
-/**
- * Generates a unique hash identfifer using SHA256 encryption algorithm
- */
-function hashValues(...values: string[]): string {
-  const sha256 = crypto.createHash('sha256');
-  values.forEach(val => sha256.update(val));
-  return sha256.digest('hex').slice(0, 12);
 }
