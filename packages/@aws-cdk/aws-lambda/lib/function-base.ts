@@ -1,16 +1,22 @@
+import { createHash } from 'crypto';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ArnFormat, ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
+import { Annotations, ArnFormat, ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
 import { AliasOptions } from './alias';
 import { Architecture } from './architecture';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
+import { FunctionUrlAuthType, FunctionUrlOptions, FunctionUrl } from './function-url';
 import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 import { addAlias, flatMap } from './util';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
@@ -63,6 +69,14 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   readonly architecture: Architecture;
 
   /**
+   * The ARN(s) to put into the resource field of the generated IAM policy for grantInvoke().
+   *
+   * This property is for cdk modules to consume only. You should not need to use this property.
+   * Instead, use grantInvoke() directly.
+   */
+  readonly resourceArnsForGrantInvoke: string[];
+
+  /**
    * Adds an event source that maps to this AWS Lambda function.
    * @param id construct ID
    * @param options mapping options
@@ -85,6 +99,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    * Grant the given identity permissions to invoke this Lambda
    */
   grantInvoke(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to invoke this Lambda Function URL
+   */
+  grantInvokeUrl(identity: iam.IGrantable): iam.Grant;
 
   /**
    * Return the given named metric for this Lambda
@@ -129,6 +148,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    * Configures options for asynchronous invocation.
    */
   configureAsyncInvoke(options: EventInvokeConfigOptions): void;
+
+  /**
+   * Adds a url to this lambda function.
+   */
+  addFunctionUrl(options?: FunctionUrlOptions): FunctionUrl;
 }
 
 /**
@@ -243,6 +267,11 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   protected abstract readonly canCreatePermissions: boolean;
 
   /**
+   * The ARN(s) to put into the resource field of the generated IAM policy for grantInvoke()
+   */
+  public abstract readonly resourceArnsForGrantInvoke: string[];
+
+  /**
    * Whether the user decides to skip adding permissions.
    * The only use case is for cross-account, imported lambdas
    * where the user commits to modifying the permisssions
@@ -262,10 +291,49 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   private _latestVersion?: LatestVersion;
 
   /**
+   * Flag to delay adding a warning message until current version is invoked.
+   * @internal
+   */
+  protected _warnIfCurrentVersionCalled: boolean = false;
+
+  /**
    * Mapping of invocation principals to grants. Used to de-dupe `grantInvoke()` calls.
    * @internal
    */
   protected _invocationGrants: Record<string, iam.Grant> = {};
+
+  /**
+   * Mapping of fucntion URL invocation principals to grants. Used to de-dupe `grantInvokeUrl()` calls.
+   * @internal
+   */
+  protected _functionUrlInvocationGrants: Record<string, iam.Grant> = {};
+
+  /**
+   * A warning will be added to functions under the following conditions:
+   * - permissions that include `lambda:InvokeFunction` are added to the unqualified function.
+   * - function.currentVersion is invoked before or after the permission is created.
+   *
+   * This applies only to permissions on Lambda functions, not versions or aliases.
+   * This function is overridden as a noOp for QualifiedFunctionBase.
+   */
+  public considerWarningOnInvokeFunctionPermissions(scope: Construct, action: string) {
+    const affectedPermissions = ['lambda:InvokeFunction', 'lambda:*', 'lambda:Invoke*'];
+    if (affectedPermissions.includes(action)) {
+      if (scope.node.tryFindChild('CurrentVersion')) {
+        this.warnInvokeFunctionPermissions(scope);
+      } else {
+        this._warnIfCurrentVersionCalled = true;
+      }
+    }
+  }
+
+  protected warnInvokeFunctionPermissions(scope: Construct): void {
+    Annotations.of(scope).addWarning([
+      "AWS Lambda has changed their authorization strategy, which may cause client invocations using the 'Qualifier' parameter of the lambda function to fail with Access Denied errors.",
+      "If you are using a lambda Version or Alias, make sure to call 'grantInvoke' or 'addPermission' on the Version or Alias, not the underlying Function",
+      'See: https://github.com/aws/aws-cdk/issues/19273',
+    ].join('\n'));
+  }
 
   /**
    * Adds a permission to the Lambda resource policy.
@@ -283,6 +351,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     const action = permission.action ?? 'lambda:InvokeFunction';
     const scope = permission.scope ?? this;
 
+    this.considerWarningOnInvokeFunctionPermissions(scope, action);
+
     new CfnPermission(scope, id, {
       action,
       principal,
@@ -290,6 +360,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       eventSourceToken: permission.eventSourceToken,
       sourceAccount: permission.sourceAccount ?? sourceAccount,
       sourceArn: permission.sourceArn ?? sourceArn,
+      functionUrlAuthType: permission.functionUrlAuthType,
     });
   }
 
@@ -344,41 +415,36 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * Grant the given identity permissions to invoke this Lambda
    */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {
-    const identifier = `Invoke${grantee.grantPrincipal}`; // calls the .toString() of the principal
+    const hash = createHash('sha256')
+      .update(JSON.stringify({
+        principal: grantee.grantPrincipal.toString(),
+        conditions: grantee.grantPrincipal.policyFragment.conditions,
+      }), 'utf8')
+      .digest('base64');
+    const identifier = `Invoke${hash}`;
 
     // Memoize the result so subsequent grantInvoke() calls are idempotent
     let grant = this._invocationGrants[identifier];
     if (!grant) {
-      grant = iam.Grant.addToPrincipalOrResource({
-        grantee,
-        actions: ['lambda:InvokeFunction'],
-        resourceArns: [this.functionArn],
-
-        // Fake resource-like object on which to call addToResourcePolicy(), which actually
-        // calls addPermission()
-        resource: {
-          addToResourcePolicy: (_statement) => {
-            // Couldn't add permissions to the principal, so add them locally.
-            this.addPermission(identifier, {
-              principal: grantee.grantPrincipal!,
-              action: 'lambda:InvokeFunction',
-            });
-
-            const permissionNode = this._functionNode().tryFindChild(identifier);
-            if (!permissionNode && !this._skipPermissions) {
-              throw new Error('Cannot modify permission to lambda function. Function is either imported or $LATEST version.\n'
-                + 'If the function is imported from the same account use `fromFunctionAttributes()` API with the `sameEnvironment` flag.\n'
-                + 'If the function is imported from a different account and already has the correct permissions use `fromFunctionAttributes()` API with the `skipPermissions` flag.');
-            }
-            return { statementAdded: true, policyDependable: permissionNode };
-          },
-          node: this.node,
-          stack: this.stack,
-          env: this.env,
-          applyRemovalPolicy: this.applyRemovalPolicy,
-        },
-      });
+      grant = this.grant(grantee, identifier, 'lambda:InvokeFunction', this.resourceArnsForGrantInvoke);
       this._invocationGrants[identifier] = grant;
+    }
+    return grant;
+  }
+
+  /**
+   * Grant the given identity permissions to invoke this Lambda Function URL
+   */
+  public grantInvokeUrl(grantee: iam.IGrantable): iam.Grant {
+    const identifier = `InvokeFunctionUrl${grantee.grantPrincipal}`; // calls the .toString() of the principal
+
+    // Memoize the result so subsequent grantInvoke() calls are idempotent
+    let grant = this._functionUrlInvocationGrants[identifier];
+    if (!grant) {
+      grant = this.grant(grantee, identifier, 'lambda:InvokeFunctionUrl', [this.functionArn], {
+        functionUrlAuthType: FunctionUrlAuthType.AWS_IAM,
+      });
+      this._functionUrlInvocationGrants[identifier] = grant;
     }
     return grant;
   }
@@ -393,6 +459,13 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     }
 
     new EventInvokeConfig(this, 'EventInvokeConfig', {
+      function: this,
+      ...options,
+    });
+  }
+
+  public addFunctionUrl(options?: FunctionUrlOptions): FunctionUrl {
+    return new FunctionUrl(this, 'FunctionUrl', {
       function: this,
       ...options,
     });
@@ -426,6 +499,47 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       return false;
     }
     return this.stack.splitArn(this.functionArn, ArnFormat.SLASH_RESOURCE_NAME).account === this.stack.account;
+  }
+
+  private grant(
+    grantee: iam.IGrantable,
+    identifier:string,
+    action: string,
+    resourceArns: string[],
+    permissionOverrides?: Partial<Permission>,
+  ): iam.Grant {
+    const grant = iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions: [action],
+      resourceArns,
+
+      // Fake resource-like object on which to call addToResourcePolicy(), which actually
+      // calls addPermission()
+      resource: {
+        addToResourcePolicy: (_statement) => {
+          // Couldn't add permissions to the principal, so add them locally.
+          this.addPermission(identifier, {
+            principal: grantee.grantPrincipal!,
+            action: action,
+            ...permissionOverrides,
+          });
+
+          const permissionNode = this._functionNode().tryFindChild(identifier);
+          if (!permissionNode && !this._skipPermissions) {
+            throw new Error('Cannot modify permission to lambda function. Function is either imported or $LATEST version.\n'
+              + 'If the function is imported from the same account use `fromFunctionAttributes()` API with the `sameEnvironment` flag.\n'
+              + 'If the function is imported from a different account and already has the correct permissions use `fromFunctionAttributes()` API with the `skipPermissions` flag.');
+          }
+          return { statementAdded: true, policyDependable: permissionNode };
+        },
+        node: this.node,
+        stack: this.stack,
+        env: this.env,
+        applyRemovalPolicy: this.applyRemovalPolicy,
+      },
+    });
+
+    return grant;
   }
 
   /**
@@ -526,6 +640,10 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
     return this.lambda.latestVersion;
   }
 
+  public get resourceArnsForGrantInvoke() {
+    return [this.functionArn];
+  }
+
   public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
     if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
       throw new Error(`An EventInvokeConfig has already been configured for the qualified function at ${this.node.path}`);
@@ -536,6 +654,11 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
       qualifier: this.qualifier,
       ...options,
     });
+  }
+
+  public considerWarningOnInvokeFunctionPermissions(_scope: Construct, _action: string): void {
+    // noOp
+    return;
   }
 }
 
@@ -578,11 +701,15 @@ class LatestVersion extends FunctionBase implements IVersion {
     return this.lambda.role;
   }
 
-  public addAlias(aliasName: string, options: AliasOptions = {}) {
-    return addAlias(this, this, aliasName, options);
-  }
-
   public get edgeArn(): never {
     throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+  }
+
+  public get resourceArnsForGrantInvoke() {
+    return [this.functionArn];
+  }
+
+  public addAlias(aliasName: string, options: AliasOptions = {}) {
+    return addAlias(this, this, aliasName, options);
   }
 }

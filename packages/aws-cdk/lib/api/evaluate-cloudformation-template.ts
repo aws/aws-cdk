@@ -1,4 +1,3 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { ISDK } from './aws-auth';
 
@@ -43,7 +42,7 @@ export interface ResourceDefinition {
 }
 
 export interface EvaluateCloudFormationTemplateProps {
-  readonly stackArtifact: cxapi.CloudFormationStackArtifact;
+  readonly template: Template;
   readonly parameters: { [parameterName: string]: string };
   readonly account: string;
   readonly region: string;
@@ -54,8 +53,8 @@ export interface EvaluateCloudFormationTemplateProps {
 
 export class EvaluateCloudFormationTemplate {
   private readonly stackResources: ListStackResources;
-  private readonly template: { [section: string]: { [headings: string]: any } };
-  private readonly context: { [k: string]: string };
+  private readonly template: Template;
+  private readonly context: { [k: string]: any };
   private readonly account: string;
   private readonly region: string;
   private readonly partition: string;
@@ -64,7 +63,7 @@ export class EvaluateCloudFormationTemplate {
 
   constructor(props: EvaluateCloudFormationTemplateProps) {
     this.stackResources = props.listStackResources;
-    this.template = props.stackArtifact.template;
+    this.template = props.template;
     this.context = {
       'AWS::AccountId': props.account,
       'AWS::Region': props.region,
@@ -75,6 +74,23 @@ export class EvaluateCloudFormationTemplate {
     this.region = props.region;
     this.partition = props.partition;
     this.urlSuffix = props.urlSuffix;
+  }
+
+  // clones current EvaluateCloudFormationTemplate object, but updates the stack name
+  public createNestedEvaluateCloudFormationTemplate(
+    listNestedStackResources: ListStackResources,
+    nestedTemplate: Template,
+    nestedStackParameters: { [parameterName: string]: any },
+  ) {
+    return new EvaluateCloudFormationTemplate({
+      template: nestedTemplate,
+      parameters: nestedStackParameters,
+      account: this.account,
+      region: this.region,
+      partition: this.partition,
+      urlSuffix: this.urlSuffix,
+      listStackResources: listNestedStackResources,
+    });
   }
 
   public async establishResourcePhysicalName(logicalId: string, physicalNameInCfnTemplate: any): Promise<string | undefined> {
@@ -309,6 +325,8 @@ export class EvaluateCloudFormationTemplate {
   }
 }
 
+export type Template = { [section: string]: { [headings: string]: any } };
+
 interface ArnParts {
   readonly partition: string;
   readonly service: string;
@@ -342,6 +360,7 @@ const RESOURCE_TYPE_ATTRIBUTES_FORMATS: { [type: string]: { [attribute: string]:
     // the name attribute of the EventBus is the same as the Ref
     Name: parts => parts.resourceName,
   },
+  'AWS::DynamoDB::Table': { Arn: stdSlashResourceArnFmt },
   'AWS::AppSync::GraphQLApi': { ApiId: appsyncGraphQlApiApiIdFmt },
 };
 
@@ -389,7 +408,7 @@ async function asyncGlobalReplace(str: string, regex: RegExp, cb: (x: string) =>
 
     start = regex.lastIndex;
   }
-  ret.push(str.substr(start));
+  ret.push(str.slice(start));
 
   return ret.join('');
 }

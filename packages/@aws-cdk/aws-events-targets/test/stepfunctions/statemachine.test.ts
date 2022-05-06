@@ -68,12 +68,12 @@ test('Existing role can be used for State machine Rule target', () => {
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
     definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) }),
-    role,
   });
 
   // WHEN
   rule.addTarget(new targets.SfnStateMachine(stateMachine, {
     input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
+    role: role,
   }));
 
   // THEN
@@ -125,13 +125,13 @@ test('specifying retry policy', () => {
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
     definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) }),
-    role,
   });
 
   rule.addTarget(new targets.SfnStateMachine(stateMachine, {
     input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
     maxEventAge: cdk.Duration.hours(2),
     retryAttempts: 2,
+    role: role,
   }));
 
   // THEN
@@ -151,7 +151,7 @@ test('specifying retry policy', () => {
         },
         RoleArn: {
           'Fn::GetAtt': [
-            'SMEventsRoleB320A902',
+            'Role1ABCC5F0',
             'Arn',
           ],
         },
@@ -176,13 +176,13 @@ test('use a Dead Letter Queue for the rule target', () => {
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
     definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) }),
-    role,
   });
 
   // WHEN
   rule.addTarget(new targets.SfnStateMachine(stateMachine, {
     input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
     deadLetterQueue: dlq,
+    role: role,
   }));
 
   // the Permission resource should be in the event stack
@@ -206,7 +206,7 @@ test('use a Dead Letter Queue for the rule target', () => {
         Input: '{"SomeParam":"SomeValue"}',
         RoleArn: {
           'Fn::GetAtt': [
-            'SMEventsRoleB320A902',
+            'Role1ABCC5F0',
             'Arn',
           ],
         },

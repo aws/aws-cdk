@@ -65,11 +65,11 @@ export abstract class Authorization {
         return {
           authorizationType: AuthorizationType.API_KEY,
           authParameters: {
-            ApiKeyAuthParameters: {
-              ApiKeyName: apiKeyName,
-              ApiKeyValue: apiKeyValue,
+            apiKeyAuthParameters: {
+              apiKeyName: apiKeyName,
+              apiKeyValue: apiKeyValue.unsafeUnwrap(), // Safe usage
             },
-          },
+          } as CfnConnection.AuthParametersProperty,
         };
       }
     }();
@@ -84,11 +84,11 @@ export abstract class Authorization {
         return {
           authorizationType: AuthorizationType.BASIC,
           authParameters: {
-            BasicAuthParameters: {
-              Username: username,
-              Password: password,
+            basicAuthParameters: {
+              username: username,
+              password: password.unsafeUnwrap(), // Safe usage
             },
-          },
+          } as CfnConnection.AuthParametersProperty,
         };
       }
     }();
@@ -107,20 +107,20 @@ export abstract class Authorization {
         return {
           authorizationType: AuthorizationType.OAUTH_CLIENT_CREDENTIALS,
           authParameters: {
-            OAuthParameters: {
-              AuthorizationEndpoint: props.authorizationEndpoint,
-              ClientParameters: {
-                ClientID: props.clientId,
-                ClientSecret: props.clientSecret,
+            oAuthParameters: {
+              authorizationEndpoint: props.authorizationEndpoint,
+              clientParameters: {
+                clientId: props.clientId,
+                clientSecret: props.clientSecret.unsafeUnwrap(), // Safe usage
               },
-              HttpMethod: props.httpMethod,
-              OAuthHttpParameters: {
-                BodyParameters: renderHttpParameters(props.bodyParameters),
-                HeaderParameters: renderHttpParameters(props.headerParameters),
-                QueryStringParameters: renderHttpParameters(props.queryStringParameters),
+              httpMethod: props.httpMethod,
+              oAuthHttpParameters: {
+                bodyParameters: renderHttpParameters(props.bodyParameters),
+                headerParameters: renderHttpParameters(props.headerParameters),
+                queryStringParameters: renderHttpParameters(props.queryStringParameters),
               },
             },
-          },
+          } as CfnConnection.AuthParametersProperty,
         };
       }
     }();
@@ -197,9 +197,9 @@ export abstract class HttpParameter {
     return new class extends HttpParameter {
       public _render(name: string) {
         return {
-          Key: name,
-          Value: value,
-        };
+          key: name,
+          value,
+        } as CfnConnection.ParameterProperty;
       }
     }();
   }
@@ -211,10 +211,10 @@ export abstract class HttpParameter {
     return new class extends HttpParameter {
       public _render(name: string) {
         return {
-          Key: name,
-          Value: value,
-          IsSecretValue: true,
-        };
+          key: name,
+          value: value.unsafeUnwrap(), // Safe usage
+          isValueSecret: true,
+        } as CfnConnection.ParameterProperty;
       }
     }();
   }
@@ -345,16 +345,16 @@ export class Connection extends Resource implements IConnection {
     const authBind = props.authorization._bind();
 
     const invocationHttpParameters = !!props.headerParameters || !!props.queryStringParameters || !!props.bodyParameters ? {
-      BodyParameters: renderHttpParameters(props.bodyParameters),
-      HeaderParameters: renderHttpParameters(props.headerParameters),
-      QueryStringParameters: renderHttpParameters(props.queryStringParameters),
+      bodyParameters: renderHttpParameters(props.bodyParameters),
+      headerParameters: renderHttpParameters(props.headerParameters),
+      queryStringParameters: renderHttpParameters(props.queryStringParameters),
     } : undefined;
 
     let connection = new CfnConnection(this, 'Connection', {
       authorizationType: authBind.authorizationType,
       authParameters: {
         ...authBind.authParameters,
-        InvocationHttpParameters: invocationHttpParameters,
+        invocationHttpParameters: invocationHttpParameters,
       },
       description: props.description,
       name: this.physicalName,
@@ -415,7 +415,7 @@ enum AuthorizationType {
   OAUTH_CLIENT_CREDENTIALS = 'OAUTH_CLIENT_CREDENTIALS',
 }
 
-function renderHttpParameters(ps?: Record<string, HttpParameter>) {
+function renderHttpParameters(ps?: Record<string, HttpParameter>): CfnConnection.ParameterProperty[] | undefined {
   if (!ps || Object.keys(ps).length === 0) { return undefined; }
 
   return Object.entries(ps).map(([name, p]) => p._render(name));

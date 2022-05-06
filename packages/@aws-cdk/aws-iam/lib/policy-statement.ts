@@ -4,6 +4,7 @@ import {
   AccountPrincipal, AccountRootPrincipal, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal,
   FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts,
 } from './principals';
+import { normalizeStatement } from './private/postprocess-policy-document';
 import { LITERAL_STRING_KEY, mergePrincipal } from './util';
 
 const ensureArrayOrUndefined = (field: any) => {
@@ -68,6 +69,9 @@ export class PolicyStatement {
   private readonly notResource = new Array<any>();
   private readonly condition: { [key: string]: any } = { };
   private principalConditionsJson?: string;
+
+  // Hold on to those principals
+  private readonly _principals = new Array<IPrincipal>();
 
   constructor(props: PolicyStatementProps = {}) {
     // Validate actions
@@ -144,6 +148,7 @@ export class PolicyStatement {
    * @param principals IAM principals that will be added
    */
   public addPrincipals(...principals: IPrincipal[]) {
+    this._principals.push(...principals);
     if (Object.keys(principals).length > 0 && Object.keys(this.notPrincipal).length > 0) {
       throw new Error('Cannot add \'Principals\' to policy statement if \'NotPrincipals\' have been added');
     }
@@ -153,6 +158,15 @@ export class PolicyStatement {
       mergePrincipal(this.principal, fragment.principalJson);
       this.addPrincipalConditions(fragment.conditions);
     }
+  }
+
+  /**
+   * Expose principals to allow their ARNs to be replaced by account ID strings
+   * in policy statements for resources policies that don't allow full account ARNs,
+   * such as AWS::Logs::ResourcePolicy.
+   */
+  public get principals(): IPrincipal[] {
+    return [...this._principals];
   }
 
   /**
@@ -296,6 +310,27 @@ export class PolicyStatement {
 
   /**
    * Add a condition to the Policy
+   *
+   * If multiple calls are made to add a condition with the same operator and field, only
+   * the last one wins. For example:
+   *
+   * ```ts
+   * declare const stmt: iam.PolicyStatement;
+   *
+   * stmt.addCondition('StringEquals', { 'aws:SomeField': '1' });
+   * stmt.addCondition('StringEquals', { 'aws:SomeField': '2' });
+   * ```
+   *
+   * Will end up with the single condition `StringEquals: { 'aws:SomeField': '2' }`.
+   *
+   * If you meant to add a condition to say that the field can be *either* `1` or `2`, write
+   * this:
+   *
+   * ```ts
+   * declare const stmt: iam.PolicyStatement;
+   *
+   * stmt.addCondition('StringEquals', { 'aws:SomeField': ['1', '2'] });
+   * ```
    */
   public addCondition(key: string, value: Condition) {
     const existingValue = this.condition[key];
@@ -304,6 +339,8 @@ export class PolicyStatement {
 
   /**
    * Add multiple conditions to the Policy
+   *
+   * See the `addCondition` function for a caveat on calling this method multiple times.
    */
   public addConditions(conditions: Conditions) {
     Object.keys(conditions).map(key => {
@@ -313,9 +350,30 @@ export class PolicyStatement {
 
   /**
    * Add a condition that limits to a given account
+   *
+   * This method can only be called once: subsequent calls will overwrite earlier calls.
    */
   public addAccountCondition(accountId: string) {
     this.addCondition('StringEquals', { 'sts:ExternalId': accountId });
+  }
+
+  /**
+   * Create a new `PolicyStatement` with the same exact properties
+   * as this one, except for the overrides
+   */
+  public copy(overrides: PolicyStatementProps = {}) {
+    return new PolicyStatement({
+      sid: overrides.sid ?? this.sid,
+      effect: overrides.effect ?? this.effect,
+      actions: overrides.actions ?? this.action,
+      notActions: overrides.notActions ?? this.notAction,
+
+      principals: overrides.principals,
+      notPrincipals: overrides.notPrincipals,
+
+      resources: overrides.resources ?? this.resource,
+      notResources: overrides.notResources ?? this.notResource,
+    });
   }
 
   /**
@@ -324,66 +382,17 @@ export class PolicyStatement {
    * Used when JSON.stringify() is called
    */
   public toStatementJson(): any {
-    return noUndef({
-      Action: _norm(this.action, { unique: true }),
-      NotAction: _norm(this.notAction, { unique: true }),
-      Condition: _norm(this.condition),
-      Effect: _norm(this.effect),
-      Principal: _normPrincipal(this.principal),
-      NotPrincipal: _normPrincipal(this.notPrincipal),
-      Resource: _norm(this.resource, { unique: true }),
-      NotResource: _norm(this.notResource, { unique: true }),
-      Sid: _norm(this.sid),
+    return normalizeStatement({
+      Action: this.action,
+      NotAction: this.notAction,
+      Condition: this.condition,
+      Effect: this.effect,
+      Principal: this.principal,
+      NotPrincipal: this.notPrincipal,
+      Resource: this.resource,
+      NotResource: this.notResource,
+      Sid: this.sid,
     });
-
-    function _norm(values: any, { unique }: { unique: boolean } = { unique: false }) {
-
-      if (typeof(values) === 'undefined') {
-        return undefined;
-      }
-
-      if (cdk.Token.isUnresolved(values)) {
-        return values;
-      }
-
-      if (Array.isArray(values)) {
-        if (!values || values.length === 0) {
-          return undefined;
-        }
-
-        if (values.length === 1) {
-          return values[0];
-        }
-
-        return unique ? [...new Set(values)] : values;
-      }
-
-      if (typeof(values) === 'object') {
-        if (Object.keys(values).length === 0) {
-          return undefined;
-        }
-      }
-
-      return values;
-    }
-
-    function _normPrincipal(principal: { [key: string]: any[] }) {
-      const keys = Object.keys(principal);
-      if (keys.length === 0) { return undefined; }
-
-      if (LITERAL_STRING_KEY in principal) {
-        return principal[LITERAL_STRING_KEY][0];
-      }
-
-      const result: any = {};
-      for (const key of keys) {
-        const normVal = _norm(principal[key]);
-        if (normVal) {
-          result[key] = normVal;
-        }
-      }
-      return result;
-    }
   }
 
   /**
@@ -587,16 +596,6 @@ export interface PolicyStatementProps {
    * @default Effect.ALLOW
    */
   readonly effect?: Effect;
-}
-
-function noUndef(x: any): any {
-  const ret: any = {};
-  for (const [key, value] of Object.entries(x)) {
-    if (value !== undefined) {
-      ret[key] = value;
-    }
-  }
-  return ret;
 }
 
 class JsonPrincipal extends PrincipalBase {

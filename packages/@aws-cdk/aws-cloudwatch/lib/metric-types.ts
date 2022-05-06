@@ -5,6 +5,15 @@ import { Duration } from '@aws-cdk/core';
  */
 export interface IMetric {
   /**
+   * Any warnings related to this metric
+   *
+   * Should be attached to the consuming construct.
+   *
+   * @default - None
+   */
+  readonly warnings?: string[];
+
+  /**
    * Inspect the details of the metric object
    */
   toMetricConfig(): MetricConfig;

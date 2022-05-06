@@ -2,7 +2,7 @@ import * as https from 'https';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
-import { debug, print } from './logging';
+import { debug, print, trace } from './logging';
 import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
 import { versionNumber } from './version';
@@ -43,13 +43,14 @@ export async function displayNotices(props: DisplayNoticesProps) {
 
 export async function generateMessage(dataSource: NoticeDataSource, props: DisplayNoticesProps) {
   const data = await dataSource.fetch();
-  const individualMessages = formatNotices(filterNotices(data, {
+  const filteredNotices = filterNotices(data, {
     outdir: props.outdir,
     acknowledgedIssueNumbers: new Set(props.acknowledgedIssueNumbers),
-  }));
+  });
 
-  if (individualMessages.length > 0) {
-    return finalMessage(individualMessages, data[0].issueNumber);
+  if (filteredNotices.length > 0) {
+    const individualMessages = formatNotices(filteredNotices);
+    return finalMessage(individualMessages, filteredNotices[0].issueNumber);
   }
   return '';
 }
@@ -105,40 +106,54 @@ export interface NoticeDataSource {
 
 export class WebsiteNoticeDataSource implements NoticeDataSource {
   fetch(): Promise<Notice[]> {
-    return new Promise((resolve) => {
+    const timeout = 3000;
+    return new Promise((resolve, reject) => {
       try {
-        const req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json', res => {
-          if (res.statusCode === 200) {
-            res.setEncoding('utf8');
-            let rawData = '';
-            res.on('data', (chunk) => {
-              rawData += chunk;
-            });
-            res.on('end', () => {
-              try {
-                const data = JSON.parse(rawData).notices as Notice[];
-                resolve(data ?? []);
-              } catch (e) {
-                debug(`Failed to parse notices: ${e}`);
-                resolve([]);
-              }
-            });
-            res.on('error', e => {
-              debug(`Failed to fetch notices: ${e}`);
-              resolve([]);
-            });
-          } else {
-            debug(`Failed to fetch notices. Status code: ${res.statusCode}`);
-            resolve([]);
-          }
+        const req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json',
+          { timeout },
+          res => {
+            if (res.statusCode === 200) {
+              res.setEncoding('utf8');
+              let rawData = '';
+              res.on('data', (chunk) => {
+                rawData += chunk;
+              });
+              res.on('end', () => {
+                try {
+                  const data = JSON.parse(rawData).notices as Notice[];
+                  if (!data) {
+                    throw new Error("'notices' key is missing");
+                  }
+                  debug('Notices refreshed');
+                  resolve(data ?? []);
+                } catch (e) {
+                  reject(new Error(`Failed to parse notices: ${e.message}`));
+                }
+              });
+              res.on('error', e => {
+                reject(new Error(`Failed to fetch notices: ${e.message}`));
+              });
+            } else {
+              reject(new Error(`Failed to fetch notices. Status code: ${res.statusCode}`));
+            }
+          });
+        req.on('error', reject);
+        req.on('timeout', () => {
+          // The 'timeout' event doesn't stop anything by itself, it just
+          // notifies that it has been long time since we saw bytes.
+          // In our case, we want to give up.
+          req.destroy(new Error('Request timed out'));
         });
-        req.on('error', e => {
-          debug(`Error on request: ${e}`);
-          resolve([]);
-        });
+
+        // It's not like I don't *trust* the 'timeout' event... but I don't trust it.
+        // Add a backup timer that will destroy the request after all.
+        // (This is at least necessary to make the tests pass, but that's probably because of 'nock'.
+        // It's not clear whether users will hit this).
+        setTimeout(() => {
+          req.destroy(new Error('Request timed out. You should never see this message; if you do, please let us know at https://github.com/aws/aws-cdk/issues'));
+        }, timeout + 200);
       } catch (e) {
-        debug(`HTTPS 'get' call threw an error: ${e}`);
-        resolve([]);
+        reject(new Error(`HTTPS 'get' call threw an error: ${e.message}`));
       }
     });
   }
@@ -149,7 +164,8 @@ interface CachedNotices {
   notices: Notice[],
 }
 
-const TIME_TO_LIVE = 60 * 60 * 1000; // 1 hour
+const TIME_TO_LIVE_SUCCESS = 60 * 60 * 1000; // 1 hour
+const TIME_TO_LIVE_ERROR = 1 * 60 * 1000; // 1 minute
 
 export class CachedDataSource implements NoticeDataSource {
   constructor(
@@ -164,26 +180,43 @@ export class CachedDataSource implements NoticeDataSource {
     const expiration = cachedData.expiration ?? 0;
 
     if (Date.now() > expiration || this.skipCache) {
-      const freshData = {
-        expiration: Date.now() + TIME_TO_LIVE,
-        notices: await this.dataSource.fetch(),
-      };
+      const freshData = await this.fetchInner();
       await this.save(freshData);
       return freshData.notices;
     } else {
+      debug(`Reading cached notices from ${this.fileName}`);
       return data;
     }
   }
 
-  private async load(): Promise<CachedNotices> {
+  private async fetchInner(): Promise<CachedNotices> {
     try {
-      return await fs.readJSON(this.fileName) as CachedNotices;
-    } catch (e) {
-      debug(`Failed to load notices from cache: ${e}`);
       return {
-        expiration: 0,
+        expiration: Date.now() + TIME_TO_LIVE_SUCCESS,
+        notices: await this.dataSource.fetch(),
+      };
+    } catch (e) {
+      debug(`Could not refresh notices: ${e}`);
+      return {
+        expiration: Date.now() + TIME_TO_LIVE_ERROR,
         notices: [],
       };
+    }
+  }
+
+  private async load(): Promise<CachedNotices> {
+    const defaultValue = {
+      expiration: 0,
+      notices: [],
+    };
+
+    try {
+      return fs.existsSync(this.fileName)
+        ? await fs.readJSON(this.fileName) as CachedNotices
+        : defaultValue;
+    } catch (e) {
+      debug(`Failed to load notices from cache: ${e}`);
+      return defaultValue;
     }
   }
 
@@ -312,7 +345,7 @@ function loadTree(outdir: string) {
   try {
     return fs.readJSONSync(path.join(outdir, 'tree.json'));
   } catch (e) {
-    debug(`Failed to get tree.json file: ${e}`);
+    trace(`Failed to get tree.json file: ${e}. Proceeding with empty tree.`);
     return {};
   }
 }

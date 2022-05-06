@@ -6,7 +6,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Stack, Token } from '@aws-cdk/core';
+import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Size, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
@@ -26,6 +26,8 @@ import { Runtime } from './runtime';
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line
 import { LogRetentionRetryOptions } from './log-retention';
+import { AliasOptions, Alias } from './alias';
+import { addAlias } from './util';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -94,6 +96,13 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default 128
    */
   readonly memorySize?: number;
+
+  /**
+   * The size of the function’s /tmp directory in MiB.
+   *
+   * @default 512 MiB
+   */
+  readonly ephemeralStorageSize?: Size;
 
   /**
    * Initial policy statements to add to the created Lambda Role.
@@ -399,6 +408,10 @@ export class Function extends FunctionBase {
       return this._currentVersion;
     }
 
+    if (this._warnIfCurrentVersionCalled) {
+      this.warnInvokeFunctionPermissions(this);
+    };
+
     this._currentVersion = new Version(this, 'CurrentVersion', {
       lambda: this,
       ...this.currentVersionOptions,
@@ -419,6 +432,10 @@ export class Function extends FunctionBase {
     }));
 
     return this._currentVersion;
+  }
+
+  public get resourceArnsForGrantInvoke() {
+    return [this.functionArn, `${this.functionArn}:*`];
   }
 
   /** @internal */
@@ -476,6 +493,7 @@ export class Function extends FunctionBase {
       public readonly role = role;
       public readonly permissionsNode = this.node;
       public readonly architecture = attrs.architecture ?? Architecture.X86_64;
+      public readonly resourceArnsForGrantInvoke = [this.functionArn, `${this.functionArn}:*`];
 
       protected readonly canCreatePermissions = attrs.sameEnvironment ?? this._isStackAccount();
       protected readonly _skipPermissions = attrs.skipPermissions ?? false;
@@ -738,6 +756,11 @@ export class Function extends FunctionBase {
     }
     this._architecture = props.architecture ?? (props.architectures && props.architectures[0]);
 
+    if (props.ephemeralStorageSize && !props.ephemeralStorageSize.isUnresolved()
+      && (props.ephemeralStorageSize.toMebibytes() < 512 || props.ephemeralStorageSize.toMebibytes() > 10240)) {
+      throw new Error(`Ephemeral storage size must be between 512 and 10240 MB, received ${props.ephemeralStorageSize}.`);
+    }
+
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
@@ -758,6 +781,9 @@ export class Function extends FunctionBase {
       // Token, actually *modifies* the 'environment' map.
       environment: Lazy.uncachedAny({ produce: () => this.renderEnvironment() }),
       memorySize: props.memorySize,
+      ephemeralStorage: props.ephemeralStorageSize ? {
+        size: props.ephemeralStorageSize.toMebibytes(),
+      } : undefined,
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(dlqTopicOrQueue),
       tracingConfig: this.buildTracingConfig(props),
@@ -933,6 +959,31 @@ export class Function extends FunctionBase {
       provisionedConcurrentExecutions: provisionedExecutions,
       ...asyncInvokeConfig,
     });
+  }
+
+  /**
+   * Defines an alias for this function.
+   *
+   * The alias will automatically be updated to point to the latest version of
+   * the function as it is being updated during a deployment.
+   *
+   * ```ts
+   * declare const fn: lambda.Function;
+   *
+   * fn.addAlias('Live');
+   *
+   * // Is equivalent to
+   *
+   * new lambda.Alias(this, 'AliasLive', {
+   *   aliasName: 'Live',
+   *   version: fn.currentVersion,
+   * });
+   *
+   * @param aliasName The name of the alias
+   * @param options Alias options
+   */
+  public addAlias(aliasName: string, options?: AliasOptions): Alias {
+    return addAlias(this, this.currentVersion, aliasName, options);
   }
 
   /**

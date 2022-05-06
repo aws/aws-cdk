@@ -454,7 +454,7 @@ test("will not perform a hotswap deployment if it doesn't know how to handle a s
     template: {
       Resources: {
         Bucket: {
-          Type: 'AWS::Lambda::Function',
+          Type: 'AWS::S3::Bucket',
         },
         Machine: {
           Type: 'AWS::StepFunctions::StateMachine',
@@ -555,6 +555,85 @@ test('knows how to handle attributes of the AWS::Events::EventBus resource', asy
       EventBus2Arn: 'arn:aws:events:here:123456789012:event-bus/my-event-bus',
       EventBus2Name: 'my-event-bus',
       EventBus2Ref: 'my-event-bus',
+    }),
+  });
+});
+
+test('knows how to handle attributes of the AWS::DynamoDB::Table resource', async () => {
+  // GIVEN
+  setup.setCurrentCfnStackTemplate({
+    Resources: {
+      Table: {
+        Type: 'AWS::DynamoDB::Table',
+        Properties: {
+          KeySchema: [{
+            AttributeName: 'name',
+            KeyType: 'HASH',
+          }],
+          AttributeDefinitions: [{
+            AttributeName: 'name',
+            AttributeType: 'S',
+          }],
+          BillingMode: 'PAY_PER_REQUEST',
+        },
+      },
+      Machine: {
+        Type: 'AWS::StepFunctions::StateMachine',
+        Properties: {
+          DefinitionString: '{}',
+          StateMachineName: 'my-machine',
+        },
+      },
+    },
+  });
+  setup.pushStackResourceSummaries(
+    setup.stackSummaryOf('Table', 'AWS::DynamoDB::Table', 'my-dynamodb-table'),
+  );
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Table: {
+          Type: 'AWS::DynamoDB::Table',
+          Properties: {
+            KeySchema: [{
+              AttributeName: 'name',
+              KeyType: 'HASH',
+            }],
+            AttributeDefinitions: [{
+              AttributeName: 'name',
+              AttributeType: 'S',
+            }],
+            BillingMode: 'PAY_PER_REQUEST',
+          },
+        },
+        Machine: {
+          Type: 'AWS::StepFunctions::StateMachine',
+          Properties: {
+            DefinitionString: {
+              'Fn::Join': ['', [
+                '{"TableName":"',
+                { Ref: 'Table' },
+                '","TableArn":"',
+                { 'Fn::GetAtt': ['Table', 'Arn'] },
+                '"}',
+              ]],
+            },
+            StateMachineName: 'my-machine',
+          },
+        },
+      },
+    },
+  });
+
+  // THEN
+  const result = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  expect(result).not.toBeUndefined();
+  expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
+    stateMachineArn: 'arn:aws:states:here:123456789012:stateMachine:my-machine',
+    definition: JSON.stringify({
+      TableName: 'my-dynamodb-table',
+      TableArn: 'arn:aws:dynamodb:here:123456789012:table/my-dynamodb-table',
     }),
   });
 });

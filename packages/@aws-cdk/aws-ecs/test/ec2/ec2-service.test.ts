@@ -1,4 +1,4 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elb from '@aws-cdk/aws-elasticloadbalancing';
@@ -1252,7 +1252,7 @@ describe('ec2 service', () => {
         memoryLimitMiB: 512,
       });
 
-      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+      new ecs.Ec2Service(stack, 'Ec2Service', {
         cluster,
         taskDefinition,
         deploymentController: {
@@ -1261,7 +1261,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(service.node.metadataEntry[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
+      Annotations.fromStack(stack).hasWarning('/Default/Ec2Service', 'taskDefinition and launchType are blanked out when using external deployment controller.');
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         Cluster: {
           Ref: 'EcsCluster97242B84',
