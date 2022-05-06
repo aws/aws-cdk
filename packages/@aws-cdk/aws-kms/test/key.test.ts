@@ -1196,6 +1196,12 @@ describe('key specs and key usages', () => {
       .toThrow('key spec \'SYMMETRIC_DEFAULT\' is not valid with usage \'SIGN_VERIFY\'');
     expect(() => new kms.Key(stack, 'Key4', { keyUsage: kms.KeyUsage.SIGN_VERIFY }))
       .toThrow('key spec \'SYMMETRIC_DEFAULT\' is not valid with usage \'SIGN_VERIFY\'');
+    expect(() => new kms.Key(stack, 'Key5', { keySpec: kms.KeySpec.ECC_NIST_P256, keyUsage: kms.KeyUsage.GENERATE_VERIFY_MAC }))
+      .toThrow('key spec \'ECC_NIST_P256\' is not valid with usage \'GENERATE_VERIFY_MAC\'');
+    expect(() => new kms.Key(stack, 'Key6', { keySpec: kms.KeySpec.RSA_2048, keyUsage: kms.KeyUsage.GENERATE_VERIFY_MAC }))
+      .toThrow('key spec \'RSA_2048\' is not valid with usage \'GENERATE_VERIFY_MAC\'');
+    expect(() => new kms.Key(stack, 'Key7', { keySpec: kms.KeySpec.SYMMETRIC_DEFAULT, keyUsage: kms.KeyUsage.GENERATE_VERIFY_MAC }))
+      .toThrow('key spec \'SYMMETRIC_DEFAULT\' is not valid with usage \'GENERATE_VERIFY_MAC\'');
   });
 
   testFutureBehavior('fails if key rotation enabled on asymmetric key', flags, cdk.App, (app) => {

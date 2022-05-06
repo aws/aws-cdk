@@ -261,6 +261,34 @@ export enum KeySpec {
   SYMMETRIC_DEFAULT = 'SYMMETRIC_DEFAULT',
 
   /**
+   * HMAC with 224 bits of key.
+   *
+   * Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY
+   */
+  HMAC_224 = 'HMAC_224',
+
+  /**
+   * HMAC with 256 bits of key.
+   *
+   * Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY
+   */
+  HMAC_256 = 'HMAC_256',
+
+  /**
+   * HMAC with 384 bits of key.
+   *
+   * Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY
+   */
+
+  HMAC_384 = 'HMAC_384',
+  /**
+   * HMAC with 512 bits of key.
+   *
+   * Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY
+   */
+  HMAC_512 = 'HMAC_512',
+
+  /**
    * RSA with 2048 bits of key.
    *
    * Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY
@@ -326,6 +354,11 @@ export enum KeyUsage {
    * Signing and verification
    */
   SIGN_VERIFY = 'SIGN_VERIFY',
+
+  /**
+   * Hash generation using HMAC
+   */
+  GENERATE_VERIFY_MAC = 'GENERATE_VERIFY_MAC',
 }
 
 /**
@@ -598,17 +631,40 @@ export class Key extends KeyBase {
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
 
+    const symmetricKeys = [
+      KeySpec.SYMMETRIC_DEFAULT,
+      KeySpec.HMAC_224,
+      KeySpec.HMAC_256,
+      KeySpec.HMAC_384,
+      KeySpec.HMAC_512,
+    ];
+
     const denyLists = {
       [KeyUsage.ENCRYPT_DECRYPT]: [
         KeySpec.ECC_NIST_P256,
         KeySpec.ECC_NIST_P384,
         KeySpec.ECC_NIST_P521,
         KeySpec.ECC_SECG_P256K1,
+        KeySpec.HMAC_224,
+        KeySpec.HMAC_256,
+        KeySpec.HMAC_384,
+        KeySpec.HMAC_512,
       ],
       [KeyUsage.SIGN_VERIFY]: [
+        ...symmetricKeys,
+      ],
+      [KeyUsage.GENERATE_VERIFY_MAC]: [
         KeySpec.SYMMETRIC_DEFAULT,
+        KeySpec.RSA_2048,
+        KeySpec.RSA_3072,
+        KeySpec.RSA_4096,
+        KeySpec.ECC_NIST_P256,
+        KeySpec.ECC_NIST_P384,
+        KeySpec.ECC_NIST_P521,
+        KeySpec.ECC_SECG_P256K1,
       ],
     };
+
     const keySpec = props.keySpec ?? KeySpec.SYMMETRIC_DEFAULT;
     const keyUsage = props.keyUsage ?? KeyUsage.ENCRYPT_DECRYPT;
     if (denyLists[keyUsage].includes(keySpec)) {
