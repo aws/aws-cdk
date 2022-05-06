@@ -292,8 +292,8 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
       indexStatements.push(`export * from './${library.shortName}';`);
     } else {
       indexStatements.push(`export * as ${library.shortName.replace(/-/g, '_')} from './${library.shortName}';`);
-      copySubmoduleExports(packageJson.exports, library, library.shortName);
     }
+    copySubmoduleExports(packageJson.exports, library, library.shortName);
   }
 
   await fs.writeFile(path.join(libRoot, 'index.ts'), indexStatements.join('\n'), { encoding: 'utf8' });
@@ -317,9 +317,11 @@ function copySubmoduleExports(targetExports: Record<string, string>, library: Li
     }
   }
 
-  // If there was an export for '.' in the original submodule, this assignment will overwrite it,
-  // which is exactly what we want.
-  targetExports[`./${unixPath(visibleName)}`] = `./${unixPath(subdirectory)}/index.js`;
+  if (visibleName !== 'core') {
+    // If there was an export for '.' in the original submodule, this assignment will overwrite it,
+    // which is exactly what we want.
+    targetExports[`./${unixPath(visibleName)}`] = `./${unixPath(subdirectory)}/index.js`;
+  }
 }
 
 async function combineRosettaFixtures(libraries: readonly LibraryReference[], uberPackageJson: PackageJson) {
