@@ -9,6 +9,10 @@
                       "path": "/Properties/Statement/Type"
                   },
                   {
+                      "op": "remove",
+                      "path": "/Properties/Statement/ItemType"
+                  },
+                  {
                       "op": "add",
                       "path": "/Properties/Statement/PrimitiveType",
                       "value": "Json"
