@@ -36,5 +36,5 @@ class TestStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new TestStack(app, 'test-kinesis-stream-action-stack');
+new TestStack(app, 'test-dynamo-d-bv2-put-item-action-stack');
 app.synth();
