@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core';
 import { CfnResourceShare } from '@aws-cdk/aws-ram';
+import * as cdk from '@aws-cdk/core';
 import { getPrincipalsforSharing, hashValues, ShareOptions } from './common';
 import { InputValidator } from './private/validation';
 import { CfnAttributeGroup } from './servicecatalogappregistry.generated';
@@ -59,14 +59,14 @@ abstract class AttributeGroupBase extends cdk.Resource implements IAttributeGrou
 
   public shareResource(shareOptions: ShareOptions): void {
     const principals = getPrincipalsforSharing(shareOptions);
-    const shareName = `RAMShare${hashValues(this.node.addr,...principals)}`;
+    const shareName = `RAMShare${hashValues(this.node.addr, ...principals)}`;
     new CfnResourceShare(this, shareName, {
       name: shareName,
       allowExternalPrincipals: shareOptions.allowExternalPrincipals ?? true,
       principals: principals,
       resourceArns: [this.attributeGroupArn],
-      });
-    }
+    });
+  }
 }
 
 /**

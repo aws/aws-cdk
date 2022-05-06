@@ -41,7 +41,7 @@ export interface IApplication extends cdk.IResource {
    * Share this resource with other IAM entities, accounts, or OUs.
    * @param shareOptions The options for the share.
    */
-   shareResource(shareOptions: ShareOptions): void;
+  shareResource(shareOptions: ShareOptions): void;
 }
 
 /**
@@ -101,11 +101,11 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   /**
    * Share application resource with target accounts.
    * The application will become available to end users within targetss.
-   * @param shareOptions 
+   * @param shareOptions
    */
   public shareResource(shareOptions: ShareOptions): void {
     const principals = getPrincipalsforSharing(shareOptions);
-    const shareName = `RAMShare${hashValues(this.node.addr,...principals)}`;
+    const shareName = `RAMShare${hashValues(this.node.addr, ...principals)}`;
     new CfnResourceShare(this, shareName, {
       name: shareName,
       allowExternalPrincipals: shareOptions.allowExternalPrincipals ?? true,
