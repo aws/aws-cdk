@@ -22,4 +22,9 @@ new Key(stack, 'AsymmetricKey', {
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
+new Key(stack, 'HmacKey', {
+  keySpec: KeySpec.HMAC_256,
+  keyUsage: KeyUsage.GENERATE_VERIFY_MAC,
+});
+
 app.synth();
