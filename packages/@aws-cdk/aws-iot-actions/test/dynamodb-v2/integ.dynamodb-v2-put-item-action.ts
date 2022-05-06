@@ -13,12 +13,12 @@ class TestStack extends cdk.Stack {
       ),
     });
 
-    const table_partition_key: dynamodb.Attribute = {
+    const tablePartitionKey: dynamodb.Attribute = {
       name: 'hashKey',
       type: dynamodb.AttributeType.STRING,
     };
 
-    const table_sort_key: dynamodb.Attribute = {
+    const tableSortKey: dynamodb.Attribute = {
       name: 'sortKey',
       type: dynamodb.AttributeType.NUMBER,
     };
@@ -27,8 +27,8 @@ class TestStack extends cdk.Stack {
       tableName: 'MyTable',
       readCapacity: 1,
       writeCapacity: 1,
-      partitionKey: table_partition_key,
-      sortKey: table_sort_key,
+      partitionKey: tablePartitionKey,
+      sortKey: tableSortKey,
     });
 
     topicRule.addAction(new actions.DynamoDBv2PutItemAction(table));
