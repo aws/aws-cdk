@@ -7,33 +7,33 @@
         "file": "tree.json"
       }
     },
-    "test-kinesis-stream-action-stack": {
+    "test-dynamo-d-bv2-put-item-action-stack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "test-kinesis-stream-action-stack.template.json",
+        "templateFile": "test-dynamo-d-bv2-put-item-action-stack.template.json",
         "validateOnSynth": false
       },
       "metadata": {
-        "/test-kinesis-stream-action-stack/TopicRule/Resource": [
+        "/test-dynamo-d-bv2-put-item-action-stack/TopicRule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TopicRule40A4EA44"
           }
         ],
-        "/test-kinesis-stream-action-stack/TopicRule/TopicRuleActionRole/Resource": [
+        "/test-dynamo-d-bv2-put-item-action-stack/TopicRule/TopicRuleActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TopicRuleTopicRuleActionRole246C4F77"
           }
         ],
-        "/test-kinesis-stream-action-stack/TopicRule/TopicRuleActionRole/DefaultPolicy/Resource": [
+        "/test-dynamo-d-bv2-put-item-action-stack/TopicRule/TopicRuleActionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687"
           }
         ],
-        "/test-kinesis-stream-action-stack/MyTable": [
+        "/test-dynamo-d-bv2-put-item-action-stack/MyTable": [
           {
             "type": "aws:cdk:hasPhysicalName",
             "data": {
@@ -41,14 +41,14 @@
             }
           }
         ],
-        "/test-kinesis-stream-action-stack/MyTable/Resource": [
+        "/test-dynamo-d-bv2-put-item-action-stack/MyTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyTable794EDED1"
           }
         ]
       },
-      "displayName": "test-kinesis-stream-action-stack"
+      "displayName": "test-dynamo-d-bv2-put-item-action-stack"
     }
   }
 }

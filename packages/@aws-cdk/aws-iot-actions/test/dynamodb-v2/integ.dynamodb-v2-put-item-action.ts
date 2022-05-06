@@ -29,6 +29,7 @@ class TestStack extends cdk.Stack {
       writeCapacity: 1,
       partitionKey: tablePartitionKey,
       sortKey: tableSortKey,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     topicRule.addAction(new actions.DynamoDBv2PutItemAction(table));

@@ -3,7 +3,7 @@
   "testCases": {
     "dynamodb-v2/integ.dynamodb-v2-put-item-action": {
       "stacks": [
-        "test-kinesis-stream-action-stack"
+        "test-dynamo-d-bv2-put-item-action-stack"
       ],
       "diffAssets": false,
       "stackUpdateWorkflow": true
