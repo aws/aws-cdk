@@ -144,7 +144,7 @@ function findLockFile(depsLockFilePath?: string): string {
   ]);
 
   if (lockFiles.length === 0) {
-    throw new Error('Cannot find a package lock file (`pnpm-lock.yaml`, `yarn.lock` or `package-lock.json`). Please specify it with `depsFileLockPath`.');
+    throw new Error('Cannot find a package lock file (`pnpm-lock.yaml`, `yarn.lock` or `package-lock.json`). Please specify it with `depsLockFilePath`.');
   }
   if (lockFiles.length > 1) {
     throw new Error(`Multiple package lock files found: ${lockFiles.join(', ')}. Please specify the desired one with \`depsFileLockPath\`.`);
