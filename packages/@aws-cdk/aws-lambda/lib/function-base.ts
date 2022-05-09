@@ -1,3 +1,4 @@
+import { createHash } from 'crypto';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -414,7 +415,13 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * Grant the given identity permissions to invoke this Lambda
    */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {
-    const identifier = `Invoke${grantee.grantPrincipal}`; // calls the .toString() of the principal
+    const hash = createHash('sha256')
+      .update(JSON.stringify({
+        principal: grantee.grantPrincipal.toString(),
+        conditions: grantee.grantPrincipal.policyFragment.conditions,
+      }), 'utf8')
+      .digest('base64');
+    const identifier = `Invoke${hash}`;
 
     // Memoize the result so subsequent grantInvoke() calls are idempotent
     let grant = this._invocationGrants[identifier];
