@@ -581,7 +581,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         return props.computeResources.spotFleetRole;
       } else if (props.computeResources.type === ComputeResourceType.SPOT) {
         return iam.Role.fromRoleArn(this, 'Resource-SpotFleet-Role',
-          `arn:${this.stack.partition}:iam::${this.stack.account}:role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet`);
+          `arn:${this.stack.partition}:iam::${this.env.account}:role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet`);
       }
     }
 
