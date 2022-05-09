@@ -9,12 +9,12 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.0",
     "@types/node": "10.17.27",
     "aws-cdk-lib": "%cdk-version%",
     "constructs": "%constructs-version%",
-    "jest": "^27.5.1",
-    "ts-jest": "^27.1.4",
+    "jest": "^28.1.0",
+    "ts-jest": "^28.0.2",
     "typescript": "~3.9.7"
   },
   "peerDependencies": {
