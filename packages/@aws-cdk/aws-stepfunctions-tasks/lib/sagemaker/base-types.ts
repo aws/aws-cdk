@@ -547,59 +547,6 @@ export interface NetworkConfig {
 }
 
 /**
- * Information about where and how you want to obtain the inputs for an processing job.
- */
-export interface S3Input {
-  /**
-   * The local path prefix where you want Amazon SageMaker to download the S3 inputs to run a processing job.
-   * If unspecified, the processing input name will be used. Data will be downloaded to:
-   * `/opt/ml/processing/inputs/s3Input/<localPathPrefix>/`
-   *
-   * @default 'ProcessingInput.inputName'
-   */
-  readonly localPathPrefix: string;
-
-  /**
-   * The compression used for Amazon S3 storage.
-   *
-   * @default S3CompressionType.NONE
-   */
-  readonly s3CompressionType?: CompressionType;
-
-  /**
-   * Whether the data stored in Amazon S3 is FullyReplicated or ShardedByS3Key.
-   *
-   * @default S3DataDistributionType.FULLY_REPLICATED
-   */
-  readonly s3DataDistributionType?: S3DataDistributionType;
-
-  /**
-   * Whether you use an S3Prefix or a ManifestFile for the data type. If you choose S3Prefix, S3Uri identifies a key
-   * name prefix. Amazon SageMaker uses all objects with the specified key name prefix for the processing job. If you
-   * choose ManifestFile, S3Uri identifies an object that is a manifest file containing a list of object keys that you
-   * want Amazon SageMaker to use for the processing job.
-   *
-   * @default S3DataType.S3_PREFIX
-   */
-  readonly s3DataType?: S3DataType;
-
-  /**
-   * Whether to use File or Pipe input mode. In File mode, Amazon SageMaker copies the data from the input source onto
-   * the local Amazon Elastic Block Store (Amazon EBS) volumes before starting your training algorithm. This is the
-   * most commonly used input mode. In Pipe mode, Amazon SageMaker streams input data from the source directly to your
-   * algorithm without using the EBS volume.
-   *
-   * @default InputMode.FILE
-   */
-  readonly s3InputMode?: InputMode;
-
-  /**
-   * The URI for the Amazon S3 storage where you want Amazon SageMaker to download the artifacts needed to run a processing job.
-   */
-  readonly s3Location: S3Location;
-}
-
-/**
  * Configuration for processing job outputs in Amazon S3.
  */
 export interface S3Output {
@@ -624,94 +571,211 @@ export interface S3Output {
   readonly s3Location: S3Location;
 }
 
-/**
- * The inputs for a processing job. The processing input must specify exactly one of either S3Input or DatasetDefinition types.
- */
-export interface ProcessingInput {
-  /**
-   * When True, output operations such as data upload are managed natively by the processing job application.
-   * When False (default when unspecified), output operations are managed by Amazon SageMaker.
-   *
-   * @default False
-   */
-  readonly appManaged?: boolean;
+export abstract class ProcessingInput {
+  readonly inputNameOverride?: string
+
+  constructor(inputNameOverride?: string) {
+    this.inputNameOverride = inputNameOverride;
+  }
+
+  public static fromAthenaDatasetDefinition(props: AthenaDatasetDefinitionProps): ProcessingInput {
+    return new AthenaDatasetDefinition(props);
+  }
+
+  public static fromRedshiftDatasetDefinition(props: RedshiftDatasetDefinitionProps ): ProcessingInput {
+    return new RedshiftDatasetDefinition(props);
+  }
+
+  public static fromS3Input(props: S3InputProps): ProcessingInput {
+    return new S3Input(props);
+  }
 
   /**
-   * Configuration for a Dataset Definition input.
-   *
-   * @default None
+   * Called when the ProcessingInput is bound to a StepFunctions task.
    */
-  readonly datasetDefinition?: DatasetDefinition;
-
-  /**
-   * The name of the inputs for the processing job.
-   *
-   * @default `input<number>`
+  public abstract bind(task: ISageMakerTask, opts: ProcessingInputBindOptions): ProcessingInputConfig;
+}
+export interface ProcessingInputBindOptions {
+   /**
+    * When True, output operations such as data upload are managed natively by the processing job application.
+    * When False (default when unspecified), output operations are managed by Amazon SageMaker.
+    *
+    * @default False
    */
-  readonly inputName?: string;
-
-  /**
-   * The S3 inputs for the processing job.
-   *
-   * @default None
+   readonly appManaged: boolean;
+   /**
+    * The name for the processing job input.
+    * 
+    * @default `input<number>`
    */
-  readonly s3Input?: S3Input;
+   readonly inputName: string;
 }
 
-/**
- * Configuration for Dataset Definition inputs. The Dataset Definition input must specify exactly one of either
- * AthenaDatasetDefinition or RedshiftDatasetDefinition types.
- */
-export interface DatasetDefinition {
+export interface ProcessingInputConfig {
   /**
-   * Configuration for Athena Dataset Definition input.
+   * Additional parameters to pass to the base task
    *
-   * @default - no definition
+   * @default - No additional parameters passed
    */
-  readonly athenaDatasetDefinition?: AthenaDatasetDefinition;
-
-  /**
-   * Whether the generated dataset is FullyReplicated or ShardedByS3Key (default when unspecified).
-   *
-   * @default S3DataDistributionType.SHARDED_BY_S3_KEY
-   */
-  readonly dataDistributionType?: S3DataDistributionType;
-
-  /**
-   * Whether to use File or Pipe input mode. In File (default) mode, Amazon SageMaker copies the data from the input
-   * source onto the local Amazon Elastic Block Store (Amazon EBS) volumes before starting your training algorithm.
-   * This is the most commonly used input mode. In Pipe mode, Amazon SageMaker streams input data from the source
-   * directly to your algorithm without using the EBS volume.
-   *
-   * @default 'File'
-   */
-  readonly inputMode?: InputMode;
-
-  /**
-   * The local path prefix where you want Amazon SageMaker to download the Dataset Definition inputs to run a processing job.
-   * If unspecified, the processing input name will be used as the localPathPrefix . Data will be downloaded to:
-   * `/opt/ml/processing/inputs/datasetDefinition/<localPathPrefix>/`
-   *
-   * @default 'ProcessingInput.inputName'
-   */
-  readonly localPathPrefix?: string;
-
-  /**
-   * Configuration for Redshift Dataset Definition input.
-   *
-   * @default - no dataset definition
-   */
-  readonly redshiftDatasetDefinition?: RedshiftDatasetDefinition;
+  readonly parameters?: { [key: string]: any };
 }
 
-/**
- * Configuration for Athena Dataset Definition input.
- */
-export interface AthenaDatasetDefinition {
-  /**
-   * The name of the data catalog used in Athena query execution.
-   */
-  readonly catalog: string;
+class S3Input extends ProcessingInput {
+   readonly localPathPrefix?: string;
+   readonly s3CompressionType?: CompressionType;
+   readonly s3DataDistributionType?: S3DataDistributionType;
+   readonly s3DataType?: S3DataType;
+   readonly s3InputMode?: InputMode;
+   readonly s3Location: S3Location;
+
+  constructor(props: S3InputProps) {
+    super(props.inputNameOverride);
+    if (props.localPathPrefix) {
+      this.localPathPrefix = props.localPathPrefix;
+    }
+    this.s3CompressionType = props.s3CompressionType ?? CompressionType.NONE;
+    this.s3DataDistributionType = props.s3DataDistributionType ?? S3DataDistributionType.FULLY_REPLICATED;
+    this.s3DataType = props.s3DataType ?? S3DataType.S3_PREFIX;
+    this.s3InputMode = props.s3InputMode ?? InputMode.FILE;
+    this.s3Location = props.s3Location;
+  }
+
+  public bind(task: ISageMakerTask, opts: ProcessingInputBindOptions): ProcessingInputConfig {
+    return {
+      parameters: {
+        AppManaged: opts.appManaged,
+        InputName: opts.inputName,
+        S3Input: {
+            LocalPath: `/opt/ml/processing/inputs/s3/${this.localPathPrefix ?? opts.inputName}/`,
+            S3CompressionType: this.s3CompressionType,
+            S3DataDistributionType: this.s3DataDistributionType,
+            S3DataType: this.s3DataType,
+            S3InputMode: this.s3InputMode,
+            S3Uri: this.s3Location.bind(task, { forReading: true }).uri,
+        }
+      }
+    };
+  }
+}
+
+class AthenaDatasetDefinition extends ProcessingInput {
+   readonly catalog: string;
+   readonly workGroup?: string;
+   readonly database: string;
+   readonly encryptionKey?: kms.IKey;
+   readonly outputCompression?: AthenaOutputCompressionType;
+   readonly outputFormat?: AthenaOutputFormat;
+   readonly s3Location: S3Location;
+   readonly queryString: string;
+   readonly dataDistributionType?: S3DataDistributionType;
+   readonly inputMode?: InputMode;
+   readonly localPathPrefix?: string;
+
+  constructor(props: AthenaDatasetDefinitionProps ) {
+    super(props.inputNameOverride);
+    if (props.workGroup) {
+      this.workGroup = props.workGroup;
+    }
+    if (props.encryptionKey) {
+      this.encryptionKey = props.encryptionKey;
+    }
+    this.catalog = props.catalog;
+    this.database = props.database
+    this.s3Location = props.s3Location
+    this.queryString = props.queryString
+  }
+
+  public bind(task: ISageMakerTask, opts: ProcessingInputBindOptions): ProcessingInputConfig {
+    return {
+      parameters: {
+        AppManaged: opts.appManaged ?? false,
+        InputName: opts.inputName,
+        DatasetDefinition: {
+          AthenaDatasetDefinition: {
+            Catalog: this.catalog,
+            Database: this.database,
+            KmsKeyId: this.encryptionKey?.keyId,
+            ...(this.encryptionKey) ? {
+              KmsKeyId: this.encryptionKey.keyId,
+            } : {},
+            ...(this.outputCompression) ? {
+              OutputCompression: this.outputCompression,
+            } : {},
+            OutputFormat: this.outputFormat ?? AthenaOutputFormat.PARQUET,
+            OutputS3Uri: this.s3Location.bind(task, { forReading: true }).uri,
+            QueryString: this.queryString,
+            ...(this.workGroup) ? {
+              WorkGroup: this.workGroup,
+            } : {},
+          }
+        }
+      }
+    };
+  }
+}
+
+class RedshiftDatasetDefinition extends ProcessingInput {
+   readonly dbUser: string;
+   readonly clusterId: string;
+   readonly clusterRole: iam.IRole;
+   readonly database: string;
+   readonly encryptionKey?: kms.IKey;
+   readonly outputCompression?: AthenaOutputCompressionType;
+   readonly outputFormat?: AthenaOutputFormat;
+   readonly s3Location: S3Location;
+   readonly queryString: string;
+   readonly dataDistributionType?: S3DataDistributionType;
+   readonly inputMode?: InputMode;
+   readonly localPathPrefix?: string;
+
+  constructor(props: RedshiftDatasetDefinitionProps) {
+    super(props.inputNameOverride);
+    this.clusterId = props.clusterId;
+    this.dbUser = props.dbUser;
+    this.clusterRole = props.clusterRole;
+    if (props.encryptionKey) {
+      this.encryptionKey = props.encryptionKey;
+    }
+    if (props.outputCompression) {
+      this.outputCompression = props.outputCompression;
+    }
+    this.outputFormat = props.outputFormat ?? AthenaOutputFormat.PARQUET
+    this.dataDistributionType = props.dataDistributionType ?? S3DataDistributionType.FULLY_REPLICATED;
+    this.inputMode = props.inputMode ?? InputMode.FILE;
+    this.localPathPrefix = props.localPathPrefix;
+    this.database = props.database;
+    this.s3Location = props.s3Location;
+    this.queryString = props.queryString;
+  }
+
+  public bind(task: ISageMakerTask, opts: ProcessingInputBindOptions): ProcessingInputConfig {
+    return {
+      parameters: {
+        AppManaged: opts.appManaged,
+        InputName: opts.inputName,
+        DatasetDefinition: {
+          RedshiftDatasetDefinition: {
+            ClusterId: this.clusterId,
+            ClusterRoleArn: this.clusterRole.roleArn,
+            Database: this.database,
+            DbUser: this.dbUser,
+            KmsKeyId: this.encryptionKey?.keyId,
+            ...(this.encryptionKey) ? {
+              KmsKeyId: this.encryptionKey.keyId,
+            } : {},
+            OutputCompression: this.outputCompression ?? RedshiftCompressionType.NONE,
+            OutputFormat: this.outputFormat,
+            OutputS3Uri: this.s3Location.bind(task, { forReading: true }).uri,
+            QueryString: this.queryString,
+          }
+        }
+      }
+    };
+  }
+}
+
+export interface DatasetDefinitionProps {
+  readonly inputNameOverride?: string;
 
   /**
    * The name of the database used in the Athena query execution.
@@ -750,67 +814,113 @@ export interface AthenaDatasetDefinition {
   readonly queryString: string;
 
   /**
-   * The name of the workgroup in which the Athena query is being started.
+   * Whether the generated dataset is FullyReplicated or ShardedByS3Key (default when unspecified).
    *
-   * @default None
+   * @default S3DataDistributionType.SHARDED_BY_S3_KEY
    */
-  readonly workGroup?: string;
+  readonly dataDistributionType?: S3DataDistributionType;
+
+  /**
+   * Whether to use File or Pipe input mode. In File (default) mode, Amazon SageMaker copies the data from the input
+   * source onto the local Amazon Elastic Block Store (Amazon EBS) volumes before starting your training algorithm.
+   * This is the most commonly used input mode. In Pipe mode, Amazon SageMaker streams input data from the source
+   * directly to your algorithm without using the EBS volume.
+   *
+   * @default 'File'
+   */
+  readonly inputMode?: InputMode;
+
+  /**
+   * The local path prefix where you want Amazon SageMaker to download the Dataset Definition inputs to run a processing job.
+   * If unspecified, the processing input name will be used as the localPathPrefix . Data will be downloaded to:
+   * `/opt/ml/processing/inputs/datasetDefinition/<localPathPrefix>/`
+   *
+   * @default 'ProcessingInput.inputName'
+   */
+  readonly localPathPrefix?: string;
 }
 
-/**
- * Configuration for Redshift Dataset Definition input.
- */
-export interface RedshiftDatasetDefinition {
-  /**
-   * The Redshift cluster Identifier.
-   */
-  readonly clusterId: string;
+ export interface AthenaDatasetDefinitionProps extends DatasetDefinitionProps {
+   /**
+    * The name of the data catalog used in Athena query execution.
+    */
+   readonly catalog: string;
 
-  /**
-   * The IAM role attached to your Redshift cluster that Amazon SageMaker uses to generate datasets.
-   */
-  readonly clusterRole: iam.IRole;
+   /**
+    * The name of the workgroup in which the Athena query is being started.
+    *
+    * @default None
+    */
+   readonly workGroup?: string;
+ }
 
-  /**
-   * The name of the Redshift database used in Redshift query execution.
-   */
-  readonly database: string;
+ export interface RedshiftDatasetDefinitionProps extends DatasetDefinitionProps {
+   /**
+    * The Redshift cluster Identifier.
+    */
+   readonly clusterId: string;
 
-  /**
-   * The database user name used in Redshift query execution.
-   */
-  readonly dbUser: string;
+   /**
+    * The IAM role attached to your Redshift cluster that Amazon SageMaker uses to generate datasets.
+    */
+   readonly clusterRole: iam.IRole;
 
-  /**
-   * The AWS Key Management Service (AWS KMS) key that Amazon SageMaker uses to encrypt data from a Redshift execution.
-   *
-   * @default None
-   */
-  readonly encryptionKey?: kms.IKey;
+   /**
+    * The database user name used in Redshift query execution.
+    */
+   readonly dbUser: string;
+ }
 
-  /**
-   * The compression used for Redshift query results.
-   *
-   * @default None
-   */
-  readonly outputCompression?: RedshiftCompressionType;
+export interface S3InputProps {
+   readonly inputNameOverride?: string;
 
-  /**
-   * The data storage format for Redshift query results.
-   *
-   * @default 'CSV'
-   */
-  readonly outputFormat?: RedshiftOutputFormat;
+   /**
+    * The local path prefix where you want Amazon SageMaker to download the S3 inputs to run a processing job.
+    * If unspecified, the processing input name will be used. Data will be downloaded to:
+    * `/opt/ml/processing/inputs/s3Input/<localPathPrefix>/`
+    *
+    * @default 'ProcessingInput.inputName'
+    */
+   readonly localPathPrefix?: string;
 
-  /**
-   * The location in Amazon S3 where the Redshift query results are stored.
-   */
-  readonly s3Location: S3Location;
+   /**
+    * The compression used for Amazon S3 storage.
+    *
+    * @default S3CompressionType.NONE
+    */
+   readonly s3CompressionType?: CompressionType;
 
-  /**
-   * The SQL query statements to be executed.
-   */
-  readonly queryString : string;
+   /**
+    * Whether the data stored in Amazon S3 is FullyReplicated or ShardedByS3Key.
+    *
+    * @default S3DataDistributionType.FULLY_REPLICATED
+    */
+   readonly s3DataDistributionType?: S3DataDistributionType;
+
+   /**
+    * Whether you use an S3Prefix or a ManifestFile for the data type. If you choose S3Prefix, S3Uri identifies a key
+    * name prefix. Amazon SageMaker uses all objects with the specified key name prefix for the processing job. If you
+    * choose ManifestFile, S3Uri identifies an object that is a manifest file containing a list of object keys that you
+    * want Amazon SageMaker to use for the processing job.
+    *
+    * @default S3DataType.S3_PREFIX
+    */
+   readonly s3DataType?: S3DataType;
+
+   /**
+    * Whether to use File or Pipe input mode. In File mode, Amazon SageMaker copies the data from the input source onto
+    * the local Amazon Elastic Block Store (Amazon EBS) volumes before starting your training algorithm. This is the
+    * most commonly used input mode. In Pipe mode, Amazon SageMaker streams input data from the source directly to your
+    * algorithm without using the EBS volume.
+    *
+    * @default InputMode.FILE
+    */
+   readonly s3InputMode?: InputMode;
+
+   /**
+    * The URI for the Amazon S3 storage where you want Amazon SageMaker to download the artifacts needed to run a processing job.
+    */
+   readonly s3Location: S3Location;
 }
 
 /**

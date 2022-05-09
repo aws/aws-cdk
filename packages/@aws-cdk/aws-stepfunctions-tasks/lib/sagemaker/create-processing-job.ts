@@ -6,19 +6,12 @@ import { Duration, Names, Lazy, Size, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import {
-  DatasetDefinition,
   ExperimentConfig,
-  InputMode,
   DockerImage,
   NetworkConfig,
   ProcessingInput,
   ProcessingOutput,
-  S3DataType,
   StoppingCondition,
-  CompressionType,
-  S3DataDistributionType,
-  AthenaOutputFormat,
-  RedshiftOutputFormat,
   S3UploadMode,
   ProcessingCluster,
 } from './base-types';
@@ -194,18 +187,6 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
       maxRuntime: Duration.hours(1),
     };
 
-    props.processingInputs?.forEach(input => {
-      if (input.s3Input && input.datasetDefinition || (!input.s3Input && !input.datasetDefinition)) {
-        throw new Error('ProcessingInput must contain exactly one of either S3Input or DatasetDefinition');
-      }
-
-      const athenaDefinition = input.datasetDefinition?.athenaDatasetDefinition;
-      const redshiftDefinition = input.datasetDefinition?.athenaDatasetDefinition;
-      if (!input.s3Input && ((athenaDefinition && redshiftDefinition) || (!athenaDefinition && !redshiftDefinition))) {
-        throw new Error('DatasetDefinition must contain exactly one of either AthenaDatasetDefinition or RedshiftDatasetDefinition');
-      }
-    });
-
     // validate ExperimentConfig names
     if (props.experimentConfig) {
       const experimentName = props.experimentConfig.experimentName;
@@ -345,79 +326,10 @@ export class SageMakerCreateProcessingJob extends sfn.TaskStateBase implements i
   private renderProcessingInputs(config: ProcessingInput[] | undefined): { [key: string]: any } {
     return (config) ? {
       ProcessingInputs: config.map((input, index) => {
-        const inputName = input.inputName ?? `input${index}`;
-        return {
-          AppManaged: input.appManaged ?? false,
-          InputName: inputName,
-          ...(input.datasetDefinition) ? {
-            DatasetDefinition: {
-              ...this.renderAthenaDatasetDefinition(input.datasetDefinition),
-              DataDistributionType: input.datasetDefinition.dataDistributionType ?? S3DataDistributionType.SHARDED_BY_S3_KEY,
-              InputMode: input.datasetDefinition.inputMode ?? InputMode.FILE,
-              LocalPath: `/opt/ml/processing/inputs/datasetDefinition/${input.datasetDefinition.localPathPrefix || inputName}/`,
-              ...this.renderRedshiftDatasetDefinition(input.datasetDefinition),
-            },
-          } : {},
-          S3Input: {
-            LocalPath: `/opt/ml/processing/inputs/s3/${input.s3Input?.localPathPrefix ?? inputName}/`,
-            S3CompressionType: input.s3Input?.s3CompressionType ?? CompressionType.NONE,
-            S3DataDistributionType: input.s3Input?.s3DataDistributionType ?? S3DataDistributionType.FULLY_REPLICATED,
-            S3DataType: input.s3Input?.s3DataType ?? S3DataType.S3_PREFIX,
-            S3InputMode: input.s3Input?.s3InputMode ?? InputMode.FILE,
-            S3Uri: input.s3Input?.s3Location.bind(this, { forReading: true }).uri,
-          },
-        };
+        const inputName = input.inputNameOverride ?? `input${index}`;
+        input.bind(this, { inputName: inputName, appManaged: false }).parameters
       }),
     } : {};
-  }
-
-  private renderAthenaDatasetDefinition(datasetDefinition: DatasetDefinition | undefined): { [key: string]: any } {
-    const athenaDatasetDefinition = datasetDefinition?.athenaDatasetDefinition;
-    if (athenaDatasetDefinition === undefined) { return {}; }
-
-    return {
-      DatasetDefinition: {
-        AthenaDatasetDefinition: {
-          Catalog: athenaDatasetDefinition.catalog,
-          Database: athenaDatasetDefinition.database,
-          ...(athenaDatasetDefinition.encryptionKey) ? {
-            KmsKeyId: athenaDatasetDefinition.encryptionKey.keyId,
-          } : {},
-          ...(athenaDatasetDefinition.outputCompression) ? {
-            OutputCompression: athenaDatasetDefinition.outputCompression,
-          } : {},
-          OutputFormat: athenaDatasetDefinition.outputFormat ?? AthenaOutputFormat.TEXTFILE,
-          OutputS3Uri: athenaDatasetDefinition.s3Location.bind(this, { forReading: true }).uri,
-          QueryString: athenaDatasetDefinition.queryString,
-          ...(athenaDatasetDefinition.workGroup) ? {
-            WorkGroup: athenaDatasetDefinition.workGroup,
-          } : {},
-        },
-      },
-    };
-  }
-
-  private renderRedshiftDatasetDefinition(datasetDefinition: DatasetDefinition | undefined): { [key: string]: any } {
-    const redshiftDatasetDefinition = datasetDefinition?.redshiftDatasetDefinition;
-    if (redshiftDatasetDefinition === undefined) { return {}; }
-
-    return {
-      RedshiftDatasetDefinition: {
-        ClusterId: redshiftDatasetDefinition.clusterId,
-        ClusterRoleArn: redshiftDatasetDefinition.clusterRole.roleArn,
-        Database: redshiftDatasetDefinition.database,
-        DbUser: redshiftDatasetDefinition.dbUser,
-        ...(redshiftDatasetDefinition.encryptionKey) ? {
-          KmsKeyId: redshiftDatasetDefinition.encryptionKey.keyId,
-        } : {},
-        ...(redshiftDatasetDefinition.outputCompression) ? {
-          OutputCompression: redshiftDatasetDefinition.outputCompression,
-        } : {},
-        OutputFormat: redshiftDatasetDefinition.outputFormat ?? RedshiftOutputFormat.CSV,
-        OutputS3Uri: redshiftDatasetDefinition.s3Location.bind(this, { forReading: true }).uri,
-        QueryString: redshiftDatasetDefinition.queryString,
-      },
-    };
   }
 
   private renderProcessingOutputConfig(props: SageMakerCreateProcessingJobProps): { [key: string]: any } {
