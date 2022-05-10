@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-ecs-integ": {
@@ -20,8 +20,8 @@
             "id": "production",
             "path": "aws-ecs-integ/production",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "production-environment-vpc": {
@@ -737,8 +737,8 @@
             "id": "Publisher",
             "path": "aws-ecs-integ/Publisher",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "Publisher-task-definition": {
@@ -770,7 +770,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -810,19 +810,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "@aws-cdk/aws-iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -915,7 +915,114 @@
                 "id": "app",
                 "path": "aws-ecs-integ/Publisher-task-definition/app",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
+                }
+              },
+              "ExecutionRole": {
+                "id": "ExecutionRole",
+                "path": "aws-ecs-integ/Publisher-task-definition/ExecutionRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-integ/Publisher-task-definition/ExecutionRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-ecs-integ/Publisher-task-definition/ExecutionRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-ecs-integ/Publisher-task-definition/ExecutionRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "PublisherlogsDF0C1067",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "PublishertaskdefinitionExecutionRoleDefaultPolicy681FD8E6",
+                            "roles": [
+                              {
+                                "Ref": "PublishertaskdefinitionExecutionRole5C00C542"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "Publisher-logs": {
+            "id": "Publisher-logs",
+            "path": "aws-ecs-integ/Publisher-logs",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecs-integ/Publisher-logs/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "Publisher-logs",
+                    "retentionInDays": 30
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
                   "version": "0.0.0"
                 }
               },
@@ -1235,8 +1342,8 @@
             "id": "Worker",
             "path": "aws-ecs-integ/Worker",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "EventsDeadLetterQueue": {
@@ -1410,7 +1517,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -1462,19 +1569,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "@aws-cdk/aws-iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -1561,7 +1668,114 @@
                 "id": "app",
                 "path": "aws-ecs-integ/Worker-task-definition/app",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
+                }
+              },
+              "ExecutionRole": {
+                "id": "ExecutionRole",
+                "path": "aws-ecs-integ/Worker-task-definition/ExecutionRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-integ/Worker-task-definition/ExecutionRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-ecs-integ/Worker-task-definition/ExecutionRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-ecs-integ/Worker-task-definition/ExecutionRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "Workerlogs2994AC4D",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "WorkertaskdefinitionExecutionRoleDefaultPolicy6E199B19",
+                            "roles": [
+                              {
+                                "Ref": "WorkertaskdefinitionExecutionRole3C1A1848"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "Worker-logs": {
+            "id": "Worker-logs",
+            "path": "aws-ecs-integ/Worker-logs",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecs-integ/Worker-logs/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "Worker-logs",
+                    "retentionInDays": 30
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
                   "version": "0.0.0"
                 }
               },
@@ -1825,7 +2039,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalableTarget",
                           "version": "0.0.0"
                         }
                       },
@@ -1867,13 +2081,13 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnResource",
+                              "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Construct",
+                          "fqn": "@aws-cdk/aws-applicationautoscaling.TargetTrackingScalingPolicy",
                           "version": "0.0.0"
                         }
                       },
@@ -1915,25 +2129,25 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnResource",
+                              "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Construct",
+                          "fqn": "@aws-cdk/aws-applicationautoscaling.TargetTrackingScalingPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "@aws-cdk/aws-applicationautoscaling.ScalableTarget",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
+                  "fqn": "@aws-cdk/aws-applicationautoscaling.BaseScalableAttribute",
                   "version": "0.0.0"
                 }
               }
@@ -1986,7 +2200,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -2052,19 +2266,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "@aws-cdk/aws-iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -2090,8 +2304,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "Resource": {
@@ -2227,14 +2441,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "BacklogPerTaskScheduledRule": {
@@ -2263,7 +2477,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-events.CfnRule",
                   "version": "0.0.0"
                 }
               },
@@ -2296,7 +2510,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-events.Rule",
               "version": "0.0.0"
             }
           },
