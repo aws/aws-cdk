@@ -43,8 +43,8 @@ describe('gateway response', () => {
       type: ResponseType.AUTHORIZER_FAILURE,
       statusCode: '500',
       responseHeaders: {
-        'Access-Control-Allow-Origin': 'test.com',
-        'test-key': 'test-value',
+        'Access-Control-Allow-Origin': "'test.com'",
+        'test-key': "'test-value'",
       },
     });
 
@@ -54,8 +54,8 @@ describe('gateway response', () => {
       RestApiId: stack.resolve(api.restApiId),
       StatusCode: '500',
       ResponseParameters: {
-        'gatewayresponse.header.Access-Control-Allow-Origin': 'test.com',
-        'gatewayresponse.header.test-key': 'test-value',
+        'gatewayresponse.header.Access-Control-Allow-Origin': "'test.com'",
+        'gatewayresponse.header.test-key': "'test-value'",
       },
       ResponseTemplates: Match.absent(),
     });
