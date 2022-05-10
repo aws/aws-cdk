@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-globalaccelerator",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::GlobalAccelerator",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -24,7 +25,7 @@
         "module": "aws_cdk.aws_globalaccelerator",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -93,16 +94,16 @@
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "stable",
   "maturity": "stable",
@@ -110,6 +111,6 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "latest"
+    "tag": "next"
   }
 }

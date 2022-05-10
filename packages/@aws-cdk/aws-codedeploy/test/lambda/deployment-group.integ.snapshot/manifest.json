@@ -202,6 +202,15 @@
             "type": "aws:cdk:logicalId",
             "data": "ServiceprincipalMap"
           }
+        ],
+        "HandlerCurrentVersion93FB80BF9a6cf166b667631aba3958d26c7ca1bb": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HandlerCurrentVersion93FB80BF9a6cf166b667631aba3958d26c7ca1bb",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-cdk-codedeploy-lambda"
