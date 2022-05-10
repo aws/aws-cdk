@@ -7,6 +7,6 @@ export function createCriticalSection() {
   return async (criticalFunction: () => Promise<void>) => {
     const res = lock.then(() => criticalFunction());
     lock = res.catch(e => e);
-    return res.then(v => v);
+    return res;
   };
 };
