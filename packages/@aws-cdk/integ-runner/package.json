@@ -57,7 +57,7 @@
     "mock-fs": "^4.14.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.0",
     "@types/node": "^10.17.60",
     "@types/workerpool": "^6.1.0",
     "@types/yargs": "^15.0.14",
@@ -72,7 +72,7 @@
     "aws-cdk": "0.0.0",
     "chalk": "^4",
     "fs-extra": "^9.1.0",
-    "workerpool": "^6.2.0",
+    "workerpool": "^6.2.1",
     "yargs": "^16.2.0"
   },
   "repository": {

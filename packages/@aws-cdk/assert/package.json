@@ -37,7 +37,7 @@
     "@aws-cdk/assert-internal": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.0",
     "aws-cdk-migration": "0.0.0",
     "constructs": "^3.3.69",
     "jest": "^27.3.1",
