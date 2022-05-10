@@ -268,7 +268,7 @@ export abstract class BaseLoadBalancer extends Resource {
         actions: ['s3:PutObject'],
         principals: [logsDeliveryServicePrincipal],
         resources: [
-          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.stack.account}/*`),
+          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.env.account}/*`),
         ],
         conditions: {
           StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
