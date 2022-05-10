@@ -13,6 +13,7 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import { Lazy, Size } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import * as lambda from '../lib';
@@ -555,7 +556,7 @@ describe('function', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
           Name: 'prod',
           FunctionName: { Ref: 'MyLambdaCCE802FB' },
-          FunctionVersion: { 'Fn::GetAtt': ['MyLambdaCurrentVersionE7A382CC60ef151b20ae483ee1018f73f30bc10e', 'Version'] },
+          FunctionVersion: { 'Fn::GetAtt': ['MyLambdaCurrentVersionE7A382CC5ca259556a03e0d5ebc2a4851a980d87', 'Version'] },
         });
       });
 
@@ -600,7 +601,12 @@ describe('function', () => {
 
   test('Lambda code can be read from a local directory via an asset', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App({
+      context: {
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const stack = new cdk.Stack(app);
     new lambda.Function(stack, 'MyLambda', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',

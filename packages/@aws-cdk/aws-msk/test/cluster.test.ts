@@ -212,48 +212,32 @@ describe('MSK Cluster', () => {
       test('with a policy allowing the secrets manager service to use the key', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
           KeyPolicy: {
-            Statement: [
+            'Statement': [
               {
-                Action: [
-                  'kms:Create*',
-                  'kms:Describe*',
-                  'kms:Enable*',
-                  'kms:List*',
-                  'kms:Put*',
-                  'kms:Update*',
-                  'kms:Revoke*',
-                  'kms:Disable*',
-                  'kms:Get*',
-                  'kms:Delete*',
-                  'kms:ScheduleKeyDeletion',
-                  'kms:CancelKeyDeletion',
-                  'kms:GenerateDataKey',
-                  'kms:TagResource',
-                  'kms:UntagResource',
-                ],
-                Effect: 'Allow',
-                Principal: {
-                  AWS: {
+                'Action': 'kms:*',
+                'Effect': 'Allow',
+                'Principal': {
+                  'AWS': {
                     'Fn::Join': [
                       '',
                       [
                         'arn:',
                         {
-                          Ref: 'AWS::Partition',
+                          'Ref': 'AWS::Partition',
                         },
                         ':iam::',
                         {
-                          Ref: 'AWS::AccountId',
+                          'Ref': 'AWS::AccountId',
                         },
                         ':root',
                       ],
                     ],
                   },
                 },
-                Resource: '*',
+                'Resource': '*',
               },
               {
-                Action: [
+                'Action': [
                   'kms:Encrypt',
                   'kms:Decrypt',
                   'kms:ReEncrypt*',
@@ -261,22 +245,22 @@ describe('MSK Cluster', () => {
                   'kms:CreateGrant',
                   'kms:DescribeKey',
                 ],
-                Condition: {
-                  StringEquals: {
+                'Condition': {
+                  'StringEquals': {
                     'kms:ViaService': {
                       'Fn::Join': [
                         '',
                         [
                           'secretsmanager.',
                           {
-                            Ref: 'AWS::Region',
+                            'Ref': 'AWS::Region',
                           },
                           '.amazonaws.com',
                         ],
                       ],
                     },
                     'kms:CallerAccount': {
-                      Ref: 'AWS::AccountId',
+                      'Ref': 'AWS::AccountId',
                     },
                   },
                 },
@@ -286,6 +270,7 @@ describe('MSK Cluster', () => {
                 Sid: 'Allow access through AWS Secrets Manager for all principals in the account that are authorized to use AWS Secrets Manager',
               },
             ],
+            'Version': '2012-10-17',
           },
         });
       });

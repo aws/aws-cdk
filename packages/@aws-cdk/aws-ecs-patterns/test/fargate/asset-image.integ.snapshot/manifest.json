@@ -223,7 +223,10 @@
         "/aws-ecs-integ/FargateService/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateServiceTaskDef940E3A80"
+            "data": "FargateServiceTaskDef940E3A80",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ/FargateService/TaskDef/web/LogGroup/Resource": [

@@ -52,6 +52,15 @@
             "type": "aws:cdk:logicalId",
             "data": "myapikey5C116C09"
           }
+        ],
+        "myusageplanUsagePlanKeyResource095B4EA9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myusageplanUsagePlanKeyResource095B4EA9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "test-apigateway-usageplan-import"
