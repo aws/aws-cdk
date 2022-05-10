@@ -206,7 +206,7 @@ export class LustreFileSystem extends FileSystemBase {
     this.fileSystem.applyRemovalPolicy(props.removalPolicy);
 
     this.fileSystemId = this.fileSystem.ref;
-    this.dnsName = `${this.fileSystemId}.fsx.${this.stack.region}.${Aws.URL_SUFFIX}`;
+    this.dnsName = `${this.fileSystemId}.fsx.${this.env.region}.${Aws.URL_SUFFIX}`;
     this.mountName = this.fileSystem.attrLustreMountName;
   }
 
