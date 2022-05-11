@@ -167,7 +167,7 @@ export function isCollectionProperty(prop: Property): prop is CollectionProperty
   return isListProperty(prop)
     || isMapProperty(prop)
     // A UnionProperty is only Collection if it defines ItemTypes or PrimitiveItemTypes
-    || (isUnionProperty(prop) && !!(prop.ItemTypes || prop.PrimitiveItemTypes));
+    || (isUnionProperty(prop) && !!(prop.ItemTypes || prop.PrimitiveItemTypes || prop.InclusiveItemTypes || prop.InclusivePrimitiveItemTypes));
 }
 
 export function isListProperty(prop: Property): prop is ListProperty {
