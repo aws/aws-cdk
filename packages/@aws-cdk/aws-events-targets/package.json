@@ -86,7 +86,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.0",
     "aws-sdk": "^2.848.0",
     "aws-sdk-mock": "5.6.0",
     "jest": "^27.5.1"
