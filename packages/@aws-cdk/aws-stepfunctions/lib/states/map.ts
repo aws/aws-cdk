@@ -1,3 +1,4 @@
+import { Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
@@ -190,7 +191,7 @@ export class Map extends State implements INextable {
       errors.push('Map state must have a non-empty iterator');
     }
 
-    if (this.maxConcurrency !== undefined && !isPositiveInteger(this.maxConcurrency)) {
+    if (this.maxConcurrency !== undefined && !Token.isUnresolved(this.maxConcurrency) && !isPositiveInteger(this.maxConcurrency)) {
       errors.push('maxConcurrency has to be a positive integer');
     }
 
