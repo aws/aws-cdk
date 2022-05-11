@@ -143,7 +143,7 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
     this.environmentId = c9env.ref;
     this.ec2EnvironmentArn = c9env.getAtt('Arn').toString();
     this.ec2EnvironmentName = c9env.getAtt('Name').toString();
-    this.ideUrl = `https://${this.stack.region}.console.aws.amazon.com/cloud9/ide/${this.environmentId}`;
+    this.ideUrl = `https://${this.env.region}.console.aws.amazon.com/cloud9/ide/${this.environmentId}`;
   }
 }
 

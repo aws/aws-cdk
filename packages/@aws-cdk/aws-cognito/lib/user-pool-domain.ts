@@ -152,10 +152,13 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
 
   /**
    * The URL to the hosted UI associated with this domain
+   *
+   * @param options options to customize baseUrl
    */
-  public baseUrl(): string {
+  public baseUrl(options?: BaseUrlOptions): string {
     if (this.isCognitoDomain) {
-      return `https://${this.domainName}.auth.${Stack.of(this).region}.amazoncognito.com`;
+      const authDomain = 'auth' + (options?.fips ? '-fips' : '');
+      return `https://${this.domainName}.${authDomain}.${Stack.of(this).region}.amazoncognito.com`;
     }
     return `https://${this.domainName}`;
   }
@@ -163,7 +166,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
   /**
    * The URL to the sign in page in this domain using a specific UserPoolClient
    * @param client [disable-awslint:ref-via-interface] the user pool client that the UI will use to interact with the UserPool
-   * @param options options to customize the behaviour of this method.
+   * @param options options to customize signInUrl.
    */
   public signInUrl(client: UserPoolClient, options: SignInUrlOptions): string {
     let responseType: string;
@@ -175,14 +178,26 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
       throw new Error('signInUrl is not supported for clients without authorizationCodeGrant or implicitCodeGrant flow enabled');
     }
     const path = options.signInPath ?? '/login';
-    return `${this.baseUrl()}${path}?client_id=${client.userPoolClientId}&response_type=${responseType}&redirect_uri=${options.redirectUri}`;
+    return `${this.baseUrl(options)}${path}?client_id=${client.userPoolClientId}&response_type=${responseType}&redirect_uri=${options.redirectUri}`;
   }
+}
+
+/**
+ * Options to customize the behaviour of `baseUrl()`
+ */
+export interface BaseUrlOptions {
+  /**
+   * Whether to return the FIPS-compliant endpoint
+   *
+   * @default return the standard URL
+   */
+  readonly fips?: boolean;
 }
 
 /**
  * Options to customize the behaviour of `signInUrl()`
  */
-export interface SignInUrlOptions {
+export interface SignInUrlOptions extends BaseUrlOptions {
   /**
    * Where to redirect to after sign in
    */

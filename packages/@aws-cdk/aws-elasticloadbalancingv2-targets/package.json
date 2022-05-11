@@ -76,7 +76,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.0",
     "jest": "^27.5.1",
     "@aws-cdk/aws-ecs": "0.0.0",
     "@aws-cdk/aws-ecs-patterns": "0.0.0"
