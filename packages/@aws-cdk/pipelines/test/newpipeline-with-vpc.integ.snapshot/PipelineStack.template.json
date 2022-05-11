@@ -650,16 +650,16 @@
          "Version": "1"
         },
         "Configuration": {
-         "Owner": "rix0rrr",
-         "Repo": "cdk-pipelines-demo",
-         "Branch": "main",
+         "Owner": "aws",
+         "Repo": "aws-cdk",
+         "Branch": "v2-main",
          "OAuthToken": "{{resolve:secretsmanager:github-token:SecretString:::}}",
          "PollForSourceChanges": false
         },
-        "Name": "rix0rrr_cdk-pipelines-demo",
+        "Name": "aws_aws-cdk",
         "OutputArtifacts": [
          {
-          "Name": "rix0rrr_cdk_pipelines_demo_Source"
+          "Name": "aws_aws_cdk_Source"
          }
         ],
         "RunOrder": 1
@@ -684,7 +684,7 @@
         },
         "InputArtifacts": [
          {
-          "Name": "rix0rrr_cdk_pipelines_demo_Source"
+          "Name": "aws_aws_cdk_Source"
          }
         ],
         "Name": "Synth",
@@ -918,7 +918,7 @@
     "PipelineRoleB27FAA37"
    ]
   },
-  "PipelineSourcerix0rrrcdkpipelinesdemoWebhookResourceDB0C1BCA": {
+  "PipelineSourceawsawscdkWebhookResource46EC529B": {
    "Type": "AWS::CodePipeline::Webhook",
    "Properties": {
     "Authentication": "GITHUB_HMAC",
@@ -931,7 +931,7 @@
       "MatchEquals": "refs/heads/{Branch}"
      }
     ],
-    "TargetAction": "rix0rrr_cdk-pipelines-demo",
+    "TargetAction": "aws_aws-cdk",
     "TargetPipeline": {
      "Ref": "Pipeline9850B417"
     },

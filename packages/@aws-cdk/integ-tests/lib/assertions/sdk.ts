@@ -1,5 +1,4 @@
 import { CustomResource, Reference, Lazy } from '@aws-cdk/core';
-import { Construct } from 'constructs';
 import { EqualsAssertion } from './assertions';
 import { IAssertion } from './deploy-assert';
 import { md5hash } from './private/hash';
@@ -7,7 +6,7 @@ import { AssertionsProvider, SDK_RESOURCE_TYPE_PREFIX } from './providers';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Options to perform an AWS JavaScript V2 API call
@@ -34,7 +33,7 @@ export interface SdkQueryOptions {
  */
 export interface SdkQueryProps extends SdkQueryOptions {}
 
-export class SdkQuery extends CoreConstruct {
+export class SdkQuery extends Construct {
   private readonly sdkCallResource: CustomResource;
   private flattenResponse: string = 'false';
 
