@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 
 describe('lambda version', () => {
   test('can import a Lambda version by ARN', () => {
@@ -124,7 +124,7 @@ describe('lambda version', () => {
       },
       FunctionVersion: {
         'Fn::GetAtt': [
-          'FnCurrentVersion17A89ABBab5c765f3c55e4e61583b51b00a95742',
+          'FnCurrentVersion17A89ABB60415807620115f34aaea569cf042980',
           'Version',
         ],
       },
@@ -143,7 +143,7 @@ describe('lambda version', () => {
     const version = fn.currentVersion;
 
     // THEN
-    expect(stack.resolve(version.edgeArn)).toEqual({ Ref: 'FnCurrentVersion17A89ABB19ed45993ff69fd011ae9fd4ab6e2005' });
+    expect(stack.resolve(version.edgeArn)).toEqual({ Ref: 'FnCurrentVersion17A89ABB60415807620115f34aaea569cf042980' });
   });
 
   test('edgeArn throws with $LATEST', () => {

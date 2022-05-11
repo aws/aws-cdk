@@ -48,7 +48,6 @@ describe('When Application Load Balancer', () => {
     Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'EC2',
     });
 
@@ -914,9 +913,7 @@ describe('When Network Load Balancer', () => {
 
     // THEN - stack contains a load balancer and a service
     Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
-
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'EC2',
     });
 
