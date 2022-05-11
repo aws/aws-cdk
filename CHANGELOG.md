@@ -7,7 +7,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* **cli:** `--concurrency` option ([#19378](https://github.com/aws/aws-cdk/issues/19378)) ([45a2d63](https://github.com/aws/aws-cdk/commit/45a2d6345ed9de319f042f29a6f619f26a10780c)), closes [#1973](https://github.com/aws/aws-cdk/issues/1973)
 * **lambda:** nodejs16.x runtime ([#20261](https://github.com/aws/aws-cdk/issues/20261)) ([edf7c86](https://github.com/aws/aws-cdk/commit/edf7c864f90acc4f29ff78ff0de74e324f8b85ee))
 
 
