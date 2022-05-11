@@ -108,6 +108,13 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
   fetch(): Promise<Notice[]> {
     const timeout = 3000;
     return new Promise((resolve, reject) => {
+
+      var timer = setTimeout(() => {
+        reject(new Error('Request timed out.'));
+      }, timeout);
+
+      timer.unref();
+
       try {
         const req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json',
           { timeout },
@@ -138,22 +145,10 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
             }
           });
         req.on('error', reject);
-        req.on('timeout', () => {
-          // The 'timeout' event doesn't stop anything by itself, it just
-          // notifies that it has been long time since we saw bytes.
-          // In our case, we want to give up.
-          req.destroy(new Error('Request timed out'));
-        });
-
-        // It's not like I don't *trust* the 'timeout' event... but I don't trust it.
-        // Add a backup timer that will destroy the request after all.
-        // (This is at least necessary to make the tests pass, but that's probably because of 'nock'.
-        // It's not clear whether users will hit this).
-        setTimeout(() => {
-          req.destroy(new Error('Request timed out. You should never see this message; if you do, please let us know at https://github.com/aws/aws-cdk/issues'));
-        }, timeout + 200);
       } catch (e) {
         reject(new Error(`HTTPS 'get' call threw an error: ${e.message}`));
+      } finally {
+        clearTimeout(timer);
       }
     });
   }
