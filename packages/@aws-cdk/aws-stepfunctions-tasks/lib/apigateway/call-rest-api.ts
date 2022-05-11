@@ -58,12 +58,12 @@ export class CallApiGatewayRestApiEndpoint extends CallApiGatewayEndpointBase {
 
     this.apiEndpoint = this.getApiEndpoint();
 
-    const method: string = (props.method.toUpperCase() === 'ANY') ? '*' : props.method;
+    const method: string = (props.method.toUpperCase() === 'ANY') ? '*' : (props.method ?? '*');
     this.arnForExecuteApi = cdk.Stack.of(props.api).formatArn({
       service: 'execute-api',
       resource: props.api.restApiId,
       arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
-      resourceName: `${props.stageName}/${method}${props.apiPath}`,
+      resourceName: `${props.stageName ?? '*'}/${method}${props.apiPath ?? '/*'}`,
     });
 
     this.stageName = props.stageName;
