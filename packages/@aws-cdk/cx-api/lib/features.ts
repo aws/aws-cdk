@@ -240,6 +240,8 @@ export const IAM_MINIMIZE_POLICIES = '@aws-cdk/aws-iam:minimizePolicies';
  * the KMS key alias name created for these pipelines may be the same due to how the uniqueId is generated.
  *
  * This new implementation creates a stack safe uniqueId for the alias name using the stack name instead of the stack ID.
+ *
+ * [PERMANENT]
  */
 export const CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID = '@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeUniqueId';
 
