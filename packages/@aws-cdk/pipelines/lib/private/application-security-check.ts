@@ -6,10 +6,6 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Properties for an ApplicationSecurityCheck
  */
@@ -32,7 +28,7 @@ export interface ApplicationSecurityCheckProps {
  * The CodeBuild Project runs a security diff on the application stage,
  * and exports the link to the console of the project.
  */
-export class ApplicationSecurityCheck extends CoreConstruct {
+export class ApplicationSecurityCheck extends Construct {
   /**
    * A lambda function that approves a Manual Approval Action, given
    * the following payload:

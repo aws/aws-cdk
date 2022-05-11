@@ -1,0 +1,19 @@
+{
+  "version": "17.0.0",
+  "files": {
+    "7ca7cc972075a5fbb17803a468871b177f14f92a9d66019709a444cb3d891411": {
+      "source": {
+        "path": "aws-cdk-rds-instance-s3-postgres-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7ca7cc972075a5fbb17803a468871b177f14f92a9d66019709a444cb3d891411.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
