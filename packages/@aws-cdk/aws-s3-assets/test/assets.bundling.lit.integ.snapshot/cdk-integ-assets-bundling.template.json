@@ -1,0 +1,78 @@
+{
+ "Parameters": {
+  "AssetParameters96eb17ab9d98dd42b972aa0dd468f59024f21aba33c7d792b8ebe7a8d378e2b6S3Bucket455340E7": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"96eb17ab9d98dd42b972aa0dd468f59024f21aba33c7d792b8ebe7a8d378e2b6\""
+  },
+  "AssetParameters96eb17ab9d98dd42b972aa0dd468f59024f21aba33c7d792b8ebe7a8d378e2b6S3VersionKey3BDA2FA7": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"96eb17ab9d98dd42b972aa0dd468f59024f21aba33c7d792b8ebe7a8d378e2b6\""
+  },
+  "AssetParameters96eb17ab9d98dd42b972aa0dd468f59024f21aba33c7d792b8ebe7a8d378e2b6ArtifactHashA1ED07BD": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"96eb17ab9d98dd42b972aa0dd468f59024f21aba33c7d792b8ebe7a8d378e2b6\""
+  }
+ },
+ "Resources": {
+  "MyUserDC45028B": {
+   "Type": "AWS::IAM::User"
+  },
+  "MyUserDefaultPolicy7B897426": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Ref": "AssetParameters96eb17ab9d98dd42b972aa0dd468f59024f21aba33c7d792b8ebe7a8d378e2b6S3Bucket455340E7"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Ref": "AssetParameters96eb17ab9d98dd42b972aa0dd468f59024f21aba33c7d792b8ebe7a8d378e2b6S3Bucket455340E7"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyUserDefaultPolicy7B897426",
+    "Users": [
+     {
+      "Ref": "MyUserDC45028B"
+     }
+    ]
+   }
+  }
+ }
+}

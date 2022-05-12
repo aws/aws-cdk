@@ -453,6 +453,16 @@ export enum InstanceClass {
   I3EN = 'i3en',
 
   /**
+   * I/O-optimized instances with local NVME drive powered by Intel Xeon Scalable processors (code named Ice Lake), 4th generation
+   */
+  IO4_INTEL = 'i4i',
+
+  /**
+   * I/O-optimized instances with local NVME drive powered by Intel Xeon Scalable processors (code named Ice Lake), 4th generation
+   */
+  I4I = 'i4i',
+
+  /**
    * Storage optimized instances powered by Graviton2 processor, 4th generation
    */
   STORAGE4_GRAVITON_NETWORK_OPTIMIZED = 'im4gn',
@@ -575,6 +585,16 @@ export enum InstanceClass {
    * Memory-intensive instances with higher network bandwith and local NVME drive, Intel Xeon Scalable (Ice Lake) processors
    */
   X2IDN = 'x2idn',
+
+  /**
+   * Memory-intensive instances with higher network bandwith and single-threaded performance, Intel Xeon Scalable (Cascade Lake) processors
+   */
+  MEMORY_INTENSIVE_2_XTZ_INTEL = 'x2iezn',
+
+  /**
+   * Memory-intensive instances with higher network bandwith and single-threaded performance, Intel Xeon Scalable (Cascade Lake) processors
+   */
+  X2IEZN = 'x2iezn',
 
   /**
    * Instances with customizable hardware acceleration, 1st generation

@@ -104,7 +104,13 @@ graph showing the Average statistic with an aggregation period of 5 minutes:
 
 ```ts
 const cpuUtilization = new cloudwatch.MathExpression({
-  expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 300)"
+  expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 300)",
+
+  // Specifying '' as the label suppresses the default behavior
+  // of using the expression as metric label. This is especially appropriate
+  // when using expressions that return multiple time series (like SEARCH()
+  // or METRICS()), to show the labels of the retrieved metrics only.
+  label: '',
 });
 ```
 
@@ -156,6 +162,33 @@ useful when embedding them in graphs, see below).
 > aggregating using `Sum`, which will be the same for both metrics types. If you
 > happen to know the Metric you want to alarm on makes sense as a rate
 > (`Average`) you can always choose to change the statistic.
+
+### Labels
+
+Metric labels are displayed in the legend of graphs that include the metrics.
+
+You can use [dynamic labels](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/graph-dynamic-labels.html)
+to show summary information about the displayed time series
+in the legend. For example, if you use:
+
+```ts
+declare const fn: lambda.Function;
+
+const minuteErrorRate = fn.metricErrors({
+  statistic: 'sum',
+  period: Duration.hours(1),
+
+  // Show the maximum hourly error count in the legend
+  label: '[max: ${MAX}] Lambda failure rate',
+});
+```
+
+As the metric label, the maximum value in the visible range will
+be shown next to the time series name in the graph's legend.
+
+If the metric is a math expression producing more than one time series, the
+maximum will be individually calculated and shown for each time series produce
+by the math expression.
 
 ## Alarms
 
@@ -308,7 +341,7 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
   right: [errorCountMetric.with({
     statistic: "average",
     label: "Error rate",
-    color: cloudwatch.Color.GREEN
+    color: cloudwatch.Color.GREEN,
   })]
 }));
 ```
@@ -436,6 +469,20 @@ dashboard.addWidgets(
 );
 ```
 
+An alarm status widget only showing firing alarms, sorted by state and timestamp:
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+declare const errorAlarm: cloudwatch.Alarm;
+
+dashboard.addWidgets(new cloudwatch.AlarmStatusWidget({
+  title: "Errors",
+  alarms: [errorAlarm],
+  sortBy: cloudwatch.AlarmStatusWidgetSortBy.STATE_UPDATED_TIMESTAMP,
+  states: [cloudwatch.AlarmState.ALARM],
+}));
+```
+
 ### Query results widget
 
 A `LogQueryWidget` shows the results of a query from Logs Insights:
@@ -453,6 +500,28 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
   ]
 }));
 ```
+
+### Custom widget
+
+A `CustomWidget` shows the result of an AWS Lambda function:
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+// Import or create a lambda function
+const fn = lambda.Function.fromFunctionArn(
+  dashboard,
+  'Function',
+  'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+);
+
+dashboard.addWidgets(new cloudwatch.CustomWidget({
+  functionArn: fn.functionArn,
+  title: 'My lambda baked widget',
+}));
+```
+
+You can learn more about custom widgets in the [Amazon Cloudwatch User Guide](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/add_custom_widget_dashboard.html).
 
 ### Dashboard Layout
 

@@ -15,11 +15,13 @@ export function integTest(
   timeoutMillis?: number,
 ) {
 
-  // Integ tests can run concurrently, and are responsible for blocking themselves if they cannot.
-  // Because `test.concurrent` executes the test code immediately (to obtain a promise), we allow
-  // setting the `JEST_TEST_CONCURRENT` environment variable to 'false' in order to use `test`
-  // instead of `test.concurrent` (this is necessary when specifying a test pattern to verify).
-  const testKind = process.env.JEST_TEST_CONCURRENT === 'false' ? test : test.concurrent;
+  // Integ tests can run concurrently, and are responsible for blocking
+  // themselves if they cannot.  Because `test.concurrent` executes the test
+  // code immediately, regardles of any `--testNamePattern`, this cannot be the
+  // default: test filtering simply does not work with `test.concurrent`.
+  // Instead, we make it opt-in only for the pipeline where we don't do any
+  // selection, but execute all tests unconditionally.
+  const testKind = process.env.JEST_TEST_CONCURRENT === 'true' ? test.concurrent : test;
   const runner = shouldSkip(name) ? testKind.skip : testKind;
 
   runner(name, async () => {
