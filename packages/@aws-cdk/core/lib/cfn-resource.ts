@@ -6,7 +6,7 @@ import { CfnCondition } from './cfn-condition';
 import { CfnRefElement } from './cfn-element';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
 import { Construct, IConstruct, Node } from 'constructs';
-import { addDependency } from './deps';
+import { addDependency, obtainDependencies, removeDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
 import { CLOUDFORMATION_TOKEN_RESOLVER } from './private/cloudformation-lang';
 import { Reference } from './reference';
@@ -290,6 +290,36 @@ export class CfnResource extends CfnRefElement {
   }
 
   /**
+   * Indicates that this resource no longer depends on another resource.
+   *
+   * This can be used for resources across stacks (or nested stack) boundaries
+   * and the dependency will automatically be removed from the relevant scope.
+   */
+  public removeDependsOn(target: CfnResource) {
+    // skip this dependency if the target is not part of the output
+    if (!target.shouldSynthesize()) {
+      return;
+    }
+
+    removeDependency(this, target, `"${Node.of(this).path}" depends on "${Node.of(target).path}"`);
+  }
+
+  /**
+   * Retrieves an array of resources this resource depends on.
+   *
+   * This assembles dependencies on resources across stacks (or nested stack)
+   * boundaries automatically.
+   */
+  public obtainDependsOn(target: CfnResource) {
+    // skip this dependency if the target is not part of the output
+    if (!target.shouldSynthesize()) {
+      return [];
+    }
+
+    return obtainDependencies(this);
+  }
+
+  /**
    * Add a value to the CloudFormation Resource Metadata
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/metadata-section-structure.html
    *
@@ -336,6 +366,24 @@ export class CfnResource extends CfnRefElement {
    */
   public _addResourceDependency(target: CfnResource) {
     this.dependsOn.add(target);
+  }
+
+  /**
+   * Get a shallow copy of dependencies between this resource and other resources
+   * in the same stack.
+   */
+  public obtainResourceDependencies() {
+    return Array.from(this.dependsOn.values());
+  }
+
+  /**
+   * Remove a dependency between this resource and other resources in the same
+   * stack.
+   *
+   * @internal
+   */
+  public _removeResourceDependency(target: CfnResource) {
+    this.dependsOn.delete(target);
   }
 
   /**

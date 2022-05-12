@@ -20,6 +20,13 @@ import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
 
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from './construct-compat';
+
+
+type Element = CfnResource | Stack;
+
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
 
@@ -306,7 +313,7 @@ export class Stack extends Construct implements ITaggable {
   private readonly _logicalIds: LogicalIDs;
 
   /**
-   * Other stacks this stack depends on
+   * Other stacks this stack source on
    */
   private readonly _stackDependencies: { [uniqueId: string]: StackDependency };
 
@@ -734,32 +741,113 @@ export class Stack extends Construct implements ITaggable {
    *
    * @internal
    */
-  public _addAssemblyDependency(target: Stack, reason?: string) {
+  public _addAssemblyDependency(target: Stack, reason: StackDependencyReason = { description: '' }) {
     // defensive: we should never get here for nested stacks
     if (this.nested || target.nested) {
       throw new Error('Cannot add assembly-level dependencies for nested stacks');
     }
+    // Fill in reason details if not provided
+    if (!reason.source) {
+      reason.source = this;
+    }
+    if (!reason.target) {
+      reason.target = target;
+    }
 
-    reason = reason || 'dependency added using stack.addDependency()';
     const cycle = target.stackDependencyReasons(this);
     if (cycle !== undefined) {
       // eslint-disable-next-line max-len
-      throw new Error(`'${target.node.path}' depends on '${this.node.path}' (${cycle.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
+      throw new Error(`'${target.node.path}' depends on '${this.node.path}' (${cycle.map(x=>x.description).join(', ')}). Adding this dependency (${reason.description}) would create a cyclic reference.`);
     }
 
     let dep = this._stackDependencies[Names.uniqueId(target)];
     if (!dep) {
-      dep = this._stackDependencies[Names.uniqueId(target)] = {
-        stack: target,
-        reasons: [],
-      };
+      dep = this._stackDependencies[Names.uniqueId(target)] = { stack: target, reasons: [] };
     }
-
+    let reasons = filterReasons(dep, reason);
+    if (reasons.length > 0) {
+      // Dependency already exists and for the provided reason
+      return;
+    }
     dep.reasons.push(reason);
 
     if (process.env.CDK_DEBUG_DEPS) {
       // eslint-disable-next-line no-console
-      console.error(`[CDK_DEBUG_DEPS] stack "${this.node.path}" depends on "${target.node.path}" because: ${reason}`);
+      console.error(`[CDK_DEBUG_DEPS] stack "${reason.source.node.path}" depends on "${reason.target.node.path}" because: ${reason.description}`);
+    }
+  }
+
+  /**
+   * Called implicitly by the `obtainDependencies` helper function in order to
+   * collect resource dependencies across two top-level stacks at the assembly level.
+   *
+   * Use `stack.obtainDependencies` to see the dependencies between any two stacks.
+   *
+   * @internal
+   */
+  public _obtainAssemblyDependencies(reasonFilter: StackDependencyReason={ description: '' }) {
+    let dependencies: Set<Element> = new Set();
+    Object.values(this._stackDependencies).forEach((dep) => {
+      filterReasons(dep, reasonFilter).forEach(r => {
+        if (r.target) {
+          dependencies.add(r.target);
+        }
+      });
+    });
+    return Array.from(dependencies);
+  }
+
+  /**
+   * Called implicitly by the `removeDependency` helper function in order to
+   * remove a dependency between two top-level stacks at the assembly level.
+   *
+   * Use `stack.addDependency` to define the dependency between any two stacks,
+   * and take into account nested stack relationships.
+   *
+   * @internal
+   */
+  public _removeAssemblyDependency(target: Stack, reasonFilter: StackDependencyReason={ description: 'dependency removed using stack.removeDependency()' }) {
+    // defensive: we should never get here for nested stacks
+    if (this.nested || target.nested) {
+      throw new Error('There cannot be assembly-level dependencies for nested stacks');
+    }
+    // No need to check for a dependency cycle when removing one
+
+    // Fill in reason details if not provided
+    if (!reasonFilter.source) {
+      reasonFilter.source = this;
+    }
+    if (!reasonFilter.target) {
+      reasonFilter.target = target;
+    }
+
+    let dep = this._stackDependencies[Names.uniqueId(target)];
+    if (!dep) {
+      throw new Error(`No dependency found from ${this.node.path} on ${target.node.path}`);
+    }
+
+    // Find and remove the specified reason from the dependency
+    let index;
+    let filteredReasons = filterReasons(dep, reasonFilter);
+    if (filteredReasons.length > 1) {
+      throw new Error(`Reason for dependency removal is too ambiguous: ${reasonFilter}`);
+    }
+    if (filteredReasons.length == 0) {
+      // Dependency is already not there - return now
+      return;
+    }
+    let matchedReason = filteredReasons[0];
+
+    index = dep.reasons.indexOf(matchedReason, 0);
+    dep.reasons.splice(index, 1);
+    // If that was the last reason, remove the dependency
+    if (!dep.reasons) {
+      delete this._stackDependencies[Names.uniqueId(target)];
+    }
+
+    if (process.env.CDK_DEBUG_DEPS) {
+      // eslint-disable-next-line no-console
+      console.error(`[CDK_DEBUG_DEPS] stack "${this.node.path}" no longer depends on "${target.node.path}" because: ${reasonFilter}`);
     }
   }
 
@@ -1100,7 +1188,7 @@ export class Stack extends Construct implements ITaggable {
    * Returns the list of reasons on the dependency path, or undefined
    * if there is no dependency.
    */
-  private stackDependencyReasons(other: Stack): string[] | undefined {
+  private stackDependencyReasons(other: Stack): StackDependencyReason[] | undefined {
     if (this === other) { return []; }
     for (const dep of Object.values(this._stackDependencies)) {
       const ret = dep.stack.stackDependencyReasons(other);
@@ -1344,9 +1432,26 @@ function generateExportName(stackExports: Construct, id: string) {
   return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
 }
 
+
+function filterReasons(dependency: StackDependency, reasonFilter: StackDependencyReason) {
+  let reasons: Set<StackDependencyReason> = new Set();
+  dependency.reasons.forEach((reason) => {
+    if ((!reasonFilter.source || reasonFilter.source == reason.source) && (!reasonFilter.target || reasonFilter.target == reason.target)) {
+      reasons.add(reason);
+    }
+  });
+  return Array.from(reasons);
+}
+
+interface StackDependencyReason {
+  description : string;
+  source?: Element;
+  target?: Element;
+}
+
 interface StackDependency {
   stack: Stack;
-  reasons: string[];
+  reasons: StackDependencyReason[];
 }
 
 
