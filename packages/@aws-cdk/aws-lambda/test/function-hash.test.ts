@@ -203,7 +203,8 @@ describe('function hash', () => {
           layers: [layer2, layer1],
         });
 
-        expect(calculateFunctionHash(fn1)).not.toEqual(calculateFunctionHash(fn2));
+        expect(calculateFunctionHash(fn1)).toEqual('b6cade45d8f9c77f29f0ab169004113c');
+        expect(calculateFunctionHash(fn2)).toEqual('0d79a0b6bcac599b278e63b173eca170');
       });
 
       test('with feature flag, we sort layers so order is consistent', () => {
