@@ -4,7 +4,6 @@ import { IOpenIdConnectProvider } from './oidc-provider';
 import { PolicyDocument } from './policy-document';
 import { Condition, Conditions, PolicyStatement } from './policy-statement';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
-import { dedupeStringFor } from './private/comparable-principal';
 import { ISamlProvider } from './saml-provider';
 import { LITERAL_STRING_KEY, mergePrincipal } from './util';
 
@@ -83,6 +82,25 @@ export interface IComparablePrincipal extends IPrincipal {
    * principals are the same.
    */
   dedupeString(): string | undefined;
+}
+
+/**
+ * Helper class for working with `IComparablePrincipal`s
+ */
+export class ComparablePrincipal {
+  /**
+   * Whether or not the given principal is a comparable principal
+   */
+  public static isComparablePrincipal(x: IPrincipal): x is IComparablePrincipal {
+    return 'dedupeString' in x;
+  }
+
+  /**
+   * Return the dedupeString of the given principal, if available
+   */
+  public static dedupeStringFor(x: IPrincipal): string | undefined {
+    return ComparablePrincipal.isComparablePrincipal(x) ? x.dedupeString() : undefined;
+  }
 }
 
 /**
@@ -225,7 +243,7 @@ abstract class PrincipalAdapter extends PrincipalBase {
    * Append the given string to the wrapped principal's dedupe string (if available)
    */
   protected appendDedupe(append: string): string | undefined {
-    const inner = dedupeStringFor(this.wrapped);
+    const inner = ComparablePrincipal.dedupeStringFor(this.wrapped);
     return inner !== undefined ? `${this.constructor.name}:${inner}:${append}` : undefined;
   }
 }
@@ -802,7 +820,7 @@ export class CompositePrincipal extends PrincipalBase {
   }
 
   public dedupeString(): string | undefined {
-    const inner = this.principals.map(dedupeStringFor);
+    const inner = this.principals.map(ComparablePrincipal.dedupeStringFor);
     if (inner.some(x => x === undefined)) { return undefined; }
     return `CompositePrincipal[${inner.join(',')}]`;
   }
