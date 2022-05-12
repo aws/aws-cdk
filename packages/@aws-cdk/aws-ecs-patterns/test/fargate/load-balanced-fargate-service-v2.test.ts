@@ -5,7 +5,7 @@ import { ContainerImage } from '@aws-cdk/aws-ecs';
 import { CompositePrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { ECS_PATTERNS_TARGET_GROUP_PORT_FROM_COTAINER_PORT } from '@aws-cdk/cx-api';
+import { ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT } from '@aws-cdk/cx-api';
 import { ApplicationLoadBalancedFargateService, ApplicationMultipleTargetGroupsFargateService, NetworkLoadBalancedFargateService, NetworkMultipleTargetGroupsFargateService } from '../../lib';
 
 describe('When Application Load Balancer', () => {
@@ -692,7 +692,7 @@ describe('When Network Load Balancer', () => {
     });
   });
 
-  testFutureBehavior('Fargate networkloadbalanced construct uses custom Port for target group when feature flag is enabled', { [ECS_PATTERNS_TARGET_GROUP_PORT_FROM_COTAINER_PORT]: true }, App, (app) => {
+  testFutureBehavior('Fargate networkloadbalanced construct uses custom Port for target group when feature flag is enabled', { [ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT]: true }, App, (app) => {
     // GIVEN
     const stack = new Stack(app);
     const vpc = new Vpc(stack, 'VPC');
@@ -719,7 +719,7 @@ describe('When Network Load Balancer', () => {
     });
   });
 
-  testFutureBehavior('Fargate networkloadbalanced construct uses 80 for target group when feature flag is enabled but container port is not provided', { [ECS_PATTERNS_TARGET_GROUP_PORT_FROM_COTAINER_PORT]: true }, App, (app) => {
+  testFutureBehavior('Fargate networkloadbalanced construct uses 80 for target group when feature flag is enabled but container port is not provided', { [ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT]: true }, App, (app) => {
     // GIVEN
     const stack = new Stack(app);
     const vpc = new Vpc(stack, 'VPC');
@@ -789,7 +789,7 @@ describe('When Network Load Balancer', () => {
     });
   });
 
-  testFutureBehavior('test Fargate multinetworkloadbalanced construct uses custom Port for target group when feature flag is enabled', { [ECS_PATTERNS_TARGET_GROUP_PORT_FROM_COTAINER_PORT]: true }, App, (app) => {
+  testFutureBehavior('test Fargate multinetworkloadbalanced construct uses custom Port for target group when feature flag is enabled', { [ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT]: true }, App, (app) => {
     // GIVEN
     const stack = new Stack(app);
     const vpc = new Vpc(stack, 'VPC');
@@ -833,7 +833,7 @@ describe('When Network Load Balancer', () => {
     });
   });
 
-  testFutureBehavior('test Fargate multinetworkloadbalanced construct uses 80 for target group when feature flag is enabled but container port is not provided', { [ECS_PATTERNS_TARGET_GROUP_PORT_FROM_COTAINER_PORT]: true }, App, (app) => {
+  testFutureBehavior('test Fargate multinetworkloadbalanced construct uses 80 for target group when feature flag is enabled but container port is not provided', { [ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT]: true }, App, (app) => {
     // GIVEN
     const stack = new Stack(app);
     const vpc = new Vpc(stack, 'VPC');

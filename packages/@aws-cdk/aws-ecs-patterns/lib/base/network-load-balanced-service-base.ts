@@ -8,7 +8,7 @@ import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, CnameRecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import { CfnOutput, Duration, FeatureFlags, Stack } from '@aws-cdk/core';
-import { ECS_PATTERNS_TARGET_GROUP_PORT_FROM_COTAINER_PORT } from '@aws-cdk/cx-api';
+import { ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -348,7 +348,7 @@ export abstract class NetworkLoadBalancedServiceBase extends CoreConstruct {
     const loadBalancer = props.loadBalancer ?? new NetworkLoadBalancer(this, 'LB', lbProps);
     const listenerPort = props.listenerPort ?? 80;
     const targetProps = {
-      port: FeatureFlags.of(this).isEnabled(ECS_PATTERNS_TARGET_GROUP_PORT_FROM_COTAINER_PORT) ? props.taskImageOptions?.containerPort ?? 80 : 80,
+      port: FeatureFlags.of(this).isEnabled(ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT) ? props.taskImageOptions?.containerPort ?? 80 : 80,
     };
 
     this.listener = loadBalancer.addListener('PublicListener', { port: listenerPort });
