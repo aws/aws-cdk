@@ -29,12 +29,16 @@
      "Statement": [
       {
        "Action": [
-        "s3:GetObject*",
-        "s3:GetBucket*",
-        "s3:List*",
+        "s3:Abort*",
         "s3:DeleteObject*",
-        "s3:PutObject*",
-        "s3:Abort*"
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
        ],
        "Effect": "Allow",
        "Resource": [
@@ -117,13 +121,13 @@
      "Statement": [
       {
        "Action": [
+        "kinesis:DescribeStream",
         "kinesis:DescribeStreamSummary",
         "kinesis:GetRecords",
         "kinesis:GetShardIterator",
         "kinesis:ListShards",
-        "kinesis:SubscribeToShard",
-        "kinesis:DescribeStream",
-        "kinesis:ListStreams"
+        "kinesis:ListStreams",
+        "kinesis:SubscribeToShard"
        ],
        "Effect": "Allow",
        "Resource": {

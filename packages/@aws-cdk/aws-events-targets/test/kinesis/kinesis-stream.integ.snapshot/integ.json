@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-events-targets/test/kinesis/integ.kinesis-stream": {
+      "stacks": [
+        "aws-cdk-kinesis-event-target"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

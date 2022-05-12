@@ -136,7 +136,7 @@ To package a specific module, say the `@aws-cdk/aws-ec2` module:
 
 ```console
 $ cd <root-of-cdk-repo>
-$ docker run --rm --net=host -it -v $PWD:$PWD -w $PWD jsii/superchain
+$ docker run --rm --net=host -it -v $PWD:$PWD -w $PWD jsii/superchain:1-buster-slim
 docker$ cd packages/@aws-cdk/aws-ec2
 docker$ ../../../scripts/foreach.sh --up yarn run package
 docker$ exit
@@ -178,12 +178,14 @@ Below is a flow chart that describes how your PR may be treated by repository ma
 graph TD
     A[Incoming PR] -->B[Is an issue attached?]
     B -->|Yes - labels copied from issue| C[Is it labeled P1?]
-    B -->|No - auto-labeled as P2| D["Is it trivial or effort/small?"]
+    B -->|No - auto-labeled as P2| D["Is the effort small?"]
     C -->|Yes - P1| E[Is the PR build succeeding?]
     C -->|No - it is P2| D
     D -->|Yes| E
-    D -->|No| F[Unfortunately, we don't have the time to review <br/> PRs that are large effort and low priority.]
-    E -->|Yes| G[We will review your PR as soon as we can]
+    D -->|No| F[Can you break down the PR into smaller chunks?]
+    F --->|Yes| I[Please do. This will help get traction on your PR.]
+    F -->|No| J[Try to garner community support on the issue you are <br/> trying to solve. With 20 +1s, the issue will be relabeled as P1.]
+    E --->|Yes| G[We will review your PR as soon as we can]
     E -->|No| H[If the build is failing for more than 4 weeks <br/> without any work on it, we will close the PR.]
 ```
 
@@ -350,7 +352,7 @@ $ yarn watch & # runs in the background
 * Once the pull request is submitted, a reviewer will be assigned by the maintainers.
 
 * If the PR build is failing, update the PR with fixes until the build succeeds. You may have trouble getting attention
-  from maintainers if your build is failing, and after 4 weeks of staleness, your PR will be automatically closed. 
+  from maintainers if your build is failing, and after 4 weeks of staleness, your PR will be automatically closed.
 
 * Discuss review comments and iterate until you get at least one "Approve". When iterating, push new commits to the
   same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
@@ -365,13 +367,13 @@ $ yarn watch & # runs in the background
 `package.json` file.**
 
 Sometimes constructs introduce new unconventional dependencies.  Any new unconventional dependency that is introduced needs to have
-an auto upgrade process in place. The recommended way to update dependencies is through [dependabot](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates). 
+an auto upgrade process in place. The recommended way to update dependencies is through [dependabot](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates).
 You can find the dependabot config file [here](./.github/dependabot.yml).
 
 An example of this is the [@aws-cdk/lambda-layer-awscli](packages/@aws-cdk/lambda-layer-awscli) module.
 This module creates a lambda layer that bundles the AWS CLI. This is considered an unconventional
 dependency because the AWS CLI is bundled into the CDK as part of the build, and the version
-of the AWS CLI that is bundled is not managed by the `package.json` file. 
+of the AWS CLI that is bundled is not managed by the `package.json` file.
 
 In order to automatically update the version of the AWS CLI, a custom build process was
 created that takes upgrades into consideration. You can take a look at the files in
@@ -664,7 +666,7 @@ cases where some of those do not apply - good judgement is to be applied):
   // An example about adding a stage to a pipeline in the @aws-cdk/pipelines library
   declare const pipeline: pipelines.CodePipeline;
   declare const myStage: Stage;
-  pipeline.addStage(myStage);   
+  pipeline.addStage(myStage);
   ```
 
 - Utilize the `default.ts-fixture` that already exists rather than writing new

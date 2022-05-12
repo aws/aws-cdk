@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "FlowLogsTestStack": {
       "type": "aws:cloudformation:stack",

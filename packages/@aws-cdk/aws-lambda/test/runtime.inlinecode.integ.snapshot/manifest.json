@@ -1,12 +1,11 @@
 {
-  "version": "17.0.0",
+  "version": "18.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-cdk-lambda-runtime-inlinecode": {
       "type": "aws:cloudformation:stack",
@@ -122,6 +121,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "NODEJS14XfunctionName"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_16_X/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS16XServiceRoleB9DAFDFD"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_16_X/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS16XDE5DD82D"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_16_X-functionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS16XfunctionName"
           }
         ]
       },
