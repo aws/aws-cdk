@@ -7,7 +7,7 @@
 import { PolicyStatement } from '../policy-statement';
 import { IPrincipal } from '../principals';
 import { LITERAL_STRING_KEY } from '../util';
-import { equalPrincipals } from './comparable-principal';
+import { partitionPrincipals } from './comparable-principal';
 
 
 /*
@@ -103,7 +103,7 @@ function tryMerge(a: ComparableStatement, b: ComparableStatement): ComparableSta
   if (
     !setEqual(a.statement.notActions, b.statement.notActions) ||
     !setEqual(a.statement.notResources, b.statement.notResources) ||
-    !setEqual(a.notPrincipalStrings, b.notPrincipalStrings)
+    !setEqualPrincipals(a.statement.notPrincipals, b.statement.notPrincipals)
   ) {
     return;
   }
@@ -112,7 +112,7 @@ function tryMerge(a: ComparableStatement, b: ComparableStatement): ComparableSta
   // are the same.
   const setsEqual = (setEqual(a.statement.actions, b.statement.actions) ? 1 : 0) +
     (setEqual(a.statement.resources, b.statement.resources) ? 1 : 0) +
-    (setEqual(a.principalStrings, b.principalStrings) ? 1 : 0);
+    (setEqualPrincipals(a.statement.principals, b.statement.principals) ? 1 : 0);
 
   if (setsEqual < 2 || unmergeablePrincipals(a, b)) { return; }
 
@@ -123,8 +123,6 @@ function tryMerge(a: ComparableStatement, b: ComparableStatement): ComparableSta
       resources: setMerge(a.statement.resources, b.statement.resources),
       principals: setMergePrincipals(a.statement.principals, b.statement.principals),
     }),
-    principalStrings: setMerge(a.principalStrings, b.principalStrings),
-    notPrincipalStrings: a.notPrincipalStrings,
     conditionString: a.conditionString,
     sizeEstimate: a.sizeEstimate + b.sizeEstimate,
   };
@@ -140,14 +138,8 @@ function makeComparable(s: PolicyStatement): ComparableStatement {
     originals: [s],
     statement: s,
     conditionString: JSON.stringify(s.conditions),
-    principalStrings: s.principals.map(renderPrincipal),
-    notPrincipalStrings: s.notPrincipals.map(renderPrincipal),
     sizeEstimate: s._estimateSize(),
   };
-
-  function renderPrincipal(x: IPrincipal) {
-    return JSON.stringify(x.policyFragment.principalJson);
-  }
 }
 
 /**
@@ -178,8 +170,6 @@ function renderComparable(s: ComparableStatement): PolicyStatement {
 interface ComparableStatement {
   readonly statement: PolicyStatement;
   readonly originals: PolicyStatement[];
-  readonly principalStrings: string[];
-  readonly notPrincipalStrings: string[];
   readonly conditionString: string;
   readonly sizeEstimate: number;
 }
@@ -199,13 +189,20 @@ function setMerge<A>(x: A[], y: A[]): A[] {
   return Array.from(new Set([...x, ...y])).sort();
 }
 
+function setEqualPrincipals(xs: IPrincipal[], ys: IPrincipal[]): boolean {
+  const xPrincipals = partitionPrincipals(xs);
+  const yPrincipals = partitionPrincipals(ys);
+
+  const nonComp = setEqual(xPrincipals.nonComparable, yPrincipals.nonComparable);
+  const comp = setEqual(Object.keys(xPrincipals.comparable), Object.keys(yPrincipals.comparable));
+
+  return nonComp && comp;
+}
+
 function setMergePrincipals(xs: IPrincipal[], ys: IPrincipal[]): IPrincipal[] {
-  const ret = [...xs];
-  for (const y of ys) {
-    if (ret.some(r => equalPrincipals(r, y))) {
-      continue;
-    }
-    ret.push(y);
-  }
-  return ret;
+  const xPrincipals = partitionPrincipals(xs);
+  const yPrincipals = partitionPrincipals(ys);
+
+  const comparable = { ...xPrincipals.comparable, ...yPrincipals.comparable };
+  return [...Object.values(comparable), ...xPrincipals.nonComparable, ...yPrincipals.nonComparable];
 }

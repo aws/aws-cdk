@@ -7,7 +7,7 @@ import { IManagedPolicy, ManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment, IComparablePrincipal } from './principals';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
@@ -198,7 +198,7 @@ export class Role extends Resource implements IRole {
     // we want to support these as well, so we just use the element after the last slash as role name
     const roleName = resourceName.split('/').pop()!;
 
-    class Import extends Resource implements IRole {
+    class Import extends Resource implements IRole, IComparablePrincipal {
       public readonly grantPrincipal: IPrincipal = this;
       public readonly principalAccount = roleAccount;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
@@ -266,6 +266,10 @@ export class Role extends Resource implements IRole {
           resourceArns: [this.roleArn],
           scope: this,
         });
+      }
+
+      public dedupeString(): string | undefined {
+        return `ImportedRole:${roleArn}`;
       }
     }
 
