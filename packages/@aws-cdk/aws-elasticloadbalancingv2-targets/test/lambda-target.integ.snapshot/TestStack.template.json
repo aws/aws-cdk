@@ -445,7 +445,7 @@
     "TargetType": "lambda"
    },
    "DependsOn": [
-    "FunInvokeServicePrincipalelasticloadbalancingamazonawscomD2CAC0C4"
+    "FunInvoke2UTWxhlfyqbT5FTn5jvgbLgjFfJwzswGk55DU1HY1CA1AAFB"
    ]
   },
   "FunServiceRole3CC876D7": {
@@ -498,7 +498,7 @@
     "FunServiceRole3CC876D7"
    ]
   },
-  "FunInvokeServicePrincipalelasticloadbalancingamazonawscomD2CAC0C4": {
+  "FunInvoke2UTWxhlfyqbT5FTn5jvgbLgjFfJwzswGk55DU1HY1CA1AAFB": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
