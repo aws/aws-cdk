@@ -136,7 +136,7 @@ To package a specific module, say the `@aws-cdk/aws-ec2` module:
 
 ```console
 $ cd <root-of-cdk-repo>
-$ docker run --rm --net=host -it -v $PWD:$PWD -w $PWD jsii/superchain
+$ docker run --rm --net=host -it -v $PWD:$PWD -w $PWD jsii/superchain:1-buster-slim
 docker$ cd packages/@aws-cdk/aws-ec2
 docker$ ../../../scripts/foreach.sh --up yarn run package
 docker$ exit
@@ -228,7 +228,8 @@ sufficient to get clarity on what you plan to do. If the changes are
 significant or intrusive to the existing CDK experience, and especially for a
 brand new L2 construct implementation, please write an RFC in our [RFC
 repository](https://github.com/aws/aws-cdk-rfcs) before jumping into the code
-base.
+base. L2 construct implementation pull requests will not be reviewed without
+linking an approved RFC.
 
 ### Step 3: Work your Magic
 
@@ -352,7 +353,7 @@ $ yarn watch & # runs in the background
 * Once the pull request is submitted, a reviewer will be assigned by the maintainers.
 
 * If the PR build is failing, update the PR with fixes until the build succeeds. You may have trouble getting attention
-  from maintainers if your build is failing, and after 4 weeks of staleness, your PR will be automatically closed. 
+  from maintainers if your build is failing, and after 4 weeks of staleness, your PR will be automatically closed.
 
 * Discuss review comments and iterate until you get at least one "Approve". When iterating, push new commits to the
   same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
@@ -367,13 +368,13 @@ $ yarn watch & # runs in the background
 `package.json` file.**
 
 Sometimes constructs introduce new unconventional dependencies.  Any new unconventional dependency that is introduced needs to have
-an auto upgrade process in place. The recommended way to update dependencies is through [dependabot](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates). 
+an auto upgrade process in place. The recommended way to update dependencies is through [dependabot](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates).
 You can find the dependabot config file [here](./.github/dependabot.yml).
 
 An example of this is the [@aws-cdk/lambda-layer-awscli](packages/@aws-cdk/lambda-layer-awscli) module.
 This module creates a lambda layer that bundles the AWS CLI. This is considered an unconventional
 dependency because the AWS CLI is bundled into the CDK as part of the build, and the version
-of the AWS CLI that is bundled is not managed by the `package.json` file. 
+of the AWS CLI that is bundled is not managed by the `package.json` file.
 
 In order to automatically update the version of the AWS CLI, a custom build process was
 created that takes upgrades into consideration. You can take a look at the files in
@@ -666,7 +667,7 @@ cases where some of those do not apply - good judgement is to be applied):
   // An example about adding a stage to a pipeline in the @aws-cdk/pipelines library
   declare const pipeline: pipelines.CodePipeline;
   declare const myStage: Stage;
-  pipeline.addStage(myStage);   
+  pipeline.addStage(myStage);
   ```
 
 - Utilize the `default.ts-fixture` that already exists rather than writing new
