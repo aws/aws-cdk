@@ -26,7 +26,7 @@
     "projen": "npx projen"
   },
   "devDependencies": {
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.0",
     "@types/license-checker": "^25.0.3",
     "@types/madge": "^5.0.0",
     "@types/node": "^12",
@@ -40,18 +40,18 @@
     "jest-junit": "^13",
     "json-schema": "^0.4.0",
     "npm-check-updates": "^12",
-    "projen": "^0.54.15",
+    "projen": "^0.56.4",
     "standard-version": "^9",
     "ts-jest": "^27.1.4",
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "esbuild": "^0.14.34",
-    "fs-extra": "^10.0.1",
+    "esbuild": "^0.14.38",
+    "fs-extra": "^10.1.0",
     "license-checker": "^25.0.1",
     "madge": "^5.0.1",
     "shlex": "^2.1.0",
-    "yargs": "^17.4.0"
+    "yargs": "^17.4.1"
   },
   "main": "lib/index.js",
   "license": "Apache-2.0",
