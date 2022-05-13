@@ -45,24 +45,22 @@ export function mergeStatements(statements: PolicyStatement[]): MergeStatementRe
   // Do one optimization pass, return 'true' if we merged anything
   function onePass() {
     let ret = false;
-    let i = 0;
-    while (i < compStatements.length) {
-      let didMerge = false;
 
-      for (let j = i + 1; j < compStatements.length; j++) {
+    for (let i = 0; i < compStatements.length; i++) {
+      let j = i + 1;
+      while (j < compStatements.length) {
         const merged = tryMerge(compStatements[i], compStatements[j]);
+
         if (merged) {
           compStatements[i] = merged;
           compStatements.splice(j, 1);
-          ret = didMerge = true;
-          break;
+          ret = true;
+        } else {
+          j++;
         }
       }
-
-      if (!didMerge) {
-        i++;
-      }
     }
+
     return ret;
   }
 }
@@ -96,8 +94,6 @@ function tryMerge(a: ComparableStatement, b: ComparableStatement): ComparableSta
   if (a.statement.effect !== b.statement.effect) { return; }
   // We don't merge Sids (for now)
   if (a.statement.sid || b.statement.sid) { return; }
-  // Not if the combination grows too large
-  if (a.sizeEstimate + b.sizeEstimate > MAX_MERGE_SIZE) { return; }
 
   if (a.conditionString !== b.conditionString) { return; }
   if (
@@ -116,15 +112,18 @@ function tryMerge(a: ComparableStatement, b: ComparableStatement): ComparableSta
 
   if (setsEqual < 2 || unmergeablePrincipals(a, b)) { return; }
 
+  const combined = a.statement.copy({
+    actions: setMerge(a.statement.actions, b.statement.actions),
+    resources: setMerge(a.statement.resources, b.statement.resources),
+    principals: setMergePrincipals(a.statement.principals, b.statement.principals),
+  });
+
+  if (combined._estimateSize() > MAX_MERGE_SIZE) { return undefined; }
+
   return {
     originals: [...a.originals, ...b.originals],
-    statement: a.statement.copy({
-      actions: setMerge(a.statement.actions, b.statement.actions),
-      resources: setMerge(a.statement.resources, b.statement.resources),
-      principals: setMergePrincipals(a.statement.principals, b.statement.principals),
-    }),
+    statement: combined,
     conditionString: a.conditionString,
-    sizeEstimate: a.sizeEstimate + b.sizeEstimate,
   };
 }
 
@@ -138,7 +137,6 @@ function makeComparable(s: PolicyStatement): ComparableStatement {
     originals: [s],
     statement: s,
     conditionString: JSON.stringify(s.conditions),
-    sizeEstimate: s._estimateSize(),
   };
 }
 
@@ -171,7 +169,6 @@ interface ComparableStatement {
   readonly statement: PolicyStatement;
   readonly originals: PolicyStatement[];
   readonly conditionString: string;
-  readonly sizeEstimate: number;
 }
 
 /**

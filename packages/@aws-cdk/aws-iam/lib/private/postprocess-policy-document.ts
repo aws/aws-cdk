@@ -41,9 +41,10 @@ export class PostProcessPolicyDocument implements cdk.IPostProcessor {
       }
 
       if (this.sort) {
-        s.Action = sortByJson(s.Action);
-        s.Resource = sortByJson(s.Resource);
-        s.Principal = sortPrincipals(s.Principal);
+        // Don't act on the values if they are 'undefined'
+        if (s.Action) { s.Action = sortByJson(s.Action); }
+        if (s.Resource) { s.Resource = sortByJson(s.Resource); }
+        if (s.Principal) { s.Principal = sortPrincipals(s.Principal); }
       }
 
       return s;
