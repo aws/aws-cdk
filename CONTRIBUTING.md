@@ -228,7 +228,8 @@ sufficient to get clarity on what you plan to do. If the changes are
 significant or intrusive to the existing CDK experience, and especially for a
 brand new L2 construct implementation, please write an RFC in our [RFC
 repository](https://github.com/aws/aws-cdk-rfcs) before jumping into the code
-base.
+base. L2 construct implementation pull requests will not be reviewed without
+linking an approved RFC.
 
 ### Step 3: Work your Magic
 

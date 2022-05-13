@@ -438,7 +438,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     const clusterParameterGroupConfig = clusterParameterGroup?.bindToCluster({});
     this.engine = props.engine;
 
-    const clusterIdentifier = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER)
+    const clusterIdentifier = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER) && !Token.isUnresolved(props.clusterIdentifier)
       ? props.clusterIdentifier?.toLowerCase()
       : props.clusterIdentifier;
 
