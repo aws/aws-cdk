@@ -1,0 +1,20 @@
+#!/bin/bash
+# Required environment variables
+# USER_ID
+# USER_NAME
+# GROUP_ID
+# GROUP_NAME
+# DOCKER_GID
+
+# add the group
+echo "Adding group ${GROUP_NAME} (${GROUP_ID})"
+groupadd -g ${GROUP_ID} ${GROUP_NAME}
+
+# add the user
+echo "Adding user ${USER_NAME} (${USER_ID})"
+useradd -m -u ${USER_ID} -g ${GROUP_NAME} ${USER_NAME}
+
+# add docker group, add user to docker group
+groupadd -g "${DOCKER_GID}" host_docker
+usermod -aG "$DOCKER_GID" "${USER_NAME}"
+
