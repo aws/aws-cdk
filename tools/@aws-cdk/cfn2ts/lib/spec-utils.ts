@@ -81,7 +81,7 @@ function complexItemTypeNames(spec: schema.CollectionProperty): string[] {
   if (schema.isComplexListProperty(spec) || schema.isMapOfStructsProperty(spec)) {
     return [spec.ItemType];
   } else if (schema.isUnionProperty(spec)) {
-    return spec.ItemTypes || [];
+    return spec.ItemTypes ?? spec.InclusiveItemTypes ?? [];
   }
   return [];
 }
@@ -92,7 +92,7 @@ function primitiveItemTypeNames(spec: schema.CollectionProperty): string[] {
   } else if (schema.isPrimitiveListProperty(spec) || schema.isPrimitiveMapProperty(spec)) {
     return [spec.PrimitiveItemType];
   } else if (schema.isUnionProperty(spec)) {
-    return spec.PrimitiveItemTypes || [];
+    return spec.PrimitiveItemTypes ?? spec.InclusivePrimitiveItemTypes ?? [];
   }
   return [];
 }
