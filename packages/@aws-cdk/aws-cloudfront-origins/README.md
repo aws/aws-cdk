@@ -126,7 +126,7 @@ Origins can be created from an API Gateway REST API. It is recommended to use a
 
 ```ts
 declare const api: apigateway.RestApi;
-new cloudfront.Distribution(stack, 'Distribution', {
+new cloudfront.Distribution(this, 'Distribution', {
   defaultBehavior: { origin: new origins.RestApiOrigin(api) },
 });
 ```
