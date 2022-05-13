@@ -84,7 +84,7 @@
     }
    }
   },
-  "MyLambdaCurrentVersionE7A382CCaab0ffd2d3271bb29338c3fe7c7f3151": {
+  "MyLambdaCurrentVersionE7A382CCf9fac83eca6426eeed700cdc0106fc3d": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -100,7 +100,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "MyLambdaCurrentVersionE7A382CCaab0ffd2d3271bb29338c3fe7c7f3151",
+      "MyLambdaCurrentVersionE7A382CCf9fac83eca6426eeed700cdc0106fc3d",
       "Version"
      ]
     },

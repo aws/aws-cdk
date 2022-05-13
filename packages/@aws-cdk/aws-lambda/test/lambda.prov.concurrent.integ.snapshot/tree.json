@@ -179,7 +179,7 @@
                     },
                     "functionVersion": {
                       "Fn::GetAtt": [
-                        "MyLambdaAliasPCECurrentVersion072335D3f742c0f8cc0b7f48bb32fb34b63bc22c",
+                        "MyLambdaAliasPCECurrentVersion072335D3ecf1e1993812a43e1ad83ad23009e893",
                         "Version"
                       ]
                     },
@@ -392,7 +392,7 @@
                     },
                     "functionVersion": {
                       "Fn::GetAtt": [
-                        "MyLambdaVersionPCECurrentVersion27FC3932fbc6188ae863cb6dc15d61f96ad00420",
+                        "MyLambdaVersionPCECurrentVersion27FC3932176d028ba8f6b4c3340c828b8d6c8815",
                         "Version"
                       ]
                     },
