@@ -1,5 +1,5 @@
 {
-  "$version": "66.1.0",
+  "$version": "69.0.0",
   "PropertyTypes": {
     "AWS::GroundStation::Config.AntennaDownlinkConfig": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-antennadownlinkconfig.html",

@@ -109,7 +109,7 @@
     "jsonschema": "^1.4.0",
     "minimatch": "^3.1.2",
     "punycode": "^2.1.1",
-    "semver": "^7.3.6",
+    "semver": "^7.3.7",
     "yaml": "1.10.2"
   },
   "devDependencies": {
@@ -235,6 +235,7 @@
     "@aws-cdk/aws-iotfleethub": "0.0.0",
     "@aws-cdk/aws-iotsitewise": "0.0.0",
     "@aws-cdk/aws-iotthingsgraph": "0.0.0",
+    "@aws-cdk/aws-iottwinmaker": "0.0.0",
     "@aws-cdk/aws-iotwireless": "0.0.0",
     "@aws-cdk/aws-ivs": "0.0.0",
     "@aws-cdk/aws-kafkaconnect": "0.0.0",
@@ -331,6 +332,7 @@
     "@aws-cdk/aws-synthetics": "0.0.0",
     "@aws-cdk/aws-timestream": "0.0.0",
     "@aws-cdk/aws-transfer": "0.0.0",
+    "@aws-cdk/aws-voiceid": "0.0.0",
     "@aws-cdk/aws-waf": "0.0.0",
     "@aws-cdk/aws-wafregional": "0.0.0",
     "@aws-cdk/aws-wafv2": "0.0.0",
