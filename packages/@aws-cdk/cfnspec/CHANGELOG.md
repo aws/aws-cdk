@@ -2,6 +2,23 @@
 
 ## New Resource Types
 
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::EC2::TrafficMirrorTarget GatewayLoadBalancerEndpointId (__added__)
+* AWS::Synthetics::Canary DeleteLambdaResourcesOnCanaryDeletion (__added__)
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v69.0.0
+
+## New Resource Types
+
 * AWS::EC2::KeyPair
 * AWS::VoiceID::Domain
 
