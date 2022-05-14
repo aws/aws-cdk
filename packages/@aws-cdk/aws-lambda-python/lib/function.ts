@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Function, FunctionOptions, Runtime, RuntimeFamily } from '@aws-cdk/aws-lambda';
+import { Stack } from '@aws-cdk/core';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
 
@@ -67,7 +68,7 @@ export class PythonFunction extends Function {
       throw new Error(`Cannot find index file at ${resolvedIndex}`);
     }
 
-    const resolvedHandler =`${index.slice(0, -3)}.${handler}`.replace('/', '.');
+    const resolvedHandler =`${index.slice(0, -3)}.${handler}`.replace(/\//g, '.');
 
     if (props.runtime && props.runtime.family !== RuntimeFamily.PYTHON) {
       throw new Error('Only `PYTHON` runtimes are supported.');
@@ -79,6 +80,7 @@ export class PythonFunction extends Function {
       code: Bundling.bundle({
         entry,
         runtime,
+        skip: !Stack.of(scope).bundlingRequired,
         ...props.bundling,
       }),
       handler: resolvedHandler,

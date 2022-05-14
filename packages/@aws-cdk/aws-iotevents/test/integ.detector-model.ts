@@ -23,6 +23,20 @@ class TestStack extends cdk.Stack {
           ),
         ),
       }],
+      onInput: [{
+        eventName: 'test-input-event',
+        condition: iotevents.Expression.eq(
+          iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+          iotevents.Expression.fromString('31.6'),
+        ),
+      }],
+      onExit: [{
+        eventName: 'test-exit-event',
+        condition: iotevents.Expression.eq(
+          iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+          iotevents.Expression.fromString('31.7'),
+        ),
+      }],
     });
     const offlineState = new iotevents.State({
       stateName: 'offline',

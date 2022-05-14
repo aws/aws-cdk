@@ -862,7 +862,7 @@ export class Project extends ProjectBase {
             // If the parameter name starts with / the resource name is not separated with a double '/'
             // arn:aws:ssm:region:1111111111:parameter/PARAM_NAME
             resourceName: envVariableValue.startsWith('/')
-              ? envVariableValue.substr(1)
+              ? envVariableValue.slice(1)
               : envVariableValue,
           }));
         }
@@ -1642,32 +1642,6 @@ export interface IBindableBuildImage extends IBuildImage {
   bind(scope: CoreConstruct, project: IProject, options: BuildImageBindOptions): BuildImageConfig;
 }
 
-class ArmBuildImage implements IBuildImage {
-  public readonly type = 'ARM_CONTAINER';
-  public readonly defaultComputeType = ComputeType.LARGE;
-  public readonly imagePullPrincipalType = ImagePullPrincipalType.CODEBUILD;
-  public readonly imageId: string;
-
-  constructor(imageId: string) {
-    this.imageId = imageId;
-  }
-
-  public validate(buildEnvironment: BuildEnvironment): string[] {
-    const ret = [];
-    if (buildEnvironment.computeType &&
-        buildEnvironment.computeType !== ComputeType.SMALL &&
-        buildEnvironment.computeType !== ComputeType.LARGE) {
-      ret.push(`ARM images only support ComputeTypes '${ComputeType.SMALL}' and '${ComputeType.LARGE}' - ` +
-        `'${buildEnvironment.computeType}' was given`);
-    }
-    return ret;
-  }
-
-  public runScriptBuildspec(entrypoint: string): BuildSpec {
-    return runScriptLinuxBuildSpec(entrypoint);
-  }
-}
-
 /**
  * The options when creating a CodeBuild Docker build image
  * using {@link LinuxBuildImage.fromDockerRegistry}
@@ -1695,8 +1669,12 @@ interface LinuxBuildImageProps {
   readonly repository?: ecr.IRepository;
 }
 
+// Keep around to resolve a circular dependency until removing deprecated ARM image constants from LinuxBuildImage
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { LinuxArmBuildImage } from './linux-arm-build-image';
+
 /**
- * A CodeBuild image running Linux.
+ * A CodeBuild image running x86-64 Linux.
  *
  * This class has a bunch of public constants that represent the most popular images.
  *
@@ -1723,9 +1701,13 @@ export class LinuxBuildImage implements IBuildImage {
   /** The Amazon Linux 2 x86_64 standard image, version `3.0`. */
   public static readonly AMAZON_LINUX_2_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:3.0');
 
-  public static readonly AMAZON_LINUX_2_ARM: IBuildImage = new ArmBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:1.0');
-  /** Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0". */
-  public static readonly AMAZON_LINUX_2_ARM_2: IBuildImage = new ArmBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:2.0');
+  /** @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0 instead. */
+  public static readonly AMAZON_LINUX_2_ARM = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0;
+  /**
+   * Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0".
+   * @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0 instead.
+   * */
+  public static readonly AMAZON_LINUX_2_ARM_2 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0;
 
   /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage('aws/codebuild/ubuntu-base:14.04');
@@ -1789,7 +1771,7 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly UBUNTU_14_04_DOTNET_CORE_2_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-2.1');
 
   /**
-   * @returns a Linux build image from a Docker Hub image.
+   * @returns a x86-64 Linux build image from a Docker Hub image.
    */
   public static fromDockerRegistry(name: string, options: DockerImageOptions = {}): IBuildImage {
     return new LinuxBuildImage({
@@ -1800,7 +1782,7 @@ export class LinuxBuildImage implements IBuildImage {
   }
 
   /**
-   * @returns A Linux build image from an ECR repository.
+   * @returns A x86-64 Linux build image from an ECR repository.
    *
    * NOTE: if the repository is external (i.e. imported), then we won't be able to add
    * a resource policy statement for it so CodeBuild can pull the image.
@@ -1808,18 +1790,18 @@ export class LinuxBuildImage implements IBuildImage {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-ecr.html
    *
    * @param repository The ECR repository
-   * @param tag Image tag (default "latest")
+   * @param tagOrDigest Image tag or digest (default "latest", digests must start with `sha256:`)
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): IBuildImage {
+  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): IBuildImage {
     return new LinuxBuildImage({
-      imageId: repository.repositoryUriForTag(tag),
+      imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
       repository,
     });
   }
 
   /**
-   * Uses an Docker image asset as a Linux build image.
+   * Uses an Docker image asset as a x86-64 Linux build image.
    */
   public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): IBuildImage {
     const asset = new DockerImageAsset(scope, id, props);
@@ -1961,7 +1943,7 @@ export class WindowsBuildImage implements IBuildImage {
   }
 
   /**
-   * @returns A Linux build image from an ECR repository.
+   * @returns A Windows build image from an ECR repository.
    *
    * NOTE: if the repository is external (i.e. imported), then we won't be able to add
    * a resource policy statement for it so CodeBuild can pull the image.
@@ -1969,15 +1951,15 @@ export class WindowsBuildImage implements IBuildImage {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-ecr.html
    *
    * @param repository The ECR repository
-   * @param tag Image tag (default "latest")
+   * @param tagOrDigest Image tag or digest (default "latest", digests must start with `sha256:`)
    */
   public static fromEcrRepository(
     repository: ecr.IRepository,
-    tag: string = 'latest',
+    tagOrDigest: string = 'latest',
     imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
 
     return new WindowsBuildImage({
-      imageId: repository.repositoryUriForTag(tag),
+      imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
       imageType,
       repository,

@@ -199,15 +199,16 @@ MachineImage.genericLinux({ ... })` and configure the right AMI ID for the
 regions you want to deploy to.
 
 By default, the NAT instances will route all traffic. To control what traffic
-gets routed, pass `allowAllTraffic: false` and access the
-`NatInstanceProvider.connections` member after having passed it to the VPC:
+gets routed, pass a custom value for `defaultAllowedTraffic` and access the
+`NatInstanceProvider.connections` member after having passed the NAT provider to
+the VPC:
 
 ```ts
 declare const instanceType: ec2.InstanceType;
 
 const provider = ec2.NatProvider.instance({
   instanceType,
-  allowAllTraffic: false,
+  defaultAllowedTraffic: ec2.NatTrafficDirection.OUTBOUND_ONLY,
 });
 new ec2.Vpc(this, 'TheVPC', {
   natGatewayProvider: provider,
@@ -600,6 +601,73 @@ const sg = ec2.SecurityGroup.fromLookupById(this, 'SecurityGroupLookup', 'sg-123
 ```
 
 The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be written to a file called `cdk.context.json`. You must commit this file to source control so that the lookup values are available in non-privileged environments such as CI build steps, and to ensure your template builds are repeatable.
+
+### Cross Stack Connections
+
+If you are attempting to add a connection from a peer in one stack to a peer in a different stack, sometimes it is necessary to ensure that you are making the connection in
+a specific stack in order to avoid a cyclic reference. If there are no other dependencies between stacks then it will not matter in which stack you make
+the connection, but if there are existing dependencies (i.e. stack1 already depends on stack2), then it is important to make the connection in the dependent stack (i.e. stack1).
+
+Whenever you make a `connections` function call, the ingress and egress security group rules will be added to the stack that the calling object exists in.
+So if you are doing something like `peer1.connections.allowFrom(peer2)`, then the security group rules (both ingress and egress) will be created in `peer1`'s Stack.
+
+As an example, if we wanted to allow a connection from a security group in one stack (egress) to a security group in a different stack (ingress),
+we would make the connection like:
+
+**If Stack1 depends on Stack2**
+
+```ts fixture=with-vpc
+// Stack 1
+declare const stack1: Stack;
+declare const stack2: Stack;
+
+const sg1 = new ec2.SecurityGroup(stack1, 'SG1', {
+  allowAllOutbound: false, // if this is `true` then no egress rule will be created
+  vpc,
+});
+
+// Stack 2
+const sg2 = new ec2.SecurityGroup(stack2, 'SG2', {
+  allowAllOutbound: false, // if this is `true` then no egress rule will be created
+  vpc,
+});
+
+
+// `connections.allowTo` on `sg1` since we want the
+// rules to be created in Stack1
+sg1.connections.allowTo(sg2, ec2.Port.tcp(3333));
+```
+
+In this case both the Ingress Rule for `sg2` and the Egress Rule for `sg1` will both be created
+in `Stack 1` which avoids the cyclic reference.
+
+
+**If Stack2 depends on Stack1**
+
+```ts fixture=with-vpc
+// Stack 1
+declare const stack1: Stack;
+declare const stack2: Stack;
+
+const sg1 = new ec2.SecurityGroup(stack1, 'SG1', {
+  allowAllOutbound: false, // if this is `true` then no egress rule will be created
+  vpc,
+});
+
+// Stack 2
+const sg2 = new ec2.SecurityGroup(stack2, 'SG2', {
+  allowAllOutbound: false, // if this is `true` then no egress rule will be created
+  vpc,
+});
+
+
+// `connections.allowFrom` on `sg2` since we want the
+// rules to be created in Stack2
+sg2.connections.allowFrom(sg1, ec2.Port.tcp(3333));
+```
+
+In this case both the Ingress Rule for `sg2` and the Egress Rule for `sg1` will both be created
+in `Stack 2` which avoids the cyclic reference.
 
 ## Machine Images (AMIs)
 
@@ -1406,5 +1474,21 @@ const template = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
   securityGroup: new ec2.SecurityGroup(this, 'LaunchTemplateSG', {
     vpc: vpc,
   }),
+});
+```
+
+## Detailed Monitoring
+
+The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](http://aws.amazon.com/cloudwatch/pricing/).
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+
+new ec2.Instance(this, 'Instance1', {
+  vpc,
+  instanceType,
+  machineImage: new ec2.AmazonLinuxImage(),
+  detailedMonitoring: true,
 });
 ```

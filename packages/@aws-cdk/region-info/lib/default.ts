@@ -35,10 +35,10 @@ export class Default {
     }
 
     function determineConfiguration(service: string): (service: string, region: string, urlSuffix: string) => string {
-      function universal(s: string) { return `${s}.amazonaws.com`; };
-      function partitional(s: string, _: string, u: string) { return `${s}.${u}`; };
-      function regional(s: string, r: string) { return `${s}.${r}.amazonaws.com`; };
-      function regionalPartitional(s: string, r: string, u: string) { return `${s}.${r}.${u}`; };
+      function universal(s: string) { return `${s}.amazonaws.com`; }
+      function partitional(s: string, _: string, u: string) { return `${s}.${u}`; }
+      function regional(s: string, r: string) { return `${s}.${r}.amazonaws.com`; }
+      function regionalPartitional(s: string, r: string, u: string) { return `${s}.${r}.${u}`; }
 
       // Exceptions for Service Principals in us-iso-*
       const US_ISO_EXCEPTIONS = new Set([
@@ -91,7 +91,8 @@ export class Default {
         case 'codedeploy':
           return region.startsWith('cn-')
             ? regionalPartitional
-            : regional;
+            // ...except in the isolated regions, where it's universal
+            : (region.startsWith('us-iso') ? universal : regional);
 
         // Services with a regional AND partitional principal
         case 'logs':
@@ -104,6 +105,11 @@ export class Default {
         // Services with a partitional principal
         case 'ec2':
           return partitional;
+
+        case 'elasticmapreduce':
+          return region.startsWith('cn-')
+            ? partitional
+            : universal;
 
         // Services with a universal principal across all regions/partitions (the default case)
         default:
