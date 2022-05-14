@@ -53,9 +53,9 @@
       },
       {
        "Action": [
-        "sqs:SendMessage",
         "sqs:GetQueueAttributes",
-        "sqs:GetQueueUrl"
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
        ],
        "Effect": "Allow",
        "Resource": {

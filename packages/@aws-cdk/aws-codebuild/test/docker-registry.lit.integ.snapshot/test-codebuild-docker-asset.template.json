@@ -24,8 +24,8 @@
      "Statement": [
       {
        "Action": [
-        "secretsmanager:GetSecretValue",
-        "secretsmanager:DescribeSecret"
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -72,7 +72,8 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "MyProject39F7B0AE"
-           }
+           },
+           ":*"
           ]
          ]
         },
@@ -95,8 +96,7 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "MyProject39F7B0AE"
-           },
-           ":*"
+           }
           ]
          ]
         }

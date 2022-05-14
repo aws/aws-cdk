@@ -386,6 +386,7 @@
   "etcdata80702D7D": {
    "Type": "AWS::EFS::FileSystem",
    "Properties": {
+    "Encrypted": true,
     "FileSystemTags": [
      {
       "Key": "Name",

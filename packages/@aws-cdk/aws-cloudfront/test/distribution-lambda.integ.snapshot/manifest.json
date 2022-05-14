@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "integ-distribution-lambda": {
       "type": "aws:cloudformation:stack",
@@ -31,7 +30,7 @@
         "/integ-distribution-lambda/Lambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaCurrentVersionDF706F6A8cedba3e8e1b3bbf7614644bfafda118"
+            "data": "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d"
           }
         ],
         "/integ-distribution-lambda/Dist/Resource": [
