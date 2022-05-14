@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import * as secretsmanager from '../lib';
 
 let stack: cdk.Stack;
@@ -516,70 +517,40 @@ describe('hosted rotation', () => {
 });
 
 describe('manual rotations', () => {
-  test('manualRotation with automaticallyAfter throws error', () => {
-    // GIVEN
-    const secret = new secretsmanager.Secret(stack, 'secret');
-
-    expect(() => {
-      // WHEN
-      new secretsmanager.RotationSchedule(stack, 'badRotation', {
-        secret,
-        hostedRotation: secretsmanager.HostedRotation.postgreSqlSingleUser(),
-        manualRotation: true,
-        automaticallyAfter: cdk.Duration.days(15),
+  test('automaticallyAfter with any duration of zero leaves RotationRules empty', () => {
+    const checkRotationNotSet = (automaticallyAfter: Duration) => {
+      // GIVEN
+      const localStack = new cdk.Stack();
+      const secret = new secretsmanager.Secret(localStack, 'Secret');
+      const rotationLambda = new lambda.Function(localStack, 'Lambda', {
+        runtime: lambda.Runtime.NODEJS_10_X,
+        code: lambda.Code.fromInline('export.handler = event => event;'),
+        handler: 'index.handler',
       });
-    }).toThrow(/Cannot specify `automaticallyAfter` when `manualRotation` is `true`./); // THEN
-  });
 
-  test('manualRotation leaves rotationSchedule unset', () => {
-    // GIVEN
-    const secret = new secretsmanager.Secret(stack, 'Secret');
-    const rotationLambda = new lambda.Function(stack, 'Lambda', {
-      runtime: lambda.Runtime.NODEJS_10_X,
-      code: lambda.Code.fromInline('export.handler = event => event;'),
-      handler: 'index.handler',
-    });
+      // WHEN
+      new secretsmanager.RotationSchedule(localStack, 'RotationSchedule', {
+        secret,
+        rotationLambda,
+        automaticallyAfter,
+      });
 
-    // WHEN
-    new secretsmanager.RotationSchedule(stack, 'RotationSchedule', {
-      secret,
-      rotationLambda,
-      manualRotation: true,
-    });
+      // THEN
+      Template.fromStack(localStack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', Match.objectEquals({
+        SecretId: { Ref: 'SecretA720EF05' },
+        RotationLambdaARN: {
+          'Fn::GetAtt': [
+            'LambdaD247545B',
+            'Arn',
+          ],
+        },
+      }));
+    };
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
-      SecretId: { Ref: 'SecretA720EF05' },
-      RotationLambdaARN: {
-        'Fn::GetAtt': [
-          'LambdaD247545B',
-          'Arn',
-        ],
-      },
-      RotationRules: { },
-    });
-  });
-
-  test('manualRotation set false allows automaticallyAfter to be set', () => {
-    // GIVEN
-    const secret = new secretsmanager.Secret(stack, 'Secret');
-    const rotationLambda = new lambda.Function(stack, 'Lambda', {
-      runtime: lambda.Runtime.NODEJS_10_X,
-      code: lambda.Code.fromInline('export.handler = event => event;'),
-      handler: 'index.handler',
-    });
-
-    // WHEN
-    new secretsmanager.RotationSchedule(stack, 'RotationSchedule', {
-      secret,
-      rotationLambda,
-      automaticallyAfter: cdk.Duration.days(5),
-      manualRotation: false,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
-      RotationRules: { AutomaticallyAfterDays: 5 },
-    });
+    checkRotationNotSet(Duration.days(0));
+    checkRotationNotSet(Duration.hours(0));
+    checkRotationNotSet(Duration.minutes(0));
+    checkRotationNotSet(Duration.seconds(0));
+    checkRotationNotSet(Duration.millis(0));
   });
 });

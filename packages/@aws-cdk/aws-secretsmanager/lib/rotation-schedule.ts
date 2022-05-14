@@ -27,20 +27,13 @@ export interface RotationScheduleOptions {
 
   /**
    * Specifies the number of days after the previous rotation before
-   * Secrets Manager triggers the next automatic rotation. Cannot be set
-   * when `manualRotation` is `true`.
+   * Secrets Manager triggers the next automatic rotation.
    *
-   * @default Duration.days(30) unless `manualRotation` is `true`
+   * A value of zero will disable automatic rotation - `Duration.days(0)`.
+   *
+   * @default Duration.days(30)
    */
   readonly automaticallyAfter?: Duration;
-
-  /**
-   * Disables automatic secret rotation if set `true`. Not compatible
-   * with the `automaticallyAfter` option.
-   *
-   * @default false
-   */
-  readonly manualRotation?: boolean;
 }
 
 /**
@@ -81,10 +74,6 @@ export class RotationSchedule extends Resource {
       throw new Error('One of `rotationLambda` or `hostedRotation` must be specified.');
     }
 
-    if (props.automaticallyAfter && props.manualRotation) {
-      throw new Error('Cannot specify `automaticallyAfter` when `manualRotation` is `true`.');
-    }
-
     if (props.rotationLambda?.permissionsNode.defaultChild) {
       if (props.secret.encryptionKey) {
         props.secret.encryptionKey.grantEncryptDecrypt(
@@ -119,17 +108,22 @@ export class RotationSchedule extends Resource {
     }
 
     let automaticallyAfterDays: number | undefined = undefined;
-    if (!props.manualRotation) {
-      automaticallyAfterDays = props.automaticallyAfter && props.automaticallyAfter.toDays() || 30;
+    if (props.automaticallyAfter?.toMilliseconds() !== 0) {
+      automaticallyAfterDays = props.automaticallyAfter?.toDays() || 30;
+    }
+
+    let rotationRules: CfnRotationSchedule.RotationRulesProperty | undefined = undefined;
+    if (automaticallyAfterDays !== undefined) {
+      rotationRules = {
+        automaticallyAfterDays,
+      };
     }
 
     new CfnRotationSchedule(this, 'Resource', {
       secretId: props.secret.secretArn,
       rotationLambdaArn: props.rotationLambda?.functionArn,
       hostedRotationLambda: props.hostedRotation?.bind(props.secret, this),
-      rotationRules: {
-        automaticallyAfterDays,
-      },
+      rotationRules,
     });
 
     // Prevent secrets deletions when rotation is in place
