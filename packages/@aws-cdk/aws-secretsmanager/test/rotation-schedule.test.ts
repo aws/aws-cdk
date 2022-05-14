@@ -517,7 +517,7 @@ describe('hosted rotation', () => {
 });
 
 describe('manual rotations', () => {
-  test('automaticallyAfter with any duration of zero leaves RotationRules empty', () => {
+  test('automaticallyAfter with any duration of zero leaves RotationRules unset', () => {
     const checkRotationNotSet = (automaticallyAfter: Duration) => {
       // GIVEN
       const localStack = new cdk.Stack();
