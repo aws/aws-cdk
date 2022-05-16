@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.0",
     "@types/node": "^10.17.60",
     "@types/semver": "^7.3.9",
     "@types/yarnpkg__lockfile": "^1.1.5",
@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@yarnpkg/lockfile": "^1.1.0",
-    "semver": "^7.3.6"
+    "semver": "^7.3.7"
   },
   "keywords": [
     "aws",
