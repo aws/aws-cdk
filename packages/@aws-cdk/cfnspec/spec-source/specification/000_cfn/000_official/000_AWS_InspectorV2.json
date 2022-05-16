@@ -1,5 +1,5 @@
 {
-  "$version": "69.0.0",
+  "$version": "72.0.0",
   "PropertyTypes": {
     "AWS::InspectorV2::Filter.DateFilter": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-datefilter.html",
