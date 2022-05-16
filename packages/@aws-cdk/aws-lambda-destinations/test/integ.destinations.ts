@@ -2,6 +2,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { App, Duration, Stack, StackProps } from '@aws-cdk/core';
+import { IntegTest, InvocationType, ExpectedResult } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as destinations from '../lib';
 
@@ -12,21 +13,23 @@ import * as destinations from '../lib';
  */
 
 class TestStack extends Stack {
+  public readonly fn: lambda.Function;
+  public readonly queue: sqs.Queue;
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const topic = new sns.Topic(this, 'Topic');
-    const queue = new sqs.Queue(this, 'Queue');
+    this.queue = new sqs.Queue(this, 'Queue');
 
-    const fn = new lambda.Function(this, 'SnsSqs', {
+    this.fn = new lambda.Function(this, 'SnsSqs', {
       runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = async (event) => {
-        if (event === 'OK') return 'success';
+        if (event.status === 'OK') return 'success';
         throw new Error('failure');
       };`),
       onFailure: new destinations.SnsDestination(topic),
-      onSuccess: new destinations.SqsDestination(queue),
+      onSuccess: new destinations.SqsDestination(this.queue),
       maxEventAge: Duration.hours(3),
       retryAttempts: 1,
     });
@@ -43,19 +46,19 @@ class TestStack extends Stack {
       runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = async (event) => {
-        if (event === 'OK') return 'success';
+        if (event.status === 'OK') return 'success';
         throw new Error('failure');
       };`),
       onFailure: new destinations.EventBridgeDestination(),
       onSuccess: new destinations.LambdaDestination(onSuccessLambda),
     });
 
-    const version = fn.addVersion('MySpecialVersion');
+    const version = this.fn.addVersion('MySpecialVersion');
 
     new lambda.Alias(this, 'MySpecialAlias', {
       aliasName: 'MySpecialAlias',
       version,
-      onSuccess: new destinations.SqsDestination(queue),
+      onSuccess: new destinations.SqsDestination(this.queue),
       onFailure: new destinations.SnsDestination(topic),
       maxEventAge: Duration.hours(2),
       retryAttempts: 0,
@@ -65,6 +68,33 @@ class TestStack extends Stack {
 
 const app = new App();
 
-new TestStack(app, 'aws-cdk-lambda-destinations');
+const stack = new TestStack(app, 'aws-cdk-lambda-destinations');
+const integ = new IntegTest(app, 'Destinations', {
+  testCases: [stack],
+});
+
+integ.assert.invokeFunction({
+  functionName: stack.fn.functionName,
+  invocationType: InvocationType.EVENT,
+  payload: JSON.stringify({ status: 'OK' }),
+});
+
+const message = integ.assert.awsApiCall('SQS', 'receiveMessage', {
+  QueueUrl: stack.queue.queueUrl,
+  WaitTimeSeconds: 20,
+});
+
+message.assertAtPath('Messages.0.Body', ExpectedResult.objectLike({
+  requestContext: {
+    condition: 'Success',
+  },
+  requestPayload: {
+    status: 'OK',
+  },
+  responseContext: {
+    statusCode: 200,
+  },
+  responsePayload: 'success',
+}));
 
 app.synth();
