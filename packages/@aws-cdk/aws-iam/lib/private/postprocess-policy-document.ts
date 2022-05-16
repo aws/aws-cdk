@@ -176,5 +176,5 @@ function sortByJson<B, A extends B | B[] | undefined>(xs: A): A {
 
   const sorted = Array.from(intermediate.keys()).sort().map(k => intermediate.get(k)!);
   xs.splice(0, xs.length, ...sorted);
-  return xs;
+  return xs.length !== 1 ? xs : xs[0];
 }
