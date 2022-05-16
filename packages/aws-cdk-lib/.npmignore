@@ -28,4 +28,5 @@ junit.xml
 
 !*.lit.ts
 
+# exclude source maps as they only work locally
 *.map
