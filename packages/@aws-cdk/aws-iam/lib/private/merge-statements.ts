@@ -26,7 +26,7 @@ const MAX_MERGE_SIZE = 2000;
  * Good Enough(tm). If it merges anything, it's at least going to produce a smaller output
  * than the input.
  */
-export function mergeStatements(statements: PolicyStatement[]): MergeStatementResult {
+export function mergeStatements(statements: PolicyStatement[], limitSize: boolean): MergeStatementResult {
   const compStatements = statements.map(makeComparable);
 
   // Keep trying until nothing changes anymore
@@ -49,7 +49,7 @@ export function mergeStatements(statements: PolicyStatement[]): MergeStatementRe
     for (let i = 0; i < compStatements.length; i++) {
       let j = i + 1;
       while (j < compStatements.length) {
-        const merged = tryMerge(compStatements[i], compStatements[j]);
+        const merged = tryMerge(compStatements[i], compStatements[j], limitSize);
 
         if (merged) {
           compStatements[i] = merged;
@@ -89,7 +89,7 @@ export interface MergeStatementResult {
  * - From their Action, Resource and Principal sets, 2 are subsets of each other
  *   (empty sets are fine).
  */
-function tryMerge(a: ComparableStatement, b: ComparableStatement): ComparableStatement | undefined {
+function tryMerge(a: ComparableStatement, b: ComparableStatement, limitSize: boolean): ComparableStatement | undefined {
   // Effects must be the same
   if (a.statement.effect !== b.statement.effect) { return; }
   // We don't merge Sids (for now)
@@ -118,7 +118,7 @@ function tryMerge(a: ComparableStatement, b: ComparableStatement): ComparableSta
     principals: setMergePrincipals(a.statement.principals, b.statement.principals),
   });
 
-  if (combined._estimateSize() > MAX_MERGE_SIZE) { return undefined; }
+  if (limitSize && combined._estimateSize() > MAX_MERGE_SIZE) { return undefined; }
 
   return {
     originals: [...a.originals, ...b.originals],

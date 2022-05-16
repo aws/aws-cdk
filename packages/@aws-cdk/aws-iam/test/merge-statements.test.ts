@@ -471,38 +471,6 @@ test('keep merging even if it requires multiple passes', () => {
   ]);
 });
 
-test('a statement is subsumed if it can, even if we are close to the size limit', () => {
-  // This is testing that the 'if' is in the right place: we can't predict how big
-  // a merging will be beforehand, so we have to do the culling afterwards.
-
-  const manyResources = range(80).map(i => `arn:aws:resource:${i}`).sort();
-
-  const statementA = new iam.PolicyStatement({
-    actions: ['service:A'],
-    resources: manyResources,
-  });
-
-  // Cannot merge with this, as we must add the resources and that would tip us over the limit
-  const cannotMerge = new iam.PolicyStatement({
-    actions: ['service:A'],
-    resources: range(20).map(i => `arn:aws:resourceNO:${i}`).sort(),
-  });
-
-  // Can merge with this, as we only need to add 'service:B' once
-  const canMerge = new iam.PolicyStatement({
-    actions: ['service:B'],
-    resources: manyResources,
-  });
-
-  assertNoMerge([statementA, cannotMerge]);
-
-  assertMerged([statementA, canMerge], [{
-    Effect: 'Allow',
-    Action: ['service:A', 'service:B'],
-    Resource: manyResources,
-  }]);
-});
-
 function assertNoMerge(statements: iam.PolicyStatement[]) {
   const app = new App();
   const stack = new Stack(app, 'Stack');
@@ -530,12 +498,4 @@ function assertMerged(statements: iam.PolicyStatement[], expected: any[]) {
  */
 function assertMergedC(doMerge: boolean, statements: iam.PolicyStatement[], expected: any[]) {
   return doMerge ? assertMerged(statements, expected) : assertNoMerge(statements);
-}
-
-function range(n: number): number[] {
-  const ret: number[] = [];
-  for (let i = 0; i < n; i++) {
-    ret.push(i);
-  }
-  return ret;
 }

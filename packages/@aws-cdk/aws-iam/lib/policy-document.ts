@@ -66,7 +66,6 @@ export class PolicyDocument implements cdk.IResolvable {
   private readonly statements = new Array<PolicyStatement>();
   private readonly autoAssignSids: boolean;
   private readonly minimize?: boolean;
-  private _minimized = false;
 
   constructor(props: PolicyDocumentProps = {}) {
     this.creationStack = cdk.captureStackTrace();
@@ -79,13 +78,15 @@ export class PolicyDocument implements cdk.IResolvable {
   public resolve(context: cdk.IResolveContext): any {
     this._maybeMergeStatements(context.scope);
 
-    // In the previous implementation of 'merge', sorting was always done, even
-    // on singular statements. In the new implementation of 'merge', sorting is
-    // only done when actually merging statements.
+    // In the previous implementation of 'merge', sorting of actions/resources on
+    // a statement always happened, even  on singular statements. In the new
+    // implementation of 'merge', sorting only happens when actually combining 2
+    // statements. This affects all test snapshots, so we need to put in mechanisms
+    // to avoid having to update all snapshots.
     //
-    // - To avoid having to update all unit tests, only sort when merging
-    // - To do sorting in a way compatible with the previous implementation of merging,
-    //   do it after render time.
+    // To do sorting in a way compatible with the previous implementation of merging,
+    // (so we don't have to update snapshots) do it after rendering, but only when
+    // merging is enabled.
     const sort = this.shouldMerge(context.scope);
     context.registerPostProcessor(new PostProcessPolicyDocument(this.autoAssignSids, sort));
     return this.render();
@@ -183,29 +184,37 @@ export class PolicyDocument implements cdk.IResolvable {
    *
    * @internal
    */
-  public _maybeMergeStatements(scope: IConstruct): Map<PolicyStatement, PolicyStatement[]> | undefined {
+  public _maybeMergeStatements(scope: IConstruct): void {
     if (this.shouldMerge(scope)) {
-      if (this._minimized) {
-        return undefined;
-      }
-      const result = mergeStatements(this.statements);
+      const result = mergeStatements(this.statements, false);
       this.statements.splice(0, this.statements.length, ...result.mergedStatements);
-      this._minimized = true;
-      return result.originsMap;
     }
-    return new Map(this.statements.map(s => [s, [s]]));
   }
 
   /**
    * Split the statements of the PolicyDocument into multiple groups, limited by their size
    *
-   * Returns the policy documents created to hold statements that were split off.
+   * We do a round of size-limited merging first (making sure to not produce statements too
+   * large to fit into standalone policies), so that we can most accurately estimate total
+   * policy size. Another final round of minimization will be done just before rendering to
+   * end up with minimal policies that look nice to humans.
+   *
+   * Return a map of the final set of policy documents, mapped to the ORIGINAL (pre-merge)
+   * PolicyStatements that ended up in the given PolicyDocument.
    *
    * @internal
    */
-  public _splitDocument(selfMaximumSize: number, splitMaximumSize: number): PolicyDocument[] {
+  public _splitDocument(scope: IConstruct, selfMaximumSize: number, splitMaximumSize: number): Map<PolicyDocument, PolicyStatement[]> {
     const self = this;
     const newDocs: PolicyDocument[] = [];
+
+    // Maps final statements to original statements
+    let statementsToOriginals = new Map(this.statements.map(s => [s, [s]]));
+    if (this.shouldMerge(scope)) {
+      const result = mergeStatements(this.statements, true);
+      this.statements.splice(0, this.statements.length, ...result.mergedStatements);
+      statementsToOriginals = result.originsMap;
+    }
 
     // Cache statement sizes to avoid recomputing them based on the fields
     const statementSizes = new Map<PolicyStatement, number>(this.statements.map(s => [s, s._estimateSize()]));
@@ -236,7 +245,13 @@ export class PolicyDocument implements cdk.IResolvable {
       this.statements.splice(i, 1);
     }
 
-    return newDocs;
+    // Return the set of all policy document and original statements
+    const ret = new Map<PolicyDocument, PolicyStatement[]>();
+    ret.set(this, this.statements.flatMap(s => statementsToOriginals.get(s) ?? [s]));
+    for (const newDoc of newDocs) {
+      ret.set(newDoc, newDoc.statements.flatMap(s => statementsToOriginals.get(s) ?? [s]));
+    }
+    return ret;
 
     function findDocWithSpace(size: number) {
       let j = 0;
@@ -249,22 +264,12 @@ export class PolicyDocument implements cdk.IResolvable {
 
       const newDoc = new PolicyDocument({
         assignSids: self.autoAssignSids,
-        // Minimizing has already been done
-        minimize: false,
+        minimize: self.minimize,
       });
       newDocs.push(newDoc);
       return newDoc;
     }
 
-  }
-
-  /**
-   * The statements in this doc
-   *
-   * @internal
-   */
-  public _statements() {
-    return [...this.statements];
   }
 
   private render(): any {

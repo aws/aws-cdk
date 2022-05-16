@@ -521,15 +521,12 @@ export class Role extends Resource implements IRole {
     this._didSplit = true;
 
     const self = this;
-    const splitDocument = this.defaultPolicy.document;
+    const originalDoc = this.defaultPolicy.document;
 
-    const mergeMap = splitDocument._maybeMergeStatements(this);
-    if (mergeMap === undefined) {
-      throw new Error('Unexpected operation order: splitLargePolicy() called on already-merged policy document');
-    }
-    const splitOffDocs = splitDocument._splitDocument(MAX_INLINE_SIZE, MAX_MANAGEDPOL_SIZE);
+    const splitOffDocs = originalDoc._splitDocument(this, MAX_INLINE_SIZE, MAX_MANAGEDPOL_SIZE);
+    // Includes the "current" document
 
-    const mpCount = this.managedPolicies.length + splitOffDocs.length;
+    const mpCount = this.managedPolicies.length + (splitOffDocs.size - 1);
     if (mpCount > 20) {
       Annotations.of(this).addWarning(`Policy too large: ${mpCount} exceeds the maximum of 20 managed policies attached to a Role`);
     } else if (mpCount > 10) {
@@ -537,27 +534,26 @@ export class Role extends Resource implements IRole {
     }
 
     // Create the managed policies and fix up the dependencies
-    markDeclaringConstruct(splitDocument, this.defaultPolicy);
+    markDeclaringConstruct(originalDoc, this.defaultPolicy);
 
     let i = 1;
-    for (const splitDoc of splitOffDocs) {
+    for (const newDoc of splitOffDocs.keys()) {
+      if (newDoc === originalDoc) { continue; }
+
       const mp = new ManagedPolicy(this, `OverflowPolicy${i++}`, {
         description: `Part of the policies for ${this.node.path}`,
-        document: splitDoc,
+        document: newDoc,
         roles: [this],
       });
-      markDeclaringConstruct(splitDoc, mp);
+      markDeclaringConstruct(newDoc, mp);
     }
 
     /**
      * Update the Dependables for the statements in the given PolicyDocument to point to the actual declaring construct
      */
     function markDeclaringConstruct(doc: PolicyDocument, declaringConstruct: IConstruct) {
-      for (const statement of doc._statements()) {
-        const originalStatements = mergeMap!.get(statement) ?? [];
-        for (const original of originalStatements) {
-          self.dependables.get(original)?.add(declaringConstruct);
-        }
+      for (const original of splitOffDocs.get(doc) ?? []) {
+        self.dependables.get(original)?.add(declaringConstruct);
       }
     }
   }
