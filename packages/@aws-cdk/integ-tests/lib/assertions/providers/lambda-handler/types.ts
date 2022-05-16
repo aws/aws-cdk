@@ -101,7 +101,7 @@ export interface AssertionRequest {
    *
    * @default false
    */
-  readonly reportFailure?: boolean;
+  readonly failDeployment?: boolean;
 }
 /**
  * The result of an Assertion

@@ -24,7 +24,7 @@ export class AssertionHandler extends CustomResourceHandler<AssertionRequest, As
           ].join('\n'),
         }),
       };
-      if (request.reportFailure) {
+      if (request.failDeployment) {
         throw new Error(result.data);
       }
     } else {
@@ -41,30 +41,11 @@ export class AssertionHandler extends CustomResourceHandler<AssertionRequest, As
 
 
 class MatchCreator {
-  private readonly type: 'arrayWith' | 'objectLike' | 'exact' | 'stringLikeRegexp';
-  private readonly parsedObj: any;
+  private readonly parsedObj: { [key: string]: any };
   constructor(obj: { [key: string]: any }) {
-    switch (Object.keys(obj)[0]) {
-      case '$ObjectLike':
-        this.type = 'objectLike';
-        this.parsedObj = obj.$ObjectLike;
-        break;
-      case '$ArrayWith':
-        this.type = 'arrayWith';
-        this.parsedObj = obj.$ArrayWith;
-        break;
-      case '$Exact':
-        this.type = 'exact';
-        this.parsedObj = obj.$Exact;
-        break;
-      case '$StringLike':
-        this.type = 'stringLikeRegexp';
-        this.parsedObj = obj.$StringLike;
-        break;
-      default:
-        this.type = 'exact';
-        this.parsedObj = obj;
-    }
+    this.parsedObj = {
+      matcher: obj,
+    };
   }
 
   /**
@@ -133,9 +114,12 @@ class MatchCreator {
             return v;
         }
       });
-      return Match[this.type](final);
+      if (Matcher.isMatcher(final.matcher)) {
+        return final.matcher;
+      }
+      return Match.exact(final.matcher);
     } catch {
-      return Match[this.type](this.parsedObj);
+      return Match.exact(this.parsedObj.matcher);
     }
   }
 }

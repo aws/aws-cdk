@@ -31,7 +31,7 @@ export interface EqualsAssertionProps {
    *
    * @default false
    */
-  readonly reportFailure?: boolean;
+  readonly failDeployment?: boolean;
 }
 
 /**
@@ -51,7 +51,7 @@ export class EqualsAssertion extends CoreConstruct {
     const properties: AssertionRequest = {
       actual: props.actual.result,
       expected: props.expected.result,
-      reportFailure: props.reportFailure,
+      failDeployment: props.failDeployment,
     };
     const resource = new CustomResource(this, 'Default', {
       serviceToken: assertionProvider.serviceToken,

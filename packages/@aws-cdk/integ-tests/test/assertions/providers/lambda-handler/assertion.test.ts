@@ -25,7 +25,7 @@ describe('AssertionHandler', () => {
     const request: AssertionRequest = {
       actual: 'this is the actual results',
       expected: ExpectedResult.stringLikeRegexp('abcd').result,
-      reportFailure: true,
+      failDeployment: true,
     };
 
     // THEN
