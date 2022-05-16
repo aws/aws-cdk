@@ -394,7 +394,7 @@ export class AccountPrincipal extends ArnPrincipal {
    */
   constructor(public readonly accountId: any) {
     if (!Token.isUnresolved(accountId) && typeof accountId !== 'string') {
-        throw new Error('accountId should be of type string');
+      throw new Error('accountId should be of type string');
     }
     super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
     this.principalAccount = accountId;
