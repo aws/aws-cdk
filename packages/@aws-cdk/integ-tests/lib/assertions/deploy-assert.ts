@@ -43,6 +43,18 @@ export class DeployAssert extends CoreConstruct {
   }
 
   constructor(scope: Construct) {
+    /**
+     * Normally we would not want to do a scope swapparoo like this
+     * but in this case this it allows us to provide a better experience
+     * for the user. This allows DeployAssert to be created _not_ in the
+     * scope of a Stack. DeployAssert is treated like a Stack, but doesn't
+     * exose any of the stack functionality (the methods that the user sees
+     * are just DeployAssert methods and not any Stack methods). So you can do
+     * something like this, which you would not normally be allowed to do
+     *
+     * const deployAssert = new DeployAssert(app);
+     * new AwsApiCall(deployAssert, 'AwsApiCall', {...});
+     */
     scope = new Stack(scope, 'DeployAssert');
     super(scope, 'Default');
 
