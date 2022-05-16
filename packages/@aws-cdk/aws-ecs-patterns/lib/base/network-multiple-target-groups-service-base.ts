@@ -7,7 +7,8 @@ import { NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-c
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
-import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import { CfnOutput, Duration, FeatureFlags, Stack } from '@aws-cdk/core';
+import { ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
@@ -374,7 +375,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends CoreConstru
   protected registerECSTargets(service: BaseService, container: ContainerDefinition, targets: NetworkTargetProps[]): NetworkTargetGroup {
     for (const targetProps of targets) {
       const targetGroup = this.findListener(targetProps.listener).addTargets(`ECSTargetGroup${container.containerName}${targetProps.containerPort}`, {
-        port: targetProps.containerPort ?? 80,
+        port: FeatureFlags.of(this).isEnabled(ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT) ? targetProps.containerPort ?? 80 : 80,
         targets: [
           service.loadBalancerTarget({
             containerName: container.containerName,
