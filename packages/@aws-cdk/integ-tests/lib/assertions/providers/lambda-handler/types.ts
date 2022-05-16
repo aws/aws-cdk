@@ -123,6 +123,21 @@ export interface AssertionResult {
 }
 
 /**
+ * The status of the assertion
+ */
+export enum Status {
+  /**
+   * The assertion passed
+   */
+  PASS = 'pass',
+
+  /**
+   * The assertion failed
+   */
+  FAIL = 'fail',
+}
+
+/**
  * The result of an assertion
  */
 export interface AssertionResultData {
@@ -130,7 +145,7 @@ export interface AssertionResultData {
    * The status of the assertion, i.e.
    * pass or fail
    */
-  readonly status: 'pass' | 'fail'
+  readonly status: Status;
 
   /**
    * Any message returned with the assertion result
