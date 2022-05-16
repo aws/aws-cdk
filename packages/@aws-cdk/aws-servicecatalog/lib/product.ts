@@ -4,7 +4,7 @@ import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { ArnFormat, IResource, Names, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CloudFormationTemplate } from './cloudformation-template';
-import { MessageLanguage, PRODUCT_STACK_CONTEXT_DIRECTORY, TemplateType, VersioningStrategy } from './common';
+import { MessageLanguage, PRODUCT_STACK_SNAPSHOT_DIRECTORY, TemplateType } from './common';
 import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
@@ -71,12 +71,6 @@ export interface CloudFormationProductVersion {
    * @default - No product version name provided
    */
   readonly productVersionName?: string;
-
-  /**
-   * Versioning Strategy to use for deployment
-   * @default DEFAULT
-   */
-  readonly versioningStrategy?: VersioningStrategy
 }
 
 /**
@@ -224,14 +218,14 @@ export class CloudFormationProduct extends Product {
           if (template.productVersionDetails) {
             template.productVersionDetails.productPathUniqueId = this.productPathUniqueId;
             template.productVersionDetails.productVersionName = productVersion.productVersionName;
-            template.productVersionDetails.versioningStrategy = productVersion.versioningStrategy;
+            template.productVersionDetails.retentionStrategy = template.retentionStrategy;
           }
           break;
         case TemplateType.PRODUCT_STACK_CONTEXT:
           const templateFileKey = `${this.productPathUniqueId}.${template.productVersionDetails?.productStackId}.${productVersion.productVersionName}.product.template.json`;
-          const templateFilePath = path.join(PRODUCT_STACK_CONTEXT_DIRECTORY, templateFileKey);
+          const templateFilePath = path.join(PRODUCT_STACK_SNAPSHOT_DIRECTORY, templateFileKey);
           if (!fs.existsSync(templateFilePath)) {
-            throw new Error(`Template ${templateFileKey} cannot be found in product stack context`);
+            throw new Error(`Template ${templateFileKey} cannot be found in ${PRODUCT_STACK_SNAPSHOT_DIRECTORY}`);
           }
           httpUrl = new s3_assets.Asset(this, `Template${hashValues(templateFileKey)}`, {
             path: templateFilePath,
@@ -242,15 +236,14 @@ export class CloudFormationProduct extends Product {
       }
 
       InputValidator.validateUrl(this.node.path, 'provisioning template url', httpUrl);
-      productVersions.push(
-        {
-          name: productVersion.productVersionName,
-          description: productVersion.description,
-          disableTemplateValidation: productVersion.validateTemplate === false ? true : false,
-          info: {
-            LoadTemplateFromURL: httpUrl,
-          },
+      productVersions.push({
+        name: productVersion.productVersionName,
+        description: productVersion.description,
+        disableTemplateValidation: productVersion.validateTemplate === false ? true : false,
+        info: {
+          LoadTemplateFromURL: httpUrl,
         },
+      },
       );
     }
     return productVersions;

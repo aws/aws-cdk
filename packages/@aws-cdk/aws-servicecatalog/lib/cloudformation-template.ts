@@ -1,5 +1,5 @@
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import { ProductVersionDetails, TemplateType } from './common';
+import { ProductVersionDetails, TemplateType, RetentionStrategy } from './common';
 import { hashValues } from './private/util';
 import { ProductStack } from './product-stack';
 
@@ -31,15 +31,15 @@ export abstract class CloudFormationTemplate {
   /**
    * Creates a product with the resources defined in the given product stack.
    */
-  public static fromProductStack(productStack: ProductStack): CloudFormationTemplate {
-    return new CloudFormationProductStackTemplate(productStack);
+  public static fromProductStack(productStack: ProductStack, retentionStrategy?: RetentionStrategy): CloudFormationTemplate {
+    return new CloudFormationProductStackTemplate(productStack, retentionStrategy);
   }
 
   /**
    * Creates a product from a previously deployed productStack template.
-   * The previous template must have been retained using VersioningStrategy.RETAIN_PREVIOUS_VERSIONS
+   * The previous template must have been retained using RetentionStrategy.RETAIN
    */
-  public static fromProductStackContext(baseProductStackId: string): CloudFormationTemplate {
+  public static fromProductStackSnapshot(baseProductStackId: string): CloudFormationTemplate {
     return new CloudFormationProductStackContextTemplate(baseProductStackId);
   }
 
@@ -70,6 +70,11 @@ export interface CloudFormationTemplateConfig {
    * The type of the template source.
    */
   readonly templateType: TemplateType;
+  /**
+   * Versioning Strategy to use for deployment
+   * @default DEFAULT
+   */
+  readonly retentionStrategy?: RetentionStrategy
 }
 
 /**
@@ -124,7 +129,7 @@ class CloudFormationProductStackTemplate extends CloudFormationTemplate {
   /**
    * @param stack A service catalog product stack.
   */
-  constructor(public readonly productStack: ProductStack) {
+  constructor(public readonly productStack: ProductStack, public readonly retentionStrategy?: RetentionStrategy) {
     super();
   }
 
@@ -133,6 +138,7 @@ class CloudFormationProductStackTemplate extends CloudFormationTemplate {
       productVersionDetails: this.productStack._getProductVersionDetails(),
       httpUrl: this.productStack._getTemplateUrl(),
       templateType: TemplateType.PRODUCT_STACK,
+      retentionStrategy: this.retentionStrategy,
     };
   }
 }

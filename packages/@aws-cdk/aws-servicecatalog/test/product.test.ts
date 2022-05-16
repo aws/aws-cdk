@@ -4,7 +4,7 @@ import { Match, Template } from '@aws-cdk/assertions';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
-import { VersioningStrategy, PRODUCT_STACK_CONTEXT_DIRECTORY } from '../lib';
+import { RetentionStrategy, PRODUCT_STACK_SNAPSHOT_DIRECTORY } from '../lib';
 
 /* eslint-disable quote-props */
 describe('Product', () => {
@@ -191,7 +191,7 @@ describe('Product', () => {
     expect(assembly.stacks[0].assets.length).toBe(1);
   }),
 
-  test('product test from product stack with versioning strategy retain', () => {
+  test('product test from product stack with retention strategy override', () => {
     const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
 
     new sns.Topic(productStack, 'SNSTopicProductStack');
@@ -202,8 +202,7 @@ describe('Product', () => {
       productVersions: [
         {
           productVersionName: 'v1',
-          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(productStack),
-          versioningStrategy: VersioningStrategy.RETAIN_PREVIOUS_VERSIONS,
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(productStack, RetentionStrategy.OVERRIDE),
         },
       ],
     });
@@ -214,18 +213,63 @@ describe('Product', () => {
     expect(assembly.stacks[0].assets[0].path).toEqual('ProductStack.product.template.json');
 
     const expectedTemplateFileKey = 'MyProduct.ProductStack.v1.product.template.json';
-    const fileExistsContext = fs.existsSync(path.join(PRODUCT_STACK_CONTEXT_DIRECTORY, expectedTemplateFileKey));
-    expect(fileExistsContext).toBe(true);
+    const fileExistsContext = fs.existsSync(path.join(PRODUCT_STACK_SNAPSHOT_DIRECTORY, expectedTemplateFileKey));
+    expect(fileExistsContext).toBe(false);
   }),
 
-  test('product test from product stack context', () => {
+  test('product test from product stack with retention strategy retain', () => {
+    const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
+
+    new sns.Topic(productStack, 'SNSTopicProductStack');
+
     new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
       productName: 'testProduct',
       owner: 'testOwner',
       productVersions: [
         {
-          productVersionName: 'v1',
-          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStackContext('ProductStack'),
+          productVersionName: 'v2',
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(productStack, RetentionStrategy.RETAIN),
+        },
+      ],
+    });
+
+    const assembly = app.synth();
+    expect(assembly.artifacts.length).toEqual(2);
+    expect(assembly.stacks[0].assets.length).toBe(1);
+    expect(assembly.stacks[0].assets[0].path).toEqual('ProductStack.product.template.json');
+
+    const expectedTemplateFileKey = 'MyProduct.ProductStack.v2.product.template.json';
+    const fileExistsContext = fs.existsSync(path.join(PRODUCT_STACK_SNAPSHOT_DIRECTORY, expectedTemplateFileKey));
+    expect(fileExistsContext).toBe(true);
+  }),
+
+
+  test('fails product test from product stack with retention strategy retain when template changes', () => {
+    const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
+    new sns.Topic(productStack, 'SNSTopicProductStack2');
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        {
+          productVersionName: 'v2',
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(productStack, RetentionStrategy.RETAIN),
+        },
+      ],
+    });
+    expect(() => {
+      app.synth();
+    }).toThrowError('Template has changed for ProductStack Version v2');
+  }),
+
+  test('product test from product stack snapshot', () => {
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        {
+          productVersionName: 'v2',
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStackSnapshot('ProductStack'),
         },
       ],
     });
@@ -236,19 +280,19 @@ describe('Product', () => {
     expect(assembly.stacks[0].assets[0].path).toEqual('asset.c0d25a2f0dec85d4ebb373daf067bb05f6c35c669e6dddf499e1931d794d547f.json');
   }),
 
-  test('fails product from product stack context not found', () => {
+  test('fails product from product stack snapshot not found', () => {
     expect(() => {
       new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
         productName: 'testProduct',
         owner: 'testOwner',
         productVersions: [
           {
-            productVersionName: 'v2',
-            cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStackContext('ProductStack'),
+            productVersionName: 'v3',
+            cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStackSnapshot('ProductStack'),
           },
         ],
       });
-    }).toThrowError('Template MyProduct.ProductStack.v2.product.template.json cannot be found in product stack context');
+    }).toThrowError('Template MyProduct.ProductStack.v3.product.template.json cannot be found in product-stack-snapshots');
   }),
 
   test('product test from multiple sources', () => {

@@ -1,7 +1,7 @@
 /**
  * Constant for the context directory to store retained ProductStack templates.
  */
-export const PRODUCT_STACK_CONTEXT_DIRECTORY = 'product-stack-context';
+export const PRODUCT_STACK_SNAPSHOT_DIRECTORY = 'product-stack-snapshots';
 
 /**
  * The language code.
@@ -55,18 +55,18 @@ export enum TemplateType {
    * The strategy to use for a ProductStack deployment.
    * Determines how a productVersion is saved and deployed.
    */
-export enum VersioningStrategy {
+export enum RetentionStrategy {
   /**
    * Default Strategy for ProductStack deployment.
    * This strategy will overwrite existing versions when deployed.
    */
-  DEFAULT = 'Default',
+  OVERRIDE = 'Override',
 
   /**
    * Retain previously deployed ProductStacks in a local context directory.
    * This strategy will not overwrite existing versions when deployed.
    */
-  RETAIN_PREVIOUS_VERSIONS = 'RetainPreviousVersions',
+  RETAIN = 'Retain',
 }
 
 /**
@@ -91,5 +91,5 @@ export class ProductVersionDetails {
   /**
    * Versioning strategy to use for a ProductStack deployment.
    */
-  public versioningStrategy?: VersioningStrategy
+  public retentionStrategy?: RetentionStrategy
 }

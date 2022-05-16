@@ -22,6 +22,7 @@ enables organizations to create and manage catalogs of products for their end us
 - [Product](#product)
   - [Creating a product from a local asset](#creating-a-product-from-local-asset)
   - [Creating a product from a stack](#creating-a-product-from-a-stack)
+  - [Creating a Product from a stack with immutable versions](#creating-a-product-from-a-stack-with-immutable-versions)
   - [Adding a product to a portfolio](#adding-a-product-to-a-portfolio)
 - [TagOptions](#tag-options)
 - [Constraints](#constraints)
@@ -184,18 +185,49 @@ const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
 });
 ```
 
-We can also define a `versioningStrategy` for your `ProductStack` deployment. 
-With the `Default` strategy, a new `ProductStack` is needed for each `productVersion`
-and each `productVersion` will get overwritten with the latest changes to your `ProductStack`.
-With the `RetainPreviousVersions` strategy, a local template will be retained for each `ProductStack` deployed.
-Subsequently, any `ProductStack` changes will not overwrite the current version.
-A new `productVersionName` must be specified in order for `ProductStack` changes to be deployed.
-When the `ProductStack` is updated with a new version, the previous version can still be deployed.
-The template of previously deployed `ProductStack` can be referenced using `fromProductStackContext`
-and passing the corresponding `ProductStack` id.
+### Creating a Product from a stack with immutable versions
 
-After using the `RetainPreviousVersions` strategy to deploy version `v1` of your `ProductStack`,
-the `ProductStack` is updated to version `v2` and version `v1` can be deployed from context:
+The default behavior of Service Catalog is to overwrite each product version upon deployment.
+This applies to Product Stacks as well, where only the latest changes to your Product Stack will 
+be deployed.
+We would need to create a separate Product Stack to store that version of Product Stack in code.
+If instead you want to never overwrite existing versions, but only add new versions, you can use the
+`RetentionStrategy.RETAIN` strategy for your deployment.
+
+```ts
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+
+class S3BucketProduct extends servicecatalog.ProductStack {
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
+
+    new s3.Bucket(this, 'BucketProduct');
+  }
+}
+
+const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
+  productName: "My Product",
+  owner: "Product Owner",
+  productVersions: [
+    {
+      productVersionName: "v1",
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new S3BucketProduct(this, 'S3BucketProduct'), servicecatalog.RetentionStrategy.RETAIN),
+    },
+  ],
+});
+```
+
+Using the `RetentionStrategy.RETAIN` strategy all deployed templates for the ProductStack will be written to disk,
+so that they will still be available in the future as the definition of the `ProductStack` subclass changes over time.
+**It is very important** that you commit these old versions to source control as these versions 
+determine whether a version has already been deployed and can be used also be deployed themselves 
+using `fromProductStackSnapshot`.
+
+After using the `RetentionStrategy.RETAIN` strategy to deploy version `v1` of your `ProductStack`, we 
+make changes to the `ProductStack` and update it to `v2`.
+We also want our `v1` version to still be deployed, so we reference it using `fromProductStackSnapshot`
+and passing the corresponding `ProductStack` id.
 
 ```ts
 import * as s3 from '@aws-cdk/aws-s3';
@@ -215,12 +247,11 @@ const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct',
   productVersions: [
     {
       productVersionName: "v2",
-      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new S3BucketProduct(this, 'S3BucketProduct')),
-      versioningStrategy: servicecatalog.VersioningStrategy.RETAIN_PREVIOUS_VERSIONS
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new S3BucketProduct(this, 'S3BucketProduct'), servicecatalog.RetentionStrategy.RETAIN),
     },
     {
       productVersionName: "v1",
-      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStackContext('S3BucketProduct'),
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStackSnapshot('S3BucketProduct'),
     },
   ],
 });

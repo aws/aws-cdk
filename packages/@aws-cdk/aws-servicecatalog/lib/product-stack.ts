@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cdk from '@aws-cdk/core';
-import { PRODUCT_STACK_CONTEXT_DIRECTORY, ProductVersionDetails, VersioningStrategy } from './common';
+import { PRODUCT_STACK_SNAPSHOT_DIRECTORY, ProductVersionDetails, RetentionStrategy } from './common';
 import { ProductStackSynthesizer } from './private/product-stack-synthesizer';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -73,7 +73,7 @@ export class ProductStack extends cdk.Stack {
       fileName: this.templateFile,
     }).httpUrl;
 
-    if (this._productVersionDetails.versioningStrategy == VersioningStrategy.RETAIN_PREVIOUS_VERSIONS) {
+    if (this._productVersionDetails.retentionStrategy == RetentionStrategy.RETAIN) {
       this.writeTemplateToContext(cfn, templateHash);
     }
 
@@ -86,18 +86,20 @@ export class ProductStack extends cdk.Stack {
    * @internal
    */
   private writeTemplateToContext(cfn: string, templateHash: string) {
-    if (!fs.existsSync(PRODUCT_STACK_CONTEXT_DIRECTORY)) {
-      fs.mkdirSync(PRODUCT_STACK_CONTEXT_DIRECTORY);
+    if (!fs.existsSync(PRODUCT_STACK_SNAPSHOT_DIRECTORY)) {
+      fs.mkdirSync(PRODUCT_STACK_SNAPSHOT_DIRECTORY);
     }
     const templateFileKey = `${this._productVersionDetails.productPathUniqueId}.${this._productVersionDetails.productStackId}.${this._productVersionDetails.productVersionName}.product.template.json`;
-    const templateFilePath = path.join(PRODUCT_STACK_CONTEXT_DIRECTORY, templateFileKey);
+    const templateFilePath = path.join(PRODUCT_STACK_SNAPSHOT_DIRECTORY, templateFileKey);
     if (fs.existsSync(templateFilePath)) {
       const previousTemplateHash = crypto.createHash('sha256').update(fs.readFileSync(templateFilePath)).digest('hex');
       if (templateHash !== previousTemplateHash) {
         throw new Error(`Template has changed for ProductStack Version ${this._productVersionDetails.productVersionName}.
-        ${this._productVersionDetails.productVersionName} already exist in product stack context.
+        ${this._productVersionDetails.productVersionName} already exist in ${PRODUCT_STACK_SNAPSHOT_DIRECTORY}.
         Either update the productVersionName to deploy a new version or deploy existing ProductStack from context using:
-        CloudFormationTemplate.fromProductStackContext("${this._productVersionDetails.productStackId}");`);
+        CloudFormationTemplate.fromProductStackSnapshot('${this._productVersionDetails.productStackId}');
+        If ${this._productVersionDetails.productVersionName} was unintentionally synthesized and not deployed, 
+        delete the corresponding version from ${PRODUCT_STACK_SNAPSHOT_DIRECTORY} and redeploy.`);
       }
     } else {
       fs.writeFileSync(templateFilePath, cfn);
