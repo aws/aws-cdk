@@ -128,6 +128,8 @@ export class PolicyDocument implements cdk.IResolvable {
    * requirements for any policy.
    *
    * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#access_policies-json
+   *
+   * @returns An array of validation error messages, or an empty array if the document is valid.
    */
   public validateForAnyPolicy(): string[] {
     const errors = new Array<string>();
@@ -142,6 +144,8 @@ export class PolicyDocument implements cdk.IResolvable {
    * requirements for a resource-based policy.
    *
    * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#access_policies-json
+   *
+   * @returns An array of validation error messages, or an empty array if the document is valid.
    */
   public validateForResourcePolicy(): string[] {
     const errors = new Array<string>();
@@ -156,6 +160,8 @@ export class PolicyDocument implements cdk.IResolvable {
    * requirements for an identity-based policy.
    *
    * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#access_policies-json
+   *
+   * @returns An array of validation error messages, or an empty array if the document is valid.
    */
   public validateForIdentityPolicy(): string[] {
     const errors = new Array<string>();
