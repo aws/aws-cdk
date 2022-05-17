@@ -40,6 +40,7 @@
   },
   "scripts": {
     "build": "cdk-build",
+    "bundle": "esbuild --bundle lib/assertions/providers/lambda-handler/index.ts --target=node14 --platform=node --external:aws-sdk --outfile=lib/assertions/providers/lambda-handler.bundle/index.js",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -67,6 +68,7 @@
     "@aws-cdk/triggers": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "constructs": "3.3.69",
@@ -82,22 +84,12 @@
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/triggers": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0",
     "constructs": "^3.3.69"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/triggers": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.3.69",
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0"
+    "constructs": "^3.3.69"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -111,6 +103,19 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "cdk-build": {
+    "pre": [
+      "yarn bundle"
+    ],
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "awslint": {
+    "exclude": [
+      "construct-ctor:@aws-cdk/integ-tests.DeployAssert.<initializer>"
+    ]
   },
   "nozem": {
     "ostools": [
