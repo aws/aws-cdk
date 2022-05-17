@@ -393,10 +393,10 @@ export class AccountPrincipal extends ArnPrincipal {
    * @param accountId AWS account ID (i.e. 123456789012)
    */
   constructor(public readonly accountId: any) {
+    super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
     if (!cdk.Token.isUnresolved(accountId) && typeof accountId !== 'string') {
       throw new Error('accountId should be of type string');
     }
-    super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
     this.principalAccount = accountId;
   }
 
