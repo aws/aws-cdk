@@ -11,6 +11,7 @@ import * as cdk8s from 'cdk8s';
 import * as constructs from 'constructs';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
+import { HelmChart } from '../lib';
 import { KubectlProvider } from '../lib/kubectl-provider';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
 import { testFixture, testFixtureNoVpc } from './util';
@@ -2459,9 +2460,40 @@ describe('cluster', () => {
       });
 
     });
+    test('imported cluster', ()=> {
+
+      const clusterName = 'my-cluster';
+      const stack = new cdk.Stack();
+      const kubectlLambdaRole = new iam.Role(stack, 'KubectlLambdaRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+      const cluster = eks.Cluster.fromClusterAttributes(stack, 'Imported', {
+        clusterName,
+        kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+        kubectlLambdaRole: kubectlLambdaRole,
+      });
+
+      const chart = 'hello-world';
+      cluster.addHelmChart('test-chart', {
+        chart,
+      });
+
+      const nested = stack.node.tryFindChild('Imported-KubectlProvider') as cdk.NestedStack;
+      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+        Role: {
+          Ref: 'referencetoKubectlLambdaRole7D084D94Arn',
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties(HelmChart.RESOURCE_TYPE, {
+        ClusterName: clusterName,
+        RoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+        Release: 'importedcharttestchartf3acd6e5',
+        Chart: chart,
+        Namespace: 'default',
+        CreateNamespace: true,
+      });
+    });
   });
-
-
   describe('endpoint access', () => {
 
     test('public restricted', () => {
