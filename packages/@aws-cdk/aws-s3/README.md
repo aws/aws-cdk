@@ -570,18 +570,15 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
     // the properties below are optional
     noncurrentVersionsToRetain: 123,
     noncurrentVersionTransitions: [{
-      storageClass: storageClass,
+      storageClass: s3.StorageClass.GLACIER,
       transitionAfter: cdk.Duration.days(30),
 
       // the properties below are optional
       noncurrentVersionsToRetain: 123,
     }],
     prefix: 'prefix',
-    tagFilters: {
-      tagFiltersKey: tagFilters,
-    },
     transitions: [{
-      storageClass: storageClass,
+      storageClass: s3.StorageClass.GLACIER,
 
       // the properties below are optional
       transitionAfter: cdk.Duration.days(30),
