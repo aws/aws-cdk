@@ -2422,42 +2422,45 @@ describe('cluster', () => {
 
   });
 
-  test('kubectl provider passes iam role environment to kube ctl lambda', () => {
+  describe('kubectl provider passes iam role environment to kube ctl lambda', ()=>{
+    test('new cluster', () => {
 
-    const { stack } = testFixture();
+      const { stack } = testFixture();
 
-    const kubectlRole = new iam.Role(stack, 'KubectlIamRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      const kubectlRole = new iam.Role(stack, 'KubectlIamRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      // using _ syntax to silence warning about _cluster not being used, when it is
+      const cluster = new eks.Cluster(stack, 'Cluster1', {
+        version: CLUSTER_VERSION,
+        prune: false,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlLambdaRole: kubectlRole,
+      });
+
+      cluster.addManifest('resource', {
+        kind: 'ConfigMap',
+        apiVersion: 'v1',
+        data: {
+          hello: 'world',
+        },
+        metadata: {
+          name: 'config-map',
+        },
+      });
+
+      // the kubectl provider is inside a nested stack.
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+        Role: {
+          Ref: 'referencetoStackKubectlIamRole02F8947EArn',
+        },
+      });
+
     });
-
-    // using _ syntax to silence warning about _cluster not being used, when it is
-    const cluster = new eks.Cluster(stack, 'Cluster1', {
-      version: CLUSTER_VERSION,
-      prune: false,
-      endpointAccess: eks.EndpointAccess.PRIVATE,
-      kubectlLambdaRole: kubectlRole,
-    });
-
-    cluster.addManifest('resource', {
-      kind: 'ConfigMap',
-      apiVersion: 'v1',
-      data: {
-        hello: 'world',
-      },
-      metadata: {
-        name: 'config-map',
-      },
-    });
-
-    // the kubectl provider is inside a nested stack.
-    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-    Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
-      Role: {
-        Ref: 'referencetoStackKubectlIamRole02F8947EArn',
-      },
-    });
-
   });
+
 
   describe('endpoint access', () => {
 
