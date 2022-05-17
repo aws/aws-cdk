@@ -36,7 +36,6 @@ describe('synthesis', () => {
         },
       }),
     });
-
   });
 
   test('synthesis respects disabling tree metadata', () => {
@@ -45,7 +44,6 @@ describe('synthesis', () => {
     });
     const assembly = app.synth();
     expect(list(assembly.directory)).toEqual(['cdk.out', 'manifest.json']);
-
   });
 
   test('synthesis respects disabling logicalId metadata', () => {
@@ -139,7 +137,6 @@ describe('synthesis', () => {
 
     // THEN
     expect(list(session.directory).includes('one-stack.template.json')).toEqual(true);
-
   });
 
   test('some random construct implements "synthesize"', () => {
@@ -193,7 +190,6 @@ describe('synthesis', () => {
         },
       },
     });
-
   });
 
   test('random construct uses addCustomSynthesis', () => {
@@ -253,7 +249,6 @@ describe('synthesis', () => {
         },
       },
     });
-
   });
 
   testDeprecated('it should be possible to synthesize without an app', () => {
@@ -301,7 +296,6 @@ describe('synthesis', () => {
     expect(stack.templateFile).toEqual('hey.json');
     expect(stack.parameters).toEqual({ paramId: 'paramValue', paramId2: 'paramValue2' });
     expect(stack.environment).toEqual({ region: 'us-east-1', account: 'unknown-account', name: 'aws://unknown-account/us-east-1' });
-
   });
 });
 
