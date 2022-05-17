@@ -43,7 +43,7 @@ export const DISABLE_METADATA_STACK_TRACE = 'aws:cdk:disable-stack-trace';
  * If this context key is set, the CDK will not store logical ID
  * metadata in the manifest.
  */
-export const DISABLE_LOGICAL_ID_METADATA = 'aws:cdk:disable-logical-id-metadata';
+export const DISABLE_LOGICAL_ID_METADATA = 'aws:cdk:disable-logicalId-metadata';
 
 /**
  * Run bundling for stacks specified in this context key

@@ -96,15 +96,6 @@ export class Construct extends constructs.Construct implements IConstruct {
       this.node.setContext(constructs.ConstructMetadata.DISABLE_STACK_TRACE_IN_METADATA, true);
       process.env.CDK_DISABLE_STACK_TRACE = '1';
     }
-
-    const disableLogicalIdMetadata =
-      this.node.tryGetContext(cxapi.DISABLE_LOGICAL_ID_METADATA) ||
-      process.env.CDK_DISABLE_LOGICAL_ID_METADATA;
-
-    if (disableLogicalIdMetadata) {
-      this.node.setContext(cxapi.DISABLE_LOGICAL_ID_METADATA, true);
-      process.env.CDK_DISABLE_LOGICAL_ID_METADATA = '1';
-    }
   }
 
   /**

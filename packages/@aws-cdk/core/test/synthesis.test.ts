@@ -48,6 +48,87 @@ describe('synthesis', () => {
 
   });
 
+  test('synthesis respects disabling logicalId metadata', () => {
+    const app = new cdk.App({
+      context: { 'aws:cdk:disable-logicalId-metadata': true },
+    });
+    const stack = new cdk.Stack(app, 'one-stack');
+    new cdk.CfnResource(stack, 'MagicResource', { type: 'Resource::Type' });
+
+    // WHEN
+    const session = app.synth();
+
+    // THEN
+    expect(session.manifest).toEqual({
+      version: cxschema.Manifest.version(),
+      artifacts: {
+        'Tree': {
+          type: 'cdk:tree',
+          properties: { file: 'tree.json' },
+        },
+        'one-stack': {
+          type: 'aws:cloudformation:stack',
+          environment: 'aws://unknown-account/unknown-region',
+          properties: {
+            templateFile: 'one-stack.template.json',
+            validateOnSynth: false,
+          },
+          displayName: 'one-stack',
+          // no metadata, because the only entry was a logicalId
+        },
+      },
+    });
+  });
+
+  test('synthesis respects disabling logicalId metadata, and does not disable other metadata', () => {
+    const app = new cdk.App({
+      context: { 'aws:cdk:disable-logicalId-metadata': true },
+      stackTraces: false,
+    });
+    const stack = new cdk.Stack(app, 'one-stack', { tags: { boomTag: 'BOOM' } });
+    new cdk.CfnResource(stack, 'MagicResource', { type: 'Resource::Type' });
+
+    // WHEN
+    const session = app.synth();
+
+    // THEN
+    expect(session.manifest).toEqual({
+      version: cxschema.Manifest.version(),
+      artifacts: {
+        'Tree': {
+          type: 'cdk:tree',
+          properties: { file: 'tree.json' },
+        },
+        'one-stack': {
+          type: 'aws:cloudformation:stack',
+          environment: 'aws://unknown-account/unknown-region',
+          properties: {
+            templateFile: 'one-stack.template.json',
+            validateOnSynth: false,
+            tags: {
+              boomTag: 'BOOM',
+            },
+          },
+          displayName: 'one-stack',
+          metadata: {
+            '/one-stack': [
+              {
+                type: 'aws:cdk:stack-tags',
+                data: [
+                  {
+                    key: 'boomTag',
+                    value: 'BOOM',
+                  },
+                ],
+              },
+            ],
+          },
+          // no logicalId entry
+        },
+      },
+    });
+  });
+
   test('single empty stack', () => {
     // GIVEN
     const app = createModernApp();
