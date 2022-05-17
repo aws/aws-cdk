@@ -70,6 +70,9 @@ export class PolicyStatement {
   private readonly condition: { [key: string]: any } = { };
   private principalConditionsJson?: string;
 
+  // Hold on to those principals
+  private readonly _principals = new Array<IPrincipal>();
+
   constructor(props: PolicyStatementProps = {}) {
     // Validate actions
     for (const action of [...props.actions || [], ...props.notActions || []]) {
@@ -145,6 +148,7 @@ export class PolicyStatement {
    * @param principals IAM principals that will be added
    */
   public addPrincipals(...principals: IPrincipal[]) {
+    this._principals.push(...principals);
     if (Object.keys(principals).length > 0 && Object.keys(this.notPrincipal).length > 0) {
       throw new Error('Cannot add \'Principals\' to policy statement if \'NotPrincipals\' have been added');
     }
@@ -154,6 +158,15 @@ export class PolicyStatement {
       mergePrincipal(this.principal, fragment.principalJson);
       this.addPrincipalConditions(fragment.conditions);
     }
+  }
+
+  /**
+   * Expose principals to allow their ARNs to be replaced by account ID strings
+   * in policy statements for resources policies that don't allow full account ARNs,
+   * such as AWS::Logs::ResourcePolicy.
+   */
+  public get principals(): IPrincipal[] {
+    return [...this._principals];
   }
 
   /**
@@ -297,6 +310,27 @@ export class PolicyStatement {
 
   /**
    * Add a condition to the Policy
+   *
+   * If multiple calls are made to add a condition with the same operator and field, only
+   * the last one wins. For example:
+   *
+   * ```ts
+   * declare const stmt: iam.PolicyStatement;
+   *
+   * stmt.addCondition('StringEquals', { 'aws:SomeField': '1' });
+   * stmt.addCondition('StringEquals', { 'aws:SomeField': '2' });
+   * ```
+   *
+   * Will end up with the single condition `StringEquals: { 'aws:SomeField': '2' }`.
+   *
+   * If you meant to add a condition to say that the field can be *either* `1` or `2`, write
+   * this:
+   *
+   * ```ts
+   * declare const stmt: iam.PolicyStatement;
+   *
+   * stmt.addCondition('StringEquals', { 'aws:SomeField': ['1', '2'] });
+   * ```
    */
   public addCondition(key: string, value: Condition) {
     const existingValue = this.condition[key];
@@ -305,6 +339,8 @@ export class PolicyStatement {
 
   /**
    * Add multiple conditions to the Policy
+   *
+   * See the `addCondition` function for a caveat on calling this method multiple times.
    */
   public addConditions(conditions: Conditions) {
     Object.keys(conditions).map(key => {
@@ -314,9 +350,30 @@ export class PolicyStatement {
 
   /**
    * Add a condition that limits to a given account
+   *
+   * This method can only be called once: subsequent calls will overwrite earlier calls.
    */
   public addAccountCondition(accountId: string) {
     this.addCondition('StringEquals', { 'sts:ExternalId': accountId });
+  }
+
+  /**
+   * Create a new `PolicyStatement` with the same exact properties
+   * as this one, except for the overrides
+   */
+  public copy(overrides: PolicyStatementProps = {}) {
+    return new PolicyStatement({
+      sid: overrides.sid ?? this.sid,
+      effect: overrides.effect ?? this.effect,
+      actions: overrides.actions ?? this.action,
+      notActions: overrides.notActions ?? this.notAction,
+
+      principals: overrides.principals,
+      notPrincipals: overrides.notPrincipals,
+
+      resources: overrides.resources ?? this.resource,
+      notResources: overrides.notResources ?? this.notResource,
+    });
   }
 
   /**
@@ -385,6 +442,8 @@ export class PolicyStatement {
 
   /**
    * Validate that the policy statement satisfies base requirements for a policy.
+   *
+   * @returns An array of validation error messages, or an empty array if the statement is valid.
    */
   public validateForAnyPolicy(): string[] {
     const errors = new Array<string>();
@@ -396,6 +455,8 @@ export class PolicyStatement {
 
   /**
    * Validate that the policy statement satisfies all requirements for a resource-based policy.
+   *
+   * @returns An array of validation error messages, or an empty array if the statement is valid.
    */
   public validateForResourcePolicy(): string[] {
     const errors = this.validateForAnyPolicy();
@@ -407,6 +468,8 @@ export class PolicyStatement {
 
   /**
    * Validate that the policy statement satisfies all requirements for an identity-based policy.
+   *
+   * @returns An array of validation error messages, or an empty array if the statement is valid.
    */
   public validateForIdentityPolicy(): string[] {
     const errors = this.validateForAnyPolicy();

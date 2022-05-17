@@ -1,0 +1,196 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "restapi-books-example": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "restapi-books-example.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/restapi-books-example/BooksHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksHandlerServiceRole5B6A8847"
+          }
+        ],
+        "/restapi-books-example/BooksHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksHandler3EB83358"
+          }
+        ],
+        "/restapi-books-example/BookHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BookHandlerServiceRole894768AD"
+          }
+        ],
+        "/restapi-books-example/BookHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BookHandlerF9638A7A"
+          }
+        ],
+        "/restapi-books-example/Hello/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HelloServiceRole1E55EA16"
+          }
+        ],
+        "/restapi-books-example/Hello/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Hello4A628BD4"
+          }
+        ],
+        "/restapi-books-example/books-api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapiE1885304"
+          }
+        ],
+        "/restapi-books-example/books-api/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapiCloudWatchRole089CB225"
+          }
+        ],
+        "/restapi-books-example/books-api/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapiAccountDBA98FB9"
+          }
+        ],
+        "/restapi-books-example/books-api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapiDeployment308B08F132cc25cf8168bd5e99b9e6d4915866b5"
+          }
+        ],
+        "/restapi-books-example/books-api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapiDeploymentStageprod55D8E03E"
+          }
+        ],
+        "/restapi-books-example/books-api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapiEndpointE230E8D5"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/ANY/ApiPermission.restapibooksexamplebooksapi4538F335.ANY..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapiANYApiPermissionrestapibooksexamplebooksapi4538F335ANY73B3CDDC"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/ANY/ApiPermission.Test.restapibooksexamplebooksapi4538F335.ANY..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapiANYApiPermissionTestrestapibooksexamplebooksapi4538F335ANYB0D7D8AC"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapiANYF4F0CDEB"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooks97D84727"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/GET/ApiPermission.restapibooksexamplebooksapi4538F335.GET..books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksGETApiPermissionrestapibooksexamplebooksapi4538F335GETbooks391776D8"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/GET/ApiPermission.Test.restapibooksexamplebooksapi4538F335.GET..books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksGETApiPermissionTestrestapibooksexamplebooksapi4538F335GETbooks01FB3D1B"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksGETA776447A"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/POST/ApiPermission.restapibooksexamplebooksapi4538F335.POST..books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksPOSTApiPermissionrestapibooksexamplebooksapi4538F335POSTbooksDFEC643F"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/POST/ApiPermission.Test.restapibooksexamplebooksapi4538F335.POST..books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksPOSTApiPermissionTestrestapibooksexamplebooksapi4538F335POSTbooks1C6D24C8"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksPOSTF6C6559D"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/{book_id}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksbookid5264BCA2"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/{book_id}/GET/ApiPermission.restapibooksexamplebooksapi4538F335.GET..books.{book_id}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksbookidGETApiPermissionrestapibooksexamplebooksapi4538F335GETbooksbookidBB91DFBD"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/{book_id}/GET/ApiPermission.Test.restapibooksexamplebooksapi4538F335.GET..books.{book_id}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksbookidGETApiPermissionTestrestapibooksexamplebooksapi4538F335GETbooksbookidA0230B08"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/{book_id}/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksbookidGETCCE21986"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/{book_id}/DELETE/ApiPermission.restapibooksexamplebooksapi4538F335.DELETE..books.{book_id}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksbookidDELETEApiPermissionrestapibooksexamplebooksapi4538F335DELETEbooksbookid76C1C947"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/{book_id}/DELETE/ApiPermission.Test.restapibooksexamplebooksapi4538F335.DELETE..books.{book_id}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksbookidDELETEApiPermissionTestrestapibooksexamplebooksapi4538F335DELETEbooksbookid09D6CB8A"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/{book_id}/DELETE/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksbookidDELETE214F4059"
+          }
+        ]
+      },
+      "displayName": "restapi-books-example"
+    }
+  }
+}

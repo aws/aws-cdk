@@ -47,7 +47,7 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
     "build": "cdk-build",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -83,10 +83,10 @@
     "@aws-cdk/aws-apigatewayv2-integrations": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.93",
-    "@types/jest": "^27.4.1"
+    "@types/aws-lambda": "^8.10.97",
+    "@types/jest": "^27.5.0"
   },
   "dependencies": {
     "@aws-cdk/aws-apigatewayv2": "0.0.0",

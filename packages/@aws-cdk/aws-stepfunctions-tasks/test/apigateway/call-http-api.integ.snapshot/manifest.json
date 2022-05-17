@@ -1,0 +1,94 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "CallHttpApiInteg": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "CallHttpApiInteg.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/CallHttpApiInteg/MyHttpApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi8AEAAC21"
+          }
+        ],
+        "/CallHttpApiInteg/MyHttpApi/DefaultStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApiDefaultStageDCB9BC49"
+          }
+        ],
+        "/CallHttpApiInteg/MyHttpApi/ANY--/DefaultIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApiANYDefaultIntegration5FAD8850"
+          }
+        ],
+        "/CallHttpApiInteg/MyHttpApi/ANY--/DefaultIntegration-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApiANYDefaultIntegrationPermissionAB8301EF"
+          }
+        ],
+        "/CallHttpApiInteg/MyHttpApi/ANY--/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApiANYC3543576"
+          }
+        ],
+        "/CallHttpApiInteg/HelloHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HelloHandlerServiceRole11EF7C63"
+          }
+        ],
+        "/CallHttpApiInteg/HelloHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HelloHandler2E4FBA4D"
+          }
+        ],
+        "/CallHttpApiInteg/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/CallHttpApiInteg/StateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+          }
+        ],
+        "/CallHttpApiInteg/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/CallHttpApiInteg/stateMachineArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "stateMachineArn"
+          }
+        ],
+        "/CallHttpApiInteg/Service-principalMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceprincipalMap"
+          }
+        ]
+      },
+      "displayName": "CallHttpApiInteg"
+    }
+  }
+}

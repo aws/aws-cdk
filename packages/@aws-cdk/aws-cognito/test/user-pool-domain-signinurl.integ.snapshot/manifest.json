@@ -1,0 +1,46 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-user-pool-domain-signinurl": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-user-pool-domain-signinurl.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-user-pool-domain-signinurl/UserPool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPool6BA7E5F2"
+          }
+        ],
+        "/integ-user-pool-domain-signinurl/UserPool/Domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolDomainD0EA232A"
+          }
+        ],
+        "/integ-user-pool-domain-signinurl/UserPool/UserPoolClient/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolUserPoolClient40176907"
+          }
+        ],
+        "/integ-user-pool-domain-signinurl/SignInUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SignInUrl"
+          }
+        ]
+      },
+      "displayName": "integ-user-pool-domain-signinurl"
+    }
+  }
+}

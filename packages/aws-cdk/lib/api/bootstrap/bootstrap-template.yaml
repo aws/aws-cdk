@@ -202,6 +202,7 @@ Resources:
   ContainerAssetsRepository:
     Type: AWS::ECR::Repository
     Properties:
+      ImageTagMutability: IMMUTABLE
       ImageScanningConfiguration:
         ScanOnPush: true
       RepositoryName:
@@ -453,6 +454,8 @@ Resources:
                   - cloudformation:DeleteStack
                   - cloudformation:UpdateTerminationProtection
                   - sts:GetCallerIdentity
+                  # `cdk import`
+                  - cloudformation:GetTemplateSummary
                 Resource: "*"
                 Effect: Allow
               - Sid: CliStagingBucket
@@ -507,7 +510,7 @@ Resources:
       Type: String
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
-      Value: '11'
+      Value: '13'
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack

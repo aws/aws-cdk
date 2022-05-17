@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ArnFormat, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
@@ -194,14 +194,38 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
    * Adds a statement to the resource policy associated with this log group.
    * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Any ARN Principals inside of the statement will be converted into AWS Account ID strings
+   * because CloudWatch Logs Resource Policies do not accept ARN principals.
+   *
    * @param statement The policy statement to add
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy) {
       this.policy = new ResourcePolicy(this, 'Policy');
     }
-    this.policy.document.addStatements(statement);
+    this.policy.document.addStatements(statement.copy({
+      principals: statement.principals.map(p => this.convertArnPrincpalToAccountId(p)),
+    }));
     return { statementAdded: true, policyDependable: this.policy };
+  }
+
+  private convertArnPrincpalToAccountId(principal: iam.IPrincipal) {
+    if (principal.principalAccount) {
+      // we use ArnPrincipal here because the constructor inserts the argument
+      // into the template without mutating it, which means that there is no
+      // ARN created by this call.
+      return new iam.ArnPrincipal(principal.principalAccount);
+    }
+
+    if (principal instanceof iam.ArnPrincipal) {
+      const parsedArn = Arn.split(principal.arn, ArnFormat.SLASH_RESOURCE_NAME);
+      if (parsedArn.account) {
+        return new iam.ArnPrincipal(parsedArn.account);
+      }
+    }
+
+    return principal;
   }
 }
 
@@ -288,6 +312,26 @@ export enum RetentionDays {
    * 5 years
    */
   FIVE_YEARS = 1827,
+
+  /**
+   * 6 years
+   */
+  SIX_YEARS = 2192,
+
+  /**
+   * 7 years
+   */
+  SEVEN_YEARS = 2557,
+
+  /**
+   * 8 years
+   */
+  EIGHT_YEARS = 2922,
+
+  /**
+   * 9 years
+   */
+  NINE_YEARS = 3288,
 
   /**
    * 10 years
