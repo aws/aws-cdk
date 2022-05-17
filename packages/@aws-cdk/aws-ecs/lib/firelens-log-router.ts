@@ -176,7 +176,7 @@ export function obtainDefaultFluentBitECRImage(task: TaskDefinition, logDriverCo
     }));
   }
 
-  const fluentBitImageTag = imageTag || 'latest';
+  const fluentBitImageTag = imageTag || 'stable';
   const fluentBitImage = `${fluentBitImageSSMPath}/${fluentBitImageTag}`;
 
   // Not use ContainerImage.fromEcrRepository since it's not support parsing ECR repo URI,

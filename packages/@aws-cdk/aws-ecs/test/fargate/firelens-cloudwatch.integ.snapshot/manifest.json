@@ -210,7 +210,7 @@
         "/aws-ecs-integ/SsmParameterValue:--aws--service--aws-for-fluent-bit--latest:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsserviceawsforfluentbitstableC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ]
       },
