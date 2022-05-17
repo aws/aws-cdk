@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { CustomResourceHandler } from './base';
-import { SdkRequest, SdkResult } from './types';
+import { AwsApiCallRequest, AwsApiCallResult } from './types';
+import { decode } from './utils';
 
 /**
  * Flattens a nested object
@@ -24,8 +25,8 @@ export function flatten(object: object): { [key: string]: any } {
 }
 
 
-export class SdkHandler extends CustomResourceHandler<SdkRequest, SdkResult | { [key: string]: string }> {
-  protected async processEvent(request: SdkRequest): Promise<SdkResult | { [key: string]: string } | undefined> {
+export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, AwsApiCallResult | { [key: string]: string }> {
+  protected async processEvent(request: AwsApiCallRequest): Promise<AwsApiCallResult | { [key: string]: string } | undefined> {
     // eslint-disable-next-line
     const AWS: any = require('aws-sdk');
     console.log(`AWS SDK VERSION: ${AWS.VERSION}`);
@@ -43,17 +44,4 @@ export class SdkHandler extends CustomResourceHandler<SdkRequest, SdkResult | { 
 
     return request.flattenResponse === 'true' ? flatData : respond;
   }
-}
-
-function decode(object: Record<string, unknown>) {
-  return JSON.parse(JSON.stringify(object), (_k, v) => {
-    switch (v) {
-      case 'TRUE:BOOLEAN':
-        return true;
-      case 'FALSE:BOOLEAN':
-        return false;
-      default:
-        return v;
-    }
-  });
 }

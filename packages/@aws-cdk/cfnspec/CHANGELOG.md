@@ -1,3 +1,41 @@
+# CloudFormation Resource Specification v72.0.0
+
+## New Resource Types
+
+* AWS::IoT::RoleAlias
+* AWS::NetworkManager::ConnectAttachment
+* AWS::NetworkManager::ConnectPeer
+* AWS::NetworkManager::CoreNetwork
+* AWS::NetworkManager::SiteToSiteVpnAttachment
+* AWS::NetworkManager::VpcAttachment
+
+## Attribute Changes
+
+* AWS::MediaTailor::PlaybackConfiguration DashConfiguration.ManifestEndpointPrefix (__added__)
+* AWS::MediaTailor::PlaybackConfiguration HlsConfiguration.ManifestEndpointPrefix (__added__)
+* AWS::MediaTailor::PlaybackConfiguration PlaybackConfigurationArn (__added__)
+* AWS::MediaTailor::PlaybackConfiguration PlaybackEndpointPrefix (__added__)
+* AWS::MediaTailor::PlaybackConfiguration SessionInitializationEndpointPrefix (__added__)
+
+## Property Changes
+
+* AWS::AutoScaling::AutoScalingGroup DefaultInstanceWarmup (__added__)
+* AWS::MediaTailor::PlaybackConfiguration SessionInitializationEndpointPrefix (__deleted__)
+* AWS::MediaTailor::PlaybackConfiguration DashConfiguration.Type (__changed__)
+  * Old: DashConfigurationForPut
+  * New: DashConfiguration
+* AWS::Redshift::Cluster IamRoles.DuplicatesAllowed (__deleted__)
+
+## Property Type Changes
+
+* AWS::MediaTailor::PlaybackConfiguration.DashConfigurationForPut (__removed__)
+* AWS::MediaTailor::PlaybackConfiguration.DashConfiguration (__added__)
+* AWS::MediaTailor::PlaybackConfiguration.HlsConfiguration (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+
 # CloudFormation Resource Specification v69.0.0
 
 ## New Resource Types

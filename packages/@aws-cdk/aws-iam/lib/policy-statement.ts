@@ -442,6 +442,8 @@ export class PolicyStatement {
 
   /**
    * Validate that the policy statement satisfies base requirements for a policy.
+   *
+   * @returns An array of validation error messages, or an empty array if the statement is valid.
    */
   public validateForAnyPolicy(): string[] {
     const errors = new Array<string>();
@@ -453,6 +455,8 @@ export class PolicyStatement {
 
   /**
    * Validate that the policy statement satisfies all requirements for a resource-based policy.
+   *
+   * @returns An array of validation error messages, or an empty array if the statement is valid.
    */
   public validateForResourcePolicy(): string[] {
     const errors = this.validateForAnyPolicy();
@@ -464,6 +468,8 @@ export class PolicyStatement {
 
   /**
    * Validate that the policy statement satisfies all requirements for an identity-based policy.
+   *
+   * @returns An array of validation error messages, or an empty array if the statement is valid.
    */
   public validateForIdentityPolicy(): string[] {
     const errors = this.validateForAnyPolicy();
