@@ -1,7 +1,8 @@
 import { IntegManifest, Manifest, TestCase, TestOptions } from '@aws-cdk/cloud-assembly-schema';
 import { attachCustomSynthesis, Stack, ISynthesisSession, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { DeployAssert } from './assertions';
+import { IDeployAssert } from './assertions';
+import { DeployAssert } from './assertions/private/deploy-assert';
 import { IntegManifestSynthesizer } from './manifest-synthesizer';
 
 const TEST_CASE_STACK_SYMBOL = Symbol.for('@aws-cdk/integ-tests.IntegTestCaseStack');
@@ -31,12 +32,15 @@ export class IntegTestCase extends CoreConstruct {
   /**
    * Make assertions on resources in this test case
    */
-  public readonly assert: DeployAssert;
+  public readonly assert: IDeployAssert;
+
+  private readonly _assert: DeployAssert;
 
   constructor(scope: Construct, id: string, private readonly props: IntegTestCaseProps) {
     super(scope, id);
 
-    this.assert = new DeployAssert(this);
+    this._assert = new DeployAssert(this);
+    this.assert = this._assert;
   }
 
   /**
@@ -53,7 +57,7 @@ export class IntegTestCase extends CoreConstruct {
   private toTestCase(props: IntegTestCaseProps): TestCase {
     return {
       ...props,
-      assertionStack: Stack.of(this.assert).artifactId,
+      assertionStack: this._assert.scope.artifactId,
       stacks: props.stacks.map(s => s.artifactId),
     };
   }
@@ -83,7 +87,7 @@ export class IntegTestCaseStack extends Stack {
   /**
    * Make assertions on resources in this test case
    */
-  public readonly assert: DeployAssert;
+  public readonly assert: IDeployAssert;
 
   /**
    * The underlying IntegTestCase that is created
@@ -124,7 +128,7 @@ export class IntegTest extends CoreConstruct {
   /**
    * Make assertions on resources in this test case
    */
-  public readonly assert: DeployAssert;
+  public readonly assert: IDeployAssert;
   private readonly testCases: IntegTestCase[];
   constructor(scope: Construct, id: string, props: IntegTestProps) {
     super(scope, id);
