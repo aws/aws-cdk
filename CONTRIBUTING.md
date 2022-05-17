@@ -228,7 +228,8 @@ sufficient to get clarity on what you plan to do. If the changes are
 significant or intrusive to the existing CDK experience, and especially for a
 brand new L2 construct implementation, please write an RFC in our [RFC
 repository](https://github.com/aws/aws-cdk-rfcs) before jumping into the code
-base.
+base. L2 construct implementation pull requests will not be reviewed without
+linking an approved RFC.
 
 ### Step 3: Work your Magic
 
@@ -325,12 +326,17 @@ $ yarn watch & # runs in the background
   [conventionalcommits](https://www.conventionalcommits.org).
   * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
     `chore(module): title`.
+  * Titles for `feat` and `fix` PRs end up in the change log. Think about what makes most sense for users reading the changelog while writing them.
+    * `feat`: describe the feature (not the action of creating the commit or PR, for example, avoid words like "added" or "changed")
+    * `fix`: describe the bug (not the solution)
   * Title should be lowercase.
   * No period at the end of the title.
 
-* Pull request message should describe _motivation_. Think about your code reviewers and what information they need in
+* Pull request body should describe _motivation_. Think about your code reviewers and what information they need in
   order to understand what you did. If it's a big commit (hopefully not), try to provide some good entry points so
   it will be easier to follow.
+  * For bugs, describe bug, root cause, solution, potential alternatives considered but discarded.
+  * For features, describe use case, most salient design aspects (especially if new), potential alternatives.
 
 * Pull request message should indicate which issues are fixed: `fixes #<issue>` or `closes #<issue>`.
 
