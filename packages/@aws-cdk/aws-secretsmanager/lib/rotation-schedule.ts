@@ -29,6 +29,8 @@ export interface RotationScheduleOptions {
    * Specifies the number of days after the previous rotation before
    * Secrets Manager triggers the next automatic rotation.
    *
+   * A value of zero will disable automatic rotation - `Duration.days(0)`.
+   *
    * @default Duration.days(30)
    */
   readonly automaticallyAfter?: Duration;
@@ -105,13 +107,23 @@ export class RotationSchedule extends Resource {
       );
     }
 
+    let automaticallyAfterDays: number | undefined = undefined;
+    if (props.automaticallyAfter?.toMilliseconds() !== 0) {
+      automaticallyAfterDays = props.automaticallyAfter?.toDays() || 30;
+    }
+
+    let rotationRules: CfnRotationSchedule.RotationRulesProperty | undefined = undefined;
+    if (automaticallyAfterDays !== undefined) {
+      rotationRules = {
+        automaticallyAfterDays,
+      };
+    }
+
     new CfnRotationSchedule(this, 'Resource', {
       secretId: props.secret.secretArn,
       rotationLambdaArn: props.rotationLambda?.functionArn,
       hostedRotationLambda: props.hostedRotation?.bind(props.secret, this),
-      rotationRules: {
-        automaticallyAfterDays: props.automaticallyAfter && props.automaticallyAfter.toDays() || 30,
-      },
+      rotationRules,
     });
 
     // Prevent secrets deletions when rotation is in place
