@@ -31,7 +31,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
     // optional , defaults to t3.medium
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
     vpcSubnets: {
-      subnetType: ec2.SubnetType.PRIVATE,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
     },
     vpc,
   },
@@ -78,7 +78,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   credentials: rds.Credentials.fromGeneratedSecret('syscdk'), // Optional - will default to 'admin' username and generated password
   vpc,
   vpcSubnets: {
-    subnetType: ec2.SubnetType.PRIVATE,
+    subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
   }
 });
 ```
@@ -154,7 +154,7 @@ new rds.DatabaseInstance(this, 'Instance', {
   }),
   vpc,
   vpcSubnets: {
-    subnetType: ec2.SubnetType.PRIVATE,
+    subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
   },
   publiclyAccessible: true,
 });
@@ -165,7 +165,7 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
   instanceProps: {
     vpc,
     vpcSubnets: {
-      subnetType: ec2.SubnetType.PRIVATE,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
     },
     publiclyAccessible: true,
   },
