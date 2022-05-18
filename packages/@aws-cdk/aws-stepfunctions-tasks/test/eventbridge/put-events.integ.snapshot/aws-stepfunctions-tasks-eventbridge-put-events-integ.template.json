@@ -41,6 +41,12 @@
        "Effect": "Allow",
        "Resource": [
         {
+         "Fn::GetAtt": [
+          "EventBus7B8748AA",
+          "Arn"
+         ]
+        },
+        {
          "Fn::Join": [
           "",
           [
@@ -58,12 +64,6 @@
            },
            ":event-bus/default"
           ]
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "EventBus7B8748AA",
-          "Arn"
          ]
         }
        ]
@@ -112,13 +112,6 @@
     "StateMachineRoleDefaultPolicyDF1E6607",
     "StateMachineRoleB840431D"
    ]
-  }
- },
- "Outputs": {
-  "stateMachineArn": {
-   "Value": {
-    "Ref": "StateMachine2E01A3A5"
-   }
   }
  },
  "Mappings": {
@@ -212,6 +205,16 @@
    },
    "us-west-2": {
     "states": "states.us-west-2.amazonaws.com"
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefStateMachine2E01A3A5BA46F753": {
+   "Value": {
+    "Ref": "StateMachine2E01A3A5"
+   },
+   "Export": {
+    "Name": "aws-stepfunctions-tasks-eventbridge-put-events-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
    }
   }
  }

@@ -106,8 +106,8 @@
      "Statement": [
       {
        "Action": [
-        "codeguru-profiler:GetProfile",
-        "codeguru-profiler:DescribeProfilingGroup"
+        "codeguru-profiler:DescribeProfilingGroup",
+        "codeguru-profiler:GetProfile"
        ],
        "Effect": "Allow",
        "Resource": {

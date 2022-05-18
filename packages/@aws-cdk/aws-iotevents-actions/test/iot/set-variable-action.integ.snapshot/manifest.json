@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "iotevents-set-variable-action-test-stack": {
       "type": "aws:cloudformation:stack",

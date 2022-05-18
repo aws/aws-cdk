@@ -1,6 +1,62 @@
+import { format } from 'util';
+import { ResourceImpact } from '@aws-cdk/cloudformation-diff';
 import * as chalk from 'chalk';
 import * as logger from '../logger';
-import { IntegTestConfig } from '../runner/integ-tests';
+import { IntegTestConfig } from '../runner/integration-tests';
+
+/**
+ * The aggregate results from running assertions on a test case
+ */
+export type AssertionResults = { [id: string]: AssertionResult };
+
+/**
+ * The result of an individual assertion
+ */
+export interface AssertionResult {
+  /**
+   * The assertion message. If the assertion failed, this will
+   * include the reason.
+   */
+  readonly message: string;
+
+  /**
+   * Whether the assertion succeeded or failed
+   */
+  readonly status: 'success' | 'fail';
+}
+
+/**
+ * Config for an integration test
+ */
+export interface IntegTestWorkerConfig extends IntegTestConfig {
+  /**
+   * A list of any destructive changes
+   *
+   * @default []
+   */
+  readonly destructiveChanges?: DestructiveChange[];
+}
+
+/**
+ * Information on any destructive changes
+ */
+export interface DestructiveChange {
+  /**
+   * The logicalId of the resource with a destructive change
+   */
+  readonly logicalId: string;
+
+  /**
+   * The name of the stack that contains the destructive change
+   */
+  readonly stackName: string;
+
+  /**
+   * The impact of the destructive change
+   */
+  readonly impact: ResourceImpact;
+}
+
 
 /**
  * Represents integration tests metrics for a given worker
@@ -57,7 +113,7 @@ export interface IntegTestOptions {
    * A list of integration tests to run
    * in this batch
    */
-  readonly tests: IntegTestConfig[];
+  readonly tests: IntegTestWorkerConfig[];
 
   /**
    * Whether or not to destroy the stacks at the
@@ -82,6 +138,13 @@ export interface IntegTestOptions {
    * @default false
    */
   readonly verbose?: boolean;
+
+  /**
+   * If this is set to true then the stack update workflow will be disabled
+   *
+   * @default true
+   */
+  readonly updateWorkflow?: boolean;
 }
 
 /**
@@ -114,6 +177,11 @@ export enum DiagnosticReason {
    * The integration test succeeded
    */
   TEST_SUCCESS = 'TEST_SUCCESS',
+
+  /**
+   * The assertion failed
+   */
+  ASSERTION_FAILED = 'ASSERTION_FAILED',
 }
 
 /**
@@ -151,6 +219,16 @@ export function printSummary(total: number, failed: number): void {
 }
 
 /**
+ * Format the assertion results so that the results can be
+ * printed
+ */
+export function formatAssertionResults(results: AssertionResults): string {
+  return Object.entries(results)
+    .map(([id, result]) => format('%s\n%s', id, result.message))
+    .join('\n');
+}
+
+/**
  * Print out the results from tests
  */
 export function printResults(diagnostic: Diagnostic): void {
@@ -169,12 +247,8 @@ export function printResults(diagnostic: Diagnostic): void {
       break;
     case DiagnosticReason.TEST_FAILED:
       logger.error('  %s - Failed! %s\n%s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+      break;
+    case DiagnosticReason.ASSERTION_FAILED:
+      logger.error('   %s - Assertions Failed! %s\n%s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
   }
-}
-
-/**
- * Flatten a list of lists into a list of elements
- */
-export function flatten<T>(xs: T[][]): T[] {
-  return Array.prototype.concat.apply([], xs);
 }

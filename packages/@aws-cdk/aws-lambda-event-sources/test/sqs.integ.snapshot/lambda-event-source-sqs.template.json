@@ -38,11 +38,11 @@
      "Statement": [
       {
        "Action": [
-        "sqs:ReceiveMessage",
         "sqs:ChangeMessageVisibility",
-        "sqs:GetQueueUrl",
         "sqs:DeleteMessage",
-        "sqs:GetQueueAttributes"
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage"
        ],
        "Effect": "Allow",
        "Resource": {
