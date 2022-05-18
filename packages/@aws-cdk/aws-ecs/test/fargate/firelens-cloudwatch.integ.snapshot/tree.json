@@ -797,7 +797,7 @@
                       {
                         "essential": true,
                         "image": {
-                          "Ref": "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter"
+                          "Ref": "SsmParameterValueawsserviceawsforfluentbitstableC96584B6F00A464EAD1953AFF4B05118Parameter"
                         },
                         "memoryReservation": 50,
                         "name": "log-router",
@@ -1081,17 +1081,17 @@
               "version": "0.0.0"
             }
           },
-          "SsmParameterValue:--aws--service--aws-for-fluent-bit--latest:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
-            "id": "SsmParameterValue:--aws--service--aws-for-fluent-bit--latest:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
-            "path": "aws-ecs-integ/SsmParameterValue:--aws--service--aws-for-fluent-bit--latest:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+          "SsmParameterValue:--aws--service--aws-for-fluent-bit--stable:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
+            "id": "SsmParameterValue:--aws--service--aws-for-fluent-bit--stable:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "aws-ecs-integ/SsmParameterValue:--aws--service--aws-for-fluent-bit--stable:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnParameter",
               "version": "0.0.0"
             }
           },
-          "SsmParameterValue:--aws--service--aws-for-fluent-bit--latest:C96584B6-F00A-464E-AD19-53AFF4B05118": {
-            "id": "SsmParameterValue:--aws--service--aws-for-fluent-bit--latest:C96584B6-F00A-464E-AD19-53AFF4B05118",
-            "path": "aws-ecs-integ/SsmParameterValue:--aws--service--aws-for-fluent-bit--latest:C96584B6-F00A-464E-AD19-53AFF4B05118",
+          "SsmParameterValue:--aws--service--aws-for-fluent-bit--stable:C96584B6-F00A-464E-AD19-53AFF4B05118": {
+            "id": "SsmParameterValue:--aws--service--aws-for-fluent-bit--stable:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "aws-ecs-integ/SsmParameterValue:--aws--service--aws-for-fluent-bit--stable:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
               "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
