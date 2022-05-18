@@ -4,7 +4,7 @@ import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { ArnFormat, IResource, Names, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CloudFormationTemplate } from './cloudformation-template';
-import { MessageLanguage, PRODUCT_STACK_SNAPSHOT_DIRECTORY, TemplateType } from './common';
+import { MessageLanguage, DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY, TemplateType } from './common';
 import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
@@ -218,14 +218,14 @@ export class CloudFormationProduct extends Product {
           if (template.productVersionDetails) {
             template.productVersionDetails.productPathUniqueId = this.productPathUniqueId;
             template.productVersionDetails.productVersionName = productVersion.productVersionName;
-            template.productVersionDetails.retentionStrategy = template.retentionStrategy;
           }
           break;
-        case TemplateType.PRODUCT_STACK_CONTEXT:
+        case TemplateType.PRODUCT_STACK_SNAPSHOT:
+          const productStackSnapshotDirectory = template.productVersionDetails?.directory || DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY;
           const templateFileKey = `${this.productPathUniqueId}.${template.productVersionDetails?.productStackId}.${productVersion.productVersionName}.product.template.json`;
-          const templateFilePath = path.join(PRODUCT_STACK_SNAPSHOT_DIRECTORY, templateFileKey);
+          const templateFilePath = path.join(productStackSnapshotDirectory, templateFileKey);
           if (!fs.existsSync(templateFilePath)) {
-            throw new Error(`Template ${templateFileKey} cannot be found in ${PRODUCT_STACK_SNAPSHOT_DIRECTORY}`);
+            throw new Error(`Template ${templateFileKey} cannot be found in ${productStackSnapshotDirectory}`);
           }
           httpUrl = new s3_assets.Asset(this, `Template${hashValues(templateFileKey)}`, {
             path: templateFilePath,
@@ -243,8 +243,7 @@ export class CloudFormationProduct extends Product {
         info: {
           LoadTemplateFromURL: httpUrl,
         },
-      },
-      );
+      });
     }
     return productVersions;
   };

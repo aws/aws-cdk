@@ -16,6 +16,46 @@
         "id": "integ-servicecatalog-product",
         "path": "integ-servicecatalog-product",
         "children": {
+          "SNSTopicProduct3": {
+            "id": "SNSTopicProduct3",
+            "path": "integ-servicecatalog-product/SNSTopicProduct3",
+            "children": {
+              "TopicProduct": {
+                "id": "TopicProduct",
+                "path": "integ-servicecatalog-product/SNSTopicProduct3/TopicProduct",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-servicecatalog-product/SNSTopicProduct3/TopicProduct/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.Topic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicecatalog.ProductStack",
+              "version": "0.0.0"
+            }
+          },
+          "ProductStackHistory": {
+            "id": "ProductStackHistory",
+            "path": "integ-servicecatalog-product/ProductStackHistory",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicecatalog.ProductStackHistory",
+              "version": "0.0.0"
+            }
+          },
           "SNSTopicProduct1": {
             "id": "SNSTopicProduct1",
             "path": "integ-servicecatalog-product/SNSTopicProduct1",
@@ -59,38 +99,6 @@
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-servicecatalog-product/SNSTopicProduct2/TopicProduct/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
-                      "aws:cdk:cloudformation:props": {}
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-sns.CfnTopic",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sns.Topic",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-servicecatalog.ProductStack",
-              "version": "0.0.0"
-            }
-          },
-          "SNSTopicProduct3": {
-            "id": "SNSTopicProduct3",
-            "path": "integ-servicecatalog-product/SNSTopicProduct3",
-            "children": {
-              "TopicProduct": {
-                "id": "TopicProduct",
-                "path": "integ-servicecatalog-product/SNSTopicProduct3/TopicProduct",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-servicecatalog-product/SNSTopicProduct3/TopicProduct/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
                       "aws:cdk:cloudformation:props": {}
@@ -294,6 +302,7 @@
                         "info": {}
                       },
                       {
+                        "name": "v1",
                         "disableTemplateValidation": false,
                         "info": {}
                       }

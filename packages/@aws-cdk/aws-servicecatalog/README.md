@@ -22,7 +22,7 @@ enables organizations to create and manage catalogs of products for their end us
 - [Product](#product)
   - [Creating a product from a local asset](#creating-a-product-from-local-asset)
   - [Creating a product from a stack](#creating-a-product-from-a-stack)
-  - [Creating a Product from a stack with immutable versions](#creating-a-product-from-a-stack-with-immutable-versions)
+  - [Creating a Product from a stack with a history of previous versions](#creating-a-product-from-a-stack-with-a-history-of-all-previous-versions)
   - [Adding a product to a portfolio](#adding-a-product-to-a-portfolio)
 - [TagOptions](#tag-options)
 - [Constraints](#constraints)
@@ -185,14 +185,19 @@ const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
 });
 ```
 
-### Creating a Product from a stack with immutable versions
+### Creating a Product from a stack with a history of previous versions
 
 The default behavior of Service Catalog is to overwrite each product version upon deployment.
 This applies to Product Stacks as well, where only the latest changes to your Product Stack will 
 be deployed.
-We would need to create a separate Product Stack to store that version of Product Stack in code.
-If instead you want to never overwrite existing versions, but only add new versions, you can use the
-`RetentionStrategy.RETAIN` strategy for your deployment.
+To keep a history of the revisions of a ProductStack available in Service Catalog,
+you would need to define a ProductStack for each historical copy.
+
+You can instead create a `ProductStackHistory` to maintain snapshots of all previous versions.
+The `ProductStackHistory` can be created by passing the base `productStack`,
+a `currentVersionName` for your current version and a `locked` boolean.
+The `locked` boolean which when set to true will prevent your `currentVersionName`
+from being overwritten when there is an existing snapshot for that version.
 
 ```ts
 import * as s3 from '@aws-cdk/aws-s3';
@@ -206,28 +211,14 @@ class S3BucketProduct extends servicecatalog.ProductStack {
   }
 }
 
-const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
-  productName: "My Product",
-  owner: "Product Owner",
-  productVersions: [
-    {
-      productVersionName: "v1",
-      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new S3BucketProduct(this, 'S3BucketProduct'), servicecatalog.RetentionStrategy.RETAIN),
-    },
-  ],
+const productStackHistory = new servicecatalog.ProductStackHistory(this, 'ProductStackHistory', {
+  productStack: new S3BucketProduct(this, 'S3BucketProduct'),
+  currentVersionName: 'v1',
+  locked: true
 });
 ```
 
-Using the `RetentionStrategy.RETAIN` strategy all deployed templates for the ProductStack will be written to disk,
-so that they will still be available in the future as the definition of the `ProductStack` subclass changes over time.
-**It is very important** that you commit these old versions to source control as these versions 
-determine whether a version has already been deployed and can be used also be deployed themselves 
-using `fromProductStackSnapshot`.
-
-After using the `RetentionStrategy.RETAIN` strategy to deploy version `v1` of your `ProductStack`, we 
-make changes to the `ProductStack` and update it to `v2`.
-We also want our `v1` version to still be deployed, so we reference it using `fromProductStackSnapshot`
-and passing the corresponding `ProductStack` id.
+We can deploy the current version `v1` by using `productStackHistory.currentVersion()`
 
 ```ts
 import * as s3 from '@aws-cdk/aws-s3';
@@ -241,18 +232,54 @@ class S3BucketProduct extends servicecatalog.ProductStack {
   }
 }
 
+const productStackHistory = new servicecatalog.ProductStackHistory(this, 'ProductStackHistory', {
+  productStack: new S3BucketProduct(this, 'S3BucketProduct'),
+  currentVersionName: 'v2',
+  locked: true
+});
+
 const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
   productName: "My Product",
   owner: "Product Owner",
   productVersions: [
-    {
-      productVersionName: "v2",
-      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new S3BucketProduct(this, 'S3BucketProduct'), servicecatalog.RetentionStrategy.RETAIN),
-    },
-    {
-      productVersionName: "v1",
-      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStackSnapshot('S3BucketProduct'),
-    },
+    productStackHistory.currentVersion(),
+  ],
+});
+```
+
+Using `ProductStackHistory` all deployed templates for the ProductStack will be written to disk,
+so that they will still be available in the future as the definition of the `ProductStack` subclass changes over time.
+**It is very important** that you commit these old versions to source control as these versions 
+determine whether a version has already been deployed and can also be deployed themselves.
+
+After using `ProductStackHistory` to deploy version `v1` of your `ProductStack`, we 
+make changes to the `ProductStack` and update the `currentVersionName` to `v2`.
+We still want our `v1` version to still be deployed, so we reference it by calling `productStackHistory.versionFromSnapshot('v1')`.
+
+```ts
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+
+class S3BucketProduct extends servicecatalog.ProductStack {
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
+
+    new s3.Bucket(this, 'BucketProductV2');
+  }
+}
+
+const productStackHistory = new servicecatalog.ProductStackHistory(this, 'ProductStackHistory', {
+  productStack: new S3BucketProduct(this, 'S3BucketProduct'),
+  currentVersionName: 'v2',
+  locked: true
+});
+
+const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
+  productName: "My Product",
+  owner: "Product Owner",
+  productVersions: [
+    productStackHistory.currentVersion(),
+    productStackHistory.versionFromSnapshot('v1')
   ],
 });
 ```

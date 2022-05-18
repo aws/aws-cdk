@@ -1,7 +1,7 @@
 /**
- * Constant for the context directory to store retained ProductStack templates.
+ * Constant for the default directory to store ProductStack snapshots.
  */
-export const PRODUCT_STACK_SNAPSHOT_DIRECTORY = 'product-stack-snapshots';
+export const DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY = 'product-stack-snapshots';
 
 /**
  * The language code.
@@ -27,7 +27,7 @@ export enum MessageLanguage {
 
 /**
  * The types of cloudFormationTemplates for product versions.
- * Used to determine the source of a cloudFormationTemplate and apply logic accordingly
+ * Used to determine the source of a cloudFormationTemplate and apply logic accordingly.
  */
 export enum TemplateType {
   /**
@@ -46,31 +46,13 @@ export enum TemplateType {
   PRODUCT_STACK = 'ProductStackTemplate',
 
   /**
-   * ProductStackContextTemplate
+   * ProductStackSnapshotTemplate
    */
-  PRODUCT_STACK_CONTEXT = 'ProductStackContextTemplate'
+  PRODUCT_STACK_SNAPSHOT = 'ProductStackSnapshotTemplate'
 }
 
 /**
-   * The strategy to use for a ProductStack deployment.
-   * Determines how a productVersion is saved and deployed.
-   */
-export enum RetentionStrategy {
-  /**
-   * Default Strategy for ProductStack deployment.
-   * This strategy will overwrite existing versions when deployed.
-   */
-  OVERRIDE = 'Override',
-
-  /**
-   * Retain previously deployed ProductStacks in a local context directory.
-   * This strategy will not overwrite existing versions when deployed.
-   */
-  RETAIN = 'Retain',
-}
-
-/**
- * A wrapper class containing useful metadata about the product version
+ * A wrapper class containing useful metadata about the product version.
  */
 export class ProductVersionDetails {
   /**
@@ -89,7 +71,12 @@ export class ProductVersionDetails {
   public productVersionName?: string;
 
   /**
-   * Versioning strategy to use for a ProductStack deployment.
+   * Directory to store snapshots
    */
-  public retentionStrategy?: RetentionStrategy
+  public directory?: string;
+
+  /**
+   * Whether to overwrite existing version
+   */
+  public locked?: boolean;
 }
