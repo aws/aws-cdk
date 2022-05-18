@@ -1,3 +1,4 @@
+import { Template, Annotations, Match } from '@aws-cdk/assertions';
 import * as ccommit from '@aws-cdk/aws-codecommit';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
@@ -52,19 +53,19 @@ describe('CodePipeline support stack reuse', () => {
     const supportStackAArtifact = assembly.getStackByName(`PipelineStackA-support-${testStageEnv.region}`);
     const supportStackBArtifact = assembly.getStackByName(`PipelineStackB-support-${testStageEnv.region}`);
 
-    const supportStackATemplate = supportStackAArtifact.template;
-    expect(supportStackATemplate).toHaveResourceLike('AWS::S3::Bucket', {
+    const supportStackATemplate = Template.fromJSON(supportStackAArtifact.template);
+    supportStackATemplate.hasResourceProperties('AWS::S3::Bucket', {
       BucketName: 'pipelinestacka-support-useplicationbucket80db3753a0ebbf052279',
     });
-    expect(supportStackATemplate).toHaveResourceLike('AWS::KMS::Alias', {
+    supportStackATemplate.hasResourceProperties('AWS::S3::Bucket', {
       AliasName: 'alias/pport-ustencryptionalias5cad45754e1ff088476b',
     });
 
-    const supportStackBTemplate = supportStackBArtifact.template;
-    expect(supportStackBTemplate).toHaveResourceLike('AWS::S3::Bucket', {
+    const supportStackBTemplate = Template.fromJSON(supportStackBArtifact.template);
+    supportStackBTemplate.hasResourceProperties('AWS::S3::Bucket', {
       BucketName: 'pipelinestackb-support-useplicationbucket1d556ec7f959b336abf8',
     });
-    expect(supportStackBTemplate).toHaveResourceLike('AWS::KMS::Alias', {
+    supportStackBTemplate.hasResourceProperties('AWS::S3::Bucket', {
       AliasName: 'alias/pport-ustencryptionalias668c7ffd0de17c9867b0',
     });
   });
