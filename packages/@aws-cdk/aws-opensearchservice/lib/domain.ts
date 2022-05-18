@@ -883,7 +883,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
       metricName,
       dimensionsMap: {
         DomainName: this.domainName,
-        ClientId: this.stack.account,
+        ClientId: this.env.account,
       },
       ...props,
     }).attachTo(this);
