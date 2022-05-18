@@ -139,6 +139,3 @@ removed:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps.onFai
 
 # removed kubernetes version from EKS
 removed:@aws-cdk/aws-eks.KubernetesVersion.V1_22
-
-# changed the type of AccountPrincipal argument accountId's type to string
-incompatible-argument:@aws-cdk/aws-iam.AccountPrincipal.<initializer>
