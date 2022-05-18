@@ -1,0 +1,496 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
+        }
+      },
+      "aws-timestream-scheduled-query-integ": {
+        "id": "aws-timestream-scheduled-query-integ",
+        "path": "aws-timestream-scheduled-query-integ",
+        "children": {
+          "TestKey": {
+            "id": "TestKey",
+            "path": "aws-timestream-scheduled-query-integ/TestKey",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-timestream-scheduled-query-integ/TestKey/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                  "aws:cdk:cloudformation:props": {
+                    "keyPolicy": {
+                      "Statement": [
+                        {
+                          "Action": "kms:*",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::457234467265:root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-kms.CfnKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-kms.Key",
+              "version": "0.0.0"
+            }
+          },
+          "TestDatabase": {
+            "id": "TestDatabase",
+            "path": "aws-timestream-scheduled-query-integ/TestDatabase",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-timestream-scheduled-query-integ/TestDatabase/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Timestream::Database",
+                  "aws:cdk:cloudformation:props": {
+                    "databaseName": "ATestDB",
+                    "kmsKeyId": {
+                      "Ref": "TestKey4CACAF33"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-timestream.CfnDatabase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-timestream.Database",
+              "version": "0.0.0"
+            }
+          },
+          "TestTable": {
+            "id": "TestTable",
+            "path": "aws-timestream-scheduled-query-integ/TestTable",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-timestream-scheduled-query-integ/TestTable/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Timestream::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "databaseName": {
+                      "Ref": "TestDatabase7A4A91C2"
+                    },
+                    "tableName": "Test"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-timestream.CfnTable",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-timestream.Table",
+              "version": "0.0.0"
+            }
+          },
+          "TestBucket": {
+            "id": "TestBucket",
+            "path": "aws-timestream-scheduled-query-integ/TestBucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-timestream-scheduled-query-integ/TestBucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "tags": [
+                      {
+                        "key": "aws-cdk:auto-delete-objects",
+                        "value": "true"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "aws-timestream-scheduled-query-integ/TestBucket/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-timestream-scheduled-query-integ/TestBucket/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "TestBucket560B80BC"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:GetBucket*",
+                                "s3:List*",
+                                "s3:DeleteObject*"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "TestBucket560B80BC",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "TestBucket560B80BC",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.BucketPolicy",
+                  "version": "0.0.0"
+                }
+              },
+              "AutoDeleteObjectsCustomResource": {
+                "id": "AutoDeleteObjectsCustomResource",
+                "path": "aws-timestream-scheduled-query-integ/TestBucket/AutoDeleteObjectsCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "aws-timestream-scheduled-query-integ/TestBucket/AutoDeleteObjectsCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
+          "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
+            "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "path": "aws-timestream-scheduled-query-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "aws-timestream-scheduled-query-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "aws-timestream-scheduled-query-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "aws-timestream-scheduled-query-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CustomResourceProvider",
+              "version": "0.0.0"
+            }
+          },
+          "TestTopic": {
+            "id": "TestTopic",
+            "path": "aws-timestream-scheduled-query-integ/TestTopic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-timestream-scheduled-query-integ/TestTopic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sns.Topic",
+              "version": "0.0.0"
+            }
+          },
+          "TestRole": {
+            "id": "TestRole",
+            "path": "aws-timestream-scheduled-query-integ/TestRole",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-timestream-scheduled-query-integ/TestRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "timestream.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "aws-timestream-scheduled-query-integ/TestRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-timestream-scheduled-query-integ/TestRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:GetObject*",
+                                "s3:GetBucket*",
+                                "s3:List*",
+                                "s3:DeleteObject*",
+                                "s3:PutObject",
+                                "s3:PutObjectLegalHold",
+                                "s3:PutObjectRetention",
+                                "s3:PutObjectTagging",
+                                "s3:PutObjectVersionTagging",
+                                "s3:Abort*"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "TestBucket560B80BC",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "TestBucket560B80BC",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "Action": "sns:Publish",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Ref": "TestTopic339EC197"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "TestRoleDefaultPolicyD1C92014",
+                        "roles": [
+                          {
+                            "Ref": "TestRole6C9272DF"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "ScheduledQuery": {
+            "id": "ScheduledQuery",
+            "path": "aws-timestream-scheduled-query-integ/ScheduledQuery",
+            "children": {
+              "ScheduledQuery": {
+                "id": "ScheduledQuery",
+                "path": "aws-timestream-scheduled-query-integ/ScheduledQuery/ScheduledQuery",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Timestream::ScheduledQuery",
+                  "aws:cdk:cloudformation:props": {
+                    "errorReportConfiguration": {
+                      "s3Configuration": {
+                        "bucketName": {
+                          "Ref": "TestBucket560B80BC"
+                        },
+                        "encryptionOption": "SSE_S3",
+                        "objectKeyPrefix": "prefix/"
+                      }
+                    },
+                    "notificationConfiguration": {
+                      "snsConfiguration": {
+                        "topicArn": {
+                          "Ref": "TestTopic339EC197"
+                        }
+                      }
+                    },
+                    "queryString": "SELECT time, measure_name as name, measure_name as amount FROM \"ATestDB\".\"Test\"",
+                    "scheduleConfiguration": {
+                      "scheduleExpression": "cron(30 * * * ? *)"
+                    },
+                    "scheduledQueryExecutionRoleArn": {
+                      "Fn::GetAtt": [
+                        "TestRole6C9272DF",
+                        "Arn"
+                      ]
+                    },
+                    "scheduledQueryName": "Test_Query",
+                    "targetConfiguration": {
+                      "timestreamConfiguration": {
+                        "databaseName": {
+                          "Ref": "TestDatabase7A4A91C2"
+                        },
+                        "tableName": {
+                          "Fn::GetAtt": [
+                            "TestTable5769773A",
+                            "Name"
+                          ]
+                        },
+                        "dimensionMappings": [
+                          {
+                            "name": "name",
+                            "dimensionValueType": "VARCHAR"
+                          }
+                        ],
+                        "multiMeasureMappings": {
+                          "targetMultiMeasureName": "test",
+                          "multiMeasureAttributeMappings": [
+                            {
+                              "measureValueType": "VARCHAR",
+                              "sourceColumn": "amount"
+                            }
+                          ]
+                        },
+                        "timeColumn": "time"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-timestream.ScheduledQuery",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

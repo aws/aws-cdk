@@ -1,0 +1,20 @@
+{
+  "version": "18.0.0",
+  "files": {
+    "948958bbcf40a7ca4503e9d3cd35bdd56928cf2670f8c4f36d8aef7056839c10": {
+      "source": {
+        "path": "aws-timestream-table-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "457234467265-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-457234467265-us-east-1",
+          "objectKey": "948958bbcf40a7ca4503e9d3cd35bdd56928cf2670f8c4f36d8aef7056839c10.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::457234467265:role/cdk-hnb659fds-file-publishing-role-457234467265-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
