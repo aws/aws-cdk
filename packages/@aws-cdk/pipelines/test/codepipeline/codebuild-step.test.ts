@@ -167,7 +167,7 @@ test('role passed it used for project and code build action', () => {
       commands: ['/bin/true'],
       input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
       role: projectRole,
-      buildActionRole: buildRole,
+      actionRole: buildRole,
     }),
   });
 

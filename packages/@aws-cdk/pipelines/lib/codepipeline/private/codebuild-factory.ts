@@ -49,7 +49,7 @@ export interface CodeBuildFactoryProps {
    *
    * @default - A role is automatically created
    */
-  readonly buildActionRole?: iam.IRole;
+  readonly actionRole?: iam.IRole;
 
   /**
    * If true, the build spec will be passed via the Cloud Assembly instead of rendered onto the Project
@@ -152,7 +152,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     const factory = CodeBuildFactory.fromShellStep(constructId, step, {
       projectName: step.projectName,
       role: step.role,
-      buildActionRole: step.buildActionRole,
+      actionRole: step.actionRole,
       ...additional,
       projectOptions: mergeCodeBuildOptions(additional?.projectOptions, {
         buildEnvironment: step.buildEnvironment,
@@ -330,7 +330,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       outputs: outputArtifacts,
       project,
       runOrder: options.runOrder,
-      role: this.props.buildActionRole,
+      role: this.props.actionRole,
       variablesNamespace: options.variablesNamespace,
 
       // Inclusion of the hash here will lead to the pipeline structure for any changes

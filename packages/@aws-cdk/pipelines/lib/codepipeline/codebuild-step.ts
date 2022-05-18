@@ -71,7 +71,7 @@ export interface CodeBuildStepProps extends ShellStepProps {
    *
    * @default - A role is automatically created
    */
-  readonly buildActionRole?: iam.IRole;
+  readonly actionRole?: iam.IRole;
 
   /**
    * Changes to environment
@@ -158,7 +158,7 @@ export class CodeBuildStep extends ShellStep {
    *
    * @default - A role is automatically created
    */
-  readonly buildActionRole?: iam.IRole;
+  readonly actionRole?: iam.IRole;
 
   /**
    * Build environment
@@ -197,7 +197,7 @@ export class CodeBuildStep extends ShellStep {
     this.vpc = props.vpc;
     this.subnetSelection = props.subnetSelection;
     this.role = props.role;
-    this.buildActionRole = props.buildActionRole;
+    this.actionRole = props.actionRole;
     this.rolePolicyStatements = props.rolePolicyStatements;
     this.securityGroups = props.securityGroups;
     this.timeout = props.timeout;
