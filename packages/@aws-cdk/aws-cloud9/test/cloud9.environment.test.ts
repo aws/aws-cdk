@@ -24,7 +24,7 @@ test('create resource correctly with both vpc and subnetSelectio', () => {
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
     subnetSelection: {
-      subnetType: ec2.SubnetType.PRIVATE,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
     },
   });
   // THEN
@@ -54,7 +54,7 @@ test('throw error when subnetSelection not specified and the provided VPC has no
     maxAzs: 2,
     subnetConfiguration: [
       {
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
         name: 'IsolatedSubnet',
         cidrMask: 24,
       },
