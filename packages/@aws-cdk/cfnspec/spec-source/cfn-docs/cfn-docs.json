@@ -25249,7 +25249,7 @@
         "KafkaClusterEncryptionInTransit": "Details of encryption in transit to the Apache Kafka cluster.",
         "KafkaConnectVersion": "The version of Kafka Connect. It has to be compatible with both the Apache Kafka cluster's version and the plugins.",
         "LogDelivery": "The settings for delivering connector logs to Amazon CloudWatch Logs.",
-        "Plugins": "Specifies which plugins were used for this connector.",
+        "Plugins": "Specifies which plugin to use for the connector. You must specify a single-element list. Amazon MSK Connect does not currently support specifying multiple plugins.",
         "ServiceExecutionRoleArn": "The Amazon Resource Name (ARN) of the IAM role used by the connector to access Amazon Web Services resources.",
         "WorkerConfiguration": "The worker configurations that are in use with the connector."
       }
