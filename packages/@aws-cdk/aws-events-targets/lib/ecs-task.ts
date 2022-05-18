@@ -162,7 +162,7 @@ export class EcsTask implements events.IRuleTarget {
     const taskCount = this.taskCount;
     const taskDefinitionArn = this.taskDefinition.taskDefinitionArn;
 
-    const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE };
+    const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT };
     const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.PUBLIC ? 'ENABLED' : 'DISABLED';
 
     const baseEcsParameters = { taskCount, taskDefinitionArn };

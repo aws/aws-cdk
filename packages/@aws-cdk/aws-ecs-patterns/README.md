@@ -491,7 +491,7 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
   securityGroups: [securityGroup],
-  taskSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+  taskSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
 });
 ```
 

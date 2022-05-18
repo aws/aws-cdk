@@ -55,7 +55,7 @@ new cloud9.Ec2Environment(this, 'Cloud9Env2', {
 const c9env = new cloud9.Ec2Environment(this, 'Cloud9Env3', {
   vpc,
   subnetSelection: {
-    subnetType: ec2.SubnetType.PRIVATE,
+    subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
   },
 });
 

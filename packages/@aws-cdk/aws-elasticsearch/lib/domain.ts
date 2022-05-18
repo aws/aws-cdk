@@ -1502,7 +1502,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     let subnets: ec2.ISubnet[] | undefined;
 
     if (props.vpc) {
-      subnets = selectSubnets(props.vpc, props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PRIVATE }]);
+      subnets = selectSubnets(props.vpc, props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }]);
       securityGroups = props.securityGroups ?? [new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
         description: `Security group for domain ${this.node.id}`,
