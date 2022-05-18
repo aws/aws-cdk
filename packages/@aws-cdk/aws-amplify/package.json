@@ -87,7 +87,6 @@
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.0",
-    "@types/yaml": "1.9.6",
     "aws-sdk": "^2.848.0"
   },
   "dependencies": {
@@ -101,12 +100,8 @@
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.3.69",
-    "yaml": "1.10.2"
+    "constructs": "^3.3.69"
   },
-  "bundledDependencies": [
-    "yaml"
-  ],
   "peerDependencies": {
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
