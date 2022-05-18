@@ -21,6 +21,7 @@ class TestStack extends Stack {
           pattern: '/path/*',
           headers: {
             'custom-header-name-1': 'custom-header-value-2',
+            'x-aws-url-suffix': `this-is-the-suffix-${Stack.of(this).urlSuffix}`,
           },
         },
       ],
