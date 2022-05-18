@@ -132,6 +132,10 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
       );
     }
 
+    if (sourceProfileExistanceTest.sso_start_url) {
+      return new AWS.SsoCredentials({ profile: sourceProfile });
+    }
+
     return new AWS.SharedIniFileCredentials(
       (AWS as any).util.merge(this.options || {}, {
         profile: sourceProfile,
