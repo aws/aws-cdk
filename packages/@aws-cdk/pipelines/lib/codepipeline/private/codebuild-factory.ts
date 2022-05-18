@@ -320,7 +320,9 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     // individual CodeBuild Project and blow out the pipeline policy size (and potentially # of resources in the stack).
     const actionRoleCid = 'CodeBuildActionRole';
     const actionRole = options.pipeline.node.tryFindChild(actionRoleCid) as iam.IRole ?? new iam.Role(options.pipeline, actionRoleCid, {
-      assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
+      assumedBy: new iam.PrincipalWithConditions(new iam.AccountRootPrincipal(), {
+        Bool: { 'aws:ViaAWSService': iam.ServicePrincipal.servicePrincipalName('codepipeline.amazonaws.com') },
+      }),
     });
 
     stage.addAction(new codepipeline_actions.CodeBuildAction({
