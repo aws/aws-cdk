@@ -87,6 +87,7 @@ describe('IntegTest runIntegTests', () => {
       context: expect.any(Object),
       versionReporting: false,
       lookups: false,
+      rollback: false,
       stacks: ['test-stack', 'new-test-stack'],
     });
     expect(destroyMock).toHaveBeenCalledWith({
@@ -127,6 +128,7 @@ describe('IntegTest runIntegTests', () => {
       context: expect.not.objectContaining({
         [AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY]: ['test-region-1a', 'test-region-1b', 'test-region-1c'],
       }),
+      rollback: false,
       lookups: false,
       stacks: ['stack1'],
       output: 'cdk-integ.out.integ-test1',
@@ -170,6 +172,7 @@ describe('IntegTest runIntegTests', () => {
       }),
       versionReporting: false,
       lookups: true,
+      rollback: false,
       stacks: ['test-stack'],
       output: 'cdk-integ.out.test-with-snapshot-assets-diff',
       profile: undefined,
@@ -324,6 +327,7 @@ describe('IntegTest runIntegTests', () => {
       versionReporting: false,
       context: expect.any(Object),
       profile: 'test-profile',
+      rollback: false,
       lookups: false,
       stacks: ['stack1'],
       output: 'cdk-integ.out.integ-test1',
