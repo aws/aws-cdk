@@ -1,18 +1,17 @@
 import * as cdk from '@aws-cdk/core';
 import { LITERAL_STRING_KEY } from '../util';
-import { mergeStatements } from './merge-statements';
 
 /**
  * A Token postprocesser for policy documents
  *
- * Removes duplicate statements, merges statements, and assign Sids if necessary
+ * Removes duplicate statements, and assign Sids if necessary
  *
  * Because policy documents can contain all kinds of crazy things,
  * we do all the necessary work here after the document has been mostly resolved
  * into a predictable CloudFormation form.
  */
 export class PostProcessPolicyDocument implements cdk.IPostProcessor {
-  constructor(private readonly autoAssignSids: boolean, private readonly minimize: boolean) {
+  constructor(private readonly autoAssignSids: boolean, private readonly sort: boolean) {
   }
 
   public postProcess(input: any, _context: cdk.IResolveContext): any {
@@ -20,16 +19,12 @@ export class PostProcessPolicyDocument implements cdk.IPostProcessor {
       return input;
     }
 
-    if (this.minimize) {
-      input.Statement = mergeStatements(input.Statement);
-    }
-
     // Also remove full-on duplicates (this will not be necessary if
     // we minimized, but it might still dedupe statements we didn't
     // minimize like 'Deny' statements, and definitely is still necessary
     // if we didn't minimize)
     const jsonStatements = new Set<string>();
-    const uniqueStatements: any[] = [];
+    const uniqueStatements: StatementSchema[] = [];
 
     for (const statement of input.Statement) {
       const jsonStatement = JSON.stringify(statement);
@@ -43,6 +38,13 @@ export class PostProcessPolicyDocument implements cdk.IPostProcessor {
     const statements = uniqueStatements.map((s, i) => {
       if (this.autoAssignSids && !s.Sid) {
         s.Sid = i.toString();
+      }
+
+      if (this.sort) {
+        // Don't act on the values if they are 'undefined'
+        if (s.Action) { s.Action = sortByJson(s.Action); }
+        if (s.Resource) { s.Resource = sortByJson(s.Resource); }
+        if (s.Principal) { s.Principal = sortPrincipals(s.Principal); }
       }
 
       return s;
@@ -59,15 +61,15 @@ export class PostProcessPolicyDocument implements cdk.IPostProcessor {
 export type IamValue = string | Record<string, any> | Array<string | Record<string, any>>;
 
 export interface StatementSchema {
-  readonly Sid?: string;
-  readonly Effect?: string;
-  readonly Principal?: Record<string, IamValue>;
-  readonly NotPrincipal?: Record<string, IamValue>;
-  readonly Resource?: IamValue;
-  readonly NotResource?: IamValue;
-  readonly Action?: IamValue;
-  readonly NotAction?: IamValue;
-  readonly Condition?: unknown;
+  Sid?: string;
+  Effect?: string;
+  Principal?: string | string[] | Record<string, IamValue>;
+  NotPrincipal?: string | string[] | Record<string, IamValue>;
+  Resource?: IamValue;
+  NotResource?: IamValue;
+  Action?: IamValue;
+  NotAction?: IamValue;
+  Condition?: unknown;
 }
 
 
@@ -115,8 +117,8 @@ export function normalizeStatement(s: StatementSchema) {
     return values;
   }
 
-  function _normPrincipal(principal?: { [key: string]: any }) {
-    if (!principal) { return undefined; }
+  function _normPrincipal(principal?: string | string[] | { [key: string]: any }) {
+    if (!principal || Array.isArray(principal) || typeof principal !== 'object') { return undefined; }
 
     const keys = Object.keys(principal);
     if (keys.length === 0) { return undefined; }
@@ -146,4 +148,33 @@ function noUndef(x: any): any {
     }
   }
   return ret;
+}
+
+function sortPrincipals<A>(xs?: string | string[] | Record<string, A | A[]>): typeof xs {
+  if (!xs || Array.isArray(xs) || typeof xs !== 'object') { return xs; }
+
+  const ret: NonNullable<typeof xs> = {};
+  for (const k of Object.keys(xs).sort()) {
+    ret[k] = sortByJson(xs[k]);
+  }
+
+  return ret;
+}
+
+/**
+ * Sort the values in the list by the JSON representation, removing duplicates.
+ *
+ * Mutates in place AND returns the mutated list.
+ */
+function sortByJson<B, A extends B | B[] | undefined>(xs: A): A {
+  if (!Array.isArray(xs)) { return xs; }
+
+  const intermediate = new Map<string, A>();
+  for (const x of xs) {
+    intermediate.set(JSON.stringify(x), x);
+  }
+
+  const sorted = Array.from(intermediate.keys()).sort().map(k => intermediate.get(k)!);
+  xs.splice(0, xs.length, ...sorted);
+  return xs.length !== 1 ? xs : xs[0];
 }

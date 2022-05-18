@@ -294,6 +294,16 @@ test('AccountPrincipal can specify an organization', () => {
   });
 });
 
+test('ServicePrincipalName returns just a string representing the principal', () => {
+  // GIVEN
+  const usEastStack = new Stack(undefined, undefined, { env: { region: 'us-east-1' } });
+  const afSouthStack = new Stack(undefined, undefined, { env: { region: 'af-south-1' } });
+  const principalName = iam.ServicePrincipal.servicePrincipalName('ssm.amazonaws.com');
+
+  expect(usEastStack.resolve(principalName)).toEqual('ssm.amazonaws.com');
+  expect(afSouthStack.resolve(principalName)).toEqual('ssm.af-south-1.amazonaws.com');
+});
+
 test('ServicePrincipal in agnostic stack generates lookup table', () => {
   // GIVEN
   const stack = new Stack();
