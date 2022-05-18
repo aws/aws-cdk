@@ -1,6 +1,7 @@
 import { AssetManifest, IManifestEntry } from './asset-manifest';
 import { IAws } from './aws';
 import { IHandlerHost } from './private/asset-handler';
+import { DockerFactory } from './private/docker';
 import { makeAssetHandler } from './private/handlers';
 import { EventType, IPublishProgress, IPublishProgressListener } from './progress';
 
@@ -76,6 +77,7 @@ export class AssetPublishing implements IPublishProgress {
       aws: this.options.aws,
       get aborted() { return self.aborted; },
       emitMessage(t, m) { self.progressEvent(t, m); },
+      dockerFactory: new DockerFactory(),
     };
   }
 
