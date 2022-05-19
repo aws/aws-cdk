@@ -127,6 +127,22 @@ constructLinter.add({
 });
 
 constructLinter.add({
+  code: 'no-on-prepare',
+  message: 'constructs should not use onPrepare since they are deprecated in CDK v2',
+  eval: e => {
+    const methods = e.ctx.classType.allMethods;
+    for (const method of methods) {
+      if (method.definingType.fqn === '@aws-cdk/core.Construct') {
+        // allow onPrepare on CoreConstruct
+        continue;
+      }
+
+      e.assertNotEquals(method.name, 'onPrepare', e.ctx.fqn);
+    }
+  },
+});
+
+constructLinter.add({
   code: 'props-struct-name',
   message: 'all constructs must have a props struct',
   eval: e => {

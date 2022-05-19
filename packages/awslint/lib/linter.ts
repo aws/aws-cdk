@@ -168,6 +168,10 @@ export class Evaluation<T> {
     return this.assert(actual === expected, scope, ` (expected="${expected}",actual="${actual}")`);
   }
 
+  public assertNotEquals(actual: any, expected: any, scope: string) {
+    return this.assert(actual !== expected, scope, ` (matched value="${actual}")`);
+  }
+
   public assertTypesEqual(ts: reflect.TypeSystem, actual: TypeSpecifier, expected: TypeSpecifier, scope: string) {
     const a = typeReferenceFrom(ts, actual);
     const e = typeReferenceFrom(ts, expected);
