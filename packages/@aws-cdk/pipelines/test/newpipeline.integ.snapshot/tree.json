@@ -2594,9 +2594,29 @@
                           "Statement": [
                             {
                               "Action": "sts:AssumeRole",
+                              "Condition": {
+                                "Bool": {
+                                  "aws:ViaAWSService": "codepipeline.amazonaws.com"
+                                }
+                              },
                               "Effect": "Allow",
                               "Principal": {
-                                "Service": "codepipeline.amazonaws.com"
+                                "AWS": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":iam::",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":root"
+                                    ]
+                                  ]
+                                }
                               }
                             }
                           ],

@@ -1,5 +1,5 @@
 {
-  "version": "18.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "assembly-PipelineStack-Beta": {
       "type": "cdk:cloud-assembly",
@@ -30,7 +30,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bc7ded943a77087531e601616d23ec39dbeeffbdcba901ae9d014dc028f53c2b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/09ed6a107711fc77b4417fe759eedb1920ea48ea07d68490b9973255f017840d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -344,78 +344,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "PipelineBuildSynthCodePipelineActionRole4E7A6C97": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "PipelineBuildSynthCodePipelineActionRoleDefaultPolicy92C90290": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineBuildSynthCodePipelineActionRoleDefaultPolicy92C90290",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleDefaultPolicyE626265B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleDefaultPolicyE626265B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "PipelineAssetsFileAsset1CodePipelineActionRoleC0EC649A": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileAsset1CodePipelineActionRoleC0EC649A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "PipelineAssetsFileAsset1CodePipelineActionRoleDefaultPolicy5F0BE7E8": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileAsset1CodePipelineActionRoleDefaultPolicy5F0BE7E8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "PipelineAssetsFileAsset2CodePipelineActionRole06965A59": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileAsset2CodePipelineActionRole06965A59",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "PipelineAssetsFileAsset2CodePipelineActionRoleDefaultPolicy2399F4BC": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileAsset2CodePipelineActionRoleDefaultPolicy2399F4BC",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

@@ -1,5 +1,5 @@
 {
-  "version": "18.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "PipelineStackProd1Stack14013D698.assets": {
       "type": "cdk:asset-manifest",
@@ -57,7 +57,7 @@
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputFnGetAttQueue4A7E3555Arn15A7202E",
             "trace": [
-              "Stack.exportValue (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/stack.js:727:13)",
+              "Stack.exportValue (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/stack.js:726:13)",
               "createImportValue (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/refs.js:138:39)",
               "resolveValue (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/refs.js:84:12)",
               "Object.resolveReferences (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/refs.js:25:30)",

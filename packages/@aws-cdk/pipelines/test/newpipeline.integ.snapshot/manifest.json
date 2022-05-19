@@ -1,5 +1,5 @@
 {
-  "version": "18.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "assembly-PipelineStack-Beta": {
       "type": "cdk:cloud-assembly",
@@ -72,7 +72,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6c09f52aaa1021b83f7264687f0182f09352bde7591247382ea7306a5c2e0b36.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7d2531c66d17cb894cbea6b47a7e239187e0d2af28927555c71267afdec36666.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -182,42 +182,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "PipelineBuildSynthCodePipelineActionRole4E7A6C97": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "PipelineBuildSynthCodePipelineActionRoleDefaultPolicy92C90290": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineBuildSynthCodePipelineActionRoleDefaultPolicy92C90290",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleDefaultPolicyE626265B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleDefaultPolicyE626265B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
