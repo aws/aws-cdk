@@ -427,6 +427,21 @@ export interface ServicePrincipalOpts {
  */
 export class ServicePrincipal extends PrincipalBase {
   /**
+   * Translate the given service principal name based on the region it's used in.
+   *
+   * For example, for Chinese regions this may (depending on whether that's necessary
+   * for the given service principal) append `.cn` to the name.
+   *
+   * The `region-info` module is used to obtain this information.
+   *
+   * @example
+   * const principalName = iam.ServicePrincipal.servicePrincipalName('ec2.amazonaws.com');
+   */
+  public static servicePrincipalName(service: string): string {
+    return new ServicePrincipalToken(service, {}).toString();
+  }
+
+  /**
    *
    * @param service AWS service (i.e. sqs.amazonaws.com)
    */
