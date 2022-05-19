@@ -57,7 +57,7 @@ describe('CodePipeline support stack reuse', () => {
     supportStackATemplate.hasResourceProperties('AWS::S3::Bucket', {
       BucketName: 'pipelinestacka-support-useplicationbucket80db3753a0ebbf052279',
     });
-    supportStackATemplate.hasResourceProperties('AWS::S3::Bucket', {
+    supportStackATemplate.hasResourceProperties('AWS::KMS::Alias', {
       AliasName: 'alias/pport-ustencryptionalias5cad45754e1ff088476b',
     });
 
@@ -65,7 +65,7 @@ describe('CodePipeline support stack reuse', () => {
     supportStackBTemplate.hasResourceProperties('AWS::S3::Bucket', {
       BucketName: 'pipelinestackb-support-useplicationbucket1d556ec7f959b336abf8',
     });
-    supportStackBTemplate.hasResourceProperties('AWS::S3::Bucket', {
+    supportStackBTemplate.hasResourceProperties('AWS::KMS::Alias', {
       AliasName: 'alias/pport-ustencryptionalias668c7ffd0de17c9867b0',
     });
   });
