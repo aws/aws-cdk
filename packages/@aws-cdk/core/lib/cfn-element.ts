@@ -1,5 +1,4 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
@@ -65,9 +64,7 @@ export abstract class CfnElement extends CoreConstruct {
       displayHint: `${notTooLong(Node.of(this).path)}.LogicalID`,
     });
 
-    if (!this.node.tryGetContext(cxapi.DISABLE_LOGICAL_ID_METADATA)) {
-      Node.of(this).addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, this.constructor);
-    }
+    Node.of(this).addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, this.constructor);
   }
 
   /**
