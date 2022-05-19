@@ -36,7 +36,6 @@ describe('synthesis', () => {
         },
       }),
     });
-
   });
 
   test('synthesis respects disabling tree metadata', () => {
@@ -45,7 +44,87 @@ describe('synthesis', () => {
     });
     const assembly = app.synth();
     expect(list(assembly.directory)).toEqual(['cdk.out', 'manifest.json']);
+  });
 
+  test('synthesis respects disabling logicalId metadata', () => {
+    const app = new cdk.App({
+      context: { 'aws:cdk:disable-logicalId-metadata': true },
+    });
+    const stack = new cdk.Stack(app, 'one-stack');
+    new cdk.CfnResource(stack, 'MagicResource', { type: 'Resource::Type' });
+
+    // WHEN
+    const session = app.synth();
+
+    // THEN
+    expect(session.manifest).toEqual({
+      version: cxschema.Manifest.version(),
+      artifacts: {
+        'Tree': {
+          type: 'cdk:tree',
+          properties: { file: 'tree.json' },
+        },
+        'one-stack': {
+          type: 'aws:cloudformation:stack',
+          environment: 'aws://unknown-account/unknown-region',
+          properties: {
+            templateFile: 'one-stack.template.json',
+            validateOnSynth: false,
+          },
+          displayName: 'one-stack',
+          // no metadata, because the only entry was a logicalId
+        },
+      },
+    });
+  });
+
+  test('synthesis respects disabling logicalId metadata, and does not disable other metadata', () => {
+    const app = new cdk.App({
+      context: { 'aws:cdk:disable-logicalId-metadata': true },
+      stackTraces: false,
+    });
+    const stack = new cdk.Stack(app, 'one-stack', { tags: { boomTag: 'BOOM' } });
+    new cdk.CfnResource(stack, 'MagicResource', { type: 'Resource::Type' });
+
+    // WHEN
+    const session = app.synth();
+
+    // THEN
+    expect(session.manifest).toEqual({
+      version: cxschema.Manifest.version(),
+      artifacts: {
+        'Tree': {
+          type: 'cdk:tree',
+          properties: { file: 'tree.json' },
+        },
+        'one-stack': {
+          type: 'aws:cloudformation:stack',
+          environment: 'aws://unknown-account/unknown-region',
+          properties: {
+            templateFile: 'one-stack.template.json',
+            validateOnSynth: false,
+            tags: {
+              boomTag: 'BOOM',
+            },
+          },
+          displayName: 'one-stack',
+          metadata: {
+            '/one-stack': [
+              {
+                type: 'aws:cdk:stack-tags',
+                data: [
+                  {
+                    key: 'boomTag',
+                    value: 'BOOM',
+                  },
+                ],
+              },
+            ],
+          },
+          // no logicalId entry
+        },
+      },
+    });
   });
 
   test('single empty stack', () => {
@@ -58,7 +137,6 @@ describe('synthesis', () => {
 
     // THEN
     expect(list(session.directory).includes('one-stack.template.json')).toEqual(true);
-
   });
 
   test('some random construct implements "synthesize"', () => {
@@ -112,7 +190,6 @@ describe('synthesis', () => {
         },
       },
     });
-
   });
 
   test('random construct uses addCustomSynthesis', () => {
@@ -172,7 +249,6 @@ describe('synthesis', () => {
         },
       },
     });
-
   });
 
   testDeprecated('it should be possible to synthesize without an app', () => {
@@ -220,7 +296,6 @@ describe('synthesis', () => {
     expect(stack.templateFile).toEqual('hey.json');
     expect(stack.parameters).toEqual({ paramId: 'paramValue', paramId2: 'paramValue2' });
     expect(stack.environment).toEqual({ region: 'us-east-1', account: 'unknown-account', name: 'aws://unknown-account/us-east-1' });
-
   });
 });
 

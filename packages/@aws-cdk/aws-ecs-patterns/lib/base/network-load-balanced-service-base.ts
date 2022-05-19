@@ -7,7 +7,8 @@ import { INetworkLoadBalancer, NetworkListener, NetworkLoadBalancer, NetworkTarg
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, CnameRecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
-import * as cdk from '@aws-cdk/core';
+import { CfnOutput, Duration, FeatureFlags, Stack } from '@aws-cdk/core';
+import { ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -103,7 +104,7 @@ export interface NetworkLoadBalancedServiceBaseProps {
    *
    * @default - defaults to 60 seconds if at least one load balancer is in-use and it is not already set
    */
-  readonly healthCheckGracePeriod?: cdk.Duration;
+  readonly healthCheckGracePeriod?: Duration;
 
   /**
    * The maximum number of tasks, specified as a percentage of the Amazon ECS
@@ -347,7 +348,7 @@ export abstract class NetworkLoadBalancedServiceBase extends CoreConstruct {
     const loadBalancer = props.loadBalancer ?? new NetworkLoadBalancer(this, 'LB', lbProps);
     const listenerPort = props.listenerPort ?? 80;
     const targetProps = {
-      port: props.taskImageOptions?.containerPort ?? 80,
+      port: FeatureFlags.of(this).isEnabled(ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT) ? props.taskImageOptions?.containerPort ?? 80 : 80,
     };
 
     this.listener = loadBalancer.addListener('PublicListener', { port: listenerPort });
@@ -384,7 +385,7 @@ export abstract class NetworkLoadBalancedServiceBase extends CoreConstruct {
     }
 
     if (props.loadBalancer === undefined) {
-      new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
+      new CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
     }
   }
 
@@ -394,7 +395,7 @@ export abstract class NetworkLoadBalancedServiceBase extends CoreConstruct {
   protected getDefaultCluster(scope: CoreConstruct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
-    const stack = cdk.Stack.of(scope);
+    const stack = Stack.of(scope);
     return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
