@@ -310,12 +310,7 @@ export class CfnResource extends CfnRefElement {
    * This assembles dependencies on resources across stacks (or nested stack)
    * boundaries automatically.
    */
-  public obtainDependsOn(target: CfnResource) {
-    // skip this dependency if the target is not part of the output
-    if (!target.shouldSynthesize()) {
-      return [];
-    }
-
+  public obtainDependsOn() {
     return obtainDependencies(this);
   }
 

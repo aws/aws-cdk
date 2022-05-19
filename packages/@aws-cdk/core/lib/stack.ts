@@ -313,7 +313,7 @@ export class Stack extends Construct implements ITaggable {
   private readonly _logicalIds: LogicalIDs;
 
   /**
-   * Other stacks this stack source on
+   * Other stacks this stack depends on
    */
   private readonly _stackDependencies: { [uniqueId: string]: StackDependency };
 
@@ -823,7 +823,8 @@ export class Stack extends Construct implements ITaggable {
 
     let dep = this._stackDependencies[Names.uniqueId(target)];
     if (!dep) {
-      throw new Error(`No dependency found from ${this.node.path} on ${target.node.path}`);
+      // Dependency doesn't exist - return now
+      return;
     }
 
     // Find and remove the specified reason from the dependency
@@ -833,7 +834,7 @@ export class Stack extends Construct implements ITaggable {
       throw new Error(`Reason for dependency removal is too ambiguous: ${reasonFilter}`);
     }
     if (filteredReasons.length == 0) {
-      // Dependency is already not there - return now
+      // Reason is already not there - return now
       return;
     }
     let matchedReason = filteredReasons[0];
@@ -841,7 +842,7 @@ export class Stack extends Construct implements ITaggable {
     index = dep.reasons.indexOf(matchedReason, 0);
     dep.reasons.splice(index, 1);
     // If that was the last reason, remove the dependency
-    if (!dep.reasons) {
+    if (dep.reasons.length == 0) {
       delete this._stackDependencies[Names.uniqueId(target)];
     }
 

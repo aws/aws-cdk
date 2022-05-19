@@ -154,12 +154,12 @@ function operateOnDependency<T extends Element>(operation: DependencyOperation, 
 export function obtainDependencies(source: Element) {
   let dependencies: Element[] = [];
   if (source instanceof CfnResource) {
-    dependencies.concat(source.obtainResourceDependencies());
+    dependencies = source.obtainResourceDependencies();
   }
 
   let stacks = pathToRoot(Stack.of(source));
   stacks.forEach((stack) => {
-    dependencies.concat(stack._obtainAssemblyDependencies({ description: '', source: source }));
+    dependencies = [...dependencies, ...stack._obtainAssemblyDependencies({ description: '', source: source })];
   });
 
   return dependencies;

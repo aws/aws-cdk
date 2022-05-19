@@ -135,6 +135,78 @@ describe('cfn resource', () => {
     });
   });
 
+  describe('dependsOn methods', () => {
+    test('can explicitly add a dependency between resources', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'TestStack');
+      const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
+      const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
+      resource1.addDependsOn(resource2);
+
+      expect(app.synth().getStackByName(stack.stackName).template).toEqual({
+        Resources: {
+          Resource1: {
+            Type: 'Test::Resource::Fake1',
+            DependsOn: [
+              'Resource2',
+            ],
+          },
+          Resource2: {
+            Type: 'Test::Resource::Fake2',
+          },
+        },
+      });
+
+    });
+
+
+    test('can explicitly remove a dependency between resources', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'TestStack');
+      const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
+      const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
+      resource1.addDependsOn(resource2);
+      resource1.removeDependsOn(resource2);
+
+      expect(app.synth().getStackByName(stack.stackName).template).toEqual({
+        Resources: {
+          Resource1: {
+            Type: 'Test::Resource::Fake1',
+          },
+          Resource2: {
+            Type: 'Test::Resource::Fake2',
+          },
+        },
+      });
+
+
+    });
+
+    test('can explicitly add, obtain, and remove dependencies across stacks', () => {
+      const app = new core.App();
+      const stack1 = new core.Stack(app, 'TestStack1');
+      const stack2 = new core.Stack(app, 'TestStack2');
+      const resource1 = new core.CfnResource(stack1, 'Resource1', { type: 'Test::Resource::Fake1' });
+      const resource2 = new core.CfnResource(stack2, 'Resource2', { type: 'Test::Resource::Fake2' });
+      const resource3 = new core.CfnResource(stack1, 'Resource3', { type: 'Test::Resource::Fake3' });
+
+      resource1.addDependsOn(resource2);
+      // Adding the same resource dependency twice should be a no-op
+      resource1.addDependsOn(resource2);
+      resource1.addDependsOn(resource3);
+      expect(stack1.dependencies).toEqual([stack2]);
+      // obtainDependsOn should assemble and flatten resource-to-resource dependencies even across stacks
+      expect(resource1.obtainDependsOn().map(x => x.node.path)).toEqual([resource3.node.path, resource2.node.path]);
+
+      resource1.removeDependsOn(resource2);
+      // For symmetry, removing a dependency that doesn't exist should be a no-op
+      resource1.removeDependsOn(resource2);
+      expect(stack1.dependencies).toEqual([]);
+    });
+
+
+  });
+
   test('applyRemovalPolicy default includes Update policy', () => {
     // GIVEN
     const app = new core.App();
