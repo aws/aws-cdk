@@ -1,10 +1,10 @@
 import * as path from 'path';
 import { Duration, CfnResource, AssetStaging, Stack, FileAssetPackaging, Token, Lazy, Reference } from '@aws-cdk/core';
-import { Construct } from 'constructs';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+
 let SDK_METADATA: any = undefined;
 
 
@@ -13,7 +13,7 @@ let SDK_METADATA: any = undefined;
  * this construct creates a lambda function provider using
  * only CfnResource
  */
-class LambdaFunctionProvider extends CoreConstruct {
+class LambdaFunctionProvider extends Construct {
   /**
    * The ARN of the lambda function which can be used
    * as a serviceToken to a CustomResource
@@ -106,7 +106,7 @@ interface SingletonFunctionProps {
 /**
  * Mimic the singletonfunction construct in '@aws-cdk/aws-lambda'
  */
-class SingletonFunction extends CoreConstruct {
+class SingletonFunction extends Construct {
   public readonly serviceToken: string;
 
   public readonly lambdaFunction: LambdaFunctionProvider;
@@ -160,7 +160,7 @@ class SingletonFunction extends CoreConstruct {
  * that serves as the custom resource provider for the various
  * assertion providers
  */
-export class AssertionsProvider extends CoreConstruct {
+export class AssertionsProvider extends Construct {
   /**
    * The ARN of the lambda function which can be used
    * as a serviceToken to a CustomResource

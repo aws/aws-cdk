@@ -155,6 +155,8 @@ export class Rule extends Resource implements IRule {
     for (const target of props.targets || []) {
       this.addTarget(target);
     }
+
+    this.node.addValidation({ validate: () => this.validateRule() });
   }
 
   /**
@@ -321,7 +323,7 @@ export class Rule extends Resource implements IRule {
     return renderEventPattern(this.eventPattern);
   }
 
-  protected validate() {
+  protected validateRule() {
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
       return ['Either \'eventPattern\' or \'schedule\' must be defined'];
     }
@@ -465,13 +467,13 @@ class MirrorRule extends Rule {
   }
 
   /**
-   * Override validate to be a no-op
+   * Override validateRule to be a no-op
    *
    * The rules are never stored on this object so there's nothing to validate.
    *
    * Instead, we mirror the other rule at render time.
    */
-  protected validate(): string[] {
+  protected validateRule(): string[] {
     return [];
   }
 }

@@ -6,6 +6,7 @@ import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { error, print, warning } from './logging';
 import { cdkHomeDir, rootDir } from './util/directories';
+import { rangeFromSemver } from './util/version-range';
 import { versionNumber } from './version';
 
 
@@ -123,7 +124,7 @@ export class InitTemplate {
         for (const fileName of fileNames) {
           const fullPath = path.join(targetDirectory, fileName);
           const template = await fs.readFile(fullPath, { encoding: 'utf-8' });
-          await fs.writeFile(fullPath, this.expand(template, projectInfo));
+          await fs.writeFile(fullPath, this.expand(template, language, projectInfo));
         }
       },
     };
@@ -131,25 +132,25 @@ export class InitTemplate {
     const sourceDirectory = path.join(this.basePath, language);
     const hookTempDirectory = path.join(targetDirectory, 'tmp');
     await fs.mkdir(hookTempDirectory);
-    await this.installFiles(sourceDirectory, targetDirectory, projectInfo);
+    await this.installFiles(sourceDirectory, targetDirectory, language, projectInfo);
     await this.applyFutureFlags(targetDirectory);
     await this.invokeHooks(hookTempDirectory, targetDirectory, hookContext);
     await fs.remove(hookTempDirectory);
   }
 
-  private async installFiles(sourceDirectory: string, targetDirectory: string, project: ProjectInfo) {
+  private async installFiles(sourceDirectory: string, targetDirectory: string, language:string, project: ProjectInfo) {
     for (const file of await fs.readdir(sourceDirectory)) {
       const fromFile = path.join(sourceDirectory, file);
-      const toFile = path.join(targetDirectory, this.expand(file, project));
+      const toFile = path.join(targetDirectory, this.expand(file, language, project));
       if ((await fs.stat(fromFile)).isDirectory()) {
         await fs.mkdir(toFile);
-        await this.installFiles(fromFile, toFile, project);
+        await this.installFiles(fromFile, toFile, language, project);
         continue;
       } else if (file.match(/^.*\.template\.[^.]+$/)) {
-        await this.installProcessed(fromFile, toFile.replace(/\.template(\.[^.]+)$/, '$1'), project);
+        await this.installProcessed(fromFile, toFile.replace(/\.template(\.[^.]+)$/, '$1'), language, project);
         continue;
       } else if (file.match(/^.*\.hook\.(d.)?[^.]+$/)) {
-        await this.installProcessed(fromFile, path.join(targetDirectory, 'tmp', file), project);
+        await this.installProcessed(fromFile, path.join(targetDirectory, 'tmp', file), language, project);
         continue;
       } else {
         await fs.copy(fromFile, toFile);
@@ -178,17 +179,27 @@ export class InitTemplate {
     }
   }
 
-  private async installProcessed(templatePath: string, toFile: string, project: ProjectInfo) {
+  private async installProcessed(templatePath: string, toFile: string, language: string, project: ProjectInfo) {
     const template = await fs.readFile(templatePath, { encoding: 'utf-8' });
-    await fs.writeFile(toFile, this.expand(template, project));
+    await fs.writeFile(toFile, this.expand(template, language, project));
   }
 
-  private expand(template: string, project: ProjectInfo) {
+  private expand(template: string, language: string, project: ProjectInfo) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const manifest = require(path.join(rootDir(), 'package.json'));
     const MATCH_VER_BUILD = /\+[a-f0-9]+$/; // Matches "+BUILD" in "x.y.z-beta+BUILD"
     const cdkVersion = manifest.version.replace(MATCH_VER_BUILD, '');
-    const constructsVersion = manifest.devDependencies.constructs.replace(MATCH_VER_BUILD, '');
+    let constructsVersion = manifest.devDependencies.constructs.replace(MATCH_VER_BUILD, '');
+    switch (language) {
+      case 'java':
+      case 'csharp':
+      case 'fsharp':
+        constructsVersion = rangeFromSemver(constructsVersion, 'bracket');
+        break;
+      case 'python':
+        constructsVersion = rangeFromSemver(constructsVersion, 'pep');
+        break;
+    }
     return template.replace(/%name%/g, project.name)
       .replace(/%name\.camelCased%/g, camelCase(project.name))
       .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
