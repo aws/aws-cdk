@@ -1,4 +1,5 @@
 import * as ccommit from '@aws-cdk/aws-codecommit';
+import { Pipeline } from '@aws-cdk/aws-codepipeline';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
