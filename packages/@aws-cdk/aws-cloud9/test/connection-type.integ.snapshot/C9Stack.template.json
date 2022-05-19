@@ -360,7 +360,7 @@
   "C9EnvF05FC3BE": {
    "Type": "AWS::Cloud9::EnvironmentEC2",
    "Properties": {
-    "ConnectionType": "CONNECT_SSH",
+    "ConnectionType": "CONNECT_SSM",
     "InstanceType": "t2.micro",
     "Repositories": [
      {
