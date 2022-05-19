@@ -10,11 +10,13 @@
 export enum InstanceClass {
   /**
    * Standard instances, 3rd generation
+   * @deprecated https://aws.amazon.com/ec2/previous-generation/
    */
   STANDARD3 = 'm3',
 
   /**
    * Standard instances, 3rd generation
+   * @deprecated https://aws.amazon.com/ec2/previous-generation/
    */
   M3 = 'm3',
 
@@ -100,11 +102,13 @@ export enum InstanceClass {
 
   /**
    * Memory optimized instances, 3rd generation
+   * @deprecated https://aws.amazon.com/ec2/previous-generation/
    */
   MEMORY3 = 'r3',
 
   /**
    * Memory optimized instances, 3rd generation
+   * @deprecated https://aws.amazon.com/ec2/previous-generation/
    */
   R3 = 'r3',
 
@@ -270,11 +274,13 @@ export enum InstanceClass {
 
   /**
    * Compute optimized instances, 3rd generation
+   * @deprecated https://aws.amazon.com/ec2/previous-generation/
    */
   COMPUTE3 = 'c3',
 
   /**
    * Compute optimized instances, 3rd generation
+   * @deprecated https://aws.amazon.com/ec2/previous-generation/
    */
   C3 = 'c3',
 
