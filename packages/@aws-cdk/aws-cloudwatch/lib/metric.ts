@@ -279,6 +279,9 @@ export class Metric implements IMetric {
   /** Region which this metric comes from. */
   public readonly region?: string;
 
+  /** Warnings attached to this metric. */
+  public readonly warnings?: string[];
+
   constructor(props: MetricProps) {
     this.period = props.period || cdk.Duration.minutes(5);
     const periodSec = this.period.toSeconds();
@@ -295,6 +298,7 @@ export class Metric implements IMetric {
     this.unit = props.unit;
     this.account = props.account;
     this.region = props.region;
+    this.warnings = undefined;
   }
 
   /**
