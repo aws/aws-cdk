@@ -2,6 +2,7 @@
 // Kept in a separate file for sharing between the handler and the provider constructs.
 
 export const ASSERT_RESOURCE_TYPE = 'Custom::DeployAssert@AssertEquals';
+export const RESULTS_RESOURCE_TYPE = 'Custom::DeployAssert@ResultsCollection';
 export const SDK_RESOURCE_TYPE_PREFIX = 'Custom::DeployAssert@SdkCall';
 
 /**
@@ -153,4 +154,25 @@ export interface AssertionResultData {
    * @default - none
    */
   readonly message?: string;
+}
+
+/**
+ * Represents a collection of assertion request results
+ */
+export interface ResultsCollectionRequest {
+  /**
+   * The results of all the assertions that have been
+   * registered
+   */
+  readonly assertionResults: AssertionResultData[];
+}
+
+/**
+ * The result of a results request
+ */
+export interface ResultsCollectionResult {
+  /**
+   * A message containing the results of the assertion
+   */
+  readonly message: string;
 }

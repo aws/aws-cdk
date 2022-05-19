@@ -177,12 +177,7 @@ new IntegTest(app, 'Integ', { testCases: [stackUnderTest, testCaseWithAssets] })
 
 This library also provides a utility to make assertions against the infrastructure that the integration test deploys.
 
-There are two main scenarios in which assertions are created.
-
-- Part of an integration test using `integ-runner`
-
-In this case you would create an integration test using the `IntegTest` construct and then make assertions using the `assert` property.
-You should **not** utilize the assertion constructs directly, but should instead use the `methods` on `IntegTest.assert`.
+The easiest way to do this is to create a `TestCase` and then access the `DeployAssert` that is automatically created.
 
 ```ts
 declare const app: App;
@@ -192,35 +187,31 @@ const integ = new IntegTest(app, 'Integ', { testCases: [stack] });
 integ.assert.awsApiCall('S3', 'getObject');
 ```
 
-- Part of a  normal CDK deployment
-
-In this case you may be using assertions as part of a normal CDK deployment in order to make an assertion on the infrastructure
-before the deployment is considered successful. In this case you can utilize the assertions constructs directly.
-
-```ts
-declare const myAppStack: Stack;
-
-new AwsApiCall(myAppStack, 'GetObject', {
-  service: 'S3',
-  api: 'getObject',
-});
-```
-
 ### DeployAssert
 
 Assertions are created by using the `DeployAssert` construct. This construct creates it's own `Stack` separate from
 any stacks that you create as part of your integration tests. This `Stack` is treated differently from other stacks
 by the `integ-runner` tool. For example, this stack will not be diffed by the `integ-runner`.
 
+Any assertions that you create should be created in the scope of `DeployAssert`. For example,
+
+```ts
+declare const app: App;
+
+const assert = new DeployAssert(app);
+new AwsApiCall(assert, 'GetObject', {
+  service: 'S3',
+  api: 'getObject',
+});
+```
+
 `DeployAssert` also provides utilities to register your own assertions.
 
 ```ts
 declare const myCustomResource: CustomResource;
-declare const stack: Stack;
 declare const app: App;
-
-const integ = new IntegTest(app, 'Integ', { testCases: [stack] });
-integ.assert.assert(
+const assert = new DeployAssert(app);
+assert.assert(
   'CustomAssertion',
   ExpectedResult.objectLike({ foo: 'bar' }),
   ActualResult.fromCustomResource(myCustomResource, 'data'),
@@ -237,12 +228,12 @@ AWS API call to receive some data. This library does this by utilizing CloudForm
 which means that CloudFormation will call out to a Lambda Function which will
 use the AWS JavaScript SDK to make the API call.
 
-This can be done by using the class directory (in the case of a normal deployment):
+This can be done by using the class directory:
 
 ```ts
-declare const stack: Stack;
+declare const assert: DeployAssert;
 
-new AwsApiCall(stack, 'MyAssertion', {
+new AwsApiCall(assert, 'MyAssertion', {
   service: 'SQS',
   api: 'receiveMessage',
   parameters: {
@@ -251,15 +242,12 @@ new AwsApiCall(stack, 'MyAssertion', {
 });
 ```
 
-Or by using the `awsApiCall` method on `DeployAssert` (when writing integration tests):
+Or by using the `awsApiCall` method on `DeployAssert`:
 
 ```ts
 declare const app: App;
-declare const stack: Stack;
-const integ = new IntegTest(app, 'Integ', {
-  testCases: [stack],
-});
-integ.assert.awsApiCall('SQS', 'receiveMessage', {
+const assert = new DeployAssert(app);
+assert.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: 'url',
 });
 ```
@@ -293,18 +281,21 @@ const message = integ.assert.awsApiCall('SQS', 'receiveMessage', {
   WaitTimeSeconds: 20,
 });
 
-message.assertAtPath('Messages.0.Body', ExpectedResult.objectLike({
-  requestContext: {
-    condition: 'Success',
-  },
-  requestPayload: {
-    status: 'OK',
-  },
-  responseContext: {
-    statusCode: 200,
-  },
-  responsePayload: 'success',
-}));
+new EqualsAssertion(integ.assert, 'ReceiveMessage', {
+  actual: ActualResult.fromAwsApiCall(message, 'Messages.0.Body'),
+  expected: ExpectedResult.objectLike({
+    requestContext: {
+      condition: 'Success',
+    },
+    requestPayload: {
+      status: 'OK',
+    },
+    responseContext: {
+      statusCode: 200,
+    },
+    responsePayload: 'success',
+  }),
+});
 ```
 
 #### Match
@@ -314,6 +305,7 @@ can be used to construct the `ExpectedResult`.
 
 ```ts
 declare const message: AwsApiCall;
+declare const assert: DeployAssert;
 
 message.assert(ExpectedResult.objectLike({
   Messages: Match.arrayWith([

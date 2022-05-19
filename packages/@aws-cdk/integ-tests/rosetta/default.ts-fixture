@@ -3,6 +3,7 @@ import {
   IntegTestCase,
   IntegTest,
   IntegTestCaseStack,
+  DeployAssert,
   AwsApiCall,
   EqualsAssertion,
   ActualResult,

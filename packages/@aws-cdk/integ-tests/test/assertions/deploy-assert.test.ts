@@ -1,13 +1,12 @@
 import { Template } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
-import { LogType, InvocationType, ExpectedResult, ActualResult } from '../../lib/assertions';
-import { DeployAssert } from '../../lib/assertions/private/deploy-assert';
+import { DeployAssert, LogType, InvocationType, ExpectedResult, ActualResult } from '../../lib/assertions';
 
 describe('DeployAssert', () => {
 
   test('of', () => {
     const app = new App();
-    const stack = new Stack(app, 'TestStack');
+    const stack = new Stack(app);
     new DeployAssert(app);
     expect(() => {
       DeployAssert.of(stack);
@@ -16,7 +15,7 @@ describe('DeployAssert', () => {
 
   test('throws if no DeployAssert', () => {
     const app = new App();
-    const stack = new Stack(app, 'TestStack');
+    const stack = new Stack(app);
     expect(() => {
       DeployAssert.of(stack);
     }).toThrow(/No DeployAssert construct found in scopes/);
@@ -44,7 +43,7 @@ describe('DeployAssert', () => {
       });
 
       // THEN
-      const template = Template.fromStack(deployAssert.scope);
+      const template = Template.fromStack(Stack.of(deployAssert));
       template.hasResourceProperties('Custom::DeployAssert@SdkCallLambdainvoke', {
         service: 'Lambda',
         api: 'invoke',
@@ -73,7 +72,7 @@ describe('DeployAssert', () => {
       );
 
       // THEN
-      const template = Template.fromStack(deplossert.scope);
+      const template = Template.fromStack(Stack.of(deplossert));
       template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
         expected: JSON.stringify({ $StringLike: 'foo' }),
         actual: {
@@ -99,7 +98,7 @@ describe('DeployAssert', () => {
       );
 
       // THEN
-      const template = Template.fromStack(deplossert.scope);
+      const template = Template.fromStack(Stack.of(deplossert));
       template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
         expected: JSON.stringify({ $ObjectLike: { foo: 'bar' } }),
         actual: {
@@ -123,7 +122,7 @@ describe('DeployAssert', () => {
 
 
       // THEN
-      Template.fromStack(deplossert.scope).hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
+      Template.fromStack(Stack.of(deplossert)).hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
         api: 'MyApi',
         service: 'MyService',
       });
@@ -140,7 +139,7 @@ describe('DeployAssert', () => {
 
 
       // THEN
-      const template = Template.fromStack(deplossert.scope);
+      const template = Template.fromStack(Stack.of(deplossert));
       template.resourceCountIs('AWS::Lambda::Function', 1);
       template.resourceCountIs('Custom::DeployAssert@SdkCallMyServiceMyApi1', 1);
       template.resourceCountIs('Custom::DeployAssert@SdkCallMyServiceMyApi2', 1);

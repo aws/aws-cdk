@@ -1,4 +1,5 @@
 import { AssertionHandler } from './assertion';
+import { ResultsCollectionHandler } from './results';
 import { AwsApiCallHandler } from './sdk';
 import * as types from './types';
 
@@ -13,6 +14,7 @@ function createResourceHandler(event: AWSLambda.CloudFormationCustomResourceEven
   }
   switch (event.ResourceType) {
     case types.ASSERT_RESOURCE_TYPE: return new AssertionHandler(event, context);
+    case types.RESULTS_RESOURCE_TYPE: return new ResultsCollectionHandler(event, context);
     default:
       throw new Error(`Unsupported resource type "${event.ResourceType}`);
   }
