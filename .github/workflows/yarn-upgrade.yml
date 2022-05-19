@@ -67,7 +67,7 @@ jobs:
           lerna exec --parallel ncu -- --upgrade --reject='@types/node,@types/fs-extra,constructs,typescript,aws-sdk,aws-sdk-mock,${{ steps.list-packages.outputs.list }}'  --target=minor
           # Upgrade package.jsons in init templates
           for pj in $(find packages/aws-cdk/lib/init-templates -name package.json); do
-            (cd $(dirname $pj) && ncu --upgrade --reject='@types/node,@types/fs-extra,constructs,typescript,aws-sdk,aws-sdk-mock,${{ steps.list-packages.outputs.list }}')
+            (cd $(dirname $pj) && ncu --upgrade --reject='@types/node,@types/fs-extra,constructs,typescript,aws-sdk,aws-sdk-mock,ts-jest,jest,${{ steps.list-packages.outputs.list }}')
           done
 
       # This will ensure the current lockfile is up-to-date with the dependency specifications (necessary for "yarn update" to run)
@@ -120,6 +120,7 @@ jobs:
         with:
           # Git commit details
           branch: automation/yarn-upgrade
+          author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
           commit-message: |-
             chore: npm-check-updates && yarn upgrade
             Ran npm-check-updates and yarn upgrade to keep the `yarn.lock` file up-to-date.
