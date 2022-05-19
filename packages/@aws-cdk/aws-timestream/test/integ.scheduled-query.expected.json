@@ -48,9 +48,7 @@
         },
         "TableName": "Test"
       },
-      "DependsOn": [
-        "TestDatabase7A4A91C2"
-      ]
+      "DependsOn": ["TestDatabase7A4A91C2"]
     },
     "TestBucket560B80BC": {
       "Type": "AWS::S3::Bucket",
@@ -74,11 +72,7 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "s3:DeleteObject*",
-                "s3:GetBucket*",
-                "s3:List*"
-              ],
+              "Action": ["s3:DeleteObject*", "s3:GetBucket*", "s3:List*"],
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
@@ -90,20 +84,14 @@
               },
               "Resource": [
                 {
-                  "Fn::GetAtt": [
-                    "TestBucket560B80BC",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["TestBucket560B80BC", "Arn"]
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Fn::GetAtt": [
-                          "TestBucket560B80BC",
-                          "Arn"
-                        ]
+                        "Fn::GetAtt": ["TestBucket560B80BC", "Arn"]
                       },
                       "/*"
                     ]
@@ -129,9 +117,7 @@
           "Ref": "TestBucket560B80BC"
         }
       },
-      "DependsOn": [
-        "TestBucketPolicyBA12ED38"
-      ],
+      "DependsOn": ["TestBucketPolicyBA12ED38"],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -266,20 +252,14 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::GetAtt": [
-                    "TestBucket560B80BC",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["TestBucket560B80BC", "Arn"]
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Fn::GetAtt": [
-                          "TestBucket560B80BC",
-                          "Arn"
-                        ]
+                        "Fn::GetAtt": ["TestBucket560B80BC", "Arn"]
                       },
                       "/*"
                     ]
@@ -329,10 +309,7 @@
           "ScheduleExpression": "cron(30 * * * ? *)"
         },
         "ScheduledQueryExecutionRoleArn": {
-          "Fn::GetAtt": [
-            "TestRole6C9272DF",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["TestRole6C9272DF", "Arn"]
         },
         "ScheduledQueryName": "Test_Query",
         "TargetConfiguration": {
@@ -356,10 +333,7 @@
               "TargetMultiMeasureName": "test"
             },
             "TableName": {
-              "Fn::GetAtt": [
-                "TestTable5769773A",
-                "Name"
-              ]
+              "Fn::GetAtt": ["TestTable5769773A", "Name"]
             },
             "TimeColumn": "time"
           }
@@ -368,17 +342,31 @@
     }
   },
   "Parameters": {
-    "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
-    },
-    "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
-    },
-    "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824ArtifactHash76F8FCF2": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
+    "BootstrapVersion": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+    }
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  ["1", "2", "3", "4", "5"],
+                  {
+                    "Ref": "BootstrapVersion"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+        }
+      ]
     }
   }
 }

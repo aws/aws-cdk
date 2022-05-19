@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "aws-timestream-table-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-timestream-table-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-timestream-table-integ": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://457234467265/us-east-1",
       "properties": {
         "templateFile": "aws-timestream-table-integ.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::457234467265:role/cdk-hnb659fds-deploy-role-457234467265-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::457234467265:role/cdk-hnb659fds-cfn-exec-role-457234467265-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-457234467265-us-east-1/948958bbcf40a7ca4503e9d3cd35bdd56928cf2670f8c4f36d8aef7056839c10.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-timestream-table-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::457234467265:role/cdk-hnb659fds-lookup-role-457234467265-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "aws-timestream-table-integ.assets"
+      ],
       "metadata": {
         "/aws-timestream-table-integ/TestKey/Resource": [
           {
@@ -31,6 +55,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TestTable5769773A"
+          }
+        ],
+        "/aws-timestream-table-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-timestream-table-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },
