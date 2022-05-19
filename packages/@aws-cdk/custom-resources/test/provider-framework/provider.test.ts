@@ -29,7 +29,7 @@ test('security groups are applied to all framework functions', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
     }),
     vpc: vpc,
-    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
     securityGroups: [securityGroup],
   });
 
@@ -97,7 +97,7 @@ test('vpc is applied to all framework functions', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
     }),
     vpc: vpc,
-    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {

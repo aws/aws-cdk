@@ -551,3 +551,39 @@ bucket.transferAccelerationUrlForObject('objectname');
 });
 
 ```
+
+## Lifecycle Rule
+
+[Managing lifecycle](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html) can be configured transition or expiration actions.
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  lifecycleRules: [{
+    abortIncompleteMultipartUploadAfter: cdk.Duration.minutes(30),
+    enabled: false,
+    expiration: cdk.Duration.days(30),
+    expirationDate: new Date(),
+    expiredObjectDeleteMarker: false,
+    id: 'id',
+    noncurrentVersionExpiration: cdk.Duration.days(30),
+
+    // the properties below are optional
+    noncurrentVersionsToRetain: 123,
+    noncurrentVersionTransitions: [{
+      storageClass: s3.StorageClass.GLACIER,
+      transitionAfter: cdk.Duration.days(30),
+
+      // the properties below are optional
+      noncurrentVersionsToRetain: 123,
+    }],
+    prefix: 'prefix',
+    transitions: [{
+      storageClass: s3.StorageClass.GLACIER,
+
+      // the properties below are optional
+      transitionAfter: cdk.Duration.days(30),
+      transitionDate: new Date(),
+    }],
+  }]
+});
+```
