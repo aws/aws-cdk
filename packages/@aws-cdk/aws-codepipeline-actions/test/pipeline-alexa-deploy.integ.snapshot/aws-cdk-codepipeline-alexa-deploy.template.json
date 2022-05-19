@@ -48,7 +48,7 @@
   "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": "alias/codepipeline-aws-cdk-codepipeline-alexa-deploy-pipeline-961107f5",
+    "AliasName": "alias/codepipeline-awscdkcodepipelinealexadeploypipeline961107f5",
     "TargetKeyId": {
      "Fn::GetAtt": [
       "PipelineArtifactsBucketEncryptionKey01D58D69",
