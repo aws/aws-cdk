@@ -368,7 +368,6 @@ export class SessionTagsPrincipal extends PrincipalAdapter {
   }
 }
 
-
 /**
  * A collection of the fields in a PolicyStatement that can be used to identify a principal.
  *

@@ -4,7 +4,8 @@
 // implemented here.
 
 
-import { PolicyStatement } from '../policy-statement';
+import { IConstruct } from '@aws-cdk/core';
+import { PolicyStatement, EstimateSizeOptions, deriveEstimateSizeOptions } from '../policy-statement';
 import { IPrincipal } from '../principals';
 import { LITERAL_STRING_KEY } from '../util';
 import { partitionPrincipals } from './comparable-principal';
@@ -26,7 +27,8 @@ const MAX_MERGE_SIZE = 2000;
  * Good Enough(tm). If it merges anything, it's at least going to produce a smaller output
  * than the input.
  */
-export function mergeStatements(statements: PolicyStatement[], limitSize: boolean): MergeStatementResult {
+export function mergeStatements(scope: IConstruct, statements: PolicyStatement[], limitSize: boolean): MergeStatementResult {
+  const sizeOptions = deriveEstimateSizeOptions(scope);
   const compStatements = statements.map(makeComparable);
 
   // Keep trying until nothing changes anymore
@@ -49,7 +51,7 @@ export function mergeStatements(statements: PolicyStatement[], limitSize: boolea
     for (let i = 0; i < compStatements.length; i++) {
       let j = i + 1;
       while (j < compStatements.length) {
-        const merged = tryMerge(compStatements[i], compStatements[j], limitSize);
+        const merged = tryMerge(compStatements[i], compStatements[j], limitSize, sizeOptions);
 
         if (merged) {
           compStatements[i] = merged;
@@ -89,7 +91,7 @@ export interface MergeStatementResult {
  * - From their Action, Resource and Principal sets, 2 are subsets of each other
  *   (empty sets are fine).
  */
-function tryMerge(a: ComparableStatement, b: ComparableStatement, limitSize: boolean): ComparableStatement | undefined {
+function tryMerge(a: ComparableStatement, b: ComparableStatement, limitSize: boolean, options: EstimateSizeOptions): ComparableStatement | undefined {
   // Effects must be the same
   if (a.statement.effect !== b.statement.effect) { return; }
   // We don't merge Sids (for now)
@@ -118,7 +120,7 @@ function tryMerge(a: ComparableStatement, b: ComparableStatement, limitSize: boo
     principals: setMergePrincipals(a.statement.principals, b.statement.principals),
   });
 
-  if (limitSize && combined._estimateSize() > MAX_MERGE_SIZE) { return undefined; }
+  if (limitSize && combined._estimateSize(options) > MAX_MERGE_SIZE) { return undefined; }
 
   return {
     originals: [...a.originals, ...b.originals],

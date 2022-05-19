@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { IConstruct } from '@aws-cdk/core';
 import { Group } from './group';
 import {
   AccountPrincipal, AccountRootPrincipal, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal,
@@ -19,6 +20,22 @@ const ensureArrayOrUndefined = (field: any) => {
   }
   return Array.isArray(field) ? field : [field];
 };
+
+/**
+ * An estimate on how long ARNs typically are
+ *
+ * This is used to decide when to start splitting statements into new Managed Policies.
+ * Because we often can't know the length of an ARN (it may be a token and only
+ * available at deployment time) we'll have to estimate it.
+ *
+ * The estimate can be overridden by setting the `@aws-cdk/aws-iam.arnSizeEstimate` context key.
+ */
+const DEFAULT_ARN_SIZE_ESTIMATE = 150;
+
+/**
+ * Context key which can be used to override the estimated length of unresolved ARNs.
+ */
+const ARN_SIZE_ESTIMATE_CONTEXT_KEY = '@aws-cdk/aws-iam.arnSizeEstimate';
 
 /**
  * Represents a statement in an IAM policy document.
@@ -535,11 +552,10 @@ export class PolicyStatement {
    *
    * @internal
    */
-  public _estimateSize(): number {
+  public _estimateSize(options: EstimateSizeOptions): number {
     let ret = 0;
 
-    const actionEstimate = 20;
-    const arnEstimate = 150; // A safe (over)estimate on how long ARNs typically are
+    const { actionEstimate, arnEstimate } = options;
 
     ret += `"Effect": "${this.effect}",`.length;
 
@@ -708,4 +724,39 @@ class JsonPrincipal extends PrincipalBase {
   public dedupeString(): string | undefined {
     return JSON.stringify(this.policyFragment);
   }
+}
+
+/**
+ * Options for _estimateSize
+ *
+ * These can optionally come from context, but it's too expensive to look
+ * them up every time so we bundle them into a struct first.
+ *
+ * @internal
+ */
+export interface EstimateSizeOptions {
+  /**
+   * Estimated size of an unresolved ARN
+   */
+  readonly arnEstimate: number;
+
+  /**
+   * Estimated size of an unresolved action
+   */
+  readonly actionEstimate: number;
+}
+
+/**
+ * Derive the size estimation options from context
+ *
+ * @internal
+ */
+export function deriveEstimateSizeOptions(scope: IConstruct): EstimateSizeOptions {
+  const actionEstimate = 20;
+  const arnEstimate = scope.node.tryGetContext(ARN_SIZE_ESTIMATE_CONTEXT_KEY) ?? DEFAULT_ARN_SIZE_ESTIMATE;
+  if (typeof arnEstimate !== 'number') {
+    throw new Error(`Context value ${ARN_SIZE_ESTIMATE_CONTEXT_KEY} should be a number, got ${JSON.stringify(arnEstimate)}`);
+  }
+
+  return { actionEstimate, arnEstimate };
 }

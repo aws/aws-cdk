@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
+import { IConstruct } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { IConstruct } from 'constructs';
-import { PolicyStatement } from './policy-statement';
+import { PolicyStatement, deriveEstimateSizeOptions } from './policy-statement';
 import { mergeStatements } from './private/merge-statements';
 import { PostProcessPolicyDocument } from './private/postprocess-policy-document';
 
@@ -185,14 +185,11 @@ export class PolicyDocument implements cdk.IResolvable {
   /**
    * Perform statement merging (if enabled and not done yet)
    *
-   * Returns a mapping of merged statements to original statements on the first invocation,
-   * `undefined` on subsequent invocations.
-   *
    * @internal
    */
-  public _maybeMergeStatements(scope: IConstruct): void {
+  public _maybeMergeStatements(scope: cdk.IConstruct): void {
     if (this.shouldMerge(scope)) {
-      const result = mergeStatements(this.statements, false);
+      const result = mergeStatements(scope, this.statements, false);
       this.statements.splice(0, this.statements.length, ...result.mergedStatements);
     }
   }
@@ -217,13 +214,15 @@ export class PolicyDocument implements cdk.IResolvable {
     // Maps final statements to original statements
     let statementsToOriginals = new Map(this.statements.map(s => [s, [s]]));
     if (this.shouldMerge(scope)) {
-      const result = mergeStatements(this.statements, true);
+      const result = mergeStatements(scope, this.statements, true);
       this.statements.splice(0, this.statements.length, ...result.mergedStatements);
       statementsToOriginals = result.originsMap;
     }
 
+    const sizeOptions = deriveEstimateSizeOptions(scope);
+
     // Cache statement sizes to avoid recomputing them based on the fields
-    const statementSizes = new Map<PolicyStatement, number>(this.statements.map(s => [s, s._estimateSize()]));
+    const statementSizes = new Map<PolicyStatement, number>(this.statements.map(s => [s, s._estimateSize(sizeOptions)]));
 
     // Keep some size counters so we can avoid recomputing them based on the statements in each
     let selfSize = 0;
@@ -275,7 +274,6 @@ export class PolicyDocument implements cdk.IResolvable {
       newDocs.push(newDoc);
       return newDoc;
     }
-
   }
 
   private render(): any {
