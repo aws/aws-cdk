@@ -844,4 +844,30 @@ describe('record set', () => {
       });
     }
   });
+
+  test('Delete existing record', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.ARecord(stack, 'A', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
+      deleteExisting: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::DeleteExistingRecordSet', {
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      RecordName: 'www.myzone.',
+      RecordType: 'A',
+    });
+  });
 });
