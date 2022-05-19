@@ -4,6 +4,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as codebuild from '../lib';
+import { ReportGroupType } from '../lib';
 
 /* eslint-disable quote-props */
 /* eslint-disable quotes */
@@ -147,7 +148,7 @@ describe('Test Reports Groups', () => {
     const stack = new cdk.Stack();
 
     new codebuild.ReportGroup(stack, 'ReportGroup', {
-      type: 'CODE_COVERAGE',
+      type: ReportGroupType.CODE_COVERAGE,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
