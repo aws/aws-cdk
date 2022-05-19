@@ -217,7 +217,6 @@ export class CloudFormationProduct extends Product {
         case TemplateType.PRODUCT_STACK:
           if (template.productVersionDetails) {
             template.productVersionDetails.productPathUniqueId = this.productPathUniqueId;
-            template.productVersionDetails.productVersionName = productVersion.productVersionName;
           }
           break;
         case TemplateType.PRODUCT_STACK_SNAPSHOT:

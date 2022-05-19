@@ -36,21 +36,6 @@ export abstract class CloudFormationTemplate {
   }
 
   /**
-   * Creates a product with the resources defined in the given product stack and retains all previously deployed product stack versions.
-   */
-  public static fromProductStackHistory(productStack: ProductStack, locked: boolean, directory?: string ): CloudFormationTemplate {
-    return new CloudFormationProductStackTemplate(productStack, locked, directory);
-  }
-
-  /**
-   * Creates a product from a previously deployed product stack snapshot.
-   */
-  public static fromProductStackSnapshot(productStack: ProductStack, directory?: string ): CloudFormationTemplate {
-    return new CloudFormationProductStackSnapshotTemplate(productStack, directory);
-  }
-
-
-  /**
    * Called when the product is initialized to allow this object to bind
    * to the stack, add resources and have fun.
    *
@@ -127,23 +112,19 @@ class CloudFormationAssetTemplate extends CloudFormationTemplate {
 /**
  * Template from a CDK defined product stack.
  */
-class CloudFormationProductStackTemplate extends CloudFormationTemplate {
+export class CloudFormationProductStackTemplate extends CloudFormationTemplate {
   /**
-   * @param stack A service catalog product stack.
+   * @param productStack A service catalog product stack.
    */
-  constructor(public readonly productStack: ProductStack,
-    public readonly locked?: boolean, public readonly directory?: string) {
+  constructor(public readonly productStack: ProductStack) {
     super();
-    const productVersionDetails = productStack._getProductVersionDetails();
-    productVersionDetails.locked = this.locked;
-    productVersionDetails.directory = this.directory;
   }
 
   public bind(_scope: Construct): CloudFormationTemplateConfig {
     return {
       httpUrl: this.productStack._getTemplateUrl(),
-      productVersionDetails: this.productStack._getProductVersionDetails(),
       templateType: TemplateType.PRODUCT_STACK,
+      productVersionDetails: this.productStack._getProductVersionDetails(),
     };
   }
 }
@@ -151,21 +132,23 @@ class CloudFormationProductStackTemplate extends CloudFormationTemplate {
 /**
  * Template from a previously deployed product stack.
  */
-class CloudFormationProductStackSnapshotTemplate extends CloudFormationTemplate {
+export class CloudFormationProductStackSnapshotTemplate extends CloudFormationTemplate {
   /**
-   * @param stack A service catalog product stack.
+   * @param productStack A service catalog product stack.
+   * @param directory Where product stack snapshots are stored.
    */
   constructor(public readonly productStack: ProductStack, public readonly directory?: string) {
     super();
-    const productVersionDetails = productStack._getProductVersionDetails();
-    productVersionDetails.directory = this.directory;
   }
 
   public bind(_scope: Construct): CloudFormationTemplateConfig {
     return {
       httpUrl: this.productStack._getTemplateUrl(),
-      productVersionDetails: this.productStack._getProductVersionDetails(),
       templateType: TemplateType.PRODUCT_STACK_SNAPSHOT,
+      productVersionDetails: {
+        productStackId: this.productStack.artifactId,
+        directory: this.directory,
+      },
     };
   }
 }

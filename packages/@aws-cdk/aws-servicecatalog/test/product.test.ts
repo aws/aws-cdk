@@ -198,7 +198,7 @@ describe('Product', () => {
     const productStackHistory = new ProductStackHistory(stack, 'MyProductStackHistory', {
       productStack: productStack,
       currentVersionName: 'v1',
-      locked: false,
+      currentVersionLocked: false,
     });
 
     new sns.Topic(productStack, 'SNSTopicProductStack');
@@ -227,7 +227,7 @@ describe('Product', () => {
     const productStackHistory = new ProductStackHistory(stack, 'MyProductStackHistory', {
       productStack: productStack,
       currentVersionName: 'v1',
-      locked: true,
+      currentVersionLocked: true,
     });
 
     new sns.Topic(productStack, 'SNSTopicProductStack2');
@@ -250,7 +250,7 @@ describe('Product', () => {
     const productStackHistory = new ProductStackHistory(stack, 'MyProductStackHistory', {
       productStack: productStack,
       currentVersionName: 'v1',
-      locked: false,
+      currentVersionLocked: false,
     });
 
     new sns.Topic(productStack, 'SNSTopicProductStack2');
@@ -279,7 +279,7 @@ describe('Product', () => {
     const productStackHistory = new ProductStackHistory(stack, 'MyProductStackHistory', {
       productStack: productStack,
       currentVersionName: 'v2',
-      locked: false,
+      currentVersionLocked: false,
     });
 
     new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
@@ -302,7 +302,7 @@ describe('Product', () => {
     const productStackHistory = new ProductStackHistory(stack, 'MyProductStackHistory', {
       productStack: productStack,
       currentVersionName: 'v2',
-      locked: false,
+      currentVersionLocked: false,
     });
 
     expect(() => {

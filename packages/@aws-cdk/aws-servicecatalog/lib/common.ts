@@ -56,27 +56,17 @@ export enum TemplateType {
  */
 export class ProductVersionDetails {
   /**
-   * Unique id denoting the stack path of a product.
-   */
-  public productPathUniqueId?: string;
-
-  /**
    * Id of a ProductStack
    */
-  public productStackId?: string;
-
-  /**
-   * Name of a productVersion
-   */
-  public productVersionName?: string;
+  readonly productStackId?: string;
 
   /**
    * Directory to store snapshots
    */
-  public directory?: string;
+  readonly directory?: string;
 
   /**
-   * Whether to overwrite existing version
+   * Unique id denoting the stack path of a product.
    */
-  public locked?: boolean;
+  productPathUniqueId?: string;
 }

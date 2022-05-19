@@ -214,7 +214,7 @@ class S3BucketProduct extends servicecatalog.ProductStack {
 const productStackHistory = new servicecatalog.ProductStackHistory(this, 'ProductStackHistory', {
   productStack: new S3BucketProduct(this, 'S3BucketProduct'),
   currentVersionName: 'v1',
-  locked: true
+  currentVersionLocked: true
 });
 ```
 
@@ -235,7 +235,7 @@ class S3BucketProduct extends servicecatalog.ProductStack {
 const productStackHistory = new servicecatalog.ProductStackHistory(this, 'ProductStackHistory', {
   productStack: new S3BucketProduct(this, 'S3BucketProduct'),
   currentVersionName: 'v2',
-  locked: true
+  currentVersionLocked: true
 });
 
 const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
@@ -271,7 +271,7 @@ class S3BucketProduct extends servicecatalog.ProductStack {
 const productStackHistory = new servicecatalog.ProductStackHistory(this, 'ProductStackHistory', {
   productStack: new S3BucketProduct(this, 'S3BucketProduct'),
   currentVersionName: 'v2',
-  locked: true
+  currentVersionLocked: true
 });
 
 const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {

@@ -18,7 +18,7 @@ class TestProductStack extends servicecatalog.ProductStack {
 const productStackHistory = new ProductStackHistory(stack, 'ProductStackHistory', {
   productStack: new TestProductStack(stack, 'SNSTopicProduct3'),
   currentVersionName: 'v1',
-  locked: true,
+  currentVersionLocked: true,
 });
 
 const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
