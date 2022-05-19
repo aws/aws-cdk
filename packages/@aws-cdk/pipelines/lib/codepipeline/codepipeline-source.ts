@@ -39,7 +39,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * * **repo** - to read the repository
    * * **admin:repo_hook** - if you plan to use webhooks (true by default)
    *
-   * If you need access to symlinks or the repository history, use a source of type 
+   * If you need access to symlinks or the repository history, use a source of type
    * `connection` instead.
    */
   public static gitHub(repoString: string, branch: string, props: GitHubSourceOptions = {}): CodePipelineSource {
@@ -95,7 +95,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * });
    * ```
    *
-   * If you need access to symlinks or the repository history, be sure to set 
+   * If you need access to symlinks or the repository history, be sure to set
    * `codeBuildCloneOutput`.
    *
    * @param repoString A string that encodes owner and repository separated by a slash (e.g. 'owner/repo').
@@ -111,7 +111,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
   /**
    * Returns a CodeCommit source.
    *
-   * If you need access to symlinks or the repository history, be sure to set 
+   * If you need access to symlinks or the repository history, be sure to set
    * `codeBuildCloneOutput`.
    *
    *
