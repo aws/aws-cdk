@@ -11,6 +11,7 @@ import * as cdk8s from 'cdk8s';
 import * as constructs from 'constructs';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
+import { HelmChart } from '../lib';
 import { KubectlProvider } from '../lib/kubectl-provider';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
 import { testFixture, testFixtureNoVpc } from './util';
@@ -2422,43 +2423,77 @@ describe('cluster', () => {
 
   });
 
-  test('kubectl provider passes iam role environment to kube ctl lambda', () => {
+  describe('kubectl provider passes iam role environment to kube ctl lambda', ()=>{
+    test('new cluster', () => {
 
-    const { stack } = testFixture();
+      const { stack } = testFixture();
 
-    const kubectlRole = new iam.Role(stack, 'KubectlIamRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      const kubectlRole = new iam.Role(stack, 'KubectlIamRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      // using _ syntax to silence warning about _cluster not being used, when it is
+      const cluster = new eks.Cluster(stack, 'Cluster1', {
+        version: CLUSTER_VERSION,
+        prune: false,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlLambdaRole: kubectlRole,
+      });
+
+      cluster.addManifest('resource', {
+        kind: 'ConfigMap',
+        apiVersion: 'v1',
+        data: {
+          hello: 'world',
+        },
+        metadata: {
+          name: 'config-map',
+        },
+      });
+
+      // the kubectl provider is inside a nested stack.
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+        Role: {
+          Ref: 'referencetoStackKubectlIamRole02F8947EArn',
+        },
+      });
+
     });
+    test('imported cluster', ()=> {
 
-    // using _ syntax to silence warning about _cluster not being used, when it is
-    const cluster = new eks.Cluster(stack, 'Cluster1', {
-      version: CLUSTER_VERSION,
-      prune: false,
-      endpointAccess: eks.EndpointAccess.PRIVATE,
-      kubectlLambdaRole: kubectlRole,
+      const clusterName = 'my-cluster';
+      const stack = new cdk.Stack();
+      const kubectlLambdaRole = new iam.Role(stack, 'KubectlLambdaRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+      const cluster = eks.Cluster.fromClusterAttributes(stack, 'Imported', {
+        clusterName,
+        kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+        kubectlLambdaRole: kubectlLambdaRole,
+      });
+
+      const chart = 'hello-world';
+      cluster.addHelmChart('test-chart', {
+        chart,
+      });
+
+      const nested = stack.node.tryFindChild('Imported-KubectlProvider') as cdk.NestedStack;
+      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+        Role: {
+          Ref: 'referencetoKubectlLambdaRole7D084D94Arn',
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties(HelmChart.RESOURCE_TYPE, {
+        ClusterName: clusterName,
+        RoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+        Release: 'importedcharttestchartf3acd6e5',
+        Chart: chart,
+        Namespace: 'default',
+        CreateNamespace: true,
+      });
     });
-
-    cluster.addManifest('resource', {
-      kind: 'ConfigMap',
-      apiVersion: 'v1',
-      data: {
-        hello: 'world',
-      },
-      metadata: {
-        name: 'config-map',
-      },
-    });
-
-    // the kubectl provider is inside a nested stack.
-    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-    Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
-      Role: {
-        Ref: 'referencetoStackKubectlIamRole02F8947EArn',
-      },
-    });
-
   });
-
   describe('endpoint access', () => {
 
     test('public restricted', () => {

@@ -2054,6 +2054,7 @@ class ImportedCluster extends ClusterBase {
     this.clusterName = props.clusterName;
     this.clusterArn = this.stack.formatArn(clusterArnComponents(props.clusterName));
     this.kubectlRole = props.kubectlRoleArn ? iam.Role.fromRoleArn(this, 'KubectlRole', props.kubectlRoleArn) : undefined;
+    this.kubectlLambdaRole = props.kubectlLambdaRole;
     this.kubectlSecurityGroup = props.kubectlSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', props.kubectlSecurityGroupId) : undefined;
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
