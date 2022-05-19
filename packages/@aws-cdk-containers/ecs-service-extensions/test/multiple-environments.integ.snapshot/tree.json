@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-ecs-integ": {
@@ -20,8 +20,8 @@
             "id": "production",
             "path": "aws-ecs-integ/production",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "production-environment-vpc": {
@@ -720,8 +720,8 @@
             "id": "development",
             "path": "aws-ecs-integ/development",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "development-environment-vpc": {
@@ -1470,8 +1470,8 @@
             "id": "name-production",
             "path": "aws-ecs-integ/name-production",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "name-production-task-definition": {
@@ -1503,13 +1503,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -1720,8 +1720,8 @@
                 "id": "app",
                 "path": "aws-ecs-integ/name-production-task-definition/app",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "ExecutionRole": {
@@ -1749,7 +1749,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -1837,6 +1837,38 @@
                           }
                         },
                         "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "envoy": {
+                "id": "envoy",
+                "path": "aws-ecs-integ/name-production-task-definition/envoy",
+                "children": {
+                  "LogGroup": {
+                    "id": "LogGroup",
+                    "path": "aws-ecs-integ/name-production-task-definition/envoy/LogGroup",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-ecs-integ/name-production-task-definition/envoy/LogGroup/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                          "aws:cdk:cloudformation:props": {}
+                        },
+                        "constructInfo": {
                           "fqn": "@aws-cdk/core.CfnResource",
                           "version": "0.0.0"
                         }
@@ -1849,7 +1881,32 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "name-production-logs": {
+            "id": "name-production-logs",
+            "path": "aws-ecs-integ/name-production-logs",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecs-integ/name-production-logs/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "name-production-logs",
+                    "retentionInDays": 30
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
                   "version": "0.0.0"
                 }
               },
@@ -1928,7 +1985,7 @@
             "id": "name-production-envoy-repo",
             "path": "aws-ecs-integ/name-production-envoy-repo",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
               "version": "0.0.0"
             }
           },
@@ -1963,13 +2020,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-iam.CfnPolicy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-iam.Policy",
               "version": "0.0.0"
             }
           },
@@ -2315,8 +2372,8 @@
             "id": "name-development",
             "path": "aws-ecs-integ/name-development",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "name-development-task-definition": {
@@ -2348,13 +2405,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -2565,8 +2622,8 @@
                 "id": "app",
                 "path": "aws-ecs-integ/name-development-task-definition/app",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "ExecutionRole": {
@@ -2594,7 +2651,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -2682,6 +2739,38 @@
                           }
                         },
                         "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "envoy": {
+                "id": "envoy",
+                "path": "aws-ecs-integ/name-development-task-definition/envoy",
+                "children": {
+                  "LogGroup": {
+                    "id": "LogGroup",
+                    "path": "aws-ecs-integ/name-development-task-definition/envoy/LogGroup",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-ecs-integ/name-development-task-definition/envoy/LogGroup/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                          "aws:cdk:cloudformation:props": {}
+                        },
+                        "constructInfo": {
                           "fqn": "@aws-cdk/core.CfnResource",
                           "version": "0.0.0"
                         }
@@ -2694,7 +2783,32 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "name-development-logs": {
+            "id": "name-development-logs",
+            "path": "aws-ecs-integ/name-development-logs",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecs-integ/name-development-logs/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "name-development-logs",
+                    "retentionInDays": 30
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
                   "version": "0.0.0"
                 }
               },
@@ -2773,7 +2887,7 @@
             "id": "name-development-envoy-repo",
             "path": "aws-ecs-integ/name-development-envoy-repo",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
               "version": "0.0.0"
             }
           },
@@ -2808,13 +2922,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-iam.CfnPolicy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-iam.Policy",
               "version": "0.0.0"
             }
           },

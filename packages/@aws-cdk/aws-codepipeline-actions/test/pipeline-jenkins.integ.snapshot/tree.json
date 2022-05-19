@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-cdk-codepipeline-jenkins": {
@@ -443,14 +443,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "Build": {
@@ -461,30 +461,30 @@
                     "id": "JenkinsBuild",
                     "path": "aws-cdk-codepipeline-jenkins/Pipeline/Build/JenkinsBuild",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   },
                   "JenkinsTest": {
                     "id": "JenkinsTest",
                     "path": "aws-cdk-codepipeline-jenkins/Pipeline/Build/JenkinsTest",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   },
                   "JenkinsTest2": {
                     "id": "JenkinsTest2",
                     "path": "aws-cdk-codepipeline-jenkins/Pipeline/Build/JenkinsTest2",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },

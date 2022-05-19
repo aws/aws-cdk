@@ -1,5 +1,4 @@
 import { Construct, Node } from 'constructs';
-import { ConstructNode } from './construct-compat';
 import { unresolved } from './private/encoding';
 import { makeUniqueResourceName } from './private/unique-resource-name';
 import { makeUniqueId } from './private/uniqueid';
@@ -63,8 +62,8 @@ export class Names {
    * @param node The construct node
    * @returns a unique id based on the construct path
    */
-  public static nodeUniqueId(node: ConstructNode): string {
-    const components = node.scopes.slice(1).map(c => c.node.id);
+  public static nodeUniqueId(node: Node): string {
+    const components = node.scopes.slice(1).map(c => Node.of(c).id);
     return components.length > 0 ? makeUniqueId(components) : '';
   }
 

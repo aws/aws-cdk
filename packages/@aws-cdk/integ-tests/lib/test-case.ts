@@ -1,6 +1,5 @@
 import { IntegManifest, Manifest, TestCase, TestOptions } from '@aws-cdk/cloud-assembly-schema';
 import { attachCustomSynthesis, Stack, ISynthesisSession, StackProps } from '@aws-cdk/core';
-import { Construct } from 'constructs';
 import { DeployAssert } from './assertions';
 import { IntegManifestSynthesizer } from './manifest-synthesizer';
 
@@ -8,7 +7,7 @@ const TEST_CASE_STACK_SYMBOL = Symbol.for('@aws-cdk/integ-tests.IntegTestCaseSta
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Properties of an integration test case
@@ -27,7 +26,7 @@ export interface IntegTestCaseProps extends TestOptions {
  * It is recommended that you use the IntegTest construct since that will create
  * a default IntegTestCase
  */
-export class IntegTestCase extends CoreConstruct {
+export class IntegTestCase extends Construct {
   /**
    * Make assertions on resources in this test case
    */
@@ -120,7 +119,7 @@ export interface IntegTestProps extends TestOptions {
  * A collection of test cases. Each test case file should contain exactly one
  * instance of this class.
  */
-export class IntegTest extends CoreConstruct {
+export class IntegTest extends Construct {
   /**
    * Make assertions on resources in this test case
    */

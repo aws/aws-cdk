@@ -27,7 +27,6 @@ describe('When Application Load Balancer', () => {
     Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'FARGATE',
       LoadBalancers: [
         {
@@ -322,7 +321,6 @@ describe('When Application Load Balancer', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'FARGATE',
       LoadBalancers: [
         {
@@ -396,7 +394,6 @@ describe('When Network Load Balancer', () => {
     Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'FARGATE',
       LoadBalancers: [
         {

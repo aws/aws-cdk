@@ -86,6 +86,24 @@
             "type": "aws:cdk:logicalId",
             "data": "Alias2AliasPermission2448514B6"
           }
+        ],
+        "MyLambdaAliasPCECurrentVersion072335D3ecf1e1993812a43e1ad83ad23009e893": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaAliasPCECurrentVersion072335D3ecf1e1993812a43e1ad83ad23009e893",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyLambdaVersionPCECurrentVersion27FC3932176d028ba8f6b4c3340c828b8d6c8815": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaVersionPCECurrentVersion27FC3932176d028ba8f6b4c3340c828b8d6c8815",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-cdk-lambda-pce-1"
