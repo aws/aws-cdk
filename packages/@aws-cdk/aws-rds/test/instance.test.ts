@@ -403,7 +403,7 @@ describe('instance', () => {
         snapshotIdentifier: 'my-snapshot',
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
         vpc,
-        credentials: rds.SnapshotCredentials.fromPassword(cdk.SecretValue.plainText('mysecretpassword')),
+        credentials: rds.SnapshotCredentials.fromPassword(cdk.SecretValue.unsafePlainText('mysecretpassword')),
       });
 
       // TODO - Expect this to be broken
@@ -957,7 +957,7 @@ describe('instance', () => {
   test('throws when trying to add rotation to an instance without secret', () => {
     const instance = new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
-      credentials: rds.Credentials.fromUsername('syscdk', { password: cdk.SecretValue.plainText('tooshort') }),
+      credentials: rds.Credentials.fromUsername('syscdk', { password: cdk.SecretValue.unsafePlainText('tooshort') }),
       vpc,
     });
 
@@ -1519,7 +1519,7 @@ describe('instance', () => {
       }),
       vpc,
       vpcSubnets: {
-        subnetType: ec2.SubnetType.PRIVATE,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
       },
       publiclyAccessible: true,
     });

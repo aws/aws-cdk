@@ -1,0 +1,106 @@
+{
+ "Resources": {
+  "AppRole1AF9B530": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "amplify.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AppAppBasicAuthE743F015": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "GenerateSecretString": {
+     "GenerateStringKey": "password",
+     "SecretStringTemplate": "{\"username\":\"aws\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AppF1B96344": {
+   "Type": "AWS::Amplify::App",
+   "Properties": {
+    "Name": "App",
+    "AutoBranchCreationConfig": {
+     "BasicAuthConfig": {
+      "EnableBasicAuth": false
+     },
+     "EnableAutoBranchCreation": true,
+     "EnableAutoBuild": true,
+     "EnablePullRequestPreview": true
+    },
+    "BasicAuthConfig": {
+     "EnableBasicAuth": true,
+     "Password": {
+      "Fn::Join": [
+       "",
+       [
+        "{{resolve:secretsmanager:",
+        {
+         "Ref": "AppAppBasicAuthE743F015"
+        },
+        ":SecretString:password::}}"
+       ]
+      ]
+     },
+     "Username": "aws"
+    },
+    "CustomHeaders": {
+     "Fn::Join": [
+      "",
+      [
+       "customHeaders:\n  - pattern: \"*.json\"\n    headers:\n      - key: \"custom-header-name-1\"\n        value: \"custom-header-value-1\"\n      - key: \"custom-header-name-2\"\n        value: \"custom-header-value-2\"\n  - pattern: \"/path/*\"\n    headers:\n      - key: \"custom-header-name-1\"\n        value: \"custom-header-value-2\"\n      - key: \"x-aws-url-suffix\"\n        value: \"this-is-the-suffix-",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "\"\n"
+      ]
+     ]
+    },
+    "CustomRules": [
+     {
+      "Source": "/source",
+      "Target": "/target"
+     }
+    ],
+    "IAMServiceRole": {
+     "Fn::GetAtt": [
+      "AppRole1AF9B530",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "Appmaster71597E87": {
+   "Type": "AWS::Amplify::Branch",
+   "Properties": {
+    "AppId": {
+     "Fn::GetAtt": [
+      "AppF1B96344",
+      "AppId"
+     ]
+    },
+    "BranchName": "master",
+    "EnableAutoBuild": true,
+    "EnablePullRequestPreview": true,
+    "EnvironmentVariables": [
+     {
+      "Name": "key",
+      "Value": "value"
+     }
+    ]
+   }
+  }
+ }
+}

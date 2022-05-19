@@ -1,17 +1,9 @@
 import { DeployOptions, DestroyOptions } from './commands';
 
 /**
- * Represents an integration test test case
+ * The set of options to control the workflow of the test runner
  */
-export interface TestCase {
-  /**
-   * Stacks that should be tested as part of this test case
-   * The stackNames will be passed as args to the cdk commands
-   * so dependent stacks will be automatically deployed unless
-   * `exclusively` is passed
-   */
-  readonly stacks: string[];
-
+export interface TestOptions {
   /**
    * Run update workflow on this test case
    * This should only be set to false to test scenarios
@@ -22,52 +14,72 @@ export interface TestCase {
   readonly stackUpdateWorkflow?: boolean;
 
   /**
-   * Additional options to use for each CDK command
-   *
-   * @default - runner default options
-   */
+    * Additional options to use for each CDK command
+    *
+    * @default - runner default options
+    */
   readonly cdkCommandOptions?: CdkCommands;
 
   /**
-   * Additional commands to run at predefined points in the test workflow
-   *
-   * e.g. { postDeploy: ['yarn', 'test'] }
-   *
-   * @default - no hooks
-   */
+    * Additional commands to run at predefined points in the test workflow
+    *
+    * e.g. { postDeploy: ['yarn', 'test'] }
+    *
+    * @default - no hooks
+    */
   readonly hooks?: Hooks;
 
   /**
-   * Whether or not to include asset hashes in the diff
-   * Asset hashes can introduces a lot of unneccessary noise into tests,
-   * but there are some cases where asset hashes _should_ be included. For example
-   * any tests involving custom resources or bundling
-   *
-   * @default false
-   */
+    * Whether or not to include asset hashes in the diff
+    * Asset hashes can introduces a lot of unneccessary noise into tests,
+    * but there are some cases where asset hashes _should_ be included. For example
+    * any tests involving custom resources or bundling
+    *
+    * @default false
+    */
   readonly diffAssets?: boolean;
 
   /**
-   * List of CloudFormation resource types in this stack that can
-   * be destroyed as part of an update without failing the test.
-   *
-   * This list should only include resources that for this specific
-   * integration test we are sure will not cause errors or an outage if
-   * destroyed. For example, maybe we know that a new resource will be created
-   * first before the old resource is destroyed which prevents any outage.
-   *
-   * e.g. ['AWS::IAM::Role']
-   *
-   * @default - do not allow destruction of any resources on update
-   */
+    * List of CloudFormation resource types in this stack that can
+    * be destroyed as part of an update without failing the test.
+    *
+    * This list should only include resources that for this specific
+    * integration test we are sure will not cause errors or an outage if
+    * destroyed. For example, maybe we know that a new resource will be created
+    * first before the old resource is destroyed which prevents any outage.
+    *
+    * e.g. ['AWS::IAM::Role']
+    *
+    * @default - do not allow destruction of any resources on update
+    */
   readonly allowDestroy?: string[];
 
   /**
-   * Limit deployment to these regions
-   *
-   * @default - can run in any region
-   */
+    * Limit deployment to these regions
+    *
+    * @default - can run in any region
+    */
   readonly regions?: string[];
+}
+
+/**
+ * Represents an integration test case
+ */
+export interface TestCase extends TestOptions {
+  /**
+   * Stacks that should be tested as part of this test case
+   * The stackNames will be passed as args to the cdk commands
+   * so dependent stacks will be automatically deployed unless
+   * `exclusively` is passed
+   */
+  readonly stacks: string[];
+
+  /**
+   * The name of the stack that contains assertions
+   *
+   * @default - no assertion stack
+   */
+  readonly assertionStack?: string;
 }
 
 /**

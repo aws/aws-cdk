@@ -1,0 +1,12 @@
+{
+ "Resources": {
+  "String0BA8456E": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Type": "String",
+    "Value": "abcdef",
+    "Name": "/My/Public/Parameter"
+   }
+  }
+ }
+}

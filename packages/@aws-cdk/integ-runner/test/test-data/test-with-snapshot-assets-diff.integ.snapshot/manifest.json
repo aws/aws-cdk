@@ -1,11 +1,12 @@
 {
-  "version": "17.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "test-stack": {
       "type": "aws:cloudformation:stack",
@@ -15,39 +16,30 @@
         "validateOnSynth": false
       },
       "metadata": {
+        "/test-stack": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.fec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509",
+              "id": "fec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509",
+              "packaging": "zip",
+              "sourceHash": "fec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509",
+              "s3BucketParameter": "AssetParametersfec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509S3BucketBF50F97C",
+              "s3KeyParameter": "AssetParametersfec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509S3VersionKeyF21AC8C1",
+              "artifactHashParameter": "AssetParametersfec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509ArtifactHash5D8C129B"
+            }
+          }
+        ],
         "/test-stack/MyFunction1/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunction1ServiceRole9852B06B",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-test-runner/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-test-runner/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-test-runner/packages/@aws-cdk/aws-s3objectlambda/test/integ.lambda.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-test-runner/packages/@aws-cdk/aws-s3objectlambda/test/integ.lambda.js:18:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MyFunction1ServiceRole9852B06B"
           }
         ],
         "/test-stack/MyFunction1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunction12A744C2E",
-            "trace": [
-              "new Function (/home/hallcor/work/aws-cdk/integ-test-runner/packages/@aws-cdk/aws-lambda/lib/function.js:154:26)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-test-runner/packages/@aws-cdk/aws-s3objectlambda/test/integ.lambda.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-test-runner/packages/@aws-cdk/aws-s3objectlambda/test/integ.lambda.js:18:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MyFunction12A744C2E"
           }
         ]
       },

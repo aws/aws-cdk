@@ -1,5 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
-import { App, Stack } from '@aws-cdk/core';
+import { App, CfnResource, Stack } from '@aws-cdk/core';
 import { Group, ManagedPolicy, User } from '../lib';
 
 describe('IAM groups', () => {
@@ -72,5 +72,34 @@ describe('IAM groups', () => {
     expect(stack.resolve(group2.groupArn)).toStrictEqual({
       'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':group/division/MyGroupName2']],
     });
+  });
+});
+
+test('cross-env group ARNs include path', () => {
+  const app = new App();
+  const groupStack = new Stack(app, 'group-stack', { env: { account: '123456789012', region: 'us-east-1' } });
+  const referencerStack = new Stack(app, 'referencer-stack', { env: { region: 'us-east-2' } });
+  const group = new Group(groupStack, 'Group', {
+    path: '/sample/path/',
+    groupName: 'sample-name',
+  });
+  new CfnResource(referencerStack, 'Referencer', {
+    type: 'Custom::GroupReferencer',
+    properties: { GroupArn: group.groupArn },
+  });
+
+  Template.fromStack(referencerStack).hasResourceProperties('Custom::GroupReferencer', {
+    GroupArn: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':iam::123456789012:group/sample/path/sample-name',
+        ],
+      ],
+    },
   });
 });

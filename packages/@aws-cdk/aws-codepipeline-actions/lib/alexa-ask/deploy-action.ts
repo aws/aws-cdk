@@ -70,8 +70,8 @@ export class AlexaSkillDeployAction extends Action {
     return {
       configuration: {
         ClientId: this.props.clientId,
-        ClientSecret: this.props.clientSecret,
-        RefreshToken: this.props.refreshToken,
+        ClientSecret: this.props.clientSecret.unsafeUnwrap(), // Safe usage
+        RefreshToken: this.props.refreshToken.unsafeUnwrap(), // Safe usage
         SkillId: this.props.skillId,
       },
     };

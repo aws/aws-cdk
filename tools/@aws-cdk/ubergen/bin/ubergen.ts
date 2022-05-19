@@ -97,6 +97,11 @@ interface PackageJson {
      * @default true
      */
     readonly explicitExports?: boolean;
+
+    /**
+     * An exports section that should be ignored for v1 but included for ubergen
+     */
+    readonly exports?: Record<string, string>;
   };
   exports?: Record<string, string>;
 }
@@ -287,8 +292,8 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
       indexStatements.push(`export * from './${library.shortName}';`);
     } else {
       indexStatements.push(`export * as ${library.shortName.replace(/-/g, '_')} from './${library.shortName}';`);
-      copySubmoduleExports(packageJson.exports, library, library.shortName);
     }
+    copySubmoduleExports(packageJson.exports, library, library.shortName);
   }
 
   await fs.writeFile(path.join(libRoot, 'index.ts'), indexStatements.join('\n'), { encoding: 'utf8' });
@@ -305,13 +310,18 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
 function copySubmoduleExports(targetExports: Record<string, string>, library: LibraryReference, subdirectory: string) {
   const visibleName = library.shortName;
 
-  for (const [relPath, relSource] of Object.entries(library.packageJson.exports ?? {})) {
-    targetExports[`./${unixPath(path.join(visibleName, relPath))}`] = `./${unixPath(path.join(subdirectory, relSource))}`;
+  // Do both REAL "exports" section, as well as virtual, ubergen-only "exports" section
+  for (const exportSet of [library.packageJson.exports, library.packageJson.ubergen?.exports]) {
+    for (const [relPath, relSource] of Object.entries(exportSet ?? {})) {
+      targetExports[`./${unixPath(path.join(visibleName, relPath))}`] = `./${unixPath(path.join(subdirectory, relSource))}`;
+    }
   }
 
-  // If there was an export for '.' in the original submodule, this assignment will overwrite it,
-  // which is exactly what we want.
-  targetExports[`./${unixPath(visibleName)}`] = `./${unixPath(subdirectory)}/index.js`;
+  if (visibleName !== 'core') {
+    // If there was an export for '.' in the original submodule, this assignment will overwrite it,
+    // which is exactly what we want.
+    targetExports[`./${unixPath(visibleName)}`] = `./${unixPath(subdirectory)}/index.js`;
+  }
 }
 
 async function combineRosettaFixtures(libraries: readonly LibraryReference[], uberPackageJson: PackageJson) {

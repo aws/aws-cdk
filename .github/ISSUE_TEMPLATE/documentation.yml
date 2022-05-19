@@ -1,7 +1,7 @@
 ---
 name: "📕 Documentation Issue"
 description: Report an issue in the API Reference documentation or Developer Guide
-title: "(short issue description)"
+title: "(module name): (short issue description)"
 labels: [documentation, needs-triage]
 assignees: []
 body:
