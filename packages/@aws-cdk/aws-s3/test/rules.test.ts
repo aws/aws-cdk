@@ -163,7 +163,9 @@ describe('rules', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
-          NoncurrentVersionExpirationInDays: 10,
+          NoncurrentVersionExpiration: {
+            NoncurrentDays: 10,
+          },
           NoncurrentVersionTransitions: [
             {
               NewerNoncurrentVersions: 1,
@@ -199,7 +201,85 @@ describe('rules', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
-          NoncurrentVersionExpirationInDays: 10,
+          NoncurrentVersionExpiration: {
+            NoncurrentDays: 10,
+          },
+          NoncurrentVersionTransitions: [
+            {
+              StorageClass: 'GLACIER_IR',
+              TransitionInDays: 10,
+            },
+          ],
+          Status: 'Enabled',
+        }],
+      },
+    });
+  });
+
+  test('Noncurrent expiration rule with versions to retain', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN: Noncurrent version to retain available
+    new Bucket(stack, 'Bucket1', {
+      versioned: true,
+      lifecycleRules: [{
+        noncurrentVersionExpiration: Duration.days(10),
+        noncurrentVersionsToRetain: 1,
+        noncurrentVersionTransitions: [
+          {
+            storageClass: StorageClass.GLACIER_INSTANT_RETRIEVAL,
+            transitionAfter: Duration.days(10),
+          },
+        ],
+      }],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      LifecycleConfiguration: {
+        Rules: [{
+          NoncurrentVersionExpiration: {
+            NoncurrentDays: 10,
+            NewerNoncurrentVersions: 1,
+          },
+          NoncurrentVersionTransitions: [
+            {
+              StorageClass: 'GLACIER_IR',
+              TransitionInDays: 10,
+            },
+          ],
+          Status: 'Enabled',
+        }],
+      },
+    });
+  });
+
+  test('Noncurrent expiration rule without versions to retain', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN: Noncurrent version to retain not set
+    new Bucket(stack, 'Bucket1', {
+      versioned: true,
+      lifecycleRules: [{
+        noncurrentVersionExpiration: Duration.days(10),
+        noncurrentVersionTransitions: [
+          {
+            storageClass: StorageClass.GLACIER_INSTANT_RETRIEVAL,
+            transitionAfter: Duration.days(10),
+          },
+        ],
+      }],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      LifecycleConfiguration: {
+        Rules: [{
+          NoncurrentVersionExpiration: {
+            NoncurrentDays: 10,
+          },
           NoncurrentVersionTransitions: [
             {
               StorageClass: 'GLACIER_IR',
