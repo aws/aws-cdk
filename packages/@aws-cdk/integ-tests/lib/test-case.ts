@@ -145,14 +145,16 @@ export class IntegTest extends Construct {
         .filter(stack => IntegTestCaseStack.isIntegTestCaseStack(stack))
         .map(stack => (stack as IntegTestCaseStack)._testCase),
     ];
-  }
 
-
-  protected onPrepare(): void {
-    attachCustomSynthesis(this, {
-      onSynthesize: (session: ISynthesisSession) => {
-        const synthesizer = new IntegManifestSynthesizer(this.testCases);
-        synthesizer.synthesize(session);
+    this.node.addValidation({
+      validate: () => {
+        attachCustomSynthesis(this, {
+          onSynthesize: (session: ISynthesisSession) => {
+            const synthesizer = new IntegManifestSynthesizer(this.testCases);
+            synthesizer.synthesize(session);
+          },
+        });
+        return [];
       },
     });
   }

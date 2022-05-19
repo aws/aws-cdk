@@ -115,13 +115,16 @@ class SingletonFunction extends Construct {
     super(scope, id);
     this.lambdaFunction = this.ensureFunction(props);
     this.serviceToken = this.lambdaFunction.serviceToken;
-  }
 
-  /**
-   * The policies can be added by different constructs
-   */
-  onPrepare(): void {
-    this.lambdaFunction.addPolicies(this.policies);
+    /**
+     * The policies can be added by different constructs
+     */
+    this.node.addValidation({
+      validate: () => {
+        this.lambdaFunction.addPolicies(this.policies);
+        return [];
+      },
+    });
   }
 
   private ensureFunction(props: SingletonFunctionProps): LambdaFunctionProvider {
