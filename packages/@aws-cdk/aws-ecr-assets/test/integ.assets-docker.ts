@@ -19,7 +19,7 @@ const asset2 = new assets.DockerImageAsset(stack, 'DockerImage2', {
   directory: path.join(__dirname, 'demo-image'),
 });
 
-const asset3 = new assets.DockerImageAsset(stack, 'DockerImage2', {
+const asset3 = new assets.DockerImageAsset(stack, 'DockerImage3', {
   directory: path.join(__dirname, 'demo-image'),
   platform: assets.Platform.LINUX_ARM64,
 });
