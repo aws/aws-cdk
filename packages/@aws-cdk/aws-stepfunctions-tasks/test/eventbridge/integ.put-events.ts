@@ -1,6 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests';
 import { EventBridgePutEvents } from '../../lib';
 
 /*
@@ -39,8 +40,24 @@ const sm = new sfn.StateMachine(stack, 'StateMachine', {
   timeout: cdk.Duration.seconds(30),
 });
 
-new cdk.CfnOutput(stack, 'stateMachineArn', {
-  value: sm.stateMachineArn,
+
+const testCase = new IntegTest(app, 'PutEvents', {
+  testCases: [stack],
 });
+
+// Start an execution
+const start = testCase.assert.awsApiCall('StepFunctions', 'startExecution', {
+  stateMachineArn: sm.stateMachineArn,
+});
+
+// describe the results of the execution
+const describe = testCase.assert.awsApiCall('StepFunctions', 'describeExecution', {
+  executionArn: start.getAttString('executionArn'),
+});
+
+// assert the results
+describe.assert(ExpectedResult.objectLike({
+  status: 'SUCCEEDED',
+}));
 
 app.synth();
