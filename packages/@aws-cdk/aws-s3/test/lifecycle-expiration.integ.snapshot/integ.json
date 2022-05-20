@@ -1,0 +1,14 @@
+{
+  "version": "19.0.0",
+  "testCases": {
+    "aws-s3/test/integ.lifecycle-expiration": {
+      "stacks": [
+        "aws-cdk-s3"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}
