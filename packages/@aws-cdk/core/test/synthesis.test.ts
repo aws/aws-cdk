@@ -51,7 +51,6 @@ describe('synthesis', () => {
     const app = new cdk.App({
       context: {
         [cxapi.DISABLE_LOGICAL_ID_METADATA]: true,
-        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
       },
     });
     const stack = new cdk.Stack(app, 'one-stack');
@@ -61,32 +60,13 @@ describe('synthesis', () => {
     const session = app.synth();
 
     // THEN
-    expect(session.manifest).toEqual({
-      version: cxschema.Manifest.version(),
-      artifacts: {
-        'Tree': {
-          type: 'cdk:tree',
-          properties: { file: 'tree.json' },
-        },
-        'one-stack': {
-          type: 'aws:cloudformation:stack',
-          environment: 'aws://unknown-account/unknown-region',
-          properties: {
-            templateFile: 'one-stack.template.json',
-            validateOnSynth: false,
-          },
-          displayName: 'one-stack',
-          // no metadata, because the only entry was a logicalId
-        },
-      },
-    });
+    expect(Object.keys((session.manifest.artifacts ?? {})['one-stack'])).not.toContain('metadata');
   });
 
   test('synthesis respects disabling logicalId metadata, and does not disable other metadata', () => {
     const app = new cdk.App({
       context: {
         [cxapi.DISABLE_LOGICAL_ID_METADATA]: true,
-        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
       },
       stackTraces: false,
     });
@@ -97,40 +77,19 @@ describe('synthesis', () => {
     const session = app.synth();
 
     // THEN
-    expect(session.manifest).toEqual({
-      version: cxschema.Manifest.version(),
-      artifacts: {
-        'Tree': {
-          type: 'cdk:tree',
-          properties: { file: 'tree.json' },
-        },
-        'one-stack': {
-          type: 'aws:cloudformation:stack',
-          environment: 'aws://unknown-account/unknown-region',
-          properties: {
-            templateFile: 'one-stack.template.json',
-            validateOnSynth: false,
-            tags: {
-              boomTag: 'BOOM',
+    expect(session.manifest.artifacts?.['one-stack'].metadata).toEqual({
+      '/one-stack': [
+        {
+          type: 'aws:cdk:stack-tags',
+          data: [
+            {
+              key: 'boomTag',
+              value: 'BOOM',
             },
-          },
-          displayName: 'one-stack',
-          metadata: {
-            '/one-stack': [
-              {
-                type: 'aws:cdk:stack-tags',
-                data: [
-                  {
-                    key: 'boomTag',
-                    value: 'BOOM',
-                  },
-                ],
-              },
-            ],
-          },
-          // no logicalId entry
+          ],
         },
-      },
+      ],
+      // no logicalId entry
     });
   });
 
