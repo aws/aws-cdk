@@ -36,7 +36,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParametersfec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509S3BucketBF50F97C"
+      "Ref": "AssetParametersb0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374eS3Bucket305E1975"
      },
      "S3Key": {
       "Fn::Join": [
@@ -49,7 +49,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParametersfec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509S3VersionKeyF21AC8C1"
+             "Ref": "AssetParametersb0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374eS3VersionKeyCC928AE5"
             }
            ]
           }
@@ -62,7 +62,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParametersfec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509S3VersionKeyF21AC8C1"
+             "Ref": "AssetParametersb0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374eS3VersionKeyCC928AE5"
             }
            ]
           }
@@ -79,7 +79,7 @@
      ]
     },
     "Handler": "index.handler",
-    "Runtime": "python3.6"
+    "Runtime": "python3.9"
    },
    "DependsOn": [
     "FunctionServiceRole675BB04A"
@@ -87,26 +87,26 @@
   }
  },
  "Parameters": {
-  "AssetParametersfec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509S3BucketBF50F97C": {
+  "AssetParametersb0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374eS3Bucket305E1975": {
    "Type": "String",
-   "Description": "S3 bucket for asset \"fec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509\""
+   "Description": "S3 bucket for asset \"b0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374e\""
   },
-  "AssetParametersfec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509S3VersionKeyF21AC8C1": {
+  "AssetParametersb0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374eS3VersionKeyCC928AE5": {
    "Type": "String",
-   "Description": "S3 key for asset version \"fec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509\""
+   "Description": "S3 key for asset version \"b0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374e\""
   },
-  "AssetParametersfec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509ArtifactHash5D8C129B": {
+  "AssetParametersb0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374eArtifactHashBE058EE4": {
    "Type": "String",
-   "Description": "Artifact hash for asset \"fec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509\""
+   "Description": "Artifact hash for asset \"b0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374e\""
   }
  },
  "Outputs": {
-  "FunctionArn": {
+  "ExportsOutputRefFunction76856677C48862D5": {
    "Value": {
-    "Fn::GetAtt": [
-     "Function76856677",
-     "Arn"
-    ]
+    "Ref": "Function76856677"
+   },
+   "Export": {
+    "Name": "cdk-integ-lambda-bundling:ExportsOutputRefFunction76856677C48862D5"
    }
   }
  }

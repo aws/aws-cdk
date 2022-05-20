@@ -1,4 +1,5 @@
 import { Template, Match } from '@aws-cdk/assertions';
+import * as iam from '@aws-cdk/aws-iam';
 import { Duration, Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
 import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, AppWithOutput } from '../testhelpers';
@@ -143,6 +144,68 @@ test('envFromOutputs works even with very long stage and stack names', () => {
   // THEN - did not throw an error about identifier lengths
 });
 
+test('role passed it used for project and code build action', () => {
+  const projectRole = new iam.Role(
+    pipelineStack,
+    'ProjectRole',
+    {
+      roleName: 'ProjectRole',
+      assumedBy: new iam.ServicePrincipal('codebuild.amazon.com'),
+    },
+  );
+  const buildRole = new iam.Role(
+    pipelineStack,
+    'BuildRole',
+    {
+      roleName: 'BuildRole',
+      assumedBy: new iam.ServicePrincipal('codebuild.amazon.com'),
+    },
+  );
+  // WHEN
+  new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
+    synth: new cdkp.CodeBuildStep('Synth', {
+      commands: ['/bin/true'],
+      input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+      role: projectRole,
+      actionRole: buildRole,
+    }),
+  });
+
+  // THEN
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    ServiceRole: {
+      'Fn::GetAtt': [
+        'ProjectRole5B707505',
+        'Arn',
+      ],
+    },
+  });
+
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: [
+      // source stage
+      {},
+      // build stage,
+      {
+        Actions: [
+          {
+            ActionTypeId: {
+              Category: 'Build',
+              Owner: 'AWS',
+              Provider: 'CodeBuild',
+            },
+            RoleArn: {
+              'Fn::GetAtt': [
+                'BuildRole41B77417',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+    ],
+  });
+});
 test('exportedVariables', () => {
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 

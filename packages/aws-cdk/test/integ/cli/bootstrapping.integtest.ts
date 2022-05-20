@@ -252,3 +252,27 @@ integTest('can deploy modern-synthesized stack even if bootstrap stack name is u
     ],
   });
 }));
+
+integTest('create ECR with tag IMMUTABILITY to set on', withDefaultFixture(async (fixture) => {
+  const bootstrapStackName = fixture.bootstrapStackName;
+
+  await fixture.cdkBootstrapModern({
+    verbose: true,
+    toolkitStackName: bootstrapStackName,
+  });
+
+  const response = await fixture.aws.cloudFormation('describeStackResources', {
+    StackName: bootstrapStackName,
+  });
+  const ecrResource = response.StackResources?.find(resource => resource.LogicalResourceId === 'ContainerAssetsRepository');
+  expect(ecrResource).toBeDefined();
+
+  const ecrResponse = await fixture.aws.ecr('describeRepositories', {
+    repositoryNames: [
+      // This is set, as otherwise we don't end up here
+      ecrResource?.PhysicalResourceId ?? '',
+    ],
+  });
+
+  expect(ecrResponse.repositories?.[0].imageTagMutability).toEqual('IMMUTABLE');
+}));

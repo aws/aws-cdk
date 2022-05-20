@@ -216,7 +216,7 @@ export enum Unit {
   COUNT_PER_SECOND = 'Count/Second',
 
   /**
-   * No unit
+   * None
    */
   NONE = 'None'
 }

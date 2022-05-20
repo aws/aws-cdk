@@ -28,7 +28,11 @@ test('can use instance reboot as alarm action', () => {
         'Fn::Join': [
           '',
           [
-            'arn:aws:automate:',
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':automate:',
             {
               Ref: 'AWS::Region',
             },
