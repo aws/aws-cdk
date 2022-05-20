@@ -18,6 +18,11 @@
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
+  "ubergen": {
+    "exports": {
+      "./lib/helpers-internal": "./lib/helpers-internal/index.js"
+    }
+  },
   "jsii": {
     "outdir": "dist",
     "diagnostics": {

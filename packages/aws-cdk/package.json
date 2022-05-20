@@ -13,7 +13,7 @@
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
-    "integ": "jest --testMatch '**/?(*.)+(integ-test).js'",
+    "integ": "jest --testMatch '**/?(*.)+(integtest).js'",
     "package": "cdk-package",
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test",

@@ -1,7 +1,29 @@
+import { format } from 'util';
 import { ResourceImpact } from '@aws-cdk/cloudformation-diff';
 import * as chalk from 'chalk';
 import * as logger from '../logger';
 import { IntegTestConfig } from '../runner/integration-tests';
+
+/**
+ * The aggregate results from running assertions on a test case
+ */
+export type AssertionResults = { [id: string]: AssertionResult };
+
+/**
+ * The result of an individual assertion
+ */
+export interface AssertionResult {
+  /**
+   * The assertion message. If the assertion failed, this will
+   * include the reason.
+   */
+  readonly message: string;
+
+  /**
+   * Whether the assertion succeeded or failed
+   */
+  readonly status: 'success' | 'fail';
+}
 
 /**
  * Config for an integration test
@@ -65,6 +87,22 @@ export interface IntegRunnerMetrics {
    * @default - default profile
    */
   readonly profile?: string;
+}
+
+export interface SnapshotVerificationOptions {
+  /**
+   * Retain failed snapshot comparisons
+   *
+   * @default false
+   */
+  readonly retain?: boolean;
+
+  /**
+   * Verbose mode
+   *
+   * @default false
+   */
+  readonly verbose?: boolean;
 }
 
 /**
@@ -155,6 +193,11 @@ export enum DiagnosticReason {
    * The integration test succeeded
    */
   TEST_SUCCESS = 'TEST_SUCCESS',
+
+  /**
+   * The assertion failed
+   */
+  ASSERTION_FAILED = 'ASSERTION_FAILED',
 }
 
 /**
@@ -181,6 +224,11 @@ export interface Diagnostic {
    * The reason for the diagnostic
    */
   readonly reason: DiagnosticReason;
+
+  /**
+   * Additional messages to print
+   */
+  readonly additionalMessages?: string[];
 }
 
 export function printSummary(total: number, failed: number): void {
@@ -189,6 +237,16 @@ export function printSummary(total: number, failed: number): void {
   } else {
     logger.print('%s:    %s %s, %s total', chalk.bold('Tests'), chalk.green(total), chalk.green('passed'), total);
   }
+}
+
+/**
+ * Format the assertion results so that the results can be
+ * printed
+ */
+export function formatAssertionResults(results: AssertionResults): string {
+  return Object.entries(results)
+    .map(([id, result]) => format('%s\n%s', id, result.message))
+    .join('\n');
 }
 
 /**
@@ -210,5 +268,11 @@ export function printResults(diagnostic: Diagnostic): void {
       break;
     case DiagnosticReason.TEST_FAILED:
       logger.error('  %s - Failed! %s\n%s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+      break;
+    case DiagnosticReason.ASSERTION_FAILED:
+      logger.error('   %s - Assertions Failed! %s\n%s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+  }
+  for (const addl of diagnostic.additionalMessages ?? []) {
+    logger.print(`      ${addl}`);
   }
 }

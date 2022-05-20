@@ -235,6 +235,72 @@ describe('IAM role', () => {
     });
   });
 
+  test('role path can be used to specify the path', () => {
+    const stack = new Stack();
+
+    new Role(stack, 'MyRole', { path: '/', assumedBy: new ServicePrincipal('sns.amazonaws.com') });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      Path: '/',
+    });
+  });
+
+  test('role path can be 1 character', () => {
+    const stack = new Stack();
+
+    const assumedBy = new ServicePrincipal('bla');
+
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/' })).not.toThrowError();
+  });
+
+  test('role path cannot be empty', () => {
+    const stack = new Stack();
+
+    const assumedBy = new ServicePrincipal('bla');
+
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '' }))
+      .toThrow('Role path must be between 1 and 512 characters. The provided role path is 0 characters.');
+  });
+
+  test('role path must be less than or equal to 512', () => {
+    const stack = new Stack();
+
+    const assumedBy = new ServicePrincipal('bla');
+
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/' + Array(512).join('a') + '/' }))
+      .toThrow('Role path must be between 1 and 512 characters. The provided role path is 513 characters.');
+  });
+
+  test('role path must start with a forward slash', () => {
+    const stack = new Stack();
+
+    const assumedBy = new ServicePrincipal('bla');
+
+    const expected = (val: any) => 'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
+    + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${val} is provided.`;
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: 'aaa' })).toThrow(expected('aaa'));
+  });
+
+  test('role path must end with a forward slash', () => {
+    const stack = new Stack();
+
+    const assumedBy = new ServicePrincipal('bla');
+
+    const expected = (val: any) => 'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
+    + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${val} is provided.`;
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/a' })).toThrow(expected('/a'));
+  });
+
+  test('role path must contain unicode chars within [\\u0021-\\u007F]', () => {
+    const stack = new Stack();
+
+    const assumedBy = new ServicePrincipal('bla');
+
+    const expected = (val: any) => 'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
+    + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${val} is provided.`;
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/\u0020\u0080/' })).toThrow(expected('/\u0020\u0080/'));
+  });
+
   describe('maxSessionDuration', () => {
 
     test('is not specified by default', () => {

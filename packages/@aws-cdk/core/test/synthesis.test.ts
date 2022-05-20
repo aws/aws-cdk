@@ -3,6 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as cdk from '../lib';
 
 function createModernApp() {
@@ -36,7 +37,6 @@ describe('synthesis', () => {
         },
       }),
     });
-
   });
 
   test('synthesis respects disabling tree metadata', () => {
@@ -45,7 +45,52 @@ describe('synthesis', () => {
     });
     const assembly = app.synth();
     expect(list(assembly.directory)).toEqual(['cdk.out', 'manifest.json']);
+  });
 
+  test('synthesis respects disabling logicalId metadata', () => {
+    const app = new cdk.App({
+      context: {
+        [cxapi.DISABLE_LOGICAL_ID_METADATA]: true,
+      },
+    });
+    const stack = new cdk.Stack(app, 'one-stack');
+    new cdk.CfnResource(stack, 'MagicResource', { type: 'Resource::Type' });
+
+    // WHEN
+    const session = app.synth();
+
+    // THEN
+    expect(Object.keys((session.manifest.artifacts ?? {})['one-stack'])).not.toContain('metadata');
+  });
+
+  test('synthesis respects disabling logicalId metadata, and does not disable other metadata', () => {
+    const app = new cdk.App({
+      context: {
+        [cxapi.DISABLE_LOGICAL_ID_METADATA]: true,
+      },
+      stackTraces: false,
+    });
+    const stack = new cdk.Stack(app, 'one-stack', { tags: { boomTag: 'BOOM' } });
+    new cdk.CfnResource(stack, 'MagicResource', { type: 'Resource::Type' });
+
+    // WHEN
+    const session = app.synth();
+
+    // THEN
+    expect(session.manifest.artifacts?.['one-stack'].metadata).toEqual({
+      '/one-stack': [
+        {
+          type: 'aws:cdk:stack-tags',
+          data: [
+            {
+              key: 'boomTag',
+              value: 'BOOM',
+            },
+          ],
+        },
+      ],
+      // no logicalId entry
+    });
   });
 
   test('single empty stack', () => {
@@ -58,7 +103,6 @@ describe('synthesis', () => {
 
     // THEN
     expect(list(session.directory).includes('one-stack.template.json')).toEqual(true);
-
   });
 
   test('some random construct implements "synthesize"', () => {
@@ -112,7 +156,6 @@ describe('synthesis', () => {
         },
       },
     });
-
   });
 
   test('random construct uses addCustomSynthesis', () => {
@@ -172,7 +215,6 @@ describe('synthesis', () => {
         },
       },
     });
-
   });
 
   testDeprecated('it should be possible to synthesize without an app', () => {
@@ -220,7 +262,6 @@ describe('synthesis', () => {
     expect(stack.templateFile).toEqual('hey.json');
     expect(stack.parameters).toEqual({ paramId: 'paramValue', paramId2: 'paramValue2' });
     expect(stack.environment).toEqual({ region: 'us-east-1', account: 'unknown-account', name: 'aws://unknown-account/us-east-1' });
-
   });
 });
 

@@ -2,14 +2,14 @@
 import * as SDK from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
 import * as sinon from 'sinon';
-import { SdkRequest, SdkResult } from '../../../../lib/assertions';
-import { SdkHandler } from '../../../../lib/assertions/providers/lambda-handler/sdk';
+import { AwsApiCallRequest, AwsApiCallResult } from '../../../../lib/assertions';
+import { AwsApiCallHandler } from '../../../../lib/assertions/providers/lambda-handler/sdk';
 
 function sdkHandler() {
   const context: any = {
     getRemainingTimeInMillis: () => 50000,
   };
-  return new SdkHandler({} as any, context); // as any to ignore all type checks
+  return new AwsApiCallHandler({} as any, context); // as any to ignore all type checks
 }
 beforeAll(() => {
   jest.useFakeTimers();
@@ -45,7 +45,7 @@ describe('SdkHandler', () => {
     } as SDK.S3.ListObjectsOutput;
     AWS.mock('S3', 'listObjects', sinon.fake.resolves(expectedResponse));
     const handler = sdkHandler() as any;
-    const request: SdkRequest = {
+    const request: AwsApiCallRequest = {
       service: 'S3',
       api: 'listObjects',
       parameters: {
@@ -54,7 +54,7 @@ describe('SdkHandler', () => {
     };
 
     // WHEN
-    const response: SdkResult = await handler.processEvent(request);
+    const response: AwsApiCallResult = await handler.processEvent(request);
 
 
     // THEN
@@ -67,7 +67,7 @@ describe('SdkHandler', () => {
       const fake = sinon.fake.resolves({});
       AWS.mock('EC2', 'describeInstances', fake);
       const handler = sdkHandler() as any;
-      const request: SdkRequest = {
+      const request: AwsApiCallRequest = {
         service: 'EC2',
         api: 'describeInstances',
         parameters: {
@@ -88,7 +88,7 @@ describe('SdkHandler', () => {
       const fake = sinon.fake.resolves({});
       AWS.mock('EC2', 'describeInstances', fake);
       const handler = sdkHandler() as any;
-      const request: SdkRequest = {
+      const request: AwsApiCallRequest = {
         service: 'EC2',
         api: 'describeInstances',
         parameters: {

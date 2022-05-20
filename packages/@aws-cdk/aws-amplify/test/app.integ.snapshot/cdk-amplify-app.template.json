@@ -56,7 +56,18 @@
      },
      "Username": "aws"
     },
-    "CustomHeaders": "customHeaders:\n  - pattern: \"*.json\"\n    headers:\n      - key: custom-header-name-1\n        value: custom-header-value-1\n      - key: custom-header-name-2\n        value: custom-header-value-2\n  - pattern: /path/*\n    headers:\n      - key: custom-header-name-1\n        value: custom-header-value-2\n",
+    "CustomHeaders": {
+     "Fn::Join": [
+      "",
+      [
+       "customHeaders:\n  - pattern: \"*.json\"\n    headers:\n      - key: \"custom-header-name-1\"\n        value: \"custom-header-value-1\"\n      - key: \"custom-header-name-2\"\n        value: \"custom-header-value-2\"\n  - pattern: \"/path/*\"\n    headers:\n      - key: \"custom-header-name-1\"\n        value: \"custom-header-value-2\"\n      - key: \"x-aws-url-suffix\"\n        value: \"this-is-the-suffix-",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "\"\n"
+      ]
+     ]
+    },
     "CustomRules": [
      {
       "Source": "/source",

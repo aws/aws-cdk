@@ -1869,6 +1869,44 @@ describe('vpc', () => {
       expect(subnetIds).toEqual(expected.map(s => s.subnetId));
 
     });
+
+    test('tests router types', () => {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'Vpc');
+
+      // WHEN
+      (vpc.publicSubnets[0] as Subnet).addRoute('TransitRoute', {
+        routerType: RouterType.TRANSIT_GATEWAY,
+        routerId: 'transit-id',
+      });
+      (vpc.publicSubnets[0] as Subnet).addRoute('CarrierRoute', {
+        routerType: RouterType.CARRIER_GATEWAY,
+        routerId: 'carrier-gateway-id',
+      });
+      (vpc.publicSubnets[0] as Subnet).addRoute('LocalGatewayRoute', {
+        routerType: RouterType.LOCAL_GATEWAY,
+        routerId: 'local-gateway-id',
+      });
+      (vpc.publicSubnets[0] as Subnet).addRoute('VpcEndpointRoute', {
+        routerType: RouterType.VPC_ENDPOINT,
+        routerId: 'vpc-endpoint-id',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        TransitGatewayId: 'transit-id',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        LocalGatewayId: 'local-gateway-id',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        CarrierGatewayId: 'carrier-gateway-id',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        VpcEndpointId: 'vpc-endpoint-id',
+      });
+    });
   });
 });
 

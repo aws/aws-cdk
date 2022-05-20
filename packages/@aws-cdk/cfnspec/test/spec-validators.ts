@@ -93,7 +93,7 @@ function validateProperties(
         expect(resolvedType).toBeTruthy();
 
       } else if (schema.isUnionProperty(property)) {
-        expectedKeys.push('PrimitiveTypes', 'PrimitiveItemTypes', 'ItemTypes', 'Types');
+        expectedKeys.push('PrimitiveTypes', 'PrimitiveItemTypes', 'ItemTypes', 'Types', 'InclusivePrimitiveItemTypes', 'InclusiveItemTypes', 'InclusiveItemPattern');
         if (property.PrimitiveTypes) {
           for (const type of property.PrimitiveTypes) {
             expect(schema.isPrimitiveType(type)).toBeTruthy();
@@ -116,7 +116,7 @@ function validateProperties(
 
       } else {
         // eslint-disable-next-line no-console
-        console.error(`${typeName}.Properties.${name} does not declare a type.` +
+        console.error(`${typeName}.Properties.${name} does not declare a type. ` +
           `Property definition is: ${JSON.stringify(property, undefined, 2)}`);
         expect(false).toBeTruthy();
       }
