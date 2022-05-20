@@ -7,8 +7,7 @@ import { INetworkLoadBalancer, NetworkListener, NetworkLoadBalancer, NetworkTarg
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, CnameRecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
-import { CfnOutput, Duration, FeatureFlags, Stack } from '@aws-cdk/core';
-import { ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT } from '@aws-cdk/cx-api';
+import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
 /**
@@ -100,7 +99,7 @@ export interface NetworkLoadBalancedServiceBaseProps {
    *
    * @default - defaults to 60 seconds if at least one load balancer is in-use and it is not already set
    */
-  readonly healthCheckGracePeriod?: Duration;
+  readonly healthCheckGracePeriod?: cdk.Duration;
 
   /**
    * The maximum number of tasks, specified as a percentage of the Amazon ECS
@@ -344,7 +343,7 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
     const loadBalancer = props.loadBalancer ?? new NetworkLoadBalancer(this, 'LB', lbProps);
     const listenerPort = props.listenerPort ?? 80;
     const targetProps = {
-      port: FeatureFlags.of(this).isEnabled(ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT) ? props.taskImageOptions?.containerPort ?? 80 : 80,
+      port: props.taskImageOptions?.containerPort ?? 80,
     };
 
     this.listener = loadBalancer.addListener('PublicListener', { port: listenerPort });
@@ -381,7 +380,7 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
     }
 
     if (props.loadBalancer === undefined) {
-      new CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
+      new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
     }
   }
 
@@ -391,7 +390,7 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
   protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
-    const stack = Stack.of(scope);
+    const stack = cdk.Stack.of(scope);
     return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
