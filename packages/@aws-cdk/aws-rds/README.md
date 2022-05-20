@@ -244,6 +244,7 @@ const myKey = new kms.Key(this, 'MyKey');
 new rds.DatabaseInstanceFromSnapshot(this, 'InstanceFromSnapshotWithCustomizedSecret', {
   engine,
   vpc,
+  snapshotIdentifier: 'mySnapshot',
   credentials: rds.SnapshotCredentials.fromGeneratedSecret('postgres', {
     encryptionKey: myKey,
     excludeCharacters: '!&*^#@()',
