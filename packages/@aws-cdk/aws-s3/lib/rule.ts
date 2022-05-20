@@ -67,6 +67,16 @@ export interface LifecycleRule {
   readonly noncurrentVersionExpiration?: Duration;
 
   /**
+   * Indicates a maximum number of noncurrent versions to retain.
+   *
+   * If there are this many more noncurrent versions,
+   * Amazon S3 permanently deletes them.
+   *
+   * @default No noncurrent versions to retain
+   */
+  readonly noncurrentVersionsToRetain?: number;
+
+  /**
    * One or more transition rules that specify when non-current objects transition to a specified storage class.
    *
    * Only for for buckets with versioning enabled (or suspended).

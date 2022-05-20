@@ -8,7 +8,7 @@ export const SDK_RESOURCE_TYPE_PREFIX = 'Custom::DeployAssert@SdkCall';
 /**
  * A AWS JavaScript SDK V2 request
  */
-export interface SdkRequest {
+export interface AwsApiCallRequest {
   /**
    * The AWS service i.e. S3
    */
@@ -48,7 +48,7 @@ export interface SdkRequest {
 /**
  * The result from a SdkQuery
  */
-export interface SdkResult {
+export interface AwsApiCallResult {
   /**
    * The full api response
    */
@@ -63,6 +63,18 @@ export enum AssertionType {
    * Assert that two values are equal
    */
   EQUALS = 'equals',
+
+  /**
+   * The keys and their values must be present in the target but the target
+   * can be a superset.
+   */
+  OBJECT_LIKE = 'objectLike',
+
+  /**
+   * Matches the specified pattern with the array
+   * The set of elements must be in the same order as would be found
+   */
+  ARRAY_WITH = 'arrayWith',
 }
 
 /**
@@ -70,11 +82,6 @@ export enum AssertionType {
  * actual value matches the expected
  */
 export interface AssertionRequest {
-  /**
-   * The type of assertion to perform
-   */
-  readonly assertionType: AssertionType;
-
   /**
    * The expected value to assert
    */
@@ -84,6 +91,17 @@ export interface AssertionRequest {
    * The actual value received
    */
   readonly actual: any;
+
+  /**
+   * Set this to true if a failed assertion should
+   * result in a CloudFormation deployment failure
+   *
+   * This is only necessary if assertions are being
+   * executed outside of `integ-runner`.
+   *
+   * @default false
+   */
+  readonly failDeployment?: boolean;
 }
 /**
  * The result of an Assertion
@@ -94,7 +112,29 @@ export interface AssertionResult {
 /**
  * The result of an assertion
  */
-  readonly data: AssertionResultData;
+  readonly data: string;
+
+  /**
+   * Whether or not the assertion failed
+   *
+   * @default false
+   */
+  readonly failed?: boolean;
+}
+
+/**
+ * The status of the assertion
+ */
+export enum Status {
+  /**
+   * The assertion passed
+   */
+  PASS = 'pass',
+
+  /**
+   * The assertion failed
+   */
+  FAIL = 'fail',
 }
 
 /**
@@ -105,7 +145,7 @@ export interface AssertionResultData {
    * The status of the assertion, i.e.
    * pass or fail
    */
-  readonly status: 'pass' | 'fail'
+  readonly status: Status;
 
   /**
    * Any message returned with the assertion result
