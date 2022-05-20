@@ -1,3 +1,37 @@
+# CloudFormation Resource Specification v72.1.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Cognito::UserPoolClient EnablePropagateAdditionalUserContextData (__added__)
+* AWS::Lightsail::LoadBalancer TlsPolicyName (__added__)
+* AWS::Lightsail::LoadBalancerTlsCertificate HttpsRedirectionEnabled (__added__)
+
+## Property Type Changes
+
+* AWS::SSMIncidents::ResponsePlan.DynamicSsmParameter (__added__)
+* AWS::SSMIncidents::ResponsePlan.DynamicSsmParameterValue (__added__)
+* AWS::AppMesh::Mesh.MeshServiceDiscovery IpPreference (__added__)
+* AWS::AppMesh::Mesh.MeshSpec ServiceDiscovery (__added__)
+* AWS::AppMesh::VirtualNode.AwsCloudMapServiceDiscovery IpPreference (__added__)
+* AWS::AppMesh::VirtualNode.DnsServiceDiscovery IpPreference (__added__)
+* AWS::Cognito::UserPool.UsernameConfiguration CaseSensitive.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DataSync::Task.Options ObjectTags (__added__)
+* AWS::SSMIncidents::ResponsePlan.SsmAutomation DynamicParameters (__added__)
+* AWS::Transfer::Server.ProtocolDetails SetStatOption (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+
 # CloudFormation Resource Specification v72.0.0
 
 ## New Resource Types
