@@ -1,4 +1,4 @@
-import { Stack } from '@aws-cdk/core';
+import { Stack, Token } from '@aws-cdk/core';
 import { IHostedZone } from './hosted-zone-ref';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -49,7 +49,7 @@ class ValidationError extends Error {
  *        <li>Otherwise, append +.+, +zoneName+ and a trailing +.+</li>
  *      </ul>
  */
-export function determineFullyQualifiedDomainName(providedName: string, hostedZone: IHostedZone): string {
+export function determineFullyQualifiedDomainName(providedName: string, hostedZone: IHostedZone, forceRemovePeriodProp?: boolean): string {
   if (providedName.endsWith('.')) {
     return providedName;
   }
@@ -63,7 +63,11 @@ export function determineFullyQualifiedDomainName(providedName: string, hostedZo
     return `${providedName}.`;
   }
 
-  return `${providedName}${suffix}.`;
+  if (Token.isUnresolved(hostedZoneName) && forceRemovePeriodProp) {
+    return `${providedName}${suffix}`;
+  } else {
+    return `${providedName}${suffix}.`;
+  }
 }
 
 export function makeHostedZoneArn(construct: Construct, hostedZoneId: string): string {
