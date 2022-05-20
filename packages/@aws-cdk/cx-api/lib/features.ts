@@ -234,15 +234,6 @@ export const EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME = '@aws-cdk/aws-ec2:uniqueIm
 export const IAM_MINIMIZE_POLICIES = '@aws-cdk/aws-iam:minimizePolicies';
 
 /**
- * Enable this feature flag to pass through the `NetworkLoadBalanced<Ec2|Fargate>ServiceProps.taskImageOptions.containerPort`
- * and the `NetworkMultipleTargetGroups<Ec2|Fargate>ServiceProps.targetGroups[X].containerPort` to the generated
- * `ElasticLoadBalancingV2::TargetGroup`'s `Port` property.
- *
- * This is a feature flag because updating `Port` causes a replacement of the target groups, which is a breaking change.
- */
-export const ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT = '@aws-cdk/aws-ecs-patterns:containerPortToTargetGroupPort';
-
-/**
  * Flag values that should apply for new projects
  *
  * Add a flag in here (typically with the value `true`), to enable
@@ -269,7 +260,6 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: true,
   [CHECK_SECRET_USAGE]: true,
   [IAM_MINIMIZE_POLICIES]: true,
-  [ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT]: true,
 };
 
 /**
