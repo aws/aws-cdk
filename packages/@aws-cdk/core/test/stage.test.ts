@@ -1,6 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { App, CfnResource, Construct, IAspect, IConstruct, Stack, Stage, Aspects } from '../lib';
+import { App, CfnResource, Construct, IAspect, IConstruct, Stack, Stage, Aspects, Tag } from '../lib';
 
 describe('stage', () => {
   test('Stack inherits unspecified part of the env from Stage', () => {
@@ -308,6 +308,19 @@ describe('stage', () => {
     expect(Stage.isStage(app)).toEqual(true);
     expect(Stage.isStage(externalStage)).toEqual(true);
 
+  });
+
+  test('Stage should inherit tags from scope if it is also a stage or an app', () => {
+    const sample_app = new App();
+    Aspects.of(sample_app).add(new Tag('first', 'A'));
+    const sample_stage1 = new Stage(sample_app, 'sample_stage1');
+    Aspects.of(sample_stage1).add(new Tag('second', '1'));
+    const sample_stage2 = new Stage(sample_app, 'sample_stage2');
+    Aspects.of(sample_stage2).add(new Tag('second', '2'));
+
+    expect(Aspects.of(sample_app).aspects.length).toBe(1);
+    expect(Aspects.of(sample_stage1).aspects.length).toBe(2);
+    expect(Aspects.of(sample_stage2).aspects.length).toBe(2);
   });
 });
 
