@@ -869,5 +869,33 @@ describe('record set', () => {
       RecordName: 'www.myzone.',
       RecordType: 'A',
     });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'route53:ListResourceRecordSets',
+              'route53:ChangeResourceRecordSets',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':route53:::hostedzone/',
+                { Ref: 'HostedZoneDB99F866' },
+              ]],
+            },
+          },
+          {
+            Action: 'route53:GetChange',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
   });
 });
