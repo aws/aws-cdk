@@ -791,7 +791,8 @@ export class Stack extends CoreConstruct implements ITaggable {
       const numberOfResources = Object.keys(resources).length;
 
       if (numberOfResources > this.maxResources) {
-        throw new Error(`Number of resources in stack '${this.node.path}': ${numberOfResources} is greater than allowed maximum of ${this.maxResources}`);
+        const counts = Object.entries(count(Object.values(resources).map((r: any) => `${r?.Type}`))).map(([type, c]) => `${type} (${c})`).join(', ');
+        throw new Error(`Number of resources in stack '${this.node.path}': ${numberOfResources} is greater than allowed maximum of ${this.maxResources}: ${counts}`);
       } else if (numberOfResources >= (this.maxResources * 0.8)) {
         Annotations.of(this).addInfo(`Number of resources: ${numberOfResources} is approaching allowed maximum of ${this.maxResources}`);
       }
@@ -1355,6 +1356,18 @@ export interface ExportValueOptions {
    * @default - A name is automatically chosen
    */
   readonly name?: string;
+}
+
+function count(xs: string[]): Record<string, number> {
+  const ret: Record<string, number> = {};
+  for (const x of xs) {
+    if (x in ret) {
+      ret[x] += 1;
+    } else {
+      ret[x] = 1;
+    }
+  }
+  return ret;
 }
 
 // These imports have to be at the end to prevent circular imports

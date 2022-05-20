@@ -1791,7 +1791,7 @@ test('can use Vpc imported from unparseable list tokens', () => {
     vpc,
     allowAllOutbound: false,
     associatePublicIpAddress: false,
-    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
   });
 
   // THEN

@@ -463,7 +463,7 @@ test('can set custom networking options', () => {
       {
         cidrMask: 24,
         name: 'Isolated',
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       },
     ],
   });
@@ -477,7 +477,7 @@ test('can set custom networking options', () => {
     memoryLimitMiB: 512,
     image: ecs.ContainerImage.fromRegistry('test'),
     securityGroups: [securityGroup],
-    taskSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+    taskSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
   });
 
   // THEN - NetworkConfiguration is created with the specific security groups and selected subnets
