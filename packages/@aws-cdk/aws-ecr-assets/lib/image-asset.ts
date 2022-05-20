@@ -57,7 +57,7 @@ export class NetworkMode {
 }
 
 /**
- * networking mode on build time supported by docker
+ * platform supported by docker
  */
 export class Platform {
   /**
