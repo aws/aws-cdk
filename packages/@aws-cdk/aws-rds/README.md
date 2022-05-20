@@ -185,7 +185,7 @@ const rule = instance.onEvent('InstanceEvent', { target: new targets.LambdaFunct
 
 ## Login credentials
 
-By default, database instances and clusters (with the exception of `DatabaseInstanceFromSnapshot` and ``ServerlessClusterFromSnapshot`) will have `admin` user with an auto-generated password.
+By default, database instances and clusters (with the exception of `DatabaseInstanceFromSnapshot` and `ServerlessClusterFromSnapshot`) will have `admin` user with an auto-generated password.
 An alternative username (and password) may be specified for the admin user instead of the default.
 
 The following examples use a `DatabaseInstance`, but the same usage is applicable to `DatabaseCluster`.
