@@ -1,5 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct, Node } from 'constructs';
+import { App } from './app';
+import { Aspects } from './aspect';
 import { Environment } from './environment';
 import { synthesize } from './private/synthesis';
 
@@ -141,6 +143,12 @@ export class Stage extends CoreConstruct {
 
     this._assemblyBuilder = this.createBuilder(props.outdir);
     this.stageName = [this.parentStage?.stageName, id].filter(x => x).join('-');
+
+    if (scope instanceof App || scope instanceof Stage) {
+      for (const tag of Aspects.of(scope as Stage).aspects) {
+        Aspects.of(this).add(tag);
+      }
+    }
   }
 
   /**
