@@ -89,6 +89,22 @@ export interface IntegRunnerMetrics {
   readonly profile?: string;
 }
 
+export interface SnapshotVerificationOptions {
+  /**
+   * Retain failed snapshot comparisons
+   *
+   * @default false
+   */
+  readonly retain?: boolean;
+
+  /**
+   * Verbose mode
+   *
+   * @default false
+   */
+  readonly verbose?: boolean;
+}
+
 /**
  * Integration test results
  */
@@ -208,6 +224,11 @@ export interface Diagnostic {
    * The reason for the diagnostic
    */
   readonly reason: DiagnosticReason;
+
+  /**
+   * Additional messages to print
+   */
+  readonly additionalMessages?: string[];
 }
 
 export function printSummary(total: number, failed: number): void {
@@ -250,5 +271,8 @@ export function printResults(diagnostic: Diagnostic): void {
       break;
     case DiagnosticReason.ASSERTION_FAILED:
       logger.error('   %s - Assertions Failed! %s\n%s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+  }
+  for (const addl of diagnostic.additionalMessages ?? []) {
+    logger.print(`      ${addl}`);
   }
 }

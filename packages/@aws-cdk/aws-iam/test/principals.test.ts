@@ -294,6 +294,10 @@ test('AccountPrincipal can specify an organization', () => {
   });
 });
 
+test('Passing non-string as accountId parameter in AccountPrincipal constructor should throw error', () => {
+  expect(() => new iam.AccountPrincipal(1234)).toThrowError('accountId should be of type string');
+});
+
 test('ServicePrincipal in agnostic stack generates lookup table', () => {
   // GIVEN
   const stack = new Stack();
