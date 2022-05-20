@@ -1,7 +1,7 @@
 import * as workerpool from 'workerpool';
 import { IntegSnapshotRunner, IntegTestRunner } from '../../runner';
 import { IntegTestConfig } from '../../runner/integration-tests';
-import { DiagnosticReason, IntegTestWorkerConfig } from '../common';
+import { DiagnosticReason, IntegTestWorkerConfig, formatAssertionResults } from '../common';
 import { IntegTestBatchRequest } from '../integ-test-worker';
 
 /**
@@ -32,23 +32,33 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
       }
       for (const testCaseName of Object.keys(tests)) {
         try {
-          runner.runIntegTestCase({
+          const results = runner.runIntegTestCase({
             testCaseName,
             clean: request.clean,
             dryRun: request.dryRun,
             updateWorkflow: request.updateWorkflow,
           });
-          workerpool.workerEmit({
-            reason: DiagnosticReason.TEST_SUCCESS,
-            testName: testCaseName,
-            message: 'Success',
-            duration: (Date.now() - start) / 1000,
-          });
+          if (results) {
+            failures.push(test);
+            workerpool.workerEmit({
+              reason: DiagnosticReason.ASSERTION_FAILED,
+              testName: `${runner.testName}-${testCaseName} (${request.profile}/${request.region})`,
+              message: formatAssertionResults(results),
+              duration: (Date.now() - start) / 1000,
+            });
+          } else {
+            workerpool.workerEmit({
+              reason: DiagnosticReason.TEST_SUCCESS,
+              testName: `${runner.testName}-${testCaseName}`,
+              message: 'Success',
+              duration: (Date.now() - start) / 1000,
+            });
+          }
         } catch (e) {
           failures.push(test);
           workerpool.workerEmit({
             reason: DiagnosticReason.TEST_FAILED,
-            testName: testCaseName,
+            testName: `${runner.testName}-${testCaseName} (${request.profile}/${request.region})`,
             message: `Integration test failed: ${e}`,
             duration: (Date.now() - start) / 1000,
           });
@@ -58,7 +68,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
       failures.push(test);
       workerpool.workerEmit({
         reason: DiagnosticReason.TEST_FAILED,
-        testName: test.fileName,
+        testName: `${test.fileName} (${request.profile}/${request.region})`,
         message: `Integration test failed: ${e}`,
         duration: (Date.now() - start) / 1000,
       });
