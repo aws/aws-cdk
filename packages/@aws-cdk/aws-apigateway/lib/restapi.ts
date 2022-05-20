@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
@@ -368,7 +368,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   }
 
   public arnForExecuteApi(method: string = '*', path: string = '/*', stage: string = '*') {
-    if (!path.startsWith('/')) {
+    if (!Token.isUnresolved(path) && !path.startsWith('/')) {
       throw new Error(`"path" must begin with a "/": '${path}'`);
     }
 

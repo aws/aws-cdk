@@ -347,7 +347,7 @@ describe('Batch Compute Environment', () => {
           ],
           type: batch.ComputeResourceType.ON_DEMAND,
           vpcSubnets: {
-            subnetType: ec2.SubnetType.PRIVATE,
+            subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
           },
         } as batch.ComputeResources,
         enabled: false,
