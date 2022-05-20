@@ -129,6 +129,8 @@ export abstract class IntegRunner {
 
   protected readonly profile?: string;
 
+  protected readonly cdkExecutable: string;
+
   protected _destructiveChanges?: DestructiveChange[];
   private legacyContext?: Record<string, any>;
 
@@ -150,8 +152,10 @@ export abstract class IntegRunner {
     this.relativeSnapshotDir = `${testName}.integ.snapshot`;
     this.sourceFilePath = path.join(this.directory, parsed.base);
     this.cdkContextPath = path.join(this.directory, 'cdk.context.json');
+
+    this.cdkExecutable = require.resolve('aws-cdk/bin/cdk');
     this.cdk = options.cdk ?? new CdkCliWrapper({
-      cdkExecutable: require.resolve('aws-cdk/bin/cdk'),
+      cdkExecutable: this.cdkExecutable,
       directory: this.directory,
       env: {
         ...options.env,
