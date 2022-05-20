@@ -218,35 +218,9 @@ describe('external task definition', () => {
                     },
                     ':s3:::',
                     {
-                      Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
+                      'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
                     },
-                    '/',
-                    {
-                      'Fn::Select': [
-                        0,
-                        {
-                          'Fn::Split': [
-                            '||',
-                            {
-                              Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
-                            },
-                          ],
-                        },
-                      ],
-                    },
-                    {
-                      'Fn::Select': [
-                        1,
-                        {
-                          'Fn::Split': [
-                            '||',
-                            {
-                              Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
-                            },
-                          ],
-                        },
-                      ],
-                    },
+                    '/872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724d.env',
                   ],
                 ],
               },

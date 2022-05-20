@@ -1,12 +1,11 @@
 import { CustomResource, Reference, Lazy, CfnResource, Stack, ArnFormat } from '@aws-cdk/core';
-import { Construct } from 'constructs';
 import { EqualsAssertion } from './assertions';
 import { ExpectedResult, ActualResult } from './common';
 import { AssertionsProvider, SDK_RESOURCE_TYPE_PREFIX } from './providers';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Options to perform an AWS JavaScript V2 API call
@@ -39,7 +38,7 @@ export interface AwsApiCallProps extends AwsApiCallOptions {}
  * Construct that creates a custom resource that will perform
  * a query using the AWS SDK
  */
-export class AwsApiCall extends CoreConstruct {
+export class AwsApiCall extends Construct {
   private readonly sdkCallResource: CustomResource;
   private flattenResponse: string = 'false';
   private readonly name: string;
