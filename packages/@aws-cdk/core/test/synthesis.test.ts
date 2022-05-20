@@ -3,6 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as cdk from '../lib';
 
 function createModernApp() {
@@ -48,7 +49,10 @@ describe('synthesis', () => {
 
   test('synthesis respects disabling logicalId metadata', () => {
     const app = new cdk.App({
-      context: { 'aws:cdk:disable-logicalId-metadata': true },
+      context: {
+        [cxapi.DISABLE_LOGICAL_ID_METADATA]: true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
     });
     const stack = new cdk.Stack(app, 'one-stack');
     new cdk.CfnResource(stack, 'MagicResource', { type: 'Resource::Type' });
@@ -80,7 +84,10 @@ describe('synthesis', () => {
 
   test('synthesis respects disabling logicalId metadata, and does not disable other metadata', () => {
     const app = new cdk.App({
-      context: { 'aws:cdk:disable-logicalId-metadata': true },
+      context: {
+        [cxapi.DISABLE_LOGICAL_ID_METADATA]: true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
       stackTraces: false,
     });
     const stack = new cdk.Stack(app, 'one-stack', { tags: { boomTag: 'BOOM' } });
