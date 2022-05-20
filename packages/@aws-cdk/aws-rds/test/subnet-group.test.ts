@@ -32,7 +32,7 @@ describe('subnet group', () => {
       description: 'My Shared Group',
       subnetGroupName: 'SharedGroup',
       vpc,
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBSubnetGroup', {
@@ -51,7 +51,7 @@ describe('subnet group', () => {
       description: 'My Shared Group',
       subnetGroupName: parameter.valueAsString,
       vpc,
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBSubnetGroup', {

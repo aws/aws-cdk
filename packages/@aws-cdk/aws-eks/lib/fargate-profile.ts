@@ -161,7 +161,7 @@ export class FargateProfile extends Construct implements ITaggable {
 
     let subnets: string[] | undefined;
     if (props.vpc) {
-      const selection: ec2.SubnetSelection = props.subnetSelection ?? { subnetType: ec2.SubnetType.PRIVATE };
+      const selection: ec2.SubnetSelection = props.subnetSelection ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT };
       subnets = props.vpc.selectSubnets(selection).subnetIds;
     }
 

@@ -25,6 +25,20 @@ export interface IEc2Environment extends cdk.IResource {
 }
 
 /**
+ * The connection type used for connecting to an Amazon EC2 environment.
+ */
+export enum ConnectionType {
+  /**
+   * Conect through SSH
+   */
+  CONNECT_SSH = 'CONNECT_SSH',
+  /**
+   * Connect through AWS Systems Manager
+   */
+  CONNECT_SSM = 'CONNECT_SSM'
+}
+
+/**
  * Properties for Ec2Environment
  */
 export interface Ec2EnvironmentProps {
@@ -70,6 +84,15 @@ export interface Ec2EnvironmentProps {
    */
   // readonly clonedRepositories?: Cloud9Repository[];
   readonly clonedRepositories?: CloneRepository[];
+
+  /**
+   * The connection type used for connecting to an Amazon EC2 environment.
+   *
+   * Valid values are: CONNECT_SSH (default) and CONNECT_SSM (connected through AWS Systems Manager)
+   *
+   * @default - CONNECT_SSH
+   */
+  readonly connectionType?: ConnectionType
 }
 
 /**
@@ -139,6 +162,7 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
         repositoryUrl: r.repositoryUrl,
         pathComponent: r.pathComponent,
       })) : undefined,
+      connectionType: props.connectionType ?? ConnectionType.CONNECT_SSH,
     });
     this.environmentId = c9env.ref;
     this.ec2EnvironmentArn = c9env.getAtt('Arn').toString();
