@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Fn } from '@aws-cdk/core';
 import { HostedZone } from '../lib';
 import * as util from '../lib/util';
 
@@ -70,5 +71,25 @@ describe('util', () => {
 
     // THEN
     expect(qualified).toEqual('test.domain.com.');
+  });
+
+  test('determineFullyQualifiedDomainName should not end with \'.\' when hostedZone.zoneName is an unresolved token', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const providedName = 'test';
+    new cdk.CfnOutput(stack, 'zoneNameExample', {
+      value: 'domain.com.',
+      exportName: 'zoneNameExample',
+    });
+
+    const qualified = util.determineFullyQualifiedDomainName(providedName, HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+      hostedZoneId: 'fakeId',
+      zoneName: Fn.importValue('zoneNameExample'),
+    }), true);
+
+    // THEN
+    expect(qualified.endsWith('.')).toBe(false);
   });
 });
