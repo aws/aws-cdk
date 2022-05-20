@@ -875,8 +875,8 @@ describe('record set', () => {
         Statement: [
           {
             Action: [
-              'route53:ListResourceRecordSets',
               'route53:ChangeResourceRecordSets',
+              'route53:ListResourceRecordSets',
             ],
             Effect: 'Allow',
             Resource: {

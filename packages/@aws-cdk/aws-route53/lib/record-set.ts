@@ -257,8 +257,8 @@ export class RecordSet extends Resource implements IRecordSet {
       const providerRole = iam.Role.fromRoleArn(this, 'DeleteExistingRecordSetRole', provider.roleArn);
       const addToPrincipalPolicyResult = providerRole.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: [
-          'route53:ListResourceRecordSets',
           'route53:ChangeResourceRecordSets',
+          'route53:ListResourceRecordSets',
         ],
         resources: [props.zone.hostedZoneArn],
       }));
