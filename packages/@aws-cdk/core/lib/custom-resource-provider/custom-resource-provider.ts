@@ -274,16 +274,18 @@ export class CustomResourceProvider extends CoreConstruct {
    * Add an IAM policy statement to the inline policy of the
    * provider's lambda function's role.
    *
-   * **Please note**: this is direct IAM JSON policy blob, *not* a `iam.PolicyStatement`
+   * **Please note**: this is a direct IAM JSON policy blob, *not* a `iam.PolicyStatement`
    * object like you will see in the rest of the CDK.
    *
    *
    * @example
-   * provider.addToRolePolicy({
+   * declare const myProvider: CustomResourceProvider;
+   *
+   * myProvider.addToRolePolicy({
    *   Effect: 'Allow',
    *   Action: 's3:GetObject',
    *   Resources: '*',
-   * }),
+   * });
    */
   public addToRolePolicy(statement: any): void {
     if (!this.policyStatements) {
