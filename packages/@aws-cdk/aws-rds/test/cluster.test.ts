@@ -1074,7 +1074,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(() => cluster.addRotationSingleUser()).toThrow(/without secret/);
+    expect(() => cluster.addRotationSingleUser()).toThrow(/without a secret/);
   });
 
   test('throws when trying to add single user rotation multiple times', () => {
@@ -2049,6 +2049,92 @@ describe('cluster', () => {
     });
   });
 
+  test('create a cluster from a snapshot with single user secret rotation', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+    });
+
+    // WHEN
+    cluster.addRotationSingleUser();
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      RotationRules: {
+        AutomaticallyAfterDays: 30,
+      },
+    });
+  });
+
+  test('throws when trying to add single user rotation multiple times on cluster from snapshot', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+    });
+
+    // WHEN
+    cluster.addRotationSingleUser();
+
+    // THEN
+    expect(() => cluster.addRotationSingleUser()).toThrow(/A single user rotation was already added to this cluster/);
+  });
+
+  test('create a cluster from a snapshot with multi user secret rotation', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+    });
+
+    // WHEN
+    const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+    cluster.addRotationMultiUser('user', { secret: userSecret.attach(cluster) });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'UserSecretAttachment16ACBE6D',
+      },
+      RotationLambdaARN: {
+        'Fn::GetAtt': [
+          'DatabaseuserECD1FB0C',
+          'Outputs.RotationLambdaARN',
+        ],
+      },
+      RotationRules: {
+        AutomaticallyAfterDays: 30,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
+      Parameters: {
+        masterSecretArn: {
+          Ref: 'DatabaseSecretAttachmentE5D1B020',
+        },
+      },
+    });
+  });
+
   test('reuse an existing subnet group', () => {
     // GIVEN
     const stack = testStack();
@@ -2208,7 +2294,7 @@ describe('cluster', () => {
       instanceProps: {
         vpc,
         vpcSubnets: {
-          subnetType: ec2.SubnetType.PRIVATE,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
         },
         publiclyAccessible: true,
       },
