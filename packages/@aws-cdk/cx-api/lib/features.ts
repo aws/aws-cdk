@@ -234,6 +234,17 @@ export const EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME = '@aws-cdk/aws-ec2:uniqueIm
 export const IAM_MINIMIZE_POLICIES = '@aws-cdk/aws-iam:minimizePolicies';
 
 /**
+ * Enable this flag to create SNS subcriptions with a unique logical ID.
+ *
+ * When a lambda function subscribes two different SNS topics, the scope of the SNS subscriptions will be the lambda function.
+ * Without this option enabled, the construct ID of the SNS subscription is the node ID of the SNS topic.
+ * This prevents users from creating SNS subscriptions with the same node ID in different scopes.
+ * This option ensures the uniqueness of the SNS subcription construct ID.
+ * [PERMANENT]
+ */
+export const SNS_SUBSCRIPTIONS_UNIQUE_LAMBDA_SUBSCRIPTION_ID = '@aws-cdk/aws-sns-subscriptions:uniqueLambdaSubscriptionId';
+
+/**
  * Flag values that should apply for new projects
  *
  * Add a flag in here (typically with the value `true`), to enable
@@ -260,6 +271,7 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: true,
   [CHECK_SECRET_USAGE]: true,
   [IAM_MINIMIZE_POLICIES]: true,
+  [SNS_SUBSCRIPTIONS_UNIQUE_LAMBDA_SUBSCRIPTION_ID]: true,
 };
 
 /**

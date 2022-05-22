@@ -1,7 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
-import { ArnFormat, Names, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, FeatureFlags, Names, Stack, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { SubscriptionProps } from './subscription';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -42,9 +43,16 @@ export class LambdaSubscription implements sns.ITopicSubscription {
       this.fn.stack.addDependency(topic.stack);
     }
 
+    // When a lambda subscribes two SNS topics, the node ID is not sufficient
+    // to ensure the uniquness of the SNS subcriptions construct ID because the node ID in different scopes can have the same ID.
+    let subscriberId = topic.node.id;
+    if (FeatureFlags.of(this.fn).isEnabled(cxapi.SNS_SUBSCRIPTIONS_UNIQUE_LAMBDA_SUBSCRIPTION_ID)) {
+      subscriberId = Names.nodeUniqueId(topic.node);
+    }
+
     return {
       subscriberScope: this.fn,
-      subscriberId: Names.nodeUniqueId(topic.node),
+      subscriberId: subscriberId,
       endpoint: this.fn.functionArn,
       protocol: sns.SubscriptionProtocol.LAMBDA,
       filterPolicy: this.props.filterPolicy,
