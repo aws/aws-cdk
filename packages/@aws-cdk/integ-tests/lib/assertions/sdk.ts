@@ -44,12 +44,12 @@ export interface IAwsApiCall extends IConstruct {
    *
    * @example
    * declare const integ: IntegTest;
-   * const invoke = integ.assert.invokeFunction({
+   * const invoke = integ.deployAssert.invokeFunction({
    *   functionName: 'my-func',
    * });
-   * invoke.assert(ExpectedResult.objectLike({ Payload: 'OK' }));
+   * invoke.expect(ExpectedResult.objectLike({ Payload: 'OK' }));
    */
-  assert(expected: ExpectedResult): void;
+  expect(expected: ExpectedResult): void;
 
   /**
    * Assert that the ExpectedResult is equal
@@ -75,7 +75,7 @@ export interface IAwsApiCall extends IConstruct {
    *
    *
    * declare const integ: IntegTest;
-   * const message = integ.assert.awsApiCall('SQS', 'receiveMessage');
+   * const message = integ.deployAssert.awsApiCall('SQS', 'receiveMessage');
    *
    * message.assertAtPath('Messages.0.Body', ExpectedResult.stringLikeRegexp('hello'));
    */
@@ -153,7 +153,7 @@ export class AwsApiCall extends CoreConstruct implements IAwsApiCall {
     return this.sdkCallResource.getAttString(`apiCallResponse.${attributeName}`);
   }
 
-  public assert(expected: ExpectedResult): void {
+  public expect(expected: ExpectedResult): void {
     new EqualsAssertion(this, `AssertEquals${this.name}`, {
       expected,
       actual: ActualResult.fromCustomResource(this.sdkCallResource, 'apiCallResponse'),

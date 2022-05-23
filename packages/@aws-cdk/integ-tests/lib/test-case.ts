@@ -32,7 +32,7 @@ export class IntegTestCase extends CoreConstruct {
   /**
    * Make assertions on resources in this test case
    */
-  public readonly assert: IDeployAssert;
+  public readonly deployAssert: IDeployAssert;
 
   private readonly _assert: DeployAssert;
 
@@ -40,7 +40,7 @@ export class IntegTestCase extends CoreConstruct {
     super(scope, id);
 
     this._assert = new DeployAssert(this);
-    this.assert = this._assert;
+    this.deployAssert = this._assert;
   }
 
   /**
@@ -87,7 +87,7 @@ export class IntegTestCaseStack extends Stack {
   /**
    * Make assertions on resources in this test case
    */
-  public readonly assert: IDeployAssert;
+  public readonly deployAssert: IDeployAssert;
 
   /**
    * The underlying IntegTestCase that is created
@@ -101,7 +101,7 @@ export class IntegTestCaseStack extends Stack {
     Object.defineProperty(this, TEST_CASE_STACK_SYMBOL, { value: true });
 
     // TODO: should we only have a single DeployAssert per test?
-    this.assert = new DeployAssert(this);
+    this.deployAssert = new DeployAssert(this);
     this._testCase = new IntegTestCase(this, `${id}TestCase`, {
       ...props,
       stacks: [this],
@@ -128,7 +128,7 @@ export class IntegTest extends CoreConstruct {
   /**
    * Make assertions on resources in this test case
    */
-  public readonly assert: IDeployAssert;
+  public readonly deployAssert: IDeployAssert;
   private readonly testCases: IntegTestCase[];
   constructor(scope: Construct, id: string, props: IntegTestProps) {
     super(scope, id);
@@ -142,7 +142,7 @@ export class IntegTest extends CoreConstruct {
       cdkCommandOptions: props.cdkCommandOptions,
       stackUpdateWorkflow: props.stackUpdateWorkflow,
     });
-    this.assert = defaultTestCase.assert;
+    this.deployAssert = defaultTestCase.deployAssert;
 
     this.testCases = [
       defaultTestCase,
