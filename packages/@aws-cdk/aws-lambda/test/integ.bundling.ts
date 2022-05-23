@@ -47,7 +47,7 @@ const integ = new IntegTest(app, 'Bundling', {
   stackUpdateWorkflow: false,
 });
 
-const invoke = integ.deployAssert.invokeFunction({
+const invoke = integ.assertions.invokeFunction({
   functionName: stack.functionName,
 });
 invoke.expect(ExpectedResult.objectLike({

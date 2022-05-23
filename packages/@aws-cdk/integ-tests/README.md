@@ -189,7 +189,7 @@ declare const app: App;
 declare const stack: Stack;
 
 const integ = new IntegTest(app, 'Integ', { testCases: [stack] });
-integ.deployAssert.awsApiCall('S3', 'getObject');
+integ.assertions.awsApiCall('S3', 'getObject');
 ```
 
 - Part of a  normal CDK deployment
@@ -220,7 +220,7 @@ declare const stack: Stack;
 declare const app: App;
 
 const integ = new IntegTest(app, 'Integ', { testCases: [stack] });
-integ.deployAssert.expect(
+integ.assertions.expect(
   'CustomAssertion',
   ExpectedResult.objectLike({ foo: 'bar' }),
   ActualResult.fromCustomResource(myCustomResource, 'data'),
@@ -259,7 +259,7 @@ declare const stack: Stack;
 const integ = new IntegTest(app, 'Integ', {
   testCases: [stack],
 });
-integ.deployAssert.awsApiCall('SQS', 'receiveMessage', {
+integ.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: 'url',
 });
 ```
@@ -282,13 +282,13 @@ const integ = new IntegTest(app, 'Integ', {
   testCases: [stack],
 });
 
-integ.deployAssert.invokeFunction({
+integ.assertions.invokeFunction({
   functionName: fn.functionName,
   invocationType: InvocationType.EVENT,
   payload: JSON.stringify({ status: 'OK' }),
 });
 
-const message = integ.deployAssert.awsApiCall('SQS', 'receiveMessage', {
+const message = integ.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: queue.queueUrl,
   WaitTimeSeconds: 20,
 });
@@ -344,7 +344,7 @@ const integ = new IntegTest(app, 'IntegTest', {
   testCases: [stack],
 });
 
-const invoke = integ.deployAssert.invokeFunction({
+const invoke = integ.assertions.invokeFunction({
   functionName: lambdaFunction.functionName,
 });
 invoke.expect(ExpectedResult.objectLike({
@@ -367,12 +367,12 @@ const testCase = new IntegTest(app, 'IntegTest', {
 });
 
 // Start an execution
-const start = testCase.deployAssert.awsApiCall('StepFunctions', 'startExecution', {
+const start = testCase.assertions.awsApiCall('StepFunctions', 'startExecution', {
   stateMachineArn: sm.stateMachineArn,
 });
 
 // describe the results of the execution
-const describe = testCase.deployAssert.awsApiCall('StepFunctions', 'describeExecution', {
+const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecution', {
   executionArn: start.getAttString('executionArn'),
 });
 

@@ -46,12 +46,12 @@ const testCase = new IntegTest(app, 'PutEvents', {
 });
 
 // Start an execution
-const start = testCase.deployAssert.awsApiCall('StepFunctions', 'startExecution', {
+const start = testCase.assertions.awsApiCall('StepFunctions', 'startExecution', {
   stateMachineArn: sm.stateMachineArn,
 });
 
 // describe the results of the execution
-const describe = testCase.deployAssert.awsApiCall('StepFunctions', 'describeExecution', {
+const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecution', {
   executionArn: start.getAttString('executionArn'),
 });
 

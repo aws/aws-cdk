@@ -44,7 +44,7 @@ export interface IAwsApiCall extends IConstruct {
    *
    * @example
    * declare const integ: IntegTest;
-   * const invoke = integ.deployAssert.invokeFunction({
+   * const invoke = integ.assertions.invokeFunction({
    *   functionName: 'my-func',
    * });
    * invoke.expect(ExpectedResult.objectLike({ Payload: 'OK' }));
@@ -75,7 +75,7 @@ export interface IAwsApiCall extends IConstruct {
    *
    *
    * declare const integ: IntegTest;
-   * const message = integ.deployAssert.awsApiCall('SQS', 'receiveMessage');
+   * const message = integ.assertions.awsApiCall('SQS', 'receiveMessage');
    *
    * message.assertAtPath('Messages.0.Body', ExpectedResult.stringLikeRegexp('hello'));
    */
