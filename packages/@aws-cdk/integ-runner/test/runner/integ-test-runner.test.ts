@@ -1,4 +1,6 @@
 import * as child_process from 'child_process';
+import { Manifest } from '@aws-cdk/cloud-assembly-schema';
+import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY } from '@aws-cdk/cx-api';
 import { SynthFastOptions, DestroyOptions, ListOptions, SynthOptions, DeployOptions } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import { IntegTestRunner } from '../../lib/runner';
@@ -17,6 +19,7 @@ beforeEach(() => {
   listMock = jest.fn().mockImplementation(() => {
     return 'stackabc';
   });
+  jest.spyOn(Manifest, 'saveIntegManifest').mockImplementation();
   synthMock = jest.fn().mockImplementation();
   deployMock = jest.fn().mockImplementation();
   destroyMock = jest.fn().mockImplementation();
@@ -34,11 +37,10 @@ beforeEach(() => {
     output: ['stdout', 'stderr'],
     signal: null,
   });
-  jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
-  jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
+  // jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
+  // jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
-  jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
-  removeSyncMock = jest.spyOn(fs, 'rmdirSync').mockImplementation(() => { return true; });
+  removeSyncMock = jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
 });
 
@@ -57,36 +59,36 @@ describe('IntegTest runIntegTests', () => {
       directory: 'test/test-data',
     });
     integTest.runIntegTestCase({
-      testCase: {
-        stacks: ['stack1'],
-      },
+      testCaseName: 'integ.test-with-snapshot',
     });
 
     // THEN
     expect(deployMock).toHaveBeenCalledTimes(2);
     expect(destroyMock).toHaveBeenCalledTimes(1);
-    expect(synthFastMock).toHaveBeenCalledTimes(0);
+    expect(synthFastMock).toHaveBeenCalledTimes(1);
     expect(deployMock).toHaveBeenCalledWith({
       app: 'test-with-snapshot.integ.snapshot',
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
       context: expect.any(Object),
+      profile: undefined,
       versionReporting: false,
       lookups: false,
-      stacks: ['stack1'],
-      output: 'cdk-integ.out.test-with-snapshot',
+      stacks: ['test-stack'],
     });
     expect(deployMock).toHaveBeenCalledWith({
-      app: 'node integ.test-with-snapshot.js',
+      app: 'cdk-integ.out.test-with-snapshot',
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
+      output: 'cdk-integ.out.test-with-snapshot',
+      profile: undefined,
       context: expect.any(Object),
       versionReporting: false,
       lookups: false,
-      stacks: ['stack1'],
-      output: 'cdk-integ.out.test-with-snapshot',
+      rollback: false,
+      stacks: ['test-stack', 'new-test-stack'],
     });
     expect(destroyMock).toHaveBeenCalledWith({
       app: 'node integ.test-with-snapshot.js',
@@ -94,8 +96,9 @@ describe('IntegTest runIntegTests', () => {
       assetMetadata: false,
       context: expect.any(Object),
       versionReporting: false,
+      profile: undefined,
       force: true,
-      stacks: ['stack1'],
+      all: true,
       output: 'cdk-integ.out.test-with-snapshot',
     });
   });
@@ -107,11 +110,8 @@ describe('IntegTest runIntegTests', () => {
       fileName: 'test/test-data/integ.integ-test1.js',
       directory: 'test/test-data',
     });
-    integTest.generateSnapshot();
     integTest.runIntegTestCase({
-      testCase: {
-        stacks: ['stack1'],
-      },
+      testCaseName: 'integ.integ-test1',
     });
 
     // THEN
@@ -124,11 +124,11 @@ describe('IntegTest runIntegTests', () => {
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
+      profile: undefined,
       context: expect.not.objectContaining({
-        'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
-          vpcId: 'vpc-60900905',
-        }),
+        [AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY]: ['test-region-1a', 'test-region-1b', 'test-region-1c'],
       }),
+      rollback: false,
       lookups: false,
       stacks: ['stack1'],
       output: 'cdk-integ.out.integ-test1',
@@ -140,7 +140,7 @@ describe('IntegTest runIntegTests', () => {
       versionReporting: false,
       context: expect.any(Object),
       force: true,
-      stacks: ['stack1'],
+      all: true,
       output: 'cdk-integ.out.integ-test1',
     });
   });
@@ -153,30 +153,13 @@ describe('IntegTest runIntegTests', () => {
       directory: 'test/test-data',
     });
     integTest.runIntegTestCase({
-      testCase: {
-        stacks: ['test-stack'],
-      },
+      testCaseName: 'integ.test-with-snapshot-assets-diff',
     });
 
     // THEN
-    expect(deployMock).toHaveBeenCalledTimes(2);
+    expect(deployMock).toHaveBeenCalledTimes(1);
     expect(destroyMock).toHaveBeenCalledTimes(1);
-    expect(synthFastMock).toHaveBeenCalledTimes(1);
-    expect(deployMock).toHaveBeenCalledWith({
-      app: 'test-with-snapshot-assets-diff.integ.snapshot',
-      requireApproval: 'never',
-      pathMetadata: false,
-      assetMetadata: false,
-      context: expect.objectContaining({
-        'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
-          vpcId: 'vpc-60900905',
-        }),
-      }),
-      versionReporting: false,
-      lookups: true,
-      stacks: ['test-stack'],
-      output: 'cdk-integ.out.test-with-snapshot-assets-diff',
-    });
+    expect(synthFastMock).toHaveBeenCalledTimes(2);
     expect(deployMock).toHaveBeenCalledWith({
       app: 'node integ.test-with-snapshot-assets-diff.js',
       requireApproval: 'never',
@@ -189,8 +172,10 @@ describe('IntegTest runIntegTests', () => {
       }),
       versionReporting: false,
       lookups: true,
+      rollback: false,
       stacks: ['test-stack'],
       output: 'cdk-integ.out.test-with-snapshot-assets-diff',
+      profile: undefined,
     });
     expect(synthFastMock).toHaveBeenCalledWith({
       execCmd: ['node', 'integ.test-with-snapshot-assets-diff.js'],
@@ -212,7 +197,7 @@ describe('IntegTest runIntegTests', () => {
       }),
       versionReporting: false,
       force: true,
-      stacks: ['test-stack'],
+      all: true,
       output: 'cdk-integ.out.test-with-snapshot-assets-diff',
     });
   });
@@ -224,12 +209,9 @@ describe('IntegTest runIntegTests', () => {
       fileName: 'test/test-data/integ.integ-test1.js',
       directory: 'test/test-data',
     });
-    integTest.generateSnapshot();
     integTest.runIntegTestCase({
+      testCaseName: 'integ.integ-test1',
       clean: false,
-      testCase: {
-        stacks: ['stack1'],
-      },
     });
 
     // THEN
@@ -245,12 +227,9 @@ describe('IntegTest runIntegTests', () => {
       fileName: 'test/test-data/integ.integ-test1.js',
       directory: 'test/test-data',
     });
-    integTest.generateSnapshot();
     integTest.runIntegTestCase({
+      testCaseName: 'integ.integ-test1',
       dryRun: true,
-      testCase: {
-        stacks: ['stack1'],
-      },
     });
 
     // THEN
@@ -266,10 +245,9 @@ describe('IntegTest runIntegTests', () => {
       fileName: 'test/test-data/integ.integ-test1.js',
       directory: 'test',
     });
-    integTest.generateSnapshot();
 
     // THEN
-    expect(integTest.tests).toEqual(expect.objectContaining({
+    expect(integTest.actualTests()).toEqual(expect.objectContaining({
       'test-data/integ.integ-test1': {
         diffAssets: false,
         stackUpdateWorkflow: true,
@@ -281,12 +259,11 @@ describe('IntegTest runIntegTests', () => {
 
   test('generate snapshot', () => {
     // WHEN
-    const integTest = new IntegTestRunner({
+    new IntegTestRunner({
       cdk: cdkMock.cdk,
       fileName: 'test/test-data/integ.integ-test1.js',
       directory: 'test/test-data',
     });
-    integTest.generateSnapshot();
 
     // THEN
     expect(synthFastMock).toHaveBeenCalledTimes(1);
@@ -306,10 +283,9 @@ describe('IntegTest runIntegTests', () => {
       fileName: 'test/test-data/integ.integ-test2.js',
       directory: 'test',
     });
-    integTest.generateSnapshot();
 
     // THEN
-    expect(integTest.tests).toEqual(expect.objectContaining({
+    expect(integTest.actualTests()).toEqual(expect.objectContaining({
       'test-data/integ.integ-test2': {
         diffAssets: false,
         stackUpdateWorkflow: true,
@@ -335,11 +311,8 @@ describe('IntegTest runIntegTests', () => {
       profile: 'test-profile',
       directory: 'test/test-data',
     });
-    integTest.generateSnapshot();
     integTest.runIntegTestCase({
-      testCase: {
-        stacks: ['stack1'],
-      },
+      testCaseName: 'integ.integ-test1',
     });
 
     // THEN
@@ -354,6 +327,7 @@ describe('IntegTest runIntegTests', () => {
       versionReporting: false,
       context: expect.any(Object),
       profile: 'test-profile',
+      rollback: false,
       lookups: false,
       stacks: ['stack1'],
       output: 'cdk-integ.out.integ-test1',
@@ -366,7 +340,7 @@ describe('IntegTest runIntegTests', () => {
       context: expect.any(Object),
       profile: 'test-profile',
       force: true,
-      stacks: ['stack1'],
+      all: true,
       output: 'cdk-integ.out.integ-test1',
     });
   });
@@ -374,19 +348,11 @@ describe('IntegTest runIntegTests', () => {
   test('with hooks', () => {
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.test-with-snapshot.js',
+      fileName: 'test/test-data/integ.test-with-snapshot-assets.js',
       directory: 'test/test-data',
     });
     integTest.runIntegTestCase({
-      testCase: {
-        hooks: {
-          preDeploy: ['echo "preDeploy"'],
-          postDeploy: ['echo "postDeploy"'],
-          preDestroy: ['echo "preDestroy"'],
-          postDestroy: ['echo "postDestroy"'],
-        },
-        stacks: ['stack1'],
-      },
+      testCaseName: 'integ.test-with-snapshot-assets',
     });
 
     // THEN
@@ -431,9 +397,7 @@ describe('IntegTest runIntegTests', () => {
       directory: 'test/test-data',
     });
     integTest.runIntegTestCase({
-      testCase: {
-        stacks: ['stack1'],
-      },
+      testCaseName: 'integ.test-with-snapshot',
     });
 
     // THEN
@@ -469,9 +433,7 @@ describe('IntegTest runIntegTests', () => {
       directory: 'test/test-data',
     });
     integTest.runIntegTestCase({
-      testCase: {
-        stacks: ['stack1'],
-      },
+      testCaseName: 'integ.test-with-snapshot',
     });
 
     // THEN
@@ -508,9 +470,7 @@ describe('IntegTest runIntegTests', () => {
       directory: 'test/test-data',
     });
     integTest.runIntegTestCase({
-      testCase: {
-        stacks: ['stack1'],
-      },
+      testCaseName: 'integ.test-with-snapshot',
     });
 
     // THEN
@@ -528,15 +488,16 @@ describe('IntegTest runIntegTests', () => {
       directory: 'test/test-data',
     });
     integTest.runIntegTestCase({
-      testCase: {
-        stackUpdateWorkflow: false,
-        stacks: ['test-stack'],
-      },
+      testCaseName: 'integ.test-with-snapshot-assets',
     });
 
-    expect(removeSyncMock.mock.calls).toEqual([[
-      'test/test-data/test-with-snapshot-assets.integ.snapshot/asset.be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824',
-    ]]);
+    expect(removeSyncMock.mock.calls).toEqual([
+      ['test/test-data/test-with-snapshot-assets.integ.snapshot'],
+      [
+        'test/test-data/test-with-snapshot-assets.integ.snapshot/asset.be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824',
+      ],
+      ['test/test-data/cdk-integ.out.test-with-snapshot-assets'],
+    ]);
   });
 
   test('with assembly manifest, assets are removed if stackUpdateWorkflow is disabled', () => {
@@ -546,14 +507,14 @@ describe('IntegTest runIntegTests', () => {
       directory: 'test/test-data',
     });
     integTest.runIntegTestCase({
-      testCase: {
-        stackUpdateWorkflow: false,
-        stacks: ['test-stack'],
-      },
+      testCaseName: 'integ.test-with-snapshot-assets-diff',
     });
 
-    expect(removeSyncMock.mock.calls).toEqual([[
-      'test/test-data/test-with-snapshot-assets-diff.integ.snapshot/asset.fec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509',
-    ]]);
+    expect(removeSyncMock.mock.calls).toEqual([
+      ['test/test-data/test-with-snapshot-assets-diff.integ.snapshot'],
+      [
+        'test/test-data/test-with-snapshot-assets-diff.integ.snapshot/asset.fec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509',
+      ],
+    ]);
   });
 });

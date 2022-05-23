@@ -368,6 +368,18 @@ export class ArnPrincipal extends PrincipalBase {
   public toString() {
     return `ArnPrincipal(${this.arn})`;
   }
+
+  /**
+   * A convenience method for adding a condition that the principal is part of the specified
+   * AWS Organization.
+   */
+  public inOrganization(organizationId: string) {
+    return this.withConditions({
+      StringEquals: {
+        'aws:PrincipalOrgID': organizationId,
+      },
+    });
+  }
 }
 
 /**
@@ -382,6 +394,9 @@ export class AccountPrincipal extends ArnPrincipal {
    */
   constructor(public readonly accountId: any) {
     super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
+    if (!cdk.Token.isUnresolved(accountId) && typeof accountId !== 'string') {
+      throw new Error('accountId should be of type string');
+    }
     this.principalAccount = accountId;
   }
 
@@ -397,7 +412,7 @@ export interface ServicePrincipalOpts {
   /**
    * The region in which the service is operating.
    *
-   * @default the current Stack's region.
+   * @default - the current Stack's region.
    * @deprecated You should not need to set this. The stack's region is always correct.
    */
   readonly region?: string;

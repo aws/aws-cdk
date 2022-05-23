@@ -40,6 +40,7 @@ export function cfnOnlyReadmeContents(options: LibraryReadmeOptions) {
   const cfnLink = `https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/${options.cfnNamespace.replace('::', '_')}.html`;
 
   const moduleName = options.cfnNamespace.replace('::', '-').replace(/V\d+$/, '').toLocaleLowerCase();
+  const serviceName = options.cfnNamespace.split('::')[1] ?? options.cfnNamespace;
   const importName = moduleName.replace(/[^a-z0-9_]/g, '_').replace(/^aws_/, '');
 
   return [
@@ -63,9 +64,17 @@ export function cfnOnlyReadmeContents(options: LibraryReadmeOptions) {
     '```ts nofixture',
     `import * as ${importName} from '${options.packageName}';`,
     '```',
+    '',
+    '<!--BEGIN CFNONLY DISCLAIMER-->',
+    '',
+    'There are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:',
+    '',
+    `- Search [Construct Hub for ${serviceName} construct libraries](https://constructs.dev/search?q=${encodeURIComponent(serviceName.toLowerCase())})`,
+    `- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation ${options.cfnNamespace} resources](${cfnLink}) directly.`,
+    '',
     ...(options.alphaPackageName ? [
       '',
-      '> The construct library for this service is in preview. Since it is not stable yet, it is distributed',
+      '> An experimental construct library for this service is available in preview. Since it is not stable yet, it is distributed',
       '> as a separate package so that you can pin its version independently of the rest of the CDK. See the package:',
       '>',
       `> <span class="package-reference">${options.alphaPackageName}</span>`,
@@ -78,7 +87,7 @@ export function cfnOnlyReadmeContents(options: LibraryReadmeOptions) {
     '',
     `For more information on the resources and properties available for this service, see the [CloudFormation documentation for ${options.cfnNamespace}](${cfnLink}).`,
     '',
-    '(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md) if you are interested in contributing to this construct library.)',
+    '(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)',
     '',
     '<!--END CFNONLY DISCLAIMER-->',
   ].join('\n') + '\n'; // File must end in newline otherwise linter will complain
