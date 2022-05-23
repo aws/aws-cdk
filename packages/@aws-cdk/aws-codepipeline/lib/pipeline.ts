@@ -7,7 +7,6 @@ import {
   ArnFormat,
   BootstraplessSynthesizer,
   DefaultStackSynthesizer,
-  FeatureFlags,
   IStackSynthesizer,
   Lazy,
   Names,
@@ -18,7 +17,6 @@ import {
   Stage as CdkStage,
   Token,
 } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { ActionCategory, IAction, IPipeline, IStage, PipelineNotificationEvents, PipelineNotifyOnOptions } from './action';
 import { CfnPipeline } from './codepipeline.generated';
@@ -699,19 +697,10 @@ export class Pipeline extends PipelineBase {
   private generateNameForDefaultBucketKeyAlias(): string {
     const prefix = 'alias/codepipeline-';
     const maxAliasLength = 256;
-    const maxResourceNameLength = maxAliasLength - prefix.length;
-    // Names.uniqueId() may have naming collisions when the IDs of resources are similar
-    // and/or when they are too long and sliced. We do not want to update this and
-    // automatically change the name of every KMS key already generated so we are putting
-    // this under a feature flag.
-    const uniqueId = FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID) ?
-      Names.uniqueResourceName(this, {
-        separator: '-',
-        maxLength: maxResourceNameLength,
-        allowedSpecialCharacters: '/_-',
-      }) :
-      Names.uniqueId(this).slice(-maxResourceNameLength);
-    return prefix + uniqueId.toLowerCase();
+    const uniqueId = Names.uniqueId(this);
+    // take the last 256 - (prefix length) characters of uniqueId
+    const startIndex = Math.max(0, uniqueId.length - (maxAliasLength - prefix.length));
+    return prefix + uniqueId.substring(startIndex).toLowerCase();
   }
 
   /**
