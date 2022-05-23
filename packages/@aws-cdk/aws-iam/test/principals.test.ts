@@ -304,6 +304,10 @@ test('ServicePrincipalName returns just a string representing the principal', ()
   expect(afSouthStack.resolve(principalName)).toEqual('ssm.af-south-1.amazonaws.com');
 });
 
+test('Passing non-string as accountId parameter in AccountPrincipal constructor should throw error', () => {
+  expect(() => new iam.AccountPrincipal(1234)).toThrowError('accountId should be of type string');
+});
+
 test('ServicePrincipal in agnostic stack generates lookup table', () => {
   // GIVEN
   const stack = new Stack();
