@@ -47,10 +47,10 @@ const integ = new IntegTest(app, 'Bundling', {
   stackUpdateWorkflow: false,
 });
 
-const invoke = integ.assert.invokeFunction({
+const invoke = integ.assertions.invokeFunction({
   functionName: stack.functionName,
 });
-invoke.assert(ExpectedResult.objectLike({
+invoke.expect(ExpectedResult.objectLike({
   Payload: '200',
 }));
 app.synth();

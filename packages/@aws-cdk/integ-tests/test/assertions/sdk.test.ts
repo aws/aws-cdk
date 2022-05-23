@@ -1,6 +1,7 @@
 import { Template, Match } from '@aws-cdk/assertions';
-import { App, Stack, CfnOutput } from '@aws-cdk/core';
-import { DeployAssert, AwsApiCall, LambdaInvokeFunction, LogType, InvocationType, ExpectedResult } from '../../lib/assertions';
+import { App, CfnOutput } from '@aws-cdk/core';
+import { LogType, InvocationType, ExpectedResult } from '../../lib/assertions';
+import { DeployAssert } from '../../lib/assertions/private/deploy-assert';
 
 describe('AwsApiCall', () => {
   test('default', () => {
@@ -9,13 +10,10 @@ describe('AwsApiCall', () => {
     const deplossert = new DeployAssert(app);
 
     // WHEN
-    new AwsApiCall(deplossert, 'AwsApiCall', {
-      service: 'MyService',
-      api: 'MyApi',
-    });
+    deplossert.awsApiCall('MyService', 'MyApi');
 
     // THEN
-    const template = Template.fromStack(Stack.of(deplossert));
+    const template = Template.fromStack(deplossert.scope);
     template.resourceCountIs('AWS::Lambda::Function', 1);
     template.hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
       service: 'MyService',
@@ -30,17 +28,13 @@ describe('AwsApiCall', () => {
     const deplossert = new DeployAssert(app);
 
     // WHEN
-    new AwsApiCall(deplossert, 'AwsApiCall', {
-      service: 'MyService',
-      api: 'MyApi',
-      parameters: {
-        param1: 'val1',
-        param2: 2,
-      },
+    deplossert.awsApiCall('MyService', 'MyApi', {
+      param1: 'val1',
+      param2: 2,
     });
 
     // THEN
-    const template = Template.fromStack(Stack.of(deplossert));
+    const template = Template.fromStack(deplossert.scope);
     template.resourceCountIs('AWS::Lambda::Function', 1);
     template.hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
       service: 'MyService',
@@ -59,21 +53,18 @@ describe('AwsApiCall', () => {
       const deplossert = new DeployAssert(app);
 
       // WHEN
-      const query = new AwsApiCall(deplossert, 'AwsApiCall', {
-        service: 'MyService',
-        api: 'MyApi',
-      });
+      const query = deplossert.awsApiCall('MyService', 'MyApi');
 
-      new CfnOutput(deplossert, 'GetAttString', {
+      new CfnOutput(deplossert.scope, 'GetAttString', {
         value: query.getAttString('att'),
       }).overrideLogicalId('GetAtt');
 
       // THEN
-      const template = Template.fromStack(Stack.of(deplossert));
+      const template = Template.fromStack(deplossert.scope);
       template.hasOutput('GetAtt', {
         Value: {
           'Fn::GetAtt': [
-            'AwsApiCall',
+            'AwsApiCallMyServiceMyApi',
             'apiCallResponse.att',
           ],
         },
@@ -85,27 +76,25 @@ describe('AwsApiCall', () => {
         flattenResponse: 'true',
       });
     });
+
     test('getAtt', () => {
       // GIVEN
       const app = new App();
       const deplossert = new DeployAssert(app);
 
       // WHEN
-      const query = new AwsApiCall(deplossert, 'AwsApiCall', {
-        service: 'MyService',
-        api: 'MyApi',
-      });
+      const query = deplossert.awsApiCall('MyService', 'MyApi');
 
-      new CfnOutput(deplossert, 'GetAttString', {
+      new CfnOutput(deplossert.scope, 'GetAttString', {
         value: query.getAtt('att').toString(),
       }).overrideLogicalId('GetAtt');
 
       // THEN
-      const template = Template.fromStack(Stack.of(deplossert));
+      const template = Template.fromStack(deplossert.scope);
       template.hasOutput('GetAtt', {
         Value: {
           'Fn::GetAtt': [
-            'AwsApiCall',
+            'AwsApiCallMyServiceMyApi',
             'apiCallResponse.att',
           ],
         },
@@ -117,7 +106,6 @@ describe('AwsApiCall', () => {
         flattenResponse: 'true',
       });
     });
-
   });
 
   describe('assertEqual', () => {
@@ -127,19 +115,16 @@ describe('AwsApiCall', () => {
       const deplossert = new DeployAssert(app);
 
       // WHEN
-      const query = new AwsApiCall(deplossert, 'AwsApiCall', {
-        service: 'MyService',
-        api: 'MyApi',
-      });
-      query.assert(ExpectedResult.exact({ foo: 'bar' }));
+      const query = deplossert.awsApiCall('MyService', 'MyApi');
+      query.expect(ExpectedResult.exact({ foo: 'bar' }));
 
       // THEN
-      const template = Template.fromStack(Stack.of(deplossert));
+      const template = Template.fromStack(deplossert.scope);
       template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
         expected: JSON.stringify({ $Exact: { foo: 'bar' } }),
         actual: {
           'Fn::GetAtt': [
-            'AwsApiCall',
+            'AwsApiCallMyServiceMyApi',
             'apiCallResponse',
           ],
         },
@@ -152,19 +137,16 @@ describe('AwsApiCall', () => {
       const deplossert = new DeployAssert(app);
 
       // WHEN
-      const query = new AwsApiCall(deplossert, 'AwsApiCall', {
-        service: 'MyService',
-        api: 'MyApi',
-      });
-      query.assert(ExpectedResult.objectLike({ foo: 'bar' }));
+      const query = deplossert.awsApiCall('MyService', 'MyApi');
+      query.expect(ExpectedResult.objectLike({ foo: 'bar' }));
 
       // THEN
-      const template = Template.fromStack(Stack.of(deplossert));
+      const template = Template.fromStack(deplossert.scope);
       template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
         expected: JSON.stringify({ $ObjectLike: { foo: 'bar' } }),
         actual: {
           'Fn::GetAtt': [
-            'AwsApiCall',
+            'AwsApiCallMyServiceMyApi',
             'apiCallResponse',
           ],
         },
@@ -177,19 +159,16 @@ describe('AwsApiCall', () => {
       const deplossert = new DeployAssert(app);
 
       // WHEN
-      const query = new AwsApiCall(deplossert, 'AwsApiCall', {
-        service: 'MyService',
-        api: 'MyApi',
-      });
-      query.assert(ExpectedResult.exact('bar'));
+      const query = deplossert.awsApiCall('MyService', 'MyApi');
+      query.expect(ExpectedResult.exact('bar'));
 
       // THEN
-      const template = Template.fromStack(Stack.of(deplossert));
+      const template = Template.fromStack(deplossert.scope);
       template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
         expected: JSON.stringify({ $Exact: 'bar' }),
         actual: {
           'Fn::GetAtt': [
-            'AwsApiCall',
+            'AwsApiCallMyServiceMyApi',
             'apiCallResponse',
           ],
         },
@@ -203,14 +182,14 @@ describe('AwsApiCall', () => {
       const app = new App();
       const deplossert = new DeployAssert(app);
 
-      new LambdaInvokeFunction(deplossert, 'Invoke', {
+      deplossert.invokeFunction({
         functionName: 'my-func',
         logType: LogType.TAIL,
         payload: JSON.stringify({ key: 'val' }),
         invocationType: InvocationType.EVENT,
       });
 
-      const template = Template.fromStack(Stack.of(deplossert));
+      const template = Template.fromStack(deplossert.scope);
       template.hasResourceProperties('Custom::DeployAssert@SdkCallLambdainvoke', {
         service: 'Lambda',
         api: 'invoke',
