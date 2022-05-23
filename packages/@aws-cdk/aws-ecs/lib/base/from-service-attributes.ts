@@ -27,7 +27,7 @@ export interface ServiceAttributes {
   readonly serviceName?: string;
 }
 
-export function fromServiceAtrributes(scope: Construct, id: string, attrs: ServiceAttributes): IBaseService {
+export function fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IBaseService {
   if ((attrs.serviceArn && attrs.serviceName) || (!attrs.serviceArn && !attrs.serviceName)) {
     throw new Error('You can only specify either serviceArn or serviceName.');
   }
@@ -57,4 +57,13 @@ export function fromServiceAtrributes(scope: Construct, id: string, attrs: Servi
   return new Import(scope, id, {
     environmentFromArn: arn,
   });
+
+}
+
+/**
+ * DEPRECATED
+ * @deprecated use fromServiceAttributes()
+ */
+function fromServiceAtrributes(scope: Construct, id: string, attrs: ServiceAttributes): IBaseService {
+  return this.fromServiceAttributes(scope, id, attrs);
 }
