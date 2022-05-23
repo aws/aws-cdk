@@ -1,5 +1,4 @@
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import { ProductVersionDetails, TemplateType } from './common';
 import { hashValues } from './private/util';
 import { ProductStack } from './product-stack';
 
@@ -53,15 +52,6 @@ export interface CloudFormationTemplateConfig {
     * The http url of the template in S3.
     */
   readonly httpUrl: string;
-  /**
-   * Additional metadata about the product version.
-   * @default - No additional details provided
-   */
-  readonly productVersionDetails?: ProductVersionDetails;
-  /**
-   * The type of the template source.
-   */
-  readonly templateType: TemplateType;
 }
 
 /**
@@ -75,7 +65,6 @@ class CloudFormationUrlTemplate extends CloudFormationTemplate {
   public bind(_scope: Construct): CloudFormationTemplateConfig {
     return {
       httpUrl: this.url,
-      templateType: TemplateType.URL,
     };
   }
 }
@@ -104,7 +93,6 @@ class CloudFormationAssetTemplate extends CloudFormationTemplate {
 
     return {
       httpUrl: this.asset.httpUrl,
-      templateType: TemplateType.ASSET,
     };
   }
 }
@@ -112,7 +100,7 @@ class CloudFormationAssetTemplate extends CloudFormationTemplate {
 /**
  * Template from a CDK defined product stack.
  */
-export class CloudFormationProductStackTemplate extends CloudFormationTemplate {
+class CloudFormationProductStackTemplate extends CloudFormationTemplate {
   /**
    * @param productStack A service catalog product stack.
    */
@@ -123,32 +111,6 @@ export class CloudFormationProductStackTemplate extends CloudFormationTemplate {
   public bind(_scope: Construct): CloudFormationTemplateConfig {
     return {
       httpUrl: this.productStack._getTemplateUrl(),
-      templateType: TemplateType.PRODUCT_STACK,
-      productVersionDetails: this.productStack._getProductVersionDetails(),
-    };
-  }
-}
-
-/**
- * Template from a previously deployed product stack.
- */
-export class CloudFormationProductStackSnapshotTemplate extends CloudFormationTemplate {
-  /**
-   * @param productStack A service catalog product stack.
-   * @param directory Where product stack snapshots are stored.
-   */
-  constructor(public readonly productStack: ProductStack, public readonly directory?: string) {
-    super();
-  }
-
-  public bind(_scope: Construct): CloudFormationTemplateConfig {
-    return {
-      httpUrl: this.productStack._getTemplateUrl(),
-      templateType: TemplateType.PRODUCT_STACK_SNAPSHOT,
-      productVersionDetails: {
-        productStackId: this.productStack.artifactId,
-        directory: this.directory,
-      },
     };
   }
 }

@@ -216,7 +216,7 @@ describe('Product', () => {
     expect(assembly.stacks[0].assets.length).toBe(1);
     expect(assembly.stacks[0].assets[0].path).toEqual('ProductStack.product.template.json');
 
-    const expectedTemplateFileKey = 'MyProduct.ProductStack.v1.product.template.json';
+    const expectedTemplateFileKey = 'MyProductStackHistory.ProductStack.v1.product.template.json';
     const snapshotExists = fs.existsSync(path.join(DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY, expectedTemplateFileKey));
     expect(snapshotExists).toBe(true);
   }),
@@ -268,7 +268,7 @@ describe('Product', () => {
     expect(assembly.stacks[0].assets.length).toBe(1);
     expect(assembly.stacks[0].assets[0].path).toEqual('ProductStack.product.template.json');
 
-    const expectedTemplateFileKey = 'MyProduct.ProductStack.v1.product.template.json';
+    const expectedTemplateFileKey = 'MyProductStackHistory.ProductStack.v1.product.template.json';
     const snapshotExists = fs.existsSync(path.join(DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY, expectedTemplateFileKey));
     expect(snapshotExists).toBe(true);
   }),
@@ -313,7 +313,7 @@ describe('Product', () => {
           productStackHistory.versionFromSnapshot('v3'),
         ],
       });
-    }).toThrowError('Template MyProduct.ProductStack.v3.product.template.json cannot be found in product-stack-snapshots');
+    }).toThrowError('Template MyProductStackHistory.ProductStack.v3.product.template.json cannot be found in product-stack-snapshots');
   }),
 
   test('product test from multiple sources', () => {

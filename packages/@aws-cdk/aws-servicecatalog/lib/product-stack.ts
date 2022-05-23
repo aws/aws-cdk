@@ -2,7 +2,6 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cdk from '@aws-cdk/core';
-import { ProductVersionDetails } from './common';
 import { ProductStackSynthesizer } from './private/product-stack-synthesizer';
 import { ProductStackHistory } from './product-stack-history';
 
@@ -21,7 +20,6 @@ import { Construct } from 'constructs';
  */
 export class ProductStack extends cdk.Stack {
   public readonly templateFile: string;
-  private readonly _productVersionDetails: ProductVersionDetails;
   private _parentProductStackHistory?: ProductStackHistory;
   private _templateUrl?: string;
   private _parentStack: cdk.Stack;
@@ -32,18 +30,9 @@ export class ProductStack extends cdk.Stack {
     });
 
     this._parentStack = findParentStack(scope);
-    this._productVersionDetails = new ProductVersionDetails();
+
     // this is the file name of the synthesized template file within the cloud assembly
     this.templateFile = `${cdk.Names.uniqueId(this)}.product.template.json`;
-  }
-
-  /**
-   * Fetch the product version details.
-   *
-   * @internal
-   */
-  public _getProductVersionDetails(): ProductVersionDetails {
-    return this._productVersionDetails;
   }
 
   /**

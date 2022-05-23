@@ -1,12 +1,8 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import { ArnFormat, IResource, Names, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CloudFormationTemplate } from './cloudformation-template';
-import { MessageLanguage, DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY, TemplateType } from './common';
+import { MessageLanguage } from './common';
 import { AssociationManager } from './private/association-manager';
-import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
 import { CfnCloudFormationProduct } from './servicecatalog.generated';
 import { TagOptions } from './tag-options';
@@ -175,12 +171,10 @@ export abstract class Product extends ProductBase {
 export class CloudFormationProduct extends Product {
   public readonly productArn: string;
   public readonly productId: string;
-  private readonly productPathUniqueId: string;
 
   constructor(scope: Construct, id: string, props: CloudFormationProductProps) {
     super(scope, id);
 
-    this.productPathUniqueId = Names.uniqueId(this);
     this.validateProductProps(props);
 
     const product = new CfnCloudFormationProduct(this, 'Resource', {
@@ -208,43 +202,20 @@ export class CloudFormationProduct extends Product {
     }
   }
 
-  private renderProvisioningArtifacts(props: CloudFormationProductProps): CfnCloudFormationProduct.ProvisioningArtifactPropertiesProperty[] {
-    let productVersions: CfnCloudFormationProduct.ProvisioningArtifactPropertiesProperty[] = [];
-    for (const productVersion of props.productVersions) {
+  private renderProvisioningArtifacts(
+    props: CloudFormationProductProps): CfnCloudFormationProduct.ProvisioningArtifactPropertiesProperty[] {
+    return props.productVersions.map(productVersion => {
       const template = productVersion.cloudFormationTemplate.bind(this);
-      let httpUrl = template.httpUrl;
-      switch (template.templateType) {
-        case TemplateType.PRODUCT_STACK:
-          if (template.productVersionDetails) {
-            template.productVersionDetails.productPathUniqueId = this.productPathUniqueId;
-          }
-          break;
-        case TemplateType.PRODUCT_STACK_SNAPSHOT:
-          const productStackSnapshotDirectory = template.productVersionDetails?.directory || DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY;
-          const templateFileKey = `${this.productPathUniqueId}.${template.productVersionDetails?.productStackId}.${productVersion.productVersionName}.product.template.json`;
-          const templateFilePath = path.join(productStackSnapshotDirectory, templateFileKey);
-          if (!fs.existsSync(templateFilePath)) {
-            throw new Error(`Template ${templateFileKey} cannot be found in ${productStackSnapshotDirectory}`);
-          }
-          httpUrl = new s3_assets.Asset(this, `Template${hashValues(templateFileKey)}`, {
-            path: templateFilePath,
-          }).httpUrl;
-          break;
-        default:
-          break;
-      }
-
-      InputValidator.validateUrl(this.node.path, 'provisioning template url', httpUrl);
-      productVersions.push({
+      InputValidator.validateUrl(this.node.path, 'provisioning template url', template.httpUrl);
+      return {
         name: productVersion.productVersionName,
         description: productVersion.description,
         disableTemplateValidation: productVersion.validateTemplate === false ? true : false,
         info: {
-          LoadTemplateFromURL: httpUrl,
+          LoadTemplateFromURL: template.httpUrl,
         },
-      });
-    }
-    return productVersions;
+      };
+    });
   };
 
   private validateProductProps(props: CloudFormationProductProps) {

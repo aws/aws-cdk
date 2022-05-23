@@ -1,10 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import {
-  CloudFormationProductStackSnapshotTemplate,
-  CloudFormationProductStackTemplate,
-} from './cloudformation-template';
+import { CloudFormationTemplate } from './cloudformation-template';
 import { DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY } from './common';
 import { CloudFormationProductVersion } from './product';
 import { ProductStack } from './product-stack';
@@ -69,7 +67,7 @@ export class ProductStackHistory extends CoreConstruct {
    */
   public currentVersion() : CloudFormationProductVersion {
     return {
-      cloudFormationTemplate: new CloudFormationProductStackTemplate(this.props.productStack),
+      cloudFormationTemplate: CloudFormationTemplate.fromProductStack(this.props.productStack),
       productVersionName: this.props.currentVersionName,
       description: this.props.description,
     };
@@ -78,11 +76,16 @@ export class ProductStackHistory extends CoreConstruct {
   /**
    * Retrieves a CloudFormationProductVersion from a previously deployed productVersionName.
    */
-  public versionFromSnapshot(versionName: string) : CloudFormationProductVersion {
+  public versionFromSnapshot(productVersionName: string) : CloudFormationProductVersion {
+    const productStackSnapshotDirectory = this.props.directory || DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY;
+    const templateFileKey = `${Names.uniqueId(this)}.${this.props.productStack.artifactId}.${productVersionName}.product.template.json`;
+    const templateFilePath = path.join(productStackSnapshotDirectory, templateFileKey);
+    if (!fs.existsSync(templateFilePath)) {
+      throw new Error(`Template ${templateFileKey} cannot be found in ${productStackSnapshotDirectory}`);
+    }
     return {
-      cloudFormationTemplate: new CloudFormationProductStackSnapshotTemplate(
-        this.props.productStack, this.props.directory),
-      productVersionName: versionName,
+      cloudFormationTemplate: CloudFormationTemplate.fromAsset(templateFilePath),
+      productVersionName: productVersionName,
       description: this.props.description,
     };
   }
@@ -97,7 +100,7 @@ export class ProductStackHistory extends CoreConstruct {
     if (!fs.existsSync(productStackSnapshotDirectory)) {
       fs.mkdirSync(productStackSnapshotDirectory);
     }
-    const templateFileKey = `${this.props.productStack._getProductVersionDetails().productPathUniqueId}.${this.props.productStack.artifactId}.${this.props.currentVersionName}.product.template.json`;
+    const templateFileKey = `${Names.uniqueId(this)}.${this.props.productStack.artifactId}.${this.props.currentVersionName}.product.template.json`;
     const templateFilePath = path.join(productStackSnapshotDirectory, templateFileKey);
     if (fs.existsSync(templateFilePath)) {
       const previousCfn = fs.readFileSync(templateFilePath).toString();
