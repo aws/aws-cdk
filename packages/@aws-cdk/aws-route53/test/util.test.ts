@@ -83,7 +83,6 @@ describe('util', () => {
       value: 'domain.com.',
       exportName: 'zoneNameExample',
     });
-
     const qualified = util.determineFullyQualifiedDomainName(providedName, HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
       hostedZoneId: 'fakeId',
       zoneName: Fn.importValue('zoneNameExample'),
