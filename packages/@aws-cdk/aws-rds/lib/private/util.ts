@@ -1,10 +1,11 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { RemovalPolicy } from '@aws-cdk/core';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import { Annotations, RemovalPolicy } from '@aws-cdk/core';
 import { DatabaseSecret } from '../database-secret';
 import { IEngine } from '../engine';
-import { CommonRotationUserOptions, Credentials } from '../props';
+import { CommonRotationUserOptions, Credentials, SnapshotCredentials } from '../props';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -105,6 +106,33 @@ export function renderCredentials(scope: Construct, engine: IEngine, credentials
       }),
       // pass username if it must be referenced as a string
       credentials?.usernameAsString ? renderedCredentials.username : undefined,
+    );
+  }
+
+  return renderedCredentials;
+}
+
+/**
+ * Renders credentials for a cluster from snapshot
+ */
+export function renderClusterSnapshotCredentials(scope: Construct, credentials?: SnapshotCredentials): SnapshotCredentials {
+  let renderedCredentials = credentials;
+
+  if (!renderedCredentials) return { generatePassword: false };
+
+  if (renderedCredentials.generatePassword) Annotations.of(scope).addWarning('Cannot generate new password for clusters created from snapshot. Use `fromSecret()` or `fromPassword()` instead');
+
+  if (renderedCredentials.secret) return renderedCredentials;
+
+  if (renderedCredentials.password) {
+    renderedCredentials = SnapshotCredentials.fromSecret(
+      new secretsmanager.Secret(scope, 'Secret', {
+        //username: renderedCredentials.username,
+        secretName: renderedCredentials.secretName,
+        encryptionKey: renderedCredentials.encryptionKey,
+        replicaRegions: renderedCredentials.replicaRegions,
+        secretStringValue: renderedCredentials.password,
+      }),
     );
   }
 

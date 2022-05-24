@@ -307,9 +307,9 @@ export abstract class Credentials {
 }
 
 /**
- * Options used in the {@link SnapshotCredentials.fromGeneratedPassword} method.
+ * Options used in the {@link SnapshotCredentials.fromPassword} method.
  */
-export interface SnapshotCredentialsFromGeneratedPasswordOptions {
+export interface GeneratedSecretForSnapshotCredentialsOptions {
   /**
    * KMS encryption key to encrypt the generated secret.
    *
@@ -318,18 +318,30 @@ export interface SnapshotCredentialsFromGeneratedPasswordOptions {
   readonly encryptionKey?: kms.IKey;
 
   /**
-   * The characters to exclude from the generated password.
-   *
-   * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
-   */
-  readonly excludeCharacters?: string;
-
-  /**
    * A list of regions where to replicate this secret.
    *
    * @default - Secret is not replicated
    */
   readonly replicaRegions?: secretsmanager.ReplicaRegion[];
+
+  /**
+   * Name of the generated secret
+   *
+   * @default - default name is generated
+   */
+  readonly secretName?: string;
+}
+
+/**
+ * Options used in the {@link SnapshotCredentials.fromGeneratedPassword} method.
+ */
+export interface SnapshotCredentialsFromGeneratedPasswordOptions extends GeneratedSecretForSnapshotCredentialsOptions {
+  /**
+   * The characters to exclude from the generated password.
+   *
+   * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
+   */
+  readonly excludeCharacters?: string;
 }
 
 /**
@@ -369,8 +381,12 @@ export abstract class SnapshotCredentials {
   /**
    * Update the snapshot login with an existing password.
    */
-  public static fromPassword(password: SecretValue): SnapshotCredentials {
-    return { generatePassword: false, password };
+  public static fromPassword(password: SecretValue, options: GeneratedSecretForSnapshotCredentialsOptions = {}): SnapshotCredentials {
+    return {
+      ...options,
+      generatePassword: false,
+      password,
+    };
   }
 
   /**
@@ -436,6 +452,13 @@ export abstract class SnapshotCredentials {
    * @default - none
    */
   public abstract readonly secret?: secretsmanager.ISecret;
+
+  /**
+   * Name of secret to create
+   *
+   * @default - default name is generated
+   */
+  public abstract readonly secretName?: string;
 
   /**
    * The characters to exclude from the generated password.

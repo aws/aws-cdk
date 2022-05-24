@@ -6,11 +6,10 @@ import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
-import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
-import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, renderClusterSnapshotCredentials, renderCredentials } from './private/util';
 import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { CfnDBCluster, CfnDBClusterProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -673,26 +672,12 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
 
     this.enableDataApi = props.enableDataApi;
 
-    let credentials = props.credentials;
-    let secret = credentials?.secret;
-    if (!secret && credentials?.generatePassword) {
-      if (!credentials.username) {
-        throw new Error('`credentials` `username` must be specified when `generatePassword` is set to true');
-      }
-
-      secret = new DatabaseSecret(this, 'Secret', {
-        username: credentials.username,
-        encryptionKey: credentials.encryptionKey,
-        excludeCharacters: credentials.excludeCharacters,
-        replaceOnPasswordCriteriaChanges: credentials.replaceOnPasswordCriteriaChanges,
-        replicaRegions: credentials.replicaRegions,
-      });
-    }
+    const credentials = renderClusterSnapshotCredentials(this, props.credentials);
+    const secret = credentials.secret;
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       snapshotIdentifier: props.snapshotIdentifier,
-      masterUserPassword: secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
     this.clusterIdentifier = cluster.ref;

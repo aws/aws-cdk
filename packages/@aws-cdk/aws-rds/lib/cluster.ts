@@ -11,8 +11,8 @@ import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { Endpoint } from './endpoint';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
-import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
-import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions } from './props';
+import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderClusterSnapshotCredentials } from './private/util';
+import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -661,9 +661,18 @@ export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBasePro
   /**
    * Credentials for the administrative user
    *
+   * @deprecated - use `snapshotCredentials` instead
+   *
    * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
    */
   readonly credentials?: Credentials;
+
+  /**
+   * Credentials for the administrative user
+   *
+   * @default - No credentials are generated
+   */
+  readonly snapshotCredentials?: SnapshotCredentials;
 }
 
 /**
@@ -687,8 +696,13 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
   constructor(scope: Construct, id: string, props: DatabaseClusterFromSnapshotProps) {
     super(scope, id, props);
 
+    if (props.credentials && !props.credentials.password && !props.credentials.secret) {
+      Annotations.of(scope).addWarning('Cannot modify password of a cluster created from a snapshot. Use `snapshotCredentials` instead');
+    }
     const credentials = renderCredentials(this, props.engine, props.credentials);
-    const secret = credentials.secret;
+
+    const snapshotCredentials = renderClusterSnapshotCredentials(this, props.snapshotCredentials);
+    const secret = snapshotCredentials.secret || credentials.secret;
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,

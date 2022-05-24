@@ -1090,6 +1090,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
         excludeCharacters: credentials.excludeCharacters,
         replaceOnPasswordCriteriaChanges: credentials.replaceOnPasswordCriteriaChanges,
         replicaRegions: credentials.replicaRegions,
+        secretName: credentials.secretName,
       });
     }
 
