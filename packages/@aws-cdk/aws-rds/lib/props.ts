@@ -381,9 +381,8 @@ export abstract class SnapshotCredentials {
   /**
    * Update the snapshot login with an existing password.
    */
-  public static fromPassword(password: SecretValue, options: GeneratedSecretForSnapshotCredentialsOptions = {}): SnapshotCredentials {
+  public static fromPassword(password: SecretValue): SnapshotCredentials {
     return {
-      ...options,
       generatePassword: false,
       password,
     };
@@ -474,6 +473,80 @@ export abstract class SnapshotCredentials {
    * @default - Secret is not replicated
    */
   public abstract readonly replicaRegions?: secretsmanager.ReplicaRegion[];
+}
+
+/**
+ * Credentials to create or reference a secret for a cluster created from snapshot
+ *
+ * The login credentials of the cluster are inherited from the snapshot and cannot be changed
+ */
+export abstract class ClusterSnapshotCredentials {
+  /**
+   * Create a new secret with the appropriate credentials
+   *
+   * **NOTE:** Do NOT store your password directly in CDK code
+   */
+  // eslint-disable-next-line max-len
+  public static fromPassword(username: string, password: SecretValue, options: GeneratedSecretForSnapshotCredentialsOptions = {}): ClusterSnapshotCredentials {
+    return {
+      ...options,
+      username,
+      password,
+    };
+  }
+
+  /**
+   * Reference a secret to attach to your cluster
+   */
+  public static fromSecret(secret: secretsmanager.ISecret, options: GeneratedSecretForSnapshotCredentialsOptions = {}): ClusterSnapshotCredentials {
+    return {
+      ...options,
+      secret,
+    };
+  }
+
+  /**
+   * KMS encryption key to encrypt the generated secret.
+   *
+   * @default - default master key
+   */
+  public abstract readonly encryptionKey?: kms.IKey;
+
+  /**
+   * The master user password.
+   *
+   * **NOTE:** Do NOT store your password directly in CDK code
+   */
+  public abstract readonly password?: SecretValue;
+
+  /**
+   * Secret used to instantiate this Login.
+   *
+   * @default - none
+   */
+  public abstract readonly secret?: secretsmanager.ISecret;
+
+  /**
+   * Name of secret to create
+   *
+   * @default - default name is generated
+   */
+  public abstract readonly secretName?: string;
+
+  /**
+   * A list of regions where to replicate the generated secret.
+   *
+   * @default - Secret is not replicated
+   */
+  public abstract readonly replicaRegions?: secretsmanager.ReplicaRegion[];
+
+  /**
+   * The master user name.
+   *
+   * Must be the **current** master user name of the snapshot.
+   * It is not possible to change the master user name of a RDS instance.
+   */
+  public abstract readonly username?: string;
 }
 
 /**

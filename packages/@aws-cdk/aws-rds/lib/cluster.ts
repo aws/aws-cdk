@@ -12,7 +12,7 @@ import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { Endpoint } from './endpoint';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderClusterSnapshotCredentials } from './private/util';
-import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials } from './props';
+import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions, ClusterSnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -661,7 +661,7 @@ export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBasePro
   /**
    * Credentials for the administrative user
    *
-   * @deprecated - use `snapshotCredentials` instead
+   * @deprecated - use {@link DatabaseClusterFromSnapshotProps.snapshotCredentials} instead
    *
    * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
    */
@@ -672,7 +672,7 @@ export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBasePro
    *
    * @default - No credentials are generated
    */
-  readonly snapshotCredentials?: SnapshotCredentials;
+  readonly snapshotCredentials?: ClusterSnapshotCredentials;
 }
 
 /**
@@ -702,7 +702,12 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     const credentials = renderCredentials(this, props.engine, props.credentials);
 
     const snapshotCredentials = renderClusterSnapshotCredentials(this, props.snapshotCredentials);
-    const secret = snapshotCredentials.secret || credentials.secret;
+    let secret;
+    if (snapshotCredentials) {
+      secret = snapshotCredentials.secret;
+    } else if (credentials) {
+      secret = credentials.secret;
+    }
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
