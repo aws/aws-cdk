@@ -1,9 +1,10 @@
+import { Template } from '@aws-cdk/assertions';
 import * as ccommit from '@aws-cdk/aws-codecommit';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
-import { PIPELINE_ENV, TestApp } from '../testhelpers';
+import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline } from '../testhelpers';
 
 let app: TestApp;
 
@@ -52,21 +53,45 @@ describe('CodePipeline support stack reuse', () => {
     const supportStackAArtifact = assembly.getStackByName(`PipelineStackA-support-${testStageEnv.region}`);
     const supportStackBArtifact = assembly.getStackByName(`PipelineStackB-support-${testStageEnv.region}`);
 
-    const supportStackATemplate = supportStackAArtifact.template;
-    expect(supportStackATemplate).toHaveResourceLike('AWS::S3::Bucket', {
+    const supportStackATemplate = Template.fromJSON(supportStackAArtifact.template);
+    supportStackATemplate.hasResourceProperties('AWS::S3::Bucket', {
       BucketName: 'pipelinestacka-support-useplicationbucket80db3753a0ebbf052279',
     });
-    expect(supportStackATemplate).toHaveResourceLike('AWS::KMS::Alias', {
+    supportStackATemplate.hasResourceProperties('AWS::KMS::Alias', {
       AliasName: 'alias/pport-ustencryptionalias5cad45754e1ff088476b',
     });
 
-    const supportStackBTemplate = supportStackBArtifact.template;
-    expect(supportStackBTemplate).toHaveResourceLike('AWS::S3::Bucket', {
+    const supportStackBTemplate = Template.fromJSON(supportStackBArtifact.template);
+    supportStackBTemplate.hasResourceProperties('AWS::S3::Bucket', {
       BucketName: 'pipelinestackb-support-useplicationbucket1d556ec7f959b336abf8',
     });
-    expect(supportStackBTemplate).toHaveResourceLike('AWS::KMS::Alias', {
+    supportStackBTemplate.hasResourceProperties('AWS::KMS::Alias', {
       AliasName: 'alias/pport-ustencryptionalias668c7ffd0de17c9867b0',
     });
+  });
+});
+
+test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Principal: {
+            AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::123pipeline:root']] },
+          },
+          Condition: {
+            Bool: {
+              'aws:ViaAWSService': 'codepipeline.amazonaws.com',
+            },
+          },
+        },
+      ],
+    },
   });
 });
 
