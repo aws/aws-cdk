@@ -268,7 +268,7 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::KMS::Alias",
                           "aws:cdk:cloudformation:props": {
-                            "aliasName": "alias/codepipeline-pipelinestackpipelinee95eedaa",
+                            "aliasName": "alias/codepipeline-pipelinestack-pipeline-e95eedaa",
                             "targetKeyId": {
                               "Fn::GetAtt": [
                                 "PipelineArtifactsBucketEncryptionKeyF5BF0670",
@@ -2292,7 +2292,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/pipelines.UpdatePipelineAction",
+                  "fqn": "@aws-cdk/core.Construct",
                   "version": "0.0.0"
                 }
               },
@@ -2352,13 +2352,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/pipelines.CdkStage",
+                  "fqn": "@aws-cdk/core.Construct",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/pipelines.CdkPipeline",
+              "fqn": "@aws-cdk/core.Construct",
               "version": "0.0.0"
             }
           },

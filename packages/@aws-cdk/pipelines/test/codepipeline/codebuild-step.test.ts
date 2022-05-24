@@ -204,6 +204,8 @@ test('role passed it used for project and code build action', () => {
           },
         ],
       },
+      // Self-update
+      {},
     ],
   });
 });
