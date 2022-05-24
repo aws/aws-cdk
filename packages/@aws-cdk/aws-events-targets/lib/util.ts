@@ -73,10 +73,7 @@ export function bindBaseTargetConfig(props: TargetBaseProps) {
  */
 export function singletonEventRole(scope: IConstruct, policyStatements: iam.PolicyStatement[]): iam.IRole {
   const id = 'EventsRole';
-  const existing = scope.node.tryFindChild(id) as iam.IRole;
-  if (existing) { return existing; }
-
-  const role = new iam.Role(scope as Construct, id, {
+  const role = scope.node.tryFindChild(id) as iam.IRole ?? new iam.Role(scope as Construct, id, {
     roleName: PhysicalName.GENERATE_IF_NEEDED,
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
