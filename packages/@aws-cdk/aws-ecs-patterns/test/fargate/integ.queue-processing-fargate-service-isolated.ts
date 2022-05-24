@@ -18,13 +18,13 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
     {
       cidrMask: 24,
       name: 'Isolated',
-      subnetType: ec2.SubnetType.ISOLATED,
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
     },
   ],
 });
 
 
-vpc.addS3Endpoint('S3Endpoint', [{ subnetType: ec2.SubnetType.ISOLATED }]);
+vpc.addS3Endpoint('S3Endpoint', [{ subnetType: ec2.SubnetType.PRIVATE_ISOLATED }]);
 
 const securityGroup = new ec2.SecurityGroup(stack, 'MyCustomSG', {
   vpc,
@@ -35,7 +35,7 @@ const queueProcessing = new QueueProcessingFargateService(stack, 'IsolatedQueueS
   memoryLimitMiB: 512,
   image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
   securityGroups: [securityGroup],
-  taskSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+  taskSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
 });
 
 queueProcessing.service.node.addDependency(
