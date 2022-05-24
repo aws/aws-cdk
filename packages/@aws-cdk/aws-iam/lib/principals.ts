@@ -394,6 +394,9 @@ export class AccountPrincipal extends ArnPrincipal {
    */
   constructor(public readonly accountId: any) {
     super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
+    if (!cdk.Token.isUnresolved(accountId) && typeof accountId !== 'string') {
+      throw new Error('accountId should be of type string');
+    }
     this.principalAccount = accountId;
   }
 
@@ -426,6 +429,21 @@ export interface ServicePrincipalOpts {
  * An IAM principal that represents an AWS service (i.e. sqs.amazonaws.com).
  */
 export class ServicePrincipal extends PrincipalBase {
+  /**
+   * Translate the given service principal name based on the region it's used in.
+   *
+   * For example, for Chinese regions this may (depending on whether that's necessary
+   * for the given service principal) append `.cn` to the name.
+   *
+   * The `region-info` module is used to obtain this information.
+   *
+   * @example
+   * const principalName = iam.ServicePrincipal.servicePrincipalName('ec2.amazonaws.com');
+   */
+  public static servicePrincipalName(service: string): string {
+    return new ServicePrincipalToken(service, {}).toString();
+  }
+
   /**
    *
    * @param service AWS service (i.e. sqs.amazonaws.com)

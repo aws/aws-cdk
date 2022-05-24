@@ -245,7 +245,7 @@ export class Alarm extends AlarmBase {
   }
 
   private validateActionArn(actionArn: string): string {
-    const ec2ActionsRegexp: RegExp = /arn:aws:automate:[a-z|\d|-]+:ec2:[a-z]+/;
+    const ec2ActionsRegexp: RegExp = /arn:aws[a-z0-9-]*:automate:[a-z|\d|-]+:ec2:[a-z]+/;
     if (ec2ActionsRegexp.test(actionArn)) {
       // Check per-instance metric
       const metricConfig = this.metric.toMetricConfig();

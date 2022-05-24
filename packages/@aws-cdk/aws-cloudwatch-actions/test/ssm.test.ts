@@ -25,7 +25,11 @@ test('can use ssm with critical severity and performance category as alarm actio
         'Fn::Join': [
           '',
           [
-            'arn:aws:ssm:',
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':ssm:',
             {
               Ref: 'AWS::Region',
             },
@@ -64,7 +68,11 @@ test('can use ssm with meduim severity and no category as alarm action', () => {
         'Fn::Join': [
           '',
           [
-            'arn:aws:ssm:',
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':ssm:',
             {
               Ref: 'AWS::Region',
             },
