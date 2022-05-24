@@ -1115,7 +1115,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     for (const subnetId of subnetIds) {
       if (publicSubnetIds.has(subnetId) && !allowPublicSubnet) {
         throw new Error('Lambda Functions in a public subnet can NOT access the internet. ' +
-          'If you are aware of this limitation and would still like to place the function int a public subnet, set `allowPublicSubnet` to true');
+          'If you are aware of this limitation and would still like to place the function in a public subnet, set `allowPublicSubnet` to true');
       }
     }
 
