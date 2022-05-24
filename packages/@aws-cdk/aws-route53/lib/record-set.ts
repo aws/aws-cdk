@@ -162,7 +162,6 @@ export interface RecordSetOptions {
   /**
    * Determines whether to remove domain name period
    *
-   * @type {boolean}
    * @default false
    */
   readonly removeDomainNamePeriodEnd?: boolean;
