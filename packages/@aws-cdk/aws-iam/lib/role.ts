@@ -247,6 +247,13 @@ export class Role extends Resource implements IRole {
       }
 
       /**
+       * Grant permissions to the given principal to pass this role.
+       */
+      public grantAssumeRole(identity: IPrincipal): Grant {
+        return this.grant(identity, 'sts:AssumeRole');
+      }
+
+      /**
        * Grant the actions defined in actions to the identity Principal on this resource.
        */
       public grant(grantee: IPrincipal, ...actions: string[]): Grant {
@@ -448,6 +455,14 @@ export class Role extends Resource implements IRole {
   }
 
   /**
+   * Grant permissions to the given principal to assume this role.
+   */
+  public grantAssumeRole(identity: IPrincipal) {
+    return this.grant(identity, 'sts:AssumeRole');
+  }
+
+
+  /**
    * Return a copy of this Role object whose Policies will not be updated
    *
    * Use the object returned by this method if you want this Role to be used by
@@ -502,6 +517,11 @@ export interface IRole extends IIdentity {
    * Grant permissions to the given principal to pass this role.
    */
   grantPassRole(grantee: IPrincipal): Grant;
+
+  /**
+   * Grant permissions to the given principal to assume this role.
+   */
+  grantAssumeRole(grantee: IPrincipal): Grant;
 }
 
 function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {

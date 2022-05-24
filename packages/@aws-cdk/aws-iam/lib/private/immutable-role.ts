@@ -67,4 +67,8 @@ export class ImmutableRole extends Resource implements IRole {
   public grantPassRole(grantee: IPrincipal): Grant {
     return this.role.grantPassRole(grantee);
   }
+
+  public grantAssumeRole(identity: IPrincipal): Grant {
+    return this.role.grantAssumeRole(identity);
+  }
 }

@@ -1,5 +1,4 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import '@aws-cdk/assert-internal/jest';
 import * as cdkp from '../../../lib';
 import { PipelineQueries } from '../../../lib/helpers-internal/pipeline-queries';
 import { AppWithOutput, TestApp } from '../../testhelpers/test-app';
