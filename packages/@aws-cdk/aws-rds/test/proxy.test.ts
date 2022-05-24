@@ -153,6 +153,78 @@ describe('proxy', () => {
     });
   });
 
+  test('Add an endpoint to a Proxy', () => {
+    // GIVEN
+    const cluster = new rds.DatabaseCluster(stack, 'Database', {
+      engine: rds.DatabaseClusterEngine.auroraPostgres({
+        version: rds.AuroraPostgresEngineVersion.VER_10_7,
+      }),
+      instanceProps: { vpc },
+    });
+
+    const proxy = new rds.DatabaseProxy(stack, 'Proxy', {
+      proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+      secrets: [cluster.secret!],
+      vpc,
+    });
+
+    // WHEN
+    proxy.addEndpoint(stack, 'ExtraEndPoint', {
+      dbProxyEndpointName: 'extraEndpoint',
+      vpc,
+      targetRole: rds.TargetRole.READ_ONLY,
+    });
+    new cdk.CfnOutput(stack, 'DefaultEndpointOutput', {
+      exportName: 'DefaultEndPoint',
+      value: proxy.endpoints[0],
+    });
+    new cdk.CfnOutput(stack, 'ExtraEndpointOutput', {
+      exportName: 'ExtraEndPoint',
+      value: proxy.endpoints[1],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      GroupDescription: 'SecurityGroup for Database Proxy Endpoint',
+      VpcId: {
+        Ref: 'VPCB9E5F0B4',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxyEndpoint', {
+      DBProxyEndpointName: 'extraEndpoint',
+      DBProxyName: {
+        Ref: 'ProxyCB0DFB71',
+      },
+      TargetRole: 'READ_ONLY',
+      VpcSecurityGroupIds: [
+        {
+          'Fn::GetAtt': ['ExtraEndPointProxyEndPointSecurityGroup8808004B', 'GroupId'],
+        },
+      ],
+      VpcSubnetIds: [
+        { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+        { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
+      ],
+    });
+    Template.fromStack(stack).hasOutput('DefaultEndpointOutput', {
+      Value: {
+        'Fn::GetAtt': [
+          'ProxyCB0DFB71',
+          'Endpoint',
+        ],
+      },
+    });
+    Template.fromStack(stack).hasOutput('ExtraEndpointOutput', {
+      Value: {
+        'Fn::GetAtt': [
+          'ExtraEndPointD566A0AB',
+          'Endpoint',
+        ],
+      },
+    });
+  });
+
   test('One or more secrets are required.', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
