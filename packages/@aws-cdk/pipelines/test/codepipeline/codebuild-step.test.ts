@@ -172,7 +172,8 @@ test('role passed it used for project and code build action', () => {
   });
 
   // THEN
-  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+  const tpl = Template.fromStack(pipelineStack);
+  tpl.hasResourceProperties('AWS::CodeBuild::Project', {
     ServiceRole: {
       'Fn::GetAtt': [
         'ProjectRole5B707505',
@@ -181,7 +182,7 @@ test('role passed it used for project and code build action', () => {
     },
   });
 
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+  tpl.hasResourceProperties('AWS::CodePipeline::Pipeline', {
     Stages: [
       // source stage
       {},
