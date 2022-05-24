@@ -1200,7 +1200,7 @@
                       ]
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs12.x",
+                    "runtime": "nodejs16.x",
                     "timeout": 120
                   }
                 },
