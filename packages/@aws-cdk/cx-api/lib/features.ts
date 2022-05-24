@@ -240,6 +240,7 @@ export const IAM_MINIMIZE_POLICIES = '@aws-cdk/aws-iam:minimizePolicies';
  * Without this option enabled, the construct ID of the SNS subscription is the node ID of the SNS topic.
  * This prevents users from creating SNS subscriptions with the same node ID in different scopes.
  * This option ensures the uniqueness of the SNS subcription construct ID.
+ *
  * [PERMANENT]
  */
 export const SNS_SUBSCRIPTIONS_UNIQUE_LAMBDA_SUBSCRIPTION_ID = '@aws-cdk/aws-sns-subscriptions:uniqueLambdaSubscriptionId';

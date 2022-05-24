@@ -139,13 +139,13 @@
                   "version": "0.0.0"
                 }
               },
-              "MyTopic": {
-                "id": "MyTopic",
-                "path": "aws-cdk-sns-lambda/Echo/MyTopic",
+              "awscdksnslambdaMyTopic6C62AB90": {
+                "id": "awscdksnslambdaMyTopic6C62AB90",
+                "path": "aws-cdk-sns-lambda/Echo/awscdksnslambdaMyTopic6C62AB90",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-sns-lambda/Echo/MyTopic/Resource",
+                    "path": "aws-cdk-sns-lambda/Echo/awscdksnslambdaMyTopic6C62AB90/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                       "aws:cdk:cloudformation:props": {
@@ -362,13 +362,13 @@
                   "version": "0.0.0"
                 }
               },
-              "MyTopic": {
-                "id": "MyTopic",
-                "path": "aws-cdk-sns-lambda/Filtered/MyTopic",
+              "awscdksnslambdaMyTopic6C62AB90": {
+                "id": "awscdksnslambdaMyTopic6C62AB90",
+                "path": "aws-cdk-sns-lambda/Filtered/awscdksnslambdaMyTopic6C62AB90",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-sns-lambda/Filtered/MyTopic/Resource",
+                    "path": "aws-cdk-sns-lambda/Filtered/awscdksnslambdaMyTopic6C62AB90/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                       "aws:cdk:cloudformation:props": {

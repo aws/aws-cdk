@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -39,10 +39,10 @@
             "data": "EchoAllowInvokeawscdksnslambdaMyTopic6C62AB907F727CDA"
           }
         ],
-        "/aws-cdk-sns-lambda/Echo/MyTopic/Resource": [
+        "/aws-cdk-sns-lambda/Echo/awscdksnslambdaMyTopic6C62AB90/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EchoMyTopic4CB8819E"
+            "data": "EchoawscdksnslambdaMyTopic6C62AB907F221A3C"
           }
         ],
         "/aws-cdk-sns-lambda/DeadLetterQueue/Resource": [
@@ -75,10 +75,28 @@
             "data": "FilteredAllowInvokeawscdksnslambdaMyTopic6C62AB90A2EA1666"
           }
         ],
-        "/aws-cdk-sns-lambda/Filtered/MyTopic/Resource": [
+        "/aws-cdk-sns-lambda/Filtered/awscdksnslambdaMyTopic6C62AB90/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FilteredMyTopicC8395C27"
+            "data": "FilteredawscdksnslambdaMyTopic6C62AB90FD17BFBF"
+          }
+        ],
+        "EchoMyTopic4CB8819E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EchoMyTopic4CB8819E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "FilteredMyTopicC8395C27": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FilteredMyTopicC8395C27",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

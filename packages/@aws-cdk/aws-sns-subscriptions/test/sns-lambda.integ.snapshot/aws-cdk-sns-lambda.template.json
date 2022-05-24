@@ -69,7 +69,7 @@
     }
    }
   },
-  "EchoMyTopic4CB8819E": {
+  "EchoawscdksnslambdaMyTopic6C62AB907F221A3C": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
     "Protocol": "lambda",
@@ -198,7 +198,7 @@
     }
    }
   },
-  "FilteredMyTopicC8395C27": {
+  "FilteredawscdksnslambdaMyTopic6C62AB90FD17BFBF": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
     "Protocol": "lambda",
