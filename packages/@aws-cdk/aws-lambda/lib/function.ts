@@ -668,6 +668,12 @@ export class Function extends FunctionBase {
       }
     }
 
+    if (props.description && !Token.isUnresolved(props.description)) {
+      if (props.description.length > 256) {
+        throw new Error(`Function description can not be longer than 256 characters but has ${props.description.length} characters.`);
+      }
+    }
+
     const managedPolicies = new Array<iam.IManagedPolicy>();
 
     // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
