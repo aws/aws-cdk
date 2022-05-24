@@ -147,7 +147,7 @@ describe('test runner', () => {
       ]),
     ]));
 
-    expect(results.length).toEqual(0);
+    expect(results).toEqual([]);
   });
 
   test('deploy failed', () => {

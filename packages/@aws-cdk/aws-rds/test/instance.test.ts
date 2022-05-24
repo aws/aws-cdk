@@ -1519,7 +1519,7 @@ describe('instance', () => {
       }),
       vpc,
       vpcSubnets: {
-        subnetType: ec2.SubnetType.PRIVATE,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
       },
       publiclyAccessible: true,
     });

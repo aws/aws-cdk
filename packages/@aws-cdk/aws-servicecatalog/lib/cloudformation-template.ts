@@ -102,8 +102,8 @@ class CloudFormationAssetTemplate extends CloudFormationTemplate {
  */
 class CloudFormationProductStackTemplate extends CloudFormationTemplate {
   /**
-   * @param stack A service catalog product stack.
-  */
+   * @param productStack A service catalog product stack.
+   */
   constructor(public readonly productStack: ProductStack) {
     super();
   }

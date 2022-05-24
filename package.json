@@ -15,6 +15,7 @@
     "postinstall": "patch-package --error-on-fail"
   },
   "devDependencies": {
+    "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "cdk-generate-synthetic-examples": "^0.1.10",
     "conventional-changelog-cli": "^2.2.2",
@@ -79,12 +80,8 @@
       "@aws-cdk/assertions-alpha/fs-extra/**",
       "@aws-cdk/assertions/fs-extra",
       "@aws-cdk/assertions/fs-extra/**",
-      "@aws-cdk/aws-amplify-alpha/yaml",
-      "@aws-cdk/aws-amplify-alpha/yaml/**",
       "@aws-cdk/aws-iot-actions-alpha/case",
       "@aws-cdk/aws-iot-actions-alpha/case/**",
-      "@aws-cdk/aws-amplify/yaml",
-      "@aws-cdk/aws-amplify/yaml/**",
       "@aws-cdk/aws-codebuild/yaml",
       "@aws-cdk/aws-codebuild/yaml/**",
       "@aws-cdk/aws-codepipeline-actions/case",
