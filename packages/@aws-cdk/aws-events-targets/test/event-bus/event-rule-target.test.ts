@@ -179,7 +179,6 @@ test('event buses are correctly added to the rule\'s principal policy', () => {
 
   rule.addTarget(new targets.EventBus(bus1));
   rule.addTarget(new targets.EventBus(bus2));
-  // role
 
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
