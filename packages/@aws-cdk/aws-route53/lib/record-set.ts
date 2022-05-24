@@ -158,6 +158,13 @@ export interface RecordSetOptions {
    * @default no comment
    */
   readonly comment?: string;
+
+  /**
+   * Whether to remove domain name period
+   * 
+   * @default false
+   */
+  readonly removeDomainNamePeriod?: boolean;
 }
 
 /**
@@ -223,7 +230,7 @@ export class RecordSet extends Resource implements IRecordSet {
 
     const recordSet = new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
-      name: determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone),
+      name: determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone, props.removeDomainNamePeriod),
       type: props.recordType,
       resourceRecords: props.target.values,
       aliasTarget: props.target.aliasTarget && props.target.aliasTarget.bind(this, props.zone),
