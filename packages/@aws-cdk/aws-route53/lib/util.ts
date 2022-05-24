@@ -49,7 +49,7 @@ class ValidationError extends Error {
  *        <li>Otherwise, append +.+, +zoneName+ and a trailing +.+</li>
  *      </ul>
  */
-export function determineFullyQualifiedDomainName(providedName: string, hostedZone: IHostedZone, removeDomainNamePeriod?: boolean): string {
+export function determineFullyQualifiedDomainName(providedName: string, hostedZone: IHostedZone, removeDomainNamePeriodEnd?: boolean): string {
   if (providedName.endsWith('.')) {
     return providedName;
   }
@@ -63,7 +63,7 @@ export function determineFullyQualifiedDomainName(providedName: string, hostedZo
     return `${providedName}.`;
   }
 
-  if (Token.isUnresolved(hostedZoneName) && removeDomainNamePeriod) {
+  if (Token.isUnresolved(hostedZoneName) && removeDomainNamePeriodEnd) {
     return `${providedName}${suffix}`;
   } else {
     return `${providedName}${suffix}.`;
