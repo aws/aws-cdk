@@ -3,6 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as cdk from '../lib';
 
 function createModernApp() {
@@ -48,7 +49,9 @@ describe('synthesis', () => {
 
   test('synthesis respects disabling logicalId metadata', () => {
     const app = new cdk.App({
-      context: { 'aws:cdk:disable-logicalId-metadata': true },
+      context: {
+        [cxapi.DISABLE_LOGICAL_ID_METADATA]: true,
+      },
     });
     const stack = new cdk.Stack(app, 'one-stack');
     new cdk.CfnResource(stack, 'MagicResource', { type: 'Resource::Type' });
@@ -57,30 +60,14 @@ describe('synthesis', () => {
     const session = app.synth();
 
     // THEN
-    expect(session.manifest).toEqual({
-      version: cxschema.Manifest.version(),
-      artifacts: {
-        'Tree': {
-          type: 'cdk:tree',
-          properties: { file: 'tree.json' },
-        },
-        'one-stack': {
-          type: 'aws:cloudformation:stack',
-          environment: 'aws://unknown-account/unknown-region',
-          properties: {
-            templateFile: 'one-stack.template.json',
-            validateOnSynth: false,
-          },
-          displayName: 'one-stack',
-          // no metadata, because the only entry was a logicalId
-        },
-      },
-    });
+    expect(Object.keys((session.manifest.artifacts ?? {})['one-stack'])).not.toContain('metadata');
   });
 
   test('synthesis respects disabling logicalId metadata, and does not disable other metadata', () => {
     const app = new cdk.App({
-      context: { 'aws:cdk:disable-logicalId-metadata': true },
+      context: {
+        [cxapi.DISABLE_LOGICAL_ID_METADATA]: true,
+      },
       stackTraces: false,
     });
     const stack = new cdk.Stack(app, 'one-stack', { tags: { boomTag: 'BOOM' } });
@@ -90,40 +77,19 @@ describe('synthesis', () => {
     const session = app.synth();
 
     // THEN
-    expect(session.manifest).toEqual({
-      version: cxschema.Manifest.version(),
-      artifacts: {
-        'Tree': {
-          type: 'cdk:tree',
-          properties: { file: 'tree.json' },
-        },
-        'one-stack': {
-          type: 'aws:cloudformation:stack',
-          environment: 'aws://unknown-account/unknown-region',
-          properties: {
-            templateFile: 'one-stack.template.json',
-            validateOnSynth: false,
-            tags: {
-              boomTag: 'BOOM',
+    expect(session.manifest.artifacts?.['one-stack'].metadata).toEqual({
+      '/one-stack': [
+        {
+          type: 'aws:cdk:stack-tags',
+          data: [
+            {
+              key: 'boomTag',
+              value: 'BOOM',
             },
-          },
-          displayName: 'one-stack',
-          metadata: {
-            '/one-stack': [
-              {
-                type: 'aws:cdk:stack-tags',
-                data: [
-                  {
-                    key: 'boomTag',
-                    value: 'BOOM',
-                  },
-                ],
-              },
-            ],
-          },
-          // no logicalId entry
+          ],
         },
-      },
+      ],
+      // no logicalId entry
     });
   });
 
