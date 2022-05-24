@@ -122,7 +122,7 @@ export interface LifecycleRule {
   /**
    * Specifies the maximum object size in bytes for this rule to apply to.
    *
-   * @default No rule
+   * @default - No rule
    */
   readonly objectSizeLessThan?: number;
 }
