@@ -53,17 +53,21 @@ export interface VpcConnectorAttributes {
 export interface IVpcConnector extends cdk.IResource {
   /**
    * The Name of the VPC connector.
+   * @attribute
    */
   readonly vpcConnectorName: string;
 
   /**
    * The ARN of the VPC connector.
+   * @attribute
    */
   readonly vpcConnectorArn: string;
 }
 
 /**
  * The App Runner VPC Connector
+ *
+ * @resource AWS::AppRunner::VpcConnector
  */
 export class VpcConnector extends cdk.Resource {
   /**
