@@ -9,16 +9,23 @@ import { CfnVpcConnector } from './apprunner.generated';
  */
 export interface VpcConnectorProps {
   /**
-   * A list of IDs of security groups that App Runner should use for access to AWS resources under the specified subnets.
-   *
-   * @default - the default security group of the VPC which allows all outbound traffic.
+   * The VPC for the VPC Connector.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly vpc: ec2.IVpc;
 
   /**
-    * A list of subnets that App Runner should use when it associates the service with a custom Amazon VPC.
-    */
-  readonly subnets: ec2.ISubnet[];
+   * Where to place the VPC Connector within the VPC.
+   *
+   * @default - Private subnets.
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * A list of IDs of security groups that App Runner should use for access to AWS resources under the specified subnets.
+   *
+   * @default - a new security group will be created in the specified VPC
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
     * The name for the VpcConnector.
@@ -124,15 +131,19 @@ export class VpcConnector extends cdk.Resource implements IVpcConnector {
 
     this.props = props;
 
+    const securityGroups = this.props.securityGroups?.length ?
+      this.props.securityGroups
+      : [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.props.vpc })];
+
     const resource = new CfnVpcConnector(this, 'VpcConnector', {
-      subnets: this.props.subnets.map(subnet => subnet.subnetId),
-      securityGroups: this.props.securityGroups?.map(securityGroup => securityGroup.securityGroupId),
+      subnets: this.props.vpc.selectSubnets(this.props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }).subnetIds,
+      securityGroups: securityGroups?.map(securityGroup => securityGroup.securityGroupId),
       vpcConnectorName: this.props.vpcConnectorName,
     });
 
     this.vpcConnectorArn = resource.attrVpcConnectorArn;
     this.vpcConnectorRevision = resource.attrVpcConnectorRevision;
     this.vpcConnectorName = resource.ref;
-    this.connections = new Connections({ securityGroups: this.props.securityGroups });;
+    this.connections = new Connections({ securityGroups });;
   }
 }
