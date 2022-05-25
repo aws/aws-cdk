@@ -142,7 +142,7 @@ export class VpcConnector extends cdk.Resource implements IVpcConnector {
 
     const resource = new CfnVpcConnector(this, 'Resource', {
       subnets: props.vpc.selectSubnets(props.vpcSubnets).subnetIds,
-      securityGroups: securityGroups?.map(securityGroup => securityGroup.securityGroupId),
+      securityGroups: cdk.Lazy.list({ produce: () => this.connections.securityGroups.map(sg => sg.securityGroupId) }),
       vpcConnectorName: this.physicalName,
     });
 
