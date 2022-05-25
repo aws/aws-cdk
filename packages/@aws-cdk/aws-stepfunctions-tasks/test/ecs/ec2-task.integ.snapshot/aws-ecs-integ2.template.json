@@ -754,7 +754,7 @@
     }
    }
   },
-  "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic37856E82": {
+  "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionawsecsinteg2FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic9C6EC468344F23B7": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
     "Protocol": "lambda",

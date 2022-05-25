@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -232,10 +232,10 @@
             "data": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsinteg2FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic9C6EC468C75B1F21"
           }
         ],
-        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic/Resource": [
+        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/DrainECSHook/Function/awsecsinteg2FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic9C6EC468/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic37856E82"
+            "data": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionawsecsinteg2FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic9C6EC468344F23B7"
           }
         ],
         "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource": [
@@ -320,6 +320,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ServiceprincipalMap"
+          }
+        ],
+        "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic37856E82": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic37856E82",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

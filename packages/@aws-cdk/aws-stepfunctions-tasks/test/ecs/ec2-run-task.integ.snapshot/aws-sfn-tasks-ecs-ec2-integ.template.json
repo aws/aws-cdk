@@ -754,7 +754,7 @@
     }
    }
   },
-  "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic4795E0F6": {
+  "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionawssfntasksecsec2integEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicEE9E39A2D2339B38": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
     "Protocol": "lambda",
