@@ -845,13 +845,13 @@
                               "version": "0.0.0"
                             }
                           },
-                          "Topic": {
-                            "id": "Topic",
-                            "path": "aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/Topic",
+                          "awsecsintegFargateClustercapacityLifecycleHookDrainHookTopic07C1229F": {
+                            "id": "awsecsintegFargateClustercapacityLifecycleHookDrainHookTopic07C1229F",
+                            "path": "aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/awsecsintegFargateClustercapacityLifecycleHookDrainHookTopic07C1229F",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/Topic/Resource",
+                                "path": "aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/awsecsintegFargateClustercapacityLifecycleHookDrainHookTopic07C1229F/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                                   "aws:cdk:cloudformation:props": {

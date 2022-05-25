@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -207,10 +207,10 @@
             "data": "EcsClusterbottlerocketasgDrainECSHookFunctionAllowInvokeawsecsintegbottlerocketEcsClusterbottlerocketasgLifecycleHookDrainHookTopicD05837A873EBB93D"
           }
         ],
-        "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/Topic/Resource": [
+        "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/awsecsintegbottlerocketEcsClusterbottlerocketasgLifecycleHookDrainHookTopicD05837A8/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterbottlerocketasgDrainECSHookFunctionTopic1953D6F0"
+            "data": "EcsClusterbottlerocketasgDrainECSHookFunctionawsecsintegbottlerocketEcsClusterbottlerocketasgLifecycleHookDrainHookTopicD05837A87F232F2A"
           }
         ],
         "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/LifecycleHookDrainHook/Topic/Resource": [
@@ -241,6 +241,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "EcsClusterbottlerocketasgDrainECSHookFunctionTopic1953D6F0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterbottlerocketasgDrainECSHookFunctionTopic1953D6F0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -153,10 +153,10 @@
             "data": "FargateClustercapacityDrainECSHookFunctionAllowInvokeawsecsintegFargateClustercapacityLifecycleHookDrainHookTopic07C1229F3B6FF246"
           }
         ],
-        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/Topic/Resource": [
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/awsecsintegFargateClustercapacityLifecycleHookDrainHookTopic07C1229F/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateClustercapacityDrainECSHookFunctionTopic7D6C4884"
+            "data": "FargateClustercapacityDrainECSHookFunctionawsecsintegFargateClustercapacityLifecycleHookDrainHookTopic07C1229F9E55D525"
           }
         ],
         "/aws-ecs-integ/FargateCluster/capacity/LifecycleHookDrainHook/Topic/Resource": [
@@ -217,6 +217,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ServiceCloudmapService046058A4"
+          }
+        ],
+        "FargateClustercapacityDrainECSHookFunctionTopic7D6C4884": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunctionTopic7D6C4884",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

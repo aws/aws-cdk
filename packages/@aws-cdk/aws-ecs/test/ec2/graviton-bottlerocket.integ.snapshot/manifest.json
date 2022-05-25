@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -219,10 +219,10 @@
             "data": "EcsClustergravitonclusterDrainECSHookFunctionAllowInvokeawsecsintegEcsClustergravitonclusterLifecycleHookDrainHookTopicF44E68AA50D91BA3"
           }
         ],
-        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/Topic/Resource": [
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/awsecsintegEcsClustergravitonclusterLifecycleHookDrainHookTopicF44E68AA/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClustergravitonclusterDrainECSHookFunctionTopic65B3FD43"
+            "data": "EcsClustergravitonclusterDrainECSHookFunctionawsecsintegEcsClustergravitonclusterLifecycleHookDrainHookTopicF44E68AA3212E446"
           }
         ],
         "/aws-ecs-integ/EcsCluster/graviton-cluster/LifecycleHookDrainHook/Topic/Resource": [
@@ -253,6 +253,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "EcsClustergravitonclusterDrainECSHookFunctionTopic65B3FD43": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterDrainECSHookFunctionTopic65B3FD43",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

@@ -754,7 +754,7 @@
     }
    }
   },
-  "EcsClustergravitonclusterDrainECSHookFunctionTopic65B3FD43": {
+  "EcsClustergravitonclusterDrainECSHookFunctionawsecsintegEcsClustergravitonclusterLifecycleHookDrainHookTopicF44E68AA3212E446": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
     "Protocol": "lambda",

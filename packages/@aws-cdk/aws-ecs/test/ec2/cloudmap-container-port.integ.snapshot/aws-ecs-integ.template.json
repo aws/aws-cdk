@@ -562,7 +562,7 @@
     }
    }
   },
-  "FargateClustercapacityDrainECSHookFunctionTopic7D6C4884": {
+  "FargateClustercapacityDrainECSHookFunctionawsecsintegFargateClustercapacityLifecycleHookDrainHookTopic07C1229F9E55D525": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
     "Protocol": "lambda",

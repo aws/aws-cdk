@@ -1147,13 +1147,13 @@
                               "version": "0.0.0"
                             }
                           },
-                          "Topic": {
-                            "id": "Topic",
-                            "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/Topic",
+                          "awsecsintegbottlerocketEcsClusterbottlerocketasgLifecycleHookDrainHookTopicD05837A8": {
+                            "id": "awsecsintegbottlerocketEcsClusterbottlerocketasgLifecycleHookDrainHookTopicD05837A8",
+                            "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/awsecsintegbottlerocketEcsClusterbottlerocketasgLifecycleHookDrainHookTopicD05837A8",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/Topic/Resource",
+                                "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/awsecsintegbottlerocketEcsClusterbottlerocketasgLifecycleHookDrainHookTopicD05837A8/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                                   "aws:cdk:cloudformation:props": {

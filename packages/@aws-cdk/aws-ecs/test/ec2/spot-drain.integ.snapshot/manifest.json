@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -225,10 +225,10 @@
             "data": "EcsClusterasgSpotDrainECSHookFunctionAllowInvokeawsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopic92E2845E8BD3FE4E"
           }
         ],
-        "/aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/Topic/Resource": [
+        "/aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/awsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopic92E2845E/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgSpotDrainECSHookFunctionTopic9648CAD4"
+            "data": "EcsClusterasgSpotDrainECSHookFunctionawsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopic92E2845EB5DDFBD6"
           }
         ],
         "/aws-ecs-integ-spot/EcsCluster/asgSpot/LifecycleHookDrainHook/Topic/Resource": [
@@ -321,10 +321,10 @@
             "data": "EcsClusterasgOdDrainECSHookFunctionAllowInvokeawsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicB293D7D8B41B2D12"
           }
         ],
-        "/aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/Topic/Resource": [
+        "/aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/awsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicB293D7D8/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgOdDrainECSHookFunctionTopicE6BE4000"
+            "data": "EcsClusterasgOdDrainECSHookFunctionawsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicB293D7D8D308BDC5"
           }
         ],
         "/aws-ecs-integ-spot/EcsCluster/asgOd/LifecycleHookDrainHook/Topic/Resource": [
@@ -373,6 +373,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ServiceD69D759B"
+          }
+        ],
+        "EcsClusterasgSpotDrainECSHookFunctionTopic9648CAD4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgSpotDrainECSHookFunctionTopic9648CAD4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EcsClusterasgOdDrainECSHookFunctionTopicE6BE4000": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgOdDrainECSHookFunctionTopicE6BE4000",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

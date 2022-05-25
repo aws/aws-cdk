@@ -756,7 +756,7 @@
     }
    }
   },
-  "EcsClusterasgSpotDrainECSHookFunctionTopic9648CAD4": {
+  "EcsClusterasgSpotDrainECSHookFunctionawsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopic92E2845EB5DDFBD6": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
     "Protocol": "lambda",
@@ -1221,7 +1221,7 @@
     }
    }
   },
-  "EcsClusterasgOdDrainECSHookFunctionTopicE6BE4000": {
+  "EcsClusterasgOdDrainECSHookFunctionawsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicB293D7D8D308BDC5": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
     "Protocol": "lambda",

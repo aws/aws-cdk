@@ -1360,13 +1360,13 @@
                               "version": "0.0.0"
                             }
                           },
-                          "Topic": {
-                            "id": "Topic",
-                            "path": "aws-ecs-integ-exec-command/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic",
+                          "awsecsintegexeccommandEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic05F8C929": {
+                            "id": "awsecsintegexeccommandEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic05F8C929",
+                            "path": "aws-ecs-integ-exec-command/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/awsecsintegexeccommandEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic05F8C929",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-ecs-integ-exec-command/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic/Resource",
+                                "path": "aws-ecs-integ-exec-command/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/awsecsintegexeccommandEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic05F8C929/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                                   "aws:cdk:cloudformation:props": {

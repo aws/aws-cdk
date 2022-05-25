@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -237,10 +237,10 @@
             "data": "ASGDrainECSHookFunctionAllowInvokeintegec2capacityproviderASGLifecycleHookDrainHookTopic4714B3C1EB63E78F"
           }
         ],
-        "/integ-ec2-capacity-provider/ASG/DrainECSHook/Function/Topic/Resource": [
+        "/integ-ec2-capacity-provider/ASG/DrainECSHook/Function/integec2capacityproviderASGLifecycleHookDrainHookTopic4714B3C1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctionTopicD6FC59F7"
+            "data": "ASGDrainECSHookFunctionintegec2capacityproviderASGLifecycleHookDrainHookTopic4714B3C162C6D1D9"
           }
         ],
         "/integ-ec2-capacity-provider/ASG/LifecycleHookDrainHook/Topic/Resource": [
@@ -283,6 +283,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EC2Service5392EF94"
+          }
+        ],
+        "ASGDrainECSHookFunctionTopicD6FC59F7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctionTopicD6FC59F7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

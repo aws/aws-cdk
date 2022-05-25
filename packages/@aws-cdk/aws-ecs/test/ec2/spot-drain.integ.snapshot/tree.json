@@ -1171,13 +1171,13 @@
                               "version": "0.0.0"
                             }
                           },
-                          "Topic": {
-                            "id": "Topic",
-                            "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/Topic",
+                          "awsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopic92E2845E": {
+                            "id": "awsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopic92E2845E",
+                            "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/awsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopic92E2845E",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/Topic/Resource",
+                                "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/awsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopic92E2845E/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                                   "aws:cdk:cloudformation:props": {
@@ -1866,13 +1866,13 @@
                               "version": "0.0.0"
                             }
                           },
-                          "Topic": {
-                            "id": "Topic",
-                            "path": "aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/Topic",
+                          "awsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicB293D7D8": {
+                            "id": "awsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicB293D7D8",
+                            "path": "aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/awsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicB293D7D8",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/Topic/Resource",
+                                "path": "aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/awsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicB293D7D8/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                                   "aws:cdk:cloudformation:props": {

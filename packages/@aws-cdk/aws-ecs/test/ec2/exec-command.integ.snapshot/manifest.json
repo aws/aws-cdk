@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -237,10 +237,10 @@
             "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegexeccommandEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic05F8C92983E1AD32"
           }
         ],
-        "/aws-ecs-integ-exec-command/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic/Resource": [
+        "/aws-ecs-integ-exec-command/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/awsecsintegexeccommandEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic05F8C929/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic4795E0F6"
+            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionawsecsintegexeccommandEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic05F8C929EDAEEACD"
           }
         ],
         "/aws-ecs-integ-exec-command/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource": [
@@ -295,6 +295,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Ec2Service04A33183"
+          }
+        ],
+        "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic4795E0F6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic4795E0F6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
