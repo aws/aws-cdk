@@ -113,3 +113,39 @@ test('create a vpcConnector without a security group should create one', () => {
     ],
   });
 });
+
+test('create a vpcConnector with an empty security group array should create one', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  const vpc = new ec2.Vpc(stack, 'Vpc', {
+    cidr: '10.0.0.0/16',
+  });
+
+  // WHEN
+  new VpcConnector(stack, 'VpcConnector', {
+    vpc,
+    vpcSubnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }),
+    securityGroups: [],
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::VpcConnector', {
+    Subnets: [
+      {
+        Ref: 'VpcPublicSubnet1Subnet5C2D37C4',
+      },
+      {
+        Ref: 'VpcPublicSubnet2Subnet691E08A3',
+      },
+    ],
+    SecurityGroups: [
+      {
+        'Fn::GetAtt': [
+          'VpcConnectorSecurityGroup33FAF25D',
+          'GroupId',
+        ],
+      },
+    ],
+  });
+});
