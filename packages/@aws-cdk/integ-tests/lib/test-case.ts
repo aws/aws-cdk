@@ -1,6 +1,6 @@
 import { IntegManifest, Manifest, TestCase, TestOptions } from '@aws-cdk/cloud-assembly-schema';
-import { attachCustomSynthesis, Stack, ISynthesisSession, StackProps } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { attachCustomSynthesis, Stack, ISynthesisSession, StackProps, IAspect, Aspects } from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
 import { DeployAssert } from './assertions';
 import { IntegManifestSynthesizer } from './manifest-synthesizer';
 
@@ -147,15 +147,24 @@ export class IntegTest extends CoreConstruct {
         .map(stack => (stack as IntegTestCaseStack)._testCase),
     ];
 
-    this.node.addValidation({
-      validate: () => {
-        attachCustomSynthesis(this, {
-          onSynthesize: (session: ISynthesisSession) => {
-            const synthesizer = new IntegManifestSynthesizer(this.testCases);
-            synthesizer.synthesize(session);
-          },
-        });
-        return [];
+    Aspects.of(this).add(new IntegTestCustomSynthesisAspect(this.testCases));
+
+  }
+}
+
+class IntegTestCustomSynthesisAspect implements IAspect {
+  constructor(private readonly testCases: IntegTestCase[]) {
+  }
+
+  public visit(node: IConstruct): void {
+    if (!(node instanceof IntegTest)) {
+      return;
+    }
+
+    attachCustomSynthesis(node, {
+      onSynthesize: (session: ISynthesisSession) => {
+        const synthesizer = new IntegManifestSynthesizer(this.testCases);
+        synthesizer.synthesize(session);
       },
     });
   }
