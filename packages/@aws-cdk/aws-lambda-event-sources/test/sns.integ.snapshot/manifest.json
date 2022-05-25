@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -33,16 +33,25 @@
             "data": "FAllowInvokelambdaeventsourcesnsT85539BB11B51A88E"
           }
         ],
-        "/lambda-event-source-sns/F/T/Resource": [
+        "/lambda-event-source-sns/F/lambdaeventsourcesnsT85539BB1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FTA788EE87"
+            "data": "FlambdaeventsourcesnsT85539BB18A76FBEC"
           }
         ],
         "/lambda-event-source-sns/T/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TD925BC7E"
+          }
+        ],
+        "FTA788EE87": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FTA788EE87",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

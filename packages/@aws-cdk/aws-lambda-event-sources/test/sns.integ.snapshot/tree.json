@@ -117,13 +117,13 @@
                   "version": "0.0.0"
                 }
               },
-              "T": {
-                "id": "T",
-                "path": "lambda-event-source-sns/F/T",
+              "lambdaeventsourcesnsT85539BB1": {
+                "id": "lambdaeventsourcesnsT85539BB1",
+                "path": "lambda-event-source-sns/F/lambdaeventsourcesnsT85539BB1",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "lambda-event-source-sns/F/T/Resource",
+                    "path": "lambda-event-source-sns/F/lambdaeventsourcesnsT85539BB1/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                       "aws:cdk:cloudformation:props": {
