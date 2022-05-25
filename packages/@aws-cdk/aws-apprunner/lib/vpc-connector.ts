@@ -141,7 +141,7 @@ export class VpcConnector extends cdk.Resource implements IVpcConnector {
       : [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc })];
 
     const resource = new CfnVpcConnector(this, 'Resource', {
-      subnets: props.vpc.selectSubnets(props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }).subnetIds,
+      subnets: props.vpc.selectSubnets(props.vpcSubnets).subnetIds,
       securityGroups: securityGroups?.map(securityGroup => securityGroup.securityGroupId),
       vpcConnectorName: this.physicalName,
     });
