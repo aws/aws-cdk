@@ -169,18 +169,17 @@ describe('proxy', () => {
     });
 
     // WHEN
-    proxy.addEndpoint(stack, 'ExtraEndPoint', {
-      dbProxyEndpointName: 'extraEndpoint',
+    const endpoint = proxy.addEndpoint('ExtraEndPoint', {
       vpc,
-      targetRole: rds.TargetRole.READ_ONLY,
+      allowedOperations: rds.AllowedOperations.READ_ONLY,
     });
     new cdk.CfnOutput(stack, 'DefaultEndpointOutput', {
       exportName: 'DefaultEndPoint',
-      value: proxy.endpoints[0],
+      value: proxy.endpoint,
     });
     new cdk.CfnOutput(stack, 'ExtraEndpointOutput', {
       exportName: 'ExtraEndPoint',
-      value: proxy.endpoints[1],
+      value: endpoint.endpoint,
     });
 
     // THEN
@@ -192,14 +191,14 @@ describe('proxy', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxyEndpoint', {
-      DBProxyEndpointName: 'extraEndpoint',
+      DBProxyEndpointName: 'ProxyExtraEndPoint0835D361',
       DBProxyName: {
         Ref: 'ProxyCB0DFB71',
       },
       TargetRole: 'READ_ONLY',
       VpcSecurityGroupIds: [
         {
-          'Fn::GetAtt': ['ExtraEndPointProxyEndPointSecurityGroup8808004B', 'GroupId'],
+          'Fn::GetAtt': ['ProxyExtraEndPointProxyEndPointSecurityGroupA91CB7CD', 'GroupId'],
         },
       ],
       VpcSubnetIds: [
@@ -218,7 +217,7 @@ describe('proxy', () => {
     Template.fromStack(stack).hasOutput('ExtraEndpointOutput', {
       Value: {
         'Fn::GetAtt': [
-          'ExtraEndPointD566A0AB',
+          'ProxyExtraEndPointF161868E',
           'Endpoint',
         ],
       },

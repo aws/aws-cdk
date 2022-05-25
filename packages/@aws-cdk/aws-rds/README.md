@@ -489,6 +489,18 @@ const proxy = dbInstance.addProxy('proxy', {
 });
 ```
 
+It is possible to create additional endpoints on a proxy. These can be used on an alternate vpc.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const proxy: rds.DatabaseProxy;
+
+const endpoint = proxy.addEndPoint('ExtraEndpoint', {
+  vpc,
+  allowedOperations: AllowedOperations.READ_WRITE,
+})
+```
+
 ## Exporting Logs
 
 You can publish database logs to Amazon CloudWatch Logs. With CloudWatch Logs, you can perform real-time analysis of the log data,
