@@ -1,7 +1,7 @@
 {
   "version": "18.0.0",
   "testCases": {
-    "aws-eks/test/integ.eks-bottlerocket-ng": {
+    "integ.eks-bottlerocket-ng": {
       "stacks": [
         "aws-cdk-eks-cluster-test"
       ],
