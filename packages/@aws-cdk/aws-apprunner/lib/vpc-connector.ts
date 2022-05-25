@@ -107,7 +107,6 @@ export class VpcConnector extends cdk.Resource implements IVpcConnector {
 
     return new Import(scope, id);
   }
-  private readonly props: VpcConnectorProps;
 
   /**
     * The ARN of the VPC connector.
@@ -133,23 +132,23 @@ export class VpcConnector extends cdk.Resource implements IVpcConnector {
   public readonly connections: Connections
 
   public constructor(scope: Construct, id: string, props: VpcConnectorProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.vpcConnectorName,
+    });
 
-    this.props = props;
-
-    const securityGroups = this.props.securityGroups?.length ?
-      this.props.securityGroups
-      : [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.props.vpc })];
+    const securityGroups = props.securityGroups?.length ?
+      props.securityGroups
+      : [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc })];
 
     const resource = new CfnVpcConnector(this, 'Resource', {
-      subnets: this.props.vpc.selectSubnets(this.props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }).subnetIds,
+      subnets: props.vpc.selectSubnets(props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }).subnetIds,
       securityGroups: securityGroups?.map(securityGroup => securityGroup.securityGroupId),
-      vpcConnectorName: this.props.vpcConnectorName,
+      vpcConnectorName: this.physicalName,
     });
 
     this.vpcConnectorArn = resource.attrVpcConnectorArn;
     this.vpcConnectorRevision = resource.attrVpcConnectorRevision;
     this.vpcConnectorName = resource.ref;
-    this.connections = new Connections({ securityGroups });;
+    this.connections = new Connections({ securityGroups });
   }
 }
