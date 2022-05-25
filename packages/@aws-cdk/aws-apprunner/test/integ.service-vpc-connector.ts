@@ -40,10 +40,11 @@ const service7 = new Service(stack, 'Service7', {
     },
     imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
   }),
-  vpcConnector: VpcConnector.fromServiceAttributes(stack, 'ImportedVpcConnector', {
+  vpcConnector: VpcConnector.fromVpcConnectorAttributes(stack, 'ImportedVpcConnector', {
     vpcConnectorArn: vpcConnector.vpcConnectorArn,
     vpcConnectorName: vpcConnector.vpcConnectorName,
     vpcConnectorRevision: vpcConnector.vpcConnectorRevision,
+    securityGroups: [securityGroup],
   }),
 });
 new cdk.CfnOutput(stack, 'URL7', { value: `https://${service7.serviceUrl}` });

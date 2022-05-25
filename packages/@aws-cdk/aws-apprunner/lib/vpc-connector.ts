@@ -1,4 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { Connections } from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVpcConnector } from './apprunner.generated';
@@ -45,12 +46,17 @@ export interface VpcConnectorAttributes {
    * The revision of the VPC connector.
    */
   readonly vpcConnectorRevision: number;
+
+  /**
+   * The security groups associated with the VPC connector.
+   */
+  readonly securityGroups: ec2.ISecurityGroup[];
 }
 
 /**
  * Represents the App Runner VPC Connector.
  */
-export interface IVpcConnector extends cdk.IResource {
+export interface IVpcConnector extends cdk.IResource, ec2.IConnectable {
   /**
    * The Name of the VPC connector.
    * @attribute
@@ -69,34 +75,21 @@ export interface IVpcConnector extends cdk.IResource {
  *
  * @resource AWS::AppRunner::VpcConnector
  */
-export class VpcConnector extends cdk.Resource {
-  /**
-   * Import from VPC connector name.
-   */
-  public static fromVpcConnectorName(scope: Construct, id: string, vpcConnectorName: string): IVpcConnector {
-    class Import extends cdk.Resource {
-      public vpcConnectorName = vpcConnectorName;
-      public vpcConnectorArn = cdk.Stack.of(this).formatArn({
-        resource: 'vpcconnector',
-        service: 'apprunner',
-        resourceName: vpcConnectorName,
-      })
-    }
-    return new Import(scope, id);
-  }
-
+export class VpcConnector extends cdk.Resource implements IVpcConnector {
   /**
    * Import from VPC connector attributes.
    */
-  public static fromServiceAttributes(scope: Construct, id: string, attrs: VpcConnectorAttributes): IVpcConnector {
+  public static fromVpcConnectorAttributes(scope: Construct, id: string, attrs: VpcConnectorAttributes): IVpcConnector {
     const vpcConnectorArn = attrs.vpcConnectorArn;
     const vpcConnectorName = attrs.vpcConnectorName;
     const vpcConnectorRevision = attrs.vpcConnectorRevision;
+    const securityGroups = attrs.securityGroups;
 
     class Import extends cdk.Resource {
       public readonly vpcConnectorArn = vpcConnectorArn
       public readonly vpcConnectorName = vpcConnectorName
       public readonly vpcConnectorRevision = vpcConnectorRevision
+      public readonly connections = new Connections({ securityGroups });
     }
 
     return new Import(scope, id);
@@ -121,6 +114,11 @@ export class VpcConnector extends cdk.Resource {
     */
   readonly vpcConnectorName: string;
 
+  /**
+   * Allows specifying security group connections for the VPC connector.
+   */
+  public readonly connections: Connections
+
   public constructor(scope: Construct, id: string, props: VpcConnectorProps) {
     super(scope, id);
 
@@ -135,5 +133,6 @@ export class VpcConnector extends cdk.Resource {
     this.vpcConnectorArn = resource.attrVpcConnectorArn;
     this.vpcConnectorRevision = resource.attrVpcConnectorRevision;
     this.vpcConnectorName = resource.ref;
+    this.connections = new Connections({ securityGroups: this.props.securityGroups });;
   }
 }
