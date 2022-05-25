@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "19.0.0",
   "testCases": {
-    "aws-events-targets/test/ecs/integ.event-ec2-task.lit": {
+    "ecs/integ.event-ec2-task.lit": {
       "stacks": [
         "aws-ecs-integ-ecs"
       ],
