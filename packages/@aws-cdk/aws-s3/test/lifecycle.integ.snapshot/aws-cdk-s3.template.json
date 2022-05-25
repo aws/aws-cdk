@@ -11,6 +11,7 @@
       },
       {
        "ObjectSizeLessThan": "500",
+       "ObjectSizeGreaterThan": "500",
        "Status": "Enabled"
       }
      ]

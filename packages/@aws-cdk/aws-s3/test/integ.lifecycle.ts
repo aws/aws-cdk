@@ -13,6 +13,7 @@ new Bucket(stack, 'MyBucket', {
     },
     {
       objectSizeLessThan: 500,
+      objectSizeGreaterThan: 500,
     },
   ],
   removalPolicy: RemovalPolicy.DESTROY,

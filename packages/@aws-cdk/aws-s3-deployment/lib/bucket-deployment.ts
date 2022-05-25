@@ -327,6 +327,9 @@ export class BucketDeployment extends CoreConstruct {
     const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this, { handlerRole }));
 
     props.destinationBucket.grantReadWrite(handler);
+    if (props.accessControl) {
+      props.destinationBucket.grantPutAcl(handler);
+    }
     if (props.distribution) {
       handler.addToRolePolicy(new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,

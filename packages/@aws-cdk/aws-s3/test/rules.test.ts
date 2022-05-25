@@ -292,7 +292,7 @@ describe('rules', () => {
     });
   });
 
-  test('Bucket with objectSizeLessThan', () => {
+  test('Bucket with object size rules', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -300,6 +300,7 @@ describe('rules', () => {
     new Bucket(stack, 'Bucket', {
       lifecycleRules: [{
         objectSizeLessThan: 0,
+        objectSizeGreaterThan: 0,
       }],
     });
 
@@ -308,6 +309,7 @@ describe('rules', () => {
       LifecycleConfiguration: {
         Rules: [{
           ObjectSizeLessThan: 0,
+          ObjectSizeGreaterThan: 0,
           Status: 'Enabled',
         }],
       },
