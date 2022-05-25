@@ -159,10 +159,10 @@
             "data": "SecurityGroupDD263621"
           }
         ],
-        "/integ-apprunner/VpcConnector/VpcConnector": [
+        "/integ-apprunner/VpcConnector/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcConnectorCF6E3C30"
+            "data": "VpcConnectorE3A78531"
           }
         ],
         "/integ-apprunner/Service6/Resource": [

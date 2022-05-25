@@ -399,7 +399,7 @@
     }
    }
   },
-  "VpcConnectorCF6E3C30": {
+  "VpcConnectorE3A78531": {
    "Type": "AWS::AppRunner::VpcConnector",
    "Properties": {
     "Subnets": [
@@ -440,7 +440,7 @@
       "EgressType": "VPC",
       "VpcConnectorArn": {
        "Fn::GetAtt": [
-        "VpcConnectorCF6E3C30",
+        "VpcConnectorE3A78531",
         "VpcConnectorArn"
        ]
       }
@@ -467,7 +467,7 @@
       "EgressType": "VPC",
       "VpcConnectorArn": {
        "Fn::GetAtt": [
-        "VpcConnectorCF6E3C30",
+        "VpcConnectorE3A78531",
         "VpcConnectorArn"
        ]
       }

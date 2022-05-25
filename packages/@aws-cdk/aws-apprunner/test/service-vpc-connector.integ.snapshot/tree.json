@@ -697,9 +697,9 @@
             "id": "VpcConnector",
             "path": "integ-apprunner/VpcConnector",
             "children": {
-              "VpcConnector": {
-                "id": "VpcConnector",
-                "path": "integ-apprunner/VpcConnector/VpcConnector",
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-apprunner/VpcConnector/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppRunner::VpcConnector",
                   "aws:cdk:cloudformation:props": {
@@ -759,7 +759,7 @@
                         "egressType": "VPC",
                         "vpcConnectorArn": {
                           "Fn::GetAtt": [
-                            "VpcConnectorCF6E3C30",
+                            "VpcConnectorE3A78531",
                             "VpcConnectorArn"
                           ]
                         }
@@ -820,7 +820,7 @@
                         "egressType": "VPC",
                         "vpcConnectorArn": {
                           "Fn::GetAtt": [
-                            "VpcConnectorCF6E3C30",
+                            "VpcConnectorE3A78531",
                             "VpcConnectorArn"
                           ]
                         }

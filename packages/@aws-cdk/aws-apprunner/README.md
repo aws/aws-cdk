@@ -146,11 +146,9 @@ const vpc = new ec2.Vpc(this, 'Vpc', {
   cidr: '10.0.0.0/16',
 });
 
-const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
-
 const vpcConnector = new apprunner.VpcConnector(this, 'VpcConnector', {
-  subnets: vpc.publicSubnets,
-  securityGroups: [securityGroup],
+  vpc,
+  vpcSubnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }),
   vpcConnectorName: 'MyVpcConnector',
 });
 

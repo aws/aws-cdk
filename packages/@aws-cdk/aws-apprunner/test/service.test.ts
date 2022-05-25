@@ -658,7 +658,8 @@ test('specifying a vpcConnector should assign the service to it and set the egre
 
   const vpcConnector = new VpcConnector(stack, 'VpcConnector', {
     securityGroups: [securityGroup],
-    subnets: vpc.publicSubnets,
+    vpc,
+    vpcSubnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }),
     vpcConnectorName: 'MyVpcConnector',
   });
   // WHEN
@@ -675,7 +676,7 @@ test('specifying a vpcConnector should assign the service to it and set the egre
         EgressType: 'VPC',
         VpcConnectorArn: {
           'Fn::GetAtt': [
-            'VpcConnectorCF6E3C30',
+            'VpcConnectorE3A78531',
             'VpcConnectorArn',
           ],
         },

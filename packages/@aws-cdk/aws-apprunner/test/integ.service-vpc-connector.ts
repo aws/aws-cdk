@@ -15,7 +15,8 @@ const vpc = new ec2.Vpc(stack, 'Vpc', {
 const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
 
 const vpcConnector = new VpcConnector(stack, 'VpcConnector', {
-  subnets: vpc.publicSubnets,
+  vpc,
+  vpcSubnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }),
   securityGroups: [securityGroup],
   vpcConnectorName: 'MyVpcConnector',
 });
