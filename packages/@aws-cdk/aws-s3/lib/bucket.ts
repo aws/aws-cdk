@@ -1923,6 +1923,7 @@ export class Bucket extends BucketBase {
         })),
         expiredObjectDeleteMarker: rule.expiredObjectDeleteMarker,
         tagFilters: self.parseTagFilters(rule.tagFilters),
+        objectSizeGreaterThan: rule.objectSizeGreaterThan,
       };
 
       return x;

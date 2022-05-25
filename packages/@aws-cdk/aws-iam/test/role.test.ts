@@ -59,6 +59,30 @@ describe('IAM role', () => {
     });
   });
 
+  test('a role can grant AssumeRole permissions', () => {
+    // GIVEN
+    const stack = new Stack();
+    const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('henk.amazonaws.com') });
+    const user = new User(stack, 'User');
+
+    // WHEN
+    role.grantAssumeRole(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   testDeprecated('can supply externalId', () => {
     // GIVEN
     const stack = new Stack();

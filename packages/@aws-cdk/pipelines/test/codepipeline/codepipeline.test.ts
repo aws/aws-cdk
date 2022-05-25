@@ -138,6 +138,30 @@ test('Policy sizes do not exceed the maximum size', () => {
   Annotations.fromStack(pipelineStack).hasNoWarning('*', Match.anyValue());
 });
 
+test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Principal: {
+            AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::123pipeline:root']] },
+          },
+          Condition: {
+            Bool: {
+              'aws:ViaAWSService': 'codepipeline.amazonaws.com',
+            },
+          },
+        },
+      ],
+    },
+  });
+});
+
 interface ReuseCodePipelineStackProps extends cdk.StackProps {
   reuseCrossRegionSupportStacks?: boolean;
 }
