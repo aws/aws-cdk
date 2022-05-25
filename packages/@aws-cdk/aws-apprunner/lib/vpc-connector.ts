@@ -75,6 +75,12 @@ export interface IVpcConnector extends cdk.IResource, ec2.IConnectable {
    * @attribute
    */
   readonly vpcConnectorArn: string;
+
+  /**
+   * The revision of the VPC connector.
+   * @attribute
+   */
+  readonly vpcConnectorRevision: number;
 }
 
 /**
