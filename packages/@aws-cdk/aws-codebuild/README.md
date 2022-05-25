@@ -500,7 +500,7 @@ declare const source: codebuild.Source;
 
 // create a new ReportGroup
 const reportGroup = new codebuild.ReportGroup(this, 'ReportGroup', {
-    type: ReportGroupType.CODE_COVERAGE
+    type: codebuild.ReportGroupType.CODE_COVERAGE
 });
 
 const project = new codebuild.Project(this, 'Project', {
