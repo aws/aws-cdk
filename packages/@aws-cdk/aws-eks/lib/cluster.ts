@@ -2285,6 +2285,7 @@ function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
 
 function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
   return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
+    INSTANCE_TYPES.graviton3.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
     INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
       CpuArch.X86_64;
 }
