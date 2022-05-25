@@ -247,6 +247,13 @@ export class Role extends Resource implements IRole {
       }
 
       /**
+       * Grant permissions to the given principal to pass this role.
+       */
+      public grantAssumeRole(identity: IPrincipal): Grant {
+        return this.grant(identity, 'sts:AssumeRole');
+      }
+
+      /**
        * Grant the actions defined in actions to the identity Principal on this resource.
        */
       public grant(grantee: IPrincipal, ...actions: string[]): Grant {
@@ -355,6 +362,8 @@ export class Role extends Resource implements IRole {
       throw new Error('Role description must be no longer than 1000 characters.');
     }
 
+    validateRolePath(props.path);
+
     const role = new CfnRole(this, 'Resource', {
       assumeRolePolicyDocument: this.assumeRolePolicy as any,
       managedPolicyArns: UniqueStringSet.from(() => this.managedPolicies.map(p => p.managedPolicyArn)),
@@ -446,6 +455,14 @@ export class Role extends Resource implements IRole {
   }
 
   /**
+   * Grant permissions to the given principal to assume this role.
+   */
+  public grantAssumeRole(identity: IPrincipal) {
+    return this.grant(identity, 'sts:AssumeRole');
+  }
+
+
+  /**
    * Return a copy of this Role object whose Policies will not be updated
    *
    * Use the object returned by this method if you want this Role to be used by
@@ -468,6 +485,7 @@ export class Role extends Resource implements IRole {
     for (const policy of Object.values(this.inlinePolicies)) {
       errors.push(...policy.validateForIdentityPolicy());
     }
+
     return errors;
   }
 }
@@ -499,6 +517,11 @@ export interface IRole extends IIdentity {
    * Grant permissions to the given principal to pass this role.
    */
   grantPassRole(grantee: IPrincipal): Grant;
+
+  /**
+   * Grant permissions to the given principal to assume this role.
+   */
+  grantAssumeRole(grantee: IPrincipal): Grant;
 }
 
 function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {
@@ -517,6 +540,22 @@ function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {
   defaultAddPrincipalToAssumeRole(principal, addDoc);
 
   return actualDoc;
+}
+
+function validateRolePath(path?: string) {
+  if (path === undefined || Token.isUnresolved(path)) {
+    return;
+  }
+
+  const validRolePath = /^(\/|\/[\u0021-\u007F]+\/)$/;
+
+  if (path.length == 0 || path.length > 512) {
+    throw new Error(`Role path must be between 1 and 512 characters. The provided role path is ${path.length} characters.`);
+  } else if (!validRolePath.test(path)) {
+    throw new Error(
+      'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
+      + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${path} is provided.`);
+  }
 }
 
 function validateMaxSessionDuration(duration?: number) {
