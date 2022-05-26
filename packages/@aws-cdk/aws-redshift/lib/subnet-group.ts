@@ -65,7 +65,7 @@ export class ClusterSubnetGroup extends Resource implements IClusterSubnetGroup 
   constructor(scope: Construct, id: string, props: ClusterSubnetGroupProps) {
     super(scope, id);
 
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE });
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT });
 
     const subnetGroup = new CfnClusterSubnetGroup(this, 'Default', {
       description: props.description,
