@@ -163,7 +163,7 @@ describe('image asset', () => {
     expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).networkMode).toEqual('default');
   });
 
-  testFutureBehavior('with platform', flags, App, (app) => {
+  testLegacyBehavior('with platform', App, (app) => {
     // GIVEN
     const stack = new Stack(app);
     // WHEN
