@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-cdk-codepipeline-codebuild-multiple-inputs-outputs": {
@@ -505,22 +505,22 @@
                     "id": "Source1",
                     "path": "aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/Pipeline/Source/Source1",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   },
                   "Source2": {
                     "id": "Source2",
                     "path": "aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/Pipeline/Source/Source2",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "EventsRole": {
@@ -627,22 +627,22 @@
                     "id": "Build1",
                     "path": "aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/Pipeline/Build/Build1",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   },
                   "Build2": {
                     "id": "Build2",
                     "path": "aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/Pipeline/Build/Build2",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },

@@ -166,7 +166,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 
 class S3BucketProduct extends servicecatalog.ProductStack {
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
 
     new s3.Bucket(this, 'BucketProduct');
