@@ -28,14 +28,6 @@ export interface ServiceAttributes {
 }
 
 export function fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IBaseService {
-  return fromServiceAtrributes(scope, id, attrs);
-}
-
-/**
- * DEPRECATED
- * @deprecated use fromServiceAttributes()
- */
-function fromServiceAtrributes(scope: Construct, id: string, attrs: ServiceAttributes): IBaseService {
   if ((attrs.serviceArn && attrs.serviceName) || (!attrs.serviceArn && !attrs.serviceName)) {
     throw new Error('You can only specify either serviceArn or serviceName.');
   }

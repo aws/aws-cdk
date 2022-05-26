@@ -748,7 +748,6 @@ constructs.Node#uniqueId
 @aws-cdk/aws-ecs.EcsOptimizedAmiProps#windowsVersion
 @aws-cdk/aws-ecs.FargateServiceProps#securityGroup
 @aws-cdk/aws-ecs.SplunkLogDriverProps#token
-@aws-cdk/aws-ecs.ServiceAttributes#fromServiceAtrributes
 @aws-cdk/aws-cloudfront.AliasConfiguration
 @aws-cdk/aws-cloudfront.AliasConfiguration#acmCertRef
 @aws-cdk/aws-cloudfront.AliasConfiguration#names
