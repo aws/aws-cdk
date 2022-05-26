@@ -129,7 +129,7 @@ async function main() {
       message = 'To re-run failed tests run: yarn integ-runner --update-on-failed';
     }
     if (!testsSucceeded) {
-      throw new Error(`Some snapshot tests failed!\n${message}`);
+      throw new Error(`Some tests failed!\n${message}`);
     }
   }
 
