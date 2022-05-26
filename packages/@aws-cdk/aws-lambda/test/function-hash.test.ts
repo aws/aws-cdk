@@ -210,7 +210,7 @@ describe('function hash', () => {
       test('with feature flag, we sort layers so order is consistent', () => {
         const app = new App({ context: { [LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
 
-        const stack2 = new Stack(app, 'stack1');
+        const stack2 = new Stack(app, 'stack2');
         const fn1 = new lambda.Function(stack2, 'MyFunction', {
           runtime: lambda.Runtime.NODEJS_12_X,
           code: lambda.Code.fromInline('foo'),
@@ -218,7 +218,7 @@ describe('function hash', () => {
           layers: [layer1, layer2],
         });
 
-        const stack3 = new Stack(app, 'stack2');
+        const stack3 = new Stack(app, 'stack3');
         const fn2 = new lambda.Function(stack3, 'MyFunction', {
           runtime: lambda.Runtime.NODEJS_12_X,
           code: lambda.Code.fromInline('foo'),
@@ -228,6 +228,21 @@ describe('function hash', () => {
 
         expect(calculateFunctionHash(fn1)).toEqual(calculateFunctionHash(fn2));
       });
+    });
+
+    test('no errors for imported lambda layers under feature flag', () => {
+      const app = new App({ context: { [LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
+
+      const stack2 = new Stack(app, 'stack2');
+      const importedLayer = lambda.LayerVersion.fromLayerVersionArn(stack2, 'imported-layer', 'arn:aws:lambda:<region>:<account>:layer:<layer-name>:<version>');
+      const fn1 = new lambda.Function(stack2, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+        layers: [importedLayer],
+      });
+
+      expect(() => calculateFunctionHash(fn1)).not.toThrow();
     });
   });
 

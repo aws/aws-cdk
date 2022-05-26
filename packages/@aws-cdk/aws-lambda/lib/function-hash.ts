@@ -128,6 +128,10 @@ function calculateLayersHash(layers: ILayerVersion[]): string {
   for (const layer of layers) {
     const stack = Stack.of(layer);
     const layerResource = layer.node.defaultChild as CfnResource;
+    // if there is no layer resource, then the layer was imported
+    if (layerResource === undefined) {
+      continue;
+    }
     const config = stack.resolve((layerResource as any)._toCloudFormation());
     const resources = config.Resources;
     const resourceKeys = Object.keys(resources);
