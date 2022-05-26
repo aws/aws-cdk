@@ -660,11 +660,17 @@ export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBasePro
   readonly snapshotIdentifier: string;
 
   /**
-   * Credentials of the administrative user
+   * Credentials for the administrative user
    *
-   * @default - The existing username and password from the snapshot will be used.
+   * Note - using this prop only works with `Credentials.fromPassword()` with the
+   * username of the snapshot, `Credentials.fromUsername()` with the username and
+   * password of the snapshot or `Credentials.fromSecret()` with a secret containing
+   * the username and password of the snapshot.
    *
-   * @deprecated use snapshotCredentials
+   * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
+   * that **will not be applied** to the cluster, use `snapshotCredentials` for the correct behavior.
+   *
+   * @deprecated use `snapshotCredentials` which allows to generate a new password
    */
   readonly credentials?: Credentials;
 
@@ -701,17 +707,21 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     super(scope, id, props);
 
     if (props.credentials && !props.credentials.password && !props.credentials.secret) {
-      Annotations.of(this).addWarning('Cannot modify password of a cluster created from a snapshot. Use `snapshotCredentials` instead.');
+      Annotations.of(this).addWarning('Use `snapshotCredentials` to modify password of a cluster created from a snapshot.');
     }
+    if (!props.credentials && !props.snapshotCredentials) {
+      Annotations.of(this).addWarning('Generated credentials will not be applied to cluster. Use `snapshotCredentials` instead. `addRotationSingleUser()` and `addRotationMultiUser()` cannot be used on tbis cluster.');
+    }
+    const deprecatedCredentials = renderCredentials(this, props.engine, props.credentials);
 
     let credentials = props.snapshotCredentials;
     let secret = credentials?.secret;
     if (!secret && credentials?.generatePassword) {
       if (!credentials.username) {
-        throw new Error('`credentials` `username` must be specified when `generatePassword` is set to true');
+        throw new Error('`snapshotCredentials` `username` must be specified when `generatePassword` is set to true');
       }
 
-      secret = new DatabaseSecret(this, 'Secret', {
+      secret = new DatabaseSecret(this, 'SnapshotSecret', {
         username: credentials.username,
         encryptionKey: credentials.encryptionKey,
         excludeCharacters: credentials.excludeCharacters,
@@ -732,12 +742,10 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
       this.secret = secret.attach(this);
     }
 
-    // Avoid breaking change when introducing `snapshotCredentials`, simply attach
-    // the secret.
-    if (props.credentials) {
-      const rendered = renderCredentials(this, props.engine, props.credentials);
-      if (rendered.secret) {
-        rendered.secret.attach(this);
+    if (deprecatedCredentials.secret) {
+      const deprecatedSecret = deprecatedCredentials.secret.attach(this);
+      if (!this.secret) {
+        this.secret = deprecatedSecret;
       }
     }
 

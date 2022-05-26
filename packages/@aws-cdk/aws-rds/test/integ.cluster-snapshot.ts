@@ -56,8 +56,6 @@ class Snapshoter extends CoreConstruct {
   constructor(scope: Construct, id: string, props: SnapshoterProps) {
     super(scope, id);
 
-    this.node.addDependency(props.cluster);
-
     const clusterArn = Stack.of(this).formatArn({
       service: 'rds',
       resource: 'cluster',

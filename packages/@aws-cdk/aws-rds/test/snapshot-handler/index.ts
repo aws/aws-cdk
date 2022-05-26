@@ -36,17 +36,28 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
 export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCompleteResponse> {
   console.log('Event: %j', event);
 
-  const rds = new RDS();
-
-  const data = await rds.describeDBClusterSnapshots({
-    DBClusterSnapshotIdentifier: event.ResourceProperties.DBClusterSnapshotIdentifier,
-  }).promise();
+  const snapshotStatus = await tryGetClusterSnapshotStatus(event.ResourceProperties.DBClusterSnapshotIdentifier);
 
   switch (event.RequestType) {
     case 'Create':
     case 'Update':
-      return { IsComplete: data.DBClusterSnapshots?.[0].Status === 'available' };
+      return { IsComplete: snapshotStatus === 'available' };
     case 'Delete':
-      return { IsComplete: data.DBClusterSnapshots?.length === 0 };
+      return { IsComplete: snapshotStatus === undefined };
+  }
+}
+
+async function tryGetClusterSnapshotStatus(identifier: string): Promise<string | undefined> {
+  try {
+    const rds = new RDS();
+    const data = await rds.describeDBClusterSnapshots({
+      DBClusterSnapshotIdentifier: identifier,
+    }).promise();
+    return data.DBClusterSnapshots?.[0].Status;
+  } catch (err) {
+    if (err.code === 'DBClusterSnapshotNotFoundFault') {
+      return undefined;
+    }
+    throw err;
   }
 }

@@ -857,7 +857,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-rds.DatabaseCluster",
+              "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
             }
           },
@@ -1038,7 +1038,7 @@
                       "aws:cdk:cloudformation:props": {
                         "code": {
                           "s3Bucket": {
-                            "Ref": "AssetParameters3bd57dc822867660fa020e2e9f2b59167eaace164c221340068e019579af06baS3BucketFF543A86"
+                            "Ref": "AssetParameters1e025324752b3133dc230c4b8b8752f666b63c09cd4aa605ec2b322cc40def2eS3BucketB5E782AC"
                           },
                           "s3Key": {
                             "Fn::Join": [
@@ -1051,7 +1051,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "AssetParameters3bd57dc822867660fa020e2e9f2b59167eaace164c221340068e019579af06baS3VersionKey2AF34F90"
+                                          "Ref": "AssetParameters1e025324752b3133dc230c4b8b8752f666b63c09cd4aa605ec2b322cc40def2eS3VersionKey5DD1F95D"
                                         }
                                       ]
                                     }
@@ -1064,7 +1064,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "AssetParameters3bd57dc822867660fa020e2e9f2b59167eaace164c221340068e019579af06baS3VersionKey2AF34F90"
+                                          "Ref": "AssetParameters1e025324752b3133dc230c4b8b8752f666b63c09cd4aa605ec2b322cc40def2eS3VersionKey5DD1F95D"
                                         }
                                       ]
                                     }
@@ -1239,7 +1239,7 @@
                       "aws:cdk:cloudformation:props": {
                         "code": {
                           "s3Bucket": {
-                            "Ref": "AssetParameters3bd57dc822867660fa020e2e9f2b59167eaace164c221340068e019579af06baS3BucketFF543A86"
+                            "Ref": "AssetParameters1e025324752b3133dc230c4b8b8752f666b63c09cd4aa605ec2b322cc40def2eS3BucketB5E782AC"
                           },
                           "s3Key": {
                             "Fn::Join": [
@@ -1252,7 +1252,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "AssetParameters3bd57dc822867660fa020e2e9f2b59167eaace164c221340068e019579af06baS3VersionKey2AF34F90"
+                                          "Ref": "AssetParameters1e025324752b3133dc230c4b8b8752f666b63c09cd4aa605ec2b322cc40def2eS3VersionKey5DD1F95D"
                                         }
                                       ]
                                     }
@@ -1265,7 +1265,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "AssetParameters3bd57dc822867660fa020e2e9f2b59167eaace164c221340068e019579af06baS3VersionKey2AF34F90"
+                                          "Ref": "AssetParameters1e025324752b3133dc230c4b8b8752f666b63c09cd4aa605ec2b322cc40def2eS3VersionKey5DD1F95D"
                                         }
                                       ]
                                     }
@@ -2235,13 +2235,13 @@
             "id": "AssetParameters",
             "path": "cdk-integ-cluster-snapshot/AssetParameters",
             "children": {
-              "3bd57dc822867660fa020e2e9f2b59167eaace164c221340068e019579af06ba": {
-                "id": "3bd57dc822867660fa020e2e9f2b59167eaace164c221340068e019579af06ba",
-                "path": "cdk-integ-cluster-snapshot/AssetParameters/3bd57dc822867660fa020e2e9f2b59167eaace164c221340068e019579af06ba",
+              "1e025324752b3133dc230c4b8b8752f666b63c09cd4aa605ec2b322cc40def2e": {
+                "id": "1e025324752b3133dc230c4b8b8752f666b63c09cd4aa605ec2b322cc40def2e",
+                "path": "cdk-integ-cluster-snapshot/AssetParameters/1e025324752b3133dc230c4b8b8752f666b63c09cd4aa605ec2b322cc40def2e",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "cdk-integ-cluster-snapshot/AssetParameters/3bd57dc822867660fa020e2e9f2b59167eaace164c221340068e019579af06ba/S3Bucket",
+                    "path": "cdk-integ-cluster-snapshot/AssetParameters/1e025324752b3133dc230c4b8b8752f666b63c09cd4aa605ec2b322cc40def2e/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2249,7 +2249,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "cdk-integ-cluster-snapshot/AssetParameters/3bd57dc822867660fa020e2e9f2b59167eaace164c221340068e019579af06ba/S3VersionKey",
+                    "path": "cdk-integ-cluster-snapshot/AssetParameters/1e025324752b3133dc230c4b8b8752f666b63c09cd4aa605ec2b322cc40def2e/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2257,7 +2257,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "cdk-integ-cluster-snapshot/AssetParameters/3bd57dc822867660fa020e2e9f2b59167eaace164c221340068e019579af06ba/ArtifactHash",
+                    "path": "cdk-integ-cluster-snapshot/AssetParameters/1e025324752b3133dc230c4b8b8752f666b63c09cd4aa605ec2b322cc40def2e/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2471,7 +2471,77 @@
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                           "aws:cdk:cloudformation:props": {
                             "secretId": {
-                              "Ref": "cdkintegclustersnapshotFromSnapshotSecret68B589DD3fdaad7efa858a3daf9490cf0a702aeb"
+                              "Ref": "FromSnapshotSecret9100F61C"
+                            },
+                            "targetId": {
+                              "Ref": "FromSnapshotEE0682C5"
+                            },
+                            "targetType": "AWS::RDS::DBCluster"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-secretsmanager.CfnSecretTargetAttachment",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.DatabaseSecret",
+                  "version": "0.0.0"
+                }
+              },
+              "SnapshotSecret": {
+                "id": "SnapshotSecret",
+                "path": "cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                      "aws:cdk:cloudformation:props": {
+                        "description": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "Generated by the CDK for stack: ",
+                              {
+                                "Ref": "AWS::StackName"
+                              }
+                            ]
+                          ]
+                        },
+                        "generateSecretString": {
+                          "passwordLength": 30,
+                          "secretStringTemplate": "{\"username\":\"admin\"}",
+                          "generateStringKey": "password",
+                          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Attachment": {
+                    "id": "Attachment",
+                    "path": "cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Attachment",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Attachment/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
+                          "aws:cdk:cloudformation:props": {
+                            "secretId": {
+                              "Ref": "cdkintegclustersnapshotFromSnapshotSnapshotSecretD93327943fdaad7efa858a3daf9490cf0a702aeb"
                             },
                             "targetId": {
                               "Ref": "FromSnapshotEE0682C5"
@@ -2486,16 +2556,16 @@
                       },
                       "RotationSchedule": {
                         "id": "RotationSchedule",
-                        "path": "cdk-integ-cluster-snapshot/FromSnapshot/Secret/Attachment/RotationSchedule",
+                        "path": "cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Attachment/RotationSchedule",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "cdk-integ-cluster-snapshot/FromSnapshot/Secret/Attachment/RotationSchedule/Resource",
+                            "path": "cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Attachment/RotationSchedule/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::SecretsManager::RotationSchedule",
                               "aws:cdk:cloudformation:props": {
                                 "secretId": {
-                                  "Ref": "FromSnapshotSecretAttachmentB62DA1C6"
+                                  "Ref": "FromSnapshotSnapshotSecretAttachmentA3F619B8"
                                 },
                                 "rotationLambdaArn": {
                                   "Fn::GetAtt": [
@@ -2521,11 +2591,11 @@
                       },
                       "Policy": {
                         "id": "Policy",
-                        "path": "cdk-integ-cluster-snapshot/FromSnapshot/Secret/Attachment/Policy",
+                        "path": "cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Attachment/Policy",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "cdk-integ-cluster-snapshot/FromSnapshot/Secret/Attachment/Policy/Resource",
+                            "path": "cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Attachment/Policy/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::SecretsManager::ResourcePolicy",
                               "aws:cdk:cloudformation:props": {
@@ -2558,7 +2628,7 @@
                                   "Version": "2012-10-17"
                                 },
                                 "secretId": {
-                                  "Ref": "FromSnapshotSecretAttachmentB62DA1C6"
+                                  "Ref": "FromSnapshotSnapshotSecretAttachmentA3F619B8"
                                 }
                               }
                             },
@@ -2604,7 +2674,7 @@
                         [
                           "{{resolve:secretsmanager:",
                           {
-                            "Ref": "cdkintegclustersnapshotFromSnapshotSecret68B589DD3fdaad7efa858a3daf9490cf0a702aeb"
+                            "Ref": "cdkintegclustersnapshotFromSnapshotSnapshotSecretD93327943fdaad7efa858a3daf9490cf0a702aeb"
                           },
                           ":SecretString:password::}}"
                         ]
@@ -2809,7 +2879,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-rds.DatabaseClusterFromSnapshot",
+              "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
             }
           },
