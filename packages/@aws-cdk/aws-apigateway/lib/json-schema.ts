@@ -7,6 +7,8 @@ export enum JsonSchemaVersion {
   DRAFT7 = 'http://json-schema.org/draft-07/schema#'
 }
 
+export type JsonSchemaVersionUnion = 'http://json-schema.org/draft-04/schema#' | 'http://json-schema.org/draft-07/schema#'
+
 export enum JsonSchemaType {
   NULL = 'null',
   BOOLEAN = 'boolean',
@@ -28,7 +30,7 @@ export type JsonSchemaTypeUnion = 'null' | 'boolean' | 'object' | 'array' | 'num
  */
 export interface JsonSchema {
   // Special keywords
-  readonly schema?: JsonSchemaVersion;
+  readonly schema?: JsonSchemaVersionUnion;
   readonly id?: string;
   readonly ref?: string;
 
