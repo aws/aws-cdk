@@ -1287,16 +1287,20 @@ function undefinedIfNoKeys<A>(struct: A): A | undefined {
 
 /**
  * Aspect for upgrading function versions when the feature flag
- * 'LAMBDA_RECOGNIZE_LAYER_VERSION' is present. This is necessary because
- * the feature flag changes the function hash, which means a new version
- * is expected. If the function itself is the same, then the upgrade will fail.
+ * provided feature flag present. This can be necessary when the feature flag
+ * changes the function hash, as such changes must be associated with a new
+ * version. This aspect will change the function description in these cases,
+ * which "validates" the new function hash.
  */
 export class FunctionVersionUpgrade implements IAspect {
+  constructor(private readonly featureFlag: string) {}
+
   public visit(node: IConstruct): void {
-    if ((node as CfnFunction).cfnResourceType === 'AWS::Lambda::Function' &&
-      FeatureFlags.of(node).isEnabled(LAMBDA_RECOGNIZE_LAYER_VERSION)) {
-      const cfnFunction = node as CfnFunction;
-      cfnFunction.addPropertyOverride('Description', `${cfnFunction.description ?? ''}-whatever`);
+    if (node instanceof Function &&
+      FeatureFlags.of(node).isEnabled(this.featureFlag)) {
+      const cfnFunction = node.node.defaultChild as CfnFunction;
+      const desc = cfnFunction.description ? `${cfnFunction.description} ` : '';
+      cfnFunction.addPropertyOverride('Description', `${desc}version-hash:${calculateFunctionHash(node)}`);
     }
   };
 }

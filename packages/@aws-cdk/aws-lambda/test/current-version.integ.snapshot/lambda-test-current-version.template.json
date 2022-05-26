@@ -78,6 +78,7 @@
       "Arn"
      ]
     },
+    "Description": "version-hash:dc9dd00a4c2f3ab3541720d352f0f09e",
     "Handler": "index.main",
     "Runtime": "python3.8"
    },
@@ -85,7 +86,7 @@
     "MyLambdaServiceRole4539ECB6"
    ]
   },
-  "MyLambdaCurrentVersionE7A382CC721de083c6b4b6360a9c534b79eb610e": {
+  "MyLambdaCurrentVersionE7A382CC1c5f33e29b34a521d6a59697cc440454": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -103,7 +104,7 @@
     },
     "Qualifier": {
      "Fn::GetAtt": [
-      "MyLambdaCurrentVersionE7A382CC721de083c6b4b6360a9c534b79eb610e",
+      "MyLambdaCurrentVersionE7A382CC1c5f33e29b34a521d6a59697cc440454",
       "Version"
      ]
     },
@@ -118,7 +119,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "MyLambdaCurrentVersionE7A382CC721de083c6b4b6360a9c534b79eb610e",
+      "MyLambdaCurrentVersionE7A382CC1c5f33e29b34a521d6a59697cc440454",
       "Version"
      ]
     },

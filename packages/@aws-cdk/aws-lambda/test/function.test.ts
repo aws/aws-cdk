@@ -12,7 +12,7 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import { Lazy, Size } from '@aws-cdk/core';
+import { Aspects, Lazy, Size } from '@aws-cdk/core';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
@@ -2958,6 +2958,29 @@ test('ephemeral storage allows unresolved tokens', () => {
       ephemeralStorageSize: Size.mebibytes(Lazy.number({ produce: () => 1024 })),
     });
   }).not.toThrow();
+});
+
+test('FunctionVersionUpgrade adds new description to function', () => {
+  const app = new cdk.App({ context: { [LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
+  const stack = new cdk.Stack(app);
+  new lambda.Function(stack, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.NODEJS_14_X,
+    description: 'my description',
+  });
+
+  Aspects.of(stack).add(new lambda.FunctionVersionUpgrade(LAMBDA_RECOGNIZE_LAYER_VERSION));
+
+  Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+    Properties:
+    {
+      Code: { ZipFile: 'foo' },
+      Handler: 'bar',
+      Runtime: 'nodejs14.x',
+      Description: 'my description version-hash:de36a94cfdb5cb58f7c7b4cd975120ba',
+    },
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {
