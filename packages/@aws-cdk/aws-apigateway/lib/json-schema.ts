@@ -33,10 +33,10 @@ export interface JsonSchema {
   readonly ref?: string;
 
   // Common properties
-  readonly type?: JsonSchemaTypeUnion | JsonSchemaTypeUnion[];
+  readonly type?: JsonSchemaTypeUnion | ReadonlyArray<JsonSchemaTypeUnion>;
   readonly title?: string;
   readonly description?: string;
-  readonly 'enum'?: any[];
+  readonly 'enum'?: ReadonlyArray<any>;
   /**
    * The default value if you use an enum.
    *
@@ -59,26 +59,26 @@ export interface JsonSchema {
   readonly pattern?: string;
 
   // Array
-  readonly items?: JsonSchema | JsonSchema[];
-  readonly additionalItems?: JsonSchema[];
+  readonly items?: JsonSchema | ReadonlyArray<JsonSchema>;
+  readonly additionalItems?: ReadonlyArray<JsonSchema>;
   readonly maxItems?: number;
   readonly minItems?: number;
   readonly uniqueItems?: boolean;
-  readonly contains?: JsonSchema | JsonSchema[];
+  readonly contains?: JsonSchema | ReadonlyArray<JsonSchema>;
 
   // Object
   readonly maxProperties?: number;
   readonly minProperties?: number;
-  readonly required?: string[];
+  readonly required?: ReadonlyArray<string>;
   readonly properties?: { [name: string]: JsonSchema };
   readonly additionalProperties?: JsonSchema | boolean;
   readonly patternProperties?: { [name: string]: JsonSchema };
-  readonly dependencies?: { [name: string]: JsonSchema | string[] };
+  readonly dependencies?: { [name: string]: JsonSchema | ReadonlyArray<string> };
   readonly propertyNames?: JsonSchema;
 
   // Conditional
-  readonly allOf?: JsonSchema[];
-  readonly anyOf?: JsonSchema[];
-  readonly oneOf?: JsonSchema[];
+  readonly allOf?: ReadonlyArray<JsonSchema>;
+  readonly anyOf?: ReadonlyArray<JsonSchema>;
+  readonly oneOf?: ReadonlyArray<JsonSchema>;
   readonly not?: JsonSchema;
 }
