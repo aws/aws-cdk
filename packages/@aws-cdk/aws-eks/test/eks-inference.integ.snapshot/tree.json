@@ -839,27 +839,51 @@
                                     },
                                     {
                                       "Action": [
-                                        "ec2:DescribeDhcpOptions",
-                                        "ec2:DescribeInstances",
-                                        "ec2:DescribeNetworkInterfaces",
-                                        "ec2:DescribeRouteTables",
-                                        "ec2:DescribeSecurityGroups",
-                                        "ec2:DescribeSubnets",
-                                        "ec2:DescribeVpcs",
                                         "eks:CreateCluster",
-                                        "eks:CreateFargateProfile",
-                                        "eks:DeleteCluster",
-                                        "eks:DeleteFargateProfile",
                                         "eks:DescribeCluster",
-                                        "eks:DescribeFargateProfile",
                                         "eks:DescribeUpdate",
-                                        "eks:TagResource",
-                                        "eks:UntagResource",
-                                        "eks:UpdateClusterConfig",
+                                        "eks:DeleteCluster",
                                         "eks:UpdateClusterVersion",
-                                        "iam:CreateServiceLinkedRole",
+                                        "eks:UpdateClusterConfig",
+                                        "eks:CreateFargateProfile",
+                                        "eks:TagResource",
+                                        "eks:UntagResource"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        "*"
+                                      ]
+                                    },
+                                    {
+                                      "Action": [
+                                        "eks:DescribeFargateProfile",
+                                        "eks:DeleteFargateProfile"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    },
+                                    {
+                                      "Action": [
                                         "iam:GetRole",
                                         "iam:listAttachedRolePolicies"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    },
+                                    {
+                                      "Action": "iam:CreateServiceLinkedRole",
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    },
+                                    {
+                                      "Action": [
+                                        "ec2:DescribeInstances",
+                                        "ec2:DescribeNetworkInterfaces",
+                                        "ec2:DescribeSecurityGroups",
+                                        "ec2:DescribeSubnets",
+                                        "ec2:DescribeRouteTables",
+                                        "ec2:DescribeDhcpOptions",
+                                        "ec2:DescribeVpcs"
                                       ],
                                       "Effect": "Allow",
                                       "Resource": "*"
@@ -1952,6 +1976,11 @@
                           ]
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
+                        "environment": {
+                          "variables": {
+                            "AWS_STS_REGIONAL_ENDPOINTS": "regional"
+                          }
+                        },
                         "handler": "index.onEvent",
                         "layers": [
                           {
@@ -2144,6 +2173,11 @@
                           ]
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
+                        "environment": {
+                          "variables": {
+                            "AWS_STS_REGIONAL_ENDPOINTS": "regional"
+                          }
+                        },
                         "handler": "index.isComplete",
                         "layers": [
                           {
@@ -2234,12 +2268,6 @@
                                           "Resource": [
                                             {
                                               "Fn::GetAtt": [
-                                                "IsCompleteHandler7073F4DA",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::GetAtt": [
                                                 "OnEventHandler42BEBAE0",
                                                 "Arn"
                                               ]
@@ -2250,12 +2278,24 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "IsCompleteHandler7073F4DA",
+                                                      "OnEventHandler42BEBAE0",
                                                       "Arn"
                                                     ]
                                                   },
                                                   ":*"
                                                 ]
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "Action": "lambda:InvokeFunction",
+                                          "Effect": "Allow",
+                                          "Resource": [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "IsCompleteHandler7073F4DA",
+                                                "Arn"
                                               ]
                                             },
                                             {
@@ -2264,7 +2304,7 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "OnEventHandler42BEBAE0",
+                                                      "IsCompleteHandler7073F4DA",
                                                       "Arn"
                                                     ]
                                                   },
@@ -2486,12 +2526,6 @@
                                           "Resource": [
                                             {
                                               "Fn::GetAtt": [
-                                                "IsCompleteHandler7073F4DA",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::GetAtt": [
                                                 "OnEventHandler42BEBAE0",
                                                 "Arn"
                                               ]
@@ -2502,12 +2536,24 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "IsCompleteHandler7073F4DA",
+                                                      "OnEventHandler42BEBAE0",
                                                       "Arn"
                                                     ]
                                                   },
                                                   ":*"
                                                 ]
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "Action": "lambda:InvokeFunction",
+                                          "Effect": "Allow",
+                                          "Resource": [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "IsCompleteHandler7073F4DA",
+                                                "Arn"
                                               ]
                                             },
                                             {
@@ -2516,7 +2562,7 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "OnEventHandler42BEBAE0",
+                                                      "IsCompleteHandler7073F4DA",
                                                       "Arn"
                                                     ]
                                                   },
@@ -2728,12 +2774,6 @@
                                           "Resource": [
                                             {
                                               "Fn::GetAtt": [
-                                                "IsCompleteHandler7073F4DA",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::GetAtt": [
                                                 "OnEventHandler42BEBAE0",
                                                 "Arn"
                                               ]
@@ -2744,12 +2784,24 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "IsCompleteHandler7073F4DA",
+                                                      "OnEventHandler42BEBAE0",
                                                       "Arn"
                                                     ]
                                                   },
                                                   ":*"
                                                 ]
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "Action": "lambda:InvokeFunction",
+                                          "Effect": "Allow",
+                                          "Resource": [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "IsCompleteHandler7073F4DA",
+                                                "Arn"
                                               ]
                                             },
                                             {
@@ -2758,7 +2810,7 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "OnEventHandler42BEBAE0",
+                                                      "IsCompleteHandler7073F4DA",
                                                       "Arn"
                                                     ]
                                                   },
@@ -2969,12 +3021,6 @@
                                               ]
                                             },
                                             {
-                                              "Fn::GetAtt": [
-                                                "ProviderframeworkonTimeout0B47CA38",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
                                               "Fn::Join": [
                                                 "",
                                                 [
@@ -2986,6 +3032,18 @@
                                                   },
                                                   ":*"
                                                 ]
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "Action": "lambda:InvokeFunction",
+                                          "Effect": "Allow",
+                                          "Resource": [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "ProviderframeworkonTimeout0B47CA38",
+                                                "Arn"
                                               ]
                                             },
                                             {
@@ -3154,7 +3212,7 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParametersadd4b91bf7fac2a8d2a9b7af71a4e54edc29c858d2e3c088267193ad61e086ddS3Bucket491C7619"
+                            "Ref": "AssetParameters23ccd590a0bcabc2f2f94bad8185495209a353340152b603d8dbde3dd4b511dbS3Bucket63266611"
                           },
                           "/",
                           {
@@ -3164,7 +3222,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParametersadd4b91bf7fac2a8d2a9b7af71a4e54edc29c858d2e3c088267193ad61e086ddS3VersionKeyDD890271"
+                                    "Ref": "AssetParameters23ccd590a0bcabc2f2f94bad8185495209a353340152b603d8dbde3dd4b511dbS3VersionKey6461E97F"
                                   }
                                 ]
                               }
@@ -3177,7 +3235,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParametersadd4b91bf7fac2a8d2a9b7af71a4e54edc29c858d2e3c088267193ad61e086ddS3VersionKeyDD890271"
+                                    "Ref": "AssetParameters23ccd590a0bcabc2f2f94bad8185495209a353340152b603d8dbde3dd4b511dbS3VersionKey6461E97F"
                                   }
                                 ]
                               }
@@ -3365,13 +3423,13 @@
                   "version": "0.0.0"
                 }
               },
-              "01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476": {
-                "id": "01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476",
-                "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476",
+              "5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17": {
+                "id": "5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17",
+                "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476/S3Bucket",
+                    "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3379,7 +3437,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476/S3VersionKey",
+                    "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3387,7 +3445,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476/ArtifactHash",
+                    "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3501,13 +3559,13 @@
                   "version": "0.0.0"
                 }
               },
-              "add4b91bf7fac2a8d2a9b7af71a4e54edc29c858d2e3c088267193ad61e086dd": {
-                "id": "add4b91bf7fac2a8d2a9b7af71a4e54edc29c858d2e3c088267193ad61e086dd",
-                "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/add4b91bf7fac2a8d2a9b7af71a4e54edc29c858d2e3c088267193ad61e086dd",
+              "23ccd590a0bcabc2f2f94bad8185495209a353340152b603d8dbde3dd4b511db": {
+                "id": "23ccd590a0bcabc2f2f94bad8185495209a353340152b603d8dbde3dd4b511db",
+                "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/23ccd590a0bcabc2f2f94bad8185495209a353340152b603d8dbde3dd4b511db",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/add4b91bf7fac2a8d2a9b7af71a4e54edc29c858d2e3c088267193ad61e086dd/S3Bucket",
+                    "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/23ccd590a0bcabc2f2f94bad8185495209a353340152b603d8dbde3dd4b511db/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3515,7 +3573,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/add4b91bf7fac2a8d2a9b7af71a4e54edc29c858d2e3c088267193ad61e086dd/S3VersionKey",
+                    "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/23ccd590a0bcabc2f2f94bad8185495209a353340152b603d8dbde3dd4b511db/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3523,7 +3581,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/add4b91bf7fac2a8d2a9b7af71a4e54edc29c858d2e3c088267193ad61e086dd/ArtifactHash",
+                    "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/23ccd590a0bcabc2f2f94bad8185495209a353340152b603d8dbde3dd4b511db/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3535,13 +3593,13 @@
                   "version": "0.0.0"
                 }
               },
-              "9c90a2855c8302a8ac530e409d60460c31d8b455c58d13f5600d305b357b134b": {
-                "id": "9c90a2855c8302a8ac530e409d60460c31d8b455c58d13f5600d305b357b134b",
-                "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/9c90a2855c8302a8ac530e409d60460c31d8b455c58d13f5600d305b357b134b",
+              "f603a936b02a89a3e6d2d4a5cbedc5672df1e0ebf3a7d4e33fcb2f8df426a4a3": {
+                "id": "f603a936b02a89a3e6d2d4a5cbedc5672df1e0ebf3a7d4e33fcb2f8df426a4a3",
+                "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/f603a936b02a89a3e6d2d4a5cbedc5672df1e0ebf3a7d4e33fcb2f8df426a4a3",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/9c90a2855c8302a8ac530e409d60460c31d8b455c58d13f5600d305b357b134b/S3Bucket",
+                    "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/f603a936b02a89a3e6d2d4a5cbedc5672df1e0ebf3a7d4e33fcb2f8df426a4a3/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3549,7 +3607,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/9c90a2855c8302a8ac530e409d60460c31d8b455c58d13f5600d305b357b134b/S3VersionKey",
+                    "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/f603a936b02a89a3e6d2d4a5cbedc5672df1e0ebf3a7d4e33fcb2f8df426a4a3/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3557,7 +3615,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/9c90a2855c8302a8ac530e409d60460c31d8b455c58d13f5600d305b357b134b/ArtifactHash",
+                    "path": "aws-cdk-eks-cluster-inference-test/AssetParameters/f603a936b02a89a3e6d2d4a5cbedc5672df1e0ebf3a7d4e33fcb2f8df426a4a3/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3859,7 +3917,7 @@
                       "aws:cdk:cloudformation:props": {
                         "content": {
                           "s3Bucket": {
-                            "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3BucketDF609260Ref"
+                            "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17S3BucketFB347885Ref"
                           },
                           "s3Key": {
                             "Fn::Join": [
@@ -3872,7 +3930,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKeyCAA52A90Ref"
+                                          "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17S3VersionKeyD8E81CE4Ref"
                                         }
                                       ]
                                     }
@@ -3885,7 +3943,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKeyCAA52A90Ref"
+                                          "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17S3VersionKeyD8E81CE4Ref"
                                         }
                                       ]
                                     }
@@ -4314,17 +4372,17 @@
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awscdkeksclusterinferencetestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3BucketDF609260Ref": {
-                "id": "reference-to-awscdkeksclusterinferencetestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3BucketDF609260Ref",
-                "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterinferencetestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3BucketDF609260Ref",
+              "reference-to-awscdkeksclusterinferencetestAssetParameters5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17S3BucketFB347885Ref": {
+                "id": "reference-to-awscdkeksclusterinferencetestAssetParameters5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17S3BucketFB347885Ref",
+                "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterinferencetestAssetParameters5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17S3BucketFB347885Ref",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnParameter",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awscdkeksclusterinferencetestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKeyCAA52A90Ref": {
-                "id": "reference-to-awscdkeksclusterinferencetestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKeyCAA52A90Ref",
-                "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterinferencetestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKeyCAA52A90Ref",
+              "reference-to-awscdkeksclusterinferencetestAssetParameters5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17S3VersionKeyD8E81CE4Ref": {
+                "id": "reference-to-awscdkeksclusterinferencetestAssetParameters5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17S3VersionKeyD8E81CE4Ref",
+                "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterinferencetestAssetParameters5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17S3VersionKeyD8E81CE4Ref",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnParameter",
                   "version": "0.0.0"
@@ -4392,7 +4450,7 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParameters9c90a2855c8302a8ac530e409d60460c31d8b455c58d13f5600d305b357b134bS3BucketE9B36E66"
+                            "Ref": "AssetParametersf603a936b02a89a3e6d2d4a5cbedc5672df1e0ebf3a7d4e33fcb2f8df426a4a3S3Bucket8AFBD76F"
                           },
                           "/",
                           {
@@ -4402,7 +4460,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters9c90a2855c8302a8ac530e409d60460c31d8b455c58d13f5600d305b357b134bS3VersionKey8B769491"
+                                    "Ref": "AssetParametersf603a936b02a89a3e6d2d4a5cbedc5672df1e0ebf3a7d4e33fcb2f8df426a4a3S3VersionKeyC60AA1E7"
                                   }
                                 ]
                               }
@@ -4415,7 +4473,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters9c90a2855c8302a8ac530e409d60460c31d8b455c58d13f5600d305b357b134bS3VersionKey8B769491"
+                                    "Ref": "AssetParametersf603a936b02a89a3e6d2d4a5cbedc5672df1e0ebf3a7d4e33fcb2f8df426a4a3S3VersionKeyC60AA1E7"
                                   }
                                 ]
                               }
@@ -4455,11 +4513,11 @@
                           "ClusterSecurityGroupId"
                         ]
                       },
-                      "referencetoawscdkeksclusterinferencetestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3BucketDF609260Ref": {
-                        "Ref": "AssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3BucketC0D91AC4"
+                      "referencetoawscdkeksclusterinferencetestAssetParameters5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17S3BucketFB347885Ref": {
+                        "Ref": "AssetParameters5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17S3Bucket6B923B78"
                       },
-                      "referencetoawscdkeksclusterinferencetestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKeyCAA52A90Ref": {
-                        "Ref": "AssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey26CFD1B0"
+                      "referencetoawscdkeksclusterinferencetestAssetParameters5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17S3VersionKeyD8E81CE4Ref": {
+                        "Ref": "AssetParameters5ffa472e2adde2b1fdc8fb053f202006bdf99da36e3ad0b1e05f837849c10b17S3VersionKey781413E1"
                       },
                       "referencetoawscdkeksclusterinferencetestAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3Bucket50BD0F5FRef": {
                         "Ref": "AssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3Bucket83B8778F"
@@ -4586,59 +4644,66 @@
                                     },
                                     {
                                       "Action": [
-                                        "acm:DescribeCertificate",
-                                        "acm:ListCertificates",
-                                        "cognito-idp:DescribeUserPoolClient",
-                                        "ec2:AuthorizeSecurityGroupIngress",
-                                        "ec2:CreateSecurityGroup",
                                         "ec2:DescribeAccountAttributes",
                                         "ec2:DescribeAddresses",
                                         "ec2:DescribeAvailabilityZones",
-                                        "ec2:DescribeCoipPools",
-                                        "ec2:DescribeInstances",
                                         "ec2:DescribeInternetGateways",
-                                        "ec2:DescribeNetworkInterfaces",
-                                        "ec2:DescribeSecurityGroups",
-                                        "ec2:DescribeSubnets",
-                                        "ec2:DescribeTags",
-                                        "ec2:DescribeVpcPeeringConnections",
                                         "ec2:DescribeVpcs",
+                                        "ec2:DescribeVpcPeeringConnections",
+                                        "ec2:DescribeSubnets",
+                                        "ec2:DescribeSecurityGroups",
+                                        "ec2:DescribeInstances",
+                                        "ec2:DescribeNetworkInterfaces",
+                                        "ec2:DescribeTags",
                                         "ec2:GetCoipPoolUsage",
-                                        "ec2:RevokeSecurityGroupIngress",
-                                        "elasticloadbalancing:AddListenerCertificates",
-                                        "elasticloadbalancing:CreateListener",
-                                        "elasticloadbalancing:CreateRule",
-                                        "elasticloadbalancing:DeleteListener",
-                                        "elasticloadbalancing:DeleteRule",
-                                        "elasticloadbalancing:DescribeListenerCertificates",
-                                        "elasticloadbalancing:DescribeListeners",
-                                        "elasticloadbalancing:DescribeLoadBalancerAttributes",
+                                        "ec2:DescribeCoipPools",
                                         "elasticloadbalancing:DescribeLoadBalancers",
-                                        "elasticloadbalancing:DescribeRules",
+                                        "elasticloadbalancing:DescribeLoadBalancerAttributes",
+                                        "elasticloadbalancing:DescribeListeners",
+                                        "elasticloadbalancing:DescribeListenerCertificates",
                                         "elasticloadbalancing:DescribeSSLPolicies",
-                                        "elasticloadbalancing:DescribeTags",
-                                        "elasticloadbalancing:DescribeTargetGroupAttributes",
+                                        "elasticloadbalancing:DescribeRules",
                                         "elasticloadbalancing:DescribeTargetGroups",
+                                        "elasticloadbalancing:DescribeTargetGroupAttributes",
                                         "elasticloadbalancing:DescribeTargetHealth",
-                                        "elasticloadbalancing:ModifyListener",
-                                        "elasticloadbalancing:ModifyRule",
-                                        "elasticloadbalancing:RemoveListenerCertificates",
-                                        "elasticloadbalancing:SetWebAcl",
-                                        "iam:GetServerCertificate",
+                                        "elasticloadbalancing:DescribeTags"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    },
+                                    {
+                                      "Action": [
+                                        "cognito-idp:DescribeUserPoolClient",
+                                        "acm:ListCertificates",
+                                        "acm:DescribeCertificate",
                                         "iam:ListServerCertificates",
-                                        "shield:CreateProtection",
-                                        "shield:DeleteProtection",
-                                        "shield:DescribeProtection",
-                                        "shield:GetSubscriptionState",
-                                        "waf-regional:AssociateWebACL",
-                                        "waf-regional:DisassociateWebACL",
+                                        "iam:GetServerCertificate",
                                         "waf-regional:GetWebACL",
                                         "waf-regional:GetWebACLForResource",
+                                        "waf-regional:AssociateWebACL",
+                                        "waf-regional:DisassociateWebACL",
+                                        "wafv2:GetWebACL",
+                                        "wafv2:GetWebACLForResource",
                                         "wafv2:AssociateWebACL",
                                         "wafv2:DisassociateWebACL",
-                                        "wafv2:GetWebACL",
-                                        "wafv2:GetWebACLForResource"
+                                        "shield:GetSubscriptionState",
+                                        "shield:DescribeProtection",
+                                        "shield:CreateProtection",
+                                        "shield:DeleteProtection"
                                       ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    },
+                                    {
+                                      "Action": [
+                                        "ec2:AuthorizeSecurityGroupIngress",
+                                        "ec2:RevokeSecurityGroupIngress"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    },
+                                    {
+                                      "Action": "ec2:CreateSecurityGroup",
                                       "Effect": "Allow",
                                       "Resource": "*"
                                     },
@@ -4672,16 +4737,8 @@
                                     {
                                       "Action": [
                                         "ec2:AuthorizeSecurityGroupIngress",
-                                        "ec2:DeleteSecurityGroup",
                                         "ec2:RevokeSecurityGroupIngress",
-                                        "elasticloadbalancing:DeleteLoadBalancer",
-                                        "elasticloadbalancing:DeleteTargetGroup",
-                                        "elasticloadbalancing:ModifyLoadBalancerAttributes",
-                                        "elasticloadbalancing:ModifyTargetGroup",
-                                        "elasticloadbalancing:ModifyTargetGroupAttributes",
-                                        "elasticloadbalancing:SetIpAddressType",
-                                        "elasticloadbalancing:SetSecurityGroups",
-                                        "elasticloadbalancing:SetSubnets"
+                                        "ec2:DeleteSecurityGroup"
                                       ],
                                       "Condition": {
                                         "Null": {
@@ -4706,6 +4763,16 @@
                                     },
                                     {
                                       "Action": [
+                                        "elasticloadbalancing:CreateListener",
+                                        "elasticloadbalancing:DeleteListener",
+                                        "elasticloadbalancing:CreateRule",
+                                        "elasticloadbalancing:DeleteRule"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    },
+                                    {
+                                      "Action": [
                                         "elasticloadbalancing:AddTags",
                                         "elasticloadbalancing:RemoveTags"
                                       ],
@@ -4717,9 +4784,9 @@
                                       },
                                       "Effect": "Allow",
                                       "Resource": [
-                                        "arn:aws:elasticloadbalancing:*:*:loadbalancer/app/*/*",
+                                        "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*",
                                         "arn:aws:elasticloadbalancing:*:*:loadbalancer/net/*/*",
-                                        "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*"
+                                        "arn:aws:elasticloadbalancing:*:*:loadbalancer/app/*/*"
                                       ]
                                     },
                                     {
@@ -4729,19 +4796,49 @@
                                       ],
                                       "Effect": "Allow",
                                       "Resource": [
-                                        "arn:aws:elasticloadbalancing:*:*:listener-rule/app/*/*/*",
-                                        "arn:aws:elasticloadbalancing:*:*:listener-rule/net/*/*/*",
+                                        "arn:aws:elasticloadbalancing:*:*:listener/net/*/*/*",
                                         "arn:aws:elasticloadbalancing:*:*:listener/app/*/*/*",
-                                        "arn:aws:elasticloadbalancing:*:*:listener/net/*/*/*"
+                                        "arn:aws:elasticloadbalancing:*:*:listener-rule/net/*/*/*",
+                                        "arn:aws:elasticloadbalancing:*:*:listener-rule/app/*/*/*"
                                       ]
                                     },
                                     {
                                       "Action": [
-                                        "elasticloadbalancing:DeregisterTargets",
-                                        "elasticloadbalancing:RegisterTargets"
+                                        "elasticloadbalancing:ModifyLoadBalancerAttributes",
+                                        "elasticloadbalancing:SetIpAddressType",
+                                        "elasticloadbalancing:SetSecurityGroups",
+                                        "elasticloadbalancing:SetSubnets",
+                                        "elasticloadbalancing:DeleteLoadBalancer",
+                                        "elasticloadbalancing:ModifyTargetGroup",
+                                        "elasticloadbalancing:ModifyTargetGroupAttributes",
+                                        "elasticloadbalancing:DeleteTargetGroup"
+                                      ],
+                                      "Condition": {
+                                        "Null": {
+                                          "aws:ResourceTag/elbv2.k8s.aws/cluster": "false"
+                                        }
+                                      },
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    },
+                                    {
+                                      "Action": [
+                                        "elasticloadbalancing:RegisterTargets",
+                                        "elasticloadbalancing:DeregisterTargets"
                                       ],
                                       "Effect": "Allow",
                                       "Resource": "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*"
+                                    },
+                                    {
+                                      "Action": [
+                                        "elasticloadbalancing:SetWebAcl",
+                                        "elasticloadbalancing:ModifyListener",
+                                        "elasticloadbalancing:AddListenerCertificates",
+                                        "elasticloadbalancing:RemoveListenerCertificates",
+                                        "elasticloadbalancing:ModifyRule"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
                                     }
                                   ],
                                   "Version": "2012-10-17"
