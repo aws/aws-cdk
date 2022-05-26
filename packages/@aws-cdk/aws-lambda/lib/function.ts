@@ -6,9 +6,10 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, Lazy, Names, Size, Stack, Token } from '@aws-cdk/core';
+import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, IConstruct, Lazy, Names, Size, Stack, Token } from '@aws-cdk/core';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { AliasOptions, Alias } from './alias';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
 import { ICodeSigningConfig } from './code-signing-config';
@@ -27,7 +28,6 @@ import { Runtime } from './runtime';
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line
 import { LogRetentionRetryOptions } from './log-retention';
-import { AliasOptions, Alias } from './alias';
 import { addAlias } from './util';
 
 /**
@@ -1283,4 +1283,20 @@ export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
 function undefinedIfNoKeys<A>(struct: A): A | undefined {
   const allUndefined = Object.values(struct).every(val => val === undefined);
   return allUndefined ? undefined : struct;
+}
+
+/**
+ * Aspect for upgrading function versions when the feature flag
+ * 'LAMBDA_RECOGNIZE_LAYER_VERSION' is present. This is necessary because
+ * the feature flag changes the function hash, which means a new version
+ * is expected. If the function itself is the same, then the upgrade will fail.
+ */
+export class FunctionVersionUpgrade implements IAspect {
+  public visit(node: IConstruct): void {
+    if ((node as CfnFunction).cfnResourceType === 'AWS::Lambda::Function' &&
+      FeatureFlags.of(node).isEnabled(LAMBDA_RECOGNIZE_LAYER_VERSION)) {
+      const cfnFunction = node as CfnFunction;
+      cfnFunction.addPropertyOverride('Description', `${cfnFunction.description ?? ''}-whatever`);
+    }
+  };
 }
