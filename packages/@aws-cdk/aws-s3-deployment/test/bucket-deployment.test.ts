@@ -708,6 +708,46 @@ testFutureBehavior('lambda execution role gets permissions to read from the sour
   });
 });
 
+testFutureBehavior('lambda execution role gets putObjectAcl permission when deploying with accessControl', s3GrantWriteCtx, cdk.App, (app) => {
+  // GIVEN
+  const stack = new cdk.Stack(app);
+  const source = new s3.Bucket(stack, 'Source');
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.bucket(source, 'file.zip')],
+    destinationBucket: bucket,
+    accessControl: s3.BucketAccessControl.PUBLIC_READ,
+  });
+
+  // THEN
+  const map = Template.fromStack(stack).findResources('AWS::IAM::Policy');
+  expect(map).toBeDefined();
+  const resource = map[Object.keys(map)[0]];
+  expect(resource.Properties.PolicyDocument.Statement).toContainEqual({
+    Action: [
+      's3:PutObjectAcl',
+      's3:PutObjectVersionAcl',
+    ],
+    Effect: 'Allow',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          {
+            'Fn::GetAtt': [
+              'DestC383B82A',
+              'Arn',
+            ],
+          },
+          '/*',
+        ],
+      ],
+    },
+  });
+});
+
 test('memoryLimit can be used to specify the memory limit for the deployment resource handler', () => {
   // GIVEN
   const stack = new cdk.Stack();

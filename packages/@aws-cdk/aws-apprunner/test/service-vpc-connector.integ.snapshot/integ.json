@@ -1,9 +1,9 @@
 {
   "version": "19.0.0",
   "testCases": {
-    "integ.service-ecr-public": {
+    "integ.service-vpc-connector": {
       "stacks": [
-        "integ-apprunner-ecr-public"
+        "integ-apprunner"
       ],
       "diffAssets": false,
       "stackUpdateWorkflow": true
