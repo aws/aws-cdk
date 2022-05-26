@@ -733,8 +733,8 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
       this.secret = secret.attach(this);
     }
 
-    // Avoid breaking change when introducing `snapshotCredentials`. No need to cover
-    // the default case because it created an unusable secret.
+    // Avoid breaking change when introducing `snapshotCredentials`, simply attach
+    // the secret.
     if (props.credentials) {
       const rendered = renderCredentials(this, props.engine, props.credentials);
       if (rendered.secret) {
