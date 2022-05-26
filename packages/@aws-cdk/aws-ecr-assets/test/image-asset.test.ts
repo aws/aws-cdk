@@ -1,12 +1,11 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import { describeDeprecated, testDeprecated, testLegacyBehavior, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, DefaultStackSynthesizer, IgnoreMode, Lazy, LegacyStackSynthesizer, Stack, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
-import * as fs from 'fs';
-import * as path from 'path';
 import { DockerImageAsset, NetworkMode, Platform } from '../lib';
 
 /* eslint-disable quote-props */
