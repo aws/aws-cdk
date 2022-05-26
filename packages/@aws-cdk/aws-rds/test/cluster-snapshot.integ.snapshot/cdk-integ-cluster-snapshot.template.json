@@ -563,10 +563,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":cluster:",
-           {
-            "Ref": "ClusterEB0386A7"
-           }
+           ":cluster-snapshot:cdk-integ-cluster-snapshot"
           ]
          ]
         },
@@ -586,7 +583,10 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":cluster-snapshot:cdk-integ-cluster-snapshot"
+           ":cluster:",
+           {
+            "Ref": "ClusterEB0386A7"
+           }
           ]
          ]
         }
@@ -714,10 +714,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":cluster:",
-           {
-            "Ref": "ClusterEB0386A7"
-           }
+           ":cluster-snapshot:cdk-integ-cluster-snapshot"
           ]
          ]
         },
@@ -737,7 +734,10 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":cluster-snapshot:cdk-integ-cluster-snapshot"
+           ":cluster:",
+           {
+            "Ref": "ClusterEB0386A7"
+           }
           ]
          ]
         }
@@ -851,6 +851,12 @@
        "Resource": [
         {
          "Fn::GetAtt": [
+          "SnapshoterIsCompleteHandler93DE2591",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
           "SnapshoterOnEventHandlerDF82DF85",
           "Arn"
          ]
@@ -861,24 +867,12 @@
           [
            {
             "Fn::GetAtt": [
-             "SnapshoterOnEventHandlerDF82DF85",
+             "SnapshoterIsCompleteHandler93DE2591",
              "Arn"
             ]
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "SnapshoterIsCompleteHandler93DE2591",
-          "Arn"
          ]
         },
         {
@@ -887,7 +881,7 @@
           [
            {
             "Fn::GetAtt": [
-             "SnapshoterIsCompleteHandler93DE2591",
+             "SnapshoterOnEventHandlerDF82DF85",
              "Arn"
             ]
            },
@@ -1033,6 +1027,12 @@
        "Resource": [
         {
          "Fn::GetAtt": [
+          "SnapshoterIsCompleteHandler93DE2591",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
           "SnapshoterOnEventHandlerDF82DF85",
           "Arn"
          ]
@@ -1043,24 +1043,12 @@
           [
            {
             "Fn::GetAtt": [
-             "SnapshoterOnEventHandlerDF82DF85",
+             "SnapshoterIsCompleteHandler93DE2591",
              "Arn"
             ]
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "SnapshoterIsCompleteHandler93DE2591",
-          "Arn"
          ]
         },
         {
@@ -1069,7 +1057,7 @@
           [
            {
             "Fn::GetAtt": [
-             "SnapshoterIsCompleteHandler93DE2591",
+             "SnapshoterOnEventHandlerDF82DF85",
              "Arn"
             ]
            },
@@ -1205,6 +1193,12 @@
        "Resource": [
         {
          "Fn::GetAtt": [
+          "SnapshoterIsCompleteHandler93DE2591",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
           "SnapshoterOnEventHandlerDF82DF85",
           "Arn"
          ]
@@ -1215,24 +1209,12 @@
           [
            {
             "Fn::GetAtt": [
-             "SnapshoterOnEventHandlerDF82DF85",
+             "SnapshoterIsCompleteHandler93DE2591",
              "Arn"
             ]
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "SnapshoterIsCompleteHandler93DE2591",
-          "Arn"
          ]
         },
         {
@@ -1241,7 +1223,7 @@
           [
            {
             "Fn::GetAtt": [
-             "SnapshoterIsCompleteHandler93DE2591",
+             "SnapshoterOnEventHandlerDF82DF85",
              "Arn"
             ]
            },
@@ -1376,6 +1358,12 @@
          ]
         },
         {
+         "Fn::GetAtt": [
+          "SnapshoterSnapshotProviderframeworkonTimeout04342B00",
+          "Arn"
+         ]
+        },
+        {
          "Fn::Join": [
           "",
           [
@@ -1387,18 +1375,6 @@
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "SnapshoterSnapshotProviderframeworkonTimeout04342B00",
-          "Arn"
          ]
         },
         {
