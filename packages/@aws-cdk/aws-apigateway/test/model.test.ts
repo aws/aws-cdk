@@ -67,4 +67,39 @@ describe('model', () => {
       },
     });
   });
+
+  test('with constant schema', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true });
+    new apigw.Method(stack, 'my-method', {
+      httpMethod: 'POST',
+      resource: api.root,
+    });
+
+    // WHEN
+    new apigw.Model(stack, 'my-model', {
+      restApi: api,
+      schema: {
+        schema: 'http://json-schema.org/draft-04/schema#',
+        title: 'test',
+        type: 'object',
+        properties: { message: { type: 'string' } },
+        required: ['message']
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Model', {
+      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
+      Schema: {
+        $schema: 'http://json-schema.org/draft-04/schema#',
+        title: 'test',
+        type: 'object',
+        properties: { message: { type: 'string' } },
+        required: ['message']
+      },
+      ContentType: 'application/json',
+    });
+  });
 });
