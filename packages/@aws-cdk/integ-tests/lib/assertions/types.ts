@@ -15,14 +15,14 @@ export interface IDeployAssert {
    * @example
    * declare const app: App;
    * declare const integ: IntegTest;
-   * integ.assert.awsApiCall('SQS', 'sendMessage', {
+   * integ.assertions.awsApiCall('SQS', 'sendMessage', {
    *   QueueUrl: 'url',
    *   MessageBody: 'hello',
    * });
-   * const message = integ.assert.awsApiCall('SQS', 'receiveMessage', {
+   * const message = integ.assertions.awsApiCall('SQS', 'receiveMessage', {
    *   QueueUrl: 'url',
    * });
-   * message.assert(ExpectedResult.objectLike({
+   * message.expect(ExpectedResult.objectLike({
    *   Messages: [{ Body: 'hello' }],
    * }));
    */
@@ -34,10 +34,10 @@ export interface IDeployAssert {
    * @example
    * declare const app: App;
    * declare const integ: IntegTest;
-   * const invoke = integ.assert.invokeFunction({
+   * const invoke = integ.assertions.invokeFunction({
    *   functionName: 'my-function',
    * });
-   * invoke.assert(ExpectedResult.objectLike({
+   * invoke.expect(ExpectedResult.objectLike({
    *   Payload: '200',
    * }));
    */
@@ -50,11 +50,11 @@ export interface IDeployAssert {
    * @example
    * declare const integ: IntegTest;
    * declare const apiCall: AwsApiCall;
-   * integ.assert.assert(
+   * integ.assertions.expect(
    *   'invoke',
    *   ExpectedResult.objectLike({ Payload: 'OK' }),
    *   ActualResult.fromAwsApiCall(apiCall, 'Body'),
    * );
    */
-  assert(id: string, expected: ExpectedResult, actual: ActualResult): void;
+  expect(id: string, expected: ExpectedResult, actual: ActualResult): void;
 }
