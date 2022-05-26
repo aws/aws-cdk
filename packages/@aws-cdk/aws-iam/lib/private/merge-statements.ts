@@ -3,8 +3,7 @@
 // See docs/policy-merging.als for a formal model of the logic
 // implemented here.
 
-
-import { IConstruct } from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 import { PolicyStatement, EstimateSizeOptions, deriveEstimateSizeOptions } from '../policy-statement';
 import { IPrincipal } from '../principals';
 import { LITERAL_STRING_KEY } from '../util';
