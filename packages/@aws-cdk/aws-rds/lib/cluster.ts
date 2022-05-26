@@ -7,8 +7,10 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Annotations, Duration, FeatureFlags, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { SnapshotCredentials } from '.';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
+import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
@@ -659,11 +661,23 @@ export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBasePro
   readonly snapshotIdentifier: string;
 
   /**
-   * Credentials for the administrative user
+   * Credentials of the administrative user
    *
-   * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
+   * @default - The existing username and password from the snapshot will be used.
+   *
+   * @deprecated use snapshotCredentials
    */
   readonly credentials?: Credentials;
+
+  /**
+   * Master user credentials.
+   *
+   * Note - It is not possible to change the master username for a snapshot;
+   * however, it is possible to provide (or generate) a new password.
+   *
+   * @default - The existing username and password from the snapshot will be used.
+   */
+  readonly snapshotCredentials?: SnapshotCredentials;
 }
 
 /**
@@ -687,18 +701,45 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
   constructor(scope: Construct, id: string, props: DatabaseClusterFromSnapshotProps) {
     super(scope, id, props);
 
-    const credentials = renderCredentials(this, props.engine, props.credentials);
-    const secret = credentials.secret;
+    if (props.credentials && !props.credentials.password && !props.credentials.secret) {
+      Annotations.of(this).addWarning('Cannot modify password of a cluster created from a snapshot. Use `snapshotCredentials` instead.');
+    }
+
+    let credentials = props.snapshotCredentials;
+    let secret = credentials?.secret;
+    if (!secret && credentials?.generatePassword) {
+      if (!credentials.username) {
+        throw new Error('`credentials` `username` must be specified when `generatePassword` is set to true');
+      }
+
+      secret = new DatabaseSecret(this, 'Secret', {
+        username: credentials.username,
+        encryptionKey: credentials.encryptionKey,
+        excludeCharacters: credentials.excludeCharacters,
+        replaceOnPasswordCriteriaChanges: credentials.replaceOnPasswordCriteriaChanges,
+        replicaRegions: credentials.replicaRegions,
+      });
+    }
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       snapshotIdentifier: props.snapshotIdentifier,
+      masterUserPassword: secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
     this.clusterIdentifier = cluster.ref;
 
     if (secret) {
       this.secret = secret.attach(this);
+    }
+
+    // Avoid breaking change when introducing `snapshotCredentials`. No need to cover
+    // the default case because it created an unusable secret.
+    if (props.credentials) {
+      const rendered = renderCredentials(this, props.engine, props.credentials);
+      if (rendered.secret) {
+        rendered.secret.attach(this);
+      }
     }
 
     // create a number token that represents the port of the cluster
