@@ -17,6 +17,8 @@ export enum JsonSchemaType {
   STRING = 'string'
 }
 
+export type JsonSchemaTypeUnion = 'null' | 'boolean' | 'object' | 'array' | 'number' | 'integer' | 'string'
+
 /**
  * Represents a JSON schema definition of the structure of a
  * REST API model. Copied from npm module jsonschema.
@@ -31,7 +33,7 @@ export interface JsonSchema {
   readonly ref?: string;
 
   // Common properties
-  readonly type?: JsonSchemaType | JsonSchemaType[];
+  readonly type?: JsonSchemaTypeUnion | JsonSchemaTypeUnion[];
   readonly title?: string;
   readonly description?: string;
   readonly 'enum'?: any[];
