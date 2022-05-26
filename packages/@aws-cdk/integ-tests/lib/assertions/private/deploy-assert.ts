@@ -67,7 +67,7 @@ export class DeployAssert extends CoreConstruct implements IDeployAssert {
     return new LambdaInvokeFunction(this.scope, `LambdaInvoke${hash}`, props);
   }
 
-  public assert(id: string, expected: ExpectedResult, actual: ActualResult): void {
+  public expect(id: string, expected: ExpectedResult, actual: ActualResult): void {
     new EqualsAssertion(this.scope, `EqualsAssertion${id}`, {
       expected,
       actual,

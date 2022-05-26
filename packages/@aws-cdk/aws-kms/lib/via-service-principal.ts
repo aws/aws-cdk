@@ -24,4 +24,9 @@ export class ViaServicePrincipal extends iam.PrincipalBase {
 
     return { principalJson: base.principalJson, conditions };
   }
+
+  public dedupeString(): string | undefined {
+    const base = iam.ComparablePrincipal.dedupeStringFor(this.basePrincipal);
+    return base !== undefined ? `ViaServicePrincipal:${this.serviceName}:${base}` : undefined;
+  }
 }

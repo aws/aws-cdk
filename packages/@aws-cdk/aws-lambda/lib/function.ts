@@ -668,6 +668,12 @@ export class Function extends FunctionBase {
       }
     }
 
+    if (props.description && !Token.isUnresolved(props.description)) {
+      if (props.description.length > 256) {
+        throw new Error(`Function description can not be longer than 256 characters but has ${props.description.length} characters.`);
+      }
+    }
+
     const managedPolicies = new Array<iam.IManagedPolicy>();
 
     // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -1115,7 +1121,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     for (const subnetId of subnetIds) {
       if (publicSubnetIds.has(subnetId) && !allowPublicSubnet) {
         throw new Error('Lambda Functions in a public subnet can NOT access the internet. ' +
-          'If you are aware of this limitation and would still like to place the function int a public subnet, set `allowPublicSubnet` to true');
+          'If you are aware of this limitation and would still like to place the function in a public subnet, set `allowPublicSubnet` to true');
       }
     }
 
