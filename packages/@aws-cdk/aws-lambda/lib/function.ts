@@ -1293,11 +1293,11 @@ function undefinedIfNoKeys<A>(struct: A): A | undefined {
  * which "validates" the new function hash.
  */
 export class FunctionVersionUpgrade implements IAspect {
-  constructor(private readonly featureFlag: string) {}
+  constructor(private readonly featureFlag: string, private readonly enabled=true) {}
 
   public visit(node: IConstruct): void {
     if (node instanceof Function &&
-      FeatureFlags.of(node).isEnabled(this.featureFlag)) {
+      this.enabled === FeatureFlags.of(node).isEnabled(this.featureFlag)) {
       const cfnFunction = node.node.defaultChild as CfnFunction;
       const desc = cfnFunction.description ? `${cfnFunction.description} ` : '';
       cfnFunction.addPropertyOverride('Description', `${desc}version-hash:${calculateFunctionHash(node)}`);

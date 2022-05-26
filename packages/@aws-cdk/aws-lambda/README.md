@@ -291,8 +291,15 @@ by default.
 Existing users will need to enable the [feature flag]
 `@aws-cdk/aws-lambda:recognizeVersionProps`. Since CloudFormation does not
 allow duplicate versions, they will also need to make some modification to
-their function so that a new version can be created. Any trivial change such as
-a whitespace change in the code or a no-op environment variable will suffice.
+their function so that a new version can be created. To efficiently and trivially
+modify all your lambda functions at once, users can attach the
+`FunctionVersionUpgrade` aspect to the stack, which slightly modifes the
+function description.
+
+```ts
+const stack = new Stack();
+Aspects.of(stack).add(new lambda.FunctionVersionUpgrade(LAMBDA_RECOGNIZE_VERSION_PROPS));
+```
 
 When the new logic is in effect, you may rarely come across the following error:
 `The following properties are not recognized as version properties`. This will
@@ -303,6 +310,30 @@ To overcome this error, use the API `Function.classifyVersionProperty()` to
 record whether a new version should be generated when this property is changed.
 This can be typically determined by checking whether the property can be
 modified using the *[UpdateFunctionConfiguration]* API or not.
+
+### `currentVersion`: Updated hashing logic for layer versions
+
+An additional update to the hashing logic fixes two issues surrounding layers.
+Prior to this change, updating the lambda layer version would have no affect on
+the function version. Also, the order of lambda layers provided to the function
+was unnecessarily baked into the hash.
+
+This has been fixed in the AWS CDK but *existing* users need to opt-in via a
+[feature flag]. Users who have run `cdk init` since this fix will be opted in,
+by default.
+
+Existing users will need to enable the [feature flag]
+`@aws-cdk/aws-lambda:recognizeLayerVersion`. Since CloudFormation does not
+allow duplicate versions, they will also need to make some modification to
+their function so that a new version can be created. To efficiently and trivially
+modify all your lambda functions at once, users can attach the
+`FunctionVersionUpgrade` aspect to the stack, which slightly modifes the
+function description.
+
+```ts
+const stack = new Stack();
+Aspects.of(stack).add(new lambda.FunctionVersionUpgrade(LAMBDA_RECOGNIZE_LAYER_VERSION));
+```
 
 [feature flag]: https://docs.aws.amazon.com/cdk/latest/guide/featureflags.html
 [property overrides]: https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html#cfn_layer_raw
