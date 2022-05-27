@@ -206,10 +206,6 @@ export abstract class IntegRunner {
     return fs.existsSync(this.snapshotDir);
   }
 
-  public hasTmpActualSnapshot(): boolean {
-    return fs.existsSync(path.join(this.directory, this.cdkOutDir));
-  }
-
   /**
    * Load the integ manifest which contains information
    * on how to execute the tests
