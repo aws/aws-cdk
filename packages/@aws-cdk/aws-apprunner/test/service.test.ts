@@ -1,10 +1,11 @@
 import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Service, GitHubConnection, Runtime, Source, Cpu, Memory, ConfigurationSourceType } from '../lib';
+import { Service, GitHubConnection, Runtime, Source, Cpu, Memory, ConfigurationSourceType, VpcConnector } from '../lib';
 
 test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () => {
   // GIVEN
@@ -27,6 +28,11 @@ test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () =
         },
         ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
         ImageRepositoryType: 'ECR_PUBLIC',
+      },
+    },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
       },
     },
   });
@@ -73,6 +79,11 @@ test('custom environment variables and start commands are allowed for imageConfi
         ImageRepositoryType: 'ECR_PUBLIC',
       },
     },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
+      },
+    },
   });
 });
 
@@ -113,6 +124,11 @@ test('custom environment variables and start commands are allowed for imageConfi
         },
         ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
         ImageRepositoryType: 'ECR_PUBLIC',
+      },
+    },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
       },
     },
   });
@@ -181,6 +197,11 @@ test('create a service from existing ECR repository(image repository type: ECR)'
           ],
         },
         ImageRepositoryType: 'ECR',
+      },
+    },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
       },
     },
   });
@@ -254,6 +275,11 @@ test('create a service with local assets(image repository type: ECR)', () => {
         ImageRepositoryType: 'ECR',
       },
     },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
+      },
+    },
   });
 });
 
@@ -288,6 +314,11 @@ test('create a service with github repository', () => {
           Type: 'BRANCH',
           Value: 'main',
         },
+      },
+    },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
       },
     },
   });
@@ -330,6 +361,11 @@ test('create a service with github repository - undefined branch name is allowed
           Type: 'BRANCH',
           Value: 'main',
         },
+      },
+    },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
       },
     },
   });
@@ -392,6 +428,11 @@ test('create a service with github repository - buildCommand, environment and st
         },
       },
     },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
+      },
+    },
   });
 });
 
@@ -445,6 +486,11 @@ test('undefined imageConfiguration port is allowed', () => {
       ImageRepository: {
         ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
         ImageRepositoryType: 'ECR_PUBLIC',
+      },
+    },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
       },
     },
   });
@@ -519,6 +565,11 @@ test('custom IAM access role and instance role are allowed', () => {
         ],
       },
     },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
+      },
+    },
   });
 });
 
@@ -539,6 +590,11 @@ test('cpu and memory properties are allowed', () => {
     InstanceConfiguration: {
       Cpu: '1 vCPU',
       Memory: '3 GB',
+    },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
+      },
     },
   });
 });
@@ -561,6 +617,11 @@ test('custom cpu and memory units are allowed', () => {
       Cpu: 'Some vCPU',
       Memory: 'Some GB',
     },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
+      },
+    },
   });
 });
 
@@ -582,4 +643,64 @@ test('environment variable with a prefix of AWSAPPRUNNER should throw an error',
       }),
     });
   }).toThrow('Environment variable key AWSAPPRUNNER_FOO with a prefix of AWSAPPRUNNER is not allowed');
+});
+
+test('specifying a vpcConnector should assign the service to it and set the egressType to VPC', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  const vpc = new ec2.Vpc(stack, 'Vpc', {
+    cidr: '10.0.0.0/16',
+  });
+
+  const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+  const vpcConnector = new VpcConnector(stack, 'VpcConnector', {
+    securityGroups: [securityGroup],
+    vpc,
+    vpcSubnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }),
+    vpcConnectorName: 'MyVpcConnector',
+  });
+  // WHEN
+  new Service(stack, 'DemoService', {
+    source: Source.fromEcrPublic({
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    vpcConnector,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'VPC',
+        VpcConnectorArn: {
+          'Fn::GetAtt': [
+            'VpcConnectorE3A78531',
+            'VpcConnectorArn',
+          ],
+        },
+      },
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::VpcConnector', {
+    Subnets: [
+      {
+        Ref: 'VpcPublicSubnet1Subnet5C2D37C4',
+      },
+      {
+        Ref: 'VpcPublicSubnet2Subnet691E08A3',
+      },
+    ],
+    SecurityGroups: [
+      {
+        'Fn::GetAtt': [
+          'SecurityGroupDD263621',
+          'GroupId',
+        ],
+      },
+    ],
+    VpcConnectorName: 'MyVpcConnector',
+  });
 });

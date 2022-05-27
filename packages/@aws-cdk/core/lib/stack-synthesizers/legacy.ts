@@ -149,6 +149,7 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
         target: asset.dockerBuildTarget,
         file: asset.dockerFile,
         networkMode: asset.networkMode,
+        platform: asset.platform,
       };
 
       this.stack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);

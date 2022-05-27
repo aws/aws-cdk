@@ -1,5 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import '@aws-cdk/assert-internal/jest';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';

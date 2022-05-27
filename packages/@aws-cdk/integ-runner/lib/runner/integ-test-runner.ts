@@ -259,7 +259,7 @@ export class IntegTestRunner extends IntegRunner {
         ...actualTestCase?.cdkCommandOptions?.deploy?.args,
         ...actualTestCase.assertionStack ? { outputsFile: path.join(this.cdkOutDir, 'assertion-results.json') } : undefined,
         context: this.getContext(actualTestCase?.cdkCommandOptions?.deploy?.args?.context),
-        app: this.hasTmpActualSnapshot() ? this.cdkOutDir : this.cdkApp,
+        app: this.cdkApp,
       });
 
       if (actualTestCase.hooks?.postDeploy) {

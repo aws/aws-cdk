@@ -365,6 +365,7 @@ export class Pipeline extends PipelineBase {
   private readonly crossAccountKeys: boolean;
   private readonly enableKeyRotation?: boolean;
   private readonly reuseCrossRegionSupportStacks: boolean;
+  private readonly codePipeline: CfnPipeline;
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -426,7 +427,7 @@ export class Pipeline extends PipelineBase {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
     });
 
-    const codePipeline = new CfnPipeline(this, 'Resource', {
+    this.codePipeline = new CfnPipeline(this, 'Resource', {
       artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
       artifactStores: Lazy.any({ produce: () => this.renderArtifactStoresProperty() }),
       stages: Lazy.any({ produce: () => this.renderStages() }),
@@ -437,11 +438,11 @@ export class Pipeline extends PipelineBase {
     });
 
     // this will produce a DependsOn for both the role and the policy resources.
-    codePipeline.node.addDependency(this.role);
+    this.codePipeline.node.addDependency(this.role);
 
     this.artifactBucket.grantReadWrite(this.role);
-    this.pipelineName = this.getResourceNameAttribute(codePipeline.ref);
-    this.pipelineVersion = codePipeline.attrVersion;
+    this.pipelineName = this.getResourceNameAttribute(this.codePipeline.ref);
+    this.pipelineVersion = this.codePipeline.attrVersion;
     this.crossRegionBucketsPassed = !!props.crossRegionReplicationBuckets;
 
     for (const [region, replicationBucket] of Object.entries(props.crossRegionReplicationBuckets || {})) {
@@ -724,13 +725,8 @@ export class Pipeline extends PipelineBase {
     }
 
     // the pipeline role needs assumeRole permissions to the action role
-    if (actionRole) {
-      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['sts:AssumeRole'],
-        resources: [actionRole.roleArn],
-      }));
-    }
-
+    const grant = actionRole?.grantAssumeRole(this.role);
+    grant?.applyBefore(this.codePipeline);
     return actionRole;
   }
 
