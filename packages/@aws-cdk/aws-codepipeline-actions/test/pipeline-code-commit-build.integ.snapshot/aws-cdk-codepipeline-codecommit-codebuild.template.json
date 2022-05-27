@@ -244,7 +244,7 @@
   "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": "alias/codepipeline-aws-cdk-codepipeline-codecommit-codebuild-pipeline-9540e1f5",
+    "AliasName": "alias/codepipeline-awscdkcodepipelinecodecommitcodebuildpipeline9540e1f5",
     "TargetKeyId": {
      "Fn::GetAtt": [
       "PipelineArtifactsBucketEncryptionKey01D58D69",
