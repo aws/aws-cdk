@@ -56,6 +56,15 @@
             "type": "aws:cdk:logicalId",
             "data": "FunctionName"
           }
+        ],
+        "MyLambdaCurrentVersionE7A382CCdcbc579545d1d05c38def865a59d6082": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaCurrentVersionE7A382CCdcbc579545d1d05c38def865a59d6082",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-lambda-autoscaling"
