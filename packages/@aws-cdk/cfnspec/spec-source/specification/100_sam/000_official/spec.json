@@ -1192,6 +1192,11 @@
                     "Type": "KeySAMPT",
                     "UpdateType": "Immutable"
                 },
+                "KMSEncryptPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "KeySAMPT",
+                    "UpdateType": "Immutable"
+                },
                 "KinesisCrudPolicy": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
                     "Type": "StreamSAMPT",
