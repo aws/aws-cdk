@@ -368,7 +368,7 @@ export class Cluster extends Resource implements ICluster {
     this.configureAutoScalingGroup(provider.autoScalingGroup, {
       ...{
         ...options,
-        canContainersAccessInstanceRole: provider.canContainersAccessInstanceRole || options.canContainersAccessInstanceRole,
+        canContainersAccessInstanceRole: provider.canContainersAccessInstanceRole ?? options.canContainersAccessInstanceRole,
       },
       machineImageType: provider.machineImageType,
       // Don't enable the instance-draining lifecycle hook if managed termination protection is enabled
