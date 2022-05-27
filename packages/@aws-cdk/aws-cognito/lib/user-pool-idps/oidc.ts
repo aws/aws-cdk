@@ -23,6 +23,11 @@ export interface UserPoolIdentityProviderOidcProps extends UserPoolIdentityProvi
   readonly clientSecret: string;
 
   /**
+   * Issuer URL
+   */
+  readonly issuerUrl: string;
+
+  /**
    * The OAuth 2.0 scopes that you will request from OpenID Connect. Scopes are
    * groups of OpenID Connect user attributes to exchange with your app.
    *
@@ -45,11 +50,6 @@ export interface UserPoolIdentityProviderOidcProps extends UserPoolIdentityProvi
    * @default OidcAttributeRequestMethod.GET
    */
   readonly attributeRequestMethod?: OidcAttributeRequestMethod
-
-  /**
-   * Issuer URL
-   */
-  readonly issuerUrl: string;
 
   /**
    * OpenID connect endpoints
