@@ -1,6 +1,6 @@
 import * as workerpool from 'workerpool';
 import { IntegSnapshotRunner, IntegTestRunner } from '../../runner';
-import { IntegTestConfig } from '../../runner/integration-tests';
+import { IntegTest, IntegTestInfo } from '../../runner/integration-tests';
 import { DiagnosticReason, IntegTestWorkerConfig, SnapshotVerificationOptions, Diagnostic, formatAssertionResults } from '../common';
 import { IntegTestBatchRequest } from '../integ-test-worker';
 
@@ -13,16 +13,17 @@ import { IntegTestBatchRequest } from '../integ-test-worker';
  * If the tests succeed it will then save the snapshot
  */
 export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorkerConfig[] {
-  const failures: IntegTestConfig[] = [];
-  for (const test of request.tests) {
+  const failures: IntegTestInfo[] = [];
+  for (const testInfo of request.tests) {
+    const test = new IntegTest(testInfo); // Hydrate from data
+
     const runner = new IntegTestRunner({
-      directory: test.directory,
-      fileName: test.fileName,
+      test,
       profile: request.profile,
       env: {
         AWS_REGION: request.region,
       },
-    }, test.destructiveChanges);
+    }, testInfo.destructiveChanges);
 
     const start = Date.now();
     const tests = runner.actualTests();
@@ -39,7 +40,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
             updateWorkflow: request.updateWorkflow,
           });
           if (results) {
-            failures.push(test);
+            failures.push(testInfo);
             workerpool.workerEmit({
               reason: DiagnosticReason.ASSERTION_FAILED,
               testName: `${runner.testName}-${testCaseName} (${request.profile}/${request.region})`,
@@ -55,7 +56,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
             });
           }
         } catch (e) {
-          failures.push(test);
+          failures.push(testInfo);
           workerpool.workerEmit({
             reason: DiagnosticReason.TEST_FAILED,
             testName: `${runner.testName}-${testCaseName} (${request.profile}/${request.region})`,
@@ -65,10 +66,10 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
         }
       }
     } catch (e) {
-      failures.push(test);
+      failures.push(testInfo);
       workerpool.workerEmit({
         reason: DiagnosticReason.TEST_FAILED,
-        testName: `${test.fileName} (${request.profile}/${request.region})`,
+        testName: `${testInfo.fileName} (${request.profile}/${request.region})`,
         message: `Integration test failed: ${e}`,
         duration: (Date.now() - start) / 1000,
       });
@@ -84,19 +85,21 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
  * if there is an existing snapshot, and if there is will
  * check if there are any changes
  */
-export function snapshotTestWorker(test: IntegTestConfig, options: SnapshotVerificationOptions = {}): IntegTestWorkerConfig[] {
+export function snapshotTestWorker(testInfo: IntegTestInfo, options: SnapshotVerificationOptions = {}): IntegTestWorkerConfig[] {
   const failedTests = new Array<IntegTestWorkerConfig>();
-  const runner = new IntegSnapshotRunner({ fileName: test.fileName, directory: test.directory });
   const start = Date.now();
+  const test = new IntegTest(testInfo); // Hydrate the data record again
+
   try {
+    const runner = new IntegSnapshotRunner({ test });
     if (!runner.hasSnapshot()) {
       workerpool.workerEmit({
         reason: DiagnosticReason.NO_SNAPSHOT,
-        testName: runner.testName,
+        testName: test.testName,
         message: 'No Snapshot',
         duration: (Date.now() - start) / 1000,
       });
-      failedTests.push(test);
+      failedTests.push(test.info);
     } else {
       const { diagnostics, destructiveChanges } = runner.testSnapshot(options);
       if (diagnostics.length > 0) {
@@ -105,24 +108,23 @@ export function snapshotTestWorker(test: IntegTestConfig, options: SnapshotVerif
           duration: (Date.now() - start) / 1000,
         } as Diagnostic));
         failedTests.push({
-          fileName: test.fileName,
-          directory: test.directory,
+          ...test.info,
           destructiveChanges,
         });
       } else {
         workerpool.workerEmit({
           reason: DiagnosticReason.SNAPSHOT_SUCCESS,
-          testName: runner.testName,
+          testName: test.testName,
           message: 'Success',
           duration: (Date.now() - start) / 1000,
         } as Diagnostic);
       }
     }
   } catch (e) {
-    failedTests.push(test);
+    failedTests.push(test.info);
     workerpool.workerEmit({
       message: e.message,
-      testName: runner.testName,
+      testName: test.testName,
       reason: DiagnosticReason.SNAPSHOT_FAILED,
       duration: (Date.now() - start) / 1000,
     } as Diagnostic);

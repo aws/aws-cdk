@@ -1,6 +1,6 @@
 import * as workerpool from 'workerpool';
 import * as logger from '../logger';
-import { IntegTestConfig } from '../runner/integration-tests';
+import { IntegTest } from '../runner/integration-tests';
 import { flatten } from '../utils';
 import { printSummary, printResults, IntegTestWorkerConfig, SnapshotVerificationOptions } from './common';
 
@@ -11,13 +11,13 @@ import { printSummary, printResults, IntegTestWorkerConfig, SnapshotVerification
  */
 export async function runSnapshotTests(
   pool: workerpool.WorkerPool,
-  tests: IntegTestConfig[],
+  tests: IntegTest[],
   options: SnapshotVerificationOptions,
 ): Promise<IntegTestWorkerConfig[]> {
   logger.highlight('\nVerifying integration test snapshots...\n');
 
   const failedTests: IntegTestWorkerConfig[][] = await Promise.all(
-    tests.map((test) => pool.exec('snapshotTestWorker', [test, options], {
+    tests.map((test) => pool.exec('snapshotTestWorker', [test.info /* Dehydrate class -> data */, options], {
       on: printResults,
     })),
   );

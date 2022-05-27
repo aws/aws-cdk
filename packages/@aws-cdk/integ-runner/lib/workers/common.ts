@@ -2,7 +2,7 @@ import { format } from 'util';
 import { ResourceImpact } from '@aws-cdk/cloudformation-diff';
 import * as chalk from 'chalk';
 import * as logger from '../logger';
-import { IntegTestConfig } from '../runner/integration-tests';
+import { IntegTestInfo } from '../runner/integration-tests';
 
 /**
  * The aggregate results from running assertions on a test case
@@ -28,7 +28,7 @@ export interface AssertionResult {
 /**
  * Config for an integration test
  */
-export interface IntegTestWorkerConfig extends IntegTestConfig {
+export interface IntegTestWorkerConfig extends IntegTestInfo {
   /**
    * A list of any destructive changes
    *
@@ -112,7 +112,7 @@ export interface IntegBatchResponse {
   /**
    * List of failed tests
    */
-  readonly failedTests: IntegTestConfig[];
+  readonly failedTests: IntegTestInfo[];
 
   /**
    * List of Integration test metrics. Each entry in the
