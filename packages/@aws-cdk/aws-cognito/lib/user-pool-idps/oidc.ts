@@ -8,11 +8,6 @@ import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
  */
 export interface UserPoolIdentityProviderOidcProps extends UserPoolIdentityProviderProps {
   /**
-   * The name of the provider
-   */
-  readonly name: string;
-
-  /**
    * The client id
    */
   readonly clientId: string;
@@ -26,6 +21,13 @@ export interface UserPoolIdentityProviderOidcProps extends UserPoolIdentityProvi
    * Issuer URL
    */
   readonly issuerUrl: string;
+
+  /**
+   * The name of the provider
+   *
+   * @default - the ID of the construct
+   */
+  readonly name?: string;
 
   /**
    * The OAuth 2.0 scopes that you will request from OpenID Connect. Scopes are
@@ -108,7 +110,7 @@ export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
       userPoolId: props.userPool.userPoolId,
-      providerName: props.name,
+      providerName: props.name ?? this.node.id,
       providerType: 'OIDC',
       providerDetails: {
         client_id: props.clientId,

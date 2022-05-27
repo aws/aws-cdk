@@ -12,14 +12,13 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       new UserPoolIdentityProviderOidc(stack, 'userpoolidp', {
         userPool: pool,
-        name: 'my-provider',
         clientId: 'client-id',
         clientSecret: 'client-secret',
         issuerUrl: 'https://my-issuer-url.com',
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
-        ProviderName: 'my-provider',
+        ProviderName: 'userpoolidp',
         ProviderType: 'OIDC',
         ProviderDetails: {
           client_id: 'client-id',
