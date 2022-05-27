@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "assembly-PipelineStack-PreProd": {
       "type": "cdk:cloud-assembly",
@@ -85,7 +85,10 @@
         "/PipelineStack/Pipeline/Pipeline/ArtifactsBucketEncryptionKeyAlias/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineArtifactsBucketEncryptionKeyAlias94A07392"
+            "data": "PipelineArtifactsBucketEncryptionKeyAlias94A07392",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/PipelineStack/Pipeline/Pipeline/ArtifactsBucket/Resource": [

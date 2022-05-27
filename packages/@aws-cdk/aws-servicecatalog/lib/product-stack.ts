@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cdk from '@aws-cdk/core';
 import { ProductStackSynthesizer } from './private/product-stack-synthesizer';
+import { ProductStackHistory } from './product-stack-history';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -19,6 +20,7 @@ import { Construct } from 'constructs';
  */
 export class ProductStack extends cdk.Stack {
   public readonly templateFile: string;
+  private _parentProductStackHistory?: ProductStackHistory;
   private _templateUrl?: string;
   private _parentStack: cdk.Stack;
 
@@ -31,6 +33,15 @@ export class ProductStack extends cdk.Stack {
 
     // this is the file name of the synthesized template file within the cloud assembly
     this.templateFile = `${cdk.Names.uniqueId(this)}.product.template.json`;
+  }
+
+  /**
+   * Set the parent product stack history
+   *
+   * @internal
+   */
+  public _setParentProductStackHistory(parentProductStackHistory: ProductStackHistory) {
+    return this._parentProductStackHistory = parentProductStackHistory;
   }
 
   /**
@@ -59,6 +70,10 @@ export class ProductStack extends cdk.Stack {
       sourceHash: templateHash,
       fileName: this.templateFile,
     }).httpUrl;
+
+    if (this._parentProductStackHistory) {
+      this._parentProductStackHistory._writeTemplateToSnapshot(cfn);
+    }
 
     fs.writeFileSync(path.join(session.assembly.outdir, this.templateFile), cfn);
   }

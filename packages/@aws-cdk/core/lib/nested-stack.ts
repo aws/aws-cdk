@@ -135,6 +135,7 @@ export class NestedStack extends Stack {
     this.resource.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.DESTROY);
 
     this.nestedStackResource = this.resource;
+    this.node.defaultChild = this.resource;
 
     // context-aware stack name: if resolved from within this stack, return AWS::StackName
     // if resolved from the outer stack, use the { Ref } of the AWS::CloudFormation::Stack resource

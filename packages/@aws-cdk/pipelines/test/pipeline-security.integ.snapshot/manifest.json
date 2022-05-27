@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "assembly-PipelineSecurityStack-SingleStage": {
       "type": "cdk:cloud-assembly",
@@ -120,7 +120,10 @@
         "/PipelineSecurityStack/TestPipeline/Pipeline/ArtifactsBucketEncryptionKeyAlias/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestPipelineArtifactsBucketEncryptionKeyAliasE8D86DD3"
+            "data": "TestPipelineArtifactsBucketEncryptionKeyAliasE8D86DD3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/PipelineSecurityStack/TestPipeline/Pipeline/ArtifactsBucket/Resource": [

@@ -291,4 +291,26 @@ describe('rules', () => {
       },
     });
   });
+
+  test('Bucket with objectSizeGreaterThan', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Bucket(stack, 'Bucket', {
+      lifecycleRules: [{
+        objectSizeGreaterThan: 0,
+      }],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      LifecycleConfiguration: {
+        Rules: [{
+          ObjectSizeGreaterThan: 0,
+          Status: 'Enabled',
+        }],
+      },
+    });
+  });
 });
