@@ -13,7 +13,12 @@
       "ImageRepositoryType": "ECR_PUBLIC"
      }
     },
-    "InstanceConfiguration": {}
+    "InstanceConfiguration": {},
+    "NetworkConfiguration": {
+     "EgressConfiguration": {
+      "EgressType": "DEFAULT"
+     }
+    }
    }
   }
  },

@@ -1,6 +1,7 @@
 import { IntegManifest, Manifest, TestCase, TestOptions } from '@aws-cdk/cloud-assembly-schema';
 import { attachCustomSynthesis, Stack, ISynthesisSession, StackProps } from '@aws-cdk/core';
-import { DeployAssert } from './assertions';
+import { IDeployAssert } from './assertions';
+import { DeployAssert } from './assertions/private/deploy-assert';
 import { IntegManifestSynthesizer } from './manifest-synthesizer';
 
 const TEST_CASE_STACK_SYMBOL = Symbol.for('@aws-cdk/integ-tests.IntegTestCaseStack');
@@ -30,12 +31,15 @@ export class IntegTestCase extends Construct {
   /**
    * Make assertions on resources in this test case
    */
-  public readonly assert: DeployAssert;
+  public readonly assertions: IDeployAssert;
+
+  private readonly _assert: DeployAssert;
 
   constructor(scope: Construct, id: string, private readonly props: IntegTestCaseProps) {
     super(scope, id);
 
-    this.assert = new DeployAssert(this);
+    this._assert = new DeployAssert(this);
+    this.assertions = this._assert;
   }
 
   /**
@@ -52,7 +56,7 @@ export class IntegTestCase extends Construct {
   private toTestCase(props: IntegTestCaseProps): TestCase {
     return {
       ...props,
-      assertionStack: Stack.of(this.assert).artifactId,
+      assertionStack: this._assert.scope.artifactId,
       stacks: props.stacks.map(s => s.artifactId),
     };
   }
@@ -82,7 +86,7 @@ export class IntegTestCaseStack extends Stack {
   /**
    * Make assertions on resources in this test case
    */
-  public readonly assert: DeployAssert;
+  public readonly assertions: IDeployAssert;
 
   /**
    * The underlying IntegTestCase that is created
@@ -96,7 +100,7 @@ export class IntegTestCaseStack extends Stack {
     Object.defineProperty(this, TEST_CASE_STACK_SYMBOL, { value: true });
 
     // TODO: should we only have a single DeployAssert per test?
-    this.assert = new DeployAssert(this);
+    this.assertions = new DeployAssert(this);
     this._testCase = new IntegTestCase(this, `${id}TestCase`, {
       ...props,
       stacks: [this],
@@ -123,7 +127,7 @@ export class IntegTest extends Construct {
   /**
    * Make assertions on resources in this test case
    */
-  public readonly assert: DeployAssert;
+  public readonly assertions: IDeployAssert;
   private readonly testCases: IntegTestCase[];
   constructor(scope: Construct, id: string, props: IntegTestProps) {
     super(scope, id);
@@ -137,7 +141,7 @@ export class IntegTest extends Construct {
       cdkCommandOptions: props.cdkCommandOptions,
       stackUpdateWorkflow: props.stackUpdateWorkflow,
     });
-    this.assert = defaultTestCase.assert;
+    this.assertions = defaultTestCase.assertions;
 
     this.testCases = [
       defaultTestCase,
