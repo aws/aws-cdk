@@ -134,7 +134,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
   }
 
   /**
-   * Imports from the specified service attrributes.
+   * Imports from the specified service attributes.
    */
   public static fromEc2ServiceAttributes(scope: Construct, id: string, attrs: Ec2ServiceAttributes): IBaseService {
     return fromServiceAttributes(scope, id, attrs);
