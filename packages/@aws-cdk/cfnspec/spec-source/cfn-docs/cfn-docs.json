@@ -9109,6 +9109,7 @@
         "SmsAuthenticationMessage": "A string representing the SMS authentication message.",
         "SmsConfiguration": "The SMS configuration with the settings that your Amazon Cognito user pool must use to send an SMS message from your AWS account through Amazon Simple Notification Service. To send SMS messages with Amazon SNS in the AWS Region that you want, the Amazon Cognito user pool uses an AWS Identity and Access Management (IAM) role in your AWS account .",
         "SmsVerificationMessage": "A string representing the SMS verification message.",
+        "UserAttributeUpdateSettings": "The settings for updates to user attributes. These settings include the property `AttributesRequireVerificationBeforeUpdate` ,\na user-pool setting that tells Amazon Cognito how to handle changes to the value of your users' email address and phone number attributes. For\nmore information, see [Verifying updates to to email addresses and phone numbers](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-email-phone-verification.html#user-pool-settings-verifications-verify-attribute-updates) .",
         "UserPoolAddOns": "Enables advanced security risk detection. Set the key `AdvancedSecurityMode` to the value \"AUDIT\".",
         "UserPoolName": "A string used to name the user pool.",
         "UserPoolTags": "The tag keys and values to assign to the user pool. A tag is a label that you can use to categorize and manage user pools in different ways, such as by purpose, owner, environment, or other criteria.",
@@ -9259,6 +9260,13 @@
       "properties": {
         "MaxLength": "The maximum length.",
         "MinLength": "The minimum length."
+      }
+    },
+    "AWS::Cognito::UserPool.UserAttributeUpdateSettings": {
+      "attributes": {},
+      "description": "The settings for updates to user attributes. These settings include the property `AttributesRequireVerificationBeforeUpdate` ,\na user-pool setting that tells Amazon Cognito how to handle changes to the value of your users' email address and phone number attributes. For\nmore information, see [Verifying updates to to email addresses and phone numbers](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-email-phone-verification.html#user-pool-settings-verifications-verify-attribute-updates) .",
+      "properties": {
+        "AttributesRequireVerificationBeforeUpdate": "Requires that your user verifies their email address, phone number, or both before Amazon Cognito updates the value of that attribute. When you update a user attribute that has this option activated, Amazon Cognito sends a verification message to the new phone number or email address. Amazon Cognito doesn\u2019t change the value of the attribute until your user responds to the verification message and confirms the new value.\n\nYou can verify an updated email address or phone number with a [VerifyUserAttribute](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_VerifyUserAttribute.html) API request. You can also call the [UpdateUserAttributes](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_UpdateUserAttributes.html) or [AdminUpdateUserAttributes](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_AdminUpdateUserAttributes.html) API and set `email_verified` or `phone_number_verified` to true.\n\nWhen `AttributesRequireVerificationBeforeUpdate` is false, your user pool doesn't require that your users verify attribute changes before Amazon Cognito updates them. In a user pool where `AttributesRequireVerificationBeforeUpdate` is false, API operations that change attribute values can immediately update a user\u2019s `email` or `phone_number` attribute."
       }
     },
     "AWS::Cognito::UserPool.UserPoolAddOns": {
@@ -16874,6 +16882,82 @@
       "description": "The information about the EKS cluster.",
       "properties": {
         "Namespace": "The namespaces of the EKS cluster.\n\n*Minimum* : 1\n\n*Maximum* : 63\n\n*Pattern* : `[a-z0-9]([-a-z0-9]*[a-z0-9])?`"
+      }
+    },
+    "AWS::EMRServerless::Application": {
+      "attributes": {
+        "ApplicationId": "The ID of the application, such as `ab4rp1abcs8xz47n3x0example` .",
+        "Arn": "The Amazon Resource Name (ARN) of the project.",
+        "Ref": "When you pass the logical ID of this resource to the intrinsic `Ref` function, `Ref` returns the ID of the application.\n\nFor more information about using the `Ref` function, see [`Ref`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
+      },
+      "description": "The `AWS::EMRServerless::Application` resource specifies an EMR Serverless application. An application uses open source analytics frameworks to run jobs that process data. To create an application, you must specify the release version for the open source framework version you want to use and the type of application you want, such as Apache Spark or Apache Hive. After you create an application, you can submit data processing jobs or interactive requests to it.",
+      "properties": {
+        "AutoStartConfiguration": "The configuration for an application to automatically start on job submission.",
+        "AutoStopConfiguration": "The configuration for an application to automatically stop after a certain amount of time being idle.",
+        "InitialCapacity": "The initial capacity of the application.",
+        "MaximumCapacity": "The maximum capacity of the application. This is cumulative across all workers at any given point in time during the lifespan of the application is created. No new resources will be created once any one of the defined limits is hit.",
+        "Name": "The name of the application.\n\n*Minimum* : 1\n\n*Maximum* : 64\n\n*Pattern* : `^[A-Za-z0-9._\\\\/#-]+$`",
+        "NetworkConfiguration": "The network configuration for customer VPC connectivity for the application.",
+        "ReleaseLabel": "The EMR release version associated with the application.\n\n*Minimum* : 1\n\n*Maximum* : 64\n\n*Pattern* : `^[A-Za-z0-9._/-]+$`",
+        "Tags": "The tags assigned to the application.",
+        "Type": "The type of application, such as Spark or Hive."
+      }
+    },
+    "AWS::EMRServerless::Application.AutoStartConfiguration": {
+      "attributes": {},
+      "description": "The con\ufb01guration for an application to automatically start on job submission.",
+      "properties": {
+        "Enabled": "Enables the application to automatically start on job submission. Defaults to true."
+      }
+    },
+    "AWS::EMRServerless::Application.AutoStopConfiguration": {
+      "attributes": {},
+      "description": "The con\ufb01guration for an application to automatically stop after a certain amount of time being idle.",
+      "properties": {
+        "Enabled": "Enables the application to automatically stop after a certain amount of time being idle. Defaults to true.",
+        "IdleTimeoutMinutes": "The amount of idle time in minutes after which your application will automatically stop. Defaults to 15 minutes.\n\n*Minimum* : 1\n\n*Maximum* : 10080"
+      }
+    },
+    "AWS::EMRServerless::Application.InitialCapacityConfig": {
+      "attributes": {},
+      "description": "The initial capacity configuration per worker.",
+      "properties": {
+        "WorkerConfiguration": "The resource configuration of the initial capacity configuration.",
+        "WorkerCount": "The number of workers in the initial capacity configuration.\n\n*Minimum* : 1\n\n*Maximum* : 1000000"
+      }
+    },
+    "AWS::EMRServerless::Application.InitialCapacityConfigKeyValuePair": {
+      "attributes": {},
+      "description": "The initial capacity configuration per worker.",
+      "properties": {
+        "Key": "The worker type for an analytics framework. For Spark applications, the key can either be set to `Driver` or `Executor` . For Hive applications, it can be set to `HiveDriver` or `TezTask` .\n\n*Minimum* : 1\n\n*Maximum* : 50\n\n*Pattern* : `^[a-zA-Z]+[-_]*[a-zA-Z]+$`",
+        "Value": "The value for the initial capacity configuration per worker."
+      }
+    },
+    "AWS::EMRServerless::Application.MaximumAllowedResources": {
+      "attributes": {},
+      "description": "The maximum allowed cumulative resources for an application. No new resources will be created once the limit is hit.",
+      "properties": {
+        "Cpu": "The maximum allowed CPU for an application.\n\n*Minimum* : 1\n\n*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(vCPU|vcpu|VCPU)?$`",
+        "Disk": "The maximum allowed disk for an application.\n\n*Minimum* : 1\n\n*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(GB|gb|gB|Gb)$\"`",
+        "Memory": "The maximum allowed resources for an application.\n\n*Minimum* : 1\n\n*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(GB|gb|gB|Gb)?$`"
+      }
+    },
+    "AWS::EMRServerless::Application.NetworkConfiguration": {
+      "attributes": {},
+      "description": "The network configuration for customer VPC connectivity.",
+      "properties": {
+        "SecurityGroupIds": "The array of security group Ids for customer VPC connectivity.\n\n*Minimum* : 1\n\n*Maximum* : 32\n\n*Pattern* : `^[-0-9a-zA-Z]+`",
+        "SubnetIds": "The array of subnet Ids for customer VPC connectivity.\n\n*Minimum* : 1\n\n*Maximum* : 32\n\n*Pattern* : `^[-0-9a-zA-Z]+`"
+      }
+    },
+    "AWS::EMRServerless::Application.WorkerConfiguration": {
+      "attributes": {},
+      "description": "The resource configuration of the initial capacity configuration.",
+      "properties": {
+        "Cpu": "*Minimum* : 1\n\n*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(vCPU|vcpu|VCPU)?$`",
+        "Disk": "*Minimum* : 1\n\n*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(GB|gb|gB|Gb)$\"`",
+        "Memory": "*Minimum* : 1\n\n*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(GB|gb|gB|Gb)?$`"
       }
     },
     "AWS::ElastiCache::CacheCluster": {
@@ -24953,6 +25037,21 @@
         "NumberOfDevicesInGroup": "Number of devices that are associated to the multicast group.",
         "NumberOfDevicesRequested": "Number of devices that are requested to be associated with the multicast group.",
         "RfRegion": "The frequency band (RFRegion) value."
+      }
+    },
+    "AWS::IoTWireless::NetworkAnalyzerConfiguration": {
+      "attributes": {
+        "Arn": "",
+        "Ref": ""
+      },
+      "description": "",
+      "properties": {
+        "Description": "",
+        "Name": "",
+        "Tags": "",
+        "TraceContent": "",
+        "WirelessDevices": "",
+        "WirelessGateways": ""
       }
     },
     "AWS::IoTWireless::PartnerAccount": {
@@ -38532,7 +38631,7 @@
         "Tags": "AWS CloudFormation resource tags to apply to the document. Use tags to help you identify and categorize resources.",
         "TargetType": "Specify a target type to define the kinds of resources the document can run on. For example, to run a document on EC2 instances, specify the following value: `/AWS::EC2::Instance` . If you specify a value of '/' the document can run on all types of resources. If you don't specify a value, the document can't run on any resources. For a list of valid resource types, see [AWS resource and property types reference](https://docs.aws.amazon.com//AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html) in the *AWS CloudFormation User Guide* .",
         "UpdateMethod": "If the document resource you specify in your template already exists, this parameter determines whether a new version of the existing document is created, or the existing document is replaced. `Replace` is the default method. If you specify `NewVersion` for the `UpdateMethod` parameter, and the `Name` of the document does not match an existing resource, a new document is created. When you specify `NewVersion` , the default version of the document is changed to the newly created version.",
-        "VersionName": "An optional field specifying the version of the artifact you are creating with the document. For example, \"Release 12, Update 6\". This value is unique across all versions of a document, and can't be changed."
+        "VersionName": "An optional field specifying the version of the artifact you are creating with the document. For example, `Release12.1` . This value is unique across all versions of a document, and can't be changed."
       }
     },
     "AWS::SSM::Document.AttachmentsSource": {
