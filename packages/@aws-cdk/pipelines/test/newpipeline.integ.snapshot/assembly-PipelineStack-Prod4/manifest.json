@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "PipelineStackProd4Stack118F74ADB.assets": {
       "type": "cdk:asset-manifest",

@@ -2654,6 +2654,31 @@ describe('function', () => {
     }).not.toThrow();
   });
 
+  test('Error when function description is longer than 256 chars', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      description: 'a'.repeat(257),
+    })).toThrow(/Function description can not be longer than 256 characters/);
+  });
+
+  test('No error when function name is Tokenized and Unresolved', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      const realFunctionDescription = 'a'.repeat(257);
+      const tokenizedFunctionDescription = cdk.Token.asString(new cdk.Intrinsic(realFunctionDescription));
+
+      new lambda.Function(stack, 'foo', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_14_X,
+        description: tokenizedFunctionDescription,
+      });
+    }).not.toThrow();
+  });
+
   describe('FunctionUrl', () => {
     test('addFunctionUrl creates a function url with default options', () => {
     // GIVEN
