@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack, NestedStack, Names, IConstruct } from '@aws-cdk/core';
+import { pathHash } from '@aws-cdk/core/lib/private/uniqueid';
 import * as cr from '@aws-cdk/custom-resources';
 import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
 import { KubectlLayer } from '@aws-cdk/lambda-layer-kubectl';
@@ -86,7 +87,12 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
     // if this is an imported cluster and there is no kubectl provider defined, we need to provision a custom resource provider in this stack
     // we will define one per stack for each cluster based on the cluster uniqueid
-    const uid = `${Names.nodeUniqueId(cluster.node)}-KubectlProvider`;
+    Names;
+    const components = cluster.node.scopes.slice(1).map(c => c.node.id);
+    components.push('-KubectlProvider')
+    const uid = `KubectlProvider-${pathHash(components)}`;
+    //const uid = makeUniqueId(components);
+    //const uid = `${Names.nodeUniqueId(cluster.node)}-KubectlProvider`;
     const stack = Stack.of(scope);
     let provider = stack.node.tryFindChild(uid) as KubectlProvider;
     if (!provider) {
@@ -123,6 +129,9 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
   public readonly handlerRole: iam.IRole;
 
   public constructor(scope: Construct, id: string, props: KubectlProviderProps) {
+    console.log('==================================')
+    console.log('id ' + id)
+    console.log('==================================')
     super(scope as CoreConstruct, id);
 
     const cluster = props.cluster;
