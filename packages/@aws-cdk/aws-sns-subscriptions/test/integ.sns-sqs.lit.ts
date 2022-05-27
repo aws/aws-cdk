@@ -1,3 +1,4 @@
+import * as kms from '@aws-cdk/aws-kms';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
@@ -9,7 +10,9 @@ class SnsToSqs extends cdk.Stack {
 
     /// !show
     const topic = new sns.Topic(this, 'MyTopic');
-    const queue = new sqs.Queue(this, 'MyQueue');
+    const queue = new sqs.Queue(this, 'MyQueue', {
+      encryptionMasterKey: new kms.Key(this, 'EncryptionMasterKey'),
+    });
 
     topic.addSubscription(new subs.SqsSubscription(queue, {
       deadLetterQueue: new sqs.Queue(this, 'DeadLetterQueue'),

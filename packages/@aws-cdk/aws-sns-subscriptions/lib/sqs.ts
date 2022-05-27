@@ -58,6 +58,9 @@ export class SqsSubscription implements sns.ITopicSubscription {
         resources: ['*'],
         actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
         principals: [snsServicePrincipal],
+        conditions: {
+          ArnEquals: { 'aws:SourceArn': topic.topicArn },
+        },
       }));
     }
 
