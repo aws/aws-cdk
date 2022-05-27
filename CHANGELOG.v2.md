@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.26.0](https://github.com/aws/aws-cdk/compare/v2.25.0...v2.26.0) (2022-05-27)
+
+
+### Features
+
+* **aws-ecr-assets:** support the --platform option when building docker images ([#20439](https://github.com/aws/aws-cdk/issues/20439)) ([adc0368](https://github.com/aws/aws-cdk/commit/adc0368dc1f137aeaa4bd92de77028269e3a48f4)), closes [#12472](https://github.com/aws/aws-cdk/issues/12472) [#16770](https://github.com/aws/aws-cdk/issues/16770) [#16858](https://github.com/aws/aws-cdk/issues/16858)
+* **lambda:** validate function description length ([#20476](https://github.com/aws/aws-cdk/issues/20476)) ([de027e2](https://github.com/aws/aws-cdk/commit/de027e28ce5c95e70fed8874e6531eabba24521c)), closes [#20475](https://github.com/aws/aws-cdk/issues/20475)
+* **s3:** adds objectSizeGreaterThan property for s3 lifecycle rule ([#20425](https://github.com/aws/aws-cdk/issues/20425)) ([23690e4](https://github.com/aws/aws-cdk/commit/23690e40b1604839f99da8b8f96168dda8679c47)), closes [#20372](https://github.com/aws/aws-cdk/issues/20372)
+* **servicecatalog:** ProductStackHistory can retain old ProductStack iterations ([#20244](https://github.com/aws/aws-cdk/issues/20244)) ([1037b8c](https://github.com/aws/aws-cdk/commit/1037b8c7f58ccd162491b49d75954c38d685d67f))
+
+
+### Bug Fixes
+
+* **core:** NestedStack defaultChild is undefined ([#20450](https://github.com/aws/aws-cdk/issues/20450)) ([0a49927](https://github.com/aws/aws-cdk/commit/0a49927e9e5bc250f339f664fa843fae2fab92ec)), closes [#11221](https://github.com/aws/aws-cdk/issues/11221)
+* **iam:** Role policies cannot grow beyond 10k ([#20400](https://github.com/aws/aws-cdk/issues/20400)) ([75bfce7](https://github.com/aws/aws-cdk/commit/75bfce70dbc57fe688c96b3c5cbb67fc4e6fcc56)), closes [#19276](https://github.com/aws/aws-cdk/issues/19276) [#19939](https://github.com/aws/aws-cdk/issues/19939) [#19835](https://github.com/aws/aws-cdk/issues/19835)
+* **lambda:** Fix typo in public subnet warning ([#20470](https://github.com/aws/aws-cdk/issues/20470)) ([85f4e29](https://github.com/aws/aws-cdk/commit/85f4e29e0551d71dd5f2f588584785cbc1ae7b72))
+* **pipelines:** too many CodeBuild steps inflate policy size ([#20396](https://github.com/aws/aws-cdk/issues/20396)) ([f334060](https://github.com/aws/aws-cdk/commit/f334060fca02e928bc4f5fdcfd45244060731d78)), closes [#20189](https://github.com/aws/aws-cdk/issues/20189) [#19276](https://github.com/aws/aws-cdk/issues/19276) [#19939](https://github.com/aws/aws-cdk/issues/19939) [#19835](https://github.com/aws/aws-cdk/issues/19835)
+* **s3-deployment:** default role does not get `PutAcl` permissions on… ([#20492](https://github.com/aws/aws-cdk/issues/20492)) ([3e6ec5c](https://github.com/aws/aws-cdk/commit/3e6ec5c48cff41cec2b32566990046fd704f4ec1))
+
 ## [2.25.0](https://github.com/aws/aws-cdk/compare/v2.24.1...v2.25.0) (2022-05-20)
 
 

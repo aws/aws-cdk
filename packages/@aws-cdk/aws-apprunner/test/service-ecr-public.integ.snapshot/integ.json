@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "19.0.0",
   "testCases": {
-    "aws-apprunner/test/integ.service-ecr-public": {
+    "integ.service-ecr-public": {
       "stacks": [
         "integ-apprunner-ecr-public"
       ],

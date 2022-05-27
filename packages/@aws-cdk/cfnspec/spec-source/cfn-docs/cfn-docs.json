@@ -2928,13 +2928,16 @@
     "AWS::AppMesh::Mesh.MeshServiceDiscovery": {
       "attributes": {},
       "description": "An object that represents the service discovery information for a service mesh.",
-      "properties": {}
+      "properties": {
+        "IpPreference": "The IP version to use to control traffic within the mesh."
+      }
     },
     "AWS::AppMesh::Mesh.MeshSpec": {
       "attributes": {},
       "description": "An object that represents the specification of a service mesh.",
       "properties": {
-        "EgressFilter": "The egress filter rules for the service mesh."
+        "EgressFilter": "The egress filter rules for the service mesh.",
+        "ServiceDiscovery": "An object that represents the service discovery information for a service mesh."
       }
     },
     "AWS::AppMesh::Route": {
@@ -3460,6 +3463,7 @@
       "description": "An object that represents the AWS Cloud Map service discovery information for your virtual node.\n\n> AWS Cloud Map is not available in the eu-south-1 Region.",
       "properties": {
         "Attributes": "A string map that contains attributes with values that you can use to filter instances by any custom attribute that you specified when you registered the instance. Only instances that match all of the specified key/value pairs will be returned.",
+        "IpPreference": "The preferred IP version that this virtual node uses. Setting the IP preference on the virtual node only overrides the IP preference set for the mesh on this specific node.",
         "NamespaceName": "The name of the AWS Cloud Map namespace to use.",
         "ServiceName": "The name of the AWS Cloud Map service to use."
       }
@@ -3508,6 +3512,7 @@
       "description": "An object that represents the DNS service discovery information for your virtual node.",
       "properties": {
         "Hostname": "Specifies the DNS service discovery hostname for the virtual node.",
+        "IpPreference": "The preferred IP version that this virtual node uses. Setting the IP preference on the virtual node only overrides the IP preference set for the mesh on this specific node.",
         "ResponseType": "Specifies the DNS response type for the virtual node."
       }
     },
@@ -5934,7 +5939,7 @@
       "properties": {
         "ComputeEnvironmentName": "The name for your compute environment. It can be up to 128 letters long. It can contain uppercase and lowercase letters, numbers, hyphens (-), and underscores (_).",
         "ComputeResources": "The ComputeResources property type specifies details of the compute resources managed by the compute environment. This parameter is required for managed compute environments. For more information, see [Compute Environments](https://docs.aws.amazon.com/batch/latest/userguide/compute_environments.html) in the ** .",
-        "ReplaceComputeEnvironment": "Specifies whether the compute environment should be replaced if an update is made that requires replacing the instances in the compute environment. The default value is `true` . To enable more properties to be updated, set this property to `false` . When changing the value of this property to `false` , no other properties should be changed at the same time. If other properties are changed at the same time, and the change needs to be rolled back but it can't, it's possible for the stack to go into the `UPDATE_ROLLBACK_FAILED` state. You can't update a stack that is in the `UPDATE_ROLLBACK_FAILED` state. However, if you can continue to roll it back, you can return the stack to its original settings and then try to update it again. For more information, see [Continue rolling back an update](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html) in the *AWS CloudFormation User Guide* .\n\nThe properties that can't be changed without replacing the compute environment are in the [`ComputeResources`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html) property type: [`AllocationStrategy`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-allocationstrategy) , [`BidPercentage`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-bidpercentage) , [`Ec2Configuration`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-ec2configuration) , [`Ec2KeyPair`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-ec2keypair) , [`Ec2KeyPair`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-ec2keypair) , [`ImageId`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-imageid) , [`InstanceRole`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-instancerole) , [`InstanceTypes`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-instancetypes) , [`LaunchTemplate`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-launchtemplate) , [`MaxvCpus`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-maxvcpus) , [`MinvCpus`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-minvcpus) , [`PlacementGroup`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-placementgroup) , [`SecurityGroupIds`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-securitygroupids) , [`Subnets`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-subnets) , [](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-tags) , [`Type`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-type) , and [`UpdateToLatestImageVersion`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-updatetolatestimageversion) .",
+        "ReplaceComputeEnvironment": "Specifies whether the compute environment should be replaced if an update is made that requires replacing the instances in the compute environment. The default value is `true` . To enable more properties to be updated, set this property to `false` . When changing the value of this property to `false` , no other properties should be changed at the same time. If other properties are changed at the same time, and the change needs to be rolled back but it can't, it's possible for the stack to go into the `UPDATE_ROLLBACK_FAILED` state. You can't update a stack that is in the `UPDATE_ROLLBACK_FAILED` state. However, if you can continue to roll it back, you can return the stack to its original settings and then try to update it again. For more information, see [Continue rolling back an update](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html) in the *AWS CloudFormation User Guide* .\n\nThe properties that can't be changed without replacing the compute environment are in the [`ComputeResources`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html) property type: [`AllocationStrategy`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-allocationstrategy) , [`BidPercentage`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-bidpercentage) , [`Ec2Configuration`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-ec2configuration) , [`Ec2KeyPair`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-ec2keypair) , [`Ec2KeyPair`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-ec2keypair) , [`ImageId`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-imageid) , [`InstanceRole`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-instancerole) , [`InstanceTypes`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-instancetypes) , [`LaunchTemplate`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-launchtemplate) , [`MaxvCpus`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-maxvcpus) , [`MinvCpus`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-minvcpus) , [`PlacementGroup`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-placementgroup) , [`SecurityGroupIds`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-securitygroupids) , [`Subnets`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-subnets) , [Tags](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-tags) , [`Type`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-type) , and [`UpdateToLatestImageVersion`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-updatetolatestimageversion) .",
         "ServiceRole": "The full Amazon Resource Name (ARN) of the IAM role that allows AWS Batch to make calls to other AWS services on your behalf. For more information, see [AWS Batch service IAM role](https://docs.aws.amazon.com/batch/latest/userguide/service_IAM_role.html) in the *AWS Batch User Guide* .\n\n> If your account already created the AWS Batch service-linked role, that role is used by default for your compute environment unless you specify a different role here. If the AWS Batch service-linked role doesn't exist in your account, and no role is specified here, the service attempts to create the AWS Batch service-linked role in your account. \n\nIf your specified role has a path other than `/` , then you must specify either the full role ARN (recommended) or prefix the role name with the path. For example, if a role with the name `bar` has a path of `/foo/` then you would specify `/foo/bar` as the role name. For more information, see [Friendly names and paths](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html#identifiers-friendly-names) in the *IAM User Guide* .\n\n> Depending on how you created your AWS Batch service role, its ARN might contain the `service-role` path prefix. When you only specify the name of the service role, AWS Batch assumes that your ARN doesn't use the `service-role` path prefix. Because of this, we recommend that you specify the full ARN of your service role when you create compute environments.",
         "State": "The state of the compute environment. If the state is `ENABLED` , then the compute environment accepts jobs from a queue and can scale out automatically based on queues.\n\nIf the state is `ENABLED` , then the AWS Batch scheduler can attempt to place jobs from an associated job queue on the compute resources within the environment. If the compute environment is managed, then it can scale its instances out or in automatically, based on the job queue demand.\n\nIf the state is `DISABLED` , then the AWS Batch scheduler doesn't attempt to place jobs within the environment. Jobs in a `STARTING` or `RUNNING` state continue to progress normally. Managed compute environments in the `DISABLED` state don't scale out. However, they scale in to `minvCpus` value after instances become idle.",
         "Tags": "The tags applied to the compute environment.",
@@ -9275,11 +9280,11 @@
       "description": "The template for verification messages.",
       "properties": {
         "DefaultEmailOption": "The default email option.",
-        "EmailMessage": "The email message template. EmailMessage is allowed only if [EmailSendingAccount](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_EmailConfigurationType.html#CognitoUserPools-Type-EmailConfigurationType-EmailSendingAccount) is DEVELOPER.",
-        "EmailMessageByLink": "The email message template for sending a confirmation link to the user. EmailMessageByLink is allowed only if [EmailSendingAccount](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_EmailConfigurationType.html#CognitoUserPools-Type-EmailConfigurationType-EmailSendingAccount) is DEVELOPER.",
-        "EmailSubject": "The subject line for the email message template. EmailSubject is allowed only if [EmailSendingAccount](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_EmailConfigurationType.html#CognitoUserPools-Type-EmailConfigurationType-EmailSendingAccount) is DEVELOPER.",
-        "EmailSubjectByLink": "The subject line for the email message template for sending a confirmation link to the user. EmailSubjectByLink is allowed only [EmailSendingAccount](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_EmailConfigurationType.html#CognitoUserPools-Type-EmailConfigurationType-EmailSendingAccount) is DEVELOPER.",
-        "SmsMessage": "The SMS message template."
+        "EmailMessage": "The template for email messages that Amazon Cognito sends to your users. You can set an `EmailMessage` template only if the value of [EmailSendingAccount](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_EmailConfigurationType.html#CognitoUserPools-Type-EmailConfigurationType-EmailSendingAccount) is `DEVELOPER` . When your [EmailSendingAccount](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_EmailConfigurationType.html#CognitoUserPools-Type-EmailConfigurationType-EmailSendingAccount) is `DEVELOPER` , your user pool sends email messages with your own Amazon SES configuration.",
+        "EmailMessageByLink": "The email message template for sending a confirmation link to the user. You can set an `EmailMessageByLink` template only if the value of [EmailSendingAccount](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_EmailConfigurationType.html#CognitoUserPools-Type-EmailConfigurationType-EmailSendingAccount) is `DEVELOPER` . When your [EmailSendingAccount](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_EmailConfigurationType.html#CognitoUserPools-Type-EmailConfigurationType-EmailSendingAccount) is `DEVELOPER` , your user pool sends email messages with your own Amazon SES configuration.",
+        "EmailSubject": "The subject line for the email message template. You can set an `EmailSubject` template only if the value of [EmailSendingAccount](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_EmailConfigurationType.html#CognitoUserPools-Type-EmailConfigurationType-EmailSendingAccount) is `DEVELOPER` . When your [EmailSendingAccount](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_EmailConfigurationType.html#CognitoUserPools-Type-EmailConfigurationType-EmailSendingAccount) is `DEVELOPER` , your user pool sends email messages with your own Amazon SES configuration.",
+        "EmailSubjectByLink": "The subject line for the email message template for sending a confirmation link to the user. You can set an `EmailSubjectByLink` template only if the value of [EmailSendingAccount](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_EmailConfigurationType.html#CognitoUserPools-Type-EmailConfigurationType-EmailSendingAccount) is `DEVELOPER` . When your [EmailSendingAccount](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_EmailConfigurationType.html#CognitoUserPools-Type-EmailConfigurationType-EmailSendingAccount) is `DEVELOPER` , your user pool sends email messages with your own Amazon SES configuration.",
+        "SmsMessage": "The template for SMS messages that Amazon Cognito sends to your users."
       }
     },
     "AWS::Cognito::UserPoolClient": {
@@ -9296,6 +9301,7 @@
         "CallbackURLs": "A list of allowed redirect (callback) URLs for the IdPs.\n\nA redirect URI must:\n\n- Be an absolute URI.\n- Be registered with the authorization server.\n- Not include a fragment component.\n\nSee [OAuth 2.0 - Redirection Endpoint](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6749#section-3.1.2) .\n\nAmazon Cognito requires HTTPS over HTTP except for http://localhost for testing purposes only.\n\nApp callback URLs such as myapp://example are also supported.",
         "ClientName": "The client name for the user pool client you would like to create.",
         "DefaultRedirectURI": "The default redirect URI. Must be in the `CallbackURLs` list.\n\nA redirect URI must:\n\n- Be an absolute URI.\n- Be registered with the authorization server.\n- Not include a fragment component.\n\nSee [OAuth 2.0 - Redirection Endpoint](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6749#section-3.1.2) .\n\nAmazon Cognito requires HTTPS over HTTP except for http://localhost for testing purposes only.\n\nApp callback URLs such as myapp://example are also supported.",
+        "EnablePropagateAdditionalUserContextData": "",
         "EnableTokenRevocation": "Activates or deactivates token revocation. For more information about revoking tokens, see [RevokeToken](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_RevokeToken.html) .\n\nIf you don't include this parameter, token revocation is automatically activated for the new user pool client.",
         "ExplicitAuthFlows": "The authentication flows that are supported by the user pool clients. Flow names without the `ALLOW_` prefix are no longer supported, in favor of new names with the `ALLOW_` prefix.\n\n> Values with `ALLOW_` prefix must be used only along with the `ALLOW_` prefix. \n\nValid values include:\n\n- `ALLOW_ADMIN_USER_PASSWORD_AUTH` : Enable admin based user password authentication flow `ADMIN_USER_PASSWORD_AUTH` . This setting replaces the `ADMIN_NO_SRP_AUTH` setting. With this authentication flow, Amazon Cognito receives the password in the request instead of using the Secure Remote Password (SRP) protocol to verify passwords.\n- `ALLOW_CUSTOM_AUTH` : Enable AWS Lambda trigger based authentication.\n- `ALLOW_USER_PASSWORD_AUTH` : Enable user password-based authentication. In this flow, Amazon Cognito receives the password in the request instead of using the SRP protocol to verify passwords.\n- `ALLOW_USER_SRP_AUTH` : Enable SRP-based authentication.\n- `ALLOW_REFRESH_TOKEN_AUTH` : Enable authflow to refresh tokens.\n\nIf you don't specify a value for `ExplicitAuthFlows` , your app client activates the `ALLOW_USER_SRP_AUTH` and `ALLOW_CUSTOM_AUTH` authentication flows.",
         "GenerateSecret": "Boolean to specify whether you want to generate a secret for the user pool client being created.",
@@ -9542,7 +9548,7 @@
         "ConfigRuleId": "The ID of the AWS Config rule, such as `config-rule-a1bzhi` .",
         "Ref": "`Ref` returns the rule name, such as `mystack-MyConfigRule-12ABCFPXHV4OV` ."
       },
-      "description": "Specifies an AWS Config rule for evaluating whether your AWS resources comply with your desired configurations.\n\nYou can use this action for custom AWS Config rules and AWS managed Config rules. A custom AWS Config rule is a rule that you develop and maintain. An AWS managed Config rule is a customizable, predefined rule that AWS Config provides.\n\nIf you are adding a new custom AWS Config rule, you must first create the AWS Lambda function that the rule invokes to evaluate your resources. When you use the `PutConfigRule` action to add the rule to AWS Config , you must specify the Amazon Resource Name (ARN) that AWS Lambda assigns to the function. Specify the ARN for the `SourceIdentifier` key. This key is part of the `Source` object, which is part of the `ConfigRule` object.\n\nIf you are adding an AWS managed Config rule, specify the rule's identifier for the `SourceIdentifier` key. To reference AWS managed Config rule identifiers, see [About AWS Managed Config Rules](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_use-managed-rules.html) .\n\nFor any new rule that you add, specify the `ConfigRuleName` in the `ConfigRule` object. Do not specify the `ConfigRuleArn` or the `ConfigRuleId` . These values are generated by AWS Config for new rules.\n\nIf you are updating a rule that you added previously, you can specify the rule by `ConfigRuleName` , `ConfigRuleId` , or `ConfigRuleArn` in the `ConfigRule` data type that you use in this request.\n\nThe maximum number of rules that AWS Config supports is 150.\n\nFor information about requesting a rule limit increase, see [AWS Config Limits](https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html#limits_config) in the *AWS General Reference Guide* .\n\nFor more information about developing and using AWS Config rules, see [Evaluating AWS Resource Configurations with AWS Config](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config.html) in the *AWS Config Developer Guide* .",
+      "description": "Specifies an AWS Config rule for evaluating whether your AWS resources comply with your desired configurations.\n\nYou can use this action for custom AWS Config rules and AWS managed Config rules. A custom AWS Config rule is a rule that you develop and maintain. An AWS managed Config rule is a customizable, predefined rule that AWS Config provides.\n\nIf you are adding a new custom AWS Config rule, you must first create the AWS Lambda function that the rule invokes to evaluate your resources. When you use the `PutConfigRule` action to add the rule to AWS Config , you must specify the Amazon Resource Name (ARN) that AWS Lambda assigns to the function. Specify the ARN for the `SourceIdentifier` key. This key is part of the `Source` object, which is part of the `ConfigRule` object.\n\nIf you are adding an AWS managed Config rule, specify the rule's identifier for the `SourceIdentifier` key. To reference AWS managed Config rule identifiers, see [About AWS Managed Config Rules](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_use-managed-rules.html) .\n\nFor any new rule that you add, specify the `ConfigRuleName` in the `ConfigRule` object. Do not specify the `ConfigRuleArn` or the `ConfigRuleId` . These values are generated by AWS Config for new rules.\n\nIf you are updating a rule that you added previously, you can specify the rule by `ConfigRuleName` , `ConfigRuleId` , or `ConfigRuleArn` in the `ConfigRule` data type that you use in this request.\n\nThe maximum number of rules that AWS Config supports is 400.\n\nFor information about requesting a rule limit increase, see [AWS Config endpoints and quotas](https://docs.aws.amazon.com/general/latest/gr/awsconfig.html) in the *AWS General Reference Guide* .\n\nFor more information about developing and using AWS Config rules, see [Evaluating AWS Resource Configurations with AWS Config](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config.html) in the *AWS Config Developer Guide* .",
       "properties": {
         "ConfigRuleName": "A name for the AWS Config rule. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the rule name. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .",
         "Description": "The description that you provide for the AWS Config rule.",
@@ -11749,15 +11755,15 @@
       },
       "description": "The `AWS::DataSync::LocationObjectStorage` resource specifies an endpoint for a self-managed object storage bucket. For more information about self-managed object storage locations, see [Creating a Location for Object Storage](https://docs.aws.amazon.com/datasync/latest/userguide/create-object-location.html) .",
       "properties": {
-        "AccessKey": "Optional. The access key is used if credentials are required to access the self-managed object storage server. If your object storage requires a user name and password to authenticate, use `AccessKey` and `SecretKey` to provide the user name and password, respectively.",
-        "AgentArns": "The Amazon Resource Name (ARN) of the agents associated with the self-managed object storage server location.",
-        "BucketName": "The bucket on the self-managed object storage server that is used to read data from.",
-        "SecretKey": "Optional. The secret key is used if credentials are required to access the self-managed object storage server. If your object storage requires a user name and password to authenticate, use `AccessKey` and `SecretKey` to provide the user name and password, respectively.",
-        "ServerHostname": "The name of the self-managed object storage server. This value is the IP address or Domain Name Service (DNS) name of the object storage server. An agent uses this hostname to mount the object storage server in a network.",
-        "ServerPort": "The port that your self-managed object storage server accepts inbound network traffic on. The server port is set by default to TCP 80 (HTTP) or TCP 443 (HTTPS). You can specify a custom port if your self-managed object storage server requires one.",
-        "ServerProtocol": "The protocol that the object storage server uses to communicate. Valid values are HTTP or HTTPS.",
-        "Subdirectory": "The subdirectory in the self-managed object storage server that is used to read data from.",
-        "Tags": "The key-value pair that represents the tag that you want to add to the location. The value can be an empty string. We recommend using tags to name your resources."
+        "AccessKey": "Specifies the access key (or user name) if credentials are required to access the object storage server.",
+        "AgentArns": "Specifies the Amazon Resource Names (ARNs) of the agents associated with the location.",
+        "BucketName": "Specifies the name of the bucket that DataSync reads from or writes to.",
+        "SecretKey": "Specifies the secret key (or password) if credentials are required to access the object storage server.",
+        "ServerHostname": "Specifies the domain name or IP address of the object storage server. A DataSync agent uses this hostname to mount the object storage server.",
+        "ServerPort": "Specifies the port that your object storage server accepts inbound network traffic on. Set to port 80 (HTTP), 443 (HTTPS), or a custom port if needed.",
+        "ServerProtocol": "Specifies the protocol that your object storage server uses to communicate.",
+        "Subdirectory": "Specifies the object prefix that DataSync reads from or writes to.",
+        "Tags": "Specifies the key-value pair that represents the tag to help you manage, filter, and search for your location. We recommend using tags for naming your locations."
       }
     },
     "AWS::DataSync::LocationS3": {
@@ -11847,6 +11853,7 @@
         "Gid": "The group ID (GID) of the file's owners.\n\nDefault value: `INT_VALUE`\n\n`INT_VALUE` : Preserve the integer value of the user ID (UID) and group ID (GID) (recommended).\n\n`NAME` : Currently not supported.\n\n`NONE` : Ignore the UID and GID.",
         "LogLevel": "A value that determines the type of logs that DataSync publishes to a log stream in the Amazon CloudWatch log group that you provide. For more information about providing a log group for DataSync, see [CloudWatchLogGroupArn](https://docs.aws.amazon.com/datasync/latest/userguide/API_CreateTask.html#DataSync-CreateTask-request-CloudWatchLogGroupArn) . If set to `OFF` , no logs are published. `BASIC` publishes logs on errors for individual files transferred, and `TRANSFER` publishes logs for every file or object that is transferred and integrity checked.",
         "Mtime": "A value that indicates the last time that a file was modified (that is, a file was written to) before the PREPARING phase. This option is required for cases when you need to run the same task more than one time.\n\nDefault value: `PRESERVE`\n\n`PRESERVE` : Preserve original `Mtime` (recommended)\n\n`NONE` : Ignore `Mtime` .\n\n> If `Mtime` is set to `PRESERVE` , `Atime` must be set to `BEST_EFFORT` .\n> \n> If `Mtime` is set to `NONE` , `Atime` must also be set to `NONE` .",
+        "ObjectTags": "Specifies whether object tags are maintained when transferring between object storage systems. If you want your DataSync task to ignore object tags, specify the `NONE` value.\n\nDefault Value: `PRESERVE`",
         "OverwriteMode": "A value that determines whether files at the destination should be overwritten or preserved when copying files. If set to `NEVER` a destination file will not be replaced by a source file, even if the destination file differs from the source file. If you modify files in the destination and you sync the files, you can use this value to protect against overwriting those changes.\n\nSome storage classes have specific behaviors that can affect your S3 storage cost. For detailed information, see [Considerations when working with Amazon S3 storage classes in DataSync](https://docs.aws.amazon.com/datasync/latest/userguide/create-s3-location.html#using-storage-classes) in the *AWS DataSync User Guide* .",
         "PosixPermissions": "A value that determines which users or groups can access a file for a specific purpose, such as reading, writing, or execution of the file. This option should be set only for Network File System (NFS), Amazon EFS, and Amazon S3 locations. For more information about what metadata is copied by DataSync, see [Metadata Copied by DataSync](https://docs.aws.amazon.com/datasync/latest/userguide/special-files.html#metadata-copied) .\n\nDefault value: `PRESERVE`\n\n`PRESERVE` : Preserve POSIX-style permissions (recommended).\n\n`NONE` : Ignore permissions.\n\n> AWS DataSync can preserve extant permissions of a source location.",
         "PreserveDeletedFiles": "A value that specifies whether files in the destination that don't exist in the source file system are preserved. This option can affect your storage costs. If your task deletes objects, you might incur minimum storage duration charges for certain storage classes. For detailed information, see [Considerations when working with Amazon S3 storage classes in DataSync](https://docs.aws.amazon.com/datasync/latest/userguide/create-s3-location.html#using-storage-classes) in the *AWS DataSync User Guide* .\n\nDefault value: `PRESERVE`\n\n`PRESERVE` : Ignore destination files that aren't present in the source (recommended).\n\n`REMOVE` : Delete destination files that aren't present in the source.",
@@ -13528,13 +13535,13 @@
         "ElasticGpuSpecifications": "An elastic GPU to associate with the instance.",
         "ElasticInferenceAccelerators": "The elastic inference accelerator for the instance.",
         "EnclaveOptions": "Indicates whether the instance is enabled for AWS Nitro Enclaves. For more information, see [What is AWS Nitro Enclaves?](https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html) in the *AWS Nitro Enclaves User Guide* .\n\nYou can't enable AWS Nitro Enclaves and hibernation on the same instance.",
-        "HibernationOptions": "Indicates whether an instance is enabled for hibernation. This parameter is valid only if the instance meets the [hibernation prerequisites](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html#hibernating-prerequisites) . For more information, see [Hibernate your instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html) in the *Amazon Elastic Compute Cloud User Guide* .",
+        "HibernationOptions": "Indicates whether an instance is enabled for hibernation. This parameter is valid only if the instance meets the [hibernation prerequisites](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/hibernating-prerequisites.html) . For more information, see [Hibernate your instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html) in the *Amazon Elastic Compute Cloud User Guide* .",
         "IamInstanceProfile": "The name or Amazon Resource Name (ARN) of an IAM instance profile.",
         "ImageId": "The ID of the AMI.",
         "InstanceInitiatedShutdownBehavior": "Indicates whether an instance stops or terminates when you initiate shutdown from the instance (using the operating system command for system shutdown).\n\nDefault: `stop`",
         "InstanceMarketOptions": "The market (purchasing) option for the instances.",
         "InstanceRequirements": "The attributes for the instance types. When you specify instance attributes, Amazon EC2 will identify instance types with these attributes.\n\nIf you specify `InstanceRequirements` , you can't specify `InstanceTypes` .",
-        "InstanceType": "The instance type. For more information, see [Instance Types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html) in the *Amazon Elastic Compute Cloud User Guide* .\n\nIf you specify `InstanceTypes` , you can't specify `InstanceRequirements` .",
+        "InstanceType": "The instance type. For more information, see [Instance types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html) in the *Amazon Elastic Compute Cloud User Guide* .\n\nIf you specify `InstanceTypes` , you can't specify `InstanceRequirements` .",
         "KernelId": "The ID of the kernel.\n\nWe recommend that you use PV-GRUB instead of kernels and RAM disks. For more information, see [User Provided Kernels](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/UserProvidedkernels.html) in the *Amazon EC2 User Guide* .",
         "KeyName": "The name of the key pair. You can create a key pair using [CreateKeyPair](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateKeyPair.html) or [ImportKeyPair](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_ImportKeyPair.html) .\n\n> If you do not specify a key pair, you can't connect to the instance unless you choose an AMI that is configured to allow users another way to log in.",
         "LicenseSpecifications": "The license configurations.",
@@ -13543,11 +13550,11 @@
         "NetworkInterfaces": "One or more network interfaces. If you specify a network interface, you must specify any security groups and subnets as part of the network interface.",
         "Placement": "The placement for the instance.",
         "PrivateDnsNameOptions": "The options for the instance hostname. The default values are inherited from the subnet.",
-        "RamDiskId": "The ID of the RAM disk.\n\n> We recommend that you use PV-GRUB instead of kernels and RAM disks. For more information, see [User Provided Kernels](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/UserProvidedkernels.html) in the *Amazon Elastic Compute Cloud User Guide* .",
+        "RamDiskId": "The ID of the RAM disk.\n\n> We recommend that you use PV-GRUB instead of kernels and RAM disks. For more information, see [User provided kernels](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/UserProvidedkernels.html) in the *Amazon Elastic Compute Cloud User Guide* .",
         "SecurityGroupIds": "One or more security group IDs. You can create a security group using [CreateSecurityGroup](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateSecurityGroup.html) . You cannot specify both a security group ID and security name in the same request.",
         "SecurityGroups": "[EC2-Classic, default VPC] One or more security group names. For a nondefault VPC, you must use security group IDs instead. You cannot specify both a security group ID and security name in the same request.",
         "TagSpecifications": "The tags to apply to the resources during launch. You can only tag instances and volumes on launch. The specified tags are applied to all instances or volumes that are created during launch.",
-        "UserData": "The user data to make available to the instance. You must provide base64-encoded text. User data is limited to 16 KB. For more information, see [Running Commands on Your Linux Instance at Launch](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html) (Linux) or [Adding User Data](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-instance-metadata.html#instancedata-add-user-data) (Windows).\n\nIf you are creating the launch template for use with AWS Batch , the user data must be provided in the [MIME multi-part archive format](https://docs.aws.amazon.com/https://cloudinit.readthedocs.io/en/latest/topics/format.html#mime-multi-part-archive) . For more information, see [Amazon EC2 user data in launch templates](https://docs.aws.amazon.com/batch/latest/userguide/launch-templates.html) in the *AWS Batch User Guide* ."
+        "UserData": "The user data to make available to the instance. You must provide base64-encoded text. User data is limited to 16 KB. For more information, see [Run commands on your Linux instance at launch](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html) (Linux) or [Work with instance user data](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/instancedata-add-user-data.html) (Windows) in the *Amazon Elastic Compute Cloud User Guide* .\n\nIf you are creating the launch template for use with AWS Batch , the user data must be provided in the [MIME multi-part archive format](https://docs.aws.amazon.com/https://cloudinit.readthedocs.io/en/latest/topics/format.html#mime-multi-part-archive) . For more information, see [Amazon EC2 user data in launch templates](https://docs.aws.amazon.com/batch/latest/userguide/launch-templates.html) in the *AWS Batch User Guide* ."
       }
     },
     "AWS::EC2::LaunchTemplate.LaunchTemplateElasticInferenceAccelerator": {
@@ -14742,10 +14749,10 @@
       "attributes": {
         "Ref": "`Ref` returns the ID of the Traffic Mirror target."
       },
-      "description": "Specifies a target for your Traffic Mirror session.\n\nA Traffic Mirror target is the destination for mirrored traffic. The Traffic Mirror source and the Traffic Mirror target (monitoring appliances) can be in the same VPC, or in different VPCs connected via VPC peering or a transit gateway.\n\nA Traffic Mirror target can be a network interface, or a Network Load Balancer.\n\nTo use the target in a Traffic Mirror session, use [AWS::EC2::TrafficMirrorSession](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-trafficmirrorsession.html) .",
+      "description": "Specifies a target for your Traffic Mirror session.\n\nA Traffic Mirror target is the destination for mirrored traffic. The Traffic Mirror source and the Traffic Mirror target (monitoring appliances) can be in the same VPC, or in different VPCs connected via VPC peering or a transit gateway.\n\nA Traffic Mirror target can be a network interface, a Network Load Balancer, or a Gateway Load Balancer endpoint.\n\nTo use the target in a Traffic Mirror session, use [AWS::EC2::TrafficMirrorSession](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-trafficmirrorsession.html) .",
       "properties": {
         "Description": "The description of the Traffic Mirror target.",
-        "GatewayLoadBalancerEndpointId": "",
+        "GatewayLoadBalancerEndpointId": "The ID of the Gateway Load Balancer endpoint.",
         "NetworkInterfaceId": "The network interface ID that is associated with the target.",
         "NetworkLoadBalancerArn": "The Amazon Resource Name (ARN) of the Network Load Balancer that is associated with the target.",
         "Tags": "The tags to assign to the Traffic Mirror target."
@@ -14950,11 +14957,11 @@
     },
     "AWS::EC2::VPC": {
       "attributes": {
-        "CidrBlock": "The set of IP addresses for the VPC. For example, `10.0.0.0/16` .",
-        "CidrBlockAssociations": "The IPv4 CIDR block association IDs for the VPC. For example, `[ vpc-cidr-assoc-0280ab6b ]` .",
-        "DefaultNetworkAcl": "The default network ACL ID that is associated with the VPC. For example, `acl-814dafe3` .",
-        "DefaultSecurityGroup": "The default security group ID that is associated with the VPC. For example, `sg-b178e0d3` .",
-        "Ipv6CidrBlocks": "The IPv6 CIDR blocks that are associated with the VPC, such as `[ 2001:db8:1234:1a00::/56 ]` .",
+        "CidrBlock": "The primary IPv4 CIDR block for the VPC. For example, 10.0.0.0/16.",
+        "CidrBlockAssociations": "The association IDs of the IPv4 CIDR blocks for the VPC. For example, [ vpc-cidr-assoc-0280ab6b ].",
+        "DefaultNetworkAcl": "The ID of the default network ACL for the VPC. For example, acl-814dafe3.",
+        "DefaultSecurityGroup": "The ID of the default security group for the VPC. For example, sg-b178e0d3.",
+        "Ipv6CidrBlocks": "The IPv6 CIDR blocks for the VPC. For example, [ 2001:db8:1234:1a00::/56 ].",
         "Ref": "`Ref` returns the ID of the VPC.",
         "VpcId": ""
       },
@@ -14963,7 +14970,7 @@
         "CidrBlock": "The IPv4 network range for the VPC, in CIDR notation. For example, `10.0.0.0/16` . We modify the specified CIDR block to its canonical form; for example, if you specify `100.68.0.18/18` , we modify it to `100.68.0.0/18` .\n\nYou must specify either `CidrBlock` or `Ipv4IpamPoolId` .",
         "EnableDnsHostnames": "Indicates whether the instances launched in the VPC get DNS hostnames. If enabled, instances in the VPC get DNS hostnames; otherwise, they do not. Disabled by default for nondefault VPCs. For more information, see [DNS attributes in your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-support) .\n\nYou can only enable DNS hostnames if you've enabled DNS support.",
         "EnableDnsSupport": "Indicates whether the DNS resolution is supported for the VPC. If enabled, queries to the Amazon provided DNS server at the 169.254.169.253 IP address, or the reserved IP address at the base of the VPC network range \"plus two\" succeed. If disabled, the Amazon provided DNS service in the VPC that resolves public DNS hostnames to IP addresses is not enabled. Enabled by default. For more information, see [DNS attributes in your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-support) .",
-        "InstanceTenancy": "The allowed tenancy of instances launched into the VPC.\n\n- `\"default\"` : An instance launched into the VPC runs on shared hardware by default, unless you explicitly specify a different tenancy during instance launch.\n- `\"dedicated\"` : An instance launched into the VPC is a Dedicated Instance by default, unless you explicitly specify a tenancy of host during instance launch. You cannot specify a tenancy of default during instance launch.\n\nUpdating `InstanceTenancy` requires no replacement only if you are updating its value from `\"dedicated\"` to `\"default\"` . Updating `InstanceTenancy` from `\"default\"` to `\"dedicated\"` requires replacement.",
+        "InstanceTenancy": "The allowed tenancy of instances launched into the VPC.\n\n- `default` : An instance launched into the VPC runs on shared hardware by default, unless you explicitly specify a different tenancy during instance launch.\n- `dedicated` : An instance launched into the VPC runs on dedicated hardware by default, unless you explicitly specify a tenancy of `host` during instance launch. You cannot specify a tenancy of `default` during instance launch.\n\nUpdating `InstanceTenancy` requires no replacement only if you are updating its value from `dedicated` to `default` . Updating `InstanceTenancy` from `default` to `dedicated` requires replacement.",
         "Ipv4IpamPoolId": "The ID of an IPv4 IPAM pool you want to use for allocating this VPC's CIDR. For more information, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .\n\nYou must specify either `CidrBlock` or `Ipv4IpamPoolId` .",
         "Ipv4NetmaskLength": "The netmask length of the IPv4 CIDR you want to allocate to this VPC from an Amazon VPC IP Address Manager (IPAM) pool. For more information about IPAM, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
         "Tags": "The tags for the VPC."
@@ -17791,7 +17798,7 @@
         "DomainEndpoint": "The domain-specific endpoint that's used for requests to the OpenSearch APIs, such as `search-mystack-elasti-1ab2cdefghij-ab1c2deckoyb3hofw7wpqa3cm.us-west-1.es.amazonaws.com` .",
         "Ref": "When the logical ID of this resource is provided to the Ref intrinsic function, Ref returns the resource name, such as `mystack-elasticsea-abc1d2efg3h4.` For more information about using the Ref function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
-      "description": "The AWS::Elasticsearch::Domain resource creates an Amazon OpenSearch Service (successor to Amazon Elasticsearch Service) domain.\n\n> The `AWS::Elasticsearch::Domain` resource is being replaced by the [AWS::OpenSearchService::Domain](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html) resource. While the legacy Elasticsearch resource and options are still supported, we recommend modifying your existing Cloudformation templates to use the new OpenSearch Service resource, which supports both OpenSearch and legacy Elasticsearch. For instructions to upgrade domains defined within CloudFormation from Elasticsearch to OpenSearch, see [Remarks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html#aws-resource-opensearchservice-domain--remarks) .",
+      "description": "The AWS::Elasticsearch::Domain resource creates an Amazon OpenSearch Service domain.\n\n> The `AWS::Elasticsearch::Domain` resource is being replaced by the [AWS::OpenSearchService::Domain](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html) resource. While the legacy Elasticsearch resource and options are still supported, we recommend modifying your existing Cloudformation templates to use the new OpenSearch Service resource, which supports both OpenSearch and legacy Elasticsearch. For instructions to upgrade domains defined within CloudFormation from Elasticsearch to OpenSearch, see [Remarks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html#aws-resource-opensearchservice-domain--remarks) .",
       "properties": {
         "AccessPolicies": "An AWS Identity and Access Management ( IAM ) policy document that specifies who can access the OpenSearch Service domain and their permissions. For more information, see [Configuring access policies](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ac.html#ac-creating) in the *Amazon OpenSearch Service Developer Guid* e.",
         "AdvancedOptions": "Additional options to specify for the OpenSearch Service domain. For more information, see [Advanced cluster parameters](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createupdatedomains.html#createdomain-configure-advanced-options) in the *Amazon OpenSearch Service Developer Guide* .",
@@ -17824,9 +17831,9 @@
       "description": "Configures OpenSearch Service to use Amazon Cognito authentication for OpenSearch Dashboards.\n\n> The `AWS::Elasticsearch::Domain` resource is being replaced by the [AWS::OpenSearchService::Domain](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html) resource. While the legacy Elasticsearch resource and options are still supported, we recommend modifying your existing Cloudformation templates to use the new OpenSearch Service resource, which supports both OpenSearch and Elasticsearch. For more information about the service rename, see [New resource types](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/rename.html#rename-resource) in the *Amazon OpenSearch Service Developer Guide* .",
       "properties": {
         "Enabled": "Whether to enable or disable Amazon Cognito authentication for OpenSearch Dashboards. See [Amazon Cognito authentication for OpenSearch Dashboards](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cognito-auth.html) .",
-        "IdentityPoolId": "The Amazon Cognito identity pool ID that you want OpenSearch Service to use for OpenSearch Dashboards authentication.",
-        "RoleArn": "The `AmazonESCognitoAccess` role that allows OpenSearch Service to configure your user pool and identity pool.",
-        "UserPoolId": "The Amazon Cognito user pool ID that you want OpenSearch Service to use for OpenSearch Dashboards authentication."
+        "IdentityPoolId": "The Amazon Cognito identity pool ID that you want OpenSearch Service to use for OpenSearch Dashboards authentication. Required if you enable Cognito authentication.",
+        "RoleArn": "The `AmazonESCognitoAccess` role that allows OpenSearch Service to configure your user pool and identity pool. Required if you enable Cognito authentication.",
+        "UserPoolId": "The Amazon Cognito user pool ID that you want OpenSearch Service to use for OpenSearch Dashboards authentication. Required if you enable Cognito authentication."
       }
     },
     "AWS::Elasticsearch::Domain.ColdStorageOptions": {
@@ -17840,8 +17847,8 @@
       "attributes": {},
       "description": "Specifies additional options for the domain endpoint, such as whether to require HTTPS for all traffic or whether to use a custom endpoint rather than the default endpoint.\n\n> The `AWS::Elasticsearch::Domain` resource is being replaced by the [AWS::OpenSearchService::Domain](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html) resource. While the legacy Elasticsearch resource and options are still supported, we recommend modifying your existing Cloudformation templates to use the new OpenSearch Service resource, which supports both OpenSearch and Elasticsearch. For more information about the service rename, see [New resource types](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/rename.html#rename-resource) in the *Amazon OpenSearch Service Developer Guide* .",
       "properties": {
-        "CustomEndpoint": "The fully qualified URL for your custom endpoint.",
-        "CustomEndpointCertificateArn": "The AWS Certificate Manager ARN for your domain's SSL/TLS certificate.",
+        "CustomEndpoint": "The fully qualified URL for your custom endpoint. Required if you enabled a custom endpoint for the domain.",
+        "CustomEndpointCertificateArn": "The AWS Certificate Manager ARN for your domain's SSL/TLS certificate. Required if you enabled a custom endpoint for the domain.",
         "CustomEndpointEnabled": "True to enable a custom endpoint for the domain. If enabled, you must also provide values for `CustomEndpoint` and `CustomEndpointCertificateArn` .",
         "EnforceHTTPS": "True to require that all traffic to the domain arrive over HTTPS.",
         "TLSSecurityPolicy": "The minimum TLS version required for traffic to the domain. Valid values are TLS 1.0 (default) or 1.2:\n\n- `Policy-Min-TLS-1-0-2019-07`\n- `Policy-Min-TLS-1-2-2019-07`"
@@ -17867,9 +17874,9 @@
         "DedicatedMasterType": "The hardware configuration of the computer that hosts the dedicated master node, such as `m3.medium.elasticsearch` . If you specify this property, you must specify true for the `DedicatedMasterEnabled` property. For valid values, see [Supported instance types in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html) .",
         "InstanceCount": "The number of data nodes (instances) to use in the OpenSearch Service domain.",
         "InstanceType": "The instance type for your data nodes, such as `m3.medium.elasticsearch` . For valid values, see [Supported instance types in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html) .",
-        "WarmCount": "The number of warm nodes in the cluster.",
+        "WarmCount": "The number of warm nodes in the cluster. Required if you enable warm storage.",
         "WarmEnabled": "Whether to enable warm storage for the cluster.",
-        "WarmType": "The instance type for the cluster's warm nodes.",
+        "WarmType": "The instance type for the cluster's warm nodes. Required if you enable warm storage.",
         "ZoneAwarenessConfig": "Specifies zone awareness configuration options. Only use if `ZoneAwarenessEnabled` is `true` .",
         "ZoneAwarenessEnabled": "Indicates whether to enable zone awareness for the OpenSearch Service domain. When you enable zone awareness, OpenSearch Service allocates the nodes and replica index shards that belong to a cluster across two Availability Zones (AZs) in the same region to prevent data loss and minimize downtime in the event of node or data center failure. Don't enable zone awareness if your cluster has no replica index shards or is a single-node cluster. For more information, see [Configuring a multi-AZ domain in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html) ."
       }
@@ -17879,20 +17886,20 @@
       "description": "Whether the domain should encrypt data at rest, and if so, the AWS Key Management Service key to use.\n\n> The `AWS::Elasticsearch::Domain` resource is being replaced by the [AWS::OpenSearchService::Domain](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html) resource. While the legacy Elasticsearch resource and options are still supported, we recommend modifying your existing Cloudformation templates to use the new OpenSearch Service resource, which supports both OpenSearch and Elasticsearch. For more information about the service rename, see [New resource types](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/rename.html#rename-resource) in the *Amazon OpenSearch Service Developer Guide* .",
       "properties": {
         "Enabled": "Specify `true` to enable encryption at rest.",
-        "KmsKeyId": "The KMS key ID. Takes the form `1a2a3a4-1a2a-3a4a-5a6a-1a2a3a4a5a6a` ."
+        "KmsKeyId": "The KMS key ID. Takes the form `1a2a3a4-1a2a-3a4a-5a6a-1a2a3a4a5a6a` . Required if you enable encryption at rest."
       }
     },
     "AWS::Elasticsearch::Domain.LogPublishingOption": {
       "attributes": {},
       "description": "> The `AWS::Elasticsearch::Domain` resource is being replaced by the [AWS::OpenSearchService::Domain](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html) resource. While the legacy Elasticsearch resource and options are still supported, we recommend modifying your existing Cloudformation templates to use the new OpenSearch Service resource, which supports both OpenSearch and Elasticsearch. For more information about the service rename, see [New resource types](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/rename.html#rename-resource) in the *Amazon OpenSearch Service Developer Guide* . \n\nSpecifies whether the OpenSearch Service domain publishes the Elasticsearch application, search slow logs, or index slow logs to Amazon CloudWatch. Each option must be an object of name `SEARCH_SLOW_LOGS` , `ES_APPLICATION_LOGS` , `INDEX_SLOW_LOGS` , or `AUDIT_LOGS` depending on the type of logs you want to publish.\n\nIf you enable a slow log, you still have to enable the *collection* of slow logs using the Configuration API. To learn more, see [Enabling log publishing ( AWS CLI)](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createdomain-configure-slow-logs.html#createdomain-configure-slow-logs-cli) .",
       "properties": {
-        "CloudWatchLogsLogGroupArn": "Specifies the CloudWatch log group to publish to.",
+        "CloudWatchLogsLogGroupArn": "Specifies the CloudWatch log group to publish to. Required if you enable log publishing for the domain.",
         "Enabled": "If `true` , enables the publishing of logs to CloudWatch.\n\nDefault: `false` ."
       }
     },
     "AWS::Elasticsearch::Domain.MasterUserOptions": {
       "attributes": {},
-      "description": "Specifies information about the master user.\n\n> The `AWS::Elasticsearch::Domain` resource is being replaced by the [AWS::OpenSearchService::Domain](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html) resource. While the legacy Elasticsearch resource and options are still supported, we recommend modifying your existing Cloudformation templates to use the new OpenSearch Service resource, which supports both OpenSearch and Elasticsearch. For more information about the service rename, see [New resource types](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/rename.html#rename-resource) in the *Amazon OpenSearch Service Developer Guide* .",
+      "description": "Specifies information about the master user. Required if you enabled the internal user database.\n\n> The `AWS::Elasticsearch::Domain` resource is being replaced by the [AWS::OpenSearchService::Domain](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html) resource. While the legacy Elasticsearch resource and options are still supported, we recommend modifying your existing Cloudformation templates to use the new OpenSearch Service resource, which supports both OpenSearch and Elasticsearch. For more information about the service rename, see [New resource types](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/rename.html#rename-resource) in the *Amazon OpenSearch Service Developer Guide* .",
       "properties": {
         "MasterUserARN": "ARN for the master user. Only specify if `InternalUserDatabaseEnabled` is false in `AdvancedSecurityOptions` .",
         "MasterUserName": "Username for the master user. Only specify if `InternalUserDatabaseEnabled` is true in `AdvancedSecurityOptions` .",
@@ -17918,7 +17925,7 @@
       "description": "The virtual private cloud (VPC) configuration for the OpenSearch Service domain. For more information, see [Launching your Amazon OpenSearch Service domains using a VPC](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/vpc.html) in the *Amazon OpenSearch Service Developer Guide* .\n\n> The `AWS::Elasticsearch::Domain` resource is being replaced by the [AWS::OpenSearchService::Domain](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html) resource. While the legacy Elasticsearch resource and options are still supported, we recommend modifying your existing Cloudformation templates to use the new OpenSearch Service resource, which supports both OpenSearch and Elasticsearch. For more information about the service rename, see [New resource types](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/rename.html#rename-resource) in the *Amazon OpenSearch Service Developer Guide* .",
       "properties": {
         "SecurityGroupIds": "The list of security group IDs that are associated with the VPC endpoints for the domain. If you don't provide a security group ID, OpenSearch Service uses the default security group for the VPC. To learn more, see [Security groups for your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html) in the *Amazon VPC User Guide* .",
-        "SubnetIds": "Provide one subnet ID for each Availability Zone that your domain uses. For example, you must specify three subnet IDs for a three Availability Zone domain. To learn more, see [VPCs and subnets](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html) in the *Amazon VPC User Guide* ."
+        "SubnetIds": "Provide one subnet ID for each Availability Zone that your domain uses. For example, you must specify three subnet IDs for a three Availability Zone domain. To learn more, see [VPCs and subnets](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html) in the *Amazon VPC User Guide* .\n\nRequired if you're creating your domain inside a VPC."
       }
     },
     "AWS::Elasticsearch::Domain.ZoneAwarenessConfig": {
@@ -18129,7 +18136,7 @@
         "Description": "A description for the endpoint.",
         "EventBuses": "The event buses being used by the endpoint.\n\n*Exactly* : `2`",
         "Name": "The name of the endpoint.",
-        "ReplicationConfig": "Whether event replication was enabled or disabled for this endpoint.",
+        "ReplicationConfig": "Whether event replication was enabled or disabled for this endpoint. The default state is `ENABLED` which means you must supply a `RoleArn` . If you don't have a `RoleArn` or you don't want event replication enabled, set the state to `DISABLED` .",
         "RoleArn": "The ARN of the role used by event replication for the endpoint.",
         "RoutingConfig": "The routing configuration of the endpoint."
       }
@@ -26016,7 +26023,7 @@
       "attributes": {},
       "description": "Provides the identifier of the AWS KMS customer master key (CMK) used to encrypt data indexed by Amazon Kendra. We suggest that you use a CMK from your account to help secure your index. Amazon Kendra doesn't support asymmetric CMKs.",
       "properties": {
-        "KmsKeyId": "The identifier of the AWS KMS customer master key (CMK). Amazon Kendra doesn't support asymmetric CMKs."
+        "KmsKeyId": "The identifier of the AWS KMS key . Amazon Kendra doesn't support asymmetric keys."
       }
     },
     "AWS::Kendra::Index.UserTokenConfiguration": {
@@ -28810,7 +28817,7 @@
         "LoadBalancerArn": "The Amazon Resource Name (ARN) of the load balancer.",
         "Ref": ""
       },
-      "description": "The `AWS::Lightsail::LoadBalancer` resource specifies a load balancer that can be used with Lightsail instances.\n\n> You cannot attach attach TLS certificates to a load balancer using the `AWS::Lightsail::LoadBalancer` resource type. Instead, use the `LoadBalancerTlsCertificate` resource type to create a certificate and attach it to a load balancer.",
+      "description": "The `AWS::Lightsail::LoadBalancer` resource specifies a load balancer that can be used with Lightsail instances.\n\n> You cannot attach a TLS certificate to a load balancer using the `AWS::Lightsail::LoadBalancer` resource type. Instead, use the `AWS::Lightsail::LoadBalancerTlsCertificate` resource type to create a certificate and attach it to a load balancer.",
       "properties": {
         "AttachedInstances": "The Lightsail instances to attach to the load balancer.",
         "HealthCheckPath": "The path on the attached instance where the health check will be performed. If no path is specified, the load balancer tries to make a request to the default (root) page ( `/index.html` ).",
@@ -28819,7 +28826,8 @@
         "LoadBalancerName": "The name of the load balancer.",
         "SessionStickinessEnabled": "A Boolean value indicating whether session stickiness is enabled.\n\nEnable session stickiness (also known as *session affinity* ) to bind a user's session to a specific instance. This ensures that all requests from the user during the session are sent to the same instance.",
         "SessionStickinessLBCookieDurationSeconds": "The time period, in seconds, after which the load balancer session stickiness cookie should be considered stale. If you do not specify this parameter, the default value is 0, which indicates that the sticky session should last for the duration of the browser session.",
-        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) in the *AWS CloudFormation User Guide* .\n\n> The `Value` of `Tags` is optional for Lightsail resources."
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) in the *AWS CloudFormation User Guide* .\n\n> The `Value` of `Tags` is optional for Lightsail resources.",
+        "TlsPolicyName": "The name of the TLS security policy for the load balancer."
       }
     },
     "AWS::Lightsail::LoadBalancerTlsCertificate": {
@@ -28833,6 +28841,7 @@
         "CertificateAlternativeNames": "An array of alternative domain names and subdomain names for your SSL/TLS certificate.\n\nIn addition to the primary domain name, you can have up to nine alternative domain names. Wildcards (such as `*.example.com` ) are not supported.",
         "CertificateDomainName": "The domain name for the SSL/TLS certificate. For example, `example.com` or `www.example.com` .",
         "CertificateName": "The name of the SSL/TLS certificate.",
+        "HttpsRedirectionEnabled": "A Boolean value indicating whether HTTPS redirection is enabled for the load balancer that the TLS certificate is attached to.",
         "IsAttached": "A Boolean value indicating whether the SSL/TLS certificate is attached to a Lightsail load balancer.",
         "LoadBalancerName": "The name of the load balancer that the SSL/TLS certificate is attached to."
       }
@@ -29195,10 +29204,10 @@
       "attributes": {},
       "description": "Contains information about how the source data should be interpreted.",
       "properties": {
-        "AppFlowConfig": "An object containing information about the AppFlow configuration.",
-        "CloudwatchConfig": "An object containing information about the Amazon CloudWatch monitoring configuration.",
-        "RDSSourceConfig": "An object containing information about the Amazon Relational Database Service (RDS) configuration.",
-        "RedshiftSourceConfig": "An object containing information about the Amazon Redshift database configuration.",
+        "AppFlowConfig": "Details about an AppFlow datasource.",
+        "CloudwatchConfig": "Details about an Amazon CloudWatch monitoring datasource.",
+        "RDSSourceConfig": "Details about an Amazon Relational Database Service (RDS) datasource.",
+        "RedshiftSourceConfig": "Details about an Amazon Redshift database datasource.",
         "S3SourceConfig": "Contains information about the configuration of the S3 bucket that contains source files."
       }
     },
@@ -32229,7 +32238,7 @@
       "description": "Specifies a MemoryDB user. For more information, see [Authenticating users with Access Contol Lists (ACLs)](https://docs.aws.amazon.com/memorydb/latest/devguide/clusters.acls.html) .",
       "properties": {
         "AccessString": "Access permissions string used for this user.",
-        "AuthenticationMode": "Denotes whether the user requires a password to authenticate.",
+        "AuthenticationMode": "Denotes whether the user requires a password to authenticate.\n\n*Example:*\n\n`mynewdbuser: Type: AWS::MemoryDB::User Properties: AccessString: on ~* &* +@all AuthenticationMode: Passwords: '1234567890123456' Type: password UserName: mynewdbuser AuthenticationMode: { \"Passwords\": [\"1234567890123456\"], \"Type\": \"Password\" }`",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
         "UserName": "The name of the user."
       }
@@ -33107,7 +33116,7 @@
         "Id": "The resource ID. For example, `123456789012/my-domain` .",
         "Ref": "When the logical ID of this resource is provided to the Ref intrinsic function, Ref returns the resource name, such as `mystack-abc1d2efg3h4.` For more information about using the Ref function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
-      "description": "The AWS::OpenSearchService::Domain resource creates an Amazon OpenSearch Service (successor to Amazon Elasticsearch Service) domain.\n\n> The `AWS::OpenSearchService::Domain` resource replaces the legacy [AWS::Elasticsearch::Domain](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticsearch-domain.html) resource. While the Elasticsearch resource and options are still supported, we recommend modifying your existing Cloudformation templates to use the new OpenSearch Service resource, which supports both OpenSearch and legacy Elasticsearch engines. For instructions to upgrade domains defined within CloudFormation from Elasticsearch to OpenSearch, see [Remarks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html#aws-resource-opensearchservice-domain--remarks) .",
+      "description": "The AWS::OpenSearchService::Domain resource creates an Amazon OpenSearch Service domain.\n\n> The `AWS::OpenSearchService::Domain` resource replaces the legacy [AWS::Elasticsearch::Domain](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticsearch-domain.html) resource. While the Elasticsearch resource and options are still supported, we recommend modifying your existing Cloudformation templates to use the new OpenSearch Service resource, which supports both OpenSearch and legacy Elasticsearch engines. For instructions to upgrade domains defined within CloudFormation from Elasticsearch to OpenSearch, see [Remarks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html#aws-resource-opensearchservice-domain--remarks) .",
       "properties": {
         "AccessPolicies": "An AWS Identity and Access Management ( IAM ) policy document that specifies who can access the OpenSearch Service domain and their permissions. For more information, see [Configuring access policies](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ac.html#ac-creating) in the *Amazon OpenSearch Service Developer Guide* .",
         "AdvancedOptions": "Additional options to specify for the OpenSearch Service domain. For more information, see [AdvancedOptions](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/configuration-api.html#configuration-api-datatypes-advancedoptions) in the OpenSearch Service configuration API reference.",
@@ -36591,7 +36600,7 @@
         "Arn": "The Amazon Resource Name (ARN) of the fleet, such as `arn:aws:robomaker:us-west-2:123456789012:deployment-fleet/MyFleet/1539894765711` .",
         "Ref": "When you pass the logical ID of an `AWS::RoboMaker::Fleet` resource to the intrinsic `Ref` function, the function returns the Amazon Resource Name (ARN) of the fleet, such as `arn:aws:robomaker:us-west-2:123456789012:deployment-fleet/MyFleet/1539894765711` ."
       },
-      "description": "The `AWS::RoboMaker::Fleet` resource creates an AWS RoboMaker fleet. Fleets contain robots and can receive deployments.",
+      "description": "> The following resource is now deprecated. This resource can no longer be provisioned via stack create or update operations, and should not be included in your stack templates.\n> \n> We recommend migrating to AWS IoT Greengrass Version 2. For more information, see [Support Changes: May 2, 2022](https://docs.aws.amazon.com/robomaker/latest/dg/chapter-support-policy.html#software-support-policy-may2022) in the *AWS RoboMaker Developer Guide* . \n\nThe `AWS::RoboMaker::Fleet` resource creates an AWS RoboMaker fleet. Fleets contain robots and can receive deployments.",
       "properties": {
         "Name": "The name of the fleet.",
         "Tags": "The list of all tags added to the fleet."
@@ -36602,7 +36611,7 @@
         "Arn": "The Amazon Resource Name (ARN) of the robot.",
         "Ref": "When you pass the logical ID of an `AWS::RoboMaker::Robot` resource to the intrinsic `Ref` function, the function returns the Amazon Resource Name (ARN) of the robot application, such as `arn:aws:robomaker:us-west-2:123456789012:robot/MyRobot/1544035373264` ."
       },
-      "description": "The `AWS::RoboMaker::RobotApplication` resource creates an AWS RoboMaker robot.",
+      "description": "> The following resource is now deprecated. This resource can no longer be provisioned via stack create or update operations, and should not be included in your stack templates.\n> \n> We recommend migrating to AWS IoT Greengrass Version 2. For more information, see [Support Changes: May 2, 2022](https://docs.aws.amazon.com/robomaker/latest/dg/chapter-support-policy.html#software-support-policy-may2022) in the *AWS RoboMaker Developer Guide* . \n\nThe `AWS::RoboMaker::RobotApplication` resource creates an AWS RoboMaker robot.",
       "properties": {
         "Architecture": "The architecture of the robot.",
         "Fleet": "The Amazon Resource Name (ARN) of the fleet to which the robot will be registered.",
@@ -38935,6 +38944,21 @@
         "ChatbotSns": "The SNS targets that AWS Chatbot uses to notify the chat channel of updates to an incident. You can also make updates to the incident through the chat channel by using the SNS topics"
       }
     },
+    "AWS::SSMIncidents::ResponsePlan.DynamicSsmParameter": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Key": "",
+        "Value": ""
+      }
+    },
+    "AWS::SSMIncidents::ResponsePlan.DynamicSsmParameterValue": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Variable": ""
+      }
+    },
     "AWS::SSMIncidents::ResponsePlan.IncidentTemplate": {
       "attributes": {},
       "description": "The `IncidentTemplate` property type specifies details used to create an incident when using this response plan.",
@@ -38959,6 +38983,7 @@
       "properties": {
         "DocumentName": "The automation document's name.",
         "DocumentVersion": "The automation document's version to use when running.",
+        "DynamicParameters": "",
         "Parameters": "The key-value pair parameters to use when running the automation document.",
         "RoleArn": "The Amazon Resource Name (ARN) of the role that the automation document will assume when running commands.",
         "TargetAccount": "The account that the automation document will be run in. This can be in either the management account or an application account."
@@ -39950,6 +39975,319 @@
         "Subnets": "The ID of the subnets in the VPC to which you want to connect your training job or model. For information about the availability of specific instance types, see [Supported Instance Types and Availability Zones](https://docs.aws.amazon.com/sagemaker/latest/dg/instance-types-az.html) ."
       }
     },
+    "AWS::SageMaker::ModelPackage": {
+      "attributes": {
+        "CreationTime": "",
+        "ModelPackageArn": "",
+        "ModelPackageStatus": "",
+        "Ref": ""
+      },
+      "description": "A versioned model that can be deployed for SageMaker inference.",
+      "properties": {
+        "AdditionalInferenceSpecificationDefinition": "",
+        "AdditionalInferenceSpecifications": "An array of additional Inference Specification objects.",
+        "AdditionalInferenceSpecificationsToAdd": "",
+        "ApprovalDescription": "A description provided when the model approval is set.",
+        "CertifyForMarketplace": "Whether the model package is to be certified to be listed on AWS Marketplace. For information about listing model packages on AWS Marketplace, see [List Your Algorithm or Model Package on AWS Marketplace](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-mkt-list.html) .",
+        "ClientToken": "",
+        "CreatedBy": "",
+        "CustomerMetadataProperties": "The metadata properties for the model package.",
+        "Domain": "The machine learning domain of your model package and its components. Common machine learning domains include computer vision and natural language processing.",
+        "DriftCheckBaselines": "Represents the drift check baselines that can be used when the model monitor is set using the model package.",
+        "Environment": "The environment variables to set in the Docker container. Each key and value in the `Environment` string to string map can have length of up to 1024. We support up to 16 entries in the map.",
+        "InferenceSpecification": "",
+        "LastModifiedBy": "",
+        "LastModifiedTime": "The last time the model package was modified.",
+        "MetadataProperties": "",
+        "ModelApprovalStatus": "The approval status of the model. This can be one of the following values.\n\n- `APPROVED` - The model is approved\n- `REJECTED` - The model is rejected.\n- `PENDING_MANUAL_APPROVAL` - The model is waiting for manual approval.",
+        "ModelMetrics": "Metrics for the model.",
+        "ModelPackageDescription": "The description of the model package.",
+        "ModelPackageGroupName": "The model group to which the model belongs.",
+        "ModelPackageName": "The name of the model.",
+        "ModelPackageStatusDetails": "",
+        "ModelPackageStatusItem": "",
+        "ModelPackageVersion": "The version number of a versioned model.",
+        "SamplePayloadUrl": "The Amazon Simple Storage Service path where the sample payload are stored. This path must point to a single gzip compressed tar archive (.tar.gz suffix).",
+        "SourceAlgorithmSpecification": "",
+        "Tag": "",
+        "Tags": "A list of the tags associated with the model package. For more information, see [Tagging AWS resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) in the *AWS General Reference Guide* .",
+        "Task": "The machine learning task your model package accomplishes. Common machine learning tasks include object detection and image classification.",
+        "ValidationSpecification": ""
+      }
+    },
+    "AWS::SageMaker::ModelPackage.AdditionalInferenceSpecificationDefinition": {
+      "attributes": {},
+      "description": "A structure of additional Inference Specification. Additional Inference Specification specifies details about inference jobs that can be run with models based on this model package",
+      "properties": {
+        "Containers": "The Amazon ECR registry path of the Docker image that contains the inference code.",
+        "Description": "A description of the additional Inference specification",
+        "Name": "A unique name to identify the additional inference specification. The name must be unique within the list of your additional inference specifications for a particular model package.",
+        "SupportedContentTypes": "The supported MIME types for the input data.",
+        "SupportedRealtimeInferenceInstanceTypes": "A list of the instance types that are used to generate inferences in real-time.",
+        "SupportedResponseMIMETypes": "The supported MIME types for the output data.",
+        "SupportedTransformInstanceTypes": "A list of the instance types on which a transformation job can be run or on which an endpoint can be deployed."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.Bias": {
+      "attributes": {},
+      "description": "Contains bias metrics for a model.",
+      "properties": {
+        "PostTrainingReport": "",
+        "PreTrainingReport": "",
+        "Report": "The bias report for a model"
+      }
+    },
+    "AWS::SageMaker::ModelPackage.CreatedBy": {
+      "attributes": {},
+      "description": "",
+      "properties": {}
+    },
+    "AWS::SageMaker::ModelPackage.DataSource": {
+      "attributes": {},
+      "description": "Describes the location of the channel data.",
+      "properties": {
+        "S3DataSource": "The S3 location of the data source that is associated with a channel."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.DriftCheckBaselines": {
+      "attributes": {},
+      "description": "Represents the drift check baselines that can be used when the model monitor is set using the model package.",
+      "properties": {
+        "Bias": "Represents the drift check bias baselines that can be used when the model monitor is set using the model package.",
+        "Explainability": "Represents the drift check explainability baselines that can be used when the model monitor is set using the model package.",
+        "ModelDataQuality": "Represents the drift check model data quality baselines that can be used when the model monitor is set using the model package.",
+        "ModelQuality": "Represents the drift check model quality baselines that can be used when the model monitor is set using the model package."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.DriftCheckBias": {
+      "attributes": {},
+      "description": "Represents the drift check bias baselines that can be used when the model monitor is set using the model package.",
+      "properties": {
+        "ConfigFile": "The bias config file for a model.",
+        "PostTrainingConstraints": "",
+        "PreTrainingConstraints": ""
+      }
+    },
+    "AWS::SageMaker::ModelPackage.DriftCheckExplainability": {
+      "attributes": {},
+      "description": "Represents the drift check explainability baselines that can be used when the model monitor is set using the model package.",
+      "properties": {
+        "ConfigFile": "The explainability config file for the model.",
+        "Constraints": ""
+      }
+    },
+    "AWS::SageMaker::ModelPackage.DriftCheckModelDataQuality": {
+      "attributes": {},
+      "description": "Represents the drift check data quality baselines that can be used when the model monitor is set using the model package.",
+      "properties": {
+        "Constraints": "",
+        "Statistics": ""
+      }
+    },
+    "AWS::SageMaker::ModelPackage.DriftCheckModelQuality": {
+      "attributes": {},
+      "description": "Represents the drift check model quality baselines that can be used when the model monitor is set using the model package.",
+      "properties": {
+        "Constraints": "",
+        "Statistics": ""
+      }
+    },
+    "AWS::SageMaker::ModelPackage.Environment": {
+      "attributes": {},
+      "description": "",
+      "properties": {}
+    },
+    "AWS::SageMaker::ModelPackage.Explainability": {
+      "attributes": {},
+      "description": "Contains explainability metrics for a model.",
+      "properties": {
+        "Report": "The explainability report for a model."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.FileSource": {
+      "attributes": {},
+      "description": "Contains details regarding the file source.",
+      "properties": {
+        "ContentDigest": "The digest of the file source.",
+        "ContentType": "The type of content stored in the file source.",
+        "S3Uri": "The Amazon S3 URI for the file source."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.InferenceSpecification": {
+      "attributes": {},
+      "description": "Defines how to perform inference generation after a training job is run.",
+      "properties": {
+        "Containers": "The Amazon ECR registry path of the Docker image that contains the inference code.",
+        "SupportedContentTypes": "The supported MIME types for the input data.",
+        "SupportedRealtimeInferenceInstanceTypes": "A list of the instance types that are used to generate inferences in real-time.\n\nThis parameter is required for unversioned models, and optional for versioned models.",
+        "SupportedResponseMIMETypes": "The supported MIME types for the output data.",
+        "SupportedTransformInstanceTypes": "A list of the instance types on which a transformation job can be run or on which an endpoint can be deployed.\n\nThis parameter is required for unversioned models, and optional for versioned models."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.LastModifiedBy": {
+      "attributes": {},
+      "description": "",
+      "properties": {}
+    },
+    "AWS::SageMaker::ModelPackage.MetadataProperties": {
+      "attributes": {},
+      "description": "Metadata properties of the tracking entity, trial, or trial component.",
+      "properties": {
+        "CommitId": "The commit ID.",
+        "GeneratedBy": "The entity this entity was generated by.",
+        "ProjectId": "The project ID.",
+        "Repository": "The repository."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.MetricsSource": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "ContentDigest": "",
+        "ContentType": "",
+        "S3Uri": ""
+      }
+    },
+    "AWS::SageMaker::ModelPackage.ModelDataQuality": {
+      "attributes": {},
+      "description": "Data quality constraints and statistics for a model.",
+      "properties": {
+        "Constraints": "Data quality constraints for a model.",
+        "Statistics": "Data quality statistics for a model."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.ModelMetrics": {
+      "attributes": {},
+      "description": "Contains metrics captured from a model.",
+      "properties": {
+        "Bias": "Metrics that measure bais in a model.",
+        "Explainability": "Metrics that help explain a model.",
+        "ModelDataQuality": "Metrics that measure the quality of the input data for a model.",
+        "ModelQuality": "Metrics that measure the quality of a model."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.ModelPackageContainerDefinition": {
+      "attributes": {},
+      "description": "Describes the Docker container for the model package.",
+      "properties": {
+        "ContainerHostname": "The DNS host name for the Docker container.",
+        "Environment": "The environment variables to set in the Docker container. Each key and value in the `Environment` string to string map can have length of up to 1024. We support up to 16 entries in the map.",
+        "Framework": "The machine learning framework of the model package container image.",
+        "FrameworkVersion": "The framework version of the Model Package Container Image.",
+        "Image": "The Amazon EC2 Container Registry (Amazon ECR) path where inference code is stored.\n\nIf you are using your own custom algorithm instead of an algorithm provided by SageMaker, the inference code must meet SageMaker requirements. SageMaker supports both `registry/repository[:tag]` and `registry/repository[@digest]` image path formats. For more information, see [Using Your Own Algorithms with Amazon SageMaker](https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms.html) .",
+        "ImageDigest": "An MD5 hash of the training algorithm that identifies the Docker image used for training.",
+        "ModelDataUrl": "The Amazon S3 path where the model artifacts, which result from model training, are stored. This path must point to a single `gzip` compressed tar archive ( `.tar.gz` suffix).\n\n> The model artifacts must be in an S3 bucket that is in the same region as the model package.",
+        "ModelInput": "A structure with Model Input details.",
+        "NearestModelName": "The name of a pre-trained machine learning benchmarked by Amazon SageMaker Inference Recommender model that matches your model. You can find a list of benchmarked models by calling `ListModelMetadata` .",
+        "ProductId": "The AWS Marketplace product ID of the model package."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.ModelPackageStatusDetails": {
+      "attributes": {},
+      "description": "Specifies the validation and image scan statuses of the model package.",
+      "properties": {
+        "ImageScanStatuses": "The status of the scan of the Docker image container for the model package.",
+        "ValidationStatuses": "The validation status of the model package."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.ModelPackageStatusItem": {
+      "attributes": {},
+      "description": "Represents the overall status of a model package.",
+      "properties": {
+        "FailureReason": "if the overall status is `Failed` , the reason for the failure.",
+        "Name": "The name of the model package for which the overall status is being reported.",
+        "Status": "The current status."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.ModelQuality": {
+      "attributes": {},
+      "description": "Model quality statistics and constraints.",
+      "properties": {
+        "Constraints": "Model quality constraints.",
+        "Statistics": "Model quality statistics."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.S3DataSource": {
+      "attributes": {},
+      "description": "Describes the S3 data source.",
+      "properties": {
+        "S3DataType": "If you choose `S3Prefix` , `S3Uri` identifies a key name prefix. SageMaker uses all objects that match the specified key name prefix for model training.\n\nIf you choose `ManifestFile` , `S3Uri` identifies an object that is a manifest file containing a list of object keys that you want SageMaker to use for model training.\n\nIf you choose `AugmentedManifestFile` , S3Uri identifies an object that is an augmented manifest file in JSON lines format. This file contains the data you want to use for model training. `AugmentedManifestFile` can only be used if the Channel's input mode is `Pipe` .",
+        "S3Uri": "Depending on the value specified for the `S3DataType` , identifies either a key name prefix or a manifest. For example:\n\n- A key name prefix might look like this: `s3://bucketname/exampleprefix`\n- A manifest might look like this: `s3://bucketname/example.manifest`\n\nA manifest is an S3 object which is a JSON file consisting of an array of elements. The first element is a prefix which is followed by one or more suffixes. SageMaker appends the suffix elements to the prefix to get a full set of `S3Uri` . Note that the prefix must be a valid non-empty `S3Uri` that precludes users from specifying a manifest whose individual `S3Uri` is sourced from different S3 buckets.\n\nThe following code example shows a valid manifest format:\n\n`[ {\"prefix\": \"s3://customer_bucket/some/prefix/\"},`\n\n`\"relative/path/to/custdata-1\",`\n\n`\"relative/path/custdata-2\",`\n\n`...`\n\n`\"relative/path/custdata-N\"`\n\n`]`\n\nThis JSON is equivalent to the following `S3Uri` list:\n\n`s3://customer_bucket/some/prefix/relative/path/to/custdata-1`\n\n`s3://customer_bucket/some/prefix/relative/path/custdata-2`\n\n`...`\n\n`s3://customer_bucket/some/prefix/relative/path/custdata-N`\n\nThe complete set of `S3Uri` in this manifest is the input data for the channel for this data source. The object that each `S3Uri` points to must be readable by the IAM role that SageMaker uses to perform tasks on your behalf."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.SourceAlgorithm": {
+      "attributes": {},
+      "description": "Specifies an algorithm that was used to create the model package. The algorithm must be either an algorithm resource in your SageMaker account or an algorithm in AWS Marketplace that you are subscribed to.",
+      "properties": {
+        "AlgorithmName": "The name of an algorithm that was used to create the model package. The algorithm must be either an algorithm resource in your SageMaker account or an algorithm in AWS Marketplace that you are subscribed to.",
+        "ModelDataUrl": "The Amazon S3 path where the model artifacts, which result from model training, are stored. This path must point to a single `gzip` compressed tar archive ( `.tar.gz` suffix).\n\n> The model artifacts must be in an S3 bucket that is in the same region as the algorithm."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.SourceAlgorithmSpecification": {
+      "attributes": {},
+      "description": "A list of algorithms that were used to create a model package.",
+      "properties": {
+        "SourceAlgorithms": "A list of the algorithms that were used to create a model package."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.TransformInput": {
+      "attributes": {},
+      "description": "Describes the input source of a transform job and the way the transform job consumes it.",
+      "properties": {
+        "CompressionType": "If your transform data is compressed, specify the compression type. Amazon SageMaker automatically decompresses the data for the transform job accordingly. The default value is `None` .",
+        "ContentType": "The multipurpose internet mail extension (MIME) type of the data. Amazon SageMaker uses the MIME type with each http call to transfer data to the transform job.",
+        "DataSource": "Describes the location of the channel data, which is, the S3 location of the input data that the model can consume.",
+        "SplitType": "The method to use to split the transform job's data files into smaller batches. Splitting is necessary when the total size of each object is too large to fit in a single request. You can also use data splitting to improve performance by processing multiple concurrent mini-batches. The default value for `SplitType` is `None` , which indicates that input data files are not split, and request payloads contain the entire contents of an input object. Set the value of this parameter to `Line` to split records on a newline character boundary. `SplitType` also supports a number of record-oriented binary data formats. Currently, the supported record formats are:\n\n- RecordIO\n- TFRecord\n\nWhen splitting is enabled, the size of a mini-batch depends on the values of the `BatchStrategy` and `MaxPayloadInMB` parameters. When the value of `BatchStrategy` is `MultiRecord` , Amazon SageMaker sends the maximum number of records in each request, up to the `MaxPayloadInMB` limit. If the value of `BatchStrategy` is `SingleRecord` , Amazon SageMaker sends individual records in each request.\n\n> Some data formats represent a record as a binary payload wrapped with extra padding bytes. When splitting is applied to a binary data format, padding is removed if the value of `BatchStrategy` is set to `SingleRecord` . Padding is not removed if the value of `BatchStrategy` is set to `MultiRecord` .\n> \n> For more information about `RecordIO` , see [Create a Dataset Using RecordIO](https://docs.aws.amazon.com/https://mxnet.apache.org/api/faq/recordio) in the MXNet documentation. For more information about `TFRecord` , see [Consuming TFRecord data](https://docs.aws.amazon.com/https://www.tensorflow.org/guide/data#consuming_tfrecord_data) in the TensorFlow documentation."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.TransformJobDefinition": {
+      "attributes": {},
+      "description": "Defines the input needed to run a transform job using the inference specification specified in the algorithm.",
+      "properties": {
+        "BatchStrategy": "A string that determines the number of records included in a single mini-batch.\n\n`SingleRecord` means only one record is used per mini-batch. `MultiRecord` means a mini-batch is set to contain as many records that can fit within the `MaxPayloadInMB` limit.",
+        "Environment": "The environment variables to set in the Docker container. We support up to 16 key and values entries in the map.",
+        "MaxConcurrentTransforms": "The maximum number of parallel requests that can be sent to each instance in a transform job. The default value is 1.",
+        "MaxPayloadInMB": "The maximum payload size allowed, in MB. A payload is the data portion of a record (without metadata).",
+        "TransformInput": "A description of the input source and the way the transform job consumes it.",
+        "TransformOutput": "Identifies the Amazon S3 location where you want Amazon SageMaker to save the results from the transform job.",
+        "TransformResources": "Identifies the ML compute instances for the transform job."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.TransformOutput": {
+      "attributes": {},
+      "description": "Describes the results of a transform job.",
+      "properties": {
+        "Accept": "The MIME type used to specify the output data. Amazon SageMaker uses the MIME type with each http call to transfer data from the transform job.",
+        "AssembleWith": "Defines how to assemble the results of the transform job as a single S3 object. Choose a format that is most convenient to you. To concatenate the results in binary format, specify `None` . To add a newline character at the end of every transformed record, specify `Line` .",
+        "KmsKeyId": "The AWS Key Management Service ( AWS KMS) key that Amazon SageMaker uses to encrypt the model artifacts at rest using Amazon S3 server-side encryption. The `KmsKeyId` can be any of the following formats:\n\n- Key ID: `1234abcd-12ab-34cd-56ef-1234567890ab`\n- Key ARN: `arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab`\n- Alias name: `alias/ExampleAlias`\n- Alias name ARN: `arn:aws:kms:us-west-2:111122223333:alias/ExampleAlias`\n\nIf you don't provide a KMS key ID, Amazon SageMaker uses the default KMS key for Amazon S3 for your role's account. For more information, see [KMS-Managed Encryption Keys](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html) in the *Amazon Simple Storage Service Developer Guide.*\n\nThe KMS key policy must grant permission to the IAM role that you specify in your [CreateModel](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateModel.html) request. For more information, see [Using Key Policies in AWS KMS](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html) in the *AWS Key Management Service Developer Guide* .",
+        "S3OutputPath": "The Amazon S3 path where you want Amazon SageMaker to store the results of the transform job. For example, `s3://bucket-name/key-name-prefix` .\n\nFor every S3 object used as input for the transform job, batch transform stores the transformed data with an . `out` suffix in a corresponding subfolder in the location in the output prefix. For example, for the input data stored at `s3://bucket-name/input-name-prefix/dataset01/data.csv` , batch transform stores the transformed data at `s3://bucket-name/output-name-prefix/input-name-prefix/data.csv.out` . Batch transform doesn't upload partially processed objects. For an input S3 object that contains multiple records, it creates an . `out` file only if the transform job succeeds on the entire file. When the input contains multiple S3 objects, the batch transform job processes the listed S3 objects and uploads only the output for successfully processed objects. If any object fails in the transform job batch transform marks the job as failed to prompt investigation."
+      }
+    },
+    "AWS::SageMaker::ModelPackage.TransformResources": {
+      "attributes": {},
+      "description": "Describes the resources, including ML instance types and ML instance count, to use for transform job.",
+      "properties": {
+        "InstanceCount": "The number of ML compute instances to use in the transform job. For distributed transform jobs, specify a value greater than 1. The default value is `1` .",
+        "InstanceType": "The ML compute instance type for the transform job. If you are using built-in algorithms to transform moderately sized datasets, we recommend using ml.m4.xlarge or `ml.m5.large` instance types.",
+        "VolumeKmsKeyId": "The AWS Key Management Service ( AWS KMS) key that Amazon SageMaker uses to encrypt model data on the storage volume attached to the ML compute instance(s) that run the batch transform job.\n\n> Certain Nitro-based instances include local storage, dependent on the instance type. Local storage volumes are encrypted using a hardware module on the instance. You can't request a `VolumeKmsKeyId` when using an instance type with local storage.\n> \n> For a list of instance types that support local instance storage, see [Instance Store Volumes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html#instance-store-volumes) .\n> \n> For more information about local instance storage encryption, see [SSD Instance Store Volumes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ssd-instance-store.html) . \n\nThe `VolumeKmsKeyId` can be any of the following formats:\n\n- Key ID: `1234abcd-12ab-34cd-56ef-1234567890ab`\n- Key ARN: `arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab`\n- Alias name: `alias/ExampleAlias`\n- Alias name ARN: `arn:aws:kms:us-west-2:111122223333:alias/ExampleAlias`"
+      }
+    },
+    "AWS::SageMaker::ModelPackage.ValidationProfile": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "ProfileName": "",
+        "TransformJobDefinition": ""
+      }
+    },
+    "AWS::SageMaker::ModelPackage.ValidationSpecification": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "ValidationProfiles": "",
+        "ValidationRole": ""
+      }
+    },
     "AWS::SageMaker::ModelPackageGroup": {
       "attributes": {
         "CreationTime": "The time when the model group was created.",
@@ -40366,7 +40704,7 @@
         "Ref": "`Ref` returns the Domain ID and the user profile name, such as `d-xxxxxxxxxxxx` and `my-user-profile` , respectively.",
         "UserProfileArn": "The Amazon Resource Name (ARN) of the user profile, such as `arn:aws:sagemaker:us-west-2:account-id:user-profile/my-user-profile` ."
       },
-      "description": "Creates a user profile. A user profile represents a single user within a domain, and is the main way to reference a \"person\" for the purposes of sharing, reporting, and other user-oriented features. This entity is created when a user onboards to Amazon SageMaker Studio. If an administrator invites a person by email or imports them from SSO, a user profile is automatically created. A user profile is the primary holder of settings for an individual user and has a reference to the user's private Amazon Elastic File System (EFS) home directory.",
+      "description": "Creates a user profile. A user profile represents a single user within a domain, and is the main way to reference a \"person\" for the purposes of sharing, reporting, and other user-oriented features. This entity is created when a user onboards to Amazon SageMaker Studio. If an administrator invites a person by email or imports them from SSO, a user profile is automatically created. A user profile is the primary holder of settings for an individual user and has a reference to the user's private Amazon Elastic File System (EFS) home directory.\n\n> If you're using SSO authentication, an SSO user, or an SSO group containing that user, must be assigned to the Amazon SageMaker Studio application from the AWS SSO Console to create a user profile. For more information about application assignment, see [Assign user access](https://docs.aws.amazon.com/singlesignon/latest/userguide/assignuserstoapp.html) . After assignment is complete, a user profile can be created for that SSO user with AWS CloudFormation.",
       "properties": {
         "DomainId": "The domain ID.",
         "SingleSignOnUserIdentifier": "A specifier for the type of value specified in SingleSignOnUserValue. Currently, the only supported value is \"UserName\". If the Domain's AuthMode is SSO, this field is required. If the Domain's AuthMode is not SSO, this field cannot be specified.",
@@ -41424,7 +41762,7 @@
         "LoggingRole": "Specifies the Amazon Resource Name (ARN) of the AWS Identity and Access Management (IAM) role that allows a server to turn on Amazon CloudWatch logging for Amazon S3 or Amazon EFS events. When set, user activity can be viewed in your CloudWatch logs.",
         "PostAuthenticationLoginBanner": "Specify a string to display when users connect to a server. This string is displayed after the user authenticates.\n\n> The SFTP protocol does not support post-authentication display banners.",
         "PreAuthenticationLoginBanner": "Specify a string to display when users connect to a server. This string is displayed before the user authenticates. For example, the following banner displays details about using the system.\n\n`This system is for the use of authorized users only. Individuals using this computer system without authority, or in excess of their authority, are subject to having all of their activities on this system monitored and recorded by system personnel.`",
-        "ProtocolDetails": "The protocol settings that are configured for your server.\n\nUse the `PassiveIp` parameter to indicate passive mode (for FTP and FTPS protocols). Enter a single dotted-quad IPv4 address, such as the external IP address of a firewall, router, or load balancer.\n\nUse the `TlsSessionResumptionMode` parameter to determine whether or not your Transfer server resumes recent, negotiated sessions through a unique session ID.",
+        "ProtocolDetails": "The protocol settings that are configured for your server.\n\n- Use the `PassiveIp` parameter to indicate passive mode (for FTP and FTPS protocols). Enter a single dotted-quad IPv4 address, such as the external IP address of a firewall, router, or load balancer.\n- Use the `SetStatOption` to ignore the error that is generated when the client attempts to use SETSTAT on a file you are uploading to an S3 bucket. Set the value to `ENABLE_NO_OP` to have the Transfer Family server ignore the SETSTAT command, and upload files without needing to make any changes to your SFTP client. Note that with `SetStatOption` set to `ENABLE_NO_OP` , Transfer generates a log entry to CloudWatch Logs, so you can determine when the client is making a SETSTAT call.\n- Use the `TlsSessionResumptionMode` parameter to determine whether or not your Transfer server resumes recent, negotiated sessions through a unique session ID.",
         "Protocols": "Specifies the file transfer protocol or protocols over which your file transfer protocol client can connect to your server's endpoint. The available protocols are:\n\n- `SFTP` (Secure Shell (SSH) File Transfer Protocol): File transfer over SSH\n- `FTPS` (File Transfer Protocol Secure): File transfer with TLS encryption\n- `FTP` (File Transfer Protocol): Unencrypted file transfer\n\n> If you select `FTPS` , you must choose a certificate stored in AWS Certificate Manager (ACM) which is used to identify your server when clients connect to it over FTPS.\n> \n> If `Protocol` includes either `FTP` or `FTPS` , then the `EndpointType` must be `VPC` and the `IdentityProviderType` must be `AWS_DIRECTORY_SERVICE` or `API_GATEWAY` .\n> \n> If `Protocol` includes `FTP` , then `AddressAllocationIds` cannot be associated.\n> \n> If `Protocol` is set only to `SFTP` , the `EndpointType` can be set to `PUBLIC` and the `IdentityProviderType` can be set to `SERVICE_MANAGED` .",
         "SecurityPolicyName": "Specifies the name of the security policy that is attached to the server.",
         "Tags": "Key-value pairs that can be used to group and search for servers.",
@@ -41461,8 +41799,9 @@
       "attributes": {},
       "description": "Protocol settings that are configured for your server.",
       "properties": {
-        "PassiveIp": "Indicates passive mode, for FTP and FTPS protocols. Enter a single dotted-quad IPv4 address, such as the external IP address of a firewall, router, or load balancer.",
-        "TlsSessionResumptionMode": "A property used with Transfer servers that use the FTPS protocol. TLS Session Resumption provides a mechanism to resume or share a negotiated secret key between the control and data connection for an FTPS session. `TlsSessionResumptionMode` determines whether or not the server resumes recent, negotiated sessions through a unique session ID. This property is available during `CreateServer` and `UpdateServer` calls. If a `TlsSessionResumptionMode` value is not specified during CreateServer, it is set to `ENFORCED` by default.\n\n- `DISABLED` : the server does not process TLS session resumption client requests and creates a new TLS session for each request.\n- `ENABLED` : the server processes and accepts clients that are performing TLS session resumption. The server doesn't reject client data connections that do not perform the TLS session resumption client processing.\n- `ENFORCED` : the server processes and accepts clients that are performing TLS session resumption. The server rejects client data connections that do not perform the TLS session resumption client processing. Before you set the value to `ENFORCED` , test your clients.\n\n> Not all FTPS clients perform TLS session resumption. So, if you choose to enforce TLS session resumption, you prevent any connections from FTPS clients that don't perform the protocol negotiation. To determine whether or not you can use the `ENFORCED` value, you need to test your clients."
+        "PassiveIp": "Indicates passive mode, for FTP and FTPS protocols. Enter a single IPv4 address, such as the public IP address of a firewall, router, or load balancer. For example:\n\n`aws transfer update-server --protocol-details PassiveIp= *0.0.0.0*`\n\nReplace `*0.0.0.0*` in the example above with the actual IP address you want to use.\n\n> If you change the `PassiveIp` value, you must stop and then restart your Transfer Family server for the change to take effect. For details on using passive mode (PASV) in a NAT environment, see [Configuring your FTPS server behind a firewall or NAT with AWS Transfer Family](https://docs.aws.amazon.com/storage/configuring-your-ftps-server-behind-a-firewall-or-nat-with-aws-transfer-family/) .",
+        "SetStatOption": "Use the `SetStatOption` to ignore the error that is generated when the client attempts to use SETSTAT on a file you are uploading to an S3 bucket.\n\nSome SFTP file transfer clients can attempt to change the attributes of remote files, including timestamp and permissions, using commands, such as SETSTAT when uploading the file. However, these commands are not compatible with object storage systems, such as Amazon S3. Due to this incompatibility, file uploads from these clients can result in errors even when the file is otherwise successfully uploaded.\n\nSet the value to `ENABLE_NO_OP` to have the Transfer Family server ignore the SETSTAT command, and upload files without needing to make any changes to your SFTP client. While the `SetStatOption` `ENABLE_NO_OP` setting ignores the error, it does generate a log entry in CloudWatch Logs, so you can determine when the client is making a SETSTAT call.\n\n> If you want to preserve the original timestamp for your file, and modify other file attributes using SETSTAT, you can use Amazon EFS as backend storage with Transfer Family.",
+        "TlsSessionResumptionMode": "A property used with Transfer Family servers that use the FTPS protocol. TLS Session Resumption provides a mechanism to resume or share a negotiated secret key between the control and data connection for an FTPS session. `TlsSessionResumptionMode` determines whether or not the server resumes recent, negotiated sessions through a unique session ID. This property is available during `CreateServer` and `UpdateServer` calls. If a `TlsSessionResumptionMode` value is not specified during `CreateServer` , it is set to `ENFORCED` by default.\n\n- `DISABLED` : the server does not process TLS session resumption client requests and creates a new TLS session for each request.\n- `ENABLED` : the server processes and accepts clients that are performing TLS session resumption. The server doesn't reject client data connections that do not perform the TLS session resumption client processing.\n- `ENFORCED` : the server processes and accepts clients that are performing TLS session resumption. The server rejects client data connections that do not perform the TLS session resumption client processing. Before you set the value to `ENFORCED` , test your clients.\n\n> Not all FTPS clients perform TLS session resumption. So, if you choose to enforce TLS session resumption, you prevent any connections from FTPS clients that don't perform the protocol negotiation. To determine whether or not you can use the `ENFORCED` value, you need to test your clients."
       }
     },
     "AWS::Transfer::Server.WorkflowDetail": {
@@ -41552,11 +41891,11 @@
         "DomainId": "The identifier of the domain.",
         "Ref": "`Ref` returns the `DomainId` of the domain."
       },
-      "description": "Creates a domain that contains all Voice ID data, such as speakers, fraudsters, customer audio, and voiceprints.",
+      "description": "Creates a domain that contains all Amazon Connect Voice ID data, such as speakers, fraudsters, customer audio, and voiceprints.",
       "properties": {
         "Description": "The client-provided description of the domain.",
         "Name": "The client-provided name for the domain.",
-        "ServerSideEncryptionConfiguration": "The server-side encryption configuration containing the KMS Key Identifier you want VoiceID to use to encrypt your data.",
+        "ServerSideEncryptionConfiguration": "The server-side encryption configuration containing the KMS Key Identifier you want Voice ID to use to encrypt your data.",
         "Tags": "The tags used to organize, track, or control access for this resource."
       }
     },
@@ -41564,7 +41903,7 @@
       "attributes": {},
       "description": "The configuration containing information about the customer-managed KMS Key used for encrypting customer data.",
       "properties": {
-        "KmsKeyId": "The identifier of the KMS Key you want VoiceID to use to encrypt your data."
+        "KmsKeyId": "The identifier of the KMS Key you want Voice ID to use to encrypt your data."
       }
     },
     "AWS::WAF::ByteMatchSet": {
@@ -42067,7 +42406,7 @@
     },
     "AWS::WAFv2::RuleGroup.ByteMatchStatement": {
       "attributes": {},
-      "description": "A rule statement that defines a string match search for AWS WAF to apply to web requests. The byte match statement provides the bytes to search for, the location in requests that you want AWS WAF to search, and other settings. The bytes to search for are typically a string that corresponds with ASCII characters. In the AWS WAF console and the developer guide, this is refered to as a string match statement.",
+      "description": "A rule statement that defines a string match search for AWS WAF to apply to web requests. The byte match statement provides the bytes to search for, the location in requests that you want AWS WAF to search, and other settings. The bytes to search for are typically a string that corresponds with ASCII characters. In the AWS WAF console and the developer guide, this is called a string match statement.",
       "properties": {
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
         "PositionalConstraint": "The area within the portion of the web request that you want AWS WAF to search for `SearchString` . Valid values include the following:\n\n*CONTAINS*\n\nThe specified part of the web request must include the value of `SearchString` , but the location doesn't matter.\n\n*CONTAINS_WORD*\n\nThe specified part of the web request must include the value of `SearchString` , and `SearchString` must contain only alphanumeric characters or underscore (A-Z, a-z, 0-9, or _). In addition, `SearchString` must be a word, which means that both of the following are true:\n\n- `SearchString` is at the beginning of the specified part of the web request or is preceded by a character other than an alphanumeric character or underscore (_). Examples include the value of a header and `;BadBot` .\n- `SearchString` is at the end of the specified part of the web request or is followed by a character other than an alphanumeric character or underscore (_), for example, `BadBot;` and `-BadBot;` .\n\n*EXACTLY*\n\nThe value of the specified part of the web request must exactly match the value of `SearchString` .\n\n*STARTS_WITH*\n\nThe value of `SearchString` must appear at the beginning of the specified part of the web request.\n\n*ENDS_WITH*\n\nThe value of `SearchString` must appear at the end of the specified part of the web request.",
@@ -42239,7 +42578,7 @@
     },
     "AWS::WAFv2::RuleGroup.RateBasedStatement": {
       "attributes": {},
-      "description": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specified the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet both of the conditions in the statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet both conditions are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
+      "description": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specified the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet the criteria of both of the nested statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet the criteria of both of the nested statements are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
       "properties": {
         "AggregateKeyType": "Setting that indicates how to aggregate the request counts. The options are the following:\n\n- IP - Aggregate the request counts on the IP address from the web request origin.\n- FORWARDED_IP - Aggregate the request counts on the first IP address in an HTTP header. If you use this, configure the `ForwardedIPConfig` , to specify the header to use.",
         "ForwardedIPConfig": "The configuration for inspecting IP addresses in an HTTP header that you specify, instead of using the IP address that's reported by the web request origin. Commonly, this is the X-Forwarded-For (XFF) header, but you can specify any header name.\n\n> If the specified header isn't present in the request, AWS WAF doesn't apply the rule to the web request at all. \n\nThis is required if `AggregateKeyType` is set to `FORWARDED_IP` .",
@@ -42290,7 +42629,7 @@
     },
     "AWS::WAFv2::RuleGroup.SizeConstraintStatement": {
       "attributes": {},
-      "description": "A rule statement that compares a number of bytes against the size of a request component, using a comparison operator, such as greater than (>) or less than (<). For example, you can use a size constraint statement to look for query strings that are longer than 100 bytes.\n\nIf you configure AWS WAF to inspect the request body, AWS WAF inspects only the first 8192 bytes (8 KB). If the request body for your web requests never exceeds 8192 bytes, you can create a size constraint condition and block requests that have a request body greater than 8192 bytes.\n\nIf you choose URI for the value of Part of the request to filter on, the slash (/) in the URI counts as one character. For example, the URI `/logo.jpg` is nine characters long.",
+      "description": "A rule statement that compares a number of bytes against the size of a request component, using a comparison operator, such as greater than (>) or less than (<). For example, you can use a size constraint statement to look for query strings that are longer than 100 bytes.\n\nIf you configure AWS WAF to inspect the request body, AWS WAF inspects only the first 8192 bytes (8 KB). If the request body for your web requests never exceeds 8192 bytes, you could use a size constraint statement to block requests that have a request body greater than 8192 bytes.\n\nIf you choose URI for the value of Part of the request to filter on, the slash (/) in the URI counts as one character. For example, the URI `/logo.jpg` is nine characters long.",
       "properties": {
         "ComparisonOperator": "The operator to use to compare the request part to the size setting.",
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
@@ -42300,7 +42639,7 @@
     },
     "AWS::WAFv2::RuleGroup.SqliMatchStatement": {
       "attributes": {},
-      "description": "Attackers sometimes insert malicious SQL code into web requests in an effort to extract data from your database. To allow or block web requests that appear to contain malicious SQL code, create one or more SQL injection match conditions. An SQL injection match condition identifies the part of web requests, such as the URI or the query string, that you want AWS WAF to inspect. Later in the process, when you create a web ACL, you specify whether to allow or block requests that appear to contain malicious SQL code.",
+      "description": "A rule statement that inspects for malicious SQL code. Attackers insert malicious SQL code into web requests to do things like modify your database or extract data from it.",
       "properties": {
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
         "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."
@@ -42311,18 +42650,18 @@
       "description": "The processing guidance for a rule, used by AWS WAF to determine whether a web request matches the rule.",
       "properties": {
         "AndStatement": "A logical rule statement used to combine other rule statements with AND logic. You provide more than one `Statement` within the `AndStatement` .",
-        "ByteMatchStatement": "A rule statement that defines a string match search for AWS WAF to apply to web requests. The byte match statement provides the bytes to search for, the location in requests that you want AWS WAF to search, and other settings. The bytes to search for are typically a string that corresponds with ASCII characters. In the AWS WAF console and the developer guide, this is refered to as a string match statement.",
+        "ByteMatchStatement": "A rule statement that defines a string match search for AWS WAF to apply to web requests. The byte match statement provides the bytes to search for, the location in requests that you want AWS WAF to search, and other settings. The bytes to search for are typically a string that corresponds with ASCII characters. In the AWS WAF console and the developer guide, this is called a string match statement.",
         "GeoMatchStatement": "A rule statement used to identify web requests based on country of origin.",
         "IPSetReferenceStatement": "A rule statement used to detect web requests coming from particular IP addresses or address ranges. To use this, create an `IPSet` that specifies the addresses you want to detect, then use the ARN of that set in this statement.\n\nEach IP set rule statement references an IP set. You create and maintain the set independent of your rules. This allows you to use the single set in multiple rules. When you update the referenced set, AWS WAF automatically updates all rules that reference it.",
         "LabelMatchStatement": "A rule statement that defines a string match search against labels that have been added to the web request by rules that have already run in the web ACL.\n\nThe label match statement provides the label or namespace string to search for. The label string can represent a part or all of the fully qualified label name that had been added to the web request. Fully qualified labels have a prefix, optional namespaces, and label name. The prefix identifies the rule group or web ACL context of the rule that added the label. If you do not provide the fully qualified name in your label match string, AWS WAF performs the search for labels that were added in the same context as the label match statement.",
         "NotStatement": "A logical rule statement used to negate the results of another rule statement. You provide one `Statement` within the `NotStatement` .",
         "OrStatement": "A logical rule statement used to combine other rule statements with OR logic. You provide more than one `Statement` within the `OrStatement` .",
-        "RateBasedStatement": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specified the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet both of the conditions in the statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet both conditions are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
+        "RateBasedStatement": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specified the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet the criteria of both of the nested statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet the criteria of both of the nested statements are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
         "RegexMatchStatement": "A rule statement used to search web request components for a match against a single regular expression.",
         "RegexPatternSetReferenceStatement": "A rule statement used to search web request components for matches with regular expressions. To use this, create a `RegexPatternSet` that specifies the expressions that you want to detect, then use the ARN of that set in this statement. A web request matches the pattern set rule statement if the request component matches any of the patterns in the set.\n\nEach regex pattern set rule statement references a regex pattern set. You create and maintain the set independent of your rules. This allows you to use the single set in multiple rules. When you update the referenced set, AWS WAF automatically updates all rules that reference it.",
-        "SizeConstraintStatement": "A rule statement that compares a number of bytes against the size of a request component, using a comparison operator, such as greater than (>) or less than (<). For example, you can use a size constraint statement to look for query strings that are longer than 100 bytes.\n\nIf you configure AWS WAF to inspect the request body, AWS WAF inspects only the first 8192 bytes (8 KB). If the request body for your web requests never exceeds 8192 bytes, you can create a size constraint condition and block requests that have a request body greater than 8192 bytes.\n\nIf you choose URI for the value of Part of the request to filter on, the slash (/) in the URI counts as one character. For example, the URI `/logo.jpg` is nine characters long.",
-        "SqliMatchStatement": "Attackers sometimes insert malicious SQL code into web requests in an effort to extract data from your database. To allow or block web requests that appear to contain malicious SQL code, create one or more SQL injection match conditions. An SQL injection match condition identifies the part of web requests, such as the URI or the query string, that you want AWS WAF to inspect. Later in the process, when you create a web ACL, you specify whether to allow or block requests that appear to contain malicious SQL code.",
-        "XssMatchStatement": "A rule statement that defines a cross-site scripting (XSS) match search for AWS WAF to apply to web requests. XSS attacks are those where the attacker uses vulnerabilities in a benign website as a vehicle to inject malicious client-site scripts into other legitimate web browsers. The XSS match statement provides the location in requests that you want AWS WAF to search and text transformations to use on the search area before AWS WAF searches for character sequences that are likely to be malicious strings."
+        "SizeConstraintStatement": "A rule statement that compares a number of bytes against the size of a request component, using a comparison operator, such as greater than (>) or less than (<). For example, you can use a size constraint statement to look for query strings that are longer than 100 bytes.\n\nIf you configure AWS WAF to inspect the request body, AWS WAF inspects only the first 8192 bytes (8 KB). If the request body for your web requests never exceeds 8192 bytes, you could use a size constraint statement to block requests that have a request body greater than 8192 bytes.\n\nIf you choose URI for the value of Part of the request to filter on, the slash (/) in the URI counts as one character. For example, the URI `/logo.jpg` is nine characters long.",
+        "SqliMatchStatement": "A rule statement that inspects for malicious SQL code. Attackers insert malicious SQL code into web requests to do things like modify your database or extract data from it.",
+        "XssMatchStatement": "A rule statement that inspects for cross-site scripting (XSS) attacks. In XSS attacks, the attacker uses vulnerabilities in a benign website as a vehicle to inject malicious client-site scripts into other legitimate web browsers."
       }
     },
     "AWS::WAFv2::RuleGroup.TextTransformation": {
@@ -42344,7 +42683,7 @@
     },
     "AWS::WAFv2::RuleGroup.XssMatchStatement": {
       "attributes": {},
-      "description": "A rule statement that defines a cross-site scripting (XSS) match search for AWS WAF to apply to web requests. XSS attacks are those where the attacker uses vulnerabilities in a benign website as a vehicle to inject malicious client-site scripts into other legitimate web browsers. The XSS match statement provides the location in requests that you want AWS WAF to search and text transformations to use on the search area before AWS WAF searches for character sequences that are likely to be malicious strings.",
+      "description": "A rule statement that inspects for cross-site scripting (XSS) attacks. In XSS attacks, the attacker uses vulnerabilities in a benign website as a vehicle to inject malicious client-site scripts into other legitimate web browsers.",
       "properties": {
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
         "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."
@@ -42401,7 +42740,7 @@
     },
     "AWS::WAFv2::WebACL.ByteMatchStatement": {
       "attributes": {},
-      "description": "A rule statement that defines a string match search for AWS WAF to apply to web requests. The byte match statement provides the bytes to search for, the location in requests that you want AWS WAF to search, and other settings. The bytes to search for are typically a string that corresponds with ASCII characters. In the AWS WAF console and the developer guide, this is refered to as a string match statement.",
+      "description": "A rule statement that defines a string match search for AWS WAF to apply to web requests. The byte match statement provides the bytes to search for, the location in requests that you want AWS WAF to search, and other settings. The bytes to search for are typically a string that corresponds with ASCII characters. In the AWS WAF console and the developer guide, this is called a string match statement.",
       "properties": {
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
         "PositionalConstraint": "The area within the portion of the web request that you want AWS WAF to search for `SearchString` . Valid values include the following:\n\n*CONTAINS*\n\nThe specified part of the web request must include the value of `SearchString` , but the location doesn't matter.\n\n*CONTAINS_WORD*\n\nThe specified part of the web request must include the value of `SearchString` , and `SearchString` must contain only alphanumeric characters or underscore (A-Z, a-z, 0-9, or _). In addition, `SearchString` must be a word, which means that both of the following are true:\n\n- `SearchString` is at the beginning of the specified part of the web request or is preceded by a character other than an alphanumeric character or underscore (_). Examples include the value of a header and `;BadBot` .\n- `SearchString` is at the end of the specified part of the web request or is followed by a character other than an alphanumeric character or underscore (_), for example, `BadBot;` and `-BadBot;` .\n\n*EXACTLY*\n\nThe value of the specified part of the web request must exactly match the value of `SearchString` .\n\n*STARTS_WITH*\n\nThe value of `SearchString` must appear at the beginning of the specified part of the web request.\n\n*ENDS_WITH*\n\nThe value of `SearchString` must appear at the end of the specified part of the web request.",
@@ -42656,7 +42995,7 @@
     },
     "AWS::WAFv2::WebACL.RateBasedStatement": {
       "attributes": {},
-      "description": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specified the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet both of the conditions in the statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet both conditions are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
+      "description": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specified the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet the criteria of both of the nested statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet the criteria of both of the nested statements are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
       "properties": {
         "AggregateKeyType": "Setting that indicates how to aggregate the request counts. The options are the following:\n\n- IP - Aggregate the request counts on the IP address from the web request origin.\n- FORWARDED_IP - Aggregate the request counts on the first IP address in an HTTP header. If you use this, configure the `ForwardedIPConfig` , to specify the header to use.",
         "ForwardedIPConfig": "The configuration for inspecting IP addresses in an HTTP header that you specify, instead of using the IP address that's reported by the web request origin. Commonly, this is the X-Forwarded-For (XFF) header, but you can specify any header name.\n\n> If the specified header isn't present in the request, AWS WAF doesn't apply the rule to the web request at all. \n\nThis is required if `AggregateKeyType` is set to `FORWARDED_IP` .",
@@ -42716,7 +43055,7 @@
     },
     "AWS::WAFv2::WebACL.SizeConstraintStatement": {
       "attributes": {},
-      "description": "A rule statement that compares a number of bytes against the size of a request component, using a comparison operator, such as greater than (>) or less than (<). For example, you can use a size constraint statement to look for query strings that are longer than 100 bytes.\n\nIf you configure AWS WAF to inspect the request body, AWS WAF inspects only the first 8192 bytes (8 KB). If the request body for your web requests never exceeds 8192 bytes, you can create a size constraint condition and block requests that have a request body greater than 8192 bytes.\n\nIf you choose URI for the value of Part of the request to filter on, the slash (/) in the URI counts as one character. For example, the URI `/logo.jpg` is nine characters long.",
+      "description": "A rule statement that compares a number of bytes against the size of a request component, using a comparison operator, such as greater than (>) or less than (<). For example, you can use a size constraint statement to look for query strings that are longer than 100 bytes.\n\nIf you configure AWS WAF to inspect the request body, AWS WAF inspects only the first 8192 bytes (8 KB). If the request body for your web requests never exceeds 8192 bytes, you could use a size constraint statement to block requests that have a request body greater than 8192 bytes.\n\nIf you choose URI for the value of Part of the request to filter on, the slash (/) in the URI counts as one character. For example, the URI `/logo.jpg` is nine characters long.",
       "properties": {
         "ComparisonOperator": "The operator to use to compare the request part to the size setting.",
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
@@ -42726,7 +43065,7 @@
     },
     "AWS::WAFv2::WebACL.SqliMatchStatement": {
       "attributes": {},
-      "description": "Attackers sometimes insert malicious SQL code into web requests in an effort to extract data from your database. To allow or block web requests that appear to contain malicious SQL code, create one or more SQL injection match conditions. An SQL injection match condition identifies the part of web requests, such as the URI or the query string, that you want AWS WAF to inspect. Later in the process, when you create a web ACL, you specify whether to allow or block requests that appear to contain malicious SQL code.",
+      "description": "A rule statement that inspects for malicious SQL code. Attackers insert malicious SQL code into web requests to do things like modify your database or extract data from it.",
       "properties": {
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
         "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."
@@ -42737,20 +43076,20 @@
       "description": "The processing guidance for a rule, used by AWS WAF to determine whether a web request matches the rule.",
       "properties": {
         "AndStatement": "A logical rule statement used to combine other rule statements with AND logic. You provide more than one `Statement` within the `AndStatement` .",
-        "ByteMatchStatement": "A rule statement that defines a string match search for AWS WAF to apply to web requests. The byte match statement provides the bytes to search for, the location in requests that you want AWS WAF to search, and other settings. The bytes to search for are typically a string that corresponds with ASCII characters. In the AWS WAF console and the developer guide, this is refered to as a string match statement.",
+        "ByteMatchStatement": "A rule statement that defines a string match search for AWS WAF to apply to web requests. The byte match statement provides the bytes to search for, the location in requests that you want AWS WAF to search, and other settings. The bytes to search for are typically a string that corresponds with ASCII characters. In the AWS WAF console and the developer guide, this is called a string match statement.",
         "GeoMatchStatement": "A rule statement used to identify web requests based on country of origin.",
         "IPSetReferenceStatement": "A rule statement used to detect web requests coming from particular IP addresses or address ranges. To use this, create an `IPSet` that specifies the addresses you want to detect, then use the ARN of that set in this statement.\n\nEach IP set rule statement references an IP set. You create and maintain the set independent of your rules. This allows you to use the single set in multiple rules. When you update the referenced set, AWS WAF automatically updates all rules that reference it.",
         "LabelMatchStatement": "A rule statement that defines a string match search against labels that have been added to the web request by rules that have already run in the web ACL.\n\nThe label match statement provides the label or namespace string to search for. The label string can represent a part or all of the fully qualified label name that had been added to the web request. Fully qualified labels have a prefix, optional namespaces, and label name. The prefix identifies the rule group or web ACL context of the rule that added the label. If you do not provide the fully qualified name in your label match string, AWS WAF performs the search for labels that were added in the same context as the label match statement.",
         "ManagedRuleGroupStatement": "A rule statement used to run the rules that are defined in a managed rule group. To use this, provide the vendor name and the name of the rule group in this statement.\n\nYou cannot nest a `ManagedRuleGroupStatement` , for example for use inside a `NotStatement` or `OrStatement` . It can only be referenced as a top-level statement within a rule.",
         "NotStatement": "A logical rule statement used to negate the results of another rule statement. You provide one `Statement` within the `NotStatement` .",
         "OrStatement": "A logical rule statement used to combine other rule statements with OR logic. You provide more than one `Statement` within the `OrStatement` .",
-        "RateBasedStatement": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specified the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet both of the conditions in the statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet both conditions are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
+        "RateBasedStatement": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specified the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet the criteria of both of the nested statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet the criteria of both of the nested statements are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
         "RegexMatchStatement": "A rule statement used to search web request components for a match against a single regular expression.",
         "RegexPatternSetReferenceStatement": "A rule statement used to search web request components for matches with regular expressions. To use this, create a `RegexPatternSet` that specifies the expressions that you want to detect, then use the ARN of that set in this statement. A web request matches the pattern set rule statement if the request component matches any of the patterns in the set.\n\nEach regex pattern set rule statement references a regex pattern set. You create and maintain the set independent of your rules. This allows you to use the single set in multiple rules. When you update the referenced set, AWS WAF automatically updates all rules that reference it.",
         "RuleGroupReferenceStatement": "A rule statement used to run the rules that are defined in a `RuleGroup` . To use this, create a rule group with your rules, then provide the ARN of the rule group in this statement.\n\nYou cannot nest a `RuleGroupReferenceStatement` , for example for use inside a `NotStatement` or `OrStatement` . You can only use a rule group reference statement at the top level inside a web ACL.",
-        "SizeConstraintStatement": "A rule statement that compares a number of bytes against the size of a request component, using a comparison operator, such as greater than (>) or less than (<). For example, you can use a size constraint statement to look for query strings that are longer than 100 bytes.\n\nIf you configure AWS WAF to inspect the request body, AWS WAF inspects only the first 8192 bytes (8 KB). If the request body for your web requests never exceeds 8192 bytes, you can create a size constraint condition and block requests that have a request body greater than 8192 bytes.\n\nIf you choose URI for the value of Part of the request to filter on, the slash (/) in the URI counts as one character. For example, the URI `/logo.jpg` is nine characters long.",
-        "SqliMatchStatement": "Attackers sometimes insert malicious SQL code into web requests in an effort to extract data from your database. To allow or block web requests that appear to contain malicious SQL code, create one or more SQL injection match conditions. An SQL injection match condition identifies the part of web requests, such as the URI or the query string, that you want AWS WAF to inspect. Later in the process, when you create a web ACL, you specify whether to allow or block requests that appear to contain malicious SQL code.",
-        "XssMatchStatement": "A rule statement that defines a cross-site scripting (XSS) match search for AWS WAF to apply to web requests. XSS attacks are those where the attacker uses vulnerabilities in a benign website as a vehicle to inject malicious client-site scripts into other legitimate web browsers. The XSS match statement provides the location in requests that you want AWS WAF to search and text transformations to use on the search area before AWS WAF searches for character sequences that are likely to be malicious strings."
+        "SizeConstraintStatement": "A rule statement that compares a number of bytes against the size of a request component, using a comparison operator, such as greater than (>) or less than (<). For example, you can use a size constraint statement to look for query strings that are longer than 100 bytes.\n\nIf you configure AWS WAF to inspect the request body, AWS WAF inspects only the first 8192 bytes (8 KB). If the request body for your web requests never exceeds 8192 bytes, you could use a size constraint statement to block requests that have a request body greater than 8192 bytes.\n\nIf you choose URI for the value of Part of the request to filter on, the slash (/) in the URI counts as one character. For example, the URI `/logo.jpg` is nine characters long.",
+        "SqliMatchStatement": "A rule statement that inspects for malicious SQL code. Attackers insert malicious SQL code into web requests to do things like modify your database or extract data from it.",
+        "XssMatchStatement": "A rule statement that inspects for cross-site scripting (XSS) attacks. In XSS attacks, the attacker uses vulnerabilities in a benign website as a vehicle to inject malicious client-site scripts into other legitimate web browsers."
       }
     },
     "AWS::WAFv2::WebACL.TextTransformation": {
@@ -42772,7 +43111,7 @@
     },
     "AWS::WAFv2::WebACL.XssMatchStatement": {
       "attributes": {},
-      "description": "A rule statement that defines a cross-site scripting (XSS) match search for AWS WAF to apply to web requests. XSS attacks are those where the attacker uses vulnerabilities in a benign website as a vehicle to inject malicious client-site scripts into other legitimate web browsers. The XSS match statement provides the location in requests that you want AWS WAF to search and text transformations to use on the search area before AWS WAF searches for character sequences that are likely to be malicious strings.",
+      "description": "A rule statement that inspects for cross-site scripting (XSS) attacks. In XSS attacks, the attacker uses vulnerabilities in a benign website as a vehicle to inject malicious client-site scripts into other legitimate web browsers.",
       "properties": {
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
         "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."

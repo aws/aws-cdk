@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "PipelineStackBetaStack1E6541489.assets": {
       "type": "cdk:asset-manifest",

@@ -41,7 +41,12 @@
                         }
                       }
                     },
-                    "instanceConfiguration": {}
+                    "instanceConfiguration": {},
+                    "networkConfiguration": {
+                      "egressConfiguration": {
+                        "egressType": "DEFAULT"
+                      }
+                    }
                   }
                 },
                 "constructInfo": {
@@ -94,7 +99,12 @@
                         }
                       }
                     },
-                    "instanceConfiguration": {}
+                    "instanceConfiguration": {},
+                    "networkConfiguration": {
+                      "egressConfiguration": {
+                        "egressType": "DEFAULT"
+                      }
+                    }
                   }
                 },
                 "constructInfo": {
