@@ -1,7 +1,7 @@
 {
   "version": "18.0.0",
   "testCases": {
-    "aws-servicecatalog/test/integ.product": {
+    "integ.product": {
       "stacks": [
         "integ-servicecatalog-product"
       ],
