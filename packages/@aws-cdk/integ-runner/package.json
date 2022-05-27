@@ -2,7 +2,7 @@
   "name": "@aws-cdk/integ-runner",
   "description": "CDK Integration Testing Tool",
   "version": "0.0.0",
-  "private": true,
+  "private": false,
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "bin": {
