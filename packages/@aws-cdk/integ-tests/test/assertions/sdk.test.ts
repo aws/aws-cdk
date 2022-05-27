@@ -116,7 +116,7 @@ describe('AwsApiCall', () => {
 
       // WHEN
       const query = deplossert.awsApiCall('MyService', 'MyApi');
-      query.assert(ExpectedResult.exact({ foo: 'bar' }));
+      query.expect(ExpectedResult.exact({ foo: 'bar' }));
 
       // THEN
       const template = Template.fromStack(deplossert.scope);
@@ -138,7 +138,7 @@ describe('AwsApiCall', () => {
 
       // WHEN
       const query = deplossert.awsApiCall('MyService', 'MyApi');
-      query.assert(ExpectedResult.objectLike({ foo: 'bar' }));
+      query.expect(ExpectedResult.objectLike({ foo: 'bar' }));
 
       // THEN
       const template = Template.fromStack(deplossert.scope);
@@ -160,7 +160,7 @@ describe('AwsApiCall', () => {
 
       // WHEN
       const query = deplossert.awsApiCall('MyService', 'MyApi');
-      query.assert(ExpectedResult.exact('bar'));
+      query.expect(ExpectedResult.exact('bar'));
 
       // THEN
       const template = Template.fromStack(deplossert.scope);

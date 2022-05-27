@@ -66,7 +66,7 @@ describe('DeployAssert', () => {
       const query = deplossert.awsApiCall('MyService', 'MyApi');
 
       // WHEN
-      deplossert.assert(
+      deplossert.expect(
         'MyAssertion',
         ExpectedResult.stringLikeRegexp('foo'),
         ActualResult.fromAwsApiCall(query, 'att'),
@@ -92,7 +92,7 @@ describe('DeployAssert', () => {
       const query = deplossert.awsApiCall('MyService', 'MyApi');
 
       // WHEN
-      deplossert.assert(
+      deplossert.expect(
         'MyAssertion',
         ExpectedResult.objectLike({ foo: 'bar' }),
         ActualResult.fromAwsApiCall(query, 'att'),

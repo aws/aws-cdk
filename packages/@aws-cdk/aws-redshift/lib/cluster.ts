@@ -415,7 +415,7 @@ export class Cluster extends ClusterBase {
 
     this.vpc = props.vpc;
     this.vpcSubnets = props.vpcSubnets ?? {
-      subnetType: ec2.SubnetType.PRIVATE,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
     };
 
     const removalPolicy = props.removalPolicy ?? RemovalPolicy.RETAIN;

@@ -27,7 +27,9 @@ async function main() {
     .options('max-workers', { type: 'number', desc: 'The max number of workerpool workers to use when running integration tests in parallel', default: 16 })
     .options('exclude', { type: 'boolean', desc: 'All tests should be run, except for the list of tests provided', default: false })
     .options('from-file', { type: 'string', desc: 'Import tests to include or exclude from a file' })
+    .option('inspect-failures', { type: 'boolean', desc: 'Keep the integ test cloud assembly if a failure occurs for inspection', default: false })
     .option('disable-update-workflow', { type: 'boolean', default: false, desc: 'If this is "true" then the stack update workflow will be disabled' })
+    .strict()
     .argv;
 
   const pool = workerpool.pool(path.join(__dirname, '../lib/workers/extract/index.js'), {
@@ -47,9 +49,10 @@ async function main() {
 
   let failedSnapshots: IntegTestWorkerConfig[] = [];
   if (argv['max-workers'] < testRegions.length * (profiles ?? [1]).length) {
-    logger.warning('You are attempting to run %s tests in parallel, but only have %s workers. Not all of your profiles+regions will be utilized', argv.profiles*argv['parallel-regions'], argv['max-workers']);
+    logger.warning('You are attempting to run %s tests in parallel, but only have %s workers. Not all of your profiles+regions will be utilized', argv.profiles * argv['parallel-regions'], argv['max-workers']);
   }
 
+  let testsSucceeded = false;
   try {
     if (argv.list) {
       const tests = await new IntegrationTests(argv.directory).fromCliArgs();
@@ -70,7 +73,10 @@ async function main() {
     // always run snapshot tests, but if '--force' is passed then
     // run integration tests on all failed tests, not just those that
     // failed snapshot tests
-    failedSnapshots = await runSnapshotTests(pool, testsFromArgs);
+    failedSnapshots = await runSnapshotTests(pool, testsFromArgs, {
+      retain: argv['inspect-failures'],
+      verbose: argv.verbose,
+    });
     for (const failure of failedSnapshots) {
       destructiveChanges.push(...failure.destructiveChanges ?? []);
     }
@@ -94,6 +100,8 @@ async function main() {
         verbose: argv.verbose,
         updateWorkflow: !argv['disable-update-workflow'],
       });
+      testsSucceeded = success;
+
 
       if (argv.clean === false) {
         logger.warning('Not cleaning up stacks since "--no-clean" was used');
@@ -120,7 +128,9 @@ async function main() {
     if (!runUpdateOnFailed) {
       message = 'To re-run failed tests run: yarn integ-runner --update-on-failed';
     }
-    throw new Error(`Some snapshot tests failed!\n${message}`);
+    if (!testsSucceeded) {
+      throw new Error(`Some tests failed!\n${message}`);
+    }
   }
 
 }
