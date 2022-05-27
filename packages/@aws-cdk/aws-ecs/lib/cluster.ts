@@ -366,13 +366,11 @@ export class Cluster extends Resource implements ICluster {
     }
     this._hasEc2Capacity = true;
     this.configureAutoScalingGroup(provider.autoScalingGroup, {
-      ...{
-        ...options,
-        canContainersAccessInstanceRole: provider.canContainersAccessInstanceRole ?? options.canContainersAccessInstanceRole,
-      },
+      ...options,
       machineImageType: provider.machineImageType,
       // Don't enable the instance-draining lifecycle hook if managed termination protection is enabled
       taskDrainTime: provider.enableManagedTerminationProtection ? Duration.seconds(0) : options.taskDrainTime,
+      canContainersAccessInstanceRole: options.canContainersAccessInstanceRole ?? provider.canContainersAccessInstanceRole,
     });
 
     this._capacityProviderNames.push(provider.capacityProviderName);
