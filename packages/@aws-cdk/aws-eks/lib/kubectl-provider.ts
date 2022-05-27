@@ -88,11 +88,13 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     // if this is an imported cluster and there is no kubectl provider defined, we need to provision a custom resource provider in this stack
     // we will define one per stack for each cluster based on the cluster uniqueid
     Names;
-    const components = cluster.node.scopes.slice(1).map(c => c.node.id);
-    components.push('-KubectlProvider')
-    const uid = `KubectlProvider-${pathHash(components)}`;
+    pathHash;
+    //const components = cluster.node.scopes.slice(1).map(c => c.node.id);
+    //const uid = `KubectlProvider-${pathHash(components)}`;
     //const uid = makeUniqueId(components);
+    //console.log(cluster.node.id);
     //const uid = `${Names.nodeUniqueId(cluster.node)}-KubectlProvider`;
+    const uid = `${cluster.node.id}-KubectlProvider`;
     const stack = Stack.of(scope);
     let provider = stack.node.tryFindChild(uid) as KubectlProvider;
     if (!provider) {
@@ -129,9 +131,6 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
   public readonly handlerRole: iam.IRole;
 
   public constructor(scope: Construct, id: string, props: KubectlProviderProps) {
-    console.log('==================================')
-    console.log('id ' + id)
-    console.log('==================================')
     super(scope as CoreConstruct, id);
 
     const cluster = props.cluster;

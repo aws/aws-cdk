@@ -190,8 +190,8 @@ describe('service account', () => {
       Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
-            'StackClusterF0EB02FAKubectlProviderNestedStackStackClusterF0EB02FAKubectlProviderNestedStackResource739D12C4',
-            'Outputs.StackStackClusterF0EB02FAKubectlProviderframeworkonEvent8377F076Arn',
+            'ClusterKubectlProviderNestedStackClusterKubectlProviderNestedStackResource97E18F19',
+            'Outputs.StackClusterKubectlProviderframeworkonEventFDFAB4EBArn',
           ],
         },
         PruneLabel: 'aws.cdk.eks/prune-c8d8e1722a4f3ed332f8ac74cb3d962f01fbb62291',
