@@ -215,6 +215,58 @@
         ]
        }
       }
+     },
+     {
+      "DisableTemplateValidation": false,
+      "Info": {
+       "LoadTemplateFromURL": {
+        "Fn::Join": [
+         "",
+         [
+          "https://s3.",
+          {
+           "Ref": "AWS::Region"
+          },
+          ".",
+          {
+           "Ref": "AWS::URLSuffix"
+          },
+          "/",
+          {
+           "Ref": "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fS3BucketB4751C98"
+          },
+          "/",
+          {
+           "Fn::Select": [
+            0,
+            {
+             "Fn::Split": [
+              "||",
+              {
+               "Ref": "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fS3VersionKeyEB38C6F9"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "Fn::Select": [
+            1,
+            {
+             "Fn::Split": [
+              "||",
+              {
+               "Ref": "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fS3VersionKeyEB38C6F9"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        ]
+       }
+      },
+      "Name": "v1"
      }
     ]
    }
