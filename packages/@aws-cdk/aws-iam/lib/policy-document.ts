@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
-import { IConstruct } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { IConstruct } from 'constructs';
 import { PolicyStatement, deriveEstimateSizeOptions } from './policy-statement';
 import { mergeStatements } from './private/merge-statements';
 import { PostProcessPolicyDocument } from './private/postprocess-policy-document';
@@ -187,7 +187,7 @@ export class PolicyDocument implements cdk.IResolvable {
    *
    * @internal
    */
-  public _maybeMergeStatements(scope: cdk.IConstruct): void {
+  public _maybeMergeStatements(scope: IConstruct): void {
     if (this.shouldMerge(scope)) {
       const result = mergeStatements(scope, this.statements, false);
       this.statements.splice(0, this.statements.length, ...result.mergedStatements);
