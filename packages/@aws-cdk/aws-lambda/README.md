@@ -651,7 +651,7 @@ profiling group -
 
 ```ts
 const fn = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.PYTHON_3_6,
+  runtime: lambda.Runtime.PYTHON_3_9,
   handler: 'index.handler',
   code: lambda.Code.fromAsset('lambda-handler'),
   profiling: true,

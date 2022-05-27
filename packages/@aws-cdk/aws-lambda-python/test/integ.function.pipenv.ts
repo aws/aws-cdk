@@ -18,7 +18,7 @@ class TestStack extends Stack {
 
     const pythonFunctionInline = new lambda.PythonFunction(this, 'my_handler_inline', {
       entry: path.join(__dirname, 'lambda-handler-pipenv'),
-      runtime: Runtime.PYTHON_3_6,
+      runtime: Runtime.PYTHON_3_9,
     });
     new CfnOutput(this, 'InlineFunctionName', {
       value: pythonFunctionInline.functionName,

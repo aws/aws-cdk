@@ -262,7 +262,7 @@ describe('function', () => {
       // WHEN
       const fn = new lambda.Function(stack, 'Function', {
         code: new lambda.InlineCode('test'),
-        runtime: lambda.Runtime.PYTHON_3_6,
+        runtime: lambda.Runtime.PYTHON_3_9,
         handler: 'index.test',
         role,
         initialPolicy: [
@@ -447,7 +447,7 @@ describe('function', () => {
         fn = new lambda.Function(stack, 'MyLambda', {
           code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
           handler: 'index.handler',
-          runtime: lambda.Runtime.PYTHON_3_6,
+          runtime: lambda.Runtime.PYTHON_3_9,
         });
       });
 
@@ -555,7 +555,7 @@ describe('function', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
           Name: 'prod',
           FunctionName: { Ref: 'MyLambdaCCE802FB' },
-          FunctionVersion: { 'Fn::GetAtt': ['MyLambdaCurrentVersionE7A382CC60ef151b20ae483ee1018f73f30bc10e', 'Version'] },
+          FunctionVersion: { 'Fn::GetAtt': ['MyLambdaCurrentVersionE7A382CC2eeae0edd9c706f9c3b9dd748e520c30', 'Version'] },
         });
       });
 
@@ -604,7 +604,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_6,
+      runtime: lambda.Runtime.PYTHON_3_9,
     });
 
     // THEN
@@ -627,7 +627,7 @@ describe('function', () => {
           'Arn',
         ],
       },
-      Runtime: 'python3.6',
+      Runtime: 'python3.9',
     });
   });
 
@@ -2008,7 +2008,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.PYTHON_3_6,
+        runtime: lambda.Runtime.PYTHON_3_9,
         profiling: true,
       });
 
@@ -2057,7 +2057,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.PYTHON_3_6,
+        runtime: lambda.Runtime.PYTHON_3_9,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
       });
 
@@ -2109,7 +2109,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.PYTHON_3_6,
+        runtime: lambda.Runtime.PYTHON_3_9,
         profiling: false,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
       });
@@ -2140,7 +2140,7 @@ describe('function', () => {
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.PYTHON_3_6,
+        runtime: lambda.Runtime.PYTHON_3_9,
         profiling: true,
         environment: {
           AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
@@ -2155,7 +2155,7 @@ describe('function', () => {
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.PYTHON_3_6,
+        runtime: lambda.Runtime.PYTHON_3_9,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
         environment: {
           AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',

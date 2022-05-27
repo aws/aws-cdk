@@ -28,7 +28,7 @@ def handler(event, context):
     "body": "Hello from Lambda"
   }
       `),
-      runtime: lambda.Runtime.PYTHON_3_6,
+      runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.handler',
     });
 

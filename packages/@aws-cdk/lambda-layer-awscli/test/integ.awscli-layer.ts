@@ -15,7 +15,6 @@ const stack = new cdk.Stack(app, 'lambda-layer-awscli-integ-stack');
 const layer = new AwsCliLayer(stack, 'AwsCliLayer');
 
 const runtimes = [
-  lambda.Runtime.PYTHON_3_6,
   lambda.Runtime.PYTHON_3_7,
   lambda.Runtime.PYTHON_3_9,
 ];
