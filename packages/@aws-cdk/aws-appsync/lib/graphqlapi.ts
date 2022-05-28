@@ -2,6 +2,7 @@ import { ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
+import { LogRetention, RetentionDays } from '@aws-cdk/aws-logs';
 import { ArnFormat, CfnResource, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
@@ -253,6 +254,13 @@ export interface LogConfig {
    * @default - None
    */
   readonly role?: IRole;
+
+  /**
+   * log retention period
+   *
+   * @default - Use AppSync default
+   */
+  readonly retention?: RetentionDays
 }
 
 /**
@@ -519,6 +527,13 @@ export class GraphqlApi extends GraphqlApiBase {
       this.apiKeyResource.addDependsOn(this.schemaResource);
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
+
+    if (props.logConfig?.retention) {
+      new LogRetention(this, 'ApiLogsRetention', {
+        logGroupName: `/aws/appsync/apis/${this.apiId}`,
+        retention: props.logConfig.retention,
+      });
+    };
   }
 
   /**
