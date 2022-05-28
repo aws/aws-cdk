@@ -495,9 +495,9 @@ It is possible to create additional endpoints on a proxy. These can be used on a
 declare const vpc: ec2.Vpc;
 declare const proxy: rds.DatabaseProxy;
 
-const endpoint = proxy.addEndPoint('ExtraEndpoint', {
+const endpoint = proxy.addEndpoint('ExtraEndpoint', {
   vpc,
-  allowedOperations: AllowedOperations.READ_WRITE,
+  allowedOperations: rds.AllowedOperations.READ_WRITE,
 })
 ```
 
