@@ -30,8 +30,8 @@ const dbProxy = new rds.DatabaseProxy(stack, 'dbProxy', {
 });
 
 dbProxy.addEndpoint('dbProxyEndpoint', {
-    vpc: otherVpc,
-    allowedOperations: rds.AllowedOperations.READ_ONLY,
+  vpc: otherVpc,
+  allowedOperations: rds.AllowedOperations.READ_ONLY,
 });
 
 app.synth();

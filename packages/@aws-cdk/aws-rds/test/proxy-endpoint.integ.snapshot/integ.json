@@ -1,0 +1,14 @@
+{
+  "version": "19.0.0",
+  "testCases": {
+    "integ.proxy-endpoint": {
+      "stacks": [
+        "aws-cdk-rds-proxy"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}
