@@ -38,7 +38,6 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       new UserPoolIdentityProviderOidc(stack, 'userpoolidp', {
         userPool: pool,
-        name: 'my-provider',
         clientId: 'client-id',
         clientSecret: 'client-secret',
         issuerUrl: 'https://my-issuer-url.com',
@@ -51,8 +50,6 @@ describe('UserPoolIdentityProvider', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
-        ProviderName: 'my-provider',
-        ProviderType: 'OIDC',
         ProviderDetails: {
           client_id: 'client-id',
           client_secret: 'client-secret',
@@ -75,7 +72,6 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       new UserPoolIdentityProviderOidc(stack, 'userpoolidp', {
         userPool: pool,
-        name: 'my-provider',
         clientId: 'client-id',
         clientSecret: 'client-secret',
         issuerUrl: 'https://my-issuer-url.com',
@@ -83,8 +79,6 @@ describe('UserPoolIdentityProvider', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
-        ProviderName: 'my-provider',
-        ProviderType: 'OIDC',
         ProviderDetails: {
           client_id: 'client-id',
           client_secret: 'client-secret',
@@ -103,7 +97,6 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       const provider = new UserPoolIdentityProviderOidc(stack, 'userpoolidp', {
         userPool: pool,
-        name: 'my-provider',
         clientId: 'client-id',
         clientSecret: 'client-secret',
         issuerUrl: 'https://my-issuer-url.com',
@@ -121,7 +114,6 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       new UserPoolIdentityProviderOidc(stack, 'userpoolidp', {
         userPool: pool,
-        name: 'my-provider',
         clientId: 'client-id',
         clientSecret: 'client-secret',
         issuerUrl: 'https://my-issuer-url.com',
@@ -144,6 +136,55 @@ describe('UserPoolIdentityProvider', () => {
           customAttr2: 'sub',
         },
       });
+    });
+
+    test('with provider name', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      // WHEN
+      new UserPoolIdentityProviderOidc(stack, 'userpoolidp', {
+        userPool: pool,
+        name: 'my-provider',
+        clientId: 'client-id',
+        clientSecret: 'client-secret',
+        issuerUrl: 'https://my-issuer-url.com',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
+        ProviderName: 'my-provider',
+      });
+    });
+
+    test('throws with invalid provider name', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      // THEN
+      expect(() => new UserPoolIdentityProviderOidc(stack, 'userpoolidp', {
+        userPool: pool,
+        name: 'xy',
+        clientId: 'client-id',
+        clientSecret: 'client-secret',
+        issuerUrl: 'https://my-issuer-url.com',
+      })).toThrow(/Expected provider name to be between 3 and 32 characters/);
+    });
+
+    test('throws when default name is invalid', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      // THEN
+      expect(() => new UserPoolIdentityProviderOidc(stack, 'xy', {
+        userPool: pool,
+        clientId: 'client-id',
+        clientSecret: 'client-secret',
+        issuerUrl: 'https://my-issuer-url.com',
+      })).toThrow(/Provider name defaults to construct's id \(xy\) which is not between 3 and 32 characters/);
     });
   });
 });

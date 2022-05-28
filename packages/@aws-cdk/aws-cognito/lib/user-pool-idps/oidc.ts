@@ -1,3 +1,4 @@
+import { Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 import { UserPoolIdentityProviderProps } from './base';
@@ -110,7 +111,7 @@ export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
       userPoolId: props.userPool.userPoolId,
-      providerName: props.name ?? this.node.id,
+      providerName: getProviderName(this.node.id, props.name),
       providerType: 'OIDC',
       providerDetails: {
         client_id: props.clientId,
@@ -129,4 +130,19 @@ export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
 
     this.providerName = super.getResourceNameAttribute(resource.ref);
   }
+}
+
+function getProviderName(id: string, name?: string): string {
+  if (name) {
+    if (!Token.isUnresolved(name) && (name.length < 3 || name.length > 32)) {
+      throw new Error(`Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`);
+    }
+    return name;
+  }
+
+  if (id.length < 3 || id.length > 32) {
+    throw new Error(`Provider name defaults to construct's id (${id}) which is not between 3 and 32 characters. Please specify a valid name with \`name\`.`);
+  }
+
+  return id;
 }
