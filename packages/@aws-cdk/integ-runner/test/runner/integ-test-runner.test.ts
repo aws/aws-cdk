@@ -78,7 +78,7 @@ describe('IntegTest runIntegTests', () => {
       stacks: ['test-stack'],
     });
     expect(deployMock).toHaveBeenCalledWith({
-      app: 'cdk-integ.out.test-with-snapshot',
+      app: 'node integ.test-with-snapshot.js',
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,

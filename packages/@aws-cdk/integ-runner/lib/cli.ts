@@ -49,9 +49,10 @@ async function main() {
 
   let failedSnapshots: IntegTestWorkerConfig[] = [];
   if (argv['max-workers'] < testRegions.length * (profiles ?? [1]).length) {
-    logger.warning('You are attempting to run %s tests in parallel, but only have %s workers. Not all of your profiles+regions will be utilized', argv.profiles*argv['parallel-regions'], argv['max-workers']);
+    logger.warning('You are attempting to run %s tests in parallel, but only have %s workers. Not all of your profiles+regions will be utilized', argv.profiles * argv['parallel-regions'], argv['max-workers']);
   }
 
+  let testsSucceeded = false;
   try {
     if (argv.list) {
       const tests = await new IntegrationTests(argv.directory).fromCliArgs();
@@ -99,6 +100,8 @@ async function main() {
         verbose: argv.verbose,
         updateWorkflow: !argv['disable-update-workflow'],
       });
+      testsSucceeded = success;
+
 
       if (argv.clean === false) {
         logger.warning('Not cleaning up stacks since "--no-clean" was used');
@@ -125,7 +128,9 @@ async function main() {
     if (!runUpdateOnFailed) {
       message = 'To re-run failed tests run: yarn integ-runner --update-on-failed';
     }
-    throw new Error(`Some snapshot tests failed!\n${message}`);
+    if (!testsSucceeded) {
+      throw new Error(`Some tests failed!\n${message}`);
+    }
   }
 
 }
