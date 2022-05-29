@@ -764,6 +764,9 @@
                           ]
                         }
                       }
+                    },
+                    "observabilityConfiguration": {
+                      "observabilityEnabled": false
                     }
                   }
                 },
@@ -825,6 +828,9 @@
                           ]
                         }
                       }
+                    },
+                    "observabilityConfiguration": {
+                      "observabilityEnabled": false
                     }
                   }
                 },

@@ -1,0 +1,106 @@
+{
+ "Resources": {
+  "ObservabilityConfiguration68CE4C7A": {
+   "Type": "AWS::AppRunner::ObservabilityConfiguration",
+   "Properties": {
+    "TraceConfiguration": {
+     "Vendor": "AWSXRAY"
+    }
+   }
+  },
+  "Service86269A78B": {
+   "Type": "AWS::AppRunner::Service",
+   "Properties": {
+    "SourceConfiguration": {
+     "AuthenticationConfiguration": {},
+     "ImageRepository": {
+      "ImageConfiguration": {
+       "Port": "8000"
+      },
+      "ImageIdentifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
+      "ImageRepositoryType": "ECR_PUBLIC"
+     }
+    },
+    "InstanceConfiguration": {},
+    "NetworkConfiguration": {
+     "EgressConfiguration": {
+      "EgressType": "DEFAULT"
+     }
+    },
+    "ObservabilityConfiguration": {
+     "ObservabilityConfigurationArn": {
+      "Fn::GetAtt": [
+       "ObservabilityConfiguration68CE4C7A",
+       "ObservabilityConfigurationArn"
+      ]
+     },
+     "ObservabilityEnabled": true
+    }
+   }
+  },
+  "Service9DECC815E": {
+   "Type": "AWS::AppRunner::Service",
+   "Properties": {
+    "SourceConfiguration": {
+     "AuthenticationConfiguration": {},
+     "ImageRepository": {
+      "ImageConfiguration": {
+       "Port": "8000"
+      },
+      "ImageIdentifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
+      "ImageRepositoryType": "ECR_PUBLIC"
+     }
+    },
+    "InstanceConfiguration": {},
+    "NetworkConfiguration": {
+     "EgressConfiguration": {
+      "EgressType": "DEFAULT"
+     }
+    },
+    "ObservabilityConfiguration": {
+     "ObservabilityConfigurationArn": {
+      "Fn::GetAtt": [
+       "ObservabilityConfiguration68CE4C7A",
+       "ObservabilityConfigurationArn"
+      ]
+     },
+     "ObservabilityEnabled": true
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "URL8": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Fn::GetAtt": [
+        "Service86269A78B",
+        "ServiceUrl"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "URL9": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Fn::GetAtt": [
+        "Service9DECC815E",
+        "ServiceUrl"
+       ]
+      }
+     ]
+    ]
+   }
+  }
+ }
+}

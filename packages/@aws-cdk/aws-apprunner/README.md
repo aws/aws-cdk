@@ -160,3 +160,21 @@ new apprunner.Service(this, 'Service', {
   vpcConnector,
 });
 ```
+
+## Observability Configuration
+
+To enable X-Ray tracing for an App Runner service, specify an observability configuration. Multiple services can share the same observability configuration. 
+
+```ts
+const observabilityConfiguration = new apprunner.ObservabilityConfiguration(this, 'ObservabilityConfiguration', {
+  xrayTracing: true
+});
+
+new apprunner.Service(this, 'Service', {
+  source: apprunner.Source.fromEcrPublic({
+    imageConfiguration: { port: 8000 },
+    imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+  }),
+  observabilityConfiguration,
+});
+```

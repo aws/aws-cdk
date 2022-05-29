@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnService } from './apprunner.generated';
+import { IObservabilityConfiguration } from './observability-configuration';
 import { IVpcConnector } from './vpc-connector';
 
 /**
@@ -532,6 +533,13 @@ export interface ServiceProps {
    * @default - no VPC connector, uses the DEFAULT egress type instead
    */
   readonly vpcConnector?: IVpcConnector;
+
+  /**
+   * The observability configuration to associate with the service.
+   *
+   * @default - no observability configuration
+   */
+  readonly observabilityConfiguration?: IObservabilityConfiguration;
 }
 
 /**
@@ -805,6 +813,10 @@ export class Service extends cdk.Resource {
           egressType: this.props.vpcConnector ? 'VPC' : 'DEFAULT',
           vpcConnectorArn: this.props.vpcConnector?.vpcConnectorArn,
         },
+      },
+      observabilityConfiguration: {
+        observabilityConfigurationArn: this.props.observabilityConfiguration?.observabilityConfigurationArn,
+        observabilityEnabled: !!this.props.observabilityConfiguration,
       },
     });
 

@@ -453,6 +453,9 @@
        ]
       }
      }
+    },
+    "ObservabilityConfiguration": {
+     "ObservabilityEnabled": false
     }
    }
   },
@@ -480,6 +483,9 @@
        ]
       }
      }
+    },
+    "ObservabilityConfiguration": {
+     "ObservabilityEnabled": false
     }
    }
   }

@@ -18,6 +18,9 @@
      "EgressConfiguration": {
       "EgressType": "DEFAULT"
      }
+    },
+    "ObservabilityConfiguration": {
+     "ObservabilityEnabled": false
     }
    }
   }

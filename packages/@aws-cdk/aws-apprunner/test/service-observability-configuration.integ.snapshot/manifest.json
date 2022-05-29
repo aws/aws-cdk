@@ -1,0 +1,52 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-apprunner": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-apprunner.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-apprunner/ObservabilityConfiguration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ObservabilityConfiguration68CE4C7A"
+          }
+        ],
+        "/integ-apprunner/Service8/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Service86269A78B"
+          }
+        ],
+        "/integ-apprunner/URL8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL8"
+          }
+        ],
+        "/integ-apprunner/Service9/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Service9DECC815E"
+          }
+        ],
+        "/integ-apprunner/URL9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL9"
+          }
+        ]
+      },
+      "displayName": "integ-apprunner"
+    }
+  }
+}

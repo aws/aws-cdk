@@ -1,0 +1,177 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "integ-apprunner": {
+        "id": "integ-apprunner",
+        "path": "integ-apprunner",
+        "children": {
+          "ObservabilityConfiguration": {
+            "id": "ObservabilityConfiguration",
+            "path": "integ-apprunner/ObservabilityConfiguration",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-apprunner/ObservabilityConfiguration/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppRunner::ObservabilityConfiguration",
+                  "aws:cdk:cloudformation:props": {
+                    "traceConfiguration": {
+                      "vendor": "AWSXRAY"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apprunner.CfnObservabilityConfiguration",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apprunner.ObservabilityConfiguration",
+              "version": "0.0.0"
+            }
+          },
+          "Service8": {
+            "id": "Service8",
+            "path": "integ-apprunner/Service8",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-apprunner/Service8/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppRunner::Service",
+                  "aws:cdk:cloudformation:props": {
+                    "sourceConfiguration": {
+                      "authenticationConfiguration": {},
+                      "imageRepository": {
+                        "imageConfiguration": {
+                          "port": "8000"
+                        },
+                        "imageIdentifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
+                        "imageRepositoryType": "ECR_PUBLIC"
+                      }
+                    },
+                    "instanceConfiguration": {},
+                    "networkConfiguration": {
+                      "egressConfiguration": {
+                        "egressType": "DEFAULT"
+                      }
+                    },
+                    "observabilityConfiguration": {
+                      "observabilityConfigurationArn": {
+                        "Fn::GetAtt": [
+                          "ObservabilityConfiguration68CE4C7A",
+                          "ObservabilityConfigurationArn"
+                        ]
+                      },
+                      "observabilityEnabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apprunner.CfnService",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apprunner.Service",
+              "version": "0.0.0"
+            }
+          },
+          "URL8": {
+            "id": "URL8",
+            "path": "integ-apprunner/URL8",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedObservabilityConfiguration": {
+            "id": "ImportedObservabilityConfiguration",
+            "path": "integ-apprunner/ImportedObservabilityConfiguration",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "Service9": {
+            "id": "Service9",
+            "path": "integ-apprunner/Service9",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-apprunner/Service9/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppRunner::Service",
+                  "aws:cdk:cloudformation:props": {
+                    "sourceConfiguration": {
+                      "authenticationConfiguration": {},
+                      "imageRepository": {
+                        "imageConfiguration": {
+                          "port": "8000"
+                        },
+                        "imageIdentifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
+                        "imageRepositoryType": "ECR_PUBLIC"
+                      }
+                    },
+                    "instanceConfiguration": {},
+                    "networkConfiguration": {
+                      "egressConfiguration": {
+                        "egressType": "DEFAULT"
+                      }
+                    },
+                    "observabilityConfiguration": {
+                      "observabilityConfigurationArn": {
+                        "Fn::GetAtt": [
+                          "ObservabilityConfiguration68CE4C7A",
+                          "ObservabilityConfigurationArn"
+                        ]
+                      },
+                      "observabilityEnabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apprunner.CfnService",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apprunner.Service",
+              "version": "0.0.0"
+            }
+          },
+          "URL9": {
+            "id": "URL9",
+            "path": "integ-apprunner/URL9",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

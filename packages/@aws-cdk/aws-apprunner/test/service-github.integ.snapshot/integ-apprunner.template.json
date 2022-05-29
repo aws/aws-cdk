@@ -23,6 +23,9 @@
      "EgressConfiguration": {
       "EgressType": "DEFAULT"
      }
+    },
+    "ObservabilityConfiguration": {
+     "ObservabilityEnabled": false
     }
    }
   },
@@ -55,6 +58,9 @@
      "EgressConfiguration": {
       "EgressType": "DEFAULT"
      }
+    },
+    "ObservabilityConfiguration": {
+     "ObservabilityEnabled": false
     }
    }
   }
