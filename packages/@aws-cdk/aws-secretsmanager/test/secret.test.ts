@@ -364,9 +364,19 @@ test('grantRead with KMS Key', () => {
           Effect: 'Allow',
           Principal: {
             AWS: {
-              'Fn::GetAtt': [
-                'Role1ABCC5F0',
-                'Arn',
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
               ],
             },
           },
@@ -461,7 +471,11 @@ test('grantRead cross account', () => {
                 {
                   Ref: 'AWS::Partition',
                 },
-                ':iam::1234:root',
+                ':iam::',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':root',
               ],
             ],
           },
@@ -524,9 +538,19 @@ test('grantRead with version label constraint', () => {
         Effect: 'Allow',
         Principal: {
           AWS: {
-            'Fn::GetAtt': [
-              'Role1ABCC5F0',
-              'Arn',
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':iam::',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':root',
+              ],
             ],
           },
         },
@@ -611,9 +635,19 @@ test('grantWrite with kms', () => {
         Effect: 'Allow',
         Principal: {
           AWS: {
-            'Fn::GetAtt': [
-              'Role1ABCC5F0',
-              'Arn',
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':iam::',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':root',
+              ],
             ],
           },
         },
