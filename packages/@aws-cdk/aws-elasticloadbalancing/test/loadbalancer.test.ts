@@ -151,12 +151,12 @@ describe('tests', () => {
         },
         {
           name: 'private1',
-          subnetType: SubnetType.PRIVATE,
+          subnetType: SubnetType.PRIVATE_WITH_NAT,
           cidrMask: 21,
         },
         {
           name: 'private2',
-          subnetType: SubnetType.PRIVATE,
+          subnetType: SubnetType.PRIVATE_WITH_NAT,
           cidrMask: 21,
         },
       ],

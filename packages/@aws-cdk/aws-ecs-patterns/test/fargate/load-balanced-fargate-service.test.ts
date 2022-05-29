@@ -245,7 +245,7 @@ test('selecting correct vpcSubnets', () => {
         name: 'Public',
       },
       {
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
         cidrMask: 20,
         name: 'ISOLATED',
       },
@@ -258,7 +258,7 @@ test('selecting correct vpcSubnets', () => {
       image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
     },
     taskSubnets: {
-      subnetType: ec2.SubnetType.ISOLATED,
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
     },
   });
   // THEN
