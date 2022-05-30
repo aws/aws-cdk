@@ -369,6 +369,16 @@ export enum InstanceClass {
   C6G = 'c6g',
 
   /**
+   * Compute optimized instances for high performance computing, 7th generation with Graviton3 processors
+   */
+  COMPUTE7_GRAVITON3 = 'c7g',
+
+  /**
+   * Compute optimized instances for high performance computing, 7th generation with Graviton3 processors
+   */
+  C7G = 'c7g',
+
+  /**
    * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
    * and local NVME drive
    */
