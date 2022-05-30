@@ -866,6 +866,29 @@
                                     },
                                     {
                                       "Action": [
+                                        "eks:CreateCluster",
+                                        "eks:CreateFargateProfile",
+                                        "eks:DeleteCluster",
+                                        "eks:DescribeCluster",
+                                        "eks:DescribeUpdate",
+                                        "eks:TagResource",
+                                        "eks:UntagResource",
+                                        "eks:UpdateClusterConfig",
+                                        "eks:UpdateClusterVersion"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    },
+                                    {
+                                      "Action": [
+                                        "eks:DeleteFargateProfile",
+                                        "eks:DescribeFargateProfile"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    },
+                                    {
+                                      "Action": [
                                         "ec2:DescribeDhcpOptions",
                                         "ec2:DescribeInstances",
                                         "ec2:DescribeNetworkInterfaces",
@@ -873,17 +896,6 @@
                                         "ec2:DescribeSecurityGroups",
                                         "ec2:DescribeSubnets",
                                         "ec2:DescribeVpcs",
-                                        "eks:CreateCluster",
-                                        "eks:CreateFargateProfile",
-                                        "eks:DeleteCluster",
-                                        "eks:DeleteFargateProfile",
-                                        "eks:DescribeCluster",
-                                        "eks:DescribeFargateProfile",
-                                        "eks:DescribeUpdate",
-                                        "eks:TagResource",
-                                        "eks:UntagResource",
-                                        "eks:UpdateClusterConfig",
-                                        "eks:UpdateClusterVersion",
                                         "iam:CreateServiceLinkedRole",
                                         "iam:GetRole",
                                         "iam:listAttachedRolePolicies"
@@ -1465,6 +1477,11 @@
                           ]
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
+                        "environment": {
+                          "variables": {
+                            "AWS_STS_REGIONAL_ENDPOINTS": "regional"
+                          }
+                        },
                         "handler": "index.onEvent",
                         "layers": [
                           {
@@ -1657,6 +1674,11 @@
                           ]
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
+                        "environment": {
+                          "variables": {
+                            "AWS_STS_REGIONAL_ENDPOINTS": "regional"
+                          }
+                        },
                         "handler": "index.isComplete",
                         "layers": [
                           {
@@ -2667,7 +2689,7 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParameters0a87d743996e4e6b297f9bfcb21122dd6de845a697ee71e30a77f3c417485774S3BucketBD0E52F3"
+                            "Ref": "AssetParameterseec87f9ea401013c27f6b15dc873d1ae0704a2d1881762417ecaba99f29ae559S3BucketF5B59FCA"
                           },
                           "/",
                           {
@@ -2677,7 +2699,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters0a87d743996e4e6b297f9bfcb21122dd6de845a697ee71e30a77f3c417485774S3VersionKeyA98754EE"
+                                    "Ref": "AssetParameterseec87f9ea401013c27f6b15dc873d1ae0704a2d1881762417ecaba99f29ae559S3VersionKeyB2D75F52"
                                   }
                                 ]
                               }
@@ -2690,7 +2712,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters0a87d743996e4e6b297f9bfcb21122dd6de845a697ee71e30a77f3c417485774S3VersionKeyA98754EE"
+                                    "Ref": "AssetParameterseec87f9ea401013c27f6b15dc873d1ae0704a2d1881762417ecaba99f29ae559S3VersionKeyB2D75F52"
                                   }
                                 ]
                               }
@@ -2878,13 +2900,13 @@
                   "version": "0.0.0"
                 }
               },
-              "01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476": {
-                "id": "01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476",
-                "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476",
+              "50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17": {
+                "id": "50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17",
+                "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476/S3Bucket",
+                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2892,7 +2914,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476/S3VersionKey",
+                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2900,7 +2922,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476/ArtifactHash",
+                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2946,13 +2968,13 @@
                   "version": "0.0.0"
                 }
               },
-              "0a87d743996e4e6b297f9bfcb21122dd6de845a697ee71e30a77f3c417485774": {
-                "id": "0a87d743996e4e6b297f9bfcb21122dd6de845a697ee71e30a77f3c417485774",
-                "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/0a87d743996e4e6b297f9bfcb21122dd6de845a697ee71e30a77f3c417485774",
+              "eec87f9ea401013c27f6b15dc873d1ae0704a2d1881762417ecaba99f29ae559": {
+                "id": "eec87f9ea401013c27f6b15dc873d1ae0704a2d1881762417ecaba99f29ae559",
+                "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/eec87f9ea401013c27f6b15dc873d1ae0704a2d1881762417ecaba99f29ae559",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/0a87d743996e4e6b297f9bfcb21122dd6de845a697ee71e30a77f3c417485774/S3Bucket",
+                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/eec87f9ea401013c27f6b15dc873d1ae0704a2d1881762417ecaba99f29ae559/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2960,7 +2982,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/0a87d743996e4e6b297f9bfcb21122dd6de845a697ee71e30a77f3c417485774/S3VersionKey",
+                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/eec87f9ea401013c27f6b15dc873d1ae0704a2d1881762417ecaba99f29ae559/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2968,7 +2990,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/0a87d743996e4e6b297f9bfcb21122dd6de845a697ee71e30a77f3c417485774/ArtifactHash",
+                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/eec87f9ea401013c27f6b15dc873d1ae0704a2d1881762417ecaba99f29ae559/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2980,13 +3002,13 @@
                   "version": "0.0.0"
                 }
               },
-              "e6768f2ab6ac4b2efff56a1f7c9868e75c6377be42aee2a38487ced012f203b0": {
-                "id": "e6768f2ab6ac4b2efff56a1f7c9868e75c6377be42aee2a38487ced012f203b0",
-                "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/e6768f2ab6ac4b2efff56a1f7c9868e75c6377be42aee2a38487ced012f203b0",
+              "4ef590e97d7a8eb96926f7580424cfda027fa610b80a71194c0a04277f711247": {
+                "id": "4ef590e97d7a8eb96926f7580424cfda027fa610b80a71194c0a04277f711247",
+                "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/4ef590e97d7a8eb96926f7580424cfda027fa610b80a71194c0a04277f711247",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/e6768f2ab6ac4b2efff56a1f7c9868e75c6377be42aee2a38487ced012f203b0/S3Bucket",
+                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/4ef590e97d7a8eb96926f7580424cfda027fa610b80a71194c0a04277f711247/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2994,7 +3016,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/e6768f2ab6ac4b2efff56a1f7c9868e75c6377be42aee2a38487ced012f203b0/S3VersionKey",
+                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/4ef590e97d7a8eb96926f7580424cfda027fa610b80a71194c0a04277f711247/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3002,7 +3024,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/e6768f2ab6ac4b2efff56a1f7c9868e75c6377be42aee2a38487ced012f203b0/ArtifactHash",
+                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/AssetParameters/4ef590e97d7a8eb96926f7580424cfda027fa610b80a71194c0a04277f711247/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3304,7 +3326,7 @@
                       "aws:cdk:cloudformation:props": {
                         "content": {
                           "s3Bucket": {
-                            "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3BucketFBCC9B7ERef"
+                            "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3Bucket786CB778Ref"
                           },
                           "s3Key": {
                             "Fn::Join": [
@@ -3317,7 +3339,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey7F3E0EF5Ref"
+                                          "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3VersionKey9D83A51CRef"
                                         }
                                       ]
                                     }
@@ -3330,7 +3352,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey7F3E0EF5Ref"
+                                          "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3VersionKey9D83A51CRef"
                                         }
                                       ]
                                     }
@@ -3759,17 +3781,17 @@
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awsstepfunctionstasksemrcontainersallservicesintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3BucketFBCC9B7ERef": {
-                "id": "reference-to-awsstepfunctionstasksemrcontainersallservicesintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3BucketFBCC9B7ERef",
-                "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersallservicesintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3BucketFBCC9B7ERef",
+              "reference-to-awsstepfunctionstasksemrcontainersallservicesintegAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3Bucket786CB778Ref": {
+                "id": "reference-to-awsstepfunctionstasksemrcontainersallservicesintegAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3Bucket786CB778Ref",
+                "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersallservicesintegAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3Bucket786CB778Ref",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnParameter",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awsstepfunctionstasksemrcontainersallservicesintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey7F3E0EF5Ref": {
-                "id": "reference-to-awsstepfunctionstasksemrcontainersallservicesintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey7F3E0EF5Ref",
-                "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersallservicesintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey7F3E0EF5Ref",
+              "reference-to-awsstepfunctionstasksemrcontainersallservicesintegAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3VersionKey9D83A51CRef": {
+                "id": "reference-to-awsstepfunctionstasksemrcontainersallservicesintegAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3VersionKey9D83A51CRef",
+                "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersallservicesintegAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3VersionKey9D83A51CRef",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnParameter",
                   "version": "0.0.0"
@@ -3837,7 +3859,7 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParameterse6768f2ab6ac4b2efff56a1f7c9868e75c6377be42aee2a38487ced012f203b0S3BucketEA574650"
+                            "Ref": "AssetParameters4ef590e97d7a8eb96926f7580424cfda027fa610b80a71194c0a04277f711247S3Bucket994F40B1"
                           },
                           "/",
                           {
@@ -3847,7 +3869,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameterse6768f2ab6ac4b2efff56a1f7c9868e75c6377be42aee2a38487ced012f203b0S3VersionKey97B5050E"
+                                    "Ref": "AssetParameters4ef590e97d7a8eb96926f7580424cfda027fa610b80a71194c0a04277f711247S3VersionKeyA2A7435D"
                                   }
                                 ]
                               }
@@ -3860,7 +3882,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameterse6768f2ab6ac4b2efff56a1f7c9868e75c6377be42aee2a38487ced012f203b0S3VersionKey97B5050E"
+                                    "Ref": "AssetParameters4ef590e97d7a8eb96926f7580424cfda027fa610b80a71194c0a04277f711247S3VersionKeyA2A7435D"
                                   }
                                 ]
                               }
@@ -3900,11 +3922,11 @@
                           "ClusterSecurityGroupId"
                         ]
                       },
-                      "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3BucketFBCC9B7ERef": {
-                        "Ref": "AssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3BucketC0D91AC4"
+                      "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3Bucket786CB778Ref": {
+                        "Ref": "AssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3Bucket1232D470"
                       },
-                      "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey7F3E0EF5Ref": {
-                        "Ref": "AssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey26CFD1B0"
+                      "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3VersionKey9D83A51CRef": {
+                        "Ref": "AssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3VersionKeyBFF4F192"
                       },
                       "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3Bucket1B3FC856Ref": {
                         "Ref": "AssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3Bucket83B8778F"
