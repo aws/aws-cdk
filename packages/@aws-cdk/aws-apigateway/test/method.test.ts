@@ -935,4 +935,143 @@ describe('method', () => {
 
 
   });
+
+  describe('Metrics', () => {
+    test('metric', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'test-api');
+      const method = api.root.addResource('pets').addMethod('GET');
+      const metricName = '4XXError';
+      const statistic = 'Sum';
+      const metric = method.metric(metricName, api.deploymentStage, { statistic });
+
+      // THEN
+      expect(metric.namespace).toEqual('AWS/ApiGateway');
+      expect(metric.metricName).toEqual(metricName);
+      expect(metric.statistic).toEqual(statistic);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricClientError', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'test-api');
+      const method = api.root.addResource('pets').addMethod('GET');
+      const color = '#00ff00';
+      const metric = method.metricClientError(api.deploymentStage, { color });
+
+      // THEN
+      expect(metric.metricName).toEqual('4XXError');
+      expect(metric.statistic).toEqual('Sum');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricServerError', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'test-api');
+      const method = api.root.addResource('pets').addMethod('GET');
+      const color = '#00ff00';
+      const metric = method.metricServerError(api.deploymentStage, { color });
+
+      // THEN
+      expect(metric.metricName).toEqual('5XXError');
+      expect(metric.statistic).toEqual('Sum');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricCacheHitCount', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'test-api');
+      const method = api.root.addResource('pets').addMethod('GET');
+      const color = '#00ff00';
+      const metric = method.metricCacheHitCount(api.deploymentStage, { color });
+
+      // THEN
+      expect(metric.metricName).toEqual('CacheHitCount');
+      expect(metric.statistic).toEqual('Sum');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricCacheMissCount', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'test-api');
+      const method = api.root.addResource('pets').addMethod('GET');
+      const color = '#00ff00';
+      const metric = method.metricCacheMissCount(api.deploymentStage, { color });
+
+      // THEN
+      expect(metric.metricName).toEqual('CacheMissCount');
+      expect(metric.statistic).toEqual('Sum');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricCount', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'test-api');
+      const method = api.root.addResource('pets').addMethod('GET');
+      const color = '#00ff00';
+      const metric = method.metricCount(api.deploymentStage, { color });
+
+      // THEN
+      expect(metric.metricName).toEqual('Count');
+      expect(metric.statistic).toEqual('SampleCount');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricIntegrationLatency', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'test-api');
+      const method = api.root.addResource('pets').addMethod('GET');
+      const color = '#00ff00';
+      const metric = method.metricIntegrationLatency(api.deploymentStage, { color });
+
+      // THEN
+      expect(metric.metricName).toEqual('IntegrationLatency');
+      expect(metric.statistic).toEqual('Average');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricLatency', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'test-api');
+      const method = api.root.addResource('pets').addMethod('GET');
+      const color = '#00ff00';
+      const metric = method.metricLatency(api.deploymentStage, { color });
+
+      // THEN
+      expect(metric.metricName).toEqual('Latency');
+      expect(metric.statistic).toEqual('Average');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+    });
+  });
 });
