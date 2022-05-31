@@ -9,7 +9,7 @@ TAG='aws-lambda-layer'
 
 docker build -t ${TAG} .
 
-echo ">> Extrating layer.zip from the build container..."
+echo ">> Extracting layer.zip from the build container..."
 CONTAINER=$(docker run -d ${TAG} false)
 docker cp ${CONTAINER}:/layer.zip ../lib/layer.zip
 

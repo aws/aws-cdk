@@ -1905,7 +1905,10 @@ export class Bucket extends BucketBase {
         expirationDate: rule.expirationDate,
         expirationInDays: rule.expiration?.toDays(),
         id: rule.id,
-        noncurrentVersionExpirationInDays: rule.noncurrentVersionExpiration && rule.noncurrentVersionExpiration.toDays(),
+        noncurrentVersionExpiration: rule.noncurrentVersionExpiration && {
+          noncurrentDays: rule.noncurrentVersionExpiration.toDays(),
+          newerNoncurrentVersions: rule.noncurrentVersionsToRetain,
+        },
         noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
           storageClass: t.storageClass.value,
           transitionInDays: t.transitionAfter.toDays(),
@@ -1920,6 +1923,8 @@ export class Bucket extends BucketBase {
         })),
         expiredObjectDeleteMarker: rule.expiredObjectDeleteMarker,
         tagFilters: self.parseTagFilters(rule.tagFilters),
+        objectSizeLessThan: rule.objectSizeLessThan,
+        objectSizeGreaterThan: rule.objectSizeGreaterThan,
       };
 
       return x;

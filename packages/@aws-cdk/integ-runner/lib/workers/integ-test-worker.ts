@@ -1,7 +1,8 @@
 import * as workerpool from 'workerpool';
 import * as logger from '../logger';
-import { IntegTestConfig } from '../runner/integ-tests';
-import { printResults, printSummary, IntegBatchResponse, IntegTestOptions, IntegRunnerMetrics, flatten } from './common';
+import { IntegTestInfo } from '../runner/integration-tests';
+import { flatten } from '../utils';
+import { printResults, printSummary, IntegBatchResponse, IntegTestOptions, IntegRunnerMetrics } from './common';
 
 /**
  * Options for an integration test batch
@@ -126,7 +127,7 @@ export async function runIntegrationTestsInParallel(
       if (!test) break;
       const testStart = Date.now();
       logger.highlight(`Running test ${test.fileName} in ${worker.profile ? worker.profile + '/' : ''}${worker.region}`);
-      const response: IntegTestConfig[][] = await options.pool.exec('integTestWorker', [{
+      const response: IntegTestInfo[][] = await options.pool.exec('integTestWorker', [{
         region: worker.region,
         profile: worker.profile,
         tests: [test],

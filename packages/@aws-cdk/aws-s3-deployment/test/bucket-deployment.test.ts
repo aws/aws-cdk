@@ -708,15 +708,53 @@ testFutureBehavior('lambda execution role gets permissions to read from the sour
   });
 });
 
+testFutureBehavior('lambda execution role gets putObjectAcl permission when deploying with accessControl', s3GrantWriteCtx, cdk.App, (app) => {
+  // GIVEN
+  const stack = new cdk.Stack(app);
+  const source = new s3.Bucket(stack, 'Source');
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.bucket(source, 'file.zip')],
+    destinationBucket: bucket,
+    accessControl: s3.BucketAccessControl.PUBLIC_READ,
+  });
+
+  // THEN
+  const map = Template.fromStack(stack).findResources('AWS::IAM::Policy');
+  expect(map).toBeDefined();
+  const resource = map[Object.keys(map)[0]];
+  expect(resource.Properties.PolicyDocument.Statement).toContainEqual({
+    Action: [
+      's3:PutObjectAcl',
+      's3:PutObjectVersionAcl',
+    ],
+    Effect: 'Allow',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          {
+            'Fn::GetAtt': [
+              'DestC383B82A',
+              'Arn',
+            ],
+          },
+          '/*',
+        ],
+      ],
+    },
+  });
+});
+
 test('memoryLimit can be used to specify the memory limit for the deployment resource handler', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // WHEN
-
   // we define 3 deployments with 2 different memory configurations
-
   new s3deploy.BucketDeployment(stack, 'Deploy256-1', {
     sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
     destinationBucket: bucket,
@@ -736,12 +774,50 @@ test('memoryLimit can be used to specify the memory limit for the deployment res
   });
 
   // THEN
-
   // we expect to find only two handlers, one for each configuration
-
   Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 256 });
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 1024 });
+});
+
+test('ephemeralStorageSize can be used to specify the storage size for the deployment resource handler', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  // we define 3 deployments with 2 different memory configurations
+  new s3deploy.BucketDeployment(stack, 'Deploy256-1', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    ephemeralStorageSize: cdk.Size.mebibytes(512),
+  });
+
+  new s3deploy.BucketDeployment(stack, 'Deploy256-2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    ephemeralStorageSize: cdk.Size.mebibytes(512),
+  });
+
+  new s3deploy.BucketDeployment(stack, 'Deploy1024', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    ephemeralStorageSize: cdk.Size.mebibytes(1024),
+  });
+
+  // THEN
+  // we expect to find only two handlers, one for each configuration
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    EphemeralStorage: {
+      Size: 512,
+    },
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    EphemeralStorage: {
+      Size: 1024,
+    },
+  });
 });
 
 test('deployment allows custom role to be supplied', () => {
