@@ -31,7 +31,7 @@ export function calculateFunctionHash(fn: LambdaFunction) {
   }
 
   if (FeatureFlags.of(fn).isEnabled(LAMBDA_RECOGNIZE_LAYER_VERSION)) {
-    stringifiedConfig = stringifiedConfig + calculateLayersHash(fn.layers);
+    stringifiedConfig = stringifiedConfig + calculateLayersHash(fn._layers);
   }
 
   const hash = crypto.createHash('md5');

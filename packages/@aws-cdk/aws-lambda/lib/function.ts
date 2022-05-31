@@ -638,13 +638,10 @@ export class Function extends FunctionBase {
 
   public readonly permissionsNode = this.node;
 
-
   protected readonly canCreatePermissions = true;
 
-  /**
-   * The lambda layers that this function depends on.
-   */
-  public readonly layers: ILayerVersion[] = [];
+  /** @internal */
+  public readonly _layers: ILayerVersion[] = [];
 
   private _logGroup?: logs.ILogGroup;
 
@@ -913,7 +910,7 @@ export class Function extends FunctionBase {
    */
   public addLayers(...layers: ILayerVersion[]): void {
     for (const layer of layers) {
-      if (this.layers.length === 5) {
+      if (this._layers.length === 5) {
         throw new Error('Unable to add layer: this lambda function already uses 5 layers.');
       }
       if (layer.compatibleRuntimes && !layer.compatibleRuntimes.find(runtime => runtime.runtimeEquals(this.runtime))) {
@@ -924,7 +921,7 @@ export class Function extends FunctionBase {
       // Currently no validations for compatible architectures since Lambda service
       // allows layers configured with one architecture to be used with a Lambda function
       // from another architecture.
-      this.layers.push(layer);
+      this._layers.push(layer);
     }
   }
 
@@ -1054,15 +1051,15 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
   }
 
   private renderLayers() {
-    if (!this.layers || this.layers.length === 0) {
+    if (!this._layers || this._layers.length === 0) {
       return undefined;
     }
 
     if (FeatureFlags.of(this).isEnabled(LAMBDA_RECOGNIZE_LAYER_VERSION)) {
-      this.layers.sort();
+      this._layers.sort();
     }
 
-    return this.layers.map(layer => layer.layerVersionArn);
+    return this._layers.map(layer => layer.layerVersionArn);
   }
 
   private renderEnvironment() {
