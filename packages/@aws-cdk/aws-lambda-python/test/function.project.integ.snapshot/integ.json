@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-lambda-python/test/integ.function.project": {
+    "@aws-cdk/aws-lambda-python/test/integ.function.project": {
       "stacks": [
         "cdk-integ-lambda-function-project"
       ],

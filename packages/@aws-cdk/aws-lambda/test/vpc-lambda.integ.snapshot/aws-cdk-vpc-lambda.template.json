@@ -455,7 +455,7 @@
      ]
     },
     "Handler": "index.main",
-    "Runtime": "python3.6",
+    "Runtime": "python3.9",
     "VpcConfig": {
      "SecurityGroupIds": [
       {

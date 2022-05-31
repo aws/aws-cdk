@@ -79,7 +79,7 @@
      ]
     },
     "Handler": "index.main",
-    "Runtime": "python3.6"
+    "Runtime": "python3.9"
    },
    "DependsOn": [
     "HandlerServiceRoleFCDC14AE"
@@ -164,7 +164,7 @@
      ]
     },
     "Handler": "index.main",
-    "Runtime": "python3.6"
+    "Runtime": "python3.9"
    },
    "DependsOn": [
     "CallbackHandlerServiceRole3689695E"

@@ -1,5 +1,5 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -181,15 +181,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "FunInvoke2UTWxhlfyqbT5FTn5jvgbLgjFfJwzswGk55DU1HY1CA1AAFB"
-          }
-        ],
-        "FunInvokeServicePrincipalelasticloadbalancingamazonawscomD2CAC0C4": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FunInvokeServicePrincipalelasticloadbalancingamazonawscomD2CAC0C4",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
