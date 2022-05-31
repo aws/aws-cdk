@@ -292,13 +292,14 @@ describe('rules', () => {
     });
   });
 
-  test('Bucket with objectSizeGreaterThan', () => {
+  test('Bucket with object size rules', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
     new Bucket(stack, 'Bucket', {
       lifecycleRules: [{
+        objectSizeLessThan: 0,
         objectSizeGreaterThan: 0,
       }],
     });
@@ -307,6 +308,7 @@ describe('rules', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
+          ObjectSizeLessThan: 0,
           ObjectSizeGreaterThan: 0,
           Status: 'Enabled',
         }],
