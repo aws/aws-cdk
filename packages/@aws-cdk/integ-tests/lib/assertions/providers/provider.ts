@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Duration, CfnResource, AssetStaging, Stack, FileAssetPackaging, Token, Lazy, Reference, Aspects, IAspect } from '@aws-cdk/core';
+import { Duration, CfnResource, AssetStaging, Stack, FileAssetPackaging, Token, Lazy, Reference, Aspects } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -119,7 +119,13 @@ class SingletonFunction extends CoreConstruct {
     /**
      * The policies can be added by different constructs
      */
-    Aspects.of(this).add(new SingletonFunctionPolicyAspect(this.policies));
+    Aspects.of(this).add({
+      visit: (node: IConstruct): void => {
+        if (node === this) {
+          this.lambdaFunction.addPolicies(this.policies);
+        }
+      },
+    });
   }
 
   private ensureFunction(props: SingletonFunctionProps): LambdaFunctionProvider {
@@ -213,19 +219,6 @@ export class AssertionsProvider extends CoreConstruct {
    */
   public addPolicyStatementFromSdkCall(service: string, api: string, resources?: string[]): void {
     this.handler.addPolicyStatementFromSdkCall(service, api, resources);
-  }
-}
-
-class SingletonFunctionPolicyAspect implements IAspect {
-  constructor(private readonly policies: any[]) {
-  }
-
-  public visit(node: IConstruct): void {
-    if (!(node instanceof SingletonFunction)) {
-      return;
-    }
-
-    node.lambdaFunction.addPolicies(this.policies);
   }
 }
 
