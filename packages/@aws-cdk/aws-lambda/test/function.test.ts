@@ -190,7 +190,7 @@ describe('function', () => {
       fn.addPermission('S3Permission', {
         action: 'lambda:*',
         principal: account,
-        principalOrg: org,
+        organizationId: org.organizationId,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {

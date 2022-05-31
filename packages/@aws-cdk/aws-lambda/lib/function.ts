@@ -8,6 +8,7 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Size, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { AliasOptions, Alias } from './alias';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
 import { ICodeSigningConfig } from './code-signing-config';
@@ -26,7 +27,6 @@ import { Runtime } from './runtime';
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line
 import { LogRetentionRetryOptions } from './log-retention';
-import { AliasOptions, Alias } from './alias';
 import { addAlias } from './util';
 
 /**

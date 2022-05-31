@@ -82,9 +82,9 @@ export interface Permission {
    * You can use this property to ensure that all source principals are owned by
    * a specific organization.
    *
-   * @default - No principalOrg
+   * @default - No organizationId
    */
-  readonly principalOrg?: iam.OrganizationPrincipal;
+  readonly organizationId?: string;
 
   /**
    * The authType for the function URL that you are granting permissions for.

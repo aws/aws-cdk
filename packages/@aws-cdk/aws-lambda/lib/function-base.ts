@@ -361,7 +361,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       eventSourceToken: permission.eventSourceToken,
       sourceAccount: permission.sourceAccount ?? sourceAccount,
       sourceArn: permission.sourceArn ?? sourceArn,
-      principalOrgId: permission.principalOrg?.organizationId ?? principalOrgID,
+      principalOrgId: permission.organizationId ?? principalOrgID,
       functionUrlAuthType: permission.functionUrlAuthType,
     });
   }
@@ -655,7 +655,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     return undefined;
   }
 
-  private isPrincipalWithConditions(principal: iam.IPrincipal): principal is iam.PrincipalWithConditions {
+  private isPrincipalWithConditions(principal: iam.IPrincipal): boolean {
     return Object.keys(principal.policyFragment.conditions).length > 0;
   }
 }
