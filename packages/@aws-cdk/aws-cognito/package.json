@@ -122,7 +122,8 @@
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderFacebookProps",
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderAmazonProps",
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderGoogleProps",
-      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderAppleProps"
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderAppleProps",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderOidcProps"
     ]
   },
   "stability": "stable",
