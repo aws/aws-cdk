@@ -65,7 +65,7 @@ describe('test runner', () => {
     // WHEN
     const test = {
       fileName: 'test/test-data/integ.integ-test1.js',
-      directory: 'test/test-data',
+      discoveryRoot: 'test/test-data',
     };
     integTestWorker({
       tests: [test],
@@ -89,7 +89,7 @@ describe('test runner', () => {
     // WHEN
     const test = {
       fileName: 'test/test-data/integ.integ-test2.js',
-      directory: 'test/test-data',
+      discoveryRoot: 'test/test-data',
     };
     spawnSyncMock.mockReset();
     jest.spyOn(child_process, 'spawnSync').mockReturnValue({
@@ -108,7 +108,7 @@ describe('test runner', () => {
     // THEN
     expect(results[0]).toEqual({
       fileName: expect.stringMatching(/integ.integ-test2.js$/),
-      directory: 'test/test-data',
+      discoveryRoot: 'test/test-data',
     });
   });
 
@@ -116,7 +116,7 @@ describe('test runner', () => {
     // WHEN
     const test = {
       fileName: 'test/test-data/integ.test-with-snapshot.js',
-      directory: 'test/test-data',
+      discoveryRoot: 'test/test-data',
     };
     const results = integTestWorker({
       tests: [test],
@@ -154,7 +154,7 @@ describe('test runner', () => {
     // WHEN
     const test = {
       fileName: 'test/test-data/integ.test-with-snapshot.js',
-      directory: 'test/test-data',
+      discoveryRoot: 'test/test-data',
     };
     jest.spyOn(child_process, 'spawnSync').mockReturnValue({
       status: 1,
@@ -171,7 +171,7 @@ describe('test runner', () => {
 
     expect(results[0]).toEqual({
       fileName: 'test/test-data/integ.test-with-snapshot.js',
-      directory: 'test/test-data',
+      discoveryRoot: 'test/test-data',
     });
   });
 });
@@ -181,11 +181,11 @@ describe('parallel worker', () => {
     const tests = [
       {
         fileName: 'integ.test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
       {
         fileName: 'integ.another-test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
     ];
     await runIntegrationTests({
@@ -211,7 +211,7 @@ describe('parallel worker', () => {
   test('run tests', async () => {
     const tests = [{
       fileName: 'integ.test-with-snapshot.js',
-      directory: 'test/test-data',
+      discoveryRoot: 'test/test-data',
     }];
     const results = await runIntegrationTestsInParallel({
       pool,
@@ -226,7 +226,7 @@ describe('parallel worker', () => {
       failedTests: expect.arrayContaining([
         {
           fileName: 'integ.test-with-snapshot.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
       ]),
       metrics: expect.arrayContaining([
@@ -245,19 +245,19 @@ describe('parallel worker', () => {
     const tests = [
       {
         fileName: 'integ.test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
       {
         fileName: 'integ.another-test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
       {
         fileName: 'integ.another-test-with-snapshot2.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
       {
         fileName: 'integ.another-test-with-snapshot3.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
     ];
     const results = await runIntegrationTestsInParallel({
@@ -283,19 +283,19 @@ describe('parallel worker', () => {
       failedTests: expect.arrayContaining([
         {
           fileName: 'integ.test-with-snapshot.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
         {
           fileName: 'integ.another-test-with-snapshot.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
         {
           fileName: 'integ.another-test-with-snapshot2.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
         {
           fileName: 'integ.another-test-with-snapshot3.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
       ]),
       metrics: expect.arrayContaining([
@@ -339,11 +339,11 @@ describe('parallel worker', () => {
     const tests = [
       {
         fileName: 'integ.test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
       {
         fileName: 'integ.another-test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
     ];
     const results = await runIntegrationTestsInParallel({
@@ -362,11 +362,11 @@ describe('parallel worker', () => {
       failedTests: expect.arrayContaining([
         {
           fileName: 'integ.test-with-snapshot.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
         {
           fileName: 'integ.another-test-with-snapshot.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
       ]),
       metrics: expect.arrayContaining([
@@ -392,11 +392,11 @@ describe('parallel worker', () => {
     const tests = [
       {
         fileName: 'integ.test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
       {
         fileName: 'integ.another-test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
     ];
     const results = await runIntegrationTestsInParallel({
@@ -415,11 +415,11 @@ describe('parallel worker', () => {
       failedTests: expect.arrayContaining([
         {
           fileName: 'integ.another-test-with-snapshot.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
         {
           fileName: 'integ.test-with-snapshot.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
       ]),
       metrics: expect.arrayContaining([
@@ -439,11 +439,11 @@ describe('parallel worker', () => {
     const tests = [
       {
         fileName: 'integ.test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
       {
         fileName: 'integ.another-test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
     ];
     const results = await runIntegrationTestsInParallel({
@@ -462,11 +462,11 @@ describe('parallel worker', () => {
       failedTests: expect.arrayContaining([
         {
           fileName: 'integ.test-with-snapshot.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
         {
           fileName: 'integ.another-test-with-snapshot.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
       ]),
       metrics: expect.arrayContaining([
