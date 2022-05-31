@@ -46,7 +46,7 @@ export abstract class LambdaInsightsVersion {
    * Version 1.0.119.0
    */
   public static readonly VERSION_1_0_119_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.119.0');
-  
+
   /**
    * Version 1.0.135.0
    */
