@@ -12,10 +12,12 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import { Lazy, Size } from '@aws-cdk/core';
+import { Aspects, Lazy, Size } from '@aws-cdk/core';
+import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import * as lambda from '../lib';
+import { calculateFunctionHash } from '../lib/function-hash';
 
 describe('function', () => {
   test('default function', () => {
@@ -1435,6 +1437,69 @@ describe('function', () => {
 
     // THEN
     expect(bindTarget).toEqual(fn);
+  });
+
+  test('layer is baked into the function version', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'TestStack');
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const code = new lambda.S3Code(bucket, 'ObjectKey');
+
+    const fn = new lambda.Function(stack, 'fn', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
+      handler: 'index.main',
+    });
+
+    const fnHash = calculateFunctionHash(fn);
+
+    // WHEN
+    const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
+      code,
+      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
+    });
+
+    fn.addLayers(layer);
+
+    const newFnHash = calculateFunctionHash(fn);
+
+    expect(fnHash).not.toEqual(newFnHash);
+  });
+
+  test('with feature flag, layer version is baked into function version', () => {
+    // GIVEN
+    const app = new cdk.App({ context: { [LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
+    const stack = new cdk.Stack(app, 'TestStack');
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const code = new lambda.S3Code(bucket, 'ObjectKey');
+    const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
+      code,
+      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
+    });
+
+    // function with layer
+    const fn = new lambda.Function(stack, 'fn', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
+      handler: 'index.main',
+      layers: [layer],
+    });
+
+    const fnHash = calculateFunctionHash(fn);
+
+    // use escape hatch to change the content of the layer
+    // this simulates updating the layer code which changes the version.
+    const cfnLayer = layer.node.defaultChild as lambda.CfnLayerVersion;
+    const newCode = (new lambda.S3Code(bucket, 'NewObjectKey')).bind(layer);
+    cfnLayer.content = {
+      s3Bucket: newCode.s3Location!.bucketName,
+      s3Key: newCode.s3Location!.objectKey,
+      s3ObjectVersion: newCode.s3Location!.objectVersion,
+    };
+
+    const newFnHash = calculateFunctionHash(fn);
+
+    expect(fnHash).not.toEqual(newFnHash);
   });
 
   test('using an incompatible layer', () => {
@@ -2893,6 +2958,29 @@ test('ephemeral storage allows unresolved tokens', () => {
       ephemeralStorageSize: Size.mebibytes(Lazy.number({ produce: () => 1024 })),
     });
   }).not.toThrow();
+});
+
+test('FunctionVersionUpgrade adds new description to function', () => {
+  const app = new cdk.App({ context: { [LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
+  const stack = new cdk.Stack(app);
+  new lambda.Function(stack, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.NODEJS_14_X,
+    description: 'my description',
+  });
+
+  Aspects.of(stack).add(new lambda.FunctionVersionUpgrade(LAMBDA_RECOGNIZE_LAYER_VERSION));
+
+  Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+    Properties:
+    {
+      Code: { ZipFile: 'foo' },
+      Handler: 'bar',
+      Runtime: 'nodejs14.x',
+      Description: 'my description version-hash:de36a94cfdb5cb58f7c7b4cd975120ba',
+    },
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {
