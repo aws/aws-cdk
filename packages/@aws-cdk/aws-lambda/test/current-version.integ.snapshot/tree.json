@@ -189,7 +189,7 @@
                             },
                             "qualifier": {
                               "Fn::GetAtt": [
-                                "MyLambdaCurrentVersionE7A382CC132baf6493c3210af4c8c0e36b416660",
+                                "MyLambdaCurrentVersionE7A382CC1c5f33e29b34a521d6a59697cc440454",
                                 "Version"
                               ]
                             },
@@ -222,7 +222,7 @@
                             },
                             "functionVersion": {
                               "Fn::GetAtt": [
-                                "MyLambdaCurrentVersionE7A382CC132baf6493c3210af4c8c0e36b416660",
+                                "MyLambdaCurrentVersionE7A382CC1c5f33e29b34a521d6a59697cc440454",
                                 "Version"
                               ]
                             },
