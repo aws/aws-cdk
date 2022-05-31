@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function error {
-  printf "\e[91;5;81m$@\e[0m\n"
+  printf "\e[91m$@\e[0m\n"
 }
 
 function usage {
