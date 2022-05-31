@@ -171,7 +171,7 @@
    "Properties": {
     "Content": {
      "S3Bucket": {
-      "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3Bucket7AAFAF8ARef"
+      "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3Bucket4FB1C7B2Ref"
      },
      "S3Key": {
       "Fn::Join": [
@@ -184,7 +184,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey15C3AF0ERef"
+             "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3VersionKey02A1BC33Ref"
             }
            ]
           }
@@ -197,7 +197,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey15C3AF0ERef"
+             "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3VersionKey02A1BC33Ref"
             }
            ]
           }
@@ -454,10 +454,10 @@
   "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegtestintegrationtestekscluster4D8C900FClusterSecurityGroupId": {
    "Type": "String"
   },
-  "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3Bucket7AAFAF8ARef": {
+  "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3Bucket4FB1C7B2Ref": {
    "Type": "String"
   },
-  "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey15C3AF0ERef": {
+  "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3VersionKey02A1BC33Ref": {
    "Type": "String"
   },
   "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3Bucket2F1A83BBRef": {
