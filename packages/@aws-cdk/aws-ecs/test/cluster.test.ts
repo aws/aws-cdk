@@ -2306,3 +2306,145 @@ test('throws when ASG Capacity Provider with capacityProviderName starting with 
     cluster.addAsgCapacityProvider(capacityProviderAl2);
   }).toThrow(/Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
 });
+
+describe('Accessing container instance role', function () {
+
+  const addUserDataMock = jest.fn();
+  const autoScalingGroup: autoscaling.AutoScalingGroup = {
+    addUserData: addUserDataMock,
+    addToRolePolicy: jest.fn(),
+    protectNewInstancesFromScaleIn: jest.fn(),
+  } as unknown as autoscaling.AutoScalingGroup;
+
+  afterEach(() => {
+    addUserDataMock.mockClear();
+  });
+
+  test('block ecs from accessing metadata service when canContainersAccessInstanceRole not set', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+    // THEN
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+
+  test('allow ecs accessing metadata service when canContainersAccessInstanceRole is set on addAsgCapacityProvider', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider, {
+      canContainersAccessInstanceRole: true,
+    });
+
+    // THEN
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+
+  test('allow ecs accessing metadata service when canContainersAccessInstanceRole is set on AsgCapacityProvider instantiation', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+      canContainersAccessInstanceRole: true,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+    // THEN
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+
+  test('allow ecs accessing metadata service when canContainersAccessInstanceRole is set on constructor and method', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+      canContainersAccessInstanceRole: true,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider, {
+      canContainersAccessInstanceRole: true,
+    });
+
+    // THEN
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+
+  test('block ecs from accessing metadata service when canContainersAccessInstanceRole set on constructor and not set on method', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+      canContainersAccessInstanceRole: true,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider, {
+      canContainersAccessInstanceRole: false,
+    });
+
+    // THEN
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+
+  test('allow ecs accessing metadata service when canContainersAccessInstanceRole is not set on constructor and set on method', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+      canContainersAccessInstanceRole: false,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider, {
+      canContainersAccessInstanceRole: true,
+    });
+
+    // THEN
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+});
+
