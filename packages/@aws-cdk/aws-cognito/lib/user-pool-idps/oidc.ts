@@ -1,4 +1,4 @@
-import { Token } from '@aws-cdk/core';
+import { Names, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 import { UserPoolIdentityProviderProps } from './base';
@@ -26,7 +26,7 @@ export interface UserPoolIdentityProviderOidcProps extends UserPoolIdentityProvi
   /**
    * The name of the provider
    *
-   * @default - the ID of the construct
+   * @default - the unique ID of the construct
    */
   readonly name?: string;
 
@@ -107,11 +107,15 @@ export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderOidcProps) {
     super(scope, id, props);
 
+    if (props.name && !Token.isUnresolved(props.name) && (props.name.length < 3 || props.name.length > 32)) {
+      throw new Error(`Expected provider name to be between 3 and 32 characters, received ${props.name} (${props.name.length} characters)`);
+    }
+
     const scopes = props.scopes ?? ['openid'];
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
       userPoolId: props.userPool.userPoolId,
-      providerName: getProviderName(this.node.id, props.name),
+      providerName: this.getProviderName(props.name),
       providerType: 'OIDC',
       providerDetails: {
         client_id: props.clientId,
@@ -130,19 +134,24 @@ export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
 
     this.providerName = super.getResourceNameAttribute(resource.ref);
   }
-}
 
-function getProviderName(id: string, name?: string): string {
-  if (name) {
-    if (!Token.isUnresolved(name) && (name.length < 3 || name.length > 32)) {
-      throw new Error(`Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`);
+  private getProviderName(name?: string): string {
+    if (name) {
+      if (!Token.isUnresolved(name) && (name.length < 3 || name.length > 32)) {
+        throw new Error(`Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`);
+      }
+      return name;
     }
-    return name;
-  }
 
-  if (id.length < 3 || id.length > 32) {
-    throw new Error(`Provider name defaults to construct's id (${id}) which is not between 3 and 32 characters. Please specify a valid name with \`name\`.`);
-  }
+    const uniqueId = Names.uniqueId(this);
 
-  return id;
+    if (uniqueId.length < 3) {
+      return `${uniqueId}oidc`;
+    }
+
+    if (uniqueId.length > 32) {
+      return uniqueId.substring(0, 16) + uniqueId.substring(uniqueId.length - 16);
+    }
+    return uniqueId;
+  }
 }

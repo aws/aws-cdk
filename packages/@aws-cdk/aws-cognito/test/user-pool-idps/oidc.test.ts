@@ -173,18 +173,42 @@ describe('UserPoolIdentityProvider', () => {
       })).toThrow(/Expected provider name to be between 3 and 32 characters/);
     });
 
-    test('throws when default name is invalid', () => {
+    test('generates a valid name when unique id is too short', () => {
       // GIVEN
       const stack = new Stack();
       const pool = new UserPool(stack, 'userpool');
 
-      // THEN
-      expect(() => new UserPoolIdentityProviderOidc(stack, 'xy', {
+      // WHEN
+      new UserPoolIdentityProviderOidc(stack, 'xy', {
         userPool: pool,
         clientId: 'client-id',
         clientSecret: 'client-secret',
         issuerUrl: 'https://my-issuer-url.com',
-      })).toThrow(/Provider name defaults to construct's id \(xy\) which is not between 3 and 32 characters/);
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
+        ProviderName: 'xyoidc',
+      });
+    });
+
+    test('generates a valid name when unique id is too long', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      // WHEN
+      new UserPoolIdentityProviderOidc(stack, `${'oidc'.repeat(10)}xyz`, {
+        userPool: pool,
+        clientId: 'client-id',
+        clientSecret: 'client-secret',
+        issuerUrl: 'https://my-issuer-url.com',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
+        ProviderName: 'oidcoidcoidcoidccoidcoidcoidcxyz',
+      });
     });
   });
 });
