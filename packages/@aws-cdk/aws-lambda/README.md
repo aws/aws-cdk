@@ -288,13 +288,15 @@ This has been fixed in the AWS CDK but *existing* users need to opt-in via a
 [feature flag]. Users who have run `cdk init` since this fix will be opted in,
 by default.
 
-Existing users will need to enable the [feature flag]
+Otherwise, you will need to enable the [feature flag]
 `@aws-cdk/aws-lambda:recognizeVersionProps`. Since CloudFormation does not
-allow duplicate versions, they will also need to make some modification to
-their function so that a new version can be created. To efficiently and trivially
-modify all your lambda functions at once, users can attach the
-`FunctionVersionUpgrade` aspect to the stack, which slightly modifes the
-function description.
+allow duplicate versions, you will also need to make some modification to
+your function so that a new version can be created. To efficiently and trivially
+modify all your lambda functions at once, you can attach the
+`FunctionVersionUpgrade` aspect to the stack, which slightly alters the
+function description. This aspect is intended for one-time use to upgrade the
+version of all your functions at the same time, and can safely be removed after
+deploying once.
 
 ```ts
 const stack = new Stack();
@@ -314,21 +316,23 @@ modified using the *[UpdateFunctionConfiguration]* API or not.
 ### `currentVersion`: Updated hashing logic for layer versions
 
 An additional update to the hashing logic fixes two issues surrounding layers.
-Prior to this change, updating the lambda layer version would have no affect on
+Prior to this change, updating the lambda layer version would have no effect on
 the function version. Also, the order of lambda layers provided to the function
 was unnecessarily baked into the hash.
 
-This has been fixed in the AWS CDK but *existing* users need to opt-in via a
-[feature flag]. Users who have run `cdk init` since this fix will be opted in,
-by default.
+This has been fixed in the AWS CDK starting with version 2.27. If you ran
+`cdk init` with an earlier version, you will need to opt-in via a [feature flag].
+If you run `cdk init` with v2.27 or later, this fix will be opted in, by default.
 
 Existing users will need to enable the [feature flag]
 `@aws-cdk/aws-lambda:recognizeLayerVersion`. Since CloudFormation does not
 allow duplicate versions, they will also need to make some modification to
 their function so that a new version can be created. To efficiently and trivially
 modify all your lambda functions at once, users can attach the
-`FunctionVersionUpgrade` aspect to the stack, which slightly modifes the
-function description.
+`FunctionVersionUpgrade` aspect to the stack, which slightly alters the
+function description. This aspect is intended for one-time use to upgrade the
+version of all your functions at the same time, and can safely be removed after
+deploying once.
 
 ```ts
 const stack = new Stack();
