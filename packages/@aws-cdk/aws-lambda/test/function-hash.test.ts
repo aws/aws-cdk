@@ -230,19 +230,28 @@ describe('function hash', () => {
       });
     });
 
-    test('no errors for imported lambda layers under feature flag', () => {
+    test('with feature flag, imported lambda layers can be distinguished', () => {
       const app = new App({ context: { [LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
 
       const stack2 = new Stack(app, 'stack2');
-      const importedLayer = lambda.LayerVersion.fromLayerVersionArn(stack2, 'imported-layer', 'arn:aws:lambda:<region>:<account>:layer:<layer-name>:<version>');
+      const importedLayer1 = lambda.LayerVersion.fromLayerVersionArn(stack2, 'imported-layer', 'arn:aws:lambda:<region>:<account>:layer:<layer-name>:<version1>');
       const fn1 = new lambda.Function(stack2, 'MyFunction', {
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromInline('foo'),
         handler: 'index.handler',
-        layers: [importedLayer],
+        layers: [importedLayer1],
       });
 
-      expect(() => calculateFunctionHash(fn1)).not.toThrow();
+      const stack3 = new Stack(app, 'stack3');
+      const importedLayer2 = lambda.LayerVersion.fromLayerVersionArn(stack3, 'imported-layer', 'arn:aws:lambda:<region>:<account>:layer:<layer-name>:<version2>');
+      const fn2 = new lambda.Function(stack3, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+        layers: [importedLayer2],
+      });
+
+      expect(calculateFunctionHash(fn1)).not.toEqual(calculateFunctionHash(fn2));
     });
   });
 

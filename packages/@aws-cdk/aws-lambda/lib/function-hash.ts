@@ -129,7 +129,9 @@ function calculateLayersHash(layers: ILayerVersion[]): string {
     const stack = Stack.of(layer);
     const layerResource = layer.node.defaultChild as CfnResource;
     // if there is no layer resource, then the layer was imported
+    // and we will include the layer arn and runtimes in the hash
     if (layerResource === undefined) {
+      layerConfig[layer.layerVersionArn] = layer.compatibleRuntimes;
       continue;
     }
     const config = stack.resolve((layerResource as any)._toCloudFormation());
