@@ -29,7 +29,7 @@ const genericEvent: AWSLambda.CloudFormationCustomResourceEventCommon = {
 
 const mockExecuteStatement = jest.fn(() => ({ promise: jest.fn(() => ({ Id: 'statementId' })) }));
 jest.mock('aws-sdk/clients/redshiftdata', () => class {
-  executeStatement = mockExecuteStatement;
+  batchExecuteStatement = mockExecuteStatement;
   describeStatement = () => ({ promise: jest.fn(() => ({ Status: 'FINISHED' })) });
 });
 import { handler as managePrivileges } from '../../lib/private/database-query-provider/privileges';
@@ -51,7 +51,7 @@ describe('create', () => {
       PhysicalResourceId: 'clusterName:databaseName:username:requestId',
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `GRANT INSERT, SELECT ON ${tableName} TO ${username}`,
+      Sqls: [`GRANT INSERT, SELECT ON ${tableName} TO ${username}`],
     }));
   });
 });
@@ -69,7 +69,7 @@ describe('delete', () => {
     await managePrivileges(resourceProperties, event);
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `REVOKE INSERT, SELECT ON ${tableName} FROM ${username}`,
+      Sqls: [`REVOKE INSERT, SELECT ON ${tableName} FROM ${username}`],
     }));
   });
 });
@@ -94,7 +94,7 @@ describe('update', () => {
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       ClusterIdentifier: newClusterName,
-      Sql: expect.stringMatching(/GRANT/),
+      Sqls: [expect.stringMatching(/GRANT/)],
     }));
   });
 
@@ -123,7 +123,7 @@ describe('update', () => {
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Database: newDatabaseName,
-      Sql: expect.stringMatching(/GRANT/),
+      Sqls: [expect.stringMatching(/GRANT/)],
     }));
   });
 
@@ -138,7 +138,7 @@ describe('update', () => {
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: expect.stringMatching(new RegExp(`GRANT .* TO ${newUsername}`)),
+      Sqls: [expect.stringMatching(new RegExp(`GRANT .* TO ${newUsername}`))],
     }));
   });
 
@@ -154,10 +154,10 @@ describe('update', () => {
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `REVOKE INSERT, SELECT ON ${tableName} FROM ${username}`,
+      Sqls: [`REVOKE INSERT, SELECT ON ${tableName} FROM ${username}`],
     }));
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `GRANT DROP ON ${newTableName} TO ${username}`,
+      Sqls: [`GRANT DROP ON ${newTableName} TO ${username}`],
     }));
   });
 });

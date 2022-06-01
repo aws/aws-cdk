@@ -59,12 +59,12 @@ async function createTable(
     statement += ` ${tableAndClusterProps.sortStyle} SORTKEY(${sortKeyColumnsString})`;
   }
 
-  await executeStatement(statement, tableAndClusterProps);
+  await executeStatement([statement], tableAndClusterProps);
   return tableName;
 }
 
 async function dropTable(tableName: string, clusterProps: ClusterProps) {
-  await executeStatement(`DROP TABLE ${tableName}`, clusterProps);
+  await executeStatement([`DROP TABLE ${tableName}`], clusterProps);
 }
 
 async function updateTable(
@@ -140,7 +140,7 @@ async function updateTable(
     }
   }
 
-  await Promise.all(alterationStatements.map(statement => executeStatement(statement, tableAndClusterProps)));
+  await executeStatement(alterationStatements, tableAndClusterProps);
 
   return tableName;
 }

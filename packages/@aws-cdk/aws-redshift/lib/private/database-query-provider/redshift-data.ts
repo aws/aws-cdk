@@ -4,18 +4,38 @@ import { ClusterProps } from './types';
 
 const redshiftData = new RedshiftData();
 
-export async function executeStatement(statement: string, clusterProps: ClusterProps): Promise<void> {
-  const executeStatementProps = {
-    ClusterIdentifier: clusterProps.clusterName,
-    Database: clusterProps.databaseName,
-    SecretArn: clusterProps.adminUserArn,
-    Sql: statement,
-  };
-  const executedStatement = await redshiftData.executeStatement(executeStatementProps).promise();
-  if (!executedStatement.Id) {
-    throw new Error('Service error: Statement execution did not return a statement ID');
+/**
+ * Execute one or more SQL statements in a transaction.
+ * [docs]{@link https://docs.aws.amazon.com/redshift-data/latest/APIReference/API_BatchExecuteStatement.html}
+ * @param {string[]} statements - The ordered list of SQL statements.
+ * @param {ClusterProps} clusterProps - The properties of the Redshift Cluster
+ * to execute against.
+ * @returns {Promise<void>}
+ */
+export async function executeStatement(statements: string[], clusterProps: ClusterProps): Promise<void> {
+  // You can execute at most 40 statements in a batch execute transaction.
+  // https://docs.aws.amazon.com/redshift-data/latest/APIReference/API_BatchExecuteStatement.html#API_BatchExecuteStatement_RequestSyntax
+  const maxBatchSize = 40;
+  for (
+    let statementIndex = 0;
+    statementIndex < Math.ceil(statements.length / maxBatchSize);
+    statementIndex++
+  ) {
+    const executeStatementProps = {
+      ClusterIdentifier: clusterProps.clusterName,
+      Database: clusterProps.databaseName,
+      SecretArn: clusterProps.adminUserArn,
+      Sqls: statements.slice(
+        statementIndex * maxBatchSize,
+        (statementIndex + 1 ) * maxBatchSize,
+      ),
+    };
+    const executedStatement = await redshiftData.batchExecuteStatement(executeStatementProps).promise();
+    if (!executedStatement.Id) {
+      throw new Error('Service error: Statement execution did not return a statement ID');
+    }
+    await waitForStatementComplete(executedStatement.Id);
   }
-  await waitForStatementComplete(executedStatement.Id);
 }
 
 const waitTimeout = 100;

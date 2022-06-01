@@ -29,7 +29,7 @@ const genericEvent: AWSLambda.CloudFormationCustomResourceEventCommon = {
 
 const mockExecuteStatement = jest.fn(() => ({ promise: jest.fn(() => ({ Id: 'statementId' })) }));
 jest.mock('aws-sdk/clients/redshiftdata', () => class {
-  executeStatement = mockExecuteStatement;
+  batchExecuteStatement = mockExecuteStatement;
   describeStatement = () => ({ promise: jest.fn(() => ({ Status: 'FINISHED' })) });
 });
 const mockGetSecretValue = jest.fn(() => ({ promise: jest.fn(() => ({ SecretString: JSON.stringify({ password }) })) }));
@@ -58,7 +58,7 @@ describe('create', () => {
       },
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `CREATE USER username PASSWORD '${password}'`,
+      Sqls: [`CREATE USER username PASSWORD '${password}'`],
     }));
   });
 });
@@ -76,7 +76,7 @@ describe('delete', () => {
     await manageUser(resourceProperties, event);
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: 'DROP USER username',
+      Sqls: ['DROP USER username'],
     }));
   });
 });
@@ -101,7 +101,7 @@ describe('update', () => {
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       ClusterIdentifier: newClusterName,
-      Sql: expect.stringMatching(/CREATE USER/),
+      Sqls: [expect.stringMatching(/CREATE USER/)],
     }));
   });
 
@@ -130,7 +130,7 @@ describe('update', () => {
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Database: newDatabaseName,
-      Sql: expect.stringMatching(/CREATE USER/),
+      Sqls: [expect.stringMatching(/CREATE USER/)],
     }));
   });
 
@@ -145,7 +145,7 @@ describe('update', () => {
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: expect.stringMatching(new RegExp(`CREATE USER ${newUsername}`)),
+      Sqls: [expect.stringMatching(new RegExp(`CREATE USER ${newUsername}`))],
     }));
   });
 
@@ -157,7 +157,7 @@ describe('update', () => {
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: expect.stringMatching(new RegExp(`ALTER USER ${username} PASSWORD '${password}'`)),
+      Sqls: [expect.stringMatching(new RegExp(`ALTER USER ${username} PASSWORD '${password}'`))],
     }));
   });
 });

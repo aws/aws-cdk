@@ -3,7 +3,7 @@ import type * as AWSLambda from 'aws-lambda';
 
 const mockExecuteStatement = jest.fn(() => ({ promise: jest.fn(() => ({ Id: 'statementId' })) }));
 jest.mock('aws-sdk/clients/redshiftdata', () => class {
-  executeStatement = mockExecuteStatement;
+  batchExecuteStatement = mockExecuteStatement;
   describeStatement = () => ({ promise: jest.fn(() => ({ Status: 'FINISHED' })) });
 });
 import { Column, TableDistStyle, TableSortStyle } from '../../lib';
@@ -59,7 +59,7 @@ describe('create', () => {
       PhysicalResourceId: `${tableNamePrefix}${requestIdTruncated}`,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1))`,
+      Sqls: [`CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1))`],
     }));
   });
 
@@ -77,7 +77,7 @@ describe('create', () => {
       PhysicalResourceId: tableNamePrefix,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `CREATE TABLE ${tableNamePrefix} (col1 varchar(1))`,
+      Sqls: [`CREATE TABLE ${tableNamePrefix} (col1 varchar(1))`],
     }));
   });
 
@@ -92,7 +92,7 @@ describe('create', () => {
     await manageTable(newResourceProperties, event);
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1)) DISTSTYLE KEY DISTKEY(col1)`,
+      Sqls: [`CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1)) DISTSTYLE KEY DISTKEY(col1)`],
     }));
   });
 
@@ -111,7 +111,7 @@ describe('create', () => {
     await manageTable(newResourceProperties, event);
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1),col2 varchar(1),col3 varchar(1)) COMPOUND SORTKEY(col1,col3)`,
+      Sqls: [`CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1),col2 varchar(1),col3 varchar(1)) COMPOUND SORTKEY(col1,col3)`],
     }));
   });
 
@@ -131,7 +131,7 @@ describe('create', () => {
     await manageTable(newResourceProperties, event);
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(4),col2 float,col3 float) DISTSTYLE KEY DISTKEY(col1) COMPOUND SORTKEY(col2,col3)`,
+      Sqls: [`CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(4),col2 float,col3 float) DISTSTYLE KEY DISTKEY(col1) COMPOUND SORTKEY(col2,col3)`],
     }));
   });
 });
@@ -149,7 +149,7 @@ describe('delete', () => {
     await manageTable(resourceProperties, event);
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `DROP TABLE ${physicalResourceId}`,
+      Sqls: [`DROP TABLE ${physicalResourceId}`],
     }));
   });
 });
@@ -174,7 +174,7 @@ describe('update', () => {
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       ClusterIdentifier: newClusterName,
-      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${tableNamePrefix}${requestIdTruncated}`)),
+      Sqls: [expect.stringMatching(new RegExp(`CREATE TABLE ${tableNamePrefix}${requestIdTruncated}`))],
     }));
   });
 
@@ -203,7 +203,7 @@ describe('update', () => {
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Database: newDatabaseName,
-      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${tableNamePrefix}${requestIdTruncated}`)),
+      Sqls: [expect.stringMatching(new RegExp(`CREATE TABLE ${tableNamePrefix}${requestIdTruncated}`))],
     }));
   });
 
@@ -221,7 +221,7 @@ describe('update', () => {
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${newTableNamePrefix}${requestIdTruncated}`)),
+      Sqls: [expect.stringMatching(new RegExp(`CREATE TABLE ${newTableNamePrefix}${requestIdTruncated}`))],
     }));
   });
 
@@ -238,7 +238,7 @@ describe('update', () => {
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (${newTableColumnName} ${newTableColumnDataType})`,
+      Sqls: [`CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (${newTableColumnName} ${newTableColumnDataType})`],
     }));
   });
 
@@ -255,7 +255,7 @@ describe('update', () => {
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `ALTER TABLE ${physicalResourceId} ADD ${newTableColumnName} ${newTableColumnDataType}`,
+      Sqls: [`ALTER TABLE ${physicalResourceId} ADD ${newTableColumnName} ${newTableColumnDataType}`],
     }));
   });
 
@@ -270,7 +270,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1)) DISTSTYLE EVEN`,
+        Sqls: [`CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1)) DISTSTYLE EVEN`],
       }));
     });
 
@@ -290,7 +290,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1))`,
+        Sqls: [`CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1))`],
       }));
     });
 
@@ -312,7 +312,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER DISTSTYLE ${newDistStyle}`,
+        Sqls: [`ALTER TABLE ${physicalResourceId} ALTER DISTSTYLE ${newDistStyle}`],
       }));
     });
 
@@ -326,7 +326,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1)) DISTKEY(col1)`,
+        Sqls: [`CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1)) DISTKEY(col1)`],
       }));
     });
 
@@ -346,7 +346,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1))`,
+        Sqls: [`CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1))`],
       }));
     });
 
@@ -374,7 +374,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER DISTKEY ${newDistKey}`,
+        Sqls: [`ALTER TABLE ${physicalResourceId} ALTER DISTKEY ${newDistKey}`],
       }));
     });
   });
@@ -408,7 +408,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1),col2 varchar(1)) INTERLEAVED SORTKEY(col2)`,
+        Sqls: [`CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1),col2 varchar(1)) INTERLEAVED SORTKEY(col2)`],
       }));
     });
 
@@ -431,7 +431,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1),col2 varchar(1)) INTERLEAVED SORTKEY(col1)`,
+        Sqls: [`CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1),col2 varchar(1)) INTERLEAVED SORTKEY(col1)`],
       }));
     });
 
@@ -454,7 +454,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER COMPOUND SORTKEY(col2)`,
+        Sqls: [`ALTER TABLE ${physicalResourceId} ALTER COMPOUND SORTKEY(col2)`],
       }));
     });
 
@@ -477,7 +477,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER COMPOUND SORTKEY(col1)`,
+        Sqls: [`ALTER TABLE ${physicalResourceId} ALTER COMPOUND SORTKEY(col1)`],
       }));
     });
 
@@ -500,7 +500,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER SORTKEY AUTO`,
+        Sqls: [`ALTER TABLE ${physicalResourceId} ALTER SORTKEY AUTO`],
       }));
     });
   });
