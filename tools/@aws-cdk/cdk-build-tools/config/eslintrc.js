@@ -17,6 +17,7 @@ module.exports = {
     'import',
     '@aws-cdk',
     'jest',
+    'no-instanceof',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -198,6 +199,10 @@ module.exports = {
         'method',
       ],
     }],
+
+    // 'instanceof' must be avoided, it cannot be made to work properly in the face of symlinks and transitive dependencies
+    // (it may only be used for built-ins and classes that are guaranteed to not escape the scope)
+    'no-instanceof/no-instanceof': 'error',
 
     // Overrides for plugin:jest/recommended
     "jest/expect-expect": "off",
