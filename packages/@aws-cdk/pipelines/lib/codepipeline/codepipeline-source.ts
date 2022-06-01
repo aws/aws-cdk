@@ -281,6 +281,18 @@ export interface S3SourceOptions {
    * @default - The bucket name
    */
   readonly actionName?: string;
+
+  /**
+   * The Role in which context's this Action will be executing in.
+   * The Pipeline's Role will assume this Role
+   * (the required permissions for that will be granted automatically)
+   * right before executing this Action.
+   * This Action will be passed into your {@link IAction.bind}
+   * method in the {@link ActionBindOptions.role} property.
+   *
+   * @default a new Role will be generated
+   */
+  readonly role?: iam.IRole;
 }
 
 class S3Source extends CodePipelineSource {
@@ -299,6 +311,7 @@ class S3Source extends CodePipelineSource {
       bucketKey: this.objectKey,
       trigger: this.props.trigger,
       bucket: this.bucket,
+      role: this.props.role,
       variablesNamespace,
     });
   }
