@@ -878,7 +878,7 @@ describe('stack', () => {
 
     // THEN
     expect(stack.stackName.length).toEqual(128);
-    expect(stack.stackName).toEqual('ProdAppThisNameButItWillOnlyBeTooLongWhenCombinedWithTheStackNameThisNameIsVeryLongButItWillOnlyBeTooLongWhenCombinedWit845473AA')
+    expect(stack.stackName).toEqual('ProdAppThisNameButItWillOnlyBeTooLongWhenCombinedWithTheStackNameThisNameIsVeryLongButItWillOnlyBeTooLongWhenCombinedWit845473AA');
   });
 
   test('stack construct id does not go through stack name validation if there is an explicit stack name', () => {
