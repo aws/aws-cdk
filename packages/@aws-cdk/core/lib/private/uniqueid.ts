@@ -27,9 +27,10 @@ const MAX_ID_LEN = 255;
  * of a length-limited "human" rendition of the path components.
  *
  * @param components The path components
- * @returns a unique alpha-numeric identifier with a maximum length of 255
+ * @param maxLength The maximum length of the return value
+ * @returns a unique alpha-numeric identifier with a maximum length of 255 or the maxLength parameter
  */
-export function makeUniqueId(components: string[]) {
+export function makeUniqueId(components: string[], maxLength?: number) {
   components = components.filter(x => x !== HIDDEN_ID);
 
   if (components.length === 0) {
@@ -66,6 +67,10 @@ export function makeUniqueId(components: string[]) {
     .map(removeNonAlphanumeric)
     .join('')
     .slice(0, MAX_HUMAN_LEN);
+
+  if (maxLength && human.length + hash.length > maxLength) {
+    return human.slice(0, maxLength - hash.length) + hash;
+  }
 
   return human + hash;
 }
