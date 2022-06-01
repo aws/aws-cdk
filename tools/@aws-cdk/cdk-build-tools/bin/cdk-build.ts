@@ -4,6 +4,7 @@ import { lintCurrentPackage } from '../lib/lint';
 import { shell } from '../lib/os';
 import { cdkBuildOptions, CompilerOverrides, currentPackageJson, genScript } from '../lib/package-info';
 import { Timers } from '../lib/timer';
+import { generateModuleDirScript } from '../lib/module-dir';
 
 async function main() {
   const args = yargs
@@ -48,6 +49,7 @@ async function main() {
   if (args.gen && gen) {
     await shell([gen], { timers, env });
   }
+  await generateModuleDirScript();
 
   const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc };
   await compileCurrentPackage(options, timers, overrides);

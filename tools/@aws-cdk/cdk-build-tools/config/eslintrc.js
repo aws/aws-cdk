@@ -27,6 +27,9 @@ module.exports = {
   extends: [
     'plugin:import/typescript',
     'plugin:jest/recommended',
+
+    // Enable all local plugins (tools/@aws-cdk/eslint-plugin)
+    'plugin:@aws-cdk/all',
   ],
   settings: {
     'import/parsers': {
@@ -41,10 +44,6 @@ module.exports = {
   },
   ignorePatterns: ['*.js', '*.d.ts', 'node_modules/', '*.generated.ts'],
   rules: {
-    '@aws-cdk/construct-import-order': [ 'error' ],
-    '@aws-cdk/no-core-construct': [ 'error' ],
-    '@aws-cdk/no-qualified-construct': [ 'error' ],
-    '@aws-cdk/invalid-cfn-imports': [ 'error' ],
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
     '@typescript-eslint/no-require-imports': ['error'],
     '@typescript-eslint/indent': ['error', 2],
