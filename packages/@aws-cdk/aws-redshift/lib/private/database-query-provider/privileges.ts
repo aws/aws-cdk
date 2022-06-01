@@ -32,15 +32,17 @@ export async function handler(props: UserTablePrivilegesHandlerProps & ClusterPr
 }
 
 async function revokePrivileges(username: string, tablePrivileges: TablePrivilege[], clusterProps: ClusterProps) {
-  await Promise.all(tablePrivileges.map(({ tableName, actions }) => {
-    return executeStatement([`REVOKE ${actions.join(', ')} ON ${tableName} FROM ${username}`], clusterProps);
-  }));
+  const privilegeStatements = tablePrivileges.map(({ tableName, actions }) => {
+    return `REVOKE ${actions.join(', ')} ON ${tableName} FROM ${username}`;
+  });
+  await executeStatement(privilegeStatements, clusterProps);
 }
 
 async function grantPrivileges(username: string, tablePrivileges: TablePrivilege[], clusterProps: ClusterProps) {
-  await Promise.all(tablePrivileges.map(({ tableName, actions }) => {
-    return executeStatement([`GRANT ${actions.join(', ')} ON ${tableName} TO ${username}`], clusterProps);
-  }));
+  const privilegeStatements = tablePrivileges.map(({ tableName, actions }) => {
+    return `GRANT ${actions.join(', ')} ON ${tableName} TO ${username}`;
+  });
+  await executeStatement(privilegeStatements, clusterProps);
 }
 
 async function updatePrivileges(
