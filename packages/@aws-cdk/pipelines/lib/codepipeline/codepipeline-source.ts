@@ -293,12 +293,8 @@ export interface S3SourceOptions {
   readonly actionName?: string;
 
   /**
-   * The Role in which context's this Action will be executing in.
-   * The Pipeline's Role will assume this Role
-   * (the required permissions for that will be granted automatically)
-   * right before executing this Action.
-   * This Action will be passed into your {@link IAction.bind}
-   * method in the {@link ActionBindOptions.role} property.
+   * The role that will be assumed by the pipeline prior to executing
+   * the `S3Source` action.
    *
    * @default - a new role will be generated
    */
