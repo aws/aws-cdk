@@ -11,7 +11,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const auth = new TokenAuthorizer(stack, 'myauthorizer', {
@@ -176,7 +176,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const auth = new TokenAuthorizer(stack, 'myauthorizer', {
@@ -320,7 +320,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const role = new iam.Role(stack, 'authorizerassumerole', {
