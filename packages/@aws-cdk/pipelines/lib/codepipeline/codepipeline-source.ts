@@ -300,7 +300,7 @@ export interface S3SourceOptions {
    * This Action will be passed into your {@link IAction.bind}
    * method in the {@link ActionBindOptions.role} property.
    *
-   * @default a new Role will be generated
+   * @default - a new role will be generated
    */
   readonly role?: iam.IRole;
 }
