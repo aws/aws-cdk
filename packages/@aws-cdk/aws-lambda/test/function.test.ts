@@ -2983,7 +2983,7 @@ test('FunctionVersionUpgrade adds new description to function', () => {
       Code: { ZipFile: 'foo' },
       Handler: 'bar',
       Runtime: 'nodejs14.x',
-      Description: 'my description version-hash:de36a94cfdb5cb58f7c7b4cd975120ba',
+      Description: 'my description version-hash:54f18c47346ed84843c2dac547de81fa',
     },
   });
 });
