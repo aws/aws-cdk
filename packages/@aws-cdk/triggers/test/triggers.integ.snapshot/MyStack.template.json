@@ -69,7 +69,7 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "MyFunctionCurrentVersion197490AF776ea8de2edf446759649703b18110a4"
+     "Ref": "MyFunctionCurrentVersion197490AFd41a8aa4109c7b22dd39d6bef408da46"
     }
    },
    "DependsOn": [
@@ -78,7 +78,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MyFunctionCurrentVersion197490AF776ea8de2edf446759649703b18110a4": {
+  "MyFunctionCurrentVersion197490AFd41a8aa4109c7b22dd39d6bef408da46": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -119,7 +119,7 @@
          ],
          "Resource": [
           {
-           "Ref": "MyFunctionCurrentVersion197490AF776ea8de2edf446759649703b18110a4"
+           "Ref": "MyFunctionCurrentVersion197490AFd41a8aa4109c7b22dd39d6bef408da46"
           }
          ]
         }

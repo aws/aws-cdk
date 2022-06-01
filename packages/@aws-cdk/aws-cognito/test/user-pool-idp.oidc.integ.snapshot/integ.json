@@ -1,9 +1,9 @@
 {
-  "version": "20.0.0",
+  "version": "18.0.0",
   "testCases": {
-    "integ.lambda": {
+    "integ.user-pool-idp.oidc": {
       "stacks": [
-        "aws-cdk-lambda-1"
+        "integ-user-pool-idp-google"
       ],
       "diffAssets": false,
       "stackUpdateWorkflow": true

@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -44,13 +44,16 @@
         "/lambda-test-current-version/MyLambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CC132baf6493c3210af4c8c0e36b416660"
+            "data": "MyLambdaCurrentVersionE7A382CC1c5f33e29b34a521d6a59697cc440454"
           }
         ],
         "/lambda-test-current-version/MyLambda/CurrentVersion/EventInvokeConfig/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionEventInvokeConfigD120DC68"
+            "data": "MyLambdaCurrentVersionEventInvokeConfigD120DC68",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/lambda-test-current-version/MyLambda/CurrentVersion/Aliaslive/Resource": [
@@ -75,6 +78,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssetParameters8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34ArtifactHash70E274C4"
+          }
+        ],
+        "MyLambdaCurrentVersionE7A382CC132baf6493c3210af4c8c0e36b416660": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaCurrentVersionE7A382CC132baf6493c3210af4c8c0e36b416660",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
