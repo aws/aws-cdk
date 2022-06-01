@@ -1,7 +1,7 @@
 import { Template, Match } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { CrossAccountDestination } from '../lib';
+import { CrossAccountDestination, FilterPattern, LogGroup } from '../lib';
 
 describe('destination', () => {
   test('simple destination', () => {
@@ -63,6 +63,26 @@ describe('destination', () => {
         ],
       },
       TargetArn: 'arn:bogus',
+    });
+  });
+
+  test('fromDestinationArn', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const destination = CrossAccountDestination.fromDestinationArn(stack, 'Dest', 'arn:aws:logs:us-east-1:123456789012:destination:testDestination');
+    const logGroup = new LogGroup(stack, 'LogGroup');
+    logGroup.addSubscriptionFilter('CrossAccountDestination', {
+      destination,
+      filterPattern: FilterPattern.allEvents(),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::SubscriptionFilter', {
+      DestinationArn: 'arn:aws:logs:us-east-1:123456789012:destination:testDestination',
+      FilterPattern: '',
+      LogGroupName: { Ref: 'LogGroupF5B46931' },
     });
   });
 });

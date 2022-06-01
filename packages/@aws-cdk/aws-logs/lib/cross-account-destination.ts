@@ -6,6 +6,24 @@ import { CfnDestination } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
 import { ArnFormat } from '@aws-cdk/core';
 
+abstract class CrossAccountDestinationBase extends cdk.Resource implements ILogSubscriptionDestination {
+  /**
+   * The name of this CrossAccountDestination object
+   * @attribute
+   */
+  public abstract readonly destinationName: string;
+
+  /**
+   * The ARN of this CrossAccountDestination object
+   * @attribute
+   */
+  public abstract readonly destinationArn: string;
+
+  public bind(_scope: Construct, _sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig {
+    return { arn: this.destinationArn };
+  }
+}
+
 /**
  * Properties for a CrossAccountDestination
  */
@@ -43,7 +61,26 @@ export interface CrossAccountDestinationProps {
  *
  * @resource AWS::Logs::Destination
  */
-export class CrossAccountDestination extends cdk.Resource implements ILogSubscriptionDestination {
+export class CrossAccountDestination extends CrossAccountDestinationBase {
+  /**
+   * Import an existing CloudWatch Logs Destination given its ARN.
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param destinationArn AWS CloudWatch Logs Destination ARN (i.e. arn:aws:logs:<region>:<account-id>:destination:MyDestination).
+   */
+  public static fromDestinationArn(scope: Construct, id: string, destinationArn: string): ILogSubscriptionDestination {
+    const stack = cdk.Stack.of(scope);
+    const destinationName = stack.splitArn(destinationArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
+
+    class Import extends CrossAccountDestinationBase {
+      public readonly destinationName = destinationName;
+      public readonly destinationArn = destinationArn;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * Policy object of this CrossAccountDestination object
    */
@@ -92,10 +129,6 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
 
   public addToPolicy(statement: iam.PolicyStatement) {
     this.policyDocument.addStatements(statement);
-  }
-
-  public bind(_scope: Construct, _sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig {
-    return { arn: this.destinationArn };
   }
 
   /**

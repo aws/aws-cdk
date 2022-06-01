@@ -99,11 +99,6 @@ Logs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-
 Log events matching a particular filter can be sent to either a Lambda function
 or a Kinesis stream.
 
-If the Kinesis stream lives in a different account, a `CrossAccountDestination`
-object needs to be added in the destination account which will act as a proxy
-for the remote Kinesis stream. This object is automatically created for you
-if you use the CDK Kinesis library.
-
 Create a `SubscriptionFilter`, initialize it with an appropriate `Pattern` (see
 below) and supply the intended destination:
 
@@ -116,6 +111,22 @@ new logs.SubscriptionFilter(this, 'Subscription', {
   logGroup,
   destination: new destinations.LambdaDestination(fn),
   filterPattern: logs.FilterPattern.allTerms("ERROR", "MainThread"),
+});
+```
+
+If your `SubscriptionFilter` destination lives in a different account, a `CrossAccountDestination`
+object needs to be added in the destination account which will act as a proxy
+for the remote resource. After you have created the `CrossAccountDestination` in the destination account,
+use the `CrossAccountDestination.fromDestinationArn` method in the source account to import the destination:
+
+```ts
+declare const logGroup: logs.LogGroup;
+
+const destination = logs.CrossAccountDestination.fromDestinationArn(this, 'Destination', 'arn:aws:logs:us-east-1:123456789012:destination:testDestination');
+new logs.SubscriptionFilter(this, 'Subscription', {
+  logGroup,
+  destination,
+  filterPattern: logs.FilterPattern.allEvents(),
 });
 ```
 
