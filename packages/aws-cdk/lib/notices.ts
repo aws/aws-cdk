@@ -1,3 +1,4 @@
+import { ClientRequest } from 'http';
 import * as https from 'https';
 import * as path from 'path';
 import * as fs from 'fs-extra';
@@ -108,15 +109,18 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
   fetch(): Promise<Notice[]> {
     const timeout = 3000;
     return new Promise((resolve, reject) => {
+      var req: ClientRequest;
 
       var timer = setTimeout(() => {
-        reject(new Error('Request timed out.'));
+        if (req) {
+          req.destroy(new Error('Request timed out'));
+        }
       }, timeout);
 
       timer.unref();
 
       try {
-        const req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json',
+        req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json',
           { timeout },
           res => {
             if (res.statusCode === 200) {
@@ -147,8 +151,6 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
         req.on('error', reject);
       } catch (e) {
         reject(new Error(`HTTPS 'get' call threw an error: ${e.message}`));
-      } finally {
-        clearTimeout(timer);
       }
     });
   }
