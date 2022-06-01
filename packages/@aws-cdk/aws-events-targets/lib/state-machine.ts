@@ -29,11 +29,8 @@ export class SfnStateMachine implements events.IRuleTarget {
   private readonly role: iam.IRole;
 
   constructor(public readonly machine: sfn.IStateMachine, private readonly props: SfnStateMachineProps = {}) {
-    if (props.role) {
-      props.role.grant(new iam.ServicePrincipal('events.amazonaws.com'));
-    }
     // no statements are passed because we are configuring permissions by using grant* helper below
-    this.role = props.role ?? singletonEventRole(machine, []);
+    this.role = props.role ?? singletonEventRole(machine);
     machine.grantStartExecution(this.role);
   }
 

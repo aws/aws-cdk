@@ -118,12 +118,9 @@ export class EcsTask implements events.IRuleTarget {
     this.taskCount = props.taskCount ?? 1;
     this.platformVersion = props.platformVersion;
 
-    if (props.role) {
-      const role = props.role;
-      this.createEventRolePolicyStatements().forEach(role.addToPrincipalPolicy.bind(role));
-      this.role = role;
-    } else {
-      this.role = singletonEventRole(this.taskDefinition, this.createEventRolePolicyStatements());
+    this.role = props.role ?? singletonEventRole(this.taskDefinition);
+    for (const stmt of this.createEventRolePolicyStatements()) {
+      this.role.addToPrincipalPolicy(stmt);
     }
 
     // Security groups are only configurable with the "awsvpc" network mode.
