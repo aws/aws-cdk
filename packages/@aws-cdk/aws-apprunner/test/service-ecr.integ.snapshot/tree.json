@@ -189,7 +189,12 @@
                         "imageRepositoryType": "ECR"
                       }
                     },
-                    "instanceConfiguration": {}
+                    "instanceConfiguration": {},
+                    "networkConfiguration": {
+                      "egressConfiguration": {
+                        "egressType": "DEFAULT"
+                      }
+                    }
                   }
                 },
                 "constructInfo": {
@@ -358,7 +363,12 @@
                         "imageRepositoryType": "ECR"
                       }
                     },
-                    "instanceConfiguration": {}
+                    "instanceConfiguration": {},
+                    "networkConfiguration": {
+                      "egressConfiguration": {
+                        "egressType": "DEFAULT"
+                      }
+                    }
                   }
                 },
                 "constructInfo": {
