@@ -109,9 +109,9 @@ export class CdkCliWrapper implements ICdk {
     this.directory = options.directory;
     this.env = options.env;
     try {
-      this.cdk = options.cdkExecutable ?? require.resolve('aws-cdk/bin/cdk');
+      this.cdk = options.cdkExecutable ?? 'cdk';
     } catch (e) {
-      throw new Error(`could not resolve path to cdk executable: "${options.cdkExecutable}"`);
+      throw new Error(`could not resolve path to cdk executable: "${options.cdkExecutable ?? 'cdk'}"`);
     }
   }
 
