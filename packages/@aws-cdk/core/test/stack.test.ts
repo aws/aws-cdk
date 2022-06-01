@@ -593,7 +593,7 @@ describe('stack', () => {
     producerM.exportValue(resourceM.getAtt('Att'));
 
     const template = appM.synth().getStackByName(producerM.stackName).template;
-    expect(template).toEqual({
+    expect(template).toMatchObject({
       Outputs: {
         ExportsOutputFnGetAttOVERRIDELOGICALIDAtt2DD28019: {
           Export: {
