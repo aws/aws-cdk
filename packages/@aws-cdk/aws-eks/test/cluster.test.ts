@@ -3088,7 +3088,7 @@ describe('cluster', () => {
 
     // THEN
     const casm = app.synth();
-    const providerNestedStackTemplate = JSON.parse(fs.readFileSync(path.join(casm.directory, 'StackImportedKubectlProvider5E8A973A.nested.template.json'), 'utf-8'));
+    const providerNestedStackTemplate = JSON.parse(fs.readFileSync(path.join(casm.directory, 'StackStackImported1CBA9C50KubectlProviderAA00BA49.nested.template.json'), 'utf-8'));
     expect(providerNestedStackTemplate?.Resources?.Handler886CB40B?.Properties?.MemorySize).toEqual(4096);
   });
 
