@@ -1,10 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from './construct-compat';
 import { Lazy } from './lazy';
 
 const CFN_ELEMENT_SYMBOL = Symbol.for('@aws-cdk/core.CfnElement');
@@ -12,7 +8,7 @@ const CFN_ELEMENT_SYMBOL = Symbol.for('@aws-cdk/core.CfnElement');
 /**
  * An element of a CloudFormation stack.
  */
-export abstract class CfnElement extends CoreConstruct {
+export abstract class CfnElement extends Construct {
   /**
    * Returns `true` if a construct is a stack element (i.e. part of the
    * synthesized cloudformation template).
@@ -74,7 +70,9 @@ export abstract class CfnElement extends CoreConstruct {
     });
 
     if (!this.node.tryGetContext(cxapi.DISABLE_LOGICAL_ID_METADATA)) {
-      Node.of(this).addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, this.constructor);
+      Node.of(this).addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, {
+        traceFromFunction: this.constructor,
+      });
     }
   }
 

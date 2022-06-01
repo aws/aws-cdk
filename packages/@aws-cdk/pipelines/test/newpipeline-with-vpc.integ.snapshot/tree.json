@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "PipelineStack": {
@@ -983,10 +983,10 @@
                             "name": "Source",
                             "actions": [
                               {
-                                "name": "rix0rrr_cdk-pipelines-demo",
+                                "name": "aws_aws-cdk",
                                 "outputArtifacts": [
                                   {
-                                    "name": "rix0rrr_cdk_pipelines_demo_Source"
+                                    "name": "aws_aws_cdk_Source"
                                   }
                                 ],
                                 "actionTypeId": {
@@ -996,9 +996,9 @@
                                   "provider": "GitHub"
                                 },
                                 "configuration": {
-                                  "Owner": "rix0rrr",
-                                  "Repo": "cdk-pipelines-demo",
-                                  "Branch": "main",
+                                  "Owner": "aws",
+                                  "Repo": "aws-cdk",
+                                  "Branch": "v2-main",
                                   "OAuthToken": "{{resolve:secretsmanager:github-token:SecretString:::}}",
                                   "PollForSourceChanges": false
                                 },
@@ -1013,7 +1013,7 @@
                                 "name": "Synth",
                                 "inputArtifacts": [
                                   {
-                                    "name": "rix0rrr_cdk_pipelines_demo_Source"
+                                    "name": "aws_aws_cdk_Source"
                                   }
                                 ],
                                 "outputArtifacts": [
@@ -1262,13 +1262,13 @@
                     "id": "Source",
                     "path": "PipelineStack/Pipeline/Pipeline/Source",
                     "children": {
-                      "rix0rrr_cdk-pipelines-demo": {
-                        "id": "rix0rrr_cdk-pipelines-demo",
-                        "path": "PipelineStack/Pipeline/Pipeline/Source/rix0rrr_cdk-pipelines-demo",
+                      "aws_aws-cdk": {
+                        "id": "aws_aws-cdk",
+                        "path": "PipelineStack/Pipeline/Pipeline/Source/aws_aws-cdk",
                         "children": {
                           "WebhookResource": {
                             "id": "WebhookResource",
-                            "path": "PipelineStack/Pipeline/Pipeline/Source/rix0rrr_cdk-pipelines-demo/WebhookResource",
+                            "path": "PipelineStack/Pipeline/Pipeline/Source/aws_aws-cdk/WebhookResource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::CodePipeline::Webhook",
                               "aws:cdk:cloudformation:props": {
@@ -1282,7 +1282,7 @@
                                     "matchEquals": "refs/heads/{Branch}"
                                   }
                                 ],
-                                "targetAction": "rix0rrr_cdk-pipelines-demo",
+                                "targetAction": "aws_aws-cdk",
                                 "targetPipeline": {
                                   "Ref": "Pipeline9850B417"
                                 },
@@ -1297,14 +1297,14 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Construct",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.9"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   },
                   "Build": {
@@ -1741,14 +1741,14 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Construct",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.9"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   },
                   "UpdatePipeline": {
@@ -1759,14 +1759,14 @@
                         "id": "SelfMutate",
                         "path": "PipelineStack/Pipeline/Pipeline/UpdatePipeline/SelfMutate",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Construct",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.9"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   },
                   "Assets": {
@@ -1777,22 +1777,22 @@
                         "id": "FileAsset1",
                         "path": "PipelineStack/Pipeline/Pipeline/Assets/FileAsset1",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Construct",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.9"
                         }
                       },
                       "FileAsset2": {
                         "id": "FileAsset2",
                         "path": "PipelineStack/Pipeline/Pipeline/Assets/FileAsset2",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Construct",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.9"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   },
                   "Beta": {
@@ -1803,22 +1803,22 @@
                         "id": "Prepare",
                         "path": "PipelineStack/Pipeline/Pipeline/Beta/Prepare",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Construct",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.9"
                         }
                       },
                       "Deploy": {
                         "id": "Deploy",
                         "path": "PipelineStack/Pipeline/Pipeline/Beta/Deploy",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Construct",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.9"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   },
                   "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": {
@@ -1837,8 +1837,8 @@
                         "id": "8389e75f-0810-4838-bf64-d6f85a95cf83",
                         "path": "PipelineStack/Pipeline/Pipeline/ImmutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}/8389e75f-0810-4838-bf64-d6f85a95cf83",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Construct",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.9"
                         }
                       }
                     },
@@ -2448,8 +2448,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "Assets": {
@@ -2977,8 +2977,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
