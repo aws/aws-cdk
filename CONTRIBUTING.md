@@ -13,34 +13,59 @@ Any code you submit will be released under that license.
 This document describes how to set up a development environment and submit your changes. Please
 let us know if it's not up-to-date (even better, submit a PR with your  corrections ;-)).
 
-- [Getting Started](#getting-started)
-- [Pull Requests](#pull-requests)
-  - [Step 1: Find something to work on](#step-1-find-something-to-work-on)
-  - [Step 2: Design (optional)](#step-2-design)
-  - [Step 3: Work your Magic](#step-3-work-your-magic)
-  - [Step 4: Pull Request](#step-4-pull-request)
-  - [Step 5: Merge](#step-5-merge)
-- [Breaking Changes](#breaking-changes)
-- [Documentation](#documentation)
-  - [Rosetta](#rosetta)
-- [Tools](#tools)
-  - [Linters](#linters)
-  - [cfn2ts](#cfn2ts)
-  - [scripts/foreach.sh](#scriptsforeachsh)
-  - [Jetbrains support (WebStorm/IntelliJ)](#jetbrains-support-webstormintellij)
-  - [Linking against this repository](#linking-against-this-repository)
-  - [Running integration tests in parallel](#running-integration-tests-in-parallel)
-  - [Visualizing dependencies in a CloudFormation Template](#visualizing-dependencies-in-a-cloudformation-template)
-  - [Find dependency cycles between packages](#find-dependency-cycles-between-packages)
-- [Running CLI integration tests](#running-cli-integration-tests)
-- [Changing the Cloud Assembly Schema](#changing-cloud-assembly-schema)
-- [Feature Flags](#feature-flags)
-- [Versioning and Release](#versioning-and-release)
-- [Troubleshooting](#troubleshooting)
-- [Debugging](#debugging)
-  - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
-  - [Run a CDK unit test in the debugger](#run-a-cdk-unit-test-in-the-debugger)
-- [Related Repositories](#related-repositories)
+- [Contributing to the AWS Cloud Development Kit](#contributing-to-the-aws-cloud-development-kit)
+  - [Getting Started](#getting-started)
+    - [Setup](#setup)
+    - [Repo Layout](#repo-layout)
+    - [Build](#build)
+    - [Pack](#pack)
+  - [Gitpod (Alternative)](#gitpod-alternative)
+  - [Pull Requests](#pull-requests)
+    - [Step 1: Find something to work on](#step-1-find-something-to-work-on)
+    - [Step 2: Design](#step-2-design)
+    - [Step 3: Work your Magic](#step-3-work-your-magic)
+      - [Integration Tests](#integration-tests)
+      - [yarn watch (Optional)](#yarn-watch-optional)
+    - [Step 4: Pull Request](#step-4-pull-request)
+      - [Adding new unconventional dependencies](#adding-new-unconventional-dependencies)
+    - [Step 5: Merge](#step-5-merge)
+  - [Breaking Changes](#breaking-changes)
+    - [API surface changes](#api-surface-changes)
+      - [Dealing with breaking API surface changes](#dealing-with-breaking-api-surface-changes)
+    - [Behavior changes](#behavior-changes)
+      - [Dealing with breaking behavior changes](#dealing-with-breaking-behavior-changes)
+    - [Adding new experimental ("preview") APIs](#adding-new-experimental-preview-apis)
+  - [Documentation](#documentation)
+    - [Rosetta](#rosetta)
+      - [Recommendations](#recommendations)
+  - [Tools (Advanced)](#tools-advanced)
+    - [scripts/foreach.sh](#scriptsforeachsh)
+    - [Linters](#linters)
+      - [eslint](#eslint)
+      - [pkglint](#pkglint)
+      - [awslint](#awslint)
+    - [cfn2ts](#cfn2ts)
+    - [Jetbrains support (WebStorm/IntelliJ)](#jetbrains-support-webstormintellij)
+    - [Linking against this repository](#linking-against-this-repository)
+    - [Running integration tests in parallel](#running-integration-tests-in-parallel)
+    - [Visualizing dependencies in a CloudFormation Template](#visualizing-dependencies-in-a-cloudformation-template)
+    - [Find dependency cycles between packages](#find-dependency-cycles-between-packages)
+  - [Running CLI integration tests](#running-cli-integration-tests)
+  - [Building aws-cdk-lib](#building-aws-cdk-lib)
+  - [Building and testing v2 -alpha packages](#building-and-testing-v2--alpha-packages)
+  - [Changing Cloud Assembly Schema](#changing-cloud-assembly-schema)
+  - [Feature Flags](#feature-flags)
+  - [Versioning and Release](#versioning-and-release)
+  - [Troubleshooting](#troubleshooting)
+      - [The compiler is throwing errors on files that I renamed/it's running old tests that I meant to remove/code coverage is low and I didn't change anything.](#the-compiler-is-throwing-errors-on-files-that-i-renamedits-running-old-tests-that-i-meant-to-removecode-coverage-is-low-and-i-didnt-change-anything)
+      - [I added a dependency but it's not being picked up by the build](#i-added-a-dependency-but-its-not-being-picked-up-by-the-build)
+      - [I added a dependency but it's not being picked up by a `watch` background compilation run.](#i-added-a-dependency-but-its-not-being-picked-up-by-a-watch-background-compilation-run)
+      - [I added a dependency but it's not being picked up by Visual Studio Code (I still get red underlines).](#i-added-a-dependency-but-its-not-being-picked-up-by-visual-studio-code-i-still-get-red-underlines)
+      - [I'm doing refactorings between packages and compile times are killing me/I need to switch between differently-verionsed branches a lot and rebuilds because of version errors are taking too long.](#im-doing-refactorings-between-packages-and-compile-times-are-killing-mei-need-to-switch-between-differently-verionsed-branches-a-lot-and-rebuilds-because-of-version-errors-are-taking-too-long)
+  - [Debugging](#debugging)
+    - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
+    - [Run a CDK unit test in the debugger](#run-a-cdk-unit-test-in-the-debugger)
+  - [Related Repositories](#related-repositories)
 
 ## Getting Started
 
@@ -286,8 +311,8 @@ The steps here are usually AWS CLI commands but they need not be.
 ```
 
 Examples:
-* [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
-* [integ.token-authorizer.lit.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.lit.ts#L7-L12)
+* [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
+* [integ.token-authorizer.lit.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.lit.ts#L7-L12)
 
 **What do do if you cannot run integration tests**
 
@@ -355,13 +380,17 @@ $ yarn watch & # runs in the background
   * **module-name:** Yet another breaking change
   ```
 
+  Breaking changes are only allowed in experimental libraries. Experimental
+  libraries are published with an `-alpha` suffix, and have the `stability`
+  property set to `experimental` in their `package.json`.
+
 * Once the pull request is submitted, a reviewer will be assigned by the maintainers.
 
 * If the PR build is failing, update the PR with fixes until the build succeeds. You may have trouble getting attention
   from maintainers if your build is failing, and after 4 weeks of staleness, your PR will be automatically closed.
 
 * Discuss review comments and iterate until you get at least one "Approve". When iterating, push new commits to the
-  same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
+  same branch. Usually all these are going to be squashed when you merge to main. The commit messages should be hints
   for you when you finalize your merge commit message.
 
 * Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
@@ -394,7 +423,7 @@ out in the description so that we can discuss the best way to manage that depend
 ### Step 5: Merge
 
 * Make sure your PR builds successfully (we have CodeBuild setup to automatically build all PRs).
-* Once approved and tested, one of our bots will squash-merge to master and will use your PR title/description as the
+* Once approved and tested, one of our bots will squash-merge to main and will use your PR title/description as the
   commit message.
 
 ## Breaking Changes
@@ -863,6 +892,67 @@ run as part of the regular build, since they have some particular requirements.
 See the [CLI CONTRIBUTING.md file](packages/aws-cdk/CONTRIBUTING.md) for
 more information on running those tests.
 
+## Building aws-cdk-lib
+
+In AWS CDK v2, all stable libraries are packaged into a single monolithic
+package and published as `aws-cdk-lib`. In most cases, you can iterate on a
+single module's directory as previously described in this document (e.g.
+`packages/@aws-cdk/aws-s3`). In some cases, you might need to build
+`aws-cdk-lib`:
+
+```
+# Generate all of the L1s first. If you have already done a full build in the repository, you can skip this.
+cd <CDK repo root>/
+./scripts/gen.sh
+cd packages/aws-cdk-lib
+yarn build
+```
+
+The commands above perform the following steps:
+1. Run `yarn install` to install all dependencies
+2. Generate `.generated.ts` files in each `packages/@aws-cdk/aws-<service>`
+   directory. These files contain TypeScript source code for all of the L1 (Cfn)
+   Constructs, and are generated from the [CloudFormation Resource
+   Specification](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html).
+3. Copy the `.ts` source code files from each `packages/@aws-cdk/aws-<service>`
+   directory to the corresponding `packages/aws-cdk-lib/aws-<service>`
+   directory.
+4. Compile `aws-cdk-lib`.
+
+Running unit tests and integration tests still has to be performed in each
+module's `package/@aws-cdk` directory.
+
+## Building and testing v2 -alpha packages
+
+In AWS CDK v2, all experimental libraries are published separately with an
+-alpha suffix. In most cases, you can iterate on a single module's directory as
+already described in this document (e.g. `packages/@aws-cdk/aws-amplify`). If
+you need to generate and iterate on the alpha package, here are the steps. The
+main differences between the alpha package is naming of the package, and import
+statements.
+
+First, make sure the following packages are built:
+  - packages/@aws-cdk/assert
+  - packages/aws-cdk-lib
+  - tools/individual-pkg-gen
+
+The following command will create all of the alpha packages by copying files
+from their source directories under `packages/@aws-cdk/aws-<service>, and it
+will build and run unit tests for all of them. This is sometimes too much for a
+developer machine or laptop.
+
+```
+<CDK repo root>/scripts/transform.sh
+```
+
+To only copy and transform the source files, and then build and test one
+alpha package at a time, use the following:
+
+```
+<CDK repo root>/scripts/transform.sh --skip-build
+cd packages/individual-packages/aws-<service>
+yarn build+test
+```
 ## Changing Cloud Assembly Schema
 
 If you plan on making changes to the `cloud-assembly-schema` package, make sure you familiarize yourself with
@@ -882,14 +972,14 @@ created through `cdk init`.
 The pattern is simple:
 
 1. Define a new const under
-   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts)
+   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/lib/features.ts)
    with the name of the context key that **enables** this new feature (for
    example, `ENABLE_STACK_NAME_DUPLICATES`). The context key should be in the
    form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
 2. Use `FeatureFlags.of(construct).isEnabled(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
 3. Add your feature flag to the `FUTURE_FLAGS` map in
-   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts).
+   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/lib/features.ts).
    This map is inserted to generated `cdk.json` files for new projects created
    through `cdk init`.
 4. In your tests, use the `testFutureBehavior` and `testLegacyBehavior` [jest helper methods] to test the enabled and disabled behavior.
@@ -897,7 +987,7 @@ The pattern is simple:
 
     `fix(core): impossible to use the same physical stack name for two stacks (under feature flag)`
 
-[jest helper methods]: https://github.com/aws/aws-cdk/blob/master/tools/@aws-cdk/cdk-build-tools/lib/feature-flag.ts
+[jest helper methods]: https://github.com/aws/aws-cdk/blob/main/tools/@aws-cdk/cdk-build-tools/lib/feature-flag.ts
 
 ## Versioning and Release
 
