@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -68,7 +68,7 @@
         "/aws-cdk-codedeploy-lambda/Handler/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HandlerCurrentVersion93FB80BFb2a9ce598bf2730613c07e406cddb6b6"
+            "data": "HandlerCurrentVersion93FB80BFf2e6129c63154d1f37c0092df295ab51"
           }
         ],
         "/aws-cdk-codedeploy-lambda/AssetParameters/edb7466707eb899fbaee22c1e67f9443e9edcc2eeda0b58d8448f7c4157746b3/S3Bucket": [

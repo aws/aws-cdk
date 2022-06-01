@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-cloudfront/test/integ.distribution-lambda": {
+    "integ.distribution-lambda": {
       "stacks": [
         "integ-distribution-lambda"
       ],

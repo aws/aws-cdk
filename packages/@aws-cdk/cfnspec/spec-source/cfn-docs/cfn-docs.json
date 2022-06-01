@@ -9109,6 +9109,7 @@
         "SmsAuthenticationMessage": "A string representing the SMS authentication message.",
         "SmsConfiguration": "The SMS configuration with the settings that your Amazon Cognito user pool must use to send an SMS message from your AWS account through Amazon Simple Notification Service. To send SMS messages with Amazon SNS in the AWS Region that you want, the Amazon Cognito user pool uses an AWS Identity and Access Management (IAM) role in your AWS account .",
         "SmsVerificationMessage": "A string representing the SMS verification message.",
+        "UserAttributeUpdateSettings": "The settings for updates to user attributes. These settings include the property `AttributesRequireVerificationBeforeUpdate` ,\na user-pool setting that tells Amazon Cognito how to handle changes to the value of your users' email address and phone number attributes. For\nmore information, see [Verifying updates to to email addresses and phone numbers](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-email-phone-verification.html#user-pool-settings-verifications-verify-attribute-updates) .",
         "UserPoolAddOns": "Enables advanced security risk detection. Set the key `AdvancedSecurityMode` to the value \"AUDIT\".",
         "UserPoolName": "A string used to name the user pool.",
         "UserPoolTags": "The tag keys and values to assign to the user pool. A tag is a label that you can use to categorize and manage user pools in different ways, such as by purpose, owner, environment, or other criteria.",
@@ -9259,6 +9260,13 @@
       "properties": {
         "MaxLength": "The maximum length.",
         "MinLength": "The minimum length."
+      }
+    },
+    "AWS::Cognito::UserPool.UserAttributeUpdateSettings": {
+      "attributes": {},
+      "description": "The settings for updates to user attributes. These settings include the property `AttributesRequireVerificationBeforeUpdate` ,\na user-pool setting that tells Amazon Cognito how to handle changes to the value of your users' email address and phone number attributes. For\nmore information, see [Verifying updates to to email addresses and phone numbers](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-email-phone-verification.html#user-pool-settings-verifications-verify-attribute-updates) .",
+      "properties": {
+        "AttributesRequireVerificationBeforeUpdate": "Requires that your user verifies their email address, phone number, or both before Amazon Cognito updates the value of that attribute. When you update a user attribute that has this option activated, Amazon Cognito sends a verification message to the new phone number or email address. Amazon Cognito doesn\u2019t change the value of the attribute until your user responds to the verification message and confirms the new value.\n\nYou can verify an updated email address or phone number with a [VerifyUserAttribute](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_VerifyUserAttribute.html) API request. You can also call the [UpdateUserAttributes](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_UpdateUserAttributes.html) or [AdminUpdateUserAttributes](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_AdminUpdateUserAttributes.html) API and set `email_verified` or `phone_number_verified` to true.\n\nWhen `AttributesRequireVerificationBeforeUpdate` is false, your user pool doesn't require that your users verify attribute changes before Amazon Cognito updates them. In a user pool where `AttributesRequireVerificationBeforeUpdate` is false, API operations that change attribute values can immediately update a user\u2019s `email` or `phone_number` attribute."
       }
     },
     "AWS::Cognito::UserPool.UserPoolAddOns": {
@@ -14163,6 +14171,7 @@
     },
     "AWS::EC2::PlacementGroup": {
       "attributes": {
+        "GroupName": "",
         "Ref": "`Ref` returns the name of the placement group."
       },
       "description": "Specifies a placement group in which to launch instances. The strategy of the placement group determines how the instances are organized within the group.\n\nA `cluster` placement group is a logical grouping of instances within a single Availability Zone that benefit from low network latency, high network throughput. A `spread` placement group places instances on distinct hardware. A `partition` placement group places groups of instances in different partitions, where instances in one partition do not share the same hardware with instances in another partition.\n\nFor more information, see [Placement Groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html) in the *Amazon EC2 User Guide* .",
@@ -14786,6 +14795,7 @@
       },
       "description": "Attaches a VPC to a transit gateway.\n\nIf you attach a VPC with a CIDR range that overlaps the CIDR range of a VPC that is already attached, the new VPC CIDR range is not propagated to the default propagation route table.\n\nTo send VPC traffic to an attached transit gateway, add a route to the VPC route table using [AWS::EC2::Route](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-route.html) .",
       "properties": {
+        "Options": "",
         "SubnetIds": "The IDs of one or more subnets. You can specify only one subnet per Availability Zone. You must specify at least one subnet, but we recommend that you specify two subnets for better availability. The transit gateway uses one IP address from each specified subnet.",
         "Tags": "The tags for the attachment.",
         "TransitGatewayId": "The ID of the transit gateway.",
@@ -15070,6 +15080,7 @@
     },
     "AWS::EC2::VPCPeeringConnection": {
       "attributes": {
+        "Id": "",
         "Ref": "`Ref` returns the ID of the VPC peering connection."
       },
       "description": "Requests a VPC peering connection between two VPCs: a requester VPC that you own and an accepter VPC with which to create the connection. The accepter VPC can belong to another AWS account and can be in a different Region to the requester VPC.\n\nThe requester VPC and accepter VPC cannot have overlapping CIDR blocks. If you create a VPC peering connection request between VPCs with overlapping CIDR blocks, the VPC peering connection has a status of `failed` .\n\nFor more information, see [Walkthough: Peer with a VPC in another AWS account](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/peer-with-vpc-in-another-account.html) .",
@@ -15773,7 +15784,7 @@
       "attributes": {},
       "description": "Information about the platform for the Amazon ECS service or task.\n\nFor more informataion about `RuntimePlatform` , see [RuntimePlatform](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#runtime-platform) in the *Amazon Elastic Container Service Developer Guide* .",
       "properties": {
-        "CpuArchitecture": "The CPU architecture.\n\nYou can run your Linux tasks on an ARM-based platform by setting the value to `ARM64` . This option is avaiable for tasks that run on Linuc Amazon EC2 instance or Linux containers on Fargate.",
+        "CpuArchitecture": "The CPU architecture.\n\nYou can run your Linux tasks on an ARM-based platform by setting the value to `ARM64` . This option is avaiable for tasks that run on Linux Amazon EC2 instance or Linux containers on Fargate.",
         "OperatingSystemFamily": "The operating system."
       }
     },
@@ -16874,6 +16885,82 @@
       "description": "The information about the EKS cluster.",
       "properties": {
         "Namespace": "The namespaces of the EKS cluster.\n\n*Minimum* : 1\n\n*Maximum* : 63\n\n*Pattern* : `[a-z0-9]([-a-z0-9]*[a-z0-9])?`"
+      }
+    },
+    "AWS::EMRServerless::Application": {
+      "attributes": {
+        "ApplicationId": "The ID of the application, such as `ab4rp1abcs8xz47n3x0example` .",
+        "Arn": "The Amazon Resource Name (ARN) of the project.",
+        "Ref": "When you pass the logical ID of this resource to the intrinsic `Ref` function, `Ref` returns the ID of the application.\n\nFor more information about using the `Ref` function, see [`Ref`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
+      },
+      "description": "The `AWS::EMRServerless::Application` resource specifies an EMR Serverless application. An application uses open source analytics frameworks to run jobs that process data. To create an application, you must specify the release version for the open source framework version you want to use and the type of application you want, such as Apache Spark or Apache Hive. After you create an application, you can submit data processing jobs or interactive requests to it.",
+      "properties": {
+        "AutoStartConfiguration": "The configuration for an application to automatically start on job submission.",
+        "AutoStopConfiguration": "The configuration for an application to automatically stop after a certain amount of time being idle.",
+        "InitialCapacity": "The initial capacity of the application.",
+        "MaximumCapacity": "The maximum capacity of the application. This is cumulative across all workers at any given point in time during the lifespan of the application is created. No new resources will be created once any one of the defined limits is hit.",
+        "Name": "The name of the application.\n\n*Minimum* : 1\n\n*Maximum* : 64\n\n*Pattern* : `^[A-Za-z0-9._\\\\/#-]+$`",
+        "NetworkConfiguration": "The network configuration for customer VPC connectivity for the application.",
+        "ReleaseLabel": "The EMR release version associated with the application.\n\n*Minimum* : 1\n\n*Maximum* : 64\n\n*Pattern* : `^[A-Za-z0-9._/-]+$`",
+        "Tags": "The tags assigned to the application.",
+        "Type": "The type of application, such as Spark or Hive."
+      }
+    },
+    "AWS::EMRServerless::Application.AutoStartConfiguration": {
+      "attributes": {},
+      "description": "The con\ufb01guration for an application to automatically start on job submission.",
+      "properties": {
+        "Enabled": "Enables the application to automatically start on job submission. Defaults to true."
+      }
+    },
+    "AWS::EMRServerless::Application.AutoStopConfiguration": {
+      "attributes": {},
+      "description": "The con\ufb01guration for an application to automatically stop after a certain amount of time being idle.",
+      "properties": {
+        "Enabled": "Enables the application to automatically stop after a certain amount of time being idle. Defaults to true.",
+        "IdleTimeoutMinutes": "The amount of idle time in minutes after which your application will automatically stop. Defaults to 15 minutes.\n\n*Minimum* : 1\n\n*Maximum* : 10080"
+      }
+    },
+    "AWS::EMRServerless::Application.InitialCapacityConfig": {
+      "attributes": {},
+      "description": "The initial capacity configuration per worker.",
+      "properties": {
+        "WorkerConfiguration": "The resource configuration of the initial capacity configuration.",
+        "WorkerCount": "The number of workers in the initial capacity configuration.\n\n*Minimum* : 1\n\n*Maximum* : 1000000"
+      }
+    },
+    "AWS::EMRServerless::Application.InitialCapacityConfigKeyValuePair": {
+      "attributes": {},
+      "description": "The initial capacity configuration per worker.",
+      "properties": {
+        "Key": "The worker type for an analytics framework. For Spark applications, the key can either be set to `Driver` or `Executor` . For Hive applications, it can be set to `HiveDriver` or `TezTask` .\n\n*Minimum* : 1\n\n*Maximum* : 50\n\n*Pattern* : `^[a-zA-Z]+[-_]*[a-zA-Z]+$`",
+        "Value": "The value for the initial capacity configuration per worker."
+      }
+    },
+    "AWS::EMRServerless::Application.MaximumAllowedResources": {
+      "attributes": {},
+      "description": "The maximum allowed cumulative resources for an application. No new resources will be created once the limit is hit.",
+      "properties": {
+        "Cpu": "The maximum allowed CPU for an application.\n\n*Minimum* : 1\n\n*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(vCPU|vcpu|VCPU)?$`",
+        "Disk": "The maximum allowed disk for an application.\n\n*Minimum* : 1\n\n*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(GB|gb|gB|Gb)$\"`",
+        "Memory": "The maximum allowed resources for an application.\n\n*Minimum* : 1\n\n*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(GB|gb|gB|Gb)?$`"
+      }
+    },
+    "AWS::EMRServerless::Application.NetworkConfiguration": {
+      "attributes": {},
+      "description": "The network configuration for customer VPC connectivity.",
+      "properties": {
+        "SecurityGroupIds": "The array of security group Ids for customer VPC connectivity.\n\n*Minimum* : 1\n\n*Maximum* : 32\n\n*Pattern* : `^[-0-9a-zA-Z]+`",
+        "SubnetIds": "The array of subnet Ids for customer VPC connectivity.\n\n*Minimum* : 1\n\n*Maximum* : 32\n\n*Pattern* : `^[-0-9a-zA-Z]+`"
+      }
+    },
+    "AWS::EMRServerless::Application.WorkerConfiguration": {
+      "attributes": {},
+      "description": "The resource configuration of the initial capacity configuration.",
+      "properties": {
+        "Cpu": "*Minimum* : 1\n\n*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(vCPU|vcpu|VCPU)?$`",
+        "Disk": "*Minimum* : 1\n\n*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(GB|gb|gB|Gb)$\"`",
+        "Memory": "*Minimum* : 1\n\n*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(GB|gb|gB|Gb)?$`"
       }
     },
     "AWS::ElastiCache::CacheCluster": {
@@ -19417,7 +19504,7 @@
       "description": "The `AWS::GameLift::Fleet` resource creates an Amazon GameLift (GameLift) fleet to host game servers. A fleet is a set of EC2 instances, each of which can host multiple game sessions.",
       "properties": {
         "BuildId": "A unique identifier for a build to be deployed on the new fleet. If you are deploying the fleet with a custom game build, you must specify this property. The build must have been successfully uploaded to Amazon GameLift and be in a `READY` status. This fleet setting cannot be changed once the fleet is created.",
-        "CertificateConfiguration": "Prompts GameLift to generate a TLS/SSL certificate for the fleet. TLS certificates are used for encrypting traffic between game clients and the game servers that are running on GameLift. By default, the `CertificateConfiguration` is set to `DISABLED` . This property cannot be changed after the fleet is created.\n\nNote: This feature requires the AWS Certificate Manager (ACM) service, which is not available in all AWS regions. When working in a region that does not support this feature, a fleet creation request with certificate generation fails with a 4xx error.",
+        "CertificateConfiguration": "Prompts GameLift to generate a TLS/SSL certificate for the fleet. GameLift uses the certificates to encrypt traffic between game clients and the game servers running on GameLift. By default, the `CertificateConfiguration` is `DISABLED` . You can't change this property after you create the fleet.\n\nAWS Certificate Manager (ACM) certificates expire after 13 months. Certificate expiration can cause fleets to fail, preventing players from connecting to instances in the fleet. We recommend you replace fleets before 13 months, consider using fleet aliases for a smooth transition.\n\n> ACM isn't available in all AWS regions. A fleet creation request with certificate generation enabled in an unsupported Region, fails with a 4xx error. For more information about the supported Regions, see [Supported Regions](https://docs.aws.amazon.com/acm/latest/userguide/acm-regions.html) in the *AWS Certificate Manager User Guide* .",
         "Description": "A human-readable description of the fleet.",
         "DesiredEC2Instances": "The number of EC2 instances that you want this fleet to host. When creating a new fleet, GameLift automatically sets this value to \"1\" and initiates a single instance. Once the fleet is active, update this value to trigger GameLift to add or remove instances from the fleet.",
         "EC2InboundPermissions": "The allowed IP address ranges and port settings that allow inbound traffic to access game sessions on this fleet. If the fleet is hosting a custom game build, this property must be set before players can connect to game sessions. For Realtime Servers fleets, GameLift automatically sets TCP and UDP ranges.",
@@ -24415,6 +24502,7 @@
       },
       "description": "Creates an asset from an existing asset model. For more information, see [Creating assets](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/create-assets.html) in the *AWS IoT SiteWise User Guide* .",
       "properties": {
+        "AssetDescription": "",
         "AssetHierarchies": "A list of asset hierarchies that each contain a `hierarchyLogicalId` . A hierarchy specifies allowed parent/child asset relationships.",
         "AssetModelId": "The ID of the asset model from which to create the asset.",
         "AssetName": "A unique, friendly name for the asset.\n\nThe maximum length is 256 characters with the pattern `[^\\u0000-\\u001F\\u007F]+` .",
@@ -24953,6 +25041,21 @@
         "NumberOfDevicesInGroup": "Number of devices that are associated to the multicast group.",
         "NumberOfDevicesRequested": "Number of devices that are requested to be associated with the multicast group.",
         "RfRegion": "The frequency band (RFRegion) value."
+      }
+    },
+    "AWS::IoTWireless::NetworkAnalyzerConfiguration": {
+      "attributes": {
+        "Arn": "",
+        "Ref": ""
+      },
+      "description": "",
+      "properties": {
+        "Description": "",
+        "Name": "",
+        "Tags": "",
+        "TraceContent": "",
+        "WirelessDevices": "",
+        "WirelessGateways": ""
       }
     },
     "AWS::IoTWireless::PartnerAccount": {
@@ -33914,6 +34017,7 @@
         "AdditionalTreatments": "An array of requests that defines additional treatments for the campaign, in addition to the default treatment for the campaign.",
         "ApplicationId": "The unique identifier for the Amazon Pinpoint application that the campaign is associated with.",
         "CampaignHook": "Specifies the Lambda function to use as a code hook for a campaign.",
+        "CustomDeliveryConfiguration": "The delivery configuration settings for sending the treatment through a custom channel. This object is required if the `MessageConfiguration` object for the treatment specifies a `CustomMessage` object.",
         "Description": "A custom description of the campaign.",
         "HoldoutPercent": "The allocated percentage of users (segment members) who shouldn't receive messages from the campaign.",
         "IsPaused": "Specifies whether to pause the campaign. A paused campaign doesn't run unless you resume it by changing this value to `false` . If you restart a campaign, the campaign restarts from the beginning and not at the point you paused it.",
@@ -33925,6 +34029,7 @@
         "SegmentId": "The unique identifier for the segment to associate with the campaign.",
         "SegmentVersion": "The version of the segment to associate with the campaign.",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+        "TemplateConfiguration": "The message template to use for the treatment.",
         "TreatmentDescription": "A custom description of the default treatment for the campaign.",
         "TreatmentName": "A custom name of the default treatment for the campaign, if the campaign has multiple treatments. A *treatment* is a variation of a campaign that's used for A/B testing."
       }
@@ -33935,6 +34040,13 @@
       "properties": {
         "AttributeType": "The type of segment dimension to use. Valid values are:\n\n- `INCLUSIVE` \u2013 endpoints that have attributes matching the values are included in the segment.\n- `EXCLUSIVE` \u2013 endpoints that have attributes matching the values are excluded from the segment.\n- `CONTAINS` \u2013 endpoints that have attributes' substrings match the values are included in the segment.\n- `BEFORE` \u2013 endpoints with attributes read as ISO_INSTANT datetimes before the value are included in the segment.\n- `AFTER` \u2013 endpoints with attributes read as ISO_INSTANT datetimes after the value are included in the segment.\n- `BETWEEN` \u2013 endpoints with attributes read as ISO_INSTANT datetimes between the values are included in the segment.\n- `ON` \u2013 endpoints with attributes read as ISO_INSTANT dates on the value are included in the segment. Time is ignored in this comparison.",
         "Values": "The criteria values to use for the segment dimension. Depending on the value of the `AttributeType` property, endpoints are included or excluded from the segment if their attribute values match the criteria values."
+      }
+    },
+    "AWS::Pinpoint::Campaign.CampaignCustomMessage": {
+      "attributes": {},
+      "description": "Specifies the contents of a message that's sent through a custom channel to recipients of a campaign.",
+      "properties": {
+        "Data": "The raw, JSON-formatted string to use as the payload for the message. The maximum size is 5 KB."
       }
     },
     "AWS::Pinpoint::Campaign.CampaignEmailMessage": {
@@ -33983,6 +34095,14 @@
         "OriginationNumber": "The long code to send the SMS message from. This value should be one of the dedicated long codes that's assigned to your AWS account. Although it isn't required, we recommend that you specify the long code using an E.164 format to ensure prompt and accurate delivery of the message. For example, +12065550100.",
         "SenderId": "The alphabetic Sender ID to display as the sender of the message on a recipient's device. Support for sender IDs varies by country or region. To specify a phone number as the sender, omit this parameter and use `OriginationNumber` instead. For more information about support for Sender ID by country, see the [Amazon Pinpoint User Guide](https://docs.aws.amazon.com/pinpoint/latest/userguide/channels-sms-countries.html) .",
         "TemplateId": "The template ID received from the regulatory body for sending SMS in your country."
+      }
+    },
+    "AWS::Pinpoint::Campaign.CustomDeliveryConfiguration": {
+      "attributes": {},
+      "description": "Specifies the delivery configuration settings for sending a campaign or campaign treatment through a custom channel. This object is required if you use the `CampaignCustomMessage` object to define the message to send for the campaign or campaign treatment.",
+      "properties": {
+        "DeliveryUri": "The destination to send the campaign or treatment to. This value can be one of the following:\n\n- The name or Amazon Resource Name (ARN) of an AWS Lambda function to invoke to handle delivery of the campaign or treatment.\n- The URL for a web application or service that supports HTTPS and can receive the message. The URL has to be a full URL, including the HTTPS protocol.",
+        "EndpointTypes": "The types of endpoints to send the campaign or treatment to. Each valid value maps to a type of channel that you can associate with an endpoint by using the `ChannelType` property of an endpoint."
       }
     },
     "AWS::Pinpoint::Campaign.DefaultButtonConfiguration": {
@@ -34082,6 +34202,7 @@
         "ADMMessage": "The message that the campaign sends through the ADM (Amazon Device Messaging) channel. If specified, this message overrides the default message.",
         "APNSMessage": "The message that the campaign sends through the APNs (Apple Push Notification service) channel. If specified, this message overrides the default message.",
         "BaiduMessage": "The message that the campaign sends through the Baidu (Baidu Cloud Push) channel. If specified, this message overrides the default message.",
+        "CustomMessage": "The message that the campaign sends through a custom channel, as specified by the delivery configuration ( `CustomDeliveryConfiguration` ) settings for the campaign. If specified, this message overrides the default message.",
         "DefaultMessage": "The default message that the campaign sends through all the channels that are configured for the campaign.",
         "EmailMessage": "The message that the campaign sends through the email channel. If specified, this message overrides the default message.",
         "GCMMessage": "The message that the campaign sends through the GCM channel, which enables Amazon Pinpoint to send push notifications through the Firebase Cloud Messaging (FCM), formerly Google Cloud Messaging (GCM), service. If specified, this message overrides the default message.",
@@ -34134,13 +34255,33 @@
         "Values": "The criteria values to use for the segment dimension. Depending on the value of the `DimensionType` property, endpoints are included or excluded from the segment if their values match the criteria values."
       }
     },
+    "AWS::Pinpoint::Campaign.Template": {
+      "attributes": {},
+      "description": "Specifies the name and version of the message template to use for the message.",
+      "properties": {
+        "Name": "The name of the message template to use for the message. If specified, this value must match the name of an existing message template.",
+        "Version": "The unique identifier for the version of the message template to use for the message. If specified, this value must match the identifier for an existing template version. To retrieve a list of versions and version identifiers for a template, use the Template Versions resource.\n\nIf you don't specify a value for this property, Amazon Pinpoint uses the *active version* of the template. The *active version* is typically the version of a template that's been most recently reviewed and approved for use, depending on your workflow. It isn't necessarily the latest version of a template."
+      }
+    },
+    "AWS::Pinpoint::Campaign.TemplateConfiguration": {
+      "attributes": {},
+      "description": "Specifies the message template to use for the message, for each type of channel.",
+      "properties": {
+        "EmailTemplate": "The email template to use for the message.",
+        "PushTemplate": "The push notification template to use for the message.",
+        "SMSTemplate": "The SMS template to use for the message.",
+        "VoiceTemplate": "The voice template to use for the message. This object isn't supported for campaigns."
+      }
+    },
     "AWS::Pinpoint::Campaign.WriteTreatmentResource": {
       "attributes": {},
       "description": "Specifies the settings for a campaign treatment. A *treatment* is a variation of a campaign that's used for A/B testing of a campaign.",
       "properties": {
+        "CustomDeliveryConfiguration": "The delivery configuration settings for sending the treatment through a custom channel. This object is required if the `MessageConfiguration` object for the treatment specifies a `CustomMessage` object.",
         "MessageConfiguration": "The message configuration settings for the treatment.",
         "Schedule": "The schedule settings for the treatment.",
         "SizePercent": "The allocated percentage of users (segment members) to send the treatment to.",
+        "TemplateConfiguration": "The message template to use for the treatment.",
         "TreatmentDescription": "A custom description of the treatment.",
         "TreatmentName": "A custom name for the treatment."
       }
@@ -34652,8 +34793,8 @@
       },
       "description": "The `AWS::QLDB::Ledger` resource specifies a new Amazon Quantum Ledger Database (Amazon QLDB) ledger in your AWS account . Amazon QLDB is a fully managed ledger database that provides a transparent, immutable, and cryptographically verifiable transaction log owned by a central trusted authority. You can use QLDB to track all application data changes, and maintain a complete and verifiable history of changes over time.\n\nFor more information, see [CreateLedger](https://docs.aws.amazon.com/qldb/latest/developerguide/API_CreateLedger.html) in the *Amazon QLDB API Reference* .",
       "properties": {
-        "DeletionProtection": "The flag that prevents a ledger from being deleted by any user. If not provided on ledger creation, this feature is enabled ( `true` ) by default.\n\nIf deletion protection is enabled, you must first disable it before you can delete the ledger. You can disable it by calling the `UpdateLedger` operation to set the flag to `false` .",
-        "KmsKey": "The key in AWS Key Management Service ( AWS KMS ) to use for encryption of data at rest in the ledger. For more information, see [Encryption at rest](https://docs.aws.amazon.com/qldb/latest/developerguide/encryption-at-rest.html) in the *Amazon QLDB Developer Guide* .\n\nUse one of the following options to specify this parameter:\n\n- `AWS_OWNED_KMS_KEY` : Use an AWS KMS key that is owned and managed by AWS on your behalf.\n- *Undefined* : By default, use an AWS owned KMS key.\n- *A valid symmetric customer managed KMS key* : Use the specified KMS key in your account that you create, own, and manage.\n\nAmazon QLDB does not support asymmetric keys. For more information, see [Using symmetric and asymmetric keys](https://docs.aws.amazon.com/kms/latest/developerguide/symmetric-asymmetric.html) in the *AWS Key Management Service Developer Guide* .\n\nTo specify a customer managed KMS key, you can use its key ID, Amazon Resource Name (ARN), alias name, or alias ARN. When using an alias name, prefix it with `\"alias/\"` . To specify a key in a different AWS account , you must use the key ARN or alias ARN.\n\nFor example:\n\n- Key ID: `1234abcd-12ab-34cd-56ef-1234567890ab`\n- Key ARN: `arn:aws:kms:us-east-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab`\n- Alias name: `alias/ExampleAlias`\n- Alias ARN: `arn:aws:kms:us-east-2:111122223333:alias/ExampleAlias`\n\nFor more information, see [Key identifiers (KeyId)](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#key-id) in the *AWS Key Management Service Developer Guide* .",
+        "DeletionProtection": "Specifies whether the ledger is protected from being deleted by any user. If not defined during ledger creation, this feature is enabled ( `true` ) by default.\n\nIf deletion protection is enabled, you must first disable it before you can delete the ledger. You can disable it by calling the `UpdateLedger` operation to set the parameter to `false` .",
+        "KmsKey": "The key in AWS Key Management Service ( AWS KMS ) to use for encryption of data at rest in the ledger. For more information, see [Encryption at rest](https://docs.aws.amazon.com/qldb/latest/developerguide/encryption-at-rest.html) in the *Amazon QLDB Developer Guide* .\n\nUse one of the following options to specify this parameter:\n\n- `AWS_OWNED_KMS_KEY` : Use an AWS KMS key that is owned and managed by AWS on your behalf.\n- *Undefined* : By default, use an AWS owned KMS key.\n- *A valid symmetric customer managed KMS key* : Use the specified symmetric encryption KMS key in your account that you create, own, and manage.\n\nAmazon QLDB does not support asymmetric keys. For more information, see [Using symmetric and asymmetric keys](https://docs.aws.amazon.com/kms/latest/developerguide/symmetric-asymmetric.html) in the *AWS Key Management Service Developer Guide* .\n\nTo specify a customer managed KMS key, you can use its key ID, Amazon Resource Name (ARN), alias name, or alias ARN. When using an alias name, prefix it with `\"alias/\"` . To specify a key in a different AWS account , you must use the key ARN or alias ARN.\n\nFor example:\n\n- Key ID: `1234abcd-12ab-34cd-56ef-1234567890ab`\n- Key ARN: `arn:aws:kms:us-east-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab`\n- Alias name: `alias/ExampleAlias`\n- Alias ARN: `arn:aws:kms:us-east-2:111122223333:alias/ExampleAlias`\n\nFor more information, see [Key identifiers (KeyId)](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#key-id) in the *AWS Key Management Service Developer Guide* .",
         "Name": "The name of the ledger that you want to create. The name must be unique among all of the ledgers in your AWS account in the current Region.\n\nNaming constraints for ledger names are defined in [Quotas in Amazon QLDB](https://docs.aws.amazon.com/qldb/latest/developerguide/limits.html#limits.naming) in the *Amazon QLDB Developer Guide* .",
         "PermissionsMode": "The permissions mode to assign to the ledger that you want to create. This parameter can have one of the following values:\n\n- `ALLOW_ALL` : A legacy permissions mode that enables access control with API-level granularity for ledgers.\n\nThis mode allows users who have the `SendCommand` API permission for this ledger to run all PartiQL commands (hence, `ALLOW_ALL` ) on any tables in the specified ledger. This mode disregards any table-level or command-level IAM permissions policies that you create for the ledger.\n- `STANDARD` : ( *Recommended* ) A permissions mode that enables access control with finer granularity for ledgers, tables, and PartiQL commands.\n\nBy default, this mode denies all user requests to run any PartiQL commands on any tables in this ledger. To allow PartiQL commands to run, you must create IAM permissions policies for specific table resources and PartiQL actions, in addition to the `SendCommand` API permission for the ledger. For information, see [Getting started with the standard permissions mode](https://docs.aws.amazon.com/qldb/latest/developerguide/getting-started-standard-mode.html) in the *Amazon QLDB Developer Guide* .\n\n> We strongly recommend using the `STANDARD` permissions mode to maximize the security of your ledger data.",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
@@ -37745,8 +37886,8 @@
         "NoncurrentVersionExpirationInDays": "(Deprecated.) For buckets with versioning enabled (or suspended), specifies the time, in days, between when a new version of the object is uploaded to the bucket and when old versions of the object expire. When object versions expire, Amazon S3 permanently deletes them. If you specify a transition and expiration time, the expiration time must be later than the transition time.",
         "NoncurrentVersionTransition": "(Deprecated.) For buckets with versioning enabled (or suspended), specifies when non-current objects transition to a specified storage class. If you specify a transition and expiration time, the expiration time must be later than the transition time. If you specify this property, don't specify the `NoncurrentVersionTransitions` property.",
         "NoncurrentVersionTransitions": "For buckets with versioning enabled (or suspended), one or more transition rules that specify when non-current objects transition to a specified storage class. If you specify a transition and expiration time, the expiration time must be later than the transition time. If you specify this property, don't specify the `NoncurrentVersionTransition` property.",
-        "ObjectSizeGreaterThan": "Specifies the minimum object size in bytes for this rule to apply to. For more information about size based rules, see [Lifecycle configuration using size-based rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-configuration-examples.html#lc-size-rules) in the *Amazon S3 User Guide* .",
-        "ObjectSizeLessThan": "Specifies the maximum object size in bytes for this rule to apply to. For more information about sized based rules, see [Lifecycle configuration using size-based rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-configuration-examples.html#lc-size-rules) in the *Amazon S3 User Guide* .",
+        "ObjectSizeGreaterThan": "Specifies the minimum object size in bytes for this rule to apply to. Objects must be larger than this value in bytes. For more information about size based rules, see [Lifecycle configuration using size-based rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-configuration-examples.html#lc-size-rules) in the *Amazon S3 User Guide* .",
+        "ObjectSizeLessThan": "Specifies the maximum object size in bytes for this rule to apply to. Objects must be smaller than this value in bytes. For more information about sized based rules, see [Lifecycle configuration using size-based rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-configuration-examples.html#lc-size-rules) in the *Amazon S3 User Guide* .",
         "Prefix": "Object key prefix that identifies one or more objects to which this rule applies.\n\n> Replacement must be made for object keys containing special characters (such as carriage returns) when using XML requests. For more information, see [XML related object key constraints](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html#object-key-xml-related-constraints) .",
         "Status": "If `Enabled` , the rule is currently being applied. If `Disabled` , the rule is not currently being applied.",
         "TagFilters": "Tags to use to identify a subset of objects to which the lifecycle rule applies.",
@@ -37756,7 +37897,7 @@
     },
     "AWS::S3::Bucket.S3KeyFilter": {
       "attributes": {},
-      "description": "A container for object key name prefix and suffix filtering rules.\n\n> The same type of filter rule cannot be used more than once. For example, you cannot specify two prefix rules.",
+      "description": "A container for object key name prefix and suffix filtering rules. For more information about object key name filtering, see [Configuring event notifications using object key name filtering](https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-filtering.html) in the *Amazon S3 User Guide* .\n\n> The same type of filter rule cannot be used more than once. For example, you cannot specify two prefix rules.",
       "properties": {
         "Rules": "A list of containers for the key-value pair that defines the criteria for the filter rule."
       }
@@ -38532,7 +38673,7 @@
         "Tags": "AWS CloudFormation resource tags to apply to the document. Use tags to help you identify and categorize resources.",
         "TargetType": "Specify a target type to define the kinds of resources the document can run on. For example, to run a document on EC2 instances, specify the following value: `/AWS::EC2::Instance` . If you specify a value of '/' the document can run on all types of resources. If you don't specify a value, the document can't run on any resources. For a list of valid resource types, see [AWS resource and property types reference](https://docs.aws.amazon.com//AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html) in the *AWS CloudFormation User Guide* .",
         "UpdateMethod": "If the document resource you specify in your template already exists, this parameter determines whether a new version of the existing document is created, or the existing document is replaced. `Replace` is the default method. If you specify `NewVersion` for the `UpdateMethod` parameter, and the `Name` of the document does not match an existing resource, a new document is created. When you specify `NewVersion` , the default version of the document is changed to the newly created version.",
-        "VersionName": "An optional field specifying the version of the artifact you are creating with the document. For example, \"Release 12, Update 6\". This value is unique across all versions of a document, and can't be changed."
+        "VersionName": "An optional field specifying the version of the artifact you are creating with the document. For example, `Release12.1` . This value is unique across all versions of a document, and can't be changed."
       }
     },
     "AWS::SSM::Document.AttachmentsSource": {
