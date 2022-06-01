@@ -129,8 +129,6 @@ export abstract class IntegRunner {
 
   protected readonly profile?: string;
 
-  protected readonly cdkExecutable: string;
-
   protected _destructiveChanges?: DestructiveChange[];
   private legacyContext?: Record<string, any>;
 
@@ -146,16 +144,14 @@ export abstract class IntegRunner {
       this.testName = testName;
     } else {
       const relativePath = path.relative(options.directory, parsed.dir);
-      this.testName = `${relativePath ? relativePath+'/' : ''}${parsed.name}`;
+      this.testName = `${relativePath ? relativePath + '/' : ''}${parsed.name}`;
     }
     this.snapshotDir = path.join(this.directory, `${testName}.integ.snapshot`);
     this.relativeSnapshotDir = `${testName}.integ.snapshot`;
     this.sourceFilePath = path.join(this.directory, parsed.base);
     this.cdkContextPath = path.join(this.directory, 'cdk.context.json');
 
-    this.cdkExecutable = require.resolve('aws-cdk/bin/cdk');
     this.cdk = options.cdk ?? new CdkCliWrapper({
-      cdkExecutable: this.cdkExecutable,
       directory: this.directory,
       env: {
         ...options.env,
@@ -208,10 +204,6 @@ export abstract class IntegRunner {
    */
   public hasSnapshot(): boolean {
     return fs.existsSync(this.snapshotDir);
-  }
-
-  public hasTmpActualSnapshot(): boolean {
-    return fs.existsSync(path.join(this.directory, this.cdkOutDir));
   }
 
   /**
@@ -371,7 +363,7 @@ export abstract class IntegRunner {
   }
 
   protected getContext(additionalContext?: Record<string, any>): Record<string, any> {
-    const futureFlags: {[key: string]: any} = {};
+    const futureFlags: { [key: string]: any } = {};
     Object.entries(FUTURE_FLAGS)
       .filter(([k, _]) => !FUTURE_FLAGS_EXPIRED.includes(k))
       .forEach(([k, v]) => futureFlags[k] = v);
