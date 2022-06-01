@@ -2,12 +2,9 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as awslogs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct, Node } from 'constructs';
 import { Service } from '../service';
 import { ServiceExtension } from './extension-interfaces';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Setting for the main application container of a service.
@@ -112,7 +109,7 @@ export class Container extends ServiceExtension {
     // If no observability extensions have been added to the service description then we can configure the `awslogs` log driver
     if (!containerProps.logging) {
       // Create a log group for the service if one is not provided by the user (only if feature flag is set)
-      if (!this.logGroup && this.parentService.node.tryGetContext(cxapi.ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER)) {
+      if (!this.logGroup && Node.of(this.parentService).tryGetContext(cxapi.ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER)) {
         this.logGroup = new awslogs.LogGroup(this.scope, `${this.parentService.id}-logs`, {
           logGroupName: `${this.parentService.id}-logs`,
           removalPolicy: cdk.RemovalPolicy.DESTROY,

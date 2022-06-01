@@ -1,11 +1,11 @@
 import { testDeprecated, testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Fact } from '@aws-cdk/region-info';
-import { Node } from 'constructs';
+import { Construct, Node } from 'constructs';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, Construct, Lazy, ScopedAws, Stack, validateString,
-  ISynthesisSession, Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
+  CfnResource, Lazy, ScopedAws, Stack, validateString,
+  Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
   NestedStack,
   Aws,
 } from '../lib';
@@ -252,7 +252,7 @@ describe('stack', () => {
 
   test('Pseudo values attached to one stack can be referenced in another stack', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack1 = new Stack(app, 'Stack1');
     const account1 = new ScopedAws(stack1).accountId;
     const stack2 = new Stack(app, 'Stack2');
@@ -303,13 +303,11 @@ describe('stack', () => {
     const assembly = app.synth();
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
-    expect(template2).toEqual({
-      Resources: {
-        SomeResource: {
-          Type: 'AWS::Some::Resource',
-          Properties: {
-            someProperty: { 'Fn::ImportValue': 'Stack1:ExportsOutputRefResource1D5D905A' },
-          },
+    expect(template2?.Resources).toEqual({
+      SomeResource: {
+        Type: 'AWS::Some::Resource',
+        Properties: {
+          someProperty: { 'Fn::ImportValue': 'Stack1:ExportsOutputRefResource1D5D905A' },
         },
       },
     });
@@ -374,13 +372,11 @@ describe('stack', () => {
     const assembly = app.synth();
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
-    expect(template2).toEqual({
-      Resources: {
-        SomeResource: {
-          Type: 'AWS::Some::Resource',
-          Properties: {
-            someProperty: { 'Fn::ImportValue': 'Stack1:ExportsOutputRefResource1D5D905A' },
-          },
+    expect(template2?.Resources).toEqual({
+      SomeResource: {
+        Type: 'AWS::Some::Resource',
+        Properties: {
+          someProperty: { 'Fn::ImportValue': 'Stack1:ExportsOutputRefResource1D5D905A' },
         },
       },
     });
@@ -388,7 +384,7 @@ describe('stack', () => {
 
   test('cross-stack references in lazy tokens work', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack1 = new Stack(app, 'Stack1');
     const account1 = new ScopedAws(stack1).accountId;
     const stack2 = new Stack(app, 'Stack2');
@@ -434,21 +430,19 @@ describe('stack', () => {
     const assembly = app.synth();
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
-    expect(template2).toEqual({
-      Outputs: {
-        DemOutput: {
-          Value: { Ref: 'AWS::Region' },
-        },
-        DemAccount: {
-          Value: { Ref: 'AWS::AccountId' },
-        },
+    expect(template2?.Outputs).toEqual({
+      DemOutput: {
+        Value: { Ref: 'AWS::Region' },
+      },
+      DemAccount: {
+        Value: { Ref: 'AWS::AccountId' },
       },
     });
   });
 
   test('cross-stack references in strings work', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack1 = new Stack(app, 'Stack1');
     const account1 = new ScopedAws(stack1).accountId;
     const stack2 = new Stack(app, 'Stack2');
@@ -472,7 +466,12 @@ describe('stack', () => {
 
   test('cross stack references and dependencies work within child stacks (non-nested)', () => {
     // GIVEN
-    const app = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
     const parent = new Stack(app, 'Parent');
     const child1 = new Stack(parent, 'Child1');
     const child2 = new Stack(parent, 'Child2');
@@ -541,6 +540,52 @@ describe('stack', () => {
     const templateM = appM.synth().getStackByName(producerM.stackName).template;
 
     expect(templateA).toEqual(templateM);
+  });
+
+  test('throw error if overrideLogicalId is used and logicalId is locked', () => {
+    // GIVEN: manual
+    const appM = new App();
+    const producerM = new Stack(appM, 'Producer');
+    const resourceM = new CfnResource(producerM, 'ResourceXXX', { type: 'AWS::Resource' });
+    producerM.exportValue(resourceM.getAtt('Att'));
+
+    // THEN - producers are the same
+    expect(() => {
+      resourceM.overrideLogicalId('OVERRIDE_LOGICAL_ID');
+    }).toThrow(/The logicalId for resource at path Producer\/ResourceXXX has been locked and cannot be overridden/);
+  });
+
+  test('do not throw error if overrideLogicalId is used and logicalId is not locked', () => {
+    // GIVEN: manual
+    const appM = new App();
+    const producerM = new Stack(appM, 'Producer');
+    const resourceM = new CfnResource(producerM, 'ResourceXXX', { type: 'AWS::Resource' });
+
+    // THEN - producers are the same
+    resourceM.overrideLogicalId('OVERRIDE_LOGICAL_ID');
+    producerM.exportValue(resourceM.getAtt('Att'));
+
+    const template = appM.synth().getStackByName(producerM.stackName).template;
+    expect(template).toMatchObject({
+      Outputs: {
+        ExportsOutputFnGetAttOVERRIDELOGICALIDAtt2DD28019: {
+          Export: {
+            Name: 'Producer:ExportsOutputFnGetAttOVERRIDELOGICALIDAtt2DD28019',
+          },
+          Value: {
+            'Fn::GetAtt': [
+              'OVERRIDE_LOGICAL_ID',
+              'Att',
+            ],
+          },
+        },
+      },
+      Resources: {
+        OVERRIDE_LOGICAL_ID: {
+          Type: 'AWS::Resource',
+        },
+      },
+    });
   });
 
   test('automatic cross-stack references and manual exports look the same: nested stack edition', () => {
@@ -619,8 +664,8 @@ describe('stack', () => {
 
     // THEN
     const assembly = app.synth();
-    expect(assembly.getStackByName(parentStack.stackName).template).toEqual({ Resources: { MyParentResource: { Type: 'Resource::Parent' } } });
-    expect(assembly.getStackByName(childStack.stackName).template).toEqual({ Resources: { MyChildResource: { Type: 'Resource::Child' } } });
+    expect(assembly.getStackByName(parentStack.stackName).template?.Resources).toEqual({ MyParentResource: { Type: 'Resource::Parent' } });
+    expect(assembly.getStackByName(childStack.stackName).template?.Resources).toEqual({ MyChildResource: { Type: 'Resource::Child' } });
   });
 
   test('Nested Stacks are synthesized with DESTROY policy', () => {
@@ -666,7 +711,7 @@ describe('stack', () => {
 
   test('cross-stack reference (substack references parent stack)', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const parentStack = new Stack(app, 'parent');
     const childStack = new Stack(parentStack, 'child');
 
@@ -706,7 +751,13 @@ describe('stack', () => {
 
   test('cross-stack reference (parent stack references substack)', () => {
     // GIVEN
-    const app = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+
     const parentStack = new Stack(app, 'parent');
     const childStack = new Stack(parentStack, 'child');
 
@@ -1041,7 +1092,8 @@ describe('stack', () => {
 
   test('stack tags are reflected in the stack cloud assembly artifact metadata', () => {
     // GIVEN
-    const app = new App({ stackTraces: false });
+    const app = new App({ stackTraces: false, context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+
     const stack1 = new Stack(app, 'stack1');
     const stack2 = new Stack(stack1, 'stack2');
 
@@ -1087,24 +1139,6 @@ describe('stack', () => {
     const artifact = assembly.getStackArtifact(stack.artifactId);
 
     expect(artifact.terminationProtection).toEqual(true);
-  });
-
-  test('users can (still) override "synthesize()" in stack', () => {
-    let called = false;
-
-    class MyStack extends Stack {
-      synthesize(session: ISynthesisSession) {
-        called = true;
-        expect(session.outdir).toBeDefined();
-        expect(session.assembly.outdir).toEqual(session.outdir);
-      }
-    }
-
-    const app = new App();
-    new MyStack(app, 'my-stack');
-
-    app.synth();
-    expect(called).toEqual(true);
   });
 
   test('context can be set on a stack using a LegacySynthesizer', () => {
