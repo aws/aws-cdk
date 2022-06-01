@@ -5,17 +5,7 @@
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
-![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are in **developer preview** before they
-> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
-> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
-> will be announced in release notes. This means that while you may use them, you may need to
-> update your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -32,6 +22,7 @@ enables organizations to create and manage catalogs of products for their end us
 - [Product](#product)
   - [Creating a product from a local asset](#creating-a-product-from-local-asset)
   - [Creating a product from a stack](#creating-a-product-from-a-stack)
+  - [Creating a Product from a stack with a history of previous versions](#creating-a-product-from-a-stack-with-a-history-of-all-previous-versions)
   - [Adding a product to a portfolio](#adding-a-product-to-a-portfolio)
 - [TagOptions](#tag-options)
 - [Constraints](#constraints)
@@ -194,6 +185,105 @@ const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
 });
 ```
 
+### Creating a Product from a stack with a history of previous versions
+
+The default behavior of Service Catalog is to overwrite each product version upon deployment.
+This applies to Product Stacks as well, where only the latest changes to your Product Stack will 
+be deployed.
+To keep a history of the revisions of a ProductStack available in Service Catalog,
+you would need to define a ProductStack for each historical copy.
+
+You can instead create a `ProductStackHistory` to maintain snapshots of all previous versions.
+The `ProductStackHistory` can be created by passing the base `productStack`,
+a `currentVersionName` for your current version and a `locked` boolean.
+The `locked` boolean which when set to true will prevent your `currentVersionName`
+from being overwritten when there is an existing snapshot for that version.
+
+```ts
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+
+class S3BucketProduct extends servicecatalog.ProductStack {
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
+
+    new s3.Bucket(this, 'BucketProduct');
+  }
+}
+
+const productStackHistory = new servicecatalog.ProductStackHistory(this, 'ProductStackHistory', {
+  productStack: new S3BucketProduct(this, 'S3BucketProduct'),
+  currentVersionName: 'v1',
+  currentVersionLocked: true
+});
+```
+
+We can deploy the current version `v1` by using `productStackHistory.currentVersion()`
+
+```ts
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+
+class S3BucketProduct extends servicecatalog.ProductStack {
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
+
+    new s3.Bucket(this, 'BucketProductV2');
+  }
+}
+
+const productStackHistory = new servicecatalog.ProductStackHistory(this, 'ProductStackHistory', {
+  productStack: new S3BucketProduct(this, 'S3BucketProduct'),
+  currentVersionName: 'v2',
+  currentVersionLocked: true
+});
+
+const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
+  productName: "My Product",
+  owner: "Product Owner",
+  productVersions: [
+    productStackHistory.currentVersion(),
+  ],
+});
+```
+
+Using `ProductStackHistory` all deployed templates for the ProductStack will be written to disk,
+so that they will still be available in the future as the definition of the `ProductStack` subclass changes over time.
+**It is very important** that you commit these old versions to source control as these versions 
+determine whether a version has already been deployed and can also be deployed themselves.
+
+After using `ProductStackHistory` to deploy version `v1` of your `ProductStack`, we 
+make changes to the `ProductStack` and update the `currentVersionName` to `v2`.
+We still want our `v1` version to still be deployed, so we reference it by calling `productStackHistory.versionFromSnapshot('v1')`.
+
+```ts
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+
+class S3BucketProduct extends servicecatalog.ProductStack {
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
+
+    new s3.Bucket(this, 'BucketProductV2');
+  }
+}
+
+const productStackHistory = new servicecatalog.ProductStackHistory(this, 'ProductStackHistory', {
+  productStack: new S3BucketProduct(this, 'S3BucketProduct'),
+  currentVersionName: 'v2',
+  currentVersionLocked: true
+});
+
+const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
+  productName: "My Product",
+  owner: "Product Owner",
+  productVersions: [
+    productStackHistory.currentVersion(),
+    productStackHistory.versionFromSnapshot('v1')
+  ],
+});
+```
+
 ### Adding a product to a portfolio
 
 You add products to a portfolio to organize and distribute your catalog at scale.  Adding a product to a portfolio creates an association,
@@ -203,6 +293,7 @@ You can add a product to multiple portfolios depending on your organizational st
 ```ts
 declare const portfolio: servicecatalog.Portfolio;
 declare const product: servicecatalog.CloudFormationProduct;
+
 portfolio.addProduct(product);
 ```
 

@@ -7,16 +7,18 @@ jobs:
   issue-reprioritization:
     permissions:
       issues: write
+      repository-projects: write
     runs-on: ubuntu-latest
     steps:
-      - uses: kaizen3031593/issue-reprioritization-manager@main
+      - uses: kaizencc/issue-reprioritization-manager@main
         id: reprioritization-manager
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           original-label: p2
           new-label: p1
           reprioritization-threshold: 20
-      - uses: kaizen3031593/pr-triage-manager@main
+          project-column-url: https://github.com/aws/aws-cdk/projects/13#column-18002436
+      - uses: kaizencc/pr-triage-manager@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           on-pulls: ${{ steps.reprioritization-manager.outputs.linked-pulls }}

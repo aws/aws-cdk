@@ -366,6 +366,7 @@ export class Cluster extends Resource implements ICluster {
       machineImageType: provider.machineImageType,
       // Don't enable the instance-draining lifecycle hook if managed termination protection is enabled
       taskDrainTime: provider.enableManagedTerminationProtection ? Duration.seconds(0) : options.taskDrainTime,
+      canContainersAccessInstanceRole: options.canContainersAccessInstanceRole ?? provider.canContainersAccessInstanceRole,
     });
 
     this._capacityProviderNames.push(provider.capacityProviderName);
@@ -1105,12 +1106,21 @@ export class AsgCapacityProvider extends Construct {
    */
   readonly enableManagedTerminationProtection?: boolean;
 
+  /**
+   * Specifies whether the containers can access the container instance role.
+   *
+   * @default false
+   */
+  readonly canContainersAccessInstanceRole?: boolean;
+
   constructor(scope: Construct, id: string, props: AsgCapacityProviderProps) {
     super(scope, id);
 
     this.autoScalingGroup = props.autoScalingGroup as autoscaling.AutoScalingGroup;
 
     this.machineImageType = props.machineImageType ?? MachineImageType.AMAZON_LINUX_2;
+
+    this.canContainersAccessInstanceRole = props.canContainersAccessInstanceRole;
 
     this.enableManagedTerminationProtection =
       props.enableManagedTerminationProtection === undefined ? true : props.enableManagedTerminationProtection;

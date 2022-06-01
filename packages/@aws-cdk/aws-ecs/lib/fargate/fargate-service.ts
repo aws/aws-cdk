@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import { ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
-import { fromServiceAtrributes } from '../base/from-service-attributes';
+import { fromServiceAttributes } from '../base/from-service-attributes';
 import { TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 
@@ -111,10 +111,10 @@ export class FargateService extends BaseService implements IFargateService {
   }
 
   /**
-   * Imports from the specified service attrributes.
+   * Imports from the specified service attributes.
    */
   public static fromFargateServiceAttributes(scope: Construct, id: string, attrs: FargateServiceAttributes): IBaseService {
-    return fromServiceAtrributes(scope, id, attrs);
+    return fromServiceAttributes(scope, id, attrs);
   }
 
   /**

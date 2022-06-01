@@ -19,7 +19,6 @@ aws-cdk-lib.CustomResourceProviderRuntime#NODEJS_12
 aws-cdk-lib.DefaultStackSynthesizerProps#fileAssetKeyArnExportName
 aws-cdk-lib.DockerImageAssetSource#repositoryName
 aws-cdk-lib.Duration#toISOString
-aws-cdk-lib.FileAssetLocation#kmsKeyArn
 aws-cdk-lib.FileAssetLocation#s3Url
 aws-cdk-lib.ITemplateOptions#transform
 aws-cdk-lib.Lazy#anyValue

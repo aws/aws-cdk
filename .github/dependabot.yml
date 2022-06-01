@@ -18,10 +18,15 @@ updates:
     labels:
       - "auto-approve"
     open-pull-requests-limit: 5
+
   # run same dependabot upgrades on v1-main
   - package-ecosystem: "github-actions"
     directory: "/"
     target-branch: "v1-main"
+
+  # Non-TypeScript init template dependency updates
+  - package-ecosystem: "pip"
+    directory: "/packages/aws-cdk/lib/init-templates"
     schedule:
       interval: "weekly"
     labels:
@@ -30,6 +35,15 @@ updates:
   - package-ecosystem: "pip"
     directory: "/packages/@aws-cdk/lambda-layer-awscli"
     target-branch: "v1-main"
+  - package-ecosystem: "maven"
+    directory: "/packages/aws-cdk/lib/init-templates"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "auto-approve"
+    open-pull-requests-limit: 5
+  - package-ecosystem: "nuget"
+    directory: "/packages/aws-cdk/lib/init-templates"
     schedule:
       interval: "weekly"
     labels:
