@@ -4,7 +4,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import { App, CfnResource, RemovalPolicy, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
+import { App, CfnResource, RemovalPolicy, DefaultStackSynthesizer, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 
@@ -12,7 +12,10 @@ class MyStage extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
 
-    const stack = new Stack(this, 'Stack', props);
+    const stack = new Stack(this, 'Stack', {
+      ...props,
+      synthesizer: new DefaultStackSynthesizer(),
+    });
 
     new s3_assets.Asset(stack, 'Asset', {
       path: path.join(__dirname, 'testhelpers/assets/test-file-asset.txt'),
@@ -89,5 +92,7 @@ const app = new App({
     '@aws-cdk/core:newStyleStackSynthesis': 'true',
   },
 });
-new CdkpipelinesDemoPipelineStack(app, 'PipelineStack');
+new CdkpipelinesDemoPipelineStack(app, 'PipelineStack', {
+  synthesizer: new DefaultStackSynthesizer(),
+});
 app.synth();
