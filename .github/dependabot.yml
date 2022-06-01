@@ -18,6 +18,24 @@ updates:
     labels:
       - "auto-approve"
     open-pull-requests-limit: 5
+  
+  # run same dependabot upgrades on v1-main
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: "v1-main"
+    schedule:
+      interval: "weekly"
+    labels: 
+      - "auto-approve"
+    open-pull-requests-limit: 5
+  - package-ecosystem: "pip"
+    directory: "/packages/@aws-cdk/lambda-layer-awscli"
+    target-branch: "v1-main"
+    schedule:
+      interval: "weekly"
+    labels: 
+      - "auto-approve"
+    open-pull-requests-limit: 5
 
   # Non-TypeScript init template dependency updates
   - package-ecosystem: "pip"
