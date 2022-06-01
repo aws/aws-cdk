@@ -904,6 +904,8 @@ single module's directory as previously described in this document (e.g.
 # Generate all of the L1s first. If you have already done a full build in the repository, you can skip this.
 cd <CDK repo root>/
 ./scripts/gen.sh
+
+# Generate and build `aws-cdk-lib`
 cd packages/aws-cdk-lib
 yarn build
 ```
