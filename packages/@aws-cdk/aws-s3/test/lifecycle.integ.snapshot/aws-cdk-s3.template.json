@@ -10,8 +10,8 @@
        "Status": "Enabled"
       },
       {
-       "ObjectSizeLessThan": "500",
-       "ObjectSizeGreaterThan": "500",
+       "ObjectSizeGreaterThan": 500,
+       "ObjectSizeLessThan": 500,
        "Status": "Enabled"
       }
      ]

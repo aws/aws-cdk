@@ -11,7 +11,7 @@
     },
     "Region": "us-east-1",
     "ParameterName": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda",
-    "RefreshToken": "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d"
+    "RefreshToken": "LambdaCurrentVersionDF706F6A1ee13d0fa54e9f5621e8c7b616fc53fc"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -120,7 +120,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs12.x"
+    "Runtime": "nodejs14.x"
    },
    "DependsOn": [
     "CustomCrossRegionStringParameterReaderCustomResourceProviderRole71CD6825"
@@ -137,7 +137,7 @@
     },
     "Region": "us-east-1",
     "ParameterName": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda2",
-    "RefreshToken": "Lambda2CurrentVersion72012B74da2ca4572056a1112d9804f75b5b7491"
+    "RefreshToken": "Lambda2CurrentVersion72012B740555f03e3d18af7287817b4795b1185b"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

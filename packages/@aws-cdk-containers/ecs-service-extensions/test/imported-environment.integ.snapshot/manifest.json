@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -284,10 +284,7 @@
         "/imported-environment-integ/Service-task-definition/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Servicetaskdefinition0CEAD834",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "Servicetaskdefinition0CEAD834"
           }
         ],
         "/imported-environment-integ/Service-task-definition/ExecutionRole/Resource": [

@@ -593,7 +593,7 @@
                           ]
                         },
                         "handler": "index.onEventHandler",
-                        "runtime": "nodejs12.x",
+                        "runtime": "nodejs14.x",
                         "timeout": 300
                       }
                     },
@@ -712,7 +712,7 @@
                           ]
                         },
                         "handler": "index.isCompleteHandler",
-                        "runtime": "nodejs12.x",
+                        "runtime": "nodejs14.x",
                         "timeout": 30
                       }
                     },
@@ -968,7 +968,7 @@
                               }
                             },
                             "handler": "framework.onEvent",
-                            "runtime": "nodejs12.x",
+                            "runtime": "nodejs14.x",
                             "timeout": 900
                           }
                         },
@@ -1210,7 +1210,7 @@
                               }
                             },
                             "handler": "framework.isComplete",
-                            "runtime": "nodejs12.x",
+                            "runtime": "nodejs14.x",
                             "timeout": 900
                           }
                         },
@@ -1452,7 +1452,7 @@
                               }
                             },
                             "handler": "framework.onTimeout",
-                            "runtime": "nodejs12.x",
+                            "runtime": "nodejs14.x",
                             "timeout": 900
                           }
                         },
@@ -1708,7 +1708,7 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParametersfa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996S3BucketF48850CA"
+                            "Ref": "AssetParameters1fce46b574f57038074a76d9bb43cd09e13bcec61e1ef4d1730418b403fbf014S3BucketB0E2EA1A"
                           },
                           "/",
                           {
@@ -1718,7 +1718,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParametersfa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996S3VersionKey238E55C8"
+                                    "Ref": "AssetParameters1fce46b574f57038074a76d9bb43cd09e13bcec61e1ef4d1730418b403fbf014S3VersionKeyEFEC4DD0"
                                   }
                                 ]
                               }
@@ -1731,7 +1731,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParametersfa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996S3VersionKey238E55C8"
+                                    "Ref": "AssetParameters1fce46b574f57038074a76d9bb43cd09e13bcec61e1ef4d1730418b403fbf014S3VersionKeyEFEC4DD0"
                                   }
                                 ]
                               }
@@ -1839,13 +1839,13 @@
                   "version": "0.0.0"
                 }
               },
-              "fa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996": {
-                "id": "fa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996",
-                "path": "aws-cdk-dynamodb-global-replicas-provisioned/AssetParameters/fa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996",
+              "1fce46b574f57038074a76d9bb43cd09e13bcec61e1ef4d1730418b403fbf014": {
+                "id": "1fce46b574f57038074a76d9bb43cd09e13bcec61e1ef4d1730418b403fbf014",
+                "path": "aws-cdk-dynamodb-global-replicas-provisioned/AssetParameters/1fce46b574f57038074a76d9bb43cd09e13bcec61e1ef4d1730418b403fbf014",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-cdk-dynamodb-global-replicas-provisioned/AssetParameters/fa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996/S3Bucket",
+                    "path": "aws-cdk-dynamodb-global-replicas-provisioned/AssetParameters/1fce46b574f57038074a76d9bb43cd09e13bcec61e1ef4d1730418b403fbf014/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -1853,7 +1853,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-cdk-dynamodb-global-replicas-provisioned/AssetParameters/fa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996/S3VersionKey",
+                    "path": "aws-cdk-dynamodb-global-replicas-provisioned/AssetParameters/1fce46b574f57038074a76d9bb43cd09e13bcec61e1ef4d1730418b403fbf014/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -1861,7 +1861,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-cdk-dynamodb-global-replicas-provisioned/AssetParameters/fa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996/ArtifactHash",
+                    "path": "aws-cdk-dynamodb-global-replicas-provisioned/AssetParameters/1fce46b574f57038074a76d9bb43cd09e13bcec61e1ef4d1730418b403fbf014/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"

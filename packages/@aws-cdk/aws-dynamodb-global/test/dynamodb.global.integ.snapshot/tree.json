@@ -400,7 +400,7 @@
                         },
                         "description": "Lambda to make DynamoDB a global table",
                         "handler": "index.handler",
-                        "runtime": "nodejs12.x",
+                        "runtime": "nodejs14.x",
                         "timeout": 300
                       }
                     },

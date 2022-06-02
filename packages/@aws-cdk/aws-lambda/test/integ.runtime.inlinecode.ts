@@ -15,13 +15,6 @@ const app = new App();
 
 const stack = new Stack(app, 'aws-cdk-lambda-runtime-inlinecode');
 
-const node12xfn = new Function(stack, 'NODEJS_12_X', {
-  code: new InlineCode('exports.handler = async function(event) { return "success" }'),
-  handler: 'index.handler',
-  runtime: Runtime.NODEJS_12_X,
-});
-new CfnOutput(stack, 'NODEJS_12_X-functionName', { value: node12xfn.functionName });
-
 const python36 = new Function(stack, 'PYTHON_3_6', {
   code: new InlineCode('def handler(event, context):\n  return "success"'),
   handler: 'index.handler',
@@ -49,6 +42,13 @@ const python39 = new Function(stack, 'PYTHON_3_9', {
   runtime: Runtime.PYTHON_3_9,
 });
 new CfnOutput(stack, 'PYTHON_3_9-functionName', { value: python39.functionName });
+
+const node12xfn = new Function(stack, 'NODEJS_12_X', {
+  code: new InlineCode('exports.handler = async function(event) { return "success" }'),
+  handler: 'index.handler',
+  runtime: Runtime.NODEJS_12_X,
+});
+new CfnOutput(stack, 'NODEJS_12_X-functionName', { value: node12xfn.functionName });
 
 const node14xfn = new Function(stack, 'NODEJS_14_X', {
   code: new InlineCode('exports.handler = async function(event) { return "success" }'),

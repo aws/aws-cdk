@@ -1,5 +1,5 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -61,15 +61,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdaInvokeN0a2GKfZP0JmDqDEVhhu6A0TUv3NyNbk4YMFKNc69846677"
-          }
-        ],
-        "LambdaInvokeServicePrincipalsecretsmanageramazonawscomB927629E": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeServicePrincipalsecretsmanageramazonawscomB927629E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

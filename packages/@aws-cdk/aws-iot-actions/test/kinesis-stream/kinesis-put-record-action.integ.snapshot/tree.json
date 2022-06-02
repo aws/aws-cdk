@@ -168,13 +168,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-kinesis.CfnStream",
+                  "fqn": "@aws-cdk/core.CfnResource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-kinesis.Stream",
+              "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
             }
           },

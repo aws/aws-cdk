@@ -554,7 +554,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-codepipeline.CfnPipeline",
+                      "fqn": "@aws-cdk/core.CfnResource",
                       "version": "0.0.0"
                     }
                   },
@@ -969,13 +969,13 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-codebuild.CfnProject",
+                                  "fqn": "@aws-cdk/core.CfnResource",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-codebuild.PipelineProject",
+                              "fqn": "@aws-cdk/core.Resource",
                               "version": "0.0.0"
                             }
                           }
@@ -1227,13 +1227,13 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-codebuild.CfnProject",
+                                  "fqn": "@aws-cdk/core.CfnResource",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-codebuild.PipelineProject",
+                              "fqn": "@aws-cdk/core.Resource",
                               "version": "0.0.0"
                             }
                           }
@@ -1475,13 +1475,13 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-codebuild.CfnProject",
+                                  "fqn": "@aws-cdk/core.CfnResource",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-codebuild.PipelineProject",
+                              "fqn": "@aws-cdk/core.Resource",
                               "version": "0.0.0"
                             }
                           }
@@ -1499,7 +1499,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-codepipeline.Pipeline",
+                  "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
                 }
               },

@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -18,10 +18,7 @@
         "/aws-cdk-ec2-import/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SecurityGroupDD263621",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "SecurityGroupDD263621"
           }
         ],
         "/aws-cdk-ec2-import/PublicSubnets": [

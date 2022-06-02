@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-cloudformation/test/integ.nested-stacks-assets": {
+    "integ.nested-stacks-assets": {
       "stacks": [
         "nested-stacks-assets"
       ],

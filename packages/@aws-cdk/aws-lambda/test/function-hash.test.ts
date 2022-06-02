@@ -25,39 +25,39 @@ describe('function hash', () => {
     test('same configuration and code yields the same hash', () => {
       const stack1 = new Stack();
       const fn1 = new lambda.Function(stack1, 'MyFunction1', {
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
       });
 
       const stack2 = new Stack();
       const fn2 = new lambda.Function(stack2, 'MyFunction1', {
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
       });
 
       expect(calculateFunctionHash(fn1)).toEqual(calculateFunctionHash(fn2));
-      expect(calculateFunctionHash(fn1)).toEqual('aea5463dba236007afe91d2832b3c836');
+      expect(calculateFunctionHash(fn1)).toEqual('1c0bdae72f58ce862e1d2b0487ec233d');
     });
   });
 
   test('code impacts hash', () => {
     const stack1 = new Stack();
     const fn1 = new lambda.Function(stack1, 'MyFunction1', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
     });
 
-    expect(calculateFunctionHash(fn1)).not.toEqual('aea5463dba236007afe91d2832b3c836');
-    expect(calculateFunctionHash(fn1)).toEqual('979b4a14c6f174c745cdbcd1036cf844');
+    expect(calculateFunctionHash(fn1)).not.toEqual('d10e64d5098e7c455c3f76636c351c91');
+    expect(calculateFunctionHash(fn1)).toEqual('cb9a7b163edfdf2d30eb41b6d2d08711');
   });
 
   test('environment variables impact hash', () => {
     const stack1 = new Stack();
     const fn1 = new lambda.Function(stack1, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
       environment: {
@@ -67,7 +67,7 @@ describe('function hash', () => {
 
     const stack2 = new Stack();
     const fn2 = new lambda.Function(stack2, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
       environment: {
@@ -75,14 +75,14 @@ describe('function hash', () => {
       },
     });
 
-    expect(calculateFunctionHash(fn1)).toEqual('d1bc824ac5022b7d62d8b12dbae6580c');
-    expect(calculateFunctionHash(fn2)).toEqual('3b683d05465012b0aa9c4ff53b32f014');
+    expect(calculateFunctionHash(fn1)).toEqual('528dd04e66817b3b439b5e9a17d239c9');
+    expect(calculateFunctionHash(fn2)).toEqual('d2387f9fda6c27296931cf4c57be82d9');
   });
 
   test('runtime impacts hash', () => {
     const stack1 = new Stack();
     const fn1 = new lambda.Function(stack1, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
       environment: {
@@ -92,7 +92,7 @@ describe('function hash', () => {
 
     const stack2 = new Stack();
     const fn2 = new lambda.Function(stack2, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
       environment: {
@@ -100,27 +100,27 @@ describe('function hash', () => {
       },
     });
 
-    expect(calculateFunctionHash(fn1)).toEqual('d1bc824ac5022b7d62d8b12dbae6580c');
-    expect(calculateFunctionHash(fn2)).toEqual('0f168f0772463e8e547bb3800937e54d');
+    expect(calculateFunctionHash(fn1)).toEqual('528dd04e66817b3b439b5e9a17d239c9');
+    expect(calculateFunctionHash(fn2)).toEqual('d2387f9fda6c27296931cf4c57be82d9');
   });
 
   test('inline code change impacts the hash', () => {
     const stack1 = new Stack();
     const fn1 = new lambda.Function(stack1, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
     });
 
     const stack2 = new Stack();
     const fn2 = new lambda.Function(stack2, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('foo bar'),
       handler: 'index.handler',
     });
 
-    expect(calculateFunctionHash(fn1)).toEqual('ebf2e871fc6a3062e8bdcc5ebe16db3f');
-    expect(calculateFunctionHash(fn2)).toEqual('ffedf6424a18a594a513129dc97bf53c');
+    expect(calculateFunctionHash(fn1)).toEqual('71fe99b1b2c3eae062ccc42144608827');
+    expect(calculateFunctionHash(fn2)).toEqual('df536bcbc0a214971aa22d9d3cf259d4');
   });
 
   describe('lambda layers', () => {
@@ -259,7 +259,7 @@ describe('function hash', () => {
     test('without "currentVersion", we preserve old behavior to avoid unnecessary invalidation of templates', () => {
       const stack1 = new Stack();
       const fn1 = new lambda.Function(stack1, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
         handler: 'index.handler',
         environment: {
@@ -270,7 +270,7 @@ describe('function hash', () => {
 
       const stack2 = new Stack();
       const fn2 = new lambda.Function(stack2, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
         handler: 'index.handler',
         environment: {
@@ -285,7 +285,7 @@ describe('function hash', () => {
     test('with "currentVersion", we sort env keys so order is consistent', () => {
       const stack1 = new Stack();
       const fn1 = new lambda.Function(stack1, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
         handler: 'index.handler',
         environment: {
@@ -298,7 +298,7 @@ describe('function hash', () => {
 
       const stack2 = new Stack();
       const fn2 = new lambda.Function(stack2, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
         handler: 'index.handler',
         environment: {
@@ -322,14 +322,14 @@ describe('function hash', () => {
     test('DependsOn does not impact function hash', () => {
       const stack1 = new Stack(app, 'Stack1');
       const fn1 = new lambda.Function(stack1, 'MyFunction1', {
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
       });
 
       const stack2 = new Stack(app, 'Stack2');
       const fn2 = new lambda.Function(stack2, 'MyFunction1', {
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
       });
@@ -341,21 +341,21 @@ describe('function hash', () => {
       });
       fn2.node.addDependency(res);
 
-      expect(calculateFunctionHash(fn1)).toEqual('e5235e3cb7a9b70c42c1a665a3ebd77c');
+      expect(calculateFunctionHash(fn1)).toEqual('74ee309e3752199288e6d64d385b52c4');
       expect(calculateFunctionHash(fn1)).toEqual(calculateFunctionHash(fn2));
     });
 
     test('properties not locked to the version do not impact function hash', () => {
       const stack1 = new Stack(app, 'Stack1');
       const fn1 = new lambda.Function(stack1, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
       });
 
       const stack2 = new Stack(app, 'Stack2');
       const fn2 = new lambda.Function(stack2, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
 
@@ -369,7 +369,7 @@ describe('function hash', () => {
     test('unclassified property throws an error', () => {
       const stack = new Stack(app);
       const fn1 = new lambda.Function(stack, 'MyFunction1', {
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
       });
@@ -381,7 +381,7 @@ describe('function hash', () => {
     test('manual classification as version locked', () => {
       const stack = new Stack(app);
       const fn1 = new lambda.Function(stack, 'MyFunction1', {
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
       });
@@ -395,7 +395,7 @@ describe('function hash', () => {
     test('manual classification as not version locked', () => {
       const stack = new Stack(app);
       const fn1 = new lambda.Function(stack, 'MyFunction1', {
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
       });

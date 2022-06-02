@@ -45,7 +45,7 @@ export interface CustomResourceProviderProps {
    * @example
    * const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
    *   codeDirectory: `${__dirname}/my-handler`,
-   *   runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+   *   runtime: CustomResourceProviderRuntime.NODEJS_14_X,
    *   policyStatements: [
    *     {
    *       Effect: 'Allow',
@@ -108,6 +108,11 @@ export enum CustomResourceProviderRuntime {
    * Node.js 14.x
    */
   NODEJS_14_X = 'nodejs14.x',
+
+  /**
+   * Node.js 16.x
+   */
+  NODEJS_16_X = 'nodejs16.x',
 }
 
 /**

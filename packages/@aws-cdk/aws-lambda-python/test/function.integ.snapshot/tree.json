@@ -103,7 +103,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParameters559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edbS3Bucket616AA48B"
+                        "Ref": "AssetParameters621b0e8c73d3cce104eb3a1d3fd146a1d33c9015d566769d214e0a9ddeb0271aS3Bucket9C063288"
                       },
                       "s3Key": {
                         "Fn::Join": [
@@ -116,7 +116,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameters559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edbS3VersionKey47E0D73B"
+                                      "Ref": "AssetParameters621b0e8c73d3cce104eb3a1d3fd146a1d33c9015d566769d214e0a9ddeb0271aS3VersionKey7453215A"
                                     }
                                   ]
                                 }
@@ -129,7 +129,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameters559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edbS3VersionKey47E0D73B"
+                                      "Ref": "AssetParameters621b0e8c73d3cce104eb3a1d3fd146a1d33c9015d566769d214e0a9ddeb0271aS3VersionKey7453215A"
                                     }
                                   ]
                                 }
@@ -164,13 +164,13 @@
             "id": "AssetParameters",
             "path": "cdk-integ-lambda-python/AssetParameters",
             "children": {
-              "559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edb": {
-                "id": "559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edb",
-                "path": "cdk-integ-lambda-python/AssetParameters/559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edb",
+              "621b0e8c73d3cce104eb3a1d3fd146a1d33c9015d566769d214e0a9ddeb0271a": {
+                "id": "621b0e8c73d3cce104eb3a1d3fd146a1d33c9015d566769d214e0a9ddeb0271a",
+                "path": "cdk-integ-lambda-python/AssetParameters/621b0e8c73d3cce104eb3a1d3fd146a1d33c9015d566769d214e0a9ddeb0271a",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "cdk-integ-lambda-python/AssetParameters/559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edb/S3Bucket",
+                    "path": "cdk-integ-lambda-python/AssetParameters/621b0e8c73d3cce104eb3a1d3fd146a1d33c9015d566769d214e0a9ddeb0271a/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -178,7 +178,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "cdk-integ-lambda-python/AssetParameters/559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edb/S3VersionKey",
+                    "path": "cdk-integ-lambda-python/AssetParameters/621b0e8c73d3cce104eb3a1d3fd146a1d33c9015d566769d214e0a9ddeb0271a/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -186,7 +186,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "cdk-integ-lambda-python/AssetParameters/559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edb/ArtifactHash",
+                    "path": "cdk-integ-lambda-python/AssetParameters/621b0e8c73d3cce104eb3a1d3fd146a1d33c9015d566769d214e0a9ddeb0271a/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"

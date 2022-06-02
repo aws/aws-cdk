@@ -23,7 +23,6 @@ const authHandler = new lambda.Function(stack, 'auth-function', {
   code: lambda.Code.fromAsset(path.join(__dirname, '../auth-handler')),
 });
 
-
 const authorizer = new HttpLambdaAuthorizer('LambdaAuthorizer', authHandler, {
   authorizerName: 'my-simple-authorizer',
   identitySource: ['$request.header.X-API-Key'],
@@ -31,7 +30,7 @@ const authorizer = new HttpLambdaAuthorizer('LambdaAuthorizer', authHandler, {
 });
 
 const handler = new lambda.Function(stack, 'lambda', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.AssetCode.fromAsset(path.join(__dirname, '../integ.lambda.handler')),
 });

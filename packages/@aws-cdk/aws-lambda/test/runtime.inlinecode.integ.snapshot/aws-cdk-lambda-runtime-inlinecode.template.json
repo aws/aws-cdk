@@ -352,11 +352,6 @@
   }
  },
  "Outputs": {
-  "NODEJS12XfunctionName": {
-   "Value": {
-    "Ref": "NODEJS12X8B8075A4"
-   }
-  },
   "PYTHON36functionName": {
    "Value": {
     "Ref": "PYTHON364935EF15"
@@ -375,6 +370,11 @@
   "PYTHON39functionName": {
    "Value": {
     "Ref": "PYTHON39143BF976"
+   }
+  },
+  "NODEJS12XfunctionName": {
+   "Value": {
+    "Ref": "NODEJS12X8B8075A4"
    }
   },
   "NODEJS14XfunctionName": {

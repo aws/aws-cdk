@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-glue/test/integ.connection": {
+    "integ.connection": {
       "stacks": [
         "aws-glue-connection"
       ],

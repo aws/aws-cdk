@@ -103,7 +103,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksclusterprivateendpointtestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3BucketCBC28892Ref"
+      "Ref": "referencetoawscdkeksclusterprivateendpointtestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3BucketEC0E9C9FRef"
      },
      "S3Key": {
       "Fn::Join": [
@@ -116,7 +116,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksclusterprivateendpointtestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKeyC7A8A894Ref"
+             "Ref": "referencetoawscdkeksclusterprivateendpointtestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey90699F60Ref"
             }
            ]
           }
@@ -129,7 +129,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksclusterprivateendpointtestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKeyC7A8A894Ref"
+             "Ref": "referencetoawscdkeksclusterprivateendpointtestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey90699F60Ref"
             }
            ]
           }
@@ -157,7 +157,7 @@
       "Ref": "NodeProxyAgentLayer924C1971"
      }
     ],
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 60
    },
    "DependsOn": [
@@ -224,7 +224,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksclusterprivateendpointtestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3BucketCBC28892Ref"
+      "Ref": "referencetoawscdkeksclusterprivateendpointtestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3BucketEC0E9C9FRef"
      },
      "S3Key": {
       "Fn::Join": [
@@ -237,7 +237,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksclusterprivateendpointtestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKeyC7A8A894Ref"
+             "Ref": "referencetoawscdkeksclusterprivateendpointtestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey90699F60Ref"
             }
            ]
           }
@@ -250,7 +250,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksclusterprivateendpointtestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKeyC7A8A894Ref"
+             "Ref": "referencetoawscdkeksclusterprivateendpointtestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey90699F60Ref"
             }
            ]
           }
@@ -278,7 +278,7 @@
       "Ref": "NodeProxyAgentLayer924C1971"
      }
     ],
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 60
    },
    "DependsOn": [
@@ -454,7 +454,7 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -620,7 +620,7 @@
      }
     },
     "Handler": "framework.isComplete",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -786,7 +786,7 @@
      }
     },
     "Handler": "framework.onTimeout",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -1033,10 +1033,10 @@
   "referencetoawscdkeksclusterprivateendpointtestClusterCreationRole990BAAEAArn": {
    "Type": "String"
   },
-  "referencetoawscdkeksclusterprivateendpointtestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3BucketCBC28892Ref": {
+  "referencetoawscdkeksclusterprivateendpointtestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3BucketEC0E9C9FRef": {
    "Type": "String"
   },
-  "referencetoawscdkeksclusterprivateendpointtestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKeyC7A8A894Ref": {
+  "referencetoawscdkeksclusterprivateendpointtestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey90699F60Ref": {
    "Type": "String"
   },
   "referencetoawscdkeksclusterprivateendpointtestAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket0EC93924Ref": {

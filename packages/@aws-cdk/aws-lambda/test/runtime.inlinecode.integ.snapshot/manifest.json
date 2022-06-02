@@ -15,19 +15,19 @@
         "validateOnSynth": false
       },
       "metadata": {
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_12_X/ServiceRole/Resource": [
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_14_X/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "NODEJS12XServiceRole59E71436"
           }
         ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_12_X/Resource": [
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_14_X/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "NODEJS12X8B8075A4"
           }
         ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_12_X-functionName": [
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_14_X-functionName": [
           {
             "type": "aws:cdk:logicalId",
             "data": "NODEJS12XfunctionName"

@@ -572,7 +572,7 @@
                           }
                         },
                         "handler": "framework.onEvent",
-                        "runtime": "nodejs12.x",
+                        "runtime": "nodejs14.x",
                         "timeout": 900
                       }
                     },
@@ -967,7 +967,7 @@
                           }
                         },
                         "handler": "framework.onEvent",
-                        "runtime": "nodejs12.x",
+                        "runtime": "nodejs14.x",
                         "timeout": 900
                       }
                     },
@@ -1362,7 +1362,7 @@
                           }
                         },
                         "handler": "framework.onEvent",
-                        "runtime": "nodejs12.x",
+                        "runtime": "nodejs14.x",
                         "timeout": 900
                       }
                     },

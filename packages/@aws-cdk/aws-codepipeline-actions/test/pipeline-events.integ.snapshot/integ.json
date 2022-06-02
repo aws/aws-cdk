@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-codepipeline-actions/test/integ.pipeline-events": {
+    "integ.pipeline-events": {
       "stacks": [
         "aws-cdk-pipeline-event-target"
       ],

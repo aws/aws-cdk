@@ -38,15 +38,6 @@
             "type": "aws:cdk:logicalId",
             "data": "DistB3B78991"
           }
-        ],
-        "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "integ-distribution-lambda"

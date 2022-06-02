@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -56,12 +56,12 @@
             "type": "aws:cdk:asset",
             "data": {
               "path": "cdkamplifyappassetdeploymentcomamazonawscdkcustomresourcesamplifyassetdeploymentprovider02396C99.nested.template.json",
-              "id": "26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ce",
+              "id": "5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09b",
               "packaging": "file",
-              "sourceHash": "26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ce",
-              "s3BucketParameter": "AssetParameters26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ceS3Bucket12F7FACF",
-              "s3KeyParameter": "AssetParameters26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ceS3VersionKeyAF0C1844",
-              "artifactHashParameter": "AssetParameters26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ceArtifactHash26F61DA0"
+              "sourceHash": "5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09b",
+              "s3BucketParameter": "AssetParameters5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09bS3BucketCCFAAC39",
+              "s3KeyParameter": "AssetParameters5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09bS3VersionKey510F0375",
+              "artifactHashParameter": "AssetParameters5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09bArtifactHash9A855C90"
             }
           }
         ],
@@ -119,22 +119,22 @@
             "data": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9ArtifactHash26B5BCAA"
           }
         ],
-        "/cdk-amplify-app-asset-deployment/AssetParameters/26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ce/S3Bucket": [
+        "/cdk-amplify-app-asset-deployment/AssetParameters/5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09b/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ceS3Bucket12F7FACF"
+            "data": "AssetParameters5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09bS3BucketCCFAAC39"
           }
         ],
-        "/cdk-amplify-app-asset-deployment/AssetParameters/26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ce/S3VersionKey": [
+        "/cdk-amplify-app-asset-deployment/AssetParameters/5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09b/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ceS3VersionKeyAF0C1844"
+            "data": "AssetParameters5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09bS3VersionKey510F0375"
           }
         ],
-        "/cdk-amplify-app-asset-deployment/AssetParameters/26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ce/ArtifactHash": [
+        "/cdk-amplify-app-asset-deployment/AssetParameters/5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09b/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ceArtifactHash26F61DA0"
+            "data": "AssetParameters5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09bArtifactHash9A855C90"
           }
         ],
         "/cdk-amplify-app-asset-deployment/App/Role/Resource": [

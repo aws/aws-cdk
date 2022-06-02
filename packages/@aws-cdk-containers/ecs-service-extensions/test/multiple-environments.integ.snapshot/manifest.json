@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -336,10 +336,7 @@
         "/aws-ecs-integ/name-production-task-definition/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "nameproductiontaskdefinition33A5D5E0",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "nameproductiontaskdefinition33A5D5E0"
           }
         ],
         "/aws-ecs-integ/name-production-task-definition/ExecutionRole/Resource": [
@@ -429,10 +426,7 @@
         "/aws-ecs-integ/name-development-task-definition/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "namedevelopmenttaskdefinition0468FBFF",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "namedevelopmenttaskdefinition0468FBFF"
           }
         ],
         "/aws-ecs-integ/name-development-task-definition/ExecutionRole/Resource": [

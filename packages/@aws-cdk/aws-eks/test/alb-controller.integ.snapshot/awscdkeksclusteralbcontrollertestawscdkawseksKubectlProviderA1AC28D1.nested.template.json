@@ -171,7 +171,7 @@
    "Properties": {
     "Content": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksclusteralbcontrollertestAssetParameters74ffc8606670c67d6fb0102782b44a64a139c8f4aca1f9c0de934bb6517010e7S3Bucket1DB06269Ref"
+      "Ref": "referencetoawscdkeksclusteralbcontrollertestAssetParameters7b972a89fc345c14ed592fbcc2da5d060bcab4e5dcf6c9a2b267a197f0b04e55S3Bucket2C893841Ref"
      },
      "S3Key": {
       "Fn::Join": [
@@ -184,7 +184,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksclusteralbcontrollertestAssetParameters74ffc8606670c67d6fb0102782b44a64a139c8f4aca1f9c0de934bb6517010e7S3VersionKeyB8C5F5B4Ref"
+             "Ref": "referencetoawscdkeksclusteralbcontrollertestAssetParameters7b972a89fc345c14ed592fbcc2da5d060bcab4e5dcf6c9a2b267a197f0b04e55S3VersionKey5A0C9264Ref"
             }
            ]
           }
@@ -197,7 +197,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksclusteralbcontrollertestAssetParameters74ffc8606670c67d6fb0102782b44a64a139c8f4aca1f9c0de934bb6517010e7S3VersionKeyB8C5F5B4Ref"
+             "Ref": "referencetoawscdkeksclusteralbcontrollertestAssetParameters7b972a89fc345c14ed592fbcc2da5d060bcab4e5dcf6c9a2b267a197f0b04e55S3VersionKey5A0C9264Ref"
             }
            ]
           }
@@ -398,7 +398,7 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
@@ -454,10 +454,10 @@
   "referencetoawscdkeksclusteralbcontrollertestCluster80A60A64ClusterSecurityGroupId": {
    "Type": "String"
   },
-  "referencetoawscdkeksclusteralbcontrollertestAssetParameters74ffc8606670c67d6fb0102782b44a64a139c8f4aca1f9c0de934bb6517010e7S3Bucket1DB06269Ref": {
+  "referencetoawscdkeksclusteralbcontrollertestAssetParameters7b972a89fc345c14ed592fbcc2da5d060bcab4e5dcf6c9a2b267a197f0b04e55S3Bucket2C893841Ref": {
    "Type": "String"
   },
-  "referencetoawscdkeksclusteralbcontrollertestAssetParameters74ffc8606670c67d6fb0102782b44a64a139c8f4aca1f9c0de934bb6517010e7S3VersionKeyB8C5F5B4Ref": {
+  "referencetoawscdkeksclusteralbcontrollertestAssetParameters7b972a89fc345c14ed592fbcc2da5d060bcab4e5dcf6c9a2b267a197f0b04e55S3VersionKey5A0C9264Ref": {
    "Type": "String"
   },
   "referencetoawscdkeksclusteralbcontrollertestAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3BucketCD1CB66DRef": {

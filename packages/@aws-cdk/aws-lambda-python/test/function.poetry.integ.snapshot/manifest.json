@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -19,25 +19,25 @@
           {
             "type": "aws:cdk:asset",
             "data": {
-              "path": "asset.59d4e7a99a5f47092964438d332128ec20027eb92e9f15daff8d111e84db0ca5",
-              "id": "59d4e7a99a5f47092964438d332128ec20027eb92e9f15daff8d111e84db0ca5",
+              "path": "asset.7ec9ac2454768d874fbee515d2e49f4ded799567ccc9c47a1983597acd25f1e1",
+              "id": "7ec9ac2454768d874fbee515d2e49f4ded799567ccc9c47a1983597acd25f1e1",
               "packaging": "zip",
-              "sourceHash": "59d4e7a99a5f47092964438d332128ec20027eb92e9f15daff8d111e84db0ca5",
-              "s3BucketParameter": "AssetParameters59d4e7a99a5f47092964438d332128ec20027eb92e9f15daff8d111e84db0ca5S3BucketD1BC9E51",
-              "s3KeyParameter": "AssetParameters59d4e7a99a5f47092964438d332128ec20027eb92e9f15daff8d111e84db0ca5S3VersionKey8067C940",
-              "artifactHashParameter": "AssetParameters59d4e7a99a5f47092964438d332128ec20027eb92e9f15daff8d111e84db0ca5ArtifactHash46D77743"
+              "sourceHash": "7ec9ac2454768d874fbee515d2e49f4ded799567ccc9c47a1983597acd25f1e1",
+              "s3BucketParameter": "AssetParameters7ec9ac2454768d874fbee515d2e49f4ded799567ccc9c47a1983597acd25f1e1S3Bucket90D93024",
+              "s3KeyParameter": "AssetParameters7ec9ac2454768d874fbee515d2e49f4ded799567ccc9c47a1983597acd25f1e1S3VersionKey996D4784",
+              "artifactHashParameter": "AssetParameters7ec9ac2454768d874fbee515d2e49f4ded799567ccc9c47a1983597acd25f1e1ArtifactHash85D824B9"
             }
           },
           {
             "type": "aws:cdk:asset",
             "data": {
-              "path": "asset.de9087c7fd157b3937ad1af465d4d321281110d142e17ad57547f9b1b640b7b5",
-              "id": "de9087c7fd157b3937ad1af465d4d321281110d142e17ad57547f9b1b640b7b5",
+              "path": "asset.427aafd6a0449516e30dda6e67267a5e6cb896b05e780861598cb20c3c89e377",
+              "id": "427aafd6a0449516e30dda6e67267a5e6cb896b05e780861598cb20c3c89e377",
               "packaging": "zip",
-              "sourceHash": "de9087c7fd157b3937ad1af465d4d321281110d142e17ad57547f9b1b640b7b5",
-              "s3BucketParameter": "AssetParametersde9087c7fd157b3937ad1af465d4d321281110d142e17ad57547f9b1b640b7b5S3Bucket2BED5FEE",
-              "s3KeyParameter": "AssetParametersde9087c7fd157b3937ad1af465d4d321281110d142e17ad57547f9b1b640b7b5S3VersionKey0104FD94",
-              "artifactHashParameter": "AssetParametersde9087c7fd157b3937ad1af465d4d321281110d142e17ad57547f9b1b640b7b5ArtifactHashE55BD9F5"
+              "sourceHash": "427aafd6a0449516e30dda6e67267a5e6cb896b05e780861598cb20c3c89e377",
+              "s3BucketParameter": "AssetParameters427aafd6a0449516e30dda6e67267a5e6cb896b05e780861598cb20c3c89e377S3BucketBBBE1E01",
+              "s3KeyParameter": "AssetParameters427aafd6a0449516e30dda6e67267a5e6cb896b05e780861598cb20c3c89e377S3VersionKeyF6535FC7",
+              "artifactHashParameter": "AssetParameters427aafd6a0449516e30dda6e67267a5e6cb896b05e780861598cb20c3c89e377ArtifactHash21F3F856"
             }
           }
         ],
@@ -53,40 +53,40 @@
             "data": "myhandlerinline53D120C7"
           }
         ],
-        "/cdk-integ-lambda-python/AssetParameters/59d4e7a99a5f47092964438d332128ec20027eb92e9f15daff8d111e84db0ca5/S3Bucket": [
+        "/cdk-integ-lambda-python/AssetParameters/7ec9ac2454768d874fbee515d2e49f4ded799567ccc9c47a1983597acd25f1e1/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters59d4e7a99a5f47092964438d332128ec20027eb92e9f15daff8d111e84db0ca5S3BucketD1BC9E51"
+            "data": "AssetParameters7ec9ac2454768d874fbee515d2e49f4ded799567ccc9c47a1983597acd25f1e1S3Bucket90D93024"
           }
         ],
-        "/cdk-integ-lambda-python/AssetParameters/59d4e7a99a5f47092964438d332128ec20027eb92e9f15daff8d111e84db0ca5/S3VersionKey": [
+        "/cdk-integ-lambda-python/AssetParameters/7ec9ac2454768d874fbee515d2e49f4ded799567ccc9c47a1983597acd25f1e1/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters59d4e7a99a5f47092964438d332128ec20027eb92e9f15daff8d111e84db0ca5S3VersionKey8067C940"
+            "data": "AssetParameters7ec9ac2454768d874fbee515d2e49f4ded799567ccc9c47a1983597acd25f1e1S3VersionKey996D4784"
           }
         ],
-        "/cdk-integ-lambda-python/AssetParameters/59d4e7a99a5f47092964438d332128ec20027eb92e9f15daff8d111e84db0ca5/ArtifactHash": [
+        "/cdk-integ-lambda-python/AssetParameters/7ec9ac2454768d874fbee515d2e49f4ded799567ccc9c47a1983597acd25f1e1/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters59d4e7a99a5f47092964438d332128ec20027eb92e9f15daff8d111e84db0ca5ArtifactHash46D77743"
+            "data": "AssetParameters7ec9ac2454768d874fbee515d2e49f4ded799567ccc9c47a1983597acd25f1e1ArtifactHash85D824B9"
           }
         ],
-        "/cdk-integ-lambda-python/AssetParameters/de9087c7fd157b3937ad1af465d4d321281110d142e17ad57547f9b1b640b7b5/S3Bucket": [
+        "/cdk-integ-lambda-python/AssetParameters/427aafd6a0449516e30dda6e67267a5e6cb896b05e780861598cb20c3c89e377/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersde9087c7fd157b3937ad1af465d4d321281110d142e17ad57547f9b1b640b7b5S3Bucket2BED5FEE"
+            "data": "AssetParameters427aafd6a0449516e30dda6e67267a5e6cb896b05e780861598cb20c3c89e377S3BucketBBBE1E01"
           }
         ],
-        "/cdk-integ-lambda-python/AssetParameters/de9087c7fd157b3937ad1af465d4d321281110d142e17ad57547f9b1b640b7b5/S3VersionKey": [
+        "/cdk-integ-lambda-python/AssetParameters/427aafd6a0449516e30dda6e67267a5e6cb896b05e780861598cb20c3c89e377/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersde9087c7fd157b3937ad1af465d4d321281110d142e17ad57547f9b1b640b7b5S3VersionKey0104FD94"
+            "data": "AssetParameters427aafd6a0449516e30dda6e67267a5e6cb896b05e780861598cb20c3c89e377S3VersionKeyF6535FC7"
           }
         ],
-        "/cdk-integ-lambda-python/AssetParameters/de9087c7fd157b3937ad1af465d4d321281110d142e17ad57547f9b1b640b7b5/ArtifactHash": [
+        "/cdk-integ-lambda-python/AssetParameters/427aafd6a0449516e30dda6e67267a5e6cb896b05e780861598cb20c3c89e377/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersde9087c7fd157b3937ad1af465d4d321281110d142e17ad57547f9b1b640b7b5ArtifactHashE55BD9F5"
+            "data": "AssetParameters427aafd6a0449516e30dda6e67267a5e6cb896b05e780861598cb20c3c89e377ArtifactHash21F3F856"
           }
         ],
         "/cdk-integ-lambda-python/InlineFunctionName": [
