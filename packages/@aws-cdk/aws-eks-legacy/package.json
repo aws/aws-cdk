@@ -19,7 +19,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.EKS.Legacy",
         "packageId": "Amazon.CDK.AWS.EKS.Legacy",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-eks-legacy",

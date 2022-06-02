@@ -95,7 +95,7 @@ const gitHubSource = codebuild.Source.gitHub({
   webhookFilters: [
     codebuild.FilterGroup
       .inEventOf(codebuild.EventAction.PUSH)
-      .andBranchIs('master')
+      .andBranchIs('main')
       .andCommitMessageIs('the commit message'),
   ], // optional, by default all pushes and Pull Requests will trigger a build
 });
