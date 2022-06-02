@@ -33,6 +33,8 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
   - [Visualizing dependencies in a CloudFormation Template](#visualizing-dependencies-in-a-cloudformation-template)
   - [Find dependency cycles between packages](#find-dependency-cycles-between-packages)
 - [Running CLI integration tests](#running-cli-integration-tests)
+- [Building aws-cdk-lib](#building-aws-cdk-lib)
+- [Building and testing v2 -alpha packages](#building-and-testing-v2--alpha-packages)
 - [Changing the Cloud Assembly Schema](#changing-cloud-assembly-schema)
 - [Feature Flags](#feature-flags)
 - [Versioning and Release](#versioning-and-release)
@@ -355,13 +357,17 @@ $ yarn watch & # runs in the background
   * **module-name:** Yet another breaking change
   ```
 
+  Breaking changes are only allowed in experimental libraries. Experimental
+  libraries are published with an `-alpha` suffix, and have the `stability`
+  property set to `experimental` in their `package.json`.
+
 * Once the pull request is submitted, a reviewer will be assigned by the maintainers.
 
 * If the PR build is failing, update the PR with fixes until the build succeeds. You may have trouble getting attention
   from maintainers if your build is failing, and after 4 weeks of staleness, your PR will be automatically closed.
 
 * Discuss review comments and iterate until you get at least one "Approve". When iterating, push new commits to the
-  same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
+  same branch. Usually all these are going to be squashed when you merge to main. The commit messages should be hints
   for you when you finalize your merge commit message.
 
 * Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
@@ -394,7 +400,7 @@ out in the description so that we can discuss the best way to manage that depend
 ### Step 5: Merge
 
 * Make sure your PR builds successfully (we have CodeBuild setup to automatically build all PRs).
-* Once approved and tested, one of our bots will squash-merge to master and will use your PR title/description as the
+* Once approved and tested, one of our bots will squash-merge to main and will use your PR title/description as the
   commit message.
 
 ## Breaking Changes
@@ -863,6 +869,69 @@ run as part of the regular build, since they have some particular requirements.
 See the [CLI CONTRIBUTING.md file](packages/aws-cdk/CONTRIBUTING.md) for
 more information on running those tests.
 
+## Building aws-cdk-lib
+
+In AWS CDK v2, all stable libraries are packaged into a single monolithic
+package and published as `aws-cdk-lib`. In most cases, you can iterate on a
+single module's directory as previously described in this document (e.g.
+`packages/@aws-cdk/aws-s3`). In some cases, you might need to build
+`aws-cdk-lib`:
+
+```
+# Generate all of the L1s first. If you have already done a full build in the repository, you can skip this.
+cd <CDK repo root>/
+./scripts/gen.sh
+
+# Generate and build `aws-cdk-lib`
+cd packages/aws-cdk-lib
+yarn build
+```
+
+The commands above perform the following steps:
+1. Run `yarn install` to install all dependencies
+2. Generate `.generated.ts` files in each `packages/@aws-cdk/aws-<service>`
+   directory. These files contain TypeScript source code for all of the L1 (Cfn)
+   Constructs, and are generated from the [CloudFormation Resource
+   Specification](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html).
+3. Copy the `.ts` source code files from each `packages/@aws-cdk/aws-<service>`
+   directory to the corresponding `packages/aws-cdk-lib/aws-<service>`
+   directory.
+4. Compile `aws-cdk-lib`.
+
+Running unit tests and integration tests still has to be performed in each
+module's `packages/@aws-cdk` directory.
+
+## Building and testing v2 -alpha packages
+
+In AWS CDK v2, all experimental libraries are published separately with an
+-alpha suffix. In most cases, you can iterate on a single module's directory as
+already described in this document (e.g. `packages/@aws-cdk/aws-amplify`). If
+you need to generate and iterate on the alpha package, here are the steps. The
+main differences between the alpha package is naming of the package, and import
+statements.
+
+First, make sure the following packages are built:
+  - packages/@aws-cdk/assert
+  - packages/aws-cdk-lib
+  - tools/individual-pkg-gen
+
+The following command will create all of the alpha packages by copying files
+from their source directories under `packages/@aws-cdk/aws-<service>`, and it
+will build and run unit tests for all of them. This is sometimes too much for a
+developer machine or laptop.
+
+```
+<CDK repo root>/scripts/transform.sh
+```
+
+To only copy and transform the source files, and then build and test one
+alpha package at a time, use the following:
+
+```
+<CDK repo root>/scripts/transform.sh --skip-build
+cd packages/individual-packages/aws-<service>
+yarn build+test
+```
 ## Changing Cloud Assembly Schema
 
 If you plan on making changes to the `cloud-assembly-schema` package, make sure you familiarize yourself with
