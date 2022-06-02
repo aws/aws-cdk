@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -42,7 +42,7 @@
         "/aws-cdk-lambda-1/MyLambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CCaab0ffd2d3271bb29338c3fe7c7f3151"
+            "data": "MyLambdaCurrentVersionE7A382CCac1a0c5f52d7e233eaf45e0c00b74629"
           }
         ],
         "/aws-cdk-lambda-1/Alias/Resource": [
@@ -67,6 +67,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Aliasinvokefunctionurl4CA9917B"
+          }
+        ],
+        "MyLambdaCurrentVersionE7A382CC7e2eef94b9010f0c2a5e7db748a3833a": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaCurrentVersionE7A382CC7e2eef94b9010f0c2a5e7db748a3833a",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
