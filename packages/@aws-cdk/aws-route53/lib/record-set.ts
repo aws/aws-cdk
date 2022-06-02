@@ -248,22 +248,21 @@ export class RecordSet extends Resource implements IRecordSet {
       const provider = CustomResourceProvider.getOrCreateProvider(this, DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE, {
         codeDirectory: path.join(__dirname, 'delete-existing-record-set-handler'),
         runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+        policyStatements: [{ // IAM permissions for all providers
+          Effect: 'Allow',
+          Action: 'route53:GetChange',
+          Resource: '*',
+        }],
       });
 
-      const providerRole = iam.Role.fromRoleArn(this, 'DeleteExistingRecordSetRole', provider.roleArn);
-      const addToPrincipalPolicyResult = providerRole.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: [
+      provider.addToRolePolicy({ // Add to the singleton policy for this specific provider
+        Effect: 'Allow',
+        Action: [
           'route53:ChangeResourceRecordSets',
           'route53:ListResourceRecordSets',
         ],
-        resources: [props.zone.hostedZoneArn],
-      }));
-      providerRole.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: [
-          'route53:GetChange',
-        ],
-        resources: ['*'],
-      }));
+        Resource: props.zone.hostedZoneArn,
+      });
 
       const customResource = new CustomResource(this, 'DeleteExistingRecordSetCustomResource', {
         resourceType: DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE,
@@ -274,10 +273,6 @@ export class RecordSet extends Resource implements IRecordSet {
           RecordType: props.recordType,
         },
       });
-
-      if (addToPrincipalPolicyResult.policyDependable) {
-        customResource.node.addDependency(addToPrincipalPolicyResult.policyDependable);
-      }
 
       recordSet.node.addDependency(customResource);
     }

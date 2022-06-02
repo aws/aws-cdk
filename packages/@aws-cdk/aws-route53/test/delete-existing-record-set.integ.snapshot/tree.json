@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "cdk-route53-integ-delete-existing-record-set": {
@@ -95,100 +95,6 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-route53.CfnRecordSet",
-                  "version": "0.0.0"
-                }
-              },
-              "DeleteExistingRecordSetRole": {
-                "id": "DeleteExistingRecordSetRole",
-                "path": "cdk-route53-integ-delete-existing-record-set/NewRecord/DeleteExistingRecordSetRole",
-                "children": {
-                  "Policy": {
-                    "id": "Policy",
-                    "path": "cdk-route53-integ-delete-existing-record-set/NewRecord/DeleteExistingRecordSetRole/Policy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "cdk-route53-integ-delete-existing-record-set/NewRecord/DeleteExistingRecordSetRole/Policy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": [
-                                    "route53:ChangeResourceRecordSets",
-                                    "route53:ListResourceRecordSets"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":route53:::hostedzone/",
-                                        {
-                                          "Ref": "HostedZoneDB99F866"
-                                        }
-                                      ]
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": "route53:GetChange",
-                                  "Effect": "Allow",
-                                  "Resource": "*"
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "NewRecordDeleteExistingRecordSetRolePolicy65D29482",
-                            "roles": [
-                              {
-                                "Fn::Select": [
-                                  1,
-                                  {
-                                    "Fn::Split": [
-                                      "/",
-                                      {
-                                        "Fn::Select": [
-                                          5,
-                                          {
-                                            "Fn::Split": [
-                                              ":",
-                                              {
-                                                "Fn::GetAtt": [
-                                                  "CustomDeleteExistingRecordSetCustomResourceProviderRole03A7ED08",
-                                                  "Arn"
-                                                ]
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -284,14 +190,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           }
         },

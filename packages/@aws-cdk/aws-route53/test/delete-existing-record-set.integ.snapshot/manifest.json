@@ -1,5 +1,5 @@
 {
-  "version": "19.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -45,12 +45,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "NewRecordB9E8EE35"
-          }
-        ],
-        "/cdk-route53-integ-delete-existing-record-set/NewRecord/DeleteExistingRecordSetRole/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NewRecordDeleteExistingRecordSetRolePolicy65D29482"
           }
         ],
         "/cdk-route53-integ-delete-existing-record-set/NewRecord/DeleteExistingRecordSetCustomResource/Default": [

@@ -38,75 +38,6 @@
     "NewRecordDeleteExistingRecordSetCustomResource3CF98631"
    ]
   },
-  "NewRecordDeleteExistingRecordSetRolePolicy65D29482": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "route53:ChangeResourceRecordSets",
-        "route53:ListResourceRecordSets"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":route53:::hostedzone/",
-          {
-           "Ref": "HostedZoneDB99F866"
-          }
-         ]
-        ]
-       }
-      },
-      {
-       "Action": "route53:GetChange",
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "NewRecordDeleteExistingRecordSetRolePolicy65D29482",
-    "Roles": [
-     {
-      "Fn::Select": [
-       1,
-       {
-        "Fn::Split": [
-         "/",
-         {
-          "Fn::Select": [
-           5,
-           {
-            "Fn::Split": [
-             ":",
-             {
-              "Fn::GetAtt": [
-               "CustomDeleteExistingRecordSetCustomResourceProviderRole03A7ED08",
-               "Arn"
-              ]
-             }
-            ]
-           }
-          ]
-         }
-        ]
-       }
-      ]
-     }
-    ]
-   },
-   "DependsOn": [
-    "ExistingRecord8E2B2167"
-   ]
-  },
   "NewRecordDeleteExistingRecordSetCustomResource3CF98631": {
    "Type": "Custom::DeleteExistingRecordSet",
    "Properties": {
@@ -123,8 +54,7 @@
     "RecordType": "A"
    },
    "DependsOn": [
-    "ExistingRecord8E2B2167",
-    "NewRecordDeleteExistingRecordSetRolePolicy65D29482"
+    "ExistingRecord8E2B2167"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -147,6 +77,43 @@
     "ManagedPolicyArns": [
      {
       "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": "route53:GetChange",
+         "Resource": "*"
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "route53:ChangeResourceRecordSets",
+          "route53:ListResourceRecordSets"
+         ],
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":route53:::hostedzone/",
+            {
+             "Ref": "HostedZoneDB99F866"
+            }
+           ]
+          ]
+         }
+        }
+       ]
+      }
      }
     ]
    }
