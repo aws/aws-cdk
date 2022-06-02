@@ -54,6 +54,11 @@ export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace 
   public readonly namespaceArn: string;
 
   /**
+   * ID of hosted zone created by namespace
+   */
+  public readonly namespaceHostedZoneId: string;
+
+  /**
    * Type of the namespace.
    */
   public readonly type: NamespaceType;
@@ -69,6 +74,7 @@ export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace 
     this.namespaceName = props.name;
     this.namespaceId = ns.attrId;
     this.namespaceArn = ns.attrArn;
+    this.namespaceHostedZoneId = ns.attrHostedZoneId;
     this.type = NamespaceType.DNS_PUBLIC;
   }
 
