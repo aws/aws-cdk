@@ -939,7 +939,7 @@ First, make sure the following packages are built:
   - tools/individual-pkg-gen
 
 The following command will create all of the alpha packages by copying files
-from their source directories under `packages/@aws-cdk/aws-<service>, and it
+from their source directories under `packages/@aws-cdk/aws-<service>`, and it
 will build and run unit tests for all of them. This is sometimes too much for a
 developer machine or laptop.
 
