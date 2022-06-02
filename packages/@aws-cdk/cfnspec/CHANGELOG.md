@@ -1,3 +1,78 @@
+# CloudFormation Resource Specification v73.1.0
+
+## New Resource Types
+
+* AWS::EMRServerless::Application
+* AWS::IoTWireless::NetworkAnalyzerConfiguration
+
+## Attribute Changes
+
+* AWS::EC2::PlacementGroup GroupName (__added__)
+* AWS::EC2::VPCPeeringConnection Id (__added__)
+
+## Property Changes
+
+* AWS::Cognito::UserPool UserAttributeUpdateSettings (__added__)
+* AWS::Cognito::UserPoolClient EnablePropagateAdditionalUserContextData (__added__)
+* AWS::EC2::TransitGatewayAttachment Options (__added__)
+* AWS::EC2::TransitGatewayAttachment SubnetIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGatewayAttachment Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::IoTSiteWise::Asset AssetDescription (__added__)
+* AWS::Lightsail::LoadBalancer TlsPolicyName (__added__)
+* AWS::Lightsail::LoadBalancerTlsCertificate HttpsRedirectionEnabled (__added__)
+* AWS::NetworkManager::CoreNetwork PolicyDocument.PrimitiveType (__changed__)
+  * Old: String
+  * New: Json
+* AWS::Pinpoint::Campaign CustomDeliveryConfiguration (__added__)
+* AWS::Pinpoint::Campaign TemplateConfiguration (__added__)
+* AWS::Pinpoint::Campaign MessageConfiguration.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Property Type Changes
+
+* AWS::Cognito::UserPool.UserAttributeUpdateSettings (__added__)
+* AWS::Pinpoint::Campaign.CampaignCustomMessage (__added__)
+* AWS::Pinpoint::Campaign.CustomDeliveryConfiguration (__added__)
+* AWS::Pinpoint::Campaign.Template (__added__)
+* AWS::Pinpoint::Campaign.TemplateConfiguration (__added__)
+* AWS::SSMIncidents::ResponsePlan.DynamicSsmParameter (__added__)
+* AWS::SSMIncidents::ResponsePlan.DynamicSsmParameterValue (__added__)
+* AWS::AppMesh::Mesh.MeshServiceDiscovery IpPreference (__added__)
+* AWS::AppMesh::Mesh.MeshSpec ServiceDiscovery (__added__)
+* AWS::AppMesh::VirtualNode.AwsCloudMapServiceDiscovery IpPreference (__added__)
+* AWS::AppMesh::VirtualNode.DnsServiceDiscovery IpPreference (__added__)
+* AWS::DataSync::Task.Options ObjectTags (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData DisableApiStop (__added__)
+* AWS::Pinpoint::Campaign.MessageConfiguration CustomMessage (__added__)
+* AWS::Pinpoint::Campaign.WriteTreatmentResource CustomDeliveryConfiguration (__added__)
+* AWS::Pinpoint::Campaign.WriteTreatmentResource TemplateConfiguration (__added__)
+* AWS::SSMIncidents::ResponsePlan.SsmAutomation DynamicParameters (__added__)
+* AWS::Transfer::Server.ProtocolDetails SetStatOption (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Serverless::Api.Auth AddDefaultAuthorizerToCorsPreflight (__added__)
+
 # CloudFormation Resource Specification v72.0.0
 
 ## New Resource Types
