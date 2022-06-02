@@ -922,7 +922,7 @@ The commands above perform the following steps:
 4. Compile `aws-cdk-lib`.
 
 Running unit tests and integration tests still has to be performed in each
-module's `package/@aws-cdk` directory.
+module's `packages/@aws-cdk` directory.
 
 ## Building and testing v2 -alpha packages
 
