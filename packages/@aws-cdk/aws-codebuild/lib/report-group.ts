@@ -114,7 +114,7 @@ export interface ReportGroupProps {
    * - **TEST** - The report group contains test reports.
    * - **CODE_COVERAGE** - The report group contains code coverage reports.
    *
-   * @default - TEST
+   * @default TEST
    */
   readonly type?: ReportGroupType
 }
