@@ -497,6 +497,8 @@ export abstract class BucketBase extends Resource implements IBucket {
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
+
+    this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
   }
 
   /**
@@ -611,12 +613,6 @@ export abstract class BucketBase extends Resource implements IBucket {
     }
 
     return { statementAdded: false };
-  }
-
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
-    return errors;
   }
 
   /**
@@ -1923,6 +1919,7 @@ export class Bucket extends BucketBase {
         })),
         expiredObjectDeleteMarker: rule.expiredObjectDeleteMarker,
         tagFilters: self.parseTagFilters(rule.tagFilters),
+        objectSizeLessThan: rule.objectSizeLessThan,
         objectSizeGreaterThan: rule.objectSizeGreaterThan,
       };
 

@@ -1,11 +1,11 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
-import { describeDeprecated, testDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
+import { describeDeprecated, testDeprecated, testLegacyBehavior, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, DefaultStackSynthesizer, IgnoreMode, Lazy, LegacyStackSynthesizer, Stack, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as fs from 'fs';
-import * as path from 'path';
 import { DockerImageAsset, NetworkMode, Platform } from '../lib';
 
 /* eslint-disable quote-props */
@@ -14,8 +14,16 @@ const DEMO_IMAGE_ASSET_HASH = '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e73964
 
 const flags = { [cxapi.DOCKER_IGNORE_SUPPORT]: true };
 
+class MyApp extends App {
+  constructor() {
+    super({
+      context: flags,
+    });
+  }
+}
+
 describe('image asset', () => {
-  testFutureBehavior('test instantiating Asset Image', flags, App, (app) => {
+  testLegacyBehavior('test instantiating Asset Image', MyApp, (app) => {
     // WHEN
     const stack = new Stack(app);
     new DockerImageAsset(stack, 'Image', {
@@ -39,7 +47,7 @@ describe('image asset', () => {
 
   });
 
-  testFutureBehavior('with build args', flags, App, (app) => {
+  testLegacyBehavior('with build args', App, (app) => {
     // WHEN
     const stack = new Stack(app);
     new DockerImageAsset(stack, 'Image', {
@@ -50,12 +58,12 @@ describe('image asset', () => {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
     expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).buildArgs).toEqual({ a: 'b' });
 
   });
 
-  testFutureBehavior('with hash options', flags, App, (app) => {
+  testLegacyBehavior('with hash options', App, (app) => {
     // WHEN
     const stack = new Stack(app);
     new DockerImageAsset(stack, 'Image1', {
@@ -86,7 +94,7 @@ describe('image asset', () => {
     // THEN
     const asm = app.synth();
     const artifact = asm.getStackArtifact(stack.artifactId);
-    expect(artifact.template).toEqual({});
+    expect(artifact.template.Resources).toBeUndefined();
     expect(artifact.assets).toEqual([
       {
         buildArgs: { 'a': 'b' },
@@ -109,7 +117,7 @@ describe('image asset', () => {
     ]);
   });
 
-  testFutureBehavior('with target', flags, App, (app) => {
+  testLegacyBehavior('with target', App, (app) => {
     // WHEN
     const stack = new Stack(app);
     new DockerImageAsset(stack, 'Image', {
@@ -121,12 +129,12 @@ describe('image asset', () => {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
     expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).target).toEqual('a-target');
 
   });
 
-  testFutureBehavior('with file', flags, App, (app) => {
+  testLegacyBehavior('with file', App, (app) => {
     // GIVEN
     const stack = new Stack(app);
     const directoryPath = path.join(__dirname, 'demo-image-custom-docker-file');
@@ -137,12 +145,11 @@ describe('image asset', () => {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
     expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).file).toEqual('Dockerfile.Custom');
-
   });
 
-  testFutureBehavior('with networkMode', flags, App, (app) => {
+  testLegacyBehavior('with networkMode', App, (app) => {
     // GIVEN
     const stack = new Stack(app);
     // WHEN
@@ -152,11 +159,11 @@ describe('image asset', () => {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
     expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).networkMode).toEqual('default');
   });
 
-  testFutureBehavior('with platform', flags, App, (app) => {
+  testLegacyBehavior('with platform', App, (app) => {
     // GIVEN
     const stack = new Stack(app);
     // WHEN
@@ -166,11 +173,26 @@ describe('image asset', () => {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
     expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).platform).toEqual('linux/arm64');
   });
 
-  testFutureBehavior('asset.repository.grantPull can be used to grant a principal permissions to use the image', flags, App, (app) => {
+  testLegacyBehavior('with platform: default synth edition', App, (app) => {
+    // GIVEN
+    const stack = new Stack(app, 'Stack', { synthesizer: new DefaultStackSynthesizer() });
+    // WHEN
+    const asset = new DockerImageAsset(stack, 'Image', {
+      directory: path.join(__dirname, 'demo-image'),
+      platform: Platform.LINUX_ARM64,
+    });
+
+    // THEN
+    const asm = app.synth();
+    const stackAssets = JSON.parse(fs.readFileSync(path.join(asm.directory, 'Stack.assets.json'), { encoding: 'utf-8' }));
+    const dockerImageAsset = stackAssets.dockerImages[asset.assetHash];
+    expect(dockerImageAsset.source.platform).toEqual('linux/arm64');
+  });
+  testLegacyBehavior('asset.repository.grantPull can be used to grant a principal permissions to use the image', App, (app) => {
     // GIVEN
     const stack = new Stack(app);
     const user = new iam.User(stack, 'MyUser');
@@ -380,8 +402,8 @@ describe('image asset', () => {
     const asset1 = new DockerImageAsset(stack, 'Asset1', { directory });
     const asset2 = new DockerImageAsset(stack, 'Asset2', { directory, repositoryName: 'foo' });
 
-    expect(asset1.assetHash).toEqual('91cd042be26211c28488a6994327fc579e75e355d9d3bf7043fa6a0bc8ad4265');
-    expect(asset2.assetHash).toEqual('6a6cab989dda908fa3d132d58f402f714d79858f3c89473f2b050096954e6827');
+    expect(asset1.assetHash).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
+    expect(asset2.assetHash).toEqual('b78978ca702a8eccd37804ce31d76cd83a695b557dbf95aeb109332ee8b1fd32');
   });
 });
 
