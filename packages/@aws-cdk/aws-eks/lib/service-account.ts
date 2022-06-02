@@ -4,10 +4,6 @@ import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { KubernetesManifest } from './k8s-manifest';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Options for `ServiceAccount`
  */
@@ -58,7 +54,7 @@ export interface ServiceAccountProps extends ServiceAccountOptions {
 /**
  * Service Account
  */
-export class ServiceAccount extends CoreConstruct implements IPrincipal {
+export class ServiceAccount extends Construct implements IPrincipal {
   /**
    * The role which is linked to the service account.
    */
