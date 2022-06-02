@@ -57,6 +57,8 @@ export class CfnOutput extends CfnElement {
     this._value = props.value;
     this._condition = props.condition;
     this._exportName = props.exportName;
+
+    this.node.addValidation({ validate: () => this.validateOutput() });
   }
 
   /**
@@ -164,7 +166,7 @@ export class CfnOutput extends CfnElement {
     };
   }
 
-  protected validate(): string[] {
+  private validateOutput(): string[] {
     if (this._exportName && !Token.isUnresolved(this._exportName) && this._exportName.length > 255) {
       return [`Export name cannot exceed 255 characters (got ${this._exportName.length} characters)`];
     }
@@ -172,6 +174,7 @@ export class CfnOutput extends CfnElement {
   }
 }
 
+/* eslint-disable import/order */
 import { CfnCondition } from './cfn-condition';
 import { Fn } from './cfn-fn';
 import { Lazy } from './lazy';
