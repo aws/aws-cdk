@@ -7,10 +7,6 @@ import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import * as rds from '../lib';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -50,7 +46,7 @@ interface SnapshoterProps {
   readonly snapshotIdentifier: string;
 }
 
-class Snapshoter extends CoreConstruct {
+class Snapshoter extends Construct {
   public readonly snapshotArn: string;
 
   constructor(scope: Construct, id: string, props: SnapshoterProps) {
