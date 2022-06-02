@@ -155,4 +155,14 @@ describe('Test Reports Groups', () => {
       "Type": "CODE_COVERAGE",
     });
   });
+
+  test('defaults to report group type=TEST when not specified explicitly', () => {
+    const stack = new cdk.Stack();
+
+    new codebuild.ReportGroup(stack, 'ReportGroup', {});
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
+      "Type": "TEST",
+    });
+  });
 });
