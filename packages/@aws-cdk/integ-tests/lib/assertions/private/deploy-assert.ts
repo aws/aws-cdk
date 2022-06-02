@@ -9,11 +9,6 @@ import { IDeployAssert } from '../types';
 
 const DEPLOY_ASSERT_SYMBOL = Symbol.for('@aws-cdk/integ-tests.DeployAssert');
 
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Options for DeployAssert
  */
@@ -23,7 +18,7 @@ export interface DeployAssertProps { }
  * Construct that allows for registering a list of assertions
  * that should be performed on a construct
  */
-export class DeployAssert extends CoreConstruct implements IDeployAssert {
+export class DeployAssert extends Construct implements IDeployAssert {
 
   /**
    * Returns whether the construct is a DeployAssert construct
