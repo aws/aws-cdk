@@ -870,32 +870,37 @@ describe('record set', () => {
       RecordType: 'A',
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'route53:ChangeResourceRecordSets',
-              'route53:ListResourceRecordSets',
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      Policies: [
+        {
+          PolicyName: 'Inline',
+          PolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Action: 'route53:GetChange',
+                Resource: '*',
+              },
+              {
+                Effect: 'Allow',
+                Action: [
+                  'route53:ChangeResourceRecordSets',
+                  'route53:ListResourceRecordSets',
+                ],
+                Resource: {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':route53:::hostedzone/',
+                    { Ref: 'HostedZoneDB99F866' },
+                  ]],
+                },
+              },
             ],
-            Effect: 'Allow',
-            Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':route53:::hostedzone/',
-                { Ref: 'HostedZoneDB99F866' },
-              ]],
-            },
           },
-          {
-            Action: 'route53:GetChange',
-            Effect: 'Allow',
-            Resource: '*',
-          },
-        ],
-        Version: '2012-10-17',
-      },
+        },
+      ],
     });
   });
 });
