@@ -1,12 +1,13 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
-import { Construct, ISynthesisSession } from '../construct-compat';
 import { FileAssetParameters } from '../private/asset-parameters';
 import { Stack } from '../stack';
 import { assertBound } from './_shared';
 import { StackSynthesizer } from './stack-synthesizer';
+import { ISynthesisSession } from './types';
 
 /**
  * The well-known name for the docker image asset ECR repository. All docker
@@ -149,6 +150,7 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
         target: asset.dockerBuildTarget,
         file: asset.dockerFile,
         networkMode: asset.networkMode,
+        platform: asset.platform,
       };
 
       this.stack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);

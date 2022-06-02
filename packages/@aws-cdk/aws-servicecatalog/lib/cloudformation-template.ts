@@ -4,7 +4,7 @@ import { ProductStack } from './product-stack';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Represents the Product Provisioning Artifact Template.
@@ -102,8 +102,8 @@ class CloudFormationAssetTemplate extends CloudFormationTemplate {
  */
 class CloudFormationProductStackTemplate extends CloudFormationTemplate {
   /**
-   * @param stack A service catalog product stack.
-  */
+   * @param productStack A service catalog product stack.
+   */
   constructor(public readonly productStack: ProductStack) {
     super();
   }

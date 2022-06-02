@@ -7,6 +7,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as ecs from '../lib';
 
 describe('cluster', () => {
@@ -175,8 +176,6 @@ describe('cluster', () => {
           Version: '2012-10-17',
         },
       });
-
-
     });
 
     testDeprecated('with only vpc set, it correctly sets default properties', () => {
@@ -810,7 +809,7 @@ describe('cluster', () => {
    */
   testDeprecated('allows specifying special HW AMI Type', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -864,7 +863,7 @@ describe('cluster', () => {
 
   testDeprecated('allows specifying windows image', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -1014,7 +1013,7 @@ describe('cluster', () => {
 
   testDeprecated('allows specifying special HW AMI Type v2', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -1045,7 +1044,7 @@ describe('cluster', () => {
 
   testDeprecated('allows specifying Amazon Linux v1 AMI', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -1076,7 +1075,7 @@ describe('cluster', () => {
 
   testDeprecated('allows specifying windows image v2', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -1669,7 +1668,6 @@ describe('cluster', () => {
         },
       ],
     });
-
   });
 
   testDeprecated('correct bottlerocket AMI for ARM64 architecture', () => {
@@ -1690,15 +1688,10 @@ describe('cluster', () => {
       },
     });
 
-    const assembly = app.synth();
-    const template = assembly.getStackByName(stack.stackName).template;
-    expect(template.Parameters).toEqual({
-      SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
-        Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
-        Default: '/aws/service/bottlerocket/aws-ecs-1/arm64/latest/image_id',
-      },
+    Template.fromStack(stack).hasParameter('SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter', {
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      Default: '/aws/service/bottlerocket/aws-ecs-1/arm64/latest/image_id',
     });
-
   });
 
   testDeprecated('throws when machineImage and machineImageType both specified', () => {
@@ -2306,3 +2299,145 @@ test('throws when ASG Capacity Provider with capacityProviderName starting with 
     cluster.addAsgCapacityProvider(capacityProviderAl2);
   }).toThrow(/Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
 });
+
+describe('Accessing container instance role', function () {
+
+  const addUserDataMock = jest.fn();
+  const autoScalingGroup: autoscaling.AutoScalingGroup = {
+    addUserData: addUserDataMock,
+    addToRolePolicy: jest.fn(),
+    protectNewInstancesFromScaleIn: jest.fn(),
+  } as unknown as autoscaling.AutoScalingGroup;
+
+  afterEach(() => {
+    addUserDataMock.mockClear();
+  });
+
+  test('block ecs from accessing metadata service when canContainersAccessInstanceRole not set', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+    // THEN
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+
+  test('allow ecs accessing metadata service when canContainersAccessInstanceRole is set on addAsgCapacityProvider', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider, {
+      canContainersAccessInstanceRole: true,
+    });
+
+    // THEN
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+
+  test('allow ecs accessing metadata service when canContainersAccessInstanceRole is set on AsgCapacityProvider instantiation', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+      canContainersAccessInstanceRole: true,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+    // THEN
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+
+  test('allow ecs accessing metadata service when canContainersAccessInstanceRole is set on constructor and method', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+      canContainersAccessInstanceRole: true,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider, {
+      canContainersAccessInstanceRole: true,
+    });
+
+    // THEN
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+
+  test('block ecs from accessing metadata service when canContainersAccessInstanceRole set on constructor and not set on method', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+      canContainersAccessInstanceRole: true,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider, {
+      canContainersAccessInstanceRole: false,
+    });
+
+    // THEN
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+
+  test('allow ecs accessing metadata service when canContainersAccessInstanceRole is not set on constructor and set on method', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+      canContainersAccessInstanceRole: false,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider, {
+      canContainersAccessInstanceRole: true,
+    });
+
+    // THEN
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+});
+

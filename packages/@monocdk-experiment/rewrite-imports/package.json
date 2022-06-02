@@ -1,6 +1,7 @@
 {
   "name": "@monocdk-experiment/rewrite-imports",
   "version": "0.0.0",
+  "private": true,
   "description": "Rewrites typescript 'import' statements from @aws-cdk/xxx to monocdk",
   "bin": {
     "rewrite-imports": "bin/rewrite-imports"
@@ -50,7 +51,7 @@
   "stability": "experimental",
   "maturity": "developer-preview",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "publishConfig": {
     "tag": "latest"

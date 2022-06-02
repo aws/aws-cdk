@@ -12,10 +12,12 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import { Lazy, Size } from '@aws-cdk/core';
+import { Aspects, Lazy, Size } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import * as lambda from '../lib';
+import { calculateFunctionHash } from '../lib/function-hash';
 
 describe('function', () => {
   test('default function', () => {
@@ -555,7 +557,7 @@ describe('function', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
           Name: 'prod',
           FunctionName: { Ref: 'MyLambdaCCE802FB' },
-          FunctionVersion: { 'Fn::GetAtt': ['MyLambdaCurrentVersionE7A382CC60ef151b20ae483ee1018f73f30bc10e', 'Version'] },
+          FunctionVersion: { 'Fn::GetAtt': ['MyLambdaCurrentVersionE7A382CC5ca259556a03e0d5ebc2a4851a980d87', 'Version'] },
         });
       });
 
@@ -600,7 +602,12 @@ describe('function', () => {
 
   test('Lambda code can be read from a local directory via an asset', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App({
+      context: {
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const stack = new cdk.Stack(app);
     new lambda.Function(stack, 'MyLambda', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
@@ -1435,6 +1442,69 @@ describe('function', () => {
 
     // THEN
     expect(bindTarget).toEqual(fn);
+  });
+
+  test('layer is baked into the function version', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'TestStack');
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const code = new lambda.S3Code(bucket, 'ObjectKey');
+
+    const fn = new lambda.Function(stack, 'fn', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
+      handler: 'index.main',
+    });
+
+    const fnHash = calculateFunctionHash(fn);
+
+    // WHEN
+    const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
+      code,
+      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
+    });
+
+    fn.addLayers(layer);
+
+    const newFnHash = calculateFunctionHash(fn);
+
+    expect(fnHash).not.toEqual(newFnHash);
+  });
+
+  test('with feature flag, layer version is baked into function version', () => {
+    // GIVEN
+    const app = new cdk.App({ context: { [cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
+    const stack = new cdk.Stack(app, 'TestStack');
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const code = new lambda.S3Code(bucket, 'ObjectKey');
+    const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
+      code,
+      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
+    });
+
+    // function with layer
+    const fn = new lambda.Function(stack, 'fn', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
+      handler: 'index.main',
+      layers: [layer],
+    });
+
+    const fnHash = calculateFunctionHash(fn);
+
+    // use escape hatch to change the content of the layer
+    // this simulates updating the layer code which changes the version.
+    const cfnLayer = layer.node.defaultChild as lambda.CfnLayerVersion;
+    const newCode = (new lambda.S3Code(bucket, 'NewObjectKey')).bind(layer);
+    cfnLayer.content = {
+      s3Bucket: newCode.s3Location!.bucketName,
+      s3Key: newCode.s3Location!.objectKey,
+      s3ObjectVersion: newCode.s3Location!.objectVersion,
+    };
+
+    const newFnHash = calculateFunctionHash(fn);
+
+    expect(fnHash).not.toEqual(newFnHash);
   });
 
   test('using an incompatible layer', () => {
@@ -2648,6 +2718,31 @@ describe('function', () => {
     }).not.toThrow();
   });
 
+  test('Error when function description is longer than 256 chars', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      description: 'a'.repeat(257),
+    })).toThrow(/Function description can not be longer than 256 characters/);
+  });
+
+  test('No error when function name is Tokenized and Unresolved', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      const realFunctionDescription = 'a'.repeat(257);
+      const tokenizedFunctionDescription = cdk.Token.asString(new cdk.Intrinsic(realFunctionDescription));
+
+      new lambda.Function(stack, 'foo', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_14_X,
+        description: tokenizedFunctionDescription,
+      });
+    }).not.toThrow();
+  });
+
   describe('FunctionUrl', () => {
     test('addFunctionUrl creates a function url with default options', () => {
     // GIVEN
@@ -2868,6 +2963,29 @@ test('ephemeral storage allows unresolved tokens', () => {
       ephemeralStorageSize: Size.mebibytes(Lazy.number({ produce: () => 1024 })),
     });
   }).not.toThrow();
+});
+
+test('FunctionVersionUpgrade adds new description to function', () => {
+  const app = new cdk.App({ context: { [cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
+  const stack = new cdk.Stack(app);
+  new lambda.Function(stack, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.NODEJS_14_X,
+    description: 'my description',
+  });
+
+  Aspects.of(stack).add(new lambda.FunctionVersionUpgrade(cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION));
+
+  Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+    Properties:
+    {
+      Code: { ZipFile: 'foo' },
+      Handler: 'bar',
+      Runtime: 'nodejs14.x',
+      Description: 'my description version-hash:54f18c47346ed84843c2dac547de81fa',
+    },
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {
