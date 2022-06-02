@@ -578,6 +578,7 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
     }],
     objectSizeGreaterThan: 500, 
     prefix: 'prefix',
+    objectSizeLessThan: 10000, 
     transitions: [{
       storageClass: s3.StorageClass.GLACIER,
 

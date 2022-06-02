@@ -120,7 +120,13 @@ export interface LifecycleRule {
   readonly expiredObjectDeleteMarker?: boolean;
 
   /**
-   * Specifies the minimum object size in bytes for this rule to apply to.
+   * Specifies the maximum object size in bytes for this rule to apply to.
+   *
+   * @default - No rule
+   */
+  readonly objectSizeLessThan?: number;
+
+  /** Specifies the minimum object size in bytes for this rule to apply to.
    *
    * @default - No rule
    */
