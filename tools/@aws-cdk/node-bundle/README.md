@@ -151,4 +151,4 @@ Note that this will balloon up the package size significantly.
 If you are bundling a CLI application that also has top level exports, we suggest to extract
 the CLI functionality into a function, and add this function as an export to `index.js`.
 
-> See [aws-cdk](https://github.com/aws/aws-cdk/blob/master/packages/aws-cdk/bin/cdk.ts) as an example.
+> See [aws-cdk](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk/bin/cdk.ts) as an example.

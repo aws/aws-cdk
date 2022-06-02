@@ -8,7 +8,7 @@ import { ServiceExtension, ServiceBuild } from './extension-interfaces';
  *
  * @deprecated use the `minTaskCount` and `maxTaskCount` properties of `autoScaleTaskCount` in the `Service` construct
  * to configure the auto scaling target for the service. For more information, please refer
- * https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk-containers/ecs-service-extensions/README.md#task-auto-scaling .
+ * https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk-containers/ecs-service-extensions/README.md#task-auto-scaling .
  */
 export interface CpuScalingProps {
   /**
@@ -68,7 +68,7 @@ const cpuScalingPropsDefault = {
  * This extension helps you scale your service according to CPU utilization.
  *
  * @deprecated To enable target tracking based on CPU utilization, use the `targetCpuUtilization` property of `autoScaleTaskCount` in the `Service` construct.
- * For more information, please refer https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk-containers/ecs-service-extensions/README.md#task-auto-scaling .
+ * For more information, please refer https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk-containers/ecs-service-extensions/README.md#task-auto-scaling .
  */
 export class ScaleOnCpuUtilization extends ServiceExtension {
   /**

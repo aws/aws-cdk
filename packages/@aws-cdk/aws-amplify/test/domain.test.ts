@@ -13,7 +13,7 @@ test('create a domain', () => {
       oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
-  const prodBranch = app.addBranch('master');
+  const prodBranch = app.addBranch('main');
   const devBranch = app.addBranch('dev');
 
   // WHEN
@@ -40,7 +40,7 @@ test('create a domain', () => {
       {
         BranchName: {
           'Fn::GetAtt': [
-            'Appmaster71597E87',
+            'AppmainF505BAED',
             'BranchName',
           ],
         },
@@ -74,7 +74,7 @@ test('map a branch to the domain root', () => {
       oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
-  const prodBranch = app.addBranch('master');
+  const prodBranch = app.addBranch('main');
 
   // WHEN
   const domain = app.addDomain('amazon.com');
@@ -93,7 +93,7 @@ test('map a branch to the domain root', () => {
       {
         BranchName: {
           'Fn::GetAtt': [
-            'Appmaster71597E87',
+            'AppmainF505BAED',
             'BranchName',
           ],
         },
@@ -132,7 +132,7 @@ test('auto subdomain all branches', () => {
       oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
-  const prodBranch = app.addBranch('master');
+  const prodBranch = app.addBranch('main');
 
   // WHEN
   const domain = app.addDomain('amazon.com', {
@@ -166,7 +166,7 @@ test('auto subdomain some branches', () => {
       oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
-  const prodBranch = app.addBranch('master');
+  const prodBranch = app.addBranch('main');
 
   // WHEN
   const domain = app.addDomain('amazon.com', {
@@ -204,7 +204,7 @@ test('auto subdomain with IAM role', () => {
       { mutable: false },
     ),
   });
-  const prodBranch = app.addBranch('master');
+  const prodBranch = app.addBranch('main');
 
   // WHEN
   const domain = app.addDomain('amazon.com', {
