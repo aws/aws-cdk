@@ -2,7 +2,7 @@ import subprocess as sp
 import os
 import logging
 
-#https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-stepfunctions#custom-state
+#https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-stepfunctions#custom-state
 def handler(event, context):
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)

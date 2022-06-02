@@ -2,11 +2,11 @@
 
 To address issue [#1698](https://github.com/aws/aws-cdk/issues/1698), the ECS construct library should provide a way for customers to specify [`repositoryCredentials`](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-repositoryCredentials) on their container.
 
-Minimally, this would mean adding a new string field on `ContainerDefinition`, however this doesn't provide any added value in terms of logical grouping or resource creation. We can instead modify the existing ECS CDK construct [`ContainerImage`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-ecs/lib/container-image.ts) so that repository credentials are specified along with the image they're meant to access.
+Minimally, this would mean adding a new string field on `ContainerDefinition`, however this doesn't provide any added value in terms of logical grouping or resource creation. We can instead modify the existing ECS CDK construct [`ContainerImage`](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-ecs/lib/container-image.ts) so that repository credentials are specified along with the image they're meant to access.
 
 ## General approach
 
-The [`ecs.ContainerImage`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-ecs/lib/container-image.ts) class already includes constructs for 3 types of images:
+The [`ecs.ContainerImage`](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-ecs/lib/container-image.ts) class already includes constructs for 3 types of images:
 
 * DockerHubImage
 * EcrImage

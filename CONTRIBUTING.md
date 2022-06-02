@@ -286,8 +286,8 @@ The steps here are usually AWS CLI commands but they need not be.
 ```
 
 Examples:
-* [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
-* [integ.token-authorizer.lit.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.lit.ts#L7-L12)
+* [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
+* [integ.token-authorizer.lit.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.lit.ts#L7-L12)
 
 **What do do if you cannot run integration tests**
 
@@ -882,14 +882,14 @@ created through `cdk init`.
 The pattern is simple:
 
 1. Define a new const under
-   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts)
+   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/lib/features.ts)
    with the name of the context key that **enables** this new feature (for
    example, `ENABLE_STACK_NAME_DUPLICATES`). The context key should be in the
    form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
 2. Use `FeatureFlags.of(construct).isEnabled(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
 3. Add your feature flag to the `FUTURE_FLAGS` map in
-   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts).
+   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/lib/features.ts).
    This map is inserted to generated `cdk.json` files for new projects created
    through `cdk init`.
 4. In your tests, use the `testFutureBehavior` and `testLegacyBehavior` [jest helper methods] to test the enabled and disabled behavior.
@@ -897,7 +897,7 @@ The pattern is simple:
 
     `fix(core): impossible to use the same physical stack name for two stacks (under feature flag)`
 
-[jest helper methods]: https://github.com/aws/aws-cdk/blob/master/tools/@aws-cdk/cdk-build-tools/lib/feature-flag.ts
+[jest helper methods]: https://github.com/aws/aws-cdk/blob/main/tools/@aws-cdk/cdk-build-tools/lib/feature-flag.ts
 
 ## Versioning and Release
 

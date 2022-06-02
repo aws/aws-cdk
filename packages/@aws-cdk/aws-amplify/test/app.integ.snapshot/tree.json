@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "cdk-amplify-app": {
@@ -144,13 +144,13 @@
                   "version": "0.0.0"
                 }
               },
-              "master": {
-                "id": "master",
-                "path": "cdk-amplify-app/App/master",
+              "main": {
+                "id": "main",
+                "path": "cdk-amplify-app/App/main",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "cdk-amplify-app/App/master/Resource",
+                    "path": "cdk-amplify-app/App/main/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Amplify::Branch",
                       "aws:cdk:cloudformation:props": {
@@ -160,7 +160,7 @@
                             "AppId"
                           ]
                         },
-                        "branchName": "master",
+                        "branchName": "main",
                         "enableAutoBuild": true,
                         "enablePullRequestPreview": true,
                         "environmentVariables": [
