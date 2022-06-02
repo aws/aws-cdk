@@ -392,7 +392,7 @@ export class Bundle {
     const bundle = esbuild.buildSync({
       entryPoints: this.entryPoints,
       bundle: true,
-      target: 'node12',
+      target: 'node14',
       platform: 'node',
       sourcemap: 'inline',
       metafile: true,

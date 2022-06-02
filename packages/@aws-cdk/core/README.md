@@ -493,7 +493,7 @@ stack-unique identifier and returns the service token:
 ```ts
 const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
   description: "Lambda function created by the custom resource provider",
 });
 
@@ -588,7 +588,7 @@ export class Sum extends Construct {
     const resourceType = 'Custom::Sum';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/sum-handler`,
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
     });
 
     const resource = new CustomResource(this, 'Resource', {
@@ -618,7 +618,7 @@ built-in singleton method:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
 });
 
 const roleArn = provider.roleArn;
@@ -631,7 +631,7 @@ To add IAM policy statements to this role, use `addToRolePolicy()`:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
 });
 provider.addToRolePolicy({
   Effect: 'Allow',
