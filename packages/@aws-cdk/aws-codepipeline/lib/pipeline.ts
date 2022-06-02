@@ -7,7 +7,6 @@ import {
   ArnFormat,
   BootstraplessSynthesizer,
   DefaultStackSynthesizer,
-  FeatureFlags,
   IStackSynthesizer,
   Lazy,
   Names,
@@ -18,7 +17,6 @@ import {
   Stage as CdkStage,
   Token,
 } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { ActionCategory, IAction, IPipeline, IStage, PipelineNotificationEvents, PipelineNotifyOnOptions } from './action';
 import { CfnPipeline } from './codepipeline.generated';
@@ -27,10 +25,6 @@ import { FullActionDescriptor } from './private/full-action-descriptor';
 import { RichAction } from './private/rich-action';
 import { Stage } from './private/stage';
 import { validateName, validateNamespaceName, validateSourceAction } from './private/validation';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Allows you to control where to place a new Stage when it's added to the Pipeline.
@@ -367,6 +361,7 @@ export class Pipeline extends PipelineBase {
   private readonly crossAccountKeys: boolean;
   private readonly enableKeyRotation?: boolean;
   private readonly reuseCrossRegionSupportStacks: boolean;
+  private readonly codePipeline: CfnPipeline;
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -428,7 +423,7 @@ export class Pipeline extends PipelineBase {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
     });
 
-    const codePipeline = new CfnPipeline(this, 'Resource', {
+    this.codePipeline = new CfnPipeline(this, 'Resource', {
       artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
       artifactStores: Lazy.any({ produce: () => this.renderArtifactStoresProperty() }),
       stages: Lazy.any({ produce: () => this.renderStages() }),
@@ -439,11 +434,11 @@ export class Pipeline extends PipelineBase {
     });
 
     // this will produce a DependsOn for both the role and the policy resources.
-    codePipeline.node.addDependency(this.role);
+    this.codePipeline.node.addDependency(this.role);
 
     this.artifactBucket.grantReadWrite(this.role);
-    this.pipelineName = this.getResourceNameAttribute(codePipeline.ref);
-    this.pipelineVersion = codePipeline.attrVersion;
+    this.pipelineName = this.getResourceNameAttribute(this.codePipeline.ref);
+    this.pipelineVersion = this.codePipeline.attrVersion;
     this.crossRegionBucketsPassed = !!props.crossRegionReplicationBuckets;
 
     for (const [region, replicationBucket] of Object.entries(props.crossRegionReplicationBuckets || {})) {
@@ -462,6 +457,8 @@ export class Pipeline extends PipelineBase {
     for (const stage of props.stages || []) {
       this.addStage(stage);
     }
+
+    this.node.addValidation({ validate: () => this.validatePipeline() });
   }
 
   /**
@@ -552,7 +549,7 @@ export class Pipeline extends PipelineBase {
     validateNamespaceName(richAction.actionProperties.variablesNamespace);
 
     // bind the Action (type h4x)
-    const actionConfig = richAction.bind(actionScope as CoreConstruct, stage, {
+    const actionConfig = richAction.bind(actionScope, stage, {
       role: actionRole ? actionRole : this.role,
       bucket: crossRegionInfo.artifactBucket,
     });
@@ -575,9 +572,8 @@ export class Pipeline extends PipelineBase {
    * Validation happens according to the rules documented at
    *
    * https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#pipeline-requirements
-   * @override
    */
-  protected validate(): string[] {
+  private validatePipeline(): string[] {
     return [
       ...this.validateSourceActionLocations(),
       ...this.validateHasStages(),
@@ -699,19 +695,10 @@ export class Pipeline extends PipelineBase {
   private generateNameForDefaultBucketKeyAlias(): string {
     const prefix = 'alias/codepipeline-';
     const maxAliasLength = 256;
-    const maxResourceNameLength = maxAliasLength - prefix.length;
-    // Names.uniqueId() may have naming collisions when the IDs of resources are similar
-    // and/or when they are too long and sliced. We do not want to update this and
-    // automatically change the name of every KMS key already generated so we are putting
-    // this under a feature flag.
-    const uniqueId = FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID) ?
-      Names.uniqueResourceName(this, {
-        separator: '-',
-        maxLength: maxResourceNameLength,
-        allowedSpecialCharacters: '/_-',
-      }) :
-      Names.uniqueId(this).slice(-maxResourceNameLength);
-    return prefix + uniqueId.toLowerCase();
+    const uniqueId = Names.uniqueId(this);
+    // take the last 256 - (prefix length) characters of uniqueId
+    const startIndex = Math.max(0, uniqueId.length - (maxAliasLength - prefix.length));
+    return prefix + uniqueId.substring(startIndex).toLowerCase();
   }
 
   /**
@@ -735,13 +722,8 @@ export class Pipeline extends PipelineBase {
     }
 
     // the pipeline role needs assumeRole permissions to the action role
-    if (actionRole) {
-      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['sts:AssumeRole'],
-        resources: [actionRole.roleArn],
-      }));
-    }
-
+    const grant = actionRole?.grantAssumeRole(this.role);
+    grant?.applyBefore(this.codePipeline);
     return actionRole;
   }
 
