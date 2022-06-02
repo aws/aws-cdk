@@ -6,6 +6,7 @@ import { AssetStaging } from '../asset-staging';
 import { FileAssetPackaging } from '../assets';
 import { CfnResource } from '../cfn-resource';
 import { Duration } from '../duration';
+import { Lazy } from '../lazy';
 import { Size } from '../size';
 import { Stack } from '../stack';
 import { Token } from '../token';
@@ -187,6 +188,8 @@ export class CustomResourceProvider extends Construct {
    */
   public readonly roleArn: string;
 
+  private policyStatements?: any[];
+
   protected constructor(scope: Construct, id: string, props: CustomResourceProviderProps) {
     super(scope, id);
 
@@ -212,15 +215,11 @@ export class CustomResourceProvider extends Construct {
       packaging: FileAssetPackaging.ZIP_DIRECTORY,
     });
 
-    const policies = !props.policyStatements ? undefined : [
-      {
-        PolicyName: 'Inline',
-        PolicyDocument: {
-          Version: '2012-10-17',
-          Statement: props.policyStatements,
-        },
-      },
-    ];
+    if (props.policyStatements) {
+      for (const statement of props.policyStatements) {
+        this.addToRolePolicy(statement);
+      }
+    }
 
     const role = new CfnResource(this, 'Role', {
       type: 'AWS::IAM::Role',
@@ -232,7 +231,7 @@ export class CustomResourceProvider extends Construct {
         ManagedPolicyArns: [
           { 'Fn::Sub': 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' },
         ],
-        Policies: policies,
+        Policies: Lazy.any({ produce: () => this.renderPolicies() }),
       },
     });
     this.roleArn = Token.asString(role.getAtt('Arn'));
@@ -265,6 +264,46 @@ export class CustomResourceProvider extends Construct {
     }
 
     this.serviceToken = Token.asString(handler.getAtt('Arn'));
+  }
+
+  /**
+   * Add an IAM policy statement to the inline policy of the
+   * provider's lambda function's role.
+   *
+   * **Please note**: this is a direct IAM JSON policy blob, *not* a `iam.PolicyStatement`
+   * object like you will see in the rest of the CDK.
+   *
+   *
+   * @example
+   * declare const myProvider: CustomResourceProvider;
+   *
+   * myProvider.addToRolePolicy({
+   *   Effect: 'Allow',
+   *   Action: 's3:GetObject',
+   *   Resources: '*',
+   * });
+   */
+  public addToRolePolicy(statement: any): void {
+    if (!this.policyStatements) {
+      this.policyStatements = [];
+    }
+    this.policyStatements.push(statement);
+  }
+
+  private renderPolicies() {
+    if (!this.policyStatements) {
+      return undefined;
+    }
+
+    const policies = [{
+      PolicyName: 'Inline',
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: this.policyStatements,
+      },
+    }];
+
+    return policies;
   }
 
   private renderEnvironmentVariables(env?: { [key: string]: string }) {
