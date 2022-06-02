@@ -40,7 +40,7 @@ test('create a domain', () => {
       {
         BranchName: {
           'Fn::GetAtt': [
-            'Appmain71597E87',
+            'AppmainF505BAED',
             'BranchName',
           ],
         },
@@ -93,7 +93,7 @@ test('map a branch to the domain root', () => {
       {
         BranchName: {
           'Fn::GetAtt': [
-            'Appmain71597E87',
+            'AppmainF505BAED',
             'BranchName',
           ],
         },
