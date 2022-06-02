@@ -4,12 +4,12 @@ Hiya! Thanks for your interest in contributing to the ECS modules! The [ECS
 Developer Experience](https://github.com/orgs/aws/teams/aws-ecs-devx) team
 currently owns the following construct libraries:
 
-- [@aws-cdk/aws-ecs](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-ecs):
+- [@aws-cdk/aws-ecs](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-ecs):
   the main construct library for AWS ECS
-- [@aws-cdk/aws-ecs-patterns](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-ecs-patterns):
+- [@aws-cdk/aws-ecs-patterns](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-ecs-patterns):
   a set of simplified, higher-level constructs based on common container-based
 application architectures. Great for first-time container developers!
-- [@aws-cdk-containers/ecs-service-extensions](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk-containers/ecs-service-extensions):
+- [@aws-cdk-containers/ecs-service-extensions](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk-containers/ecs-service-extensions):
   a set of ECS constructs that promote best practices for container
 infrastructure by using composable add-ons, such as load balancers and sidecar
 containers used for tracing and metric logging. More suitable for advanced
@@ -29,7 +29,7 @@ working on it. Otherwise, any unassigned issue is up for grabs!
 
 If an issue doesn't exist for your feature/fix, please create one using the
 appropriate [issue
-template](https://github.com/aws/aws-cdk/tree/master/.github/ISSUE_TEMPLATE).
+template](https://github.com/aws/aws-cdk/tree/main/.github/ISSUE_TEMPLATE).
 
 If you're simply looking for any issue to work on, explore our [Backlog of
 issues](https://github.com/aws/aws-cdk/projects/2#column-8114389) on the public
@@ -50,7 +50,7 @@ For larger features, your contribution is far more likely to be accepted if you:
 2. include a design document.
 
 Examples of past designs for the ECS module can be found in under the
-[design](https://github.com/aws/aws-cdk/tree/master/design/aws-ecs) directory.
+[design](https://github.com/aws/aws-cdk/tree/main/design/aws-ecs) directory.
 
 ## Breaking Changes
-See guidance on breaking changes in the [Contributing Guide](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md#breaking-changes).
+See guidance on breaking changes in the [Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#breaking-changes).

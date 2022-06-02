@@ -40,7 +40,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.Assertions",
         "packageId": "Amazon.CDK.Assertions",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.assertions",
