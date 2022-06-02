@@ -3,10 +3,6 @@ import { CfnListenerCertificate } from '../elasticloadbalancingv2.generated';
 import { IListenerCertificate } from '../shared/listener-certificate';
 import { INetworkListener } from './network-listener';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Properties for adding a set of certificates to a listener
  */
@@ -27,7 +23,7 @@ export interface NetworkListenerCertificateProps {
 /**
  * Add certificates to a listener
  */
-export class NetworkListenerCertificate extends CoreConstruct {
+export class NetworkListenerCertificate extends Construct {
   constructor(scope: Construct, id: string, props: NetworkListenerCertificateProps) {
     super(scope, id);
 
