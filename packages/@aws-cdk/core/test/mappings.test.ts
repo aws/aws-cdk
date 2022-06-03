@@ -151,8 +151,8 @@ describe('mappings', () => {
   });
 
   test('using the value of a mapping in a different stack copies the mapping to the consuming stack', () => {
-    const stack1 = new Stack(undefined, 'stack1');
-    const stack2 = new Stack(undefined, 'stack2');
+    const stack1 = new Stack();
+    const stack2 = new Stack();
 
     const mapping = new CfnMapping(stack1, 'MyMapping', {
       mapping: {
