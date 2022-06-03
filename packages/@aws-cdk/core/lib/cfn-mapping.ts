@@ -86,7 +86,7 @@ export class CfnMapping extends CfnRefElement {
       this.lazyRender = true;
     }
 
-    return new CrossStackToken(this.id, this.mapping, Fn.findInMap(this.logicalId, key1, key2)).toString();
+    return new CfnMappingEmbedder(this.id, this.mapping, Fn.findInMap(this.logicalId, key1, key2)).toString();
   }
 
   /**
@@ -127,7 +127,7 @@ export class CfnMapping extends CfnRefElement {
   }
 }
 
-class CrossStackToken implements IResolvable {
+class CfnMappingEmbedder implements IResolvable {
   readonly creationStack: string[] = [];
 
   constructor(readonly mappingId: string, readonly mapping: Mapping, readonly value: string) {
