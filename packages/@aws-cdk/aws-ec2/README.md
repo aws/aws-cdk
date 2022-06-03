@@ -91,7 +91,7 @@ itself to 2 Availability Zones.
 Therefore, to get the VPC to spread over 3 or more availability zones, you
 must specify the environment where the stack will be deployed.
 
-You can gain full control over the availability zones selection strategy by overriding the Stack's [`get availabilityZones()`](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/core/lib/stack.ts) method:
+You can gain full control over the availability zones selection strategy by overriding the Stack's [`get availabilityZones()`](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/core/lib/stack.ts) method:
 
 ```text
 // This example is only available in TypeScript
@@ -734,7 +734,7 @@ By default, routes will be propagated on the route tables associated with the pr
 private subnets exist, isolated subnets are used. If no isolated subnets exist, public subnets are
 used. Use the `Vpc` property `vpnRoutePropagation` to customize this behavior.
 
-VPN connections expose [metrics (cloudwatch.Metric)](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-cloudwatch/README.md) across all tunnels in the account/region and per connection:
+VPN connections expose [metrics (cloudwatch.Metric)](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-cloudwatch/README.md) across all tunnels in the account/region and per connection:
 
 ```ts fixture=with-vpc
 // Across all tunnels in the account/region

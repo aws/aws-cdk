@@ -255,3 +255,36 @@ test('can use source attributes in pipeline', () => {
     ],
   });
 });
+
+test('pass role to s3 codepipeline source', () => {
+  const bucket = new s3.Bucket(pipelineStack, 'Bucket');
+  const role = new Role(pipelineStack, 'TestRole', {
+    assumedBy: new AnyPrincipal(),
+  });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
+    input: cdkp.CodePipelineSource.s3(bucket, 'thefile.zip', {
+      role,
+    }),
+  });
+
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'Source',
+      Actions: [
+        Match.objectLike({
+          Configuration: Match.objectLike({
+            S3Bucket: { Ref: Match.anyValue() },
+            S3ObjectKey: 'thefile.zip',
+          }),
+          Name: { Ref: Match.anyValue() },
+          RoleArn: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('TestRole.*'),
+              'Arn',
+            ],
+          },
+        }),
+      ],
+    }]),
+  });
+});

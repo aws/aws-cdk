@@ -70,7 +70,7 @@
     }
    }
   },
-  "Appmaster71597E87": {
+  "AppmainF505BAED": {
    "Type": "AWS::Amplify::Branch",
    "Properties": {
     "AppId": {
@@ -79,7 +79,7 @@
       "AppId"
      ]
     },
-    "BranchName": "master",
+    "BranchName": "main",
     "EnableAutoBuild": true,
     "EnablePullRequestPreview": true
    }
