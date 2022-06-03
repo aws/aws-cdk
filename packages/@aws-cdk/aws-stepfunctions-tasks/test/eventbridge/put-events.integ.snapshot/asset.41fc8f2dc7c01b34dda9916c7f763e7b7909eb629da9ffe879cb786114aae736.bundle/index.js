@@ -497,6 +497,9 @@ var AssertionHandler = class extends CustomResourceHandler {
           ].join("\n")
         })
       };
+      if (request2.failDeployment) {
+        throw new Error(result.data);
+      }
     } else {
       result = {
         data: JSON.stringify({
@@ -509,27 +512,9 @@ var AssertionHandler = class extends CustomResourceHandler {
 };
 var MatchCreator = class {
   constructor(obj) {
-    switch (Object.keys(obj)[0]) {
-      case "$ObjectLike":
-        this.type = "objectLike";
-        this.parsedObj = obj.$ObjectLike;
-        break;
-      case "$ArrayWith":
-        this.type = "arrayWith";
-        this.parsedObj = obj.$ArrayWith;
-        break;
-      case "$Exact":
-        this.type = "exact";
-        this.parsedObj = obj.$Exact;
-        break;
-      case "$StringLike":
-        this.type = "stringLikeRegexp";
-        this.parsedObj = obj.$StringLike;
-        break;
-      default:
-        this.type = "exact";
-        this.parsedObj = obj;
-    }
+    this.parsedObj = {
+      matcher: obj
+    };
   }
   getMatcher() {
     try {
@@ -546,9 +531,12 @@ var MatchCreator = class {
             return v;
         }
       });
-      return Match[this.type](final);
+      if (Matcher.isMatcher(final.matcher)) {
+        return final.matcher;
+      }
+      return Match.exact(final.matcher);
     } catch {
-      return Match[this.type](this.parsedObj);
+      return Match.exact(this.parsedObj.matcher);
     }
   }
 };
@@ -563,18 +551,6 @@ function decodeCall(call) {
     return call;
   }
 }
-
-// lib/assertions/providers/lambda-handler/results.ts
-var ResultsCollectionHandler = class extends CustomResourceHandler {
-  async processEvent(request2) {
-    const reduced = request2.assertionResults.reduce((agg, result, idx) => {
-      const msg = result.status === "pass" ? "pass" : `fail - ${result.message}`;
-      return `${agg}
-Test${idx}: ${msg}`;
-    }, "").trim();
-    return { message: reduced };
-  }
-};
 
 // lib/assertions/providers/lambda-handler/utils.ts
 function decode(object) {
@@ -617,7 +593,6 @@ var AwsApiCallHandler = class extends CustomResourceHandler {
 
 // lib/assertions/providers/lambda-handler/types.ts
 var ASSERT_RESOURCE_TYPE = "Custom::DeployAssert@AssertEquals";
-var RESULTS_RESOURCE_TYPE = "Custom::DeployAssert@ResultsCollection";
 var SDK_RESOURCE_TYPE_PREFIX = "Custom::DeployAssert@SdkCall";
 
 // lib/assertions/providers/lambda-handler/index.ts
@@ -632,8 +607,6 @@ function createResourceHandler(event, context) {
   switch (event.ResourceType) {
     case ASSERT_RESOURCE_TYPE:
       return new AssertionHandler(event, context);
-    case RESULTS_RESOURCE_TYPE:
-      return new ResultsCollectionHandler(event, context);
     default:
       throw new Error(`Unsupported resource type "${event.ResourceType}`);
   }

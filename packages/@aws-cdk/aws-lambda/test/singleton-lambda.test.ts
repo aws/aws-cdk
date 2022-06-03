@@ -248,7 +248,7 @@ describe('singleton lambda', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
     });
 
@@ -276,7 +276,7 @@ describe('singleton lambda', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       securityGroups: [securityGroup],
       vpc: vpc,

@@ -18,7 +18,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.CloudFormation.Include",
         "packageId": "Amazon.CDK.CloudFormation.Include",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.cloudformation-include",
@@ -146,6 +146,7 @@
     "@aws-cdk/aws-elasticsearch": "0.0.0",
     "@aws-cdk/aws-emr": "0.0.0",
     "@aws-cdk/aws-emrcontainers": "0.0.0",
+    "@aws-cdk/aws-emrserverless": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-eventschemas": "0.0.0",
     "@aws-cdk/aws-evidently": "0.0.0",
@@ -341,6 +342,7 @@
     "@aws-cdk/aws-elasticsearch": "0.0.0",
     "@aws-cdk/aws-emr": "0.0.0",
     "@aws-cdk/aws-emrcontainers": "0.0.0",
+    "@aws-cdk/aws-emrserverless": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-eventschemas": "0.0.0",
     "@aws-cdk/aws-evidently": "0.0.0",
