@@ -188,8 +188,17 @@ describe('mappings', () => {
         },
       },
     });
-    //expect(toCloudFormation(stack2).Outputs).toEqual({
-    //});
+    expect(toCloudFormation(stack2).Outputs).toEqual({
+      Output: {
+        Value: {
+          'Fn::FindInMap': [
+            'MyMapping',
+            'boo',
+            'bah',
+          ],
+        },
+      },
+    });
   });
 });
 
