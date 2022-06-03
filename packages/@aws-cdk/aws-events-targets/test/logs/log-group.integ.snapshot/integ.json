@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-events-targets/test/logs/integ.log-group": {
+    "logs/integ.log-group": {
       "stacks": [
         "log-group-events"
       ],

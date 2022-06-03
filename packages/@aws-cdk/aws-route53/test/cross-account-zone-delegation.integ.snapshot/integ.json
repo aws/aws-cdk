@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-route53/test/integ.cross-account-zone-delegation": {
+    "integ.cross-account-zone-delegation": {
       "stacks": [
         "aws-cdk-route53-cross-account-integ"
       ],
