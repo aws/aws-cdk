@@ -603,6 +603,7 @@ export class CanonicalUserPrincipal extends PrincipalBase {
  */
 export class FederatedPrincipal extends PrincipalBase {
   public readonly assumeRoleAction: string;
+  public readonly conditions: Conditions;
 
   /**
    *
@@ -613,10 +614,11 @@ export class FederatedPrincipal extends PrincipalBase {
    */
   constructor(
     public readonly federated: string,
-    public readonly conditions: Conditions,
+    conditions: Conditions = {},
     assumeRoleAction: string = 'sts:AssumeRole') {
     super();
 
+    this.conditions = conditions;
     this.assumeRoleAction = assumeRoleAction;
   }
 
