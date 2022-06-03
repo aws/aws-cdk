@@ -1,5 +1,5 @@
-import { ArnFormat, IConstruct, Duration, Resource, Stack, Token, TokenComparison, Aspects, ConcreteDependable, Annotations } from '@aws-cdk/core';
-import { Construct, Node } from 'constructs';
+import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations } from '@aws-cdk/core';
+import { Construct, IConstruct, DependencyGroup, Node } from 'constructs';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -277,15 +277,20 @@ export class Role extends Resource implements IRole {
       throw new Error('\'addGrantsToResources\' can only be passed if \'mutable: false\'');
     }
 
-    const importedRole = new Import(scope, id);
-    const roleArnAndScopeStackAccountComparison = Token.compareStrings(importedRole.env.account, scopeStack.account);
+    const roleArnAndScopeStackAccountComparison = Token.compareStrings(roleAccount ?? '', scopeStack.account);
     const equalOrAnyUnresolved = roleArnAndScopeStackAccountComparison === TokenComparison.SAME ||
       roleArnAndScopeStackAccountComparison === TokenComparison.BOTH_UNRESOLVED ||
       roleArnAndScopeStackAccountComparison === TokenComparison.ONE_UNRESOLVED;
+
+    // if we are returning an immutable role then the 'importedRole' is just a throwaway construct
+    // so give it a different id
+    const mutableRoleId = (options.mutable !== false && equalOrAnyUnresolved) ? id : `MutableRole${id}`;
+    const importedRole = new Import(scope, mutableRoleId);
+
     // we only return an immutable Role if both accounts were explicitly provided, and different
     return options.mutable !== false && equalOrAnyUnresolved
       ? importedRole
-      : new ImmutableRole(scope, `ImmutableRole${id}`, importedRole, options.addGrantsToResources ?? false);
+      : new ImmutableRole(scope, id, importedRole, options.addGrantsToResources ?? false);
   }
 
   /**
@@ -345,7 +350,7 @@ export class Role extends Resource implements IRole {
   private readonly managedPolicies: IManagedPolicy[] = [];
   private readonly attachedPolicies = new AttachedPolicies();
   private readonly inlinePolicies: { [name: string]: PolicyDocument };
-  private readonly dependables = new Map<PolicyStatement, ConcreteDependable>();
+  private readonly dependables = new Map<PolicyStatement, DependencyGroup>();
   private immutableRole?: IRole;
   private _didSplit = false;
 
@@ -414,6 +419,8 @@ export class Role extends Resource implements IRole {
         }
       },
     });
+
+    this.node.addValidation({ validate: () => this.validateRole() });
   }
 
   /**
@@ -430,7 +437,7 @@ export class Role extends Resource implements IRole {
 
     // We might split this statement off into a different policy, so we'll need to
     // late-bind the dependable.
-    const policyDependable = new ConcreteDependable();
+    const policyDependable = new DependencyGroup();
     this.dependables.set(statement, policyDependable);
 
     return { statementAdded: true, policyDependable };
@@ -502,9 +509,9 @@ export class Role extends Resource implements IRole {
     return this.immutableRole;
   }
 
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.assumeRolePolicy?.validateForResourcePolicy() || []);
+  private validateRole(): string[] {
+    const errors = new Array<string>();
+    errors.push(...this.assumeRolePolicy?.validateForResourcePolicy() ?? []);
     for (const policy of Object.values(this.inlinePolicies)) {
       errors.push(...policy.validateForIdentityPolicy());
     }
