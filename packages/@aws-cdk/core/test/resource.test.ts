@@ -734,6 +734,76 @@ describe('resource', () => {
 
     });
 
+    test('overrides allow overriding one intrinsic with another', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      const resource = new CfnResource(stack, 'MyResource', {
+        type: 'MyResourceType',
+        properties: {
+          prop1: Fn.ref('Param'),
+        },
+      });
+
+      // WHEN
+      resource.addPropertyOverride('prop1', Fn.join('-', ['hello', Fn.ref('Param')]));
+      const cfn = toCloudFormation(stack);
+
+      // THEN
+      expect(cfn.Resources.MyResource).toEqual({
+        Type: 'MyResourceType',
+        Properties: {
+          prop1: {
+            'Fn::Join': [
+              '-',
+              [
+                'hello',
+                {
+                  Ref: 'Param',
+                },
+              ],
+            ],
+          },
+        },
+      });
+    });
+
+    test('overrides allow overriding a nested intrinsic', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      const resource = new CfnResource(stack, 'MyResource', {
+        type: 'MyResourceType',
+        properties: {
+          prop1: Fn.importValue(Fn.sub('${Sub}', { Sub: 'Value' })),
+        },
+      });
+
+      // WHEN
+      resource.addPropertyOverride('prop1', Fn.importValue(Fn.join('-', ['abc', Fn.sub('${Sub}', { Sub: 'Value' })])));
+      const cfn = toCloudFormation(stack);
+
+      // THEN
+      expect(cfn.Resources.MyResource).toEqual({
+        Type: 'MyResourceType',
+        Properties: {
+          prop1: {
+            'Fn::ImportValue': {
+              'Fn::Join': [
+                '-',
+                [
+                  'abc',
+                  {
+                    'Fn::Sub': ['${Sub}', { Sub: 'Value' }],
+                  },
+                ],
+              ],
+            },
+          },
+        },
+      });
+    });
+
     describe('using mutable properties', () => {
 
       test('can be used by derived classes to specify overrides before render()', () => {
