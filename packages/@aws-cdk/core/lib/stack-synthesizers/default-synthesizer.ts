@@ -3,12 +3,12 @@ import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, Fi
 import { Fn } from '../cfn-fn';
 import { CfnParameter } from '../cfn-parameter';
 import { CfnRule } from '../cfn-rule';
-import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { Token } from '../token';
 import { AssetManifestBuilder } from './_asset-manifest-builder';
 import { assertBound, StringSpecializer, stackTemplateFileAsset } from './_shared';
 import { StackSynthesizer } from './stack-synthesizer';
+import { ISynthesisSession } from './types';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
@@ -455,7 +455,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
  * so we encode this rule into the template in a way that CloudFormation will check it.
  */
 function addBootstrapVersionRule(stack: Stack, requiredVersion: number, bootstrapStackVersionSsmParameter: string) {
-  // Because of https://github.com/aws/aws-cdk/blob/master/packages/assert-internal/lib/synth-utils.ts#L74
+  // Because of https://github.com/aws/aws-cdk/blob/main/packages/assert-internal/lib/synth-utils.ts#L74
   // synthesize() may be called more than once on a stack in unit tests, and the below would break
   // if we execute it a second time. Guard against the constructs already existing.
   if (stack.node.tryFindChild('BootstrapVersion')) { return; }
@@ -487,4 +487,3 @@ function range(startIncl: number, endExcl: number) {
   }
   return ret;
 }
-

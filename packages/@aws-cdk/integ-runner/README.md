@@ -25,7 +25,7 @@ publishing this tool so that it can be used by the community and we would love t
 on use cases that the tool should support, or issues that prevent the tool from being used in your
 library.
 
-This tool is meant to be used with the [integ-tests](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/integ-tests) library.
+This tool is meant to be used with the [integ-tests](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests) library.
 
 ## Usage
 

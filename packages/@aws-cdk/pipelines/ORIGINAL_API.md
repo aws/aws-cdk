@@ -197,7 +197,7 @@ pipeline.addStage(stage, {
 ### Custom CodePipeline Actions
 
 See the section [**Arbitrary CodePipeline actions** in the
-main `README`](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/pipelines/README.md#arbitrary-codepipeline-actions) for an example of how to inject arbitrary
+main `README`](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/pipelines/README.md#arbitrary-codepipeline-actions) for an example of how to inject arbitrary
 CodeBuild Actions.
 
 ## Definining the pipeline

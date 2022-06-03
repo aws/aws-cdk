@@ -657,6 +657,23 @@ const roleArn = provider.roleArn;
 
 This role ARN can then be used in resource-based IAM policies.
 
+To add IAM policy statements to this role, use `addToRolePolicy()`:
+
+```ts
+const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
+  codeDirectory: `${__dirname}/my-handler`,
+  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+});
+provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: 's3:GetObject',
+  Resource: '*',
+})
+```
+
+Note that `addToRolePolicy()` uses direct IAM JSON policy blobs, *not* a
+`iam.PolicyStatement` object like you will see in the rest of the CDK.
+
 #### The Custom Resource Provider Framework
 
 The [`@aws-cdk/custom-resources`] module includes an advanced framework for
