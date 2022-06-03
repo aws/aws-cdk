@@ -3,16 +3,18 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct } from 'constructs';
 
 /**
- * KubectlLayerProps 
+ * KubectlLayerProps
  */
 export interface KubectlLayerProps {
   /**
    * Kubectl Version which is actually a version of k8s the EKS cluster is running.
+   * @default 1.20.0
    */
   readonly kubectlVersion?: string;
 
   /**
    * Helm Charts version
+   * @default 3.8.2
    */
   readonly helmVersion?: string;
 }

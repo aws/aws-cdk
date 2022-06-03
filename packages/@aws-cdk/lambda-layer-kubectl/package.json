@@ -99,6 +99,11 @@
   "engines": {
     "node": ">= 14.15.0"
   },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/lambda-layer-kubectl.KubectlLayerProps"
+    ]
+  },
   "stability": "stable",
   "maturity": "stable",
   "awscdkio": {
