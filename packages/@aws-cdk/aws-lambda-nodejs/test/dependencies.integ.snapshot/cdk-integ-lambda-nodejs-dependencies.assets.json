@@ -1,0 +1,32 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "e235181b37d83d303912716cfb12d07f09f5fc6ff3da14badbb0fff37db69424": {
+      "source": {
+        "path": "/Users/rdjurasaj/code/robertd/aws-cdk",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e235181b37d83d303912716cfb12d07f09f5fc6ff3da14badbb0fff37db69424.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "94cd95ecab796a9093e0e0f6a867e989f5a5340b74bc179f5d38026dcef48daf": {
+      "source": {
+        "path": "cdk-integ-lambda-nodejs-dependencies.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "94cd95ecab796a9093e0e0f6a867e989f5a5340b74bc179f5d38026dcef48daf.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

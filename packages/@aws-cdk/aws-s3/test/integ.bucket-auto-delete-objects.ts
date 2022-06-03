@@ -18,7 +18,7 @@ class TestStack extends Stack {
     // Put objects in the bucket to ensure auto delete works as expected
     const serviceToken = CustomResourceProvider.getOrCreate(this, PUT_OBJECTS_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'put-objects-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       policyStatements: [{
         Effect: 'Allow',
         Action: 's3:PutObject',

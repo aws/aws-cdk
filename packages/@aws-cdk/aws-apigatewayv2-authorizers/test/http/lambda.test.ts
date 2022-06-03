@@ -13,7 +13,7 @@ describe('HttpLambdaAuthorizer', () => {
     const api = new HttpApi(stack, 'HttpApi');
 
     const handler = new Function(stack, 'auth-function', {
-      runtime: Runtime.NODEJS_12_X,
+      runtime: Runtime.NODEJS_14_X,
       code: Code.fromInline('exports.handler = () => {return true}'),
       handler: 'index.handler',
     });
@@ -49,7 +49,7 @@ describe('HttpLambdaAuthorizer', () => {
     const api = new HttpApi(stack, 'HttpApi');
 
     const handler = new Function(stack, 'auth-function', {
-      runtime: Runtime.NODEJS_12_X,
+      runtime: Runtime.NODEJS_14_X,
       code: Code.fromInline('exports.handler = () => {return true}'),
       handler: 'index.handler',
     });
@@ -78,7 +78,7 @@ describe('HttpLambdaAuthorizer', () => {
     const api = new HttpApi(stack, 'HttpApi');
 
     const handler = new Function(stack, 'auth-function', {
-      runtime: Runtime.NODEJS_12_X,
+      runtime: Runtime.NODEJS_14_X,
       code: Code.fromInline('exports.handler = () => {return true}'),
       handler: 'index.handler',
     });
@@ -107,7 +107,7 @@ describe('HttpLambdaAuthorizer', () => {
     const api = new HttpApi(stack, 'HttpApi');
 
     const handler = new Function(stack, 'auth-function', {
-      runtime: Runtime.NODEJS_12_X,
+      runtime: Runtime.NODEJS_14_X,
       code: Code.fromInline('exports.handler = () => {return true}'),
       handler: 'index.handler',
     });
@@ -136,7 +136,7 @@ describe('HttpLambdaAuthorizer', () => {
     const api = new HttpApi(stack, 'HttpApi');
 
     const handler = new Function(stack, 'auth-functon', {
-      runtime: Runtime.NODEJS_12_X,
+      runtime: Runtime.NODEJS_14_X,
       code: Code.fromInline('exports.handler = () => {return true}'),
       handler: 'index.handler',
     });
