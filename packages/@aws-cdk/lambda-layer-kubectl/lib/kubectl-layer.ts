@@ -9,12 +9,12 @@ export interface KubectlLayerProps {
   /**
    * Kubectl Version which is actually a version of k8s the EKS cluster is running.
    */
-  readonly kubectlVersion: string;
+  readonly kubectlVersion?: string;
 
   /**
    * Helm Charts version
    */
-  readonly helmVersion: string;
+  readonly helmVersion?: string;
 }
 
 /**
