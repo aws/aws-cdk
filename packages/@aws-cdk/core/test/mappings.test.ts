@@ -150,7 +150,7 @@ describe('mappings', () => {
     })).toThrowError(/Attribute name 'us-east-1' must contain only alphanumeric characters./);
   });
 
-  test('cross stack', () => {
+  test('using the value of a mapping in a different stack copies the mapping to the consuming stack', () => {
     const stack1 = new Stack(undefined, 'stack1');
     const stack2 = new Stack(undefined, 'stack2');
 
