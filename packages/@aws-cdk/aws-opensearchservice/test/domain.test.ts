@@ -31,7 +31,7 @@ const readWriteActions = [
 
 const defaultVersion = EngineVersion.OPENSEARCH_1_0;
 
-test('connections throws if domain is placed inside a vpc', () => {
+test('connections throws if domain is not placed inside a vpc', () => {
 
   expect(() => {
     new Domain(stack, 'Domain', {
