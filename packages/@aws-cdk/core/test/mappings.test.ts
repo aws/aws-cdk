@@ -1,6 +1,6 @@
 import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
 import { CloudAssembly } from '@aws-cdk/cx-api';
-import { App, Aws, CfnMapping, CfnResource, Fn, Stack } from '../lib';
+import { App, Aws, CfnMapping, CfnResource, CfnOutput, Fn, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 describe('mappings', () => {
@@ -148,6 +148,48 @@ describe('mappings', () => {
         },
       },
     })).toThrowError(/Attribute name 'us-east-1' must contain only alphanumeric characters./);
+  });
+
+  test('cross stack', () => {
+    const stack1 = new Stack(undefined, 'stack1');
+    const stack2 = new Stack(undefined, 'stack2');
+
+    const mapping = new CfnMapping(stack1, 'MyMapping', {
+      mapping: {
+        boo: {
+          bah: 'foo',
+        },
+      },
+    });
+
+    new CfnOutput(stack2, 'Output', {
+      value: mapping.findInMap('boo', 'bah'),
+    });
+
+    const v1 = mapping.findInMap('boo', 'bah');
+    const v2 = Fn.findInMap(mapping.logicalId, 'boo', 'bah');
+
+    const expected = { 'Fn::FindInMap': ['MyMapping', 'boo', 'bah'] };
+    expect(stack1.resolve(v1)).toEqual(expected);
+    expect(stack1.resolve(v2)).toEqual(expected);
+    expect(toCloudFormation(stack1).Mappings).toEqual({
+      MyMapping: {
+        boo: {
+          bah: 'foo',
+        },
+      },
+    });
+    expect(stack2.resolve(v1)).toEqual(expected);
+    expect(stack2.resolve(v2)).toEqual(expected);
+    expect(toCloudFormation(stack2).Mappings).toEqual({
+      MyMapping: {
+        boo: {
+          bah: 'foo',
+        },
+      },
+    });
+    //expect(toCloudFormation(stack2).Outputs).toEqual({
+    //});
   });
 });
 

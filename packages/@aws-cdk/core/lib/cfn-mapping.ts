@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { Annotations } from './annotations';
 import { CfnRefElement } from './cfn-element';
 import { Fn } from './cfn-fn';
+import { IResolvable, IResolveContext } from './resolvable';
+import { Stack } from './stack';
 import { Token } from './token';
 
 type Mapping = { [k1: string]: { [k2: string]: any } };
@@ -41,7 +43,7 @@ export class CfnMapping extends CfnRefElement {
   private lazyRender = false;
   private lazyInformed = false;
 
-  constructor(scope: Construct, id: string, props: CfnMappingProps = {}) {
+  constructor(scope: Construct, readonly id: string, props: CfnMappingProps = {}) {
     super(scope, id);
     this.mapping = props.mapping ? this.validateMapping(props.mapping) : {};
     this.lazy = props.lazy;
@@ -83,7 +85,8 @@ export class CfnMapping extends CfnRefElement {
     } else {
       this.lazyRender = true;
     }
-    return Fn.findInMap(this.logicalId, key1, key2);
+    //return Fn.findInMap(this.logicalId, key1, key2);
+    return new CrossStackToken(this.id, this.mapping, Fn.findInMap(this.logicalId, key1, key2)).toString();
   }
 
   /**
@@ -121,5 +124,33 @@ export class CfnMapping extends CfnRefElement {
     if (value.match(/[^a-zA-Z0-9]/g)) {
       throw new Error(`Attribute name '${value}' must contain only alphanumeric characters.`);
     }
+  }
+}
+
+class CrossStackToken implements IResolvable {
+  readonly creationStack: string[] = [];
+
+  constructor(readonly mappingId: string, readonly mapping: Mapping, readonly value: string) {
+  }
+
+  public resolve(context: IResolveContext): string {
+    const consumingStack = Stack.of(context.scope);
+    const childIds: string[] = [];
+
+    for (const child of consumingStack.node.children) {
+      childIds.push(child.node.id);
+    }
+
+    if (!childIds.includes(this.mappingId)) {
+      new CfnMapping(consumingStack, this.mappingId, {
+        mapping: this.mapping,
+      });
+    }
+
+    return this.value;
+  }
+
+  public toString() {
+    return Token.asString(this);
   }
 }
