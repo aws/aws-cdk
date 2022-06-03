@@ -29,6 +29,12 @@ export interface IRestApi extends IResourceBase {
   readonly restApiId: string;
 
   /**
+   * The name of this API Gateway RestApi.
+   * @attribute
+   */
+  readonly restApiName: string;
+
+  /**
    * The resource ID of the root resource.
    * @attribute
    */
@@ -673,6 +679,13 @@ export interface RestApiAttributes {
   readonly restApiId: string;
 
   /**
+   * The name of the API Gateway RestApi.
+   *
+   * @default - ID of the RestApi construct.
+   */
+  readonly restApiName?: string;
+
+  /**
    * The resource ID of the root resource.
    */
   readonly rootResourceId: string;
@@ -710,11 +723,19 @@ export class RestApi extends RestApiBase {
    * Import an existing RestApi that can be configured with additional Methods and Resources.
    */
   public static fromRestApiAttributes(scope: Construct, id: string, attrs: RestApiAttributes): IRestApi {
+    const restApiName = attrs.restApiName ?? '';
+
     class Import extends RestApiBase {
       public readonly restApiId = attrs.restApiId;
       public readonly restApiRootResourceId = attrs.rootResourceId;
       public readonly root: IResource = new RootResource(this, {}, this.restApiRootResourceId);
     }
+
+    class ImportWithApiName extends Import {
+      public readonly restApiName = restApiName;
+    }
+
+    if (attrs.restApiName !== undefined) return new ImportWithApiName(scope, id);
 
     return new Import(scope, id);
   }
