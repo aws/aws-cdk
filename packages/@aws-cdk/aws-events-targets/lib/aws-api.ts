@@ -86,7 +86,7 @@ export class AwsApi implements events.IRuleTarget {
       code: lambda.Code.fromAsset(path.join(__dirname, 'aws-api-handler'), {
         exclude: ['*.ts'],
       }),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       uuid: 'b4cf1abd-4e4f-4bc6-9944-1af7ccd9ec37',
       lambdaPurpose: 'AWS',

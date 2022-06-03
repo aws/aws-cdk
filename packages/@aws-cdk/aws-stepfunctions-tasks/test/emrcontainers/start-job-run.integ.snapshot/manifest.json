@@ -1,5 +1,5 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -67,13 +67,13 @@
           {
             "type": "aws:cdk:asset",
             "data": {
-              "path": "asset.50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17.zip",
-              "id": "50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17",
+              "path": "asset.02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557.zip",
+              "id": "02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557",
               "packaging": "file",
-              "sourceHash": "50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17",
-              "s3BucketParameter": "AssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3Bucket1232D470",
-              "s3KeyParameter": "AssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3VersionKeyBFF4F192",
-              "artifactHashParameter": "AssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17ArtifactHash8FBD3E15"
+              "sourceHash": "02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557",
+              "s3BucketParameter": "AssetParameters02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557S3Bucket8513C222",
+              "s3KeyParameter": "AssetParameters02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557S3VersionKeyDF2A43EA",
+              "artifactHashParameter": "AssetParameters02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557ArtifactHash89001C28"
             }
           },
           {
@@ -116,24 +116,24 @@
             "type": "aws:cdk:asset",
             "data": {
               "path": "awsstepfunctionstasksemrcontainersstartjobrunintegtestawscdkawseksClusterResourceProviderB5D967DC.nested.template.json",
-              "id": "45dc984c2b0a575179e146a99a8fa2730df1b83b8414dd75aa27295ec6d1e8d3",
+              "id": "6b19fa02995edad5be0aed8c17c70477f521fbc37ca1149178950f3380fdd36f",
               "packaging": "file",
-              "sourceHash": "45dc984c2b0a575179e146a99a8fa2730df1b83b8414dd75aa27295ec6d1e8d3",
-              "s3BucketParameter": "AssetParameters45dc984c2b0a575179e146a99a8fa2730df1b83b8414dd75aa27295ec6d1e8d3S3BucketB926ED3E",
-              "s3KeyParameter": "AssetParameters45dc984c2b0a575179e146a99a8fa2730df1b83b8414dd75aa27295ec6d1e8d3S3VersionKey118E8A61",
-              "artifactHashParameter": "AssetParameters45dc984c2b0a575179e146a99a8fa2730df1b83b8414dd75aa27295ec6d1e8d3ArtifactHashA39DCB12"
+              "sourceHash": "6b19fa02995edad5be0aed8c17c70477f521fbc37ca1149178950f3380fdd36f",
+              "s3BucketParameter": "AssetParameters6b19fa02995edad5be0aed8c17c70477f521fbc37ca1149178950f3380fdd36fS3Bucket0642A551",
+              "s3KeyParameter": "AssetParameters6b19fa02995edad5be0aed8c17c70477f521fbc37ca1149178950f3380fdd36fS3VersionKey5D09001F",
+              "artifactHashParameter": "AssetParameters6b19fa02995edad5be0aed8c17c70477f521fbc37ca1149178950f3380fdd36fArtifactHash05BB0DA4"
             }
           },
           {
             "type": "aws:cdk:asset",
             "data": {
               "path": "awsstepfunctionstasksemrcontainersstartjobrunintegtestawscdkawseksKubectlProviderC26A0FC7.nested.template.json",
-              "id": "a31e0f4c672d3f7489f707ae0ed36a85ec720c6f242f44aeb61431d7d3ffbb2d",
+              "id": "2dfa50302f6cecc6ca65758cfc8536012b6a053bc34e75c2f8775f239fc93b30",
               "packaging": "file",
-              "sourceHash": "a31e0f4c672d3f7489f707ae0ed36a85ec720c6f242f44aeb61431d7d3ffbb2d",
-              "s3BucketParameter": "AssetParametersa31e0f4c672d3f7489f707ae0ed36a85ec720c6f242f44aeb61431d7d3ffbb2dS3Bucket74B53335",
-              "s3KeyParameter": "AssetParametersa31e0f4c672d3f7489f707ae0ed36a85ec720c6f242f44aeb61431d7d3ffbb2dS3VersionKeyBDDF9259",
-              "artifactHashParameter": "AssetParametersa31e0f4c672d3f7489f707ae0ed36a85ec720c6f242f44aeb61431d7d3ffbb2dArtifactHash61884E43"
+              "sourceHash": "2dfa50302f6cecc6ca65758cfc8536012b6a053bc34e75c2f8775f239fc93b30",
+              "s3BucketParameter": "AssetParameters2dfa50302f6cecc6ca65758cfc8536012b6a053bc34e75c2f8775f239fc93b30S3Bucket14BA426A",
+              "s3KeyParameter": "AssetParameters2dfa50302f6cecc6ca65758cfc8536012b6a053bc34e75c2f8775f239fc93b30S3VersionKey702197B6",
+              "artifactHashParameter": "AssetParameters2dfa50302f6cecc6ca65758cfc8536012b6a053bc34e75c2f8775f239fc93b30ArtifactHash4333C947"
             }
           }
         ],
@@ -605,22 +605,22 @@
             "data": "AssetParameters07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963ArtifactHash41646C3F"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17/S3Bucket": [
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3Bucket1232D470"
+            "data": "AssetParameters02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557S3Bucket8513C222"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17/S3VersionKey": [
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3VersionKeyBFF4F192"
+            "data": "AssetParameters02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557S3VersionKeyDF2A43EA"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17/ArtifactHash": [
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17ArtifactHash8FBD3E15"
+            "data": "AssetParameters02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557ArtifactHash89001C28"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/c6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffed/S3Bucket": [
@@ -677,40 +677,40 @@
             "data": "AssetParametersb866fb0fd5a9b4215d1e23188632d74c01f3195f6f9d706134b197b400afb680ArtifactHashE32BBB7E"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/45dc984c2b0a575179e146a99a8fa2730df1b83b8414dd75aa27295ec6d1e8d3/S3Bucket": [
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/6b19fa02995edad5be0aed8c17c70477f521fbc37ca1149178950f3380fdd36f/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters45dc984c2b0a575179e146a99a8fa2730df1b83b8414dd75aa27295ec6d1e8d3S3BucketB926ED3E"
+            "data": "AssetParameters6b19fa02995edad5be0aed8c17c70477f521fbc37ca1149178950f3380fdd36fS3Bucket0642A551"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/45dc984c2b0a575179e146a99a8fa2730df1b83b8414dd75aa27295ec6d1e8d3/S3VersionKey": [
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/6b19fa02995edad5be0aed8c17c70477f521fbc37ca1149178950f3380fdd36f/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters45dc984c2b0a575179e146a99a8fa2730df1b83b8414dd75aa27295ec6d1e8d3S3VersionKey118E8A61"
+            "data": "AssetParameters6b19fa02995edad5be0aed8c17c70477f521fbc37ca1149178950f3380fdd36fS3VersionKey5D09001F"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/45dc984c2b0a575179e146a99a8fa2730df1b83b8414dd75aa27295ec6d1e8d3/ArtifactHash": [
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/6b19fa02995edad5be0aed8c17c70477f521fbc37ca1149178950f3380fdd36f/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters45dc984c2b0a575179e146a99a8fa2730df1b83b8414dd75aa27295ec6d1e8d3ArtifactHashA39DCB12"
+            "data": "AssetParameters6b19fa02995edad5be0aed8c17c70477f521fbc37ca1149178950f3380fdd36fArtifactHash05BB0DA4"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/a31e0f4c672d3f7489f707ae0ed36a85ec720c6f242f44aeb61431d7d3ffbb2d/S3Bucket": [
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/2dfa50302f6cecc6ca65758cfc8536012b6a053bc34e75c2f8775f239fc93b30/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersa31e0f4c672d3f7489f707ae0ed36a85ec720c6f242f44aeb61431d7d3ffbb2dS3Bucket74B53335"
+            "data": "AssetParameters2dfa50302f6cecc6ca65758cfc8536012b6a053bc34e75c2f8775f239fc93b30S3Bucket14BA426A"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/a31e0f4c672d3f7489f707ae0ed36a85ec720c6f242f44aeb61431d7d3ffbb2d/S3VersionKey": [
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/2dfa50302f6cecc6ca65758cfc8536012b6a053bc34e75c2f8775f239fc93b30/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersa31e0f4c672d3f7489f707ae0ed36a85ec720c6f242f44aeb61431d7d3ffbb2dS3VersionKeyBDDF9259"
+            "data": "AssetParameters2dfa50302f6cecc6ca65758cfc8536012b6a053bc34e75c2f8775f239fc93b30S3VersionKey702197B6"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/a31e0f4c672d3f7489f707ae0ed36a85ec720c6f242f44aeb61431d7d3ffbb2d/ArtifactHash": [
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/AssetParameters/2dfa50302f6cecc6ca65758cfc8536012b6a053bc34e75c2f8775f239fc93b30/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersa31e0f4c672d3f7489f707ae0ed36a85ec720c6f242f44aeb61431d7d3ffbb2dArtifactHash61884E43"
+            "data": "AssetParameters2dfa50302f6cecc6ca65758cfc8536012b6a053bc34e75c2f8775f239fc93b30ArtifactHash4333C947"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/Resource": [
@@ -809,16 +809,16 @@
             "data": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegtestintegrationtestekscluster4D8C900FClusterSecurityGroupId"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3Bucket4FB1C7B2Ref": [
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParameters02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557S3Bucket406FB688Ref": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3Bucket4FB1C7B2Ref"
+            "data": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParameters02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557S3Bucket406FB688Ref"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3VersionKey02A1BC33Ref": [
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParameters02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557S3VersionKey02AFB984Ref": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3VersionKey02A1BC33Ref"
+            "data": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParameters02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557S3VersionKey02AFB984Ref"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegtestAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3Bucket2F1A83BBRef": [
