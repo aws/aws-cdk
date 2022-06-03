@@ -85,7 +85,7 @@ export class CfnMapping extends CfnRefElement {
     } else {
       this.lazyRender = true;
     }
-    //return Fn.findInMap(this.logicalId, key1, key2);
+
     return new CrossStackToken(this.id, this.mapping, Fn.findInMap(this.logicalId, key1, key2)).toString();
   }
 
