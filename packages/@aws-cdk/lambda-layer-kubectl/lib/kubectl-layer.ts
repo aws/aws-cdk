@@ -29,7 +29,7 @@ export class KubectlLayer extends lambda.LayerVersion {
           HELM_VERSION: props?.helmVersion ?? '3.8.2',
         },
       }),
-      description: `/opt/kubectl/kubectl and /opt/helm/helm`,
+      description: '/opt/kubectl/kubectl and /opt/helm/helm',
     });
   }
 }

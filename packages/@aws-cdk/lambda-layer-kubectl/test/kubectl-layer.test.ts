@@ -7,7 +7,7 @@ test('synthesized to a layer version', () => {
   const stack = new Stack();
 
   // WHEN
-  new KubectlLayer(stack, 'MyLayer', { kubectlVersion: '1.22.6' });
+  new KubectlLayer(stack, 'MyLayer', { kubectlVersion: '1.22.9' });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersion', {
