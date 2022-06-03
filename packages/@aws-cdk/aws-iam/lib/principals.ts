@@ -603,13 +603,16 @@ export class CanonicalUserPrincipal extends PrincipalBase {
  */
 export class FederatedPrincipal extends PrincipalBase {
   public readonly assumeRoleAction: string;
+
+  /**
+   * The conditions under which the policy is in effect.
+   *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+   */
   public readonly conditions: Conditions;
 
   /**
    *
    * @param federated federated identity provider (i.e. 'cognito-identity.amazonaws.com' for users authenticated through Cognito)
-   * @param conditions The conditions under which the policy is in effect.
-   *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
    * @param sessionTags Whether to enable session tagging (see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html)
    */
   constructor(
