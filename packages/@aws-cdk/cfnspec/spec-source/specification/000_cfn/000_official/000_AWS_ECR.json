@@ -1,5 +1,5 @@
 {
-  "$version": "73.1.0",
+  "$version": "75.0.0",
   "PropertyTypes": {
     "AWS::ECR::ReplicationConfiguration.ReplicationConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-replicationconfiguration-replicationconfiguration.html",
