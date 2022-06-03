@@ -99,7 +99,7 @@ async function main() {
             packageId: module.dotnetPackage,
             signAssembly: true,
             assemblyOriginatorKeyFile: '../../key.snk',
-            iconUrl: 'https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png',
+            iconUrl: 'https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png',
           },
           java: {
             package: `${module.javaGroupId}.${module.javaPackage}`,

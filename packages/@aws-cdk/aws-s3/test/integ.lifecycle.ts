@@ -12,6 +12,7 @@ new Bucket(stack, 'MyBucket', {
       expirationDate: new Date('2019-10-01'),
     },
     {
+      objectSizeLessThan: 500,
       objectSizeGreaterThan: 500,
     },
   ],

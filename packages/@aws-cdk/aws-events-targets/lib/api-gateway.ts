@@ -98,16 +98,20 @@ export class ApiGateway implements events.IRuleTarget {
       this.props?.path || '/',
       this.props?.stage || this.restApi.deploymentStage.stageName,
     );
+
+    const role = this.props?.eventRole || singletonEventRole(this.restApi);
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      resources: [restApiArn],
+      actions: [
+        'execute-api:Invoke',
+        'execute-api:ManageConnections',
+      ],
+    }));
+
     return {
       ...(this.props ? bindBaseTargetConfig(this.props) : {}),
       arn: restApiArn,
-      role: this.props?.eventRole || singletonEventRole(this.restApi, [new iam.PolicyStatement({
-        resources: [restApiArn],
-        actions: [
-          'execute-api:Invoke',
-          'execute-api:ManageConnections',
-        ],
-      })]),
+      role,
       deadLetterConfig: this.props?.deadLetterQueue && { arn: this.props.deadLetterQueue?.queueArn },
       input: this.props?.postBody,
       targetResource: this.restApi,

@@ -17,7 +17,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.CloudAssembly.Schema",
         "packageId": "Amazon.CDK.CloudAssembly.Schema",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.cloud-assembly-schema",

@@ -1,5 +1,5 @@
 {
-  "$version": "72.0.0",
+  "$version": "73.1.0",
   "PropertyTypes": {},
   "ResourceTypes": {
     "AWS::Forecast::Dataset": {

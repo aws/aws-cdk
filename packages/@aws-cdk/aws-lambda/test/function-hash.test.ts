@@ -143,8 +143,139 @@ describe('function hash', () => {
     expect(calculateFunctionHash(fn2)).toEqual('bdce872a679fc58e06ab8b0cd30ffb37');
   });
 
-  describe('impact of env variables order on hash', () => {
+  describe('lambda layers', () => {
+    let stack1: Stack;
+    let layer1: lambda.LayerVersion;
+    let layer2: lambda.LayerVersion;
+    beforeAll(() => {
+      stack1 = new Stack();
+      layer1 = new lambda.LayerVersion(stack1, 'MyLayer', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code')),
+        compatibleRuntimes: [lambda.Runtime.NODEJS_12_X],
+        license: 'Apache-2.0',
+        description: 'A layer to test the L2 construct',
+      });
+      layer2 = new lambda.LayerVersion(stack1, 'MyLayer2', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code')),
+        compatibleRuntimes: [lambda.Runtime.NODEJS_12_X],
+        license: 'Apache-2.0',
+        description: 'A layer to test the L2 construct',
+      });
+    });
 
+    test('same configuration yields the same hash', () => {
+      const stack2 = new Stack();
+      const fn1 = new lambda.Function(stack2, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+        layers: [layer1],
+      });
+
+      const stack3 = new Stack();
+      const fn2 = new lambda.Function(stack3, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+        layers: [layer1],
+      });
+
+      expect(calculateFunctionHash(fn1)).toEqual(calculateFunctionHash(fn2));
+      expect(calculateFunctionHash(fn1)).toEqual('8633cf3f4f019915d1f5d2c0c34c080a');
+    });
+
+    test('different layers impacts hash', () => {
+      const stack2 = new Stack();
+      const fn1 = new lambda.Function(stack2, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+        layers: [layer1],
+      });
+
+      const stack3 = new Stack();
+      const fn2 = new lambda.Function(stack3, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+        layers: [layer2],
+      });
+
+      expect(calculateFunctionHash(fn1)).toEqual('8633cf3f4f019915d1f5d2c0c34c080a');
+      expect(calculateFunctionHash(fn2)).toEqual('22a2173d7ae9608c12f4d93703d28b03');
+    });
+
+    describe('impact of lambda layer order on hash', () => {
+      test('without feature flag, preserve old behavior to avoid unnecessary invalidation of templates', () => {
+        const stack2 = new Stack();
+        const fn1 = new lambda.Function(stack2, 'MyFunction', {
+          runtime: lambda.Runtime.NODEJS_12_X,
+          code: lambda.Code.fromInline('foo'),
+          handler: 'index.handler',
+          layers: [layer1, layer2],
+        });
+
+        const stack3 = new Stack();
+        const fn2 = new lambda.Function(stack3, 'MyFunction', {
+          runtime: lambda.Runtime.NODEJS_12_X,
+          code: lambda.Code.fromInline('foo'),
+          handler: 'index.handler',
+          layers: [layer2, layer1],
+        });
+
+        expect(calculateFunctionHash(fn1)).toEqual('f6d16d9486308ab39801029f742bf4d2');
+        expect(calculateFunctionHash(fn2)).toEqual('93b2e5f48356020117f72c248ec1e0da');
+      });
+
+      test('with feature flag, we sort layers so order is consistent', () => {
+        const app = new App({ context: { [cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
+
+        const stack2 = new Stack(app, 'stack2');
+        const fn1 = new lambda.Function(stack2, 'MyFunction', {
+          runtime: lambda.Runtime.NODEJS_12_X,
+          code: lambda.Code.fromInline('foo'),
+          handler: 'index.handler',
+          layers: [layer1, layer2],
+        });
+
+        const stack3 = new Stack(app, 'stack3');
+        const fn2 = new lambda.Function(stack3, 'MyFunction', {
+          runtime: lambda.Runtime.NODEJS_12_X,
+          code: lambda.Code.fromInline('foo'),
+          handler: 'index.handler',
+          layers: [layer2, layer1],
+        });
+
+        expect(calculateFunctionHash(fn1)).toEqual(calculateFunctionHash(fn2));
+      });
+    });
+
+    test('with feature flag, imported lambda layers can be distinguished', () => {
+      const app = new App({ context: { [cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
+
+      const stack2 = new Stack(app, 'stack2');
+      const importedLayer1 = lambda.LayerVersion.fromLayerVersionArn(stack2, 'imported-layer', 'arn:aws:lambda:<region>:<account>:layer:<layer-name>:<version1>');
+      const fn1 = new lambda.Function(stack2, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+        layers: [importedLayer1],
+      });
+
+      const stack3 = new Stack(app, 'stack3');
+      const importedLayer2 = lambda.LayerVersion.fromLayerVersionArn(stack3, 'imported-layer', 'arn:aws:lambda:<region>:<account>:layer:<layer-name>:<version2>');
+      const fn2 = new lambda.Function(stack3, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+        layers: [importedLayer2],
+      });
+
+      expect(calculateFunctionHash(fn1)).not.toEqual(calculateFunctionHash(fn2));
+    });
+  });
+
+  describe('impact of env variables order on hash', () => {
     test('without "currentVersion", we preserve old behavior to avoid unnecessary invalidation of templates', () => {
       const stack1 = new Stack();
       const fn1 = new lambda.Function(stack1, 'MyFunction', {

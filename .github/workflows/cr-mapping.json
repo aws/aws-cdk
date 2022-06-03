@@ -2,7 +2,7 @@
   "mappings": [
     {
       "keywords": ["CustomResourceProvider", "CustomResource", "CloudFormationCustomResourceDeleteEvent", "CloudFormationCustomResourceUpdateEvent", "CloudFormationCustomResourceCreateEvent"],
-      "comment": "I have read the guidelines on the [important cases to handle](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/custom-resources#important-cases-to-handle) when implementing the custom resource."
+      "comment": "I have read the guidelines on the [important cases to handle](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/custom-resources#important-cases-to-handle) when implementing the custom resource."
     }
   ]
 }

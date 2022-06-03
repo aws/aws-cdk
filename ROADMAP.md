@@ -83,4 +83,4 @@ A: We strongly encourage you to do so, as it helps us understand which issues wi
 
 **Q: Will you accept a pull request to the aws-cdk repo?**
 
-A: Yes! We take PRs very seriously and will review for inclusion. You can read how to contribute to the CDK [here](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md).
+A: Yes! We take PRs very seriously and will review for inclusion. You can read how to contribute to the CDK [here](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md).

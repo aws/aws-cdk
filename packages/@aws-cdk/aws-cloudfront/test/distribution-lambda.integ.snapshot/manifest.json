@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -30,7 +30,7 @@
         "/integ-distribution-lambda/Lambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d"
+            "data": "LambdaCurrentVersionDF706F6A1ee13d0fa54e9f5621e8c7b616fc53fc"
           }
         ],
         "/integ-distribution-lambda/Dist/Resource": [

@@ -22,7 +22,7 @@ describe('Snapshot tests', () => {
     // WHEN
     const test = {
       fileName: path.join(directory, 'integ.integ-test1.js'),
-      directory: directory,
+      discoveryRoot: directory,
     };
     const result = snapshotTestWorker(test);
 
@@ -36,7 +36,7 @@ describe('Snapshot tests', () => {
     jest.spyOn(child_process, 'spawnSync').mockResolvedValue;
     const test = {
       fileName: path.join(directory, 'integ.test-with-snapshot.js'),
-      directory: directory,
+      discoveryRoot: directory,
     };
     const result = snapshotTestWorker(test);
 
@@ -49,7 +49,7 @@ describe('Snapshot tests', () => {
     jest.spyOn(child_process, 'spawnSync').mockRejectedValue;
     const test = {
       fileName: path.join(directory, 'integ.test-with-snapshot-assets.js'),
-      directory,
+      discoveryRoot: directory,
       destructiveChanges: [],
     };
     const result = snapshotTestWorker(test);

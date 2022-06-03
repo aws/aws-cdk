@@ -210,6 +210,33 @@ describe('custom resource provider', () => {
 
   });
 
+  test('addToRolePolicy() can be used to add statements to the inline policy', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const provider = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
+      codeDirectory: TEST_HANDLER,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      policyStatements: [
+        { statement1: 123 },
+        { statement2: { foo: 111 } },
+      ],
+    });
+    provider.addToRolePolicy({ statement3: 456 });
+
+    // THEN
+    const template = toCloudFormation(stack);
+    const role = template.Resources.CustomMyResourceTypeCustomResourceProviderRoleBD5E655F;
+    expect(role.Properties.Policies).toEqual([{
+      PolicyName: 'Inline',
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [{ statement1: 123 }, { statement2: { foo: 111 } }, { statement3: 456 }],
+      },
+    }]);
+  });
+
   test('memorySize, timeout and description', () => {
     // GIVEN
     const stack = new Stack();

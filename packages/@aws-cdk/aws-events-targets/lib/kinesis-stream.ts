@@ -45,14 +45,15 @@ export class KinesisStream implements events.IRuleTarget {
    * result from a CloudWatch event.
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
-    const policyStatements = [new iam.PolicyStatement({
+    const role = singletonEventRole(this.stream);
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['kinesis:PutRecord', 'kinesis:PutRecords'],
       resources: [this.stream.streamArn],
-    })];
+    }));
 
     return {
       arn: this.stream.streamArn,
-      role: singletonEventRole(this.stream, policyStatements),
+      role,
       input: this.props.message,
       targetResource: this.stream,
       kinesisParameters: this.props.partitionKeyPath ? { partitionKeyPath: this.props.partitionKeyPath } : undefined,

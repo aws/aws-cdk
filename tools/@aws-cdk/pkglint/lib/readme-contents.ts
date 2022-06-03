@@ -87,7 +87,7 @@ export function cfnOnlyReadmeContents(options: LibraryReadmeOptions) {
     '',
     `For more information on the resources and properties available for this service, see the [CloudFormation documentation for ${options.cfnNamespace}](${cfnLink}).`,
     '',
-    '(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)',
+    '(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)',
     '',
     '<!--END CFNONLY DISCLAIMER-->',
   ].join('\n') + '\n'; // File must end in newline otherwise linter will complain
