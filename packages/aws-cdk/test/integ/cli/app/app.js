@@ -220,7 +220,7 @@ class LambdaStack extends cdk.Stack {
 
     const fn = new lambda.Function(this, 'my-function', {
       code: lambda.Code.asset(path.join(__dirname, 'lambda')),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler'
     });
 

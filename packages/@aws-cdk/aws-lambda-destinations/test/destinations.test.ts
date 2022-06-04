@@ -14,7 +14,7 @@ beforeEach(() => {
 const lambdaProps = {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
 };
 
 test('event bus as destination', () => {

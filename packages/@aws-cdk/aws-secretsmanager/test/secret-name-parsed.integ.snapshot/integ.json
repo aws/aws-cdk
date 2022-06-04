@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-secretsmanager/test/integ.secret-name-parsed": {
+    "integ.secret-name-parsed": {
       "stacks": [
         "Integ-SecretsManager-ParsedSecretName"
       ],

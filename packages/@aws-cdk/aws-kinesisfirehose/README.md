@@ -402,7 +402,7 @@ times by default, but can be configured using `retries` in the processor configu
 // Provide a Lambda function that will transform records before delivery, with custom
 // buffering and retry configuration
 const lambdaFunction = new lambda.Function(this, 'Processor', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'process-records')),
 });
