@@ -134,13 +134,7 @@ class CfnMappingEmbedder implements IResolvable {
 
   public resolve(context: IResolveContext): string {
     const consumingStack = Stack.of(context.scope);
-    const childIds: string[] = [];
-
-    for (const child of consumingStack.node.children) {
-      childIds.push(child.node.id);
-    }
-
-    if (!childIds.includes(this.mappingId)) {
+    if (!consumingStack.node.tryFindChild(this.mappingId)) {
       new CfnMapping(consumingStack, this.mappingId, {
         mapping: this.mapping,
       });
