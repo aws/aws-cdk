@@ -984,6 +984,7 @@ export class Function extends FunctionBase {
    *   aliasName: 'Live',
    *   version: fn.currentVersion,
    * });
+   * ```
    *
    * @param aliasName The name of the alias
    * @param options Alias options
