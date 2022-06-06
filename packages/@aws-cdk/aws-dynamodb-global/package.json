@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-dynamodb-global",
   "version": "0.0.0",
+  "private": true,
   "description": "Build a global dynamodb table",
   "deprecated": "This module has been deprecated. Use @aws-cdk/aws-dynamodb.Table with replicationRegions instead",
   "license": "Apache-2.0",
@@ -30,13 +31,13 @@
         "module": "aws_cdk.aws_dynamodb_global",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.DynamoDB.Global",
         "packageId": "Amazon.CDK.AWS.DynamoDB.Global",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       }
     },
     "projectReferences": true,
@@ -60,14 +61,14 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.0",
     "jest": "^27.5.1"
   },
   "peerDependencies": {
@@ -75,7 +76,7 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "scripts": {
     "build": "cdk-build",
@@ -94,7 +95,7 @@
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

@@ -2,7 +2,7 @@ import * as path from 'path';
 import { Writable, WritableOptions } from 'stream';
 import { StringDecoder, NodeStringDecoder } from 'string_decoder';
 import { diffTemplate, formatDifferences, ResourceDifference, ResourceImpact } from '@aws-cdk/cloudformation-diff';
-import { Diagnostic, DiagnosticReason, DestructiveChange } from '../workers/common';
+import { Diagnostic, DiagnosticReason, DestructiveChange, SnapshotVerificationOptions } from '../workers/common';
 import { canonicalizeTemplate } from './private/canonicalize-assets';
 import { AssemblyManifestReader } from './private/cloud-assembly';
 import { IntegRunnerOptions, IntegRunner, DEFAULT_SYNTH_OPTIONS } from './runner-base';
@@ -22,30 +22,86 @@ export class IntegSnapshotRunner extends IntegRunner {
    *
    * @returns any diagnostics and any destructive changes
    */
-  public testSnapshot(): { diagnostics: Diagnostic[], destructiveChanges: DestructiveChange[] } {
+  public testSnapshot(options: SnapshotVerificationOptions = {}): { diagnostics: Diagnostic[], destructiveChanges: DestructiveChange[] } {
+    let doClean = true;
     try {
       // read the existing snapshot
       const expectedStacks = this.readAssembly(this.snapshotDir);
+      // only diff stacks that are part of the test case
+      const expectedStacksToDiff: Record<string, any> = {};
+      for (const [stackName, template] of Object.entries(expectedStacks)) {
+        if (this.expectedTestSuite?.stacks.includes(stackName)) {
+          expectedStacksToDiff[stackName] = template;
+        }
+      }
 
-      const env: Record<string, any> = {
+      // synth the integration test
+      // FIXME: ideally we should not need to run this again if
+      // the cdkOutDir exists already, but for some reason generateActualSnapshot
+      // generates an incorrect snapshot and I have no idea why so synth again here
+      // to produce the "correct" snapshot
+      const env = {
         ...DEFAULT_SYNTH_OPTIONS.env,
         CDK_CONTEXT_JSON: JSON.stringify(this.getContext()),
       };
-      // synth the integration test
       this.cdk.synthFast({
         execCmd: this.cdkApp.split(' '),
         env,
-        output: this.cdkOutDir,
+        output: path.relative(this.directory, this.cdkOutDir),
       });
-      const actualStacks = this.readAssembly(path.join(this.directory, this.cdkOutDir));
+
+      // read the "actual" snapshot
+      const actualDir = this.cdkOutDir;
+      const actualStacks = this.readAssembly(actualDir);
+      // only diff stacks that are part of the test case
+      const actualStacksToDiff: Record<string, any> = {};
+      for (const [stackName, template] of Object.entries(actualStacks)) {
+        if (this.actualTestSuite.stacks.includes(stackName)) {
+          actualStacksToDiff[stackName] = template;
+        }
+      }
 
       // diff the existing snapshot (expected) with the integration test (actual)
-      const diagnostics = this.diffAssembly(expectedStacks, actualStacks);
+      const diagnostics = this.diffAssembly(expectedStacksToDiff, actualStacksToDiff);
+
+      if (diagnostics.diagnostics.length) {
+        // Attach additional messages to the first diagnostic
+        const additionalMessages: string[] = [];
+
+        if (options.retain) {
+          additionalMessages.push(
+            `(Failure retained) Expected: ${path.relative(process.cwd(), this.snapshotDir)}`,
+            `                   Actual:   ${path.relative(process.cwd(), actualDir)}`,
+          ),
+          doClean = false;
+        }
+
+        if (options.verbose) {
+          // Show the command necessary to repro this
+          const envSet = Object.entries(env)
+            .filter(([k, _]) => k !== 'CDK_CONTEXT_JSON')
+            .map(([k, v]) => `${k}='${v}'`);
+          const envCmd = envSet.length > 0 ? ['env', ...envSet] : [];
+
+          additionalMessages.push(
+            'Repro:',
+            `  ${[...envCmd, 'cdk synth', `-a '${this.cdkApp}'`, `-o '${this.cdkOutDir}'`, ...Object.entries(this.getContext()).flatMap(([k, v]) => typeof v !== 'object' ? [`-c '${k}=${v}'`] : [])].join(' ')}`,
+          );
+        }
+
+        diagnostics.diagnostics[0] = {
+          ...diagnostics.diagnostics[0],
+          additionalMessages,
+        };
+      }
+
       return diagnostics;
     } catch (e) {
       throw e;
     } finally {
-      this.cleanup();
+      if (doClean) {
+        this.cleanup();
+      }
     }
   }
 
@@ -57,7 +113,7 @@ export class IntegSnapshotRunner extends IntegRunner {
    * @returns a list of resource types or undefined if none are found
    */
   private getAllowedDestroyTypesForStack(stackId: string): string[] | undefined {
-    for (const testCase of Object.values(this.tests ?? {})) {
+    for (const testCase of Object.values(this.actualTests() ?? {})) {
       if (testCase.stacks.includes(stackId)) {
         return testCase.allowDestroy;
       }
@@ -73,7 +129,7 @@ export class IntegSnapshotRunner extends IntegRunner {
    * @returns any diagnostics and any destructive changes
    */
   private diffAssembly(
-    existing: Record<string, any>,
+    expected: Record<string, any>,
     actual: Record<string, any>,
   ): { diagnostics: Diagnostic[], destructiveChanges: DestructiveChange[] } {
     const failures: Diagnostic[] = [];
@@ -81,7 +137,7 @@ export class IntegSnapshotRunner extends IntegRunner {
 
     // check if there is a CFN template in the current snapshot
     // that does not exist in the "actual" snapshot
-    for (const templateId of Object.keys(existing)) {
+    for (const templateId of Object.keys(expected)) {
       if (!actual.hasOwnProperty(templateId)) {
         failures.push({
           testName: this.testName,
@@ -94,21 +150,22 @@ export class IntegSnapshotRunner extends IntegRunner {
     for (const templateId of Object.keys(actual)) {
       // check if there is a CFN template in the "actual" snapshot
       // that does not exist in the current snapshot
-      if (!existing.hasOwnProperty(templateId)) {
+      if (!expected.hasOwnProperty(templateId)) {
         failures.push({
           testName: this.testName,
           reason: DiagnosticReason.SNAPSHOT_FAILED,
           message: `${templateId} does not exist in snapshot, but does in actual`,
         });
+        continue;
       } else {
         let actualTemplate = actual[templateId];
-        let expectedTemplate = existing[templateId];
+        let expectedTemplate = expected[templateId];
         const allowedDestroyTypes = this.getAllowedDestroyTypesForStack(templateId) ?? [];
 
         // if we are not verifying asset hashes then remove the specific
         // asset hashes from the templates so they are not part of the diff
         // comparison
-        if (!this.testSuite?.getOptionsForStack(templateId)?.diffAssets) {
+        if (!this.actualTestSuite.getOptionsForStack(templateId)?.diffAssets) {
           actualTemplate = canonicalizeTemplate(actualTemplate);
           expectedTemplate = canonicalizeTemplate(expectedTemplate);
         }

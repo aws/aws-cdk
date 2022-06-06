@@ -99,7 +99,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
       code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
       handler: 'index.certificateRequestHandler',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       timeout: cdk.Duration.minutes(15),
       role: props.customResourceRole,
     });
@@ -131,9 +131,11 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     });
 
     this.certificateArn = certificate.getAtt('Arn').toString();
+
+    this.node.addValidation({ validate: () => this.validateDnsValidatedCertificate() });
   }
 
-  protected validate(): string[] {
+  private validateDnsValidatedCertificate(): string[] {
     const errors: string[] = [];
     // Ensure the zone name is a parent zone of the certificate domain name
     if (!cdk.Token.isUnresolved(this.normalizedZoneName) &&

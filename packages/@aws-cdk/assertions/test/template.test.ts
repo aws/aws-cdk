@@ -1,4 +1,4 @@
-import { App, CfnCondition, CfnMapping, CfnOutput, CfnParameter, CfnResource, Fn, NestedStack, Stack } from '@aws-cdk/core';
+import { App, CfnCondition, CfnMapping, CfnOutput, CfnParameter, CfnResource, Fn, LegacyStackSynthesizer, NestedStack, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Capture, Match, Template } from '../lib';
 
@@ -126,7 +126,10 @@ describe('Template', () => {
 
   describe('templateMatches', () => {
     test('matches', () => {
-      const stack = new Stack();
+      const app = new App();
+      const stack = new Stack(app, 'Stack', {
+        synthesizer: new LegacyStackSynthesizer(),
+      });
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
         properties: { baz: 'qux' },
@@ -181,7 +184,7 @@ describe('Template', () => {
 
       expect(() => inspect.hasResource('Foo::Bar', {
         Properties: { baz: 'qux', fred: 'waldo' },
-      })).toThrow(/Missing key at \/Properties\/fred/);
+      })).toThrow(/Missing key.*at \/Properties\/fred/);
     });
 
     test('arrayWith', () => {
@@ -337,7 +340,7 @@ describe('Template', () => {
         .toThrow(/Expected waldo but received qux at \/Properties\/baz/);
 
       expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'qux', fred: 'waldo' }))
-        .toThrow(/Missing key at \/Properties\/fred/);
+        .toThrow(/Missing key.*at \/Properties\/fred/);
     });
 
     test('absent - with properties', () => {
@@ -367,7 +370,7 @@ describe('Template', () => {
       const inspect = Template.fromStack(stack);
 
       expect(() => inspect.hasResourceProperties('Foo::Bar', { bar: Match.absent(), baz: 'qux' }))
-        .toThrow(/Missing key at \/Properties\/baz/);
+        .toThrow(/Missing key.*at \/Properties\/baz/);
 
       inspect.hasResourceProperties('Foo::Bar', Match.absent());
     });
@@ -811,7 +814,8 @@ describe('Template', () => {
       expectToThrow(
         () => inspect.hasParameter('*', { Type: 'CommaDelimitedList' }),
         [
-          /2 parameters/,
+          // Third parameter is automatically included as part of DefaultSynthesizer
+          /3 parameters/,
           /Expected CommaDelimitedList but received String/,
         ],
         done,

@@ -229,7 +229,7 @@ Usage of output in a CDK stack
 const fn = new lambda.Function(this, "fn", {
   handler: "index.handler",
   code: lambda.Code.fromInline(`exports.handler = \${handler.toString()}`),
-  runtime: lambda.Runtime.NODEJS_12_X
+  runtime: lambda.Runtime.NODEJS_14_X
 });
 
 new cdk.CfnOutput(this, 'FunctionArn', {
@@ -510,10 +510,11 @@ $ cdk destroy --app='node bin/main.js' MyStackName
 
 ### `cdk bootstrap`
 
-Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket that
-`cdk deploy` will use to store synthesized templates and the related assets, before triggering a CloudFormation stack
-update. The name of the deployed stack can be configured using the `--toolkit-stack-name` argument. The S3 Bucket
-Public Access Block Configuration can be configured using the `--public-access-block-configuration` argument.
+Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket 
+and ECR reposity that `cdk deploy` will use to store synthesized templates and the related assets, before 
+triggering a CloudFormation stack update. The name of the deployed stack can be configured using the 
+`--toolkit-stack-name` argument. The S3 Bucket Public Access Block Configuration can be configured using 
+the `--public-access-block-configuration` argument. ECR uses immutable tags for images.
 
 ```console
 $ # Deploys to all environments

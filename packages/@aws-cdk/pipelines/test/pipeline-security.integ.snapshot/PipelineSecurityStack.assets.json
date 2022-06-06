@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "files": {
     "be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824": {
       "source": {
@@ -27,7 +27,7 @@
         }
       }
     },
-    "b2f63a28c764e12d64edb71d5c1d3948896ebee7102ef091632e20276295da5c": {
+    "c0f684aed2d5fb2802d89421521976009f94e611b11169639bbbd1509167532e": {
       "source": {
         "path": "PipelineSecurityStack.template.json",
         "packaging": "file"
@@ -35,7 +35,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b2f63a28c764e12d64edb71d5c1d3948896ebee7102ef091632e20276295da5c.json",
+          "objectKey": "c0f684aed2d5fb2802d89421521976009f94e611b11169639bbbd1509167532e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

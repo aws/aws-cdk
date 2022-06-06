@@ -131,7 +131,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkekshandlersinvpctestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3BucketCEF22FB7Ref"
+      "Ref": "referencetoawscdkekshandlersinvpctestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3Bucket00AA190ERef"
      },
      "S3Key": {
       "Fn::Join": [
@@ -144,7 +144,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkekshandlersinvpctestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey64FA2EA1Ref"
+             "Ref": "referencetoawscdkekshandlersinvpctestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKey6B362EC5Ref"
             }
            ]
           }
@@ -157,7 +157,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkekshandlersinvpctestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey64FA2EA1Ref"
+             "Ref": "referencetoawscdkekshandlersinvpctestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKey6B362EC5Ref"
             }
            ]
           }
@@ -174,13 +174,18 @@
      ]
     },
     "Description": "onEvent handler for EKS cluster resource provider",
+    "Environment": {
+     "Variables": {
+      "AWS_STS_REGIONAL_ENDPOINTS": "regional"
+     }
+    },
     "Handler": "index.onEvent",
     "Layers": [
      {
       "Ref": "NodeProxyAgentLayer924C1971"
      }
     ],
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 60,
     "VpcConfig": {
      "SecurityGroupIds": [
@@ -293,7 +298,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkekshandlersinvpctestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3BucketCEF22FB7Ref"
+      "Ref": "referencetoawscdkekshandlersinvpctestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3Bucket00AA190ERef"
      },
      "S3Key": {
       "Fn::Join": [
@@ -306,7 +311,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkekshandlersinvpctestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey64FA2EA1Ref"
+             "Ref": "referencetoawscdkekshandlersinvpctestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKey6B362EC5Ref"
             }
            ]
           }
@@ -319,7 +324,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkekshandlersinvpctestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey64FA2EA1Ref"
+             "Ref": "referencetoawscdkekshandlersinvpctestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKey6B362EC5Ref"
             }
            ]
           }
@@ -336,13 +341,18 @@
      ]
     },
     "Description": "isComplete handler for EKS cluster resource provider",
+    "Environment": {
+     "Variables": {
+      "AWS_STS_REGIONAL_ENDPOINTS": "regional"
+     }
+    },
     "Handler": "index.isComplete",
     "Layers": [
      {
       "Ref": "NodeProxyAgentLayer924C1971"
      }
     ],
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 60,
     "VpcConfig": {
      "SecurityGroupIds": [
@@ -564,7 +574,7 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
@@ -776,7 +786,7 @@
      }
     },
     "Handler": "framework.isComplete",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
@@ -988,7 +998,7 @@
      }
     },
     "Handler": "framework.onTimeout",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
@@ -1256,10 +1266,10 @@
   "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcE40EA7ACRef": {
    "Type": "String"
   },
-  "referencetoawscdkekshandlersinvpctestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3BucketCEF22FB7Ref": {
+  "referencetoawscdkekshandlersinvpctestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3Bucket00AA190ERef": {
    "Type": "String"
   },
-  "referencetoawscdkekshandlersinvpctestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey64FA2EA1Ref": {
+  "referencetoawscdkekshandlersinvpctestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKey6B362EC5Ref": {
    "Type": "String"
   },
   "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet1Subnet9479BAA8Ref": {

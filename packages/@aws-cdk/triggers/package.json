@@ -17,14 +17,14 @@
       "dotnet": {
         "namespace": "Amazon.CDK.Triggers",
         "packageId": "Amazon.CDK.Triggers",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.triggers",
         "module": "aws_cdk.triggers",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -79,22 +79,22 @@
     "@aws-cdk/aws-sns": "0.0.0",
     "aws-sdk": "^2.848.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.0",
     "jest": "^27.5.1"
   },
   "dependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "stable",
   "maturity": "stable",
@@ -113,5 +113,6 @@
     "exclude": [
       "ref-via-interface:@aws-cdk/triggers.TriggerProps.handler"
     ]
-  }
+  },
+  "private": true
 }

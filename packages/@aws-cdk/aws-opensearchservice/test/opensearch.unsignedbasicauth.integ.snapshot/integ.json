@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-opensearchservice/test/integ.opensearch.unsignedbasicauth": {
+      "stacks": [
+        "cdk-integ-opensearch-unsignedbasicauth"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

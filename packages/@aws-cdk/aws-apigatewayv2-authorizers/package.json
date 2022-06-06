@@ -8,11 +8,11 @@
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.APIGatewayv2.Authorizers",
+        "namespace": "Amazon.CDK.AWS.Apigatewayv2.Authorizers",
         "packageId": "Amazon.CDK.AWS.APIGatewayv2.Authorizers",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
         "package": "software.amazon.awscdk.services.apigatewayv2.authorizers",
@@ -26,7 +26,7 @@
         "module": "aws_cdk.aws_apigatewayv2_authorizers",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -85,8 +85,8 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.93",
-    "@types/jest": "^27.4.1"
+    "@types/aws-lambda": "^8.10.97",
+    "@types/jest": "^27.5.0"
   },
   "dependencies": {
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
@@ -94,7 +94,7 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
@@ -102,10 +102,10 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "experimental",
   "maturity": "experimental",
@@ -114,5 +114,6 @@
   },
   "publishConfig": {
     "tag": "latest"
-  }
+  },
+  "private": true
 }

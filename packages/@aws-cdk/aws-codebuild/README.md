@@ -95,7 +95,7 @@ const gitHubSource = codebuild.Source.gitHub({
   webhookFilters: [
     codebuild.FilterGroup
       .inEventOf(codebuild.EventAction.PUSH)
-      .andBranchIs('master')
+      .andBranchIs('main')
       .andCommitMessageIs('the commit message'),
   ], // optional, by default all pushes and Pull Requests will trigger a build
 });
@@ -493,7 +493,32 @@ const project = new codebuild.Project(this, 'Project', {
 });
 ```
 
-If you do that, you need to grant the project's role permissions to write reports to that report group:
+For a code coverage report, you can specify a report group with the code coverage report group type.
+
+```ts
+declare const source: codebuild.Source;
+
+// create a new ReportGroup
+const reportGroup = new codebuild.ReportGroup(this, 'ReportGroup', {
+    type: codebuild.ReportGroupType.CODE_COVERAGE
+});
+
+const project = new codebuild.Project(this, 'Project', {
+  source,
+  buildSpec: codebuild.BuildSpec.fromObject({
+    // ...
+    reports: {
+      [reportGroup.reportGroupArn]: {
+        files: '**/*',
+        'base-directory': 'build/coverage-report.xml',
+        'file-format': 'JACOCOXML'
+      },
+    },
+  }),
+});
+```
+
+If you specify a report group, you need to grant the project's role permissions to write reports to that report group:
 
 ```ts
 declare const project: codebuild.Project;

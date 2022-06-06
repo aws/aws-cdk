@@ -103,7 +103,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksclustertestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3Bucket21BC7ECERef"
+      "Ref": "referencetoawscdkeksclustertestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3Bucket2683569BRef"
      },
      "S3Key": {
       "Fn::Join": [
@@ -116,7 +116,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksclustertestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey31720EE9Ref"
+             "Ref": "referencetoawscdkeksclustertestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKeyC9682349Ref"
             }
            ]
           }
@@ -129,7 +129,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksclustertestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey31720EE9Ref"
+             "Ref": "referencetoawscdkeksclustertestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKeyC9682349Ref"
             }
            ]
           }
@@ -146,13 +146,18 @@
      ]
     },
     "Description": "onEvent handler for EKS cluster resource provider",
+    "Environment": {
+     "Variables": {
+      "AWS_STS_REGIONAL_ENDPOINTS": "regional"
+     }
+    },
     "Handler": "index.onEvent",
     "Layers": [
      {
       "Ref": "NodeProxyAgentLayer924C1971"
      }
     ],
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 60
    },
    "DependsOn": [
@@ -219,7 +224,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksclustertestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3Bucket21BC7ECERef"
+      "Ref": "referencetoawscdkeksclustertestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3Bucket2683569BRef"
      },
      "S3Key": {
       "Fn::Join": [
@@ -232,7 +237,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksclustertestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey31720EE9Ref"
+             "Ref": "referencetoawscdkeksclustertestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKeyC9682349Ref"
             }
            ]
           }
@@ -245,7 +250,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksclustertestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey31720EE9Ref"
+             "Ref": "referencetoawscdkeksclustertestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKeyC9682349Ref"
             }
            ]
           }
@@ -262,13 +267,18 @@
      ]
     },
     "Description": "isComplete handler for EKS cluster resource provider",
+    "Environment": {
+     "Variables": {
+      "AWS_STS_REGIONAL_ENDPOINTS": "regional"
+     }
+    },
     "Handler": "index.isComplete",
     "Layers": [
      {
       "Ref": "NodeProxyAgentLayer924C1971"
      }
     ],
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 60
    },
    "DependsOn": [
@@ -444,7 +454,7 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -610,7 +620,7 @@
      }
     },
     "Handler": "framework.isComplete",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -776,7 +786,7 @@
      }
     },
     "Handler": "framework.onTimeout",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -1023,10 +1033,10 @@
   "referencetoawscdkeksclustertestClusterCreationRole95F44854Arn": {
    "Type": "String"
   },
-  "referencetoawscdkeksclustertestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3Bucket21BC7ECERef": {
+  "referencetoawscdkeksclustertestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3Bucket2683569BRef": {
    "Type": "String"
   },
-  "referencetoawscdkeksclustertestAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey31720EE9Ref": {
+  "referencetoawscdkeksclustertestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKeyC9682349Ref": {
    "Type": "String"
   },
   "referencetoawscdkeksclustertestAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3BucketC52CB9E4Ref": {

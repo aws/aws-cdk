@@ -11,7 +11,7 @@ test('minimal', () => {
   // WHEN
   new triggers.TriggerFunction(stack, 'MyTrigger', {
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_12_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
     code: lambda.Code.fromInline('foo'),
   });
 
@@ -19,7 +19,7 @@ test('minimal', () => {
   const template = Template.fromStack(stack);
   template.hasResourceProperties('AWS::Lambda::Function', {});
   template.hasResourceProperties('Custom::Trigger', {
-    HandlerArn: { Ref: 'MyTriggerCurrentVersion8802742B707afb4f5c680fa04113c095ec4e8b5d' },
+    HandlerArn: { Ref: 'MyTriggerCurrentVersion8802742B555ea1a8a066d494bd9b85921db605fb' },
   });
 });
 
@@ -33,7 +33,7 @@ test('before/after', () => {
 
   // WHEN
   const myTrigger = new triggers.TriggerFunction(stack, 'MyTrigger', {
-    runtime: lambda.Runtime.NODEJS_12_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
     code: lambda.Code.fromInline('zoo'),
     handler: 'index.handler',
 

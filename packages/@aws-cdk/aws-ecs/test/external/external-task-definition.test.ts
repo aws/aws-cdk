@@ -218,35 +218,9 @@ describe('external task definition', () => {
                     },
                     ':s3:::',
                     {
-                      Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
+                      'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
                     },
-                    '/',
-                    {
-                      'Fn::Select': [
-                        0,
-                        {
-                          'Fn::Split': [
-                            '||',
-                            {
-                              Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
-                            },
-                          ],
-                        },
-                      ],
-                    },
-                    {
-                      'Fn::Select': [
-                        1,
-                        {
-                          'Fn::Split': [
-                            '||',
-                            {
-                              Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
-                            },
-                          ],
-                        },
-                      ],
-                    },
+                    '/872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724d.env',
                   ],
                 ],
               },
@@ -350,9 +324,6 @@ describe('external task definition', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
-        ImageScanningConfiguration: {
-          ScanOnPush: false,
-        },
         LifecyclePolicy: {
           // eslint-disable-next-line max-len
           LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
@@ -578,11 +549,7 @@ describe('external task definition', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
-      ImageScanningConfiguration: {
-        ScanOnPush: false,
-      },
-    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {});
   });
 
   test('warns when setting containers from ECR repository using fromRegistry method', () => {

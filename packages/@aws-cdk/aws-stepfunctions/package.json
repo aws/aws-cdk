@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-stepfunctions",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::StepFunctions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -17,14 +18,14 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.StepFunctions",
         "packageId": "Amazon.CDK.AWS.StepFunctions",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-stepfunctions",
         "module": "aws_cdk.aws_stepfunctions",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -84,7 +85,7 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1"
+    "@types/jest": "^27.5.0"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "0.0.0",
@@ -93,7 +94,7 @@
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -103,10 +104,10 @@
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "awslint": {
     "exclude": [

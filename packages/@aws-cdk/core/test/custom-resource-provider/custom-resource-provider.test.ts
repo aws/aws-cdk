@@ -9,12 +9,13 @@ const TEST_HANDLER = `${__dirname}/mock-provider`;
 describe('custom resource provider', () => {
   test('minimal configuration', () => {
     // GIVEN
-    const stack = new Stack();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new Stack(app);
 
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
     });
 
     // THEN
@@ -98,7 +99,7 @@ describe('custom resource provider', () => {
                 'Arn',
               ],
             },
-            Runtime: 'nodejs12.x',
+            Runtime: 'nodejs14.x',
           },
           DependsOn: [
             'CustomMyResourceTypeCustomResourceProviderRoleBD5E655F',
@@ -132,7 +133,7 @@ describe('custom resource provider', () => {
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
     });
 
     // Then
@@ -171,7 +172,7 @@ describe('custom resource provider', () => {
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
     });
 
     // THEN -- no exception
@@ -189,7 +190,7 @@ describe('custom resource provider', () => {
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       policyStatements: [
         { statement1: 123 },
         { statement2: { foo: 111 } },
@@ -209,6 +210,33 @@ describe('custom resource provider', () => {
 
   });
 
+  test('addToRolePolicy() can be used to add statements to the inline policy', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const provider = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
+      codeDirectory: TEST_HANDLER,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      policyStatements: [
+        { statement1: 123 },
+        { statement2: { foo: 111 } },
+      ],
+    });
+    provider.addToRolePolicy({ statement3: 456 });
+
+    // THEN
+    const template = toCloudFormation(stack);
+    const role = template.Resources.CustomMyResourceTypeCustomResourceProviderRoleBD5E655F;
+    expect(role.Properties.Policies).toEqual([{
+      PolicyName: 'Inline',
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [{ statement1: 123 }, { statement2: { foo: 111 } }, { statement3: 456 }],
+      },
+    }]);
+  });
+
   test('memorySize, timeout and description', () => {
     // GIVEN
     const stack = new Stack();
@@ -216,7 +244,7 @@ describe('custom resource provider', () => {
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       memorySize: Size.gibibytes(2),
       timeout: Duration.minutes(5),
       description: 'veni vidi vici',
@@ -238,7 +266,7 @@ describe('custom resource provider', () => {
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       environment: {
         B: 'b',
         A: 'a',
@@ -264,7 +292,7 @@ describe('custom resource provider', () => {
     // WHEN
     const cr = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
     });
 
     // THEN

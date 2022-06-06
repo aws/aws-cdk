@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/pipelines",
   "version": "0.0.0",
+  "private": true,
   "description": "Continuous Delivery of CDK applications",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -48,7 +49,7 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.0",
     "aws-sdk": "^2.848.0"
   },
   "peerDependencies": {
@@ -68,7 +69,7 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-codebuild": "0.0.0",
@@ -87,7 +88,7 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "keywords": [
     "aws",
@@ -99,7 +100,7 @@
     "delivery"
   ],
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "license": "Apache-2.0",
   "stability": "stable",
@@ -122,14 +123,14 @@
       "dotnet": {
         "namespace": "Amazon.CDK.Pipelines",
         "packageId": "Amazon.CDK.Pipelines",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.pipelines",
         "module": "aws_cdk.pipelines",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },

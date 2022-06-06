@@ -1,0 +1,14 @@
+{
+  "version": "19.0.0",
+  "testCases": {
+    "integ.service-ecr": {
+      "stacks": [
+        "integ-apprunner"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

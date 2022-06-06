@@ -1,0 +1,198 @@
+{
+ "Resources": {
+  "AwsApiCallStepFunctionsstartExecution": {
+   "Type": "Custom::DeployAssert@SdkCallStepFunctionsstartExecution",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "StepFunctions",
+    "api": "startExecution",
+    "parameters": {
+     "stateMachineArn": {
+      "Fn::ImportValue": "aws-stepfunctions-tasks-eventbridge-put-events-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
+     }
+    },
+    "flattenResponse": "true",
+    "salt": "1654203804899"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:DescribeExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs14.x",
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3BucketA9F12763"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3VersionKey589F30A2"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3VersionKey589F30A2"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallStepFunctionsdescribeExecution": {
+   "Type": "Custom::DeployAssert@SdkCallStepFunctionsdescribeExecution",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "StepFunctions",
+    "api": "describeExecution",
+    "parameters": {
+     "executionArn": {
+      "Fn::GetAtt": [
+       "AwsApiCallStepFunctionsstartExecution",
+       "apiCallResponse.executionArn"
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1654203804900"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallStepFunctionsdescribeExecutionAssertEqualsStepFunctionsdescribeExecution58E75A69": {
+   "Type": "Custom::DeployAssert@AssertEquals",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "actual": {
+     "Fn::GetAtt": [
+      "AwsApiCallStepFunctionsdescribeExecution",
+      "apiCallResponse"
+     ]
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":\"SUCCEEDED\"}}",
+    "salt": "1654203804901"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3BucketA9F12763": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736\""
+  },
+  "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3VersionKey589F30A2": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736\""
+  },
+  "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736ArtifactHash2CC614EA": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736\""
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAssertEqualsStepFunctionsdescribeExecution": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallStepFunctionsdescribeExecutionAssertEqualsStepFunctionsdescribeExecution58E75A69",
+     "data"
+    ]
+   }
+  }
+ }
+}

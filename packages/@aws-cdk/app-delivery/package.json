@@ -2,6 +2,7 @@
   "name": "@aws-cdk/app-delivery",
   "description": "Continuous Integration / Continuous Delivery for CDK Applications",
   "deprecated": "Use the @aws-cdk/pipelines module instead",
+  "private": true,
   "version": "0.0.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -17,14 +18,14 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AppDelivery",
         "packageId": "Amazon.CDK.AppDelivery",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.app-delivery",
         "module": "aws_cdk.app_delivery",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -64,7 +65,7 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
@@ -72,8 +73,8 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
-    "fast-check": "^2.24.0",
+    "@types/jest": "^27.5.0",
+    "fast-check": "^2.25.0",
     "jest": "^27.5.1"
   },
   "repository": {
@@ -102,10 +103,10 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "deprecated",
   "maturity": "deprecated",
@@ -125,6 +126,6 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "latest"
+    "tag": "next"
   }
 }

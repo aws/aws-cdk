@@ -1,7 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import {
   App, App as Root, CfnCondition,
-  CfnDeletionPolicy, CfnResource, Construct,
+  CfnDeletionPolicy, CfnResource,
   Fn, IResource, RemovalPolicy, Resource, Stack,
 } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
@@ -733,6 +734,76 @@ describe('resource', () => {
 
     });
 
+    test('overrides allow overriding one intrinsic with another', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      const resource = new CfnResource(stack, 'MyResource', {
+        type: 'MyResourceType',
+        properties: {
+          prop1: Fn.ref('Param'),
+        },
+      });
+
+      // WHEN
+      resource.addPropertyOverride('prop1', Fn.join('-', ['hello', Fn.ref('Param')]));
+      const cfn = toCloudFormation(stack);
+
+      // THEN
+      expect(cfn.Resources.MyResource).toEqual({
+        Type: 'MyResourceType',
+        Properties: {
+          prop1: {
+            'Fn::Join': [
+              '-',
+              [
+                'hello',
+                {
+                  Ref: 'Param',
+                },
+              ],
+            ],
+          },
+        },
+      });
+    });
+
+    test('overrides allow overriding a nested intrinsic', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      const resource = new CfnResource(stack, 'MyResource', {
+        type: 'MyResourceType',
+        properties: {
+          prop1: Fn.importValue(Fn.sub('${Sub}', { Sub: 'Value' })),
+        },
+      });
+
+      // WHEN
+      resource.addPropertyOverride('prop1', Fn.importValue(Fn.join('-', ['abc', Fn.sub('${Sub}', { Sub: 'Value' })])));
+      const cfn = toCloudFormation(stack);
+
+      // THEN
+      expect(cfn.Resources.MyResource).toEqual({
+        Type: 'MyResourceType',
+        Properties: {
+          prop1: {
+            'Fn::ImportValue': {
+              'Fn::Join': [
+                '-',
+                [
+                  'abc',
+                  {
+                    'Fn::Sub': ['${Sub}', { Sub: 'Value' }],
+                  },
+                ],
+              ],
+            },
+          },
+        },
+      });
+    });
+
     describe('using mutable properties', () => {
 
       test('can be used by derived classes to specify overrides before render()', () => {
@@ -839,13 +910,9 @@ describe('resource', () => {
     const assembly = app.synth();
     const templateB = assembly.getStackByName(stackB.stackName).template;
 
-    expect(templateB).toEqual({
-      Resources: {
-        Resource: {
-          Type: 'R',
-          // Notice absence of 'DependsOn'
-        },
-      },
+    expect(templateB?.Resources?.Resource).toEqual({
+      Type: 'R',
+      // Notice absence of 'DependsOn'
     });
     expect(stackB.dependencies.map(s => s.node.id)).toEqual(['StackA']);
 

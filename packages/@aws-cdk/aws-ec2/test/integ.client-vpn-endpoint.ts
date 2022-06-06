@@ -4,10 +4,6 @@ import { App, CustomResource, CustomResourceProvider, CustomResourceProviderRunt
 import { Construct } from 'constructs';
 import * as ec2 from '../lib';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -33,7 +29,7 @@ class TestStack extends Stack {
 
 const IMPORT_CERTIFICATES_RESOURCE_TYPE = 'Custom::ACMImportCertificates';
 
-class ImportCertificates extends CoreConstruct {
+class ImportCertificates extends Construct {
   public readonly serverCertificateArn: string;
   public readonly clientCertificateArn: string;
 
@@ -42,7 +38,7 @@ class ImportCertificates extends CoreConstruct {
 
     const serviceToken = CustomResourceProvider.getOrCreate(this, IMPORT_CERTIFICATES_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'import-certificates-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       policyStatements: [{
         Effect: 'Allow',
         Action: ['acm:ImportCertificate', 'acm:DeleteCertificate'],

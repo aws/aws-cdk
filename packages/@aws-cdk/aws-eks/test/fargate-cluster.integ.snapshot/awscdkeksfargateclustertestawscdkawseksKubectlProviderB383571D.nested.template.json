@@ -171,7 +171,7 @@
    "Properties": {
     "Content": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksfargateclustertestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3Bucket458005E4Ref"
+      "Ref": "referencetoawscdkeksfargateclustertestAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3Bucket5B560F41Ref"
      },
      "S3Key": {
       "Fn::Join": [
@@ -184,7 +184,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey70BE044CRef"
+             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3VersionKey80E28F80Ref"
             }
            ]
           }
@@ -197,7 +197,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey70BE044CRef"
+             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3VersionKey80E28F80Ref"
             }
            ]
           }
@@ -398,7 +398,7 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
@@ -454,10 +454,10 @@
   "referencetoawscdkeksfargateclustertestFargateCluster8588769EClusterSecurityGroupId": {
    "Type": "String"
   },
-  "referencetoawscdkeksfargateclustertestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3Bucket458005E4Ref": {
+  "referencetoawscdkeksfargateclustertestAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3Bucket5B560F41Ref": {
    "Type": "String"
   },
-  "referencetoawscdkeksfargateclustertestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey70BE044CRef": {
+  "referencetoawscdkeksfargateclustertestAssetParameters50336bec1c378b6b89cb429265ea84d9df45193d8a0a501e3c7b6794aec3ae17S3VersionKey80E28F80Ref": {
    "Type": "String"
   },
   "referencetoawscdkeksfargateclustertestAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3Bucket647800A6Ref": {
