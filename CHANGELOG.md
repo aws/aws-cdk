@@ -2,6 +2,59 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.159.0](https://github.com/aws/aws-cdk/compare/v1.158.0...v1.159.0) (2022-06-02)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **core:** so this PR attempts to smooth a rough edge by "locking"
+the `logicalId` when `exportValue` is called. If the user attempts to
+override the id _after_ that point, an error message will be thrown
+
+### Features
+
+* **cfnspec:** cloudformation spec v73.1.0 ([#20587](https://github.com/aws/aws-cdk/issues/20587)) ([419fdae](https://github.com/aws/aws-cdk/commit/419fdaec2770de1d21c0340f294ad72155d991ce))
+* **cognito:** OpenID Connect identity provider ([#20241](https://github.com/aws/aws-cdk/issues/20241)) ([33acc7c](https://github.com/aws/aws-cdk/commit/33acc7cc03c4a6700c05e840393ef90e5d8f68dc))
+* **integ-runner:** publish integ-runner cli ([#20477](https://github.com/aws/aws-cdk/issues/20477)) ([7779531](https://github.com/aws/aws-cdk/commit/777953106ac550b058fdaa3ccde25b62be07defa))
+* **lambda:** add insights version 1.0.135.0 ([#19588](https://github.com/aws/aws-cdk/issues/19588)) ([68761dc](https://github.com/aws/aws-cdk/commit/68761dc3ceadbe77e241fb85544e48544149568a)), closes [/docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versionsx86-64.html#Lambda-Insights-extension-1](https://github.com/aws//docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versionsx86-64.html/issues/Lambda-Insights-extension-1) [/docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versionsARM.html#Lambda-Insights-extension-ARM-1](https://github.com/aws//docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versionsARM.html/issues/Lambda-Insights-extension-ARM-1)
+* **s3:** adds objectSizeLessThan property for s3 lifecycle rule ([#20429](https://github.com/aws/aws-cdk/issues/20429)) ([2bf30df](https://github.com/aws/aws-cdk/commit/2bf30df223cc5bb43c2fcfaaf32669a8438ad19a)), closes [#20425](https://github.com/aws/aws-cdk/issues/20425) [#20372](https://github.com/aws/aws-cdk/issues/20372)
+
+
+### Bug Fixes
+
+* **core:** logicalId is consumed prior to being overridden ([#20560](https://github.com/aws/aws-cdk/issues/20560)) ([e44c2c4](https://github.com/aws/aws-cdk/commit/e44c2c436d41a9993714d7e9ff5a9ed95b5677f1)), closes [#14335](https://github.com/aws/aws-cdk/issues/14335)
+* **ecr-assets:** cannot build ARM images using modern stack synthesis ([#20563](https://github.com/aws/aws-cdk/issues/20563)) ([9a23575](https://github.com/aws/aws-cdk/commit/9a23575f4590a170caf79f4141c16adf431e7c40)), closes [#20439](https://github.com/aws/aws-cdk/issues/20439)
+* **ecs:** canContainersAccessInstanceRole is ignored when passed in AsgCapacityProvider constructor ([#20522](https://github.com/aws/aws-cdk/issues/20522)) ([dacefd6](https://github.com/aws/aws-cdk/commit/dacefd6c4770f06390f853fdf4703d8662beb3f5)), closes [#20293](https://github.com/aws/aws-cdk/issues/20293) [#20293](https://github.com/aws/aws-cdk/issues/20293)
+* **ecs:** fix typo from fromServiceAtrributes to fromServiceAttributes ([#20456](https://github.com/aws/aws-cdk/issues/20456)) ([f4439ce](https://github.com/aws/aws-cdk/commit/f4439ceda079dd762ec30c6f4a893d6bcd7ed100)), closes [#20458](https://github.com/aws/aws-cdk/issues/20458)
+* **events-targets:** EventBus IAM statements are only added for the first target ([#20479](https://github.com/aws/aws-cdk/issues/20479)) ([74318c7](https://github.com/aws/aws-cdk/commit/74318c7d22bfc00de9e005f68a0a6aaa58c7db39)), closes [#19407](https://github.com/aws/aws-cdk/issues/19407)
+* **iam:** referencing the same immutable role twice makes it mutable ([#20497](https://github.com/aws/aws-cdk/issues/20497)) ([264c02e](https://github.com/aws/aws-cdk/commit/264c02e6014552cd73f38acef0df2205811d6c86)), closes [#7255](https://github.com/aws/aws-cdk/issues/7255)
+* **integ-runner:** catch snapshot errors, treat `--from-file` as command-line ([#20523](https://github.com/aws/aws-cdk/issues/20523)) ([cedfde8](https://github.com/aws/aws-cdk/commit/cedfde8cb07eb879ee384bda93bba813ede91699))
+* **integ-runner:** don't throw error if tests pass ([#20511](https://github.com/aws/aws-cdk/issues/20511)) ([c274c2f](https://github.com/aws/aws-cdk/commit/c274c2f983de2dfd20ed2886a3c50f7fd3f6b3f4)), closes [#20384](https://github.com/aws/aws-cdk/issues/20384)
+* **lambda:** function version ignores layer version changes ([#20150](https://github.com/aws/aws-cdk/issues/20150)) ([f19ecef](https://github.com/aws/aws-cdk/commit/f19ecefcdde712dfd951106bec3b1f850b66f2a8)), closes [#19098](https://github.com/aws/aws-cdk/issues/19098)
+* Default username in RoleSessionName ([#20188](https://github.com/aws/aws-cdk/issues/20188)) ([b7bc10c](https://github.com/aws/aws-cdk/commit/b7bc10cc7a734fe3b4a9194dffbc017f2fe3ef43)), closes [#19401](https://github.com/aws/aws-cdk/issues/19401) [#7937](https://github.com/aws/aws-cdk/issues/7937) [#19401](https://github.com/aws/aws-cdk/issues/19401)
+
+## [1.158.0](https://github.com/aws/aws-cdk/compare/v1.157.0...v1.158.0) (2022-05-27)
+
+
+### Features
+
+* **apprunner:** VpcConnector construct ([#20471](https://github.com/aws/aws-cdk/issues/20471)) ([5052191](https://github.com/aws/aws-cdk/commit/50521911f22f433323d700db77530e883762138a))
+* **aws-ecr-assets:** support the --platform option when building docker images ([#20439](https://github.com/aws/aws-cdk/issues/20439)) ([adc0368](https://github.com/aws/aws-cdk/commit/adc0368dc1f137aeaa4bd92de77028269e3a48f4)), closes [#12472](https://github.com/aws/aws-cdk/issues/12472) [#16770](https://github.com/aws/aws-cdk/issues/16770) [#16858](https://github.com/aws/aws-cdk/issues/16858)
+* **lambda:** validate function description length ([#20476](https://github.com/aws/aws-cdk/issues/20476)) ([de027e2](https://github.com/aws/aws-cdk/commit/de027e28ce5c95e70fed8874e6531eabba24521c)), closes [#20475](https://github.com/aws/aws-cdk/issues/20475)
+* **s3:** adds objectSizeGreaterThan property for s3 lifecycle rule ([#20425](https://github.com/aws/aws-cdk/issues/20425)) ([23690e4](https://github.com/aws/aws-cdk/commit/23690e40b1604839f99da8b8f96168dda8679c47)), closes [#20372](https://github.com/aws/aws-cdk/issues/20372)
+* **servicecatalog:** ProductStackHistory can retain old ProductStack iterations ([#20244](https://github.com/aws/aws-cdk/issues/20244)) ([1037b8c](https://github.com/aws/aws-cdk/commit/1037b8c7f58ccd162491b49d75954c38d685d67f))
+
+
+### Bug Fixes
+
+* **core:** NestedStack defaultChild is undefined ([#20450](https://github.com/aws/aws-cdk/issues/20450)) ([0a49927](https://github.com/aws/aws-cdk/commit/0a49927e9e5bc250f339f664fa843fae2fab92ec)), closes [#11221](https://github.com/aws/aws-cdk/issues/11221)
+* **iam:** Role policies cannot grow beyond 10k ([#20400](https://github.com/aws/aws-cdk/issues/20400)) ([75bfce7](https://github.com/aws/aws-cdk/commit/75bfce70dbc57fe688c96b3c5cbb67fc4e6fcc56)), closes [#19276](https://github.com/aws/aws-cdk/issues/19276) [#19939](https://github.com/aws/aws-cdk/issues/19939) [#19835](https://github.com/aws/aws-cdk/issues/19835)
+* **integ-runner:** always resynth on deploy ([#20508](https://github.com/aws/aws-cdk/issues/20508)) ([7138057](https://github.com/aws/aws-cdk/commit/71380571b878a50fe4b754c7dac78da075a98242))
+* **integ-tests:** DeployAssert should be private ([#20466](https://github.com/aws/aws-cdk/issues/20466)) ([0f52813](https://github.com/aws/aws-cdk/commit/0f52813bcf6a48c352f697004a899461dd06935d))
+* **lambda:** Fix typo in public subnet warning ([#20470](https://github.com/aws/aws-cdk/issues/20470)) ([85f4e29](https://github.com/aws/aws-cdk/commit/85f4e29e0551d71dd5f2f588584785cbc1ae7b72))
+* **pipelines:** too many CodeBuild steps inflate policy size ([#20396](https://github.com/aws/aws-cdk/issues/20396)) ([f334060](https://github.com/aws/aws-cdk/commit/f334060fca02e928bc4f5fdcfd45244060731d78)), closes [#20189](https://github.com/aws/aws-cdk/issues/20189) [#19276](https://github.com/aws/aws-cdk/issues/19276) [#19939](https://github.com/aws/aws-cdk/issues/19939) [#19835](https://github.com/aws/aws-cdk/issues/19835)
+* **s3-deployment:** default role does not get `PutAcl` permissions on… ([#20492](https://github.com/aws/aws-cdk/issues/20492)) ([3e6ec5c](https://github.com/aws/aws-cdk/commit/3e6ec5c48cff41cec2b32566990046fd704f4ec1))
+
 ## [1.157.0](https://github.com/aws/aws-cdk/compare/v1.156.1...v1.157.0) (2022-05-20)
 
 

@@ -74,12 +74,15 @@ export class AttachedPolicies {
  */
 export function mergePrincipal(target: { [key: string]: string[] }, source: { [key: string]: string[] }) {
   // If one represents a literal string, the other one must be empty
-  if ((LITERAL_STRING_KEY in source && !isEmptyObject(target)) ||
-    (LITERAL_STRING_KEY in target && !isEmptyObject(source))) {
+  const sourceKeys = Object.keys(source);
+  const targetKeys = Object.keys(target);
+
+  if ((LITERAL_STRING_KEY in source && targetKeys.some(k => k !== LITERAL_STRING_KEY)) ||
+    (LITERAL_STRING_KEY in target && sourceKeys.some(k => k !== LITERAL_STRING_KEY))) {
     throw new Error(`Cannot merge principals ${JSON.stringify(target)} and ${JSON.stringify(source)}; if one uses a literal principal string the other one must be empty`);
   }
 
-  for (const key of Object.keys(source)) {
+  for (const key of sourceKeys) {
     target[key] = target[key] ?? [];
 
     let value = source[key];
@@ -135,6 +138,6 @@ export class UniqueStringSet implements IResolvable, IPostProcessor {
   }
 }
 
-function isEmptyObject(x: { [key: string]: any }): boolean {
-  return Object.keys(x).length === 0;
+export function sum(xs: number[]) {
+  return xs.reduce((a, b) => a + b, 0);
 }

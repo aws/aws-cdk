@@ -907,6 +907,14 @@ export class Stack extends CoreConstruct implements ITaggable {
       throw new Error('exportValue: either supply \'name\' or make sure to export a resource attribute (like \'bucket.bucketName\')');
     }
 
+    // if exportValue is being called manually (which is pre onPrepare) then the logicalId
+    // could potentially be changed by a call to overrideLogicalId. This would cause our Export/Import
+    // to have an incorrect id. For a better user experience, lock the logicalId and throw an error
+    // if the user tries to override the id _after_ calling exportValue
+    if (CfnElement.isCfnElement(resolvable.target)) {
+      resolvable.target._lockLogicalId();
+    }
+
     // "teleport" the value here, in case it comes from a nested stack. This will also
     // ensure the value is from our own scope.
     const exportable = referenceNestedStackValueInParent(resolvable, this);
