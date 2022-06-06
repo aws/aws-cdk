@@ -132,9 +132,26 @@ class CfnMappingEmbedder implements IResolvable {
 
   constructor(private readonly mappingId: string, private readonly mapping: Mapping, private readonly value: string) { }
 
+  private tryFindChildRecurse(scope: Construct): boolean {
+    if (scope.node.tryFindChild(this.mappingId)) {
+      return true;
+    }
+
+    for (const child of scope.node.children) {
+      if (this.tryFindChildRecurse(child)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   public resolve(context: IResolveContext): string {
     const consumingStack = Stack.of(context.scope);
-    if (!consumingStack.node.tryFindChild(this.mappingId)) {
+    // we must check the entire tree because CfnMappings can be
+    // added to Constructs and won't be direct children of the
+    // stack. This is done in aws-secretsmanager/lib/secret-rotation.ts
+    if (!this.tryFindChildRecurse(consumingStack)) {
       new CfnMapping(consumingStack, this.mappingId, {
         mapping: this.mapping,
       });
