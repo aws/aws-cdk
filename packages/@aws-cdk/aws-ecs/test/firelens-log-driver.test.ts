@@ -288,6 +288,7 @@ describe('firelens log driver', () => {
           options: {
             enableECSLogMetadata: false,
             configFileValue: 'arn:aws:s3:::mybucket/fluent.conf',
+            configFileType: ecs.FirelensConfigFileType.S3,
           },
         },
         logging: new ecs.AwsLogDriver({ streamPrefix: 'firelens' }),
@@ -343,6 +344,39 @@ describe('firelens log driver', () => {
                 'enable-ecs-log-metadata': 'false',
                 'config-file-type': 'file',
                 'config-file-value': '/my/working/dir/firelens/config',
+              },
+            },
+          }),
+        ],
+      });
+    });
+
+    // test added for: https://github.com/aws/aws-for-fluent-bit/issues/352
+    test('firelens config options are fully optional', () => {
+      // GIVEN
+      td.addFirelensLogRouter('log_router', {
+        image: ecs.obtainDefaultFluentBitECRImage(td, undefined, '2.1.0'),
+        firelensConfig: {
+          type: ecs.FirelensLogRouterType.FLUENTBIT,
+          options: {
+            enableECSLogMetadata: false,
+          },
+        },
+        logging: new ecs.AwsLogDriver({ streamPrefix: 'firelens' }),
+        memoryReservationMiB: 50,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          Match.objectLike({
+            Essential: true,
+            MemoryReservation: 50,
+            Name: 'log_router',
+            FirelensConfiguration: {
+              Type: 'fluentbit',
+              Options: {
+                'enable-ecs-log-metadata': 'false',
               },
             },
           }),
