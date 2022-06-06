@@ -130,7 +130,7 @@ export class CfnMapping extends CfnRefElement {
 class CfnMappingEmbedder implements IResolvable {
   readonly creationStack: string[] = [];
 
-  constructor(readonly mappingId: string, readonly mapping: Mapping, readonly value: string) { }
+  constructor(private readonly mappingId: string, private readonly mapping: Mapping, private readonly value: string) { }
 
   public resolve(context: IResolveContext): string {
     const consumingStack = Stack.of(context.scope);
