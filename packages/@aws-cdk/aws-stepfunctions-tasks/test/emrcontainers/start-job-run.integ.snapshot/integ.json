@@ -1,7 +1,7 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "emrcontainers/integ.start-job-run": {
+    "@aws-cdk/aws-stepfunctions-tasks/test/emrcontainers/integ.start-job-run": {
       "stacks": [
         "aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test"
       ],
