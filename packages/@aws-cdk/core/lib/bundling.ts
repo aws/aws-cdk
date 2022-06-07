@@ -491,9 +491,9 @@ export interface DockerBuildOptions {
 
   /**
    * Set build target for multi-stage container builds. Any stage defined afterwards will be ignored.
-   * 
+   *
    * Example value: `build-env`
-   * 
+   *
    * @default - Build all stages defined in the Dockerfile
    */
   readonly targetStage?: string;
