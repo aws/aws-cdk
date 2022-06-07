@@ -3,7 +3,7 @@
   "MyNamespaceD0BB8558": {
    "Type": "AWS::ServiceDiscovery::HttpNamespace",
    "Properties": {
-    "Name": "covfefe"
+    "Name": "MyHTTPNamespace"
    }
   },
   "MyNamespaceNonIpService3B425009": {
