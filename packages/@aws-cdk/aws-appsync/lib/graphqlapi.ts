@@ -519,6 +519,17 @@ export class GraphqlApi extends GraphqlApiBase {
       this.apiKeyResource.addDependsOn(this.schemaResource);
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
+
+    if (modes.some((mode) => mode.authorizationType === AuthorizationType.LAMBDA)) {
+      const config = modes.find((mode: AuthorizationMode) => {
+        return mode.authorizationType === AuthorizationType.LAMBDA && mode.lambdaAuthorizerConfig;
+      })?.lambdaAuthorizerConfig;
+      config?.handler.addPermission('appsync', {
+        principal: new ServicePrincipal('appsync.amazonaws.com'),
+        action: 'lambda:InvokeFunction',
+      });
+    }
+
   }
 
   /**
