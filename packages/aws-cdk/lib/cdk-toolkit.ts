@@ -370,7 +370,7 @@ export class CdkToolkit {
     }
 
     if (!process.stdout.isTTY && !options.resourceMappingFile) {
-      throw new Error('--resource-mapping-file is required when input is not a terminal');
+      throw new Error('--resource-mapping is required when input is not a terminal');
     }
 
     const stack = stacks.stackArtifacts[0];
