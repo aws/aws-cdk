@@ -40,7 +40,7 @@
     "@aws-cdk/eslint-plugin": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/glob": "^7.2.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.0",
     "@types/semver": "^7.3.9",
     "@types/yargs": "^15.0.14",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
@@ -66,7 +66,7 @@
     "fs-extra": "^9.1.0",
     "glob": "^7.2.0",
     "npm-bundled": "^1.1.2",
-    "semver": "^7.3.6",
+    "semver": "^7.3.7",
     "yargs": "^16.2.0"
   }
 }

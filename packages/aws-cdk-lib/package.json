@@ -1,6 +1,5 @@
 {
   "name": "aws-cdk-lib",
-  "private": "true",
   "version": "0.0.0",
   "description": "Version 2 of the AWS Cloud Development Kit library",
   "main": "index.js",
@@ -10,8 +9,8 @@
     "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/aws-cdk-lib"
   },
-  "stability": "experimental",
-  "maturity": "developer-preview",
+  "stability": "stable",
+  "maturity": "stable",
   "scripts": {
     "gen": "ubergen",
     "build": "cdk-build",
@@ -67,7 +66,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK",
         "packageId": "Amazon.CDK.Lib",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
         "package": "software.amazon.awscdk",
@@ -112,7 +111,7 @@
     "jsonschema": "^1.4.0",
     "minimatch": "^3.1.2",
     "punycode": "^2.1.1",
-    "semver": "^7.3.6",
+    "semver": "^7.3.7",
     "yaml": "1.10.2"
   },
   "devDependencies": {
@@ -205,6 +204,7 @@
     "@aws-cdk/aws-elasticsearch": "0.0.0",
     "@aws-cdk/aws-emr": "0.0.0",
     "@aws-cdk/aws-emrcontainers": "0.0.0",
+    "@aws-cdk/aws-emrserverless": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-eventschemas": "0.0.0",
@@ -335,6 +335,7 @@
     "@aws-cdk/aws-synthetics": "0.0.0",
     "@aws-cdk/aws-timestream": "0.0.0",
     "@aws-cdk/aws-transfer": "0.0.0",
+    "@aws-cdk/aws-voiceid": "0.0.0",
     "@aws-cdk/aws-waf": "0.0.0",
     "@aws-cdk/aws-wafregional": "0.0.0",
     "@aws-cdk/aws-wafv2": "0.0.0",
@@ -358,18 +359,18 @@
     "@aws-cdk/ubergen": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/node": "^10.17.60",
-    "constructs": "^3.3.69",
-    "esbuild": "^0.14.34",
+    "esbuild": "^0.14.38",
+    "constructs": "^10.0.0",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3"
   },
   "peerDependencies": {
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "keywords": [
     "aws",
@@ -390,6 +391,7 @@
     "./.jsii": "./.jsii",
     "./.warnings.jsii.js": "./.warnings.jsii.js",
     "./alexa-ask": "./alexa-ask/index.js",
+    "./assertions/lib/helpers-internal": "./assertions/lib/helpers-internal/index.js",
     "./assertions": "./assertions/index.js",
     "./assets": "./assets/index.js",
     "./aws-accessanalyzer": "./aws-accessanalyzer/index.js",
@@ -504,6 +506,7 @@
     "./aws-iotfleethub": "./aws-iotfleethub/index.js",
     "./aws-iotsitewise": "./aws-iotsitewise/index.js",
     "./aws-iotthingsgraph": "./aws-iotthingsgraph/index.js",
+    "./aws-iottwinmaker": "./aws-iottwinmaker/index.js",
     "./aws-iotwireless": "./aws-iotwireless/index.js",
     "./aws-ivs": "./aws-ivs/index.js",
     "./aws-kafkaconnect": "./aws-kafkaconnect/index.js",
@@ -535,6 +538,7 @@
     "./aws-medialive": "./aws-medialive/index.js",
     "./aws-mediapackage": "./aws-mediapackage/index.js",
     "./aws-mediastore": "./aws-mediastore/index.js",
+    "./aws-mediatailor": "./aws-mediatailor/index.js",
     "./aws-memorydb": "./aws-memorydb/index.js",
     "./aws-msk": "./aws-msk/index.js",
     "./aws-mwaa": "./aws-mwaa/index.js",
@@ -616,5 +620,8 @@
     "./region-info": "./region-info/index.js",
     "./triggers": "./triggers/index.js"
   },
-  "preferredCdkCliVersion": "2"
+  "preferredCdkCliVersion": "2",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

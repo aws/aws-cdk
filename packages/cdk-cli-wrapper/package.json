@@ -34,14 +34,14 @@
       "dotnet": {
         "namespace": "Amazon.CDK.CdkCliWrapper",
         "packageId": "Amazon.CDK.CdkCliWrapper",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.cdk-cli-wrapper",
         "module": "aws_cdk.cdk_cli_wrapper",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -61,7 +61,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.0",
     "@types/node": "^10.17.60",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "jest": "^27.5.1",
@@ -78,7 +78,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "cdk-package": {
     "shrinkWrap": true

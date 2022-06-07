@@ -369,6 +369,97 @@ export class SingleValueWidget extends ConcreteWidget {
 }
 
 /**
+ * The properties for a CustomWidget
+ */
+export interface CustomWidgetProps {
+  /**
+   * The Arn of the AWS Lambda function that returns HTML or JSON that will be displayed in the widget
+   */
+  readonly functionArn: string;
+
+  /**
+   * Width of the widget, in a grid of 24 units wide
+   *
+   * @default 6
+   */
+  readonly width?: number;
+
+  /**
+   * Height of the widget
+   *
+   * @default - 6 for Alarm and Graph widgets.
+   *   3 for single value widgets where most recent value of a metric is displayed.
+   */
+  readonly height?: number;
+
+  /**
+   * The title of the widget
+   */
+  readonly title: string;
+
+  /**
+   * Update the widget on refresh
+   *
+   * @default true
+   */
+  readonly updateOnRefresh?: boolean;
+
+  /**
+   * Update the widget on resize
+   *
+   * @default true
+   */
+  readonly updateOnResize?: boolean;
+
+  /**
+   * Update the widget on time range change
+   *
+   * @default true
+   */
+  readonly updateOnTimeRangeChange?: boolean;
+
+  /**
+   * Parameters passed to the lambda function
+   *
+   * @default - no parameters are passed to the lambda function
+   */
+  readonly params?: any;
+}
+
+/**
+ * A CustomWidget shows the result of a AWS lambda function
+ */
+export class CustomWidget extends ConcreteWidget {
+
+  private readonly props: CustomWidgetProps;
+
+  public constructor(props: CustomWidgetProps) {
+    super(props.width ?? 6, props.height ?? 6);
+    this.props = props;
+  }
+
+  public toJson(): any[] {
+    return [{
+      type: 'custom',
+      width: this.width,
+      height: this.height,
+      x: this.x,
+      y: this.y,
+      properties: {
+        endpoint: this.props.functionArn,
+        params: this.props.params,
+        title: this.props.title,
+        updateOn: {
+          refresh: this.props.updateOnRefresh ?? true,
+          resize: this.props.updateOnResize ?? true,
+          timeRange: this.props.updateOnTimeRangeChange ?? true,
+        },
+      },
+    }];
+  }
+}
+
+/**
  * Horizontal annotation to be added to a graph
  */
 export interface HorizontalAnnotation {

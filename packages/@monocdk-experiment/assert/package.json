@@ -1,6 +1,7 @@
 {
   "name": "@monocdk-experiment/assert",
   "version": "0.0.0",
+  "private": true,
   "description": "An assertion library for use with CDK Apps",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -26,6 +27,9 @@
       "disable": true
     }
   },
+  "pkglint": {
+    "ignore": true
+  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
@@ -34,11 +38,11 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@monocdk-experiment/rewrite-imports": "0.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.0",
     "@types/node": "^10.17.60",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "constructs": "^3.3.69",
     "jest": "^27.5.1",
+    "constructs": "^10.0.0",
     "monocdk": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "ts-jest": "^27.1.4"
@@ -47,8 +51,8 @@
     "@aws-cdk/cloudformation-diff": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "^3.3.69",
     "jest": "^27.5.1",
+    "constructs": "^10.0.0",
     "monocdk": "^0.0.0"
   },
   "repository": {

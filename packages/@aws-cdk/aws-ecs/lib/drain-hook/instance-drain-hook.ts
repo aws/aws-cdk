@@ -9,10 +9,6 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ICluster } from '../cluster';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 // Reference for the source in this package:
 //
 // https://github.com/aws-samples/ecs-refarch-cloudformation/blob/master/infrastructure/lifecyclehook.yaml
@@ -53,7 +49,7 @@ export interface InstanceDrainHookProps {
 /**
  * A hook to drain instances from ECS traffic before they're terminated
  */
-export class InstanceDrainHook extends CoreConstruct {
+export class InstanceDrainHook extends Construct {
 
   /**
    * Constructs a new instance of the InstanceDrainHook class.
@@ -67,7 +63,7 @@ export class InstanceDrainHook extends CoreConstruct {
     const fn = new lambda.Function(this, 'Function', {
       code: lambda.Code.fromInline(fs.readFileSync(path.join(__dirname, 'lambda-source', 'index.py'), { encoding: 'utf-8' })),
       handler: 'index.lambda_handler',
-      runtime: lambda.Runtime.PYTHON_3_6,
+      runtime: lambda.Runtime.PYTHON_3_9,
       // Timeout: some extra margin for additional API calls made by the Lambda,
       // up to a maximum of 15 minutes.
       timeout: cdk.Duration.seconds(Math.min(drainTime.toSeconds() + 10, 900)),

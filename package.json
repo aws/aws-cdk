@@ -6,7 +6,8 @@
     "include": "dependencies/node-version"
   },
   "scripts": {
-    "pkglint": "lerna --scope @aws-cdk/pkglint run build && lerna run pkglint",
+    "pkglint": "lerna run build --scope @aws-cdk/pkglint --include-dependencies && lerna run pkglint",
+    "prebuild": "node ./scripts/check-yarn-lock.js",
     "build": "./build.sh",
     "pack": "./pack.sh",
     "compat": "./scripts/check-api-compatibility.sh",
@@ -15,16 +16,17 @@
     "postinstall": "patch-package --error-on-fail"
   },
   "devDependencies": {
+    "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
-    "cdk-generate-synthetic-examples": "^0.1.8",
+    "cdk-generate-synthetic-examples": "^0.1.10",
     "conventional-changelog-cli": "^2.2.2",
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.10",
-    "jest-junit": "^13.1.0",
-    "jsii-diff": "^1.57.0",
-    "jsii-pacmak": "^1.57.0",
-    "jsii-reflect": "^1.57.0",
-    "jsii-rosetta": "^1.57.0",
+    "jest-junit": "^13.2.0",
+    "jsii-diff": "^1.58.0",
+    "jsii-pacmak": "^1.58.0",
+    "jsii-reflect": "^1.58.0",
+    "jsii-rosetta": "^1.58.0",
     "lerna": "^4.0.0",
     "patch-package": "^6.4.7",
     "semver": "^6.3.0",
@@ -55,7 +57,7 @@
       "release.json",
       "scripts/resolve-version.js",
       "scripts/resolve-version-lib.js",
-      "version.v1.json"
+      "version.v2.json"
     ],
     "cacheBucket": "nozem-artifacts-eu",
     "cacheBucketRegion": "eu-west-1"
@@ -79,12 +81,8 @@
       "@aws-cdk/assertions-alpha/fs-extra/**",
       "@aws-cdk/assertions/fs-extra",
       "@aws-cdk/assertions/fs-extra/**",
-      "@aws-cdk/aws-amplify-alpha/yaml",
-      "@aws-cdk/aws-amplify-alpha/yaml/**",
       "@aws-cdk/aws-iot-actions-alpha/case",
       "@aws-cdk/aws-iot-actions-alpha/case/**",
-      "@aws-cdk/aws-amplify/yaml",
-      "@aws-cdk/aws-amplify/yaml/**",
       "@aws-cdk/aws-codebuild/yaml",
       "@aws-cdk/aws-codebuild/yaml/**",
       "@aws-cdk/aws-codepipeline-actions/case",

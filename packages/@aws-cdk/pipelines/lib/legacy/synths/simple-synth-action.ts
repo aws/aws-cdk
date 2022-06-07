@@ -15,7 +15,7 @@ const DEFAULT_OUTPUT_DIR = 'cdk.out';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Configuration options for a SimpleSynth

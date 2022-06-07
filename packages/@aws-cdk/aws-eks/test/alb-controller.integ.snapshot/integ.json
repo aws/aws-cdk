@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-eks/test/integ.alb-controller": {
+    "@aws-cdk/aws-eks/test/integ.alb-controller": {
       "stacks": [
         "aws-cdk-eks-cluster-alb-controller-test"
       ],

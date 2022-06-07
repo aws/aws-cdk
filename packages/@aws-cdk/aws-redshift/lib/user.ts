@@ -1,7 +1,6 @@
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { DatabaseOptions } from './database-options';
 import { DatabaseSecret } from './database-secret';
@@ -13,7 +12,7 @@ import { ITable, TableAction } from './table';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
 
 /**
  * Properties for configuring a Redshift user.
@@ -46,7 +45,7 @@ export interface UserProps extends DatabaseOptions {
 /**
  * Represents a user in a Redshift database.
  */
-export interface IUser extends cdk.IConstruct {
+export interface IUser extends IConstruct {
   /**
    * The name of the user.
    */
@@ -90,7 +89,7 @@ export interface UserAttributes extends DatabaseOptions {
   readonly password: cdk.SecretValue;
 }
 
-abstract class UserBase extends CoreConstruct implements IUser {
+abstract class UserBase extends Construct implements IUser {
   abstract readonly username: string;
   abstract readonly password: cdk.SecretValue;
   abstract readonly cluster: ICluster;

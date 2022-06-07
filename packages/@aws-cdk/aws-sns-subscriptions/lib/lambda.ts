@@ -6,7 +6,7 @@ import { SubscriptionProps } from './subscription';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Properties for a Lambda subscription
@@ -27,7 +27,7 @@ export class LambdaSubscription implements sns.ITopicSubscription {
   public bind(topic: sns.ITopic): sns.TopicSubscriptionConfig {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
-    if (!Construct.isConstruct(this.fn)) {
+    if (!(this.fn instanceof Construct)) {
       throw new Error('The supplied lambda Function object must be an instance of Construct');
     }
 
@@ -59,9 +59,9 @@ export class LambdaSubscription implements sns.ITopicSubscription {
       if (topic.stack !== this.fn.stack) {
         // only if we know the region, will not work for
         // env agnostic stacks
-        if (!Token.isUnresolved(topic.stack.region) &&
-          (topic.stack.region !== this.fn.stack.region)) {
-          return topic.stack.region;
+        if (!Token.isUnresolved(topic.env.region) &&
+          (topic.env.region !== this.fn.env.region)) {
+          return topic.env.region;
         }
       }
       return undefined;

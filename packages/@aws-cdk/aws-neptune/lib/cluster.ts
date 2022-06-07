@@ -435,7 +435,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     super(scope, id);
 
     this.vpc = props.vpc;
-    this.vpcSubnets = props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE };
+    this.vpcSubnets = props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT };
 
     // Determine the subnet(s) to deploy the Neptune cluster to
     const { subnetIds, internetConnectivityEstablished } = this.vpc.selectSubnets(this.vpcSubnets);

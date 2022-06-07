@@ -91,7 +91,7 @@ itself to 2 Availability Zones.
 Therefore, to get the VPC to spread over 3 or more availability zones, you
 must specify the environment where the stack will be deployed.
 
-You can gain full control over the availability zones selection strategy by overriding the Stack's [`get availabilityZones()`](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/core/lib/stack.ts) method:
+You can gain full control over the availability zones selection strategy by overriding the Stack's [`get availabilityZones()`](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/core/lib/stack.ts) method:
 
 ```text
 // This example is only available in TypeScript
@@ -131,7 +131,7 @@ new ec2.InterfaceVpcEndpoint(this, 'VPC Endpoint', {
   vpc,
   service: new ec2.InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
   subnets: {
-    subnetType: ec2.SubnetType.ISOLATED,
+    subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
     availabilityZones: ['us-east-1a', 'us-east-1c']
   }
 });
@@ -230,7 +230,9 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
   // The IP space will be divided over the configured subnets.
   cidr: '10.0.0.0/21',
 
-  // 'maxAzs' configures the maximum number of availability zones to use
+  // 'maxAzs' configures the maximum number of availability zones to use.
+  // If you want to specify the exact availability zones you want the VPC
+  // to use, use `availabilityZones` instead.
   maxAzs: 3,
 
   // 'subnetConfiguration' specifies the "subnet groups" to create.
@@ -325,7 +327,7 @@ const vpc = new ec2.Vpc(this, "VPC", {
       subnetType: ec2.SubnetType.PUBLIC,
       name: 'Public',
     },{
-      subnetType: ec2.SubnetType.ISOLATED,
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       name: 'Isolated',
     }]
 });
@@ -372,7 +374,7 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
     {
       cidrMask: 27,
       name: 'Database',
-      subnetType: ec2.SubnetType.ISOLATED,
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
     }
   ],
 });
@@ -734,7 +736,7 @@ By default, routes will be propagated on the route tables associated with the pr
 private subnets exist, isolated subnets are used. If no isolated subnets exist, public subnets are
 used. Use the `Vpc` property `vpnRoutePropagation` to customize this behavior.
 
-VPN connections expose [metrics (cloudwatch.Metric)](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-cloudwatch/README.md) across all tunnels in the account/region and per connection:
+VPN connections expose [metrics (cloudwatch.Metric)](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-cloudwatch/README.md) across all tunnels in the account/region and per connection:
 
 ```ts fixture=with-vpc
 // Across all tunnels in the account/region

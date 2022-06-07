@@ -1,6 +1,7 @@
 {
   "name": "monocdk",
   "version": "0.0.0",
+  "private": true,
   "description": "An experiment to bundle the entire CDK into a single module",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -61,7 +62,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK",
         "packageId": "Amazon.CDK.MonoCDK",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
         "versionSuffix": "-devpreview"
       },
       "java": {
@@ -109,7 +110,7 @@
     "jsonschema": "^1.4.0",
     "minimatch": "^3.1.2",
     "punycode": "^2.1.1",
-    "semver": "^7.3.6",
+    "semver": "^7.3.7",
     "yaml": "1.10.2"
   },
   "devDependencies": {
@@ -202,6 +203,7 @@
     "@aws-cdk/aws-elasticsearch": "0.0.0",
     "@aws-cdk/aws-emr": "0.0.0",
     "@aws-cdk/aws-emrcontainers": "0.0.0",
+    "@aws-cdk/aws-emrserverless": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-eventschemas": "0.0.0",
@@ -332,6 +334,7 @@
     "@aws-cdk/aws-synthetics": "0.0.0",
     "@aws-cdk/aws-timestream": "0.0.0",
     "@aws-cdk/aws-transfer": "0.0.0",
+    "@aws-cdk/aws-voiceid": "0.0.0",
     "@aws-cdk/aws-waf": "0.0.0",
     "@aws-cdk/aws-wafregional": "0.0.0",
     "@aws-cdk/aws-wafv2": "0.0.0",
@@ -356,17 +359,17 @@
     "@aws-cdk/yaml-cfn": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/node": "^10.17.60",
-    "constructs": "^3.3.69",
+    "constructs": "^10.0.0",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3"
   },
   "peerDependencies": {
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "keywords": [
     "aws",
@@ -377,7 +380,7 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "latest"
+    "tag": "next"
   },
   "preferredCdkCliVersion": "1"
 }

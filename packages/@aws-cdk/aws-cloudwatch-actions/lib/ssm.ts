@@ -3,7 +3,7 @@ import { Stack } from '@aws-cdk/core';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Types of OpsItem severity available
@@ -70,9 +70,9 @@ export class SsmAction implements cloudwatch.IAlarmAction {
    */
   bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
     if (this.category === undefined) {
-      return { alarmActionArn: `arn:aws:ssm:${Stack.of(_scope).region}:${Stack.of(_scope).account}:opsitem:${this.severity}` };
+      return { alarmActionArn: `arn:${Stack.of(_scope).partition}:ssm:${Stack.of(_scope).region}:${Stack.of(_scope).account}:opsitem:${this.severity}` };
     } else {
-      return { alarmActionArn: `arn:aws:ssm:${Stack.of(_scope).region}:${Stack.of(_scope).account}:opsitem:${this.severity}#CATEGORY=${this.category}` };
+      return { alarmActionArn: `arn:${Stack.of(_scope).partition}:ssm:${Stack.of(_scope).region}:${Stack.of(_scope).account}:opsitem:${this.severity}#CATEGORY=${this.category}` };
     }
   }
 }
