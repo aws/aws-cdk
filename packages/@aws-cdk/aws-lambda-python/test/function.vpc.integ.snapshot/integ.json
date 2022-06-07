@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-lambda-python/test/integ.function.vpc": {
+    "@aws-cdk/aws-lambda-python/test/integ.function.vpc": {
       "stacks": [
         "cdk-integ-lambda-python-vpc"
       ],

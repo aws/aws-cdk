@@ -1,7 +1,7 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "lambda/integ.invoke-function": {
+    "@aws-cdk/aws-stepfunctions-tasks/test/lambda/integ.invoke-function": {
       "stacks": [
         "aws-stepfunctions-integ"
       ],

@@ -51,6 +51,9 @@ export interface IntegRunnerOptions {
 }
 
 /**
+ * The different components of a test name
+ */
+/**
  * Represents an Integration test runner
  */
 export abstract class IntegRunner {
