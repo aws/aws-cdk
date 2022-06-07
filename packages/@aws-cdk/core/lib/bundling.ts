@@ -272,6 +272,7 @@ export class DockerImage extends BundlingDockerImage {
       'build', '-t', tag,
       ...(options.file ? ['-f', join(path, options.file)] : []),
       ...(options.platform ? ['--platform', options.platform] : []),
+      ...(options.targetStage ? ['--target', options.targetStage] : []),
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
       path,
     ];
@@ -487,6 +488,15 @@ export interface DockerBuildOptions {
    * @default - no platform specified
    */
   readonly platform?: string;
+
+  /**
+   * Set build target for multi-stage container builds. Any stage defined afterwards will be ignored.
+   * 
+   * Example value: `build-env`
+   * 
+   * @default - Build all stages defined in the Dockerfile
+   */
+  readonly targetStage?: string;
 }
 
 function flatten(x: string[][]) {
