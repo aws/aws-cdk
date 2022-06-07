@@ -179,10 +179,20 @@ export enum DiagnosticReason {
   TEST_FAILED = 'TEST_FAILED',
 
   /**
+   * There was an error running the integration test
+   */
+  TEST_ERROR = 'TEST_ERROR',
+
+  /**
    * The snapshot test failed because the actual
    * snapshot was different than the expected snapshot
    */
   SNAPSHOT_FAILED = 'SNAPSHOT_FAILED',
+
+  /**
+   * The snapshot test failed because there was an error executing it
+   */
+  SNAPSHOT_ERROR = 'SNAPSHOT_ERROR',
 
   /**
    * The snapshot test succeeded
@@ -255,24 +265,39 @@ export function formatAssertionResults(results: AssertionResults): string {
 export function printResults(diagnostic: Diagnostic): void {
   switch (diagnostic.reason) {
     case DiagnosticReason.SNAPSHOT_SUCCESS:
-      logger.success('  %s No Change! %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));
+      logger.success('  UNCHANGED  %s %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));
       break;
     case DiagnosticReason.TEST_SUCCESS:
-      logger.success('  %s Test Succeeded! %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));
+      logger.success('  SUCCESS    %s %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));
       break;
     case DiagnosticReason.NO_SNAPSHOT:
-      logger.error('  %s - No Snapshot! %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));
+      logger.error('  NEW        %s %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));
       break;
     case DiagnosticReason.SNAPSHOT_FAILED:
-      logger.error('  %s - Snapshot changed! %s\n%s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+      logger.error('  CHANGED    %s %s\n      %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+      break;
+    case DiagnosticReason.SNAPSHOT_ERROR:
+    case DiagnosticReason.TEST_ERROR:
+      logger.error('  ERROR      %s %s\n      %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
       break;
     case DiagnosticReason.TEST_FAILED:
-      logger.error('  %s - Failed! %s\n%s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+      logger.error('  FAILED     %s %s\n      %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
       break;
     case DiagnosticReason.ASSERTION_FAILED:
-      logger.error('   %s - Assertions Failed! %s\n%s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+      logger.error('  ASSERT     %s %s\n      %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+      break;
   }
   for (const addl of diagnostic.additionalMessages ?? []) {
     logger.print(`      ${addl}`);
   }
+}
+
+export function printLaggards(testNames: Set<string>) {
+  const parts = [
+    '  ',
+    `Waiting for ${testNames.size} more`,
+    testNames.size < 10 ? ['(', Array.from(testNames).join(', '), ')'].join('') : '',
+  ];
+
+  logger.print(chalk.grey(parts.filter(x => x).join(' ')));
 }

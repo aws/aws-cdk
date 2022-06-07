@@ -107,7 +107,7 @@ export class IntegTest {
    */
   public matches(name: string) {
     return [
-      this.info.fileName,
+      this.fileName,
       this.discoveryRelativeFileName,
       this.testName,
       this.absoluteFileName,

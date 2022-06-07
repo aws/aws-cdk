@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -36,7 +36,7 @@
         "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaAliasPCECurrentVersion072335D3f742c0f8cc0b7f48bb32fb34b63bc22c"
+            "data": "MyLambdaAliasPCECurrentVersion072335D3224448d87cb592b450e76b3259c1d874"
           }
         ],
         "/aws-cdk-lambda-pce-1/Alias/Resource": [
@@ -72,7 +72,7 @@
         "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaVersionPCECurrentVersion27FC3932fbc6188ae863cb6dc15d61f96ad00420"
+            "data": "MyLambdaVersionPCECurrentVersion27FC3932d779c9115684f8f405cbd7282b1508f5"
           }
         ],
         "/aws-cdk-lambda-pce-1/Alias2/Resource": [
@@ -85,6 +85,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Alias2AliasPermission2448514B6"
+          }
+        ],
+        "MyLambdaAliasPCECurrentVersion072335D369bedb3f5cf56c66c63ccfdba59d5d84": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaAliasPCECurrentVersion072335D369bedb3f5cf56c66c63ccfdba59d5d84",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyLambdaVersionPCECurrentVersion27FC3932fc9df6df91e1aac821ec45a32cf17e32": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaVersionPCECurrentVersion27FC3932fc9df6df91e1aac821ec45a32cf17e32",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

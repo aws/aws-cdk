@@ -16,18 +16,19 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
   const failures: IntegTestInfo[] = [];
   for (const testInfo of request.tests) {
     const test = new IntegTest(testInfo); // Hydrate from data
-
-    const runner = new IntegTestRunner({
-      test,
-      profile: request.profile,
-      env: {
-        AWS_REGION: request.region,
-      },
-    }, testInfo.destructiveChanges);
-
     const start = Date.now();
-    const tests = runner.actualTests();
+
     try {
+      const runner = new IntegTestRunner({
+        test,
+        profile: request.profile,
+        env: {
+          AWS_REGION: request.region,
+        },
+      }, testInfo.destructiveChanges);
+
+      const tests = runner.actualTests();
+
       if (!tests || Object.keys(tests).length === 0) {
         throw new Error(`No tests defined for ${runner.testName}`);
       }
@@ -68,9 +69,9 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
     } catch (e) {
       failures.push(testInfo);
       workerpool.workerEmit({
-        reason: DiagnosticReason.TEST_FAILED,
+        reason: DiagnosticReason.TEST_ERROR,
         testName: `${testInfo.fileName} (${request.profile}/${request.region})`,
-        message: `Integration test failed: ${e}`,
+        message: `Error during integration test: ${e}`,
         duration: (Date.now() - start) / 1000,
       });
     }
@@ -89,6 +90,15 @@ export function snapshotTestWorker(testInfo: IntegTestInfo, options: SnapshotVer
   const failedTests = new Array<IntegTestWorkerConfig>();
   const start = Date.now();
   const test = new IntegTest(testInfo); // Hydrate the data record again
+
+  const timer = setTimeout(() => {
+    workerpool.workerEmit({
+      reason: DiagnosticReason.SNAPSHOT_ERROR,
+      testName: test.testName,
+      message: 'Test is taking a very long time',
+      duration: (Date.now() - start) / 1000,
+    });
+  }, 60_000);
 
   try {
     const runner = new IntegSnapshotRunner({ test });
@@ -125,9 +135,11 @@ export function snapshotTestWorker(testInfo: IntegTestInfo, options: SnapshotVer
     workerpool.workerEmit({
       message: e.message,
       testName: test.testName,
-      reason: DiagnosticReason.SNAPSHOT_FAILED,
+      reason: DiagnosticReason.SNAPSHOT_ERROR,
       duration: (Date.now() - start) / 1000,
     } as Diagnostic);
+  } finally {
+    clearTimeout(timer);
   }
 
   return failedTests;

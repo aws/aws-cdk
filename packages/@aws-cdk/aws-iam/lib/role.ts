@@ -277,15 +277,20 @@ export class Role extends Resource implements IRole {
       throw new Error('\'addGrantsToResources\' can only be passed if \'mutable: false\'');
     }
 
-    const importedRole = new Import(scope, id);
-    const roleArnAndScopeStackAccountComparison = Token.compareStrings(importedRole.env.account, scopeStack.account);
+    const roleArnAndScopeStackAccountComparison = Token.compareStrings(roleAccount ?? '', scopeStack.account);
     const equalOrAnyUnresolved = roleArnAndScopeStackAccountComparison === TokenComparison.SAME ||
       roleArnAndScopeStackAccountComparison === TokenComparison.BOTH_UNRESOLVED ||
       roleArnAndScopeStackAccountComparison === TokenComparison.ONE_UNRESOLVED;
+
+    // if we are returning an immutable role then the 'importedRole' is just a throwaway construct
+    // so give it a different id
+    const mutableRoleId = (options.mutable !== false && equalOrAnyUnresolved) ? id : `MutableRole${id}`;
+    const importedRole = new Import(scope, mutableRoleId);
+
     // we only return an immutable Role if both accounts were explicitly provided, and different
     return options.mutable !== false && equalOrAnyUnresolved
       ? importedRole
-      : new ImmutableRole(scope, `ImmutableRole${id}`, importedRole, options.addGrantsToResources ?? false);
+      : new ImmutableRole(scope, id, importedRole, options.addGrantsToResources ?? false);
   }
 
   /**
