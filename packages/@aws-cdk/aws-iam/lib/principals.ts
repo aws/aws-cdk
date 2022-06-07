@@ -606,7 +606,7 @@ export class FederatedPrincipal extends PrincipalBase {
 
   /**
    * The conditions under which the policy is in effect.
-   *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html
    */
   public readonly conditions: Conditions;
 
