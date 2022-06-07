@@ -1,14 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Names } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CloudFormationTemplate } from './cloudformation-template';
 import { DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY } from './common';
 import { CloudFormationProductVersion } from './product';
 import { ProductStack } from './product-stack';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
 
 /**
  * Properties for a ProductStackHistory.
