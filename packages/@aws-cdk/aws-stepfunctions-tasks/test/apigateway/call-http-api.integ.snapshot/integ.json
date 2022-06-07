@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-stepfunctions-tasks/test/apigateway/integ.call-http-api": {
+    "apigateway/integ.call-http-api": {
       "stacks": [
         "CallHttpApiInteg"
       ],

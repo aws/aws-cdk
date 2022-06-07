@@ -1,15 +1,15 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "files": {
-    "3f2f2e669dfa3a93efdf3faf7257d875b287206a5bab9484c4899b1d56322e68": {
+    "c7553a90baaf597ae7bb4196f9bfb163fa49102ba8d41a77a90bd96f7590bd78": {
       "source": {
-        "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ.template.json",
+        "path": "integ-user-pool.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "3f2f2e669dfa3a93efdf3faf7257d875b287206a5bab9484c4899b1d56322e68.json",
+          "objectKey": "c7553a90baaf597ae7bb4196f9bfb163fa49102ba8d41a77a90bd96f7590bd78.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
