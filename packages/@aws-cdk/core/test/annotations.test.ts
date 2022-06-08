@@ -8,7 +8,6 @@ const restore = process.env.CDK_BLOCK_DEPRECATIONS;
 describe('annotations', () => {
   afterEach(() => {
     process.env.CDK_BLOCK_DEPRECATIONS = restore; // restore to the original value
-
   });
 
   test('addDeprecation() annotates the usage of a deprecated API', () => {
@@ -28,7 +27,6 @@ describe('annotations', () => {
         message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
       },
     ]);
-
   });
 
   test('deduplicated per node based on "api"', () => {
@@ -64,7 +62,6 @@ describe('annotations', () => {
         message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
       },
     ]);
-
   });
 
   test('CDK_BLOCK_DEPRECATIONS will throw if a deprecated API is used', () => {
@@ -76,7 +73,6 @@ describe('annotations', () => {
     // THEN
     process.env.CDK_BLOCK_DEPRECATIONS = '1';
     expect(() => Annotations.of(c1).addDeprecation('foo', 'bar')).toThrow(/MyStack\/Hello: The API foo is deprecated: bar\. This API will be removed in the next major release/);
-
   });
 });
 

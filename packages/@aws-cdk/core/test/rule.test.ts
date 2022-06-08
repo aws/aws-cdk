@@ -25,8 +25,6 @@ describe('rule', () => {
         },
       },
     });
-
-
   });
 
   test('a template can contain multiple Rules', () => {
@@ -41,7 +39,5 @@ describe('rule', () => {
         Rule2: {},
       },
     });
-
-
   });
 });

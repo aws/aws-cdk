@@ -30,14 +30,11 @@ describe('resource', () => {
         },
       },
     });
-
-
   });
 
   test('resources must reside within a Stack and fail upon creation if not', () => {
     const root = new Root();
     expect(() => new CfnResource(root, 'R1', { type: 'ResourceType' })).toThrow();
-
   });
 
   test('all entities have a logical ID calculated based on their full path in the tree', () => {
@@ -50,8 +47,6 @@ describe('resource', () => {
 
     expect(withoutHash(stack.resolve(res1.logicalId))).toEqual('level1childoflevel1');
     expect(withoutHash(stack.resolve(res2.logicalId))).toEqual('level1level2level3childoflevel3');
-
-
   });
 
   test('resource.props can only be accessed by derived classes', () => {
@@ -65,8 +60,6 @@ describe('resource', () => {
         MyResource: { Type: 'My::Counter', Properties: { Count: 13 } },
       },
     });
-
-
   });
 
   test('resource attributes can be retrieved using getAtt(s) or attribute properties', () => {
@@ -95,8 +88,6 @@ describe('resource', () => {
         },
       },
     });
-
-
   });
 
   test('ARN-type resource attributes have some common functionality', () => {
@@ -122,8 +113,6 @@ describe('resource', () => {
         },
       },
     });
-
-
   });
 
   test('resource.addDependency(e) can be used to add a DependsOn on another resource', () => {
@@ -153,8 +142,6 @@ describe('resource', () => {
         Resource3: { Type: 'MyResourceType' },
       },
     });
-
-
   });
 
   test('if addDependency is called multiple times with the same resource, it will only appear once', () => {
@@ -187,7 +174,6 @@ describe('resource', () => {
         },
       },
     });
-
   });
 
   test('conditions can be attached to a resource', () => {
@@ -200,8 +186,6 @@ describe('resource', () => {
       Resources: { Resource: { Type: 'Type', Condition: 'MyCondition' } },
       Conditions: { MyCondition: { 'Fn::Not': [{ 'Fn::Equals': ['a', 'b'] }] } },
     });
-
-
   });
 
   test('creation/update/updateReplace/deletion policies can be set on a resource', () => {
@@ -241,8 +225,6 @@ describe('resource', () => {
         },
       },
     });
-
-
   });
 
   test('update policies UseOnlineResharding flag', () => {
@@ -261,8 +243,6 @@ describe('resource', () => {
         },
       },
     });
-
-
   });
 
   test('metadata can be set on a resource', () => {
@@ -285,14 +265,11 @@ describe('resource', () => {
         },
       },
     });
-
-
   });
 
   test('the "type" property is required when creating a resource', () => {
     const stack = new Stack();
     expect(() => new CfnResource(stack, 'Resource', { notypehere: true } as any)).toThrow();
-
   });
 
   test('removal policy is a high level abstraction of deletion policy used by l2', () => {
@@ -316,7 +293,6 @@ describe('resource', () => {
         Default2: { Type: 'T4', DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain' }, // implicit default
       },
     });
-
   });
 
   test('applyRemovalPolicy available for interface resources', () => {
@@ -409,7 +385,6 @@ describe('resource', () => {
         },
       },
     });
-
   });
 
   test('resource.ref returns the {Ref} token', () => {
@@ -417,7 +392,6 @@ describe('resource', () => {
     const r = new CfnResource(stack, 'MyResource', { type: 'R' });
 
     expect(stack.resolve(r.ref)).toEqual({ Ref: 'MyResource' });
-
   });
 
   describe('overrides', () => {
@@ -443,8 +417,6 @@ describe('resource', () => {
           },
         },
       });
-
-
     });
 
     test('addPropertyOverride() allows assigning an attribute of a different resource', () => {
@@ -474,8 +446,6 @@ describe('resource', () => {
           },
         },
       });
-
-
     });
 
     test('addOverride(p, null) will assign an "null" value', () => {
@@ -508,8 +478,6 @@ describe('resource', () => {
           },
         },
       });
-
-
     });
 
     test('addOverride(p, undefined) can be used to delete a value', () => {
@@ -542,8 +510,6 @@ describe('resource', () => {
           },
         },
       });
-
-
     });
 
     test('addOverride(p, undefined) will not create empty trees', () => {
@@ -567,8 +533,6 @@ describe('resource', () => {
           },
         },
       });
-
-
     });
 
     test('addDeletionOverride(p) and addPropertyDeletionOverride(pp) are sugar for `undefined`', () => {
@@ -603,8 +567,6 @@ describe('resource', () => {
           },
         },
       });
-
-
     });
 
     test('addOverride(p, v) will overwrite any non-objects along the path', () => {
@@ -641,7 +603,6 @@ describe('resource', () => {
           },
         },
       });
-
     });
 
     test('addOverride(p, v) will not split on escaped dots', () => {
@@ -674,7 +635,6 @@ describe('resource', () => {
           },
         },
       });
-
     });
 
     test('addPropertyOverride(pp, v) is a sugar for overriding properties', () => {
@@ -699,7 +659,6 @@ describe('resource', () => {
           },
         },
       });
-
     });
 
     test('overrides are applied after render', () => {
@@ -731,7 +690,6 @@ describe('resource', () => {
           },
         },
       });
-
     });
 
     test('overrides allow overriding one intrinsic with another', () => {
@@ -805,7 +763,6 @@ describe('resource', () => {
     });
 
     describe('using mutable properties', () => {
-
       test('can be used by derived classes to specify overrides before render()', () => {
         const stack = new Stack();
 
@@ -825,7 +782,6 @@ describe('resource', () => {
             },
           },
         });
-
       });
 
       test('"properties" is undefined', () => {
@@ -845,7 +801,6 @@ describe('resource', () => {
             },
           },
         });
-
       });
 
       test('"properties" is empty', () => {
@@ -866,7 +821,6 @@ describe('resource', () => {
             },
           },
         });
-
       });
     });
   });
@@ -891,8 +845,6 @@ describe('resource', () => {
          },
       },
     });
-
-
   });
 
   test('cross-stack construct dependencies are not rendered but turned into stack dependencies', () => {
@@ -915,8 +867,6 @@ describe('resource', () => {
       // Notice absence of 'DependsOn'
     });
     expect(stackB.dependencies.map(s => s.node.id)).toEqual(['StackA']);
-
-
   });
 
   test('enableVersionUpgrade can be set on a resource', () => {
@@ -937,8 +887,6 @@ describe('resource', () => {
         },
       },
     });
-
-
   });
 });
 

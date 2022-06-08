@@ -30,7 +30,6 @@ describe('output', () => {
       },
      },
     });
-
   });
 
   test('No export is created by default', () => {
@@ -45,8 +44,6 @@ describe('output', () => {
         },
       },
     });
-
-
   });
 
   test('importValue can be used to obtain a Fn::ImportValue expression', () => {
@@ -73,8 +70,6 @@ describe('output', () => {
         },
       },
     });
-
-
   });
 
   test('importValue used inside the same stack produces an error', () => {
@@ -89,8 +84,6 @@ describe('output', () => {
 
     // THEN
     expect(() => toCloudFormation(stack)).toThrow(/should only be used in a different Stack/);
-
-
   });
 
   test('error message if importValue is used and Output is not exported', () => {
@@ -109,8 +102,6 @@ describe('output', () => {
     expect(() => {
       toCloudFormation(stack2);
     }).toThrow(/Add an exportName to the CfnOutput/);
-
-
   });
 
   test('Verify maximum length of export name', () => {
@@ -120,7 +111,5 @@ describe('output', () => {
     expect(errors).toEqual([
       expect.stringContaining('Export name cannot exceed 255 characters'),
     ]);
-
-
   });
 });

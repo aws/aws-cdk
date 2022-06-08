@@ -99,8 +99,6 @@ describe('app', () => {
       '/stack2/s1c2/r2':
         [{ type: 'aws:cdk:logicalId', data: 's1c2r25F685FFF' }],
     });
-
-
   });
 
   test('context can be passed through CDK_CONTEXT', () => {
@@ -111,7 +109,6 @@ describe('app', () => {
     const prog = new App();
     expect(prog.node.tryGetContext('key1')).toEqual('val1');
     expect(prog.node.tryGetContext('key2')).toEqual('val2');
-
   });
 
   test('context passed through CDK_CONTEXT has precedence', () => {
@@ -127,7 +124,6 @@ describe('app', () => {
     });
     expect(prog.node.tryGetContext('key1')).toEqual('val1');
     expect(prog.node.tryGetContext('key2')).toEqual('val2');
-
   });
 
   test('context from the command line can be used when creating the stack', () => {
@@ -152,7 +148,6 @@ describe('app', () => {
         },
       },
     });
-
   });
 
   test('setContext(k,v) can be used to set context programmatically', () => {
@@ -162,18 +157,15 @@ describe('app', () => {
       },
     });
     expect(prog.node.tryGetContext('foo')).toEqual('bar');
-
   });
 
   test('setContext(k,v) cannot be called after stacks have been added because stacks may use the context', () => {
     const prog = new App();
     new Stack(prog, 's1');
     expect(() => prog.node.setContext('foo', 'bar')).toThrow();
-
   });
 
   test('app.synth() performs validation first and if there are errors, it returns the errors', () => {
-
     class Child extends Construct {
       constructor(scope: Construct, id: string) {
         super(scope, id);
@@ -183,7 +175,6 @@ describe('app', () => {
     }
 
     class Parent extends Stack {
-
     }
 
     const app = new App();
@@ -193,8 +184,6 @@ describe('app', () => {
     new Child(parent, 'C2');
 
     expect(() => app.synth()).toThrow(/Validation failed with the following errors/);
-
-
   });
 
   test('app.synthesizeStack(stack) will return a list of missing contextual information', () => {
@@ -248,8 +237,6 @@ describe('app', () => {
         },
       },
     ]);
-
-
   });
 
   /**
@@ -264,7 +251,6 @@ describe('app', () => {
     });
 
     expect(assembly.runtime).toEqual({ libraries: {} });
-
   });
 
   test('deep stack is shown and synthesized properly', () => {
@@ -288,8 +274,6 @@ describe('app', () => {
         template: { Resources: { Res: { Type: 'CDK::BottomStack::Resource' } } },
       },
     ]);
-
-
   });
 
   test('stacks are written to the assembly file in a topological order', () => {
@@ -314,8 +298,6 @@ describe('app', () => {
     expect(artifactsIds.indexOf('StackA')).toBeLessThan(artifactsIds.indexOf('StackC'));
     expect(artifactsIds.indexOf('StackB')).toBeLessThan(artifactsIds.indexOf('StackC'));
     expect(artifactsIds.indexOf('StackC')).toBeLessThan(artifactsIds.indexOf('StackD'));
-
-
   });
 
   test('application support any type in context', () => {
@@ -330,8 +312,6 @@ describe('app', () => {
     expect(app.node.tryGetContext('isString')).toEqual('string');
     expect(app.node.tryGetContext('isNumber')).toEqual(10);
     expect(app.node.tryGetContext('isObject')).toEqual({ isString: 'string', isNumber: 10 });
-
-
   });
 });
 
