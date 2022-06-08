@@ -59,6 +59,20 @@ abstract class ReportGroupBase extends cdk.Resource implements IReportGroup {
 }
 
 /**
+ * The type of reports in the report group.
+ */
+export enum ReportGroupType {
+  /**
+   * The report group contains test reports.
+   */
+  TEST = 'TEST',
+  /**
+   * The report group contains code coverage reports.
+   */
+  CODE_COVERAGE = 'CODE_COVERAGE'
+}
+
+/**
  * Construction properties for {@link ReportGroup}.
  */
 export interface ReportGroupProps {
@@ -93,6 +107,16 @@ export interface ReportGroupProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: cdk.RemovalPolicy;
+
+  /**
+   * The type of report group. This can be one of the following values:
+   *
+   * - **TEST** - The report group contains test reports.
+   * - **CODE_COVERAGE** - The report group contains code coverage reports.
+   *
+   * @default TEST
+   */
+  readonly type?: ReportGroupType
 }
 
 /**
@@ -125,7 +149,7 @@ export class ReportGroup extends ReportGroupBase {
     });
 
     const resource = new CfnReportGroup(this, 'Resource', {
-      type: 'TEST',
+      type: props.type ? props.type : ReportGroupType.TEST,
       exportConfig: {
         exportConfigType: props.exportBucket ? 'S3' : 'NO_EXPORT',
         s3Destination: props.exportBucket
