@@ -200,7 +200,7 @@ const USE_AWS_MANAGED_KEY = 'AWS_MANAGED_KEY';
 const USE_DEFAULT_KEY = 'AWS_DEFAULT_KEY';
 
 /**
- * Magic parameter value that will cause the bootstrap-template.yml to create a CMK
+ * Predefined value that will cause the bootstrap-template.yml to create a CMK
  */
 const CREATE_NEW_KEY = '';
 
