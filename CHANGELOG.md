@@ -4595,8 +4595,8 @@ required to defined a `UserPool`.
 * **batch:** the `allocationStrategy` property was moved from `ComputeEnvironmentProps` to the `ComputeResources` interface, which is where it semantically belongs.
 * **custom-resources:** `getDataString` was renamed to `getResponseField`.
 * **custom-resources:** `getData` was renamed to `getResponseFieldReference`.
-* **custom-resources:** `catchErrorPattern` was renamed to `ignoreErrorCodesMatching`. In addition, a few synth time validations were added when using this property. See [Error Handling](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/custom-resources#error-handling-1) for details.
-* **custom-resources:** `policyStatements` property was removed in favor of a required `policy` property. Refer to [Execution Policy](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/custom-resources#execution-policy-1) for more details.
+* **custom-resources:** `catchErrorPattern` was renamed to `ignoreErrorCodesMatching`. In addition, a few synth time validations were added when using this property. See [Error Handling](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/custom-resources#error-handling-1) for details.
+* **custom-resources:** `policyStatements` property was removed in favor of a required `policy` property. Refer to [Execution Policy](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/custom-resources#execution-policy-1) for more details.
 
 ### Features
 
@@ -7289,8 +7289,8 @@ $ cdk --version
 
 ### Highlights
 
-- **A new construct library for AWS Step Functions** ([docs](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-stepfunctions/README.md)). The library provides rich APIs for modeling state machines by exposing a programmatic interface for [Amazon State Language](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-amazon-states-language.html).
-- **A new construct library for Amazon S3 bucket deployments** ([docs](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-s3-deployment/README.md)). You can use now automatically populate an S3 Bucket from a .zip file or a local directory. This is a building block for end-to-end support for static websites in the AWS CDK.
+- **A new construct library for AWS Step Functions** ([docs](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-stepfunctions/README.md)). The library provides rich APIs for modeling state machines by exposing a programmatic interface for [Amazon State Language](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-amazon-states-language.html).
+- **A new construct library for Amazon S3 bucket deployments** ([docs](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-s3-deployment/README.md)). You can use now automatically populate an S3 Bucket from a .zip file or a local directory. This is a building block for end-to-end support for static websites in the AWS CDK.
 
 ### Bug Fixes
 
@@ -8852,7 +8852,7 @@ Warning: this is a warning (at /Stack/Construct)
 [#436]: https://github.com/aws/aws-cdk/issues/436
 [#439]: https://github.com/aws/aws-cdk/issues/439
 [#86]: https://github.com/aws/aws-cdk/pull/86
-[@aws-cdk/cloudwatch documentation]: https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cloudwatch/README.md
+[@aws-cdk/cloudwatch documentation]: https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cloudwatch/README.md
 [@cookejames]: https://github.com/cookejames
 [@doug-aws]: https://github.com/Doug-AWS
 [@eladb]: https://github.com/eladb

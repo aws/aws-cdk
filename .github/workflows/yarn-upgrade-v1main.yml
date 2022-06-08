@@ -1,0 +1,134 @@
+name: Yarn Upgrade v1-main
+
+on:
+  schedule:
+    # Every wednesday at 13:37 UTC
+    - cron: 37 13 * * 3
+  workflow_dispatch: {}
+
+jobs:
+  upgrade:
+    name: Yarn Upgrade
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check Out
+        uses: actions/checkout@v3
+        with:
+          ref: v1-main
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 12
+
+      - name: Locate Yarn cache
+        id: yarn-cache
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Restore Yarn cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |-
+            ${{ runner.os }}-yarn-
+      - name: Yarn Install
+        run: yarn install --frozen-lockfile
+      - name: Install Tools
+        run: |-
+          npm -g install lerna npm-check-updates@^9.0.0
+      - name: Build CLI
+        run: cd packages/aws-cdk && ../../scripts/buildup
+      - name: Build Integ Runner
+        run: cd packages/@aws-cdk/integ-runner && ../../../scripts/buildup
+      - name: List Mono-Repo Packages
+        id: list-packages
+        # These need to be ignored from the `ncu` runs!
+        run: |-
+          echo -n "::set-output name=list::"
+          node -p "$(lerna ls --all --json 2>/dev/null).map(item => item.name).join(',')"
+      - name: Run "ncu -u"
+        # We special-case @types/node because we want to stay on the current major (minimum supported node release)
+        # We special-case @types/fs-extra because the current major (9.x) is broken with @types/node >= 10
+        # We special-case aws-sdk because of breaking changes with TS interface exports in recent minor versions - https://github.com/aws/aws-sdk-js/issues/3453
+        # We special-case typescript because it's not semantically versionned
+        # We special-case constructs because we want to stay in control of the minimum compatible version
+        # We special-case lerna because we have a patch on it that stops applying if Lerna upgrades. Remove this once https://github.com/lerna/lerna/pull/2874 releases.
+        # We special-case aws-sdk-mock because of breaking changes in type exports https://github.com/dwyl/aws-sdk-mock/pull/260. We are not respecting `@ts-ignore`
+        run: |-
+          # Upgrade dependencies at repository root
+          ncu --upgrade --filter=@types/node,@types/fs-extra --target=minor
+          ncu --upgrade --filter=typescript --target=patch
+          ncu --upgrade --reject=@types/node,@types/fs-extra,constructs,typescript,lerna --target=minor
+          # Upgrade all the packages
+          lerna exec --parallel ncu -- --upgrade --filter=@types/node,@types/fs-extra --target=minor
+          lerna exec --parallel ncu -- --upgrade --filter=typescript --target=patch
+          lerna exec --parallel ncu -- --upgrade --reject='@types/node,@types/fs-extra,constructs,typescript,aws-sdk,aws-sdk-mock,${{ steps.list-packages.outputs.list }}'  --target=minor
+
+      # This will ensure the current lockfile is up-to-date with the dependency specifications (necessary for "yarn update" to run)
+      - name: Run "yarn install"
+        run: yarn install
+
+      - name: Run "yarn upgrade"
+        run: yarn upgrade
+
+      - name: Regenerate CLI attributions
+        run: cd packages/aws-cdk && yarn pkglint
+      - name: Regenerate Integ Runner attributions
+        run: cd packages/@aws-cdk/integ-runner && yarn pkglint
+
+      # Next, create and upload the changes as a patch file. This will later be downloaded to create a pull request
+      # Creating a pull request requires write permissions and it's best to keep write privileges isolated.
+      - name: Create Patch
+        run: |-
+          git add .
+          git diff --patch --staged > ${{ runner.temp }}/upgrade.patch
+      - name: Upload Patch
+        uses: actions/upload-artifact@v3
+        with:
+          name: upgrade.patch
+          path: ${{ runner.temp }}/upgrade.patch
+
+  pr:
+    name: Create Pull Request
+    needs: upgrade
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out
+        uses: actions/checkout@v3
+        with:
+          ref: v1-main
+
+      - name: Download patch
+        uses: actions/download-artifact@v3
+        with:
+          name: upgrade.patch
+          path: ${{ runner.temp }}
+
+      - name: Apply patch
+        run: '[ -s ${{ runner.temp }}/upgrade.patch ] && git apply ${{ runner.temp
+          }}/upgrade.patch || echo "Empty patch. Skipping."'
+
+      - name: Make Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          # Git commit details
+          branch: automation/yarn-upgrade
+          commit-message: |-
+            chore: npm-check-updates && yarn upgrade
+            Ran npm-check-updates and yarn upgrade to keep the `yarn.lock` file up-to-date.
+          # Pull Request details
+          title: 'chore: npm-check-updates && yarn upgrade'
+          body: |-
+            Ran npm-check-updates and yarn upgrade to keep the `yarn.lock` file up-to-date.
+          labels: contribution/core,dependencies,auto-approve
+          team-reviewers: aws-cdk-team
+          # Github prevents further Github actions to be run if the default Github token is used.
+          # Instead use a privileged token here, so further GH actions can be triggered on this PR.
+          token: ${{ secrets.PROJEN_GITHUB_TOKEN }}

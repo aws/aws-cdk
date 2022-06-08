@@ -418,7 +418,7 @@
      }
     },
     "Handler": "iam-query.handler",
-    "Runtime": "nodejs12.x"
+    "Runtime": "nodejs14.x"
    },
    "DependsOn": [
     "LambdaIAMDefaultPolicy96DEA124",
@@ -514,7 +514,7 @@
      }
     },
     "Handler": "iam-query.handler",
-    "Runtime": "nodejs12.x"
+    "Runtime": "nodejs14.x"
    },
    "DependsOn": [
     "testFailServiceRole9FF22F85"

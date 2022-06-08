@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "files": {
     "be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824": {
       "source": {
@@ -14,20 +14,20 @@
         }
       }
     },
-    "3a0df356c74318460e8172175150c9d21465d77dcfdda6f7686b4b10af25db19": {
+    "45851fd5f84b5067f2232644bbf86f53d313030a3fca7b2e0282f2017629dfc1": {
       "source": {
-        "path": "/home/hallcor/work/aws-cdk-fork",
+        "path": "/Users/rdjurasaj/code/robertd/aws-cdk",
         "packaging": "zip"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "3a0df356c74318460e8172175150c9d21465d77dcfdda6f7686b4b10af25db19.zip",
+          "objectKey": "45851fd5f84b5067f2232644bbf86f53d313030a3fca7b2e0282f2017629dfc1.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "b45f276b7cf0f059173ac995a23975e42973813f5920b0064ce65aca50ac0ac4": {
+    "36a7a3ab9847ebaf10f0a4868ce89a361d5d8a013aca88bfce64ff26d7c3c916": {
       "source": {
         "path": "aws-cdk-firehose-delivery-stream-s3-all-properties.template.json",
         "packaging": "file"
@@ -35,7 +35,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b45f276b7cf0f059173ac995a23975e42973813f5920b0064ce65aca50ac0ac4.json",
+          "objectKey": "36a7a3ab9847ebaf10f0a4868ce89a361d5d8a013aca88bfce64ff26d7c3c916.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
