@@ -43,7 +43,6 @@ describe('bundling', () => {
       'alpine',
       'cool', 'command',
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
   });
 
   test('bundling with image from asset', () => {
@@ -85,7 +84,6 @@ describe('bundling', () => {
       'run', '--rm',
       tag,
     ])).toEqual(true);
-
   });
 
   test('bundling with image from asset with platform', () => {
@@ -122,7 +120,6 @@ describe('bundling', () => {
       'run', '--rm',
       tag,
     ])).toEqual(true);
-
   });
 
   test('throws in case of spawnSync error', () => {
@@ -138,7 +135,6 @@ describe('bundling', () => {
 
     const image = DockerImage.fromRegistry('alpine');
     expect(() => image.run()).toThrow(/UnknownError/);
-
   });
 
   test('throws if status is not 0', () => {
@@ -153,14 +149,12 @@ describe('bundling', () => {
 
     const image = DockerImage.fromRegistry('alpine');
     expect(() => image.run()).toThrow(/\[Status -1\]/);
-
   });
 
   test('BundlerDockerImage json is the bundler image name by default', () => {
     const image = DockerImage.fromRegistry('alpine');
 
     expect(image.toJSON()).toEqual('alpine');
-
   });
 
   test('BundlerDockerImage json is the bundler image if building an image', () => {
@@ -185,7 +179,6 @@ describe('bundling', () => {
     expect(image.image).toEqual(`cdk-${tagHash}`);
     expect(image.toJSON()).toEqual(imageHash);
     expect(fingerprintStub.calledWith('docker-path', sinon.match({ extraHash: JSON.stringify({}) }))).toEqual(true);
-
   });
 
   test('custom dockerfile is passed through to docker exec', () => {
@@ -206,8 +199,6 @@ describe('bundling', () => {
     expect(spawnSyncStub.calledOnce).toEqual(true);
     const expected = path.join(imagePath, 'my-dockerfile');
     expect(new RegExp(`-f ${expected}`).test(spawnSyncStub.firstCall.args[1]?.join(' ') ?? '')).toEqual(true);
-
-
   });
 
   test('fromAsset', () => {
@@ -226,7 +217,6 @@ describe('bundling', () => {
     });
     expect(image).toBeDefined();
     expect(image.image).toBeDefined();
-
   });
 
   test('custom entrypoint is passed through to docker exec', () => {
@@ -265,7 +255,6 @@ describe('bundling', () => {
       '--cool-entrypoint-arg',
       'cool', 'command',
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
   });
 
   test('cp utility copies from an image', () => {
@@ -287,8 +276,6 @@ describe('bundling', () => {
     expect(spawnSyncStub.calledWith(sinon.match.any, ['create', 'alpine'], sinon.match.any)).toEqual(true);
     expect(spawnSyncStub.calledWith(sinon.match.any, ['cp', `${containerId}:/foo/bar`, '/baz'], sinon.match.any)).toEqual(true);
     expect(spawnSyncStub.calledWith(sinon.match.any, ['rm', '-v', containerId])).toEqual(true);
-
-
   });
 
   test('cp utility cleans up after itself', () => {
@@ -320,7 +307,6 @@ describe('bundling', () => {
 
     // THEN
     expect(spawnSyncStub.calledWith(sinon.match.any, ['rm', '-v', containerId])).toEqual(true);
-
   });
 
   test('cp utility copies to a temp dir of outputPath is omitted', () => {
@@ -340,8 +326,6 @@ describe('bundling', () => {
 
     // THEN
     expect(/cdk-docker-cp-/.test(tempPath)).toEqual(true);
-
-
   });
 
   test('adding user provided security-opt', () => {
@@ -381,7 +365,6 @@ describe('bundling', () => {
       'alpine',
       'cool', 'command',
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
   });
 
   test('ensure selinux docker mount', () => {
@@ -423,7 +406,6 @@ describe('bundling', () => {
       'alpine',
       'cool', 'command',
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
   });
 
   test('ensure selinux docker mount on linux with selinux disabled', () => {
@@ -465,8 +447,8 @@ describe('bundling', () => {
       'alpine',
       'cool', 'command',
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
   });
+
   test('ensure no selinux docker mount if selinuxenabled isn\'t an available command', () => {
     // GIVEN
     sinon.stub(process, 'platform').value('linux');
@@ -506,6 +488,5 @@ describe('bundling', () => {
       'alpine',
       'cool', 'command',
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
   });
 });
