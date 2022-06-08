@@ -30,8 +30,6 @@ describe('parameter', () => {
         },
       },
     });
-
-
   });
 
   test('parameters are tokens, so they can be assigned without .ref and their Ref will be taken', () => {
@@ -39,6 +37,5 @@ describe('parameter', () => {
     const param = new CfnParameter(stack, 'MyParam', { type: 'String' });
 
     expect(stack.resolve(param)).toEqual({ Ref: 'MyParam' });
-
   });
 });
