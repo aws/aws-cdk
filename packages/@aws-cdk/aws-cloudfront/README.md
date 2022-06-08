@@ -361,7 +361,7 @@ on every request:
 // A Lambda@Edge function added to default behavior of a Distribution
 // and triggered on every request
 const myFunc = new cloudfront.experimental.EdgeFunction(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
@@ -392,7 +392,7 @@ If the stack is in `us-east-1`, a "normal" `lambda.Function` can be used instead
 ```ts
 // Using a lambda Function instead of an EdgeFunction for stacks in `us-east-`.
 const myFunc = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
@@ -405,14 +405,14 @@ you can also set a specific stack ID for each Lambda@Edge.
 // Setting stackIds for EdgeFunctions that can be referenced from different applications
 // on the same account.
 const myFunc1 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction1', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler1')),
   stackId: 'edge-lambda-stack-id-1',
 });
 
 const myFunc2 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction2', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler2')),
   stackId: 'edge-lambda-stack-id-2',

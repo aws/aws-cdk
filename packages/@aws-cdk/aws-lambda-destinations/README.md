@@ -30,7 +30,7 @@ import * as sns from '@aws-cdk/aws-sns';
 const myTopic = new sns.Topic(this, 'Topic');
 
 const myFn = new lambda.Function(this, 'Fn', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
   // sns topic for successful invocations
@@ -47,7 +47,7 @@ import * as sqs from '@aws-cdk/aws-sqs';
 const deadLetterQueue = new sqs.Queue(this, 'DeadLetterQueue');
 
 const myFn = new lambda.Function(this, 'Fn', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline('// your code'),
   // sqs queue for unsuccessful invocations
@@ -135,7 +135,7 @@ invocation record:
 declare const destinationFn: lambda.Function;
 
 const sourceFn = new lambda.Function(this, 'Source', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
   // auto-extract on success
