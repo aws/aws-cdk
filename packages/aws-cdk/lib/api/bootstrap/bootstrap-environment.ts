@@ -1,4 +1,4 @@
-import { info } from 'console';
+import {info} from 'console';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { warning } from '../../logging';
@@ -139,7 +139,7 @@ export class Bootstrapper {
     if (params.ecrKey) {
       // key is given
       kmsEcrKeyId = params.ecrKey;
-    } else if (params.ecrKey === CREATE_NEW_KEY) {
+    } else if (params.ecrKey === '') {
       // key shall be created
       kmsEcrKeyId = CREATE_NEW_KEY;
     }
