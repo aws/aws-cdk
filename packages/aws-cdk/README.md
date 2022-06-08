@@ -561,6 +561,11 @@ $ cdk bootstrap --show-template > bootstrap-template.yaml
 $ cdk bootstrap --template bootstrap-template.yaml
 ```
 
+If have the need to encrypt the bootstrap artifacts, you can do this via the parameters `--bootstrap-ecr-key`,
+`--bootstrap-kms-key-id` and `--bootstrap-customer-key`. You have the possibility to provide own key id's or 
+let cdk cdk create one for you.
+
+
 ### `cdk doctor`
 
 Inspect the current command-line environment and configurations, and collect information that can be useful for
