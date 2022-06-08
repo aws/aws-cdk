@@ -13,6 +13,7 @@ import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
 import { TagManager } from './tag-manager';
 import { Tokenization } from './token';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
+import { FeatureFlags } from './feature-flags';
 
 export interface CfnResourceProps {
   /**
@@ -141,7 +142,8 @@ export class CfnResource extends CfnRefElement {
           'AWS::Redshift::Cluster',
         ];
 
-        if (!snapshottableResourceTypes.includes(this.cfnResourceType)) {
+        if (FeatureFlags.of(this).isEnabled(cxapi.VALIDATE_SNAPSHOT_REMOVAL_POLICY) &&
+          !snapshottableResourceTypes.includes(this.cfnResourceType)) {
           throw new Error(`${this.cfnResourceType} does not support snapshot removal policy`);
         }
 

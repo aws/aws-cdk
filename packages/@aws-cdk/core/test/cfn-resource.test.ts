@@ -1,3 +1,4 @@
+import { VALIDATE_SNAPSHOT_REMOVAL_POLICY } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as core from '../lib';
 
@@ -59,7 +60,7 @@ describe('cfn resource', () => {
     ];
 
     test.each(supportedResources) (
-      'works as expected when used on supported resources', (resourceType) => {
+      'works as expected when used on supported resources (old behavior)', (resourceType) => {
         // GIVEN
         const app = new core.App();
         const stack = new core.Stack(app, 'TestStack');
@@ -81,15 +82,39 @@ describe('cfn resource', () => {
       },
     );
 
-    test('fails on unsupported resources', () => {
+    test.each(supportedResources) (
+      'works as expected when used on supported resources (under feature flag)', (resourceType) => {
+        // GIVEN
+        const app = new core.App({ context: { [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true } });
+        const stack = new core.Stack(app, 'TestStack');
+        const resource = new core.CfnResource(stack, 'Resource', {
+          type: resourceType,
+        });
+
+        // WHEN
+        resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT);
+
+        // THEN
+        expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+          Resource: {
+            Type: resourceType,
+            DeletionPolicy: 'Snapshot',
+            UpdateReplacePolicy: 'Snapshot',
+          },
+        });
+      },
+    );
+
+    test('fails on unsupported resources (under feature flag)', () => {
       // GIVEN
-      const stack = new core.Stack();
+      const app = new core.App({ context: { [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true } });
+      const stack = new core.Stack(app);
       const resource = new core.CfnResource(stack, 'Resource', {
         type: 'AWS::Lambda::Function',
       });
 
       // THEN
-      expect(() => resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT)).toThrowError();
+      expect(() => resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT)).toThrowError('AWS::Lambda::Function does not support snapshot removal policy');
     });
   });
 
