@@ -315,7 +315,7 @@ describe('State Machine', () => {
     beforeEach(() => {
       const app = new cdk.App();
       stack = new cdk.Stack(app, "Base", {
-        env: { account: "111111111111", region: "stack-region" },
+        env: { account: "122345678900", region: "stack-region" },
       });
     });
 
@@ -335,12 +335,12 @@ describe('State Machine', () => {
       });
 
       test("the state machine's account is taken from the current stack", () => {
-        expect(mach.env.account).toBe("111111111111");
+        expect(mach.env.account).toBe("122345678900");
       });
 
       test("the state machine's account is taken from the current stack", () => {
         expect(mach.stateMachineArn).toBe(
-          "arn:aws:states:stack-region:111111111111:stateMachine:machine-name"
+          "arn:aws:states:stack-region:122345678900:stateMachine:machine-name"
         );
       });
     });
