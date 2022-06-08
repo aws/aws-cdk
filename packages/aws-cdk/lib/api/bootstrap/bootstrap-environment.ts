@@ -134,7 +134,7 @@ export class Bootstrapper {
         params.createCustomerMasterKey === false || currentKmsKeyId === undefined ? USE_AWS_MANAGED_KEY :
           undefined);
 
-    let kmsEcrKeyId = undefined;
+    let kmsEcrKeyId = USE_DEFAULT_KEY;
 
     if (params.ecrKey) {
       // key is given
@@ -142,9 +142,6 @@ export class Bootstrapper {
     } else if (params.ecrKey === CREATE_NEW_KEY) {
       // key shall be created
       kmsEcrKeyId = CREATE_NEW_KEY;
-    } else if (params.ecrKey === undefined) {
-      // use an AWS managed key
-      kmsEcrKeyId = USE_DEFAULT_KEY;
     }
 
     return current.update(
