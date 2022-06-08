@@ -21,8 +21,6 @@ describe('cfn resource', () => {
         },
       });
       expect(called).toEqual(true);
-
-
     });
 
     test('renders "Properties" for a resource that has only properties set to "false"', () => {
@@ -43,8 +41,6 @@ describe('cfn resource', () => {
           },
         },
       });
-
-
     });
   });
 
@@ -135,8 +131,6 @@ describe('cfn resource', () => {
         UpdateReplacePolicy: 'Retain',
       },
     });
-
-
   });
 
   test('can switch off updating Update policy', () => {
@@ -157,8 +151,6 @@ describe('cfn resource', () => {
         DeletionPolicy: 'Retain',
       },
     });
-
-
   });
 
   test('can add metadata', () => {
@@ -179,8 +171,6 @@ describe('cfn resource', () => {
         },
       },
     });
-
-
   });
 
   test('can read metadata', () => {
@@ -192,8 +182,6 @@ describe('cfn resource', () => {
 
     // THEN
     expect(resource.getMetadata('Beep')).toEqual('Boop');
-
-
   });
 
   test('subclasses can override "shouldSynthesize" to lazy-determine if the resource should be included', () => {
@@ -222,8 +210,6 @@ describe('cfn resource', () => {
         // No DependsOn!
       },
     });
-
-
   });
 
   test('CfnResource cannot be created outside Stack', () => {
@@ -233,8 +219,6 @@ describe('cfn resource', () => {
         type: 'Some::Resource',
       });
     }).toThrow(/should be created in the scope of a Stack, but no Stack found/);
-
-
   });
 
   /**
@@ -249,7 +233,5 @@ describe('cfn resource', () => {
         type: 'Some::Resource',
       });
     }).toThrow(/should be created in the scope of a Stack, but no Stack found/);
-
-
   });
 });
