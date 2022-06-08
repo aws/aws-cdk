@@ -2210,7 +2210,24 @@ describe('grants', () => {
                 ],
               },
               {
-                Ref: 'AWS::NoValue',
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table/index/*',
+                  ],
+                ],
               },
             ],
           },
@@ -2292,7 +2309,7 @@ describe('import', () => {
             'Effect': 'Allow',
             'Resource': [
               tableArn,
-              { 'Ref': 'AWS::NoValue' },
+              `${tableArn}/index/*`,
             ],
           },
         ],
@@ -2359,7 +2376,24 @@ describe('import', () => {
                 ],
               },
               {
-                'Ref': 'AWS::NoValue',
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      'Ref': 'AWS::Partition',
+                    },
+                    ':dynamodb:',
+                    {
+                      'Ref': 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      'Ref': 'AWS::AccountId',
+                    },
+                    ':table/MyTable/index/*',
+                  ],
+                ],
               },
             ],
           },

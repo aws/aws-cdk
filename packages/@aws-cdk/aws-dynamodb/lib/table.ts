@@ -586,6 +586,8 @@ export interface TableAttributes {
    * to grant permissions for indexes as well as the table itself.
    *
    * @default - no global indexes
+   * 
+   * @deprecated grant methods grant permssions for indexes without specifying this parameter.
    */
   readonly globalIndexes?: string[];
 
@@ -597,6 +599,8 @@ export interface TableAttributes {
    * to grant permissions for indexes as well as the table itself.
    *
    * @default - no local indexes
+   * 
+   * @deprecated grant methods grant permssions for indexes without specifying this parameter.
    */
   readonly localIndexes?: string[];
 }
@@ -1078,8 +1082,8 @@ export class Table extends TableBase {
       public readonly tableArn: string;
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: kms.IKey;
-      protected readonly hasIndex = (attrs.globalIndexes ?? []).length > 0 ||
-        (attrs.localIndexes ?? []).length > 0;
+      // Always to grant permissions to indexes
+      protected readonly hasIndex = true;
 
       constructor(_tableArn: string, tableName: string, tableStreamArn?: string) {
         super(scope, id);
