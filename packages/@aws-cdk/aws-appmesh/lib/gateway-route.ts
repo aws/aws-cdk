@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnGatewayRoute } from './appmesh.generated';
 import { GatewayRouteSpec } from './gateway-route-spec';
@@ -62,6 +63,15 @@ export interface GatewayRouteProps extends GatewayRouteBaseProps {
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/gateway-routes.html
  */
 export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
+  /**
+   * Create an immutable {@link IGatewayRoute} based on a low-level
+   * {@link CfnGatewayRoute}.
+   */
+  public static fromCfnGatewayRoute(cfnGatewayRoute: CfnGatewayRoute) {
+    const uniqueId = `FromCfnGatewayRoute${Names.uniqueId(cfnGatewayRoute)}`;
+    return GatewayRoute.fromGatewayRouteArn(cfnGatewayRoute, uniqueId, cfnGatewayRoute.attrArn);
+  }
+
   /**
    * Import an existing GatewayRoute given an ARN
    */

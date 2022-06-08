@@ -1215,4 +1215,62 @@ describe('gateway route', () => {
     expect(gatewayRoute.virtualGateway.mesh.meshName).toEqual(meshName);
 
   });
+
+  test('Can create a Gateway Route from a CfnGatewayRoute', () => {
+    const app = new cdk.App();
+    // GIVEN
+    const stack = new cdk.Stack(app, 'Imports', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const meshName = 'test-mesh';
+    const virtualGatewayName = 'test-gateway';
+
+    // WHEN
+    const mesh = appmesh.Mesh.fromMeshName(stack, 'Mesh', meshName);
+    const gateway = mesh.addVirtualGateway('VirtualGateway', {
+      virtualGatewayName: virtualGatewayName,
+    });
+    const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+      virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+      virtualServiceName: 'target.local',
+    });
+    const cfnGatewayRoute = new appmesh.CfnGatewayRoute(stack, 'GatewayRoute', {
+      meshName: mesh.meshName,
+      virtualGatewayName: gateway.virtualGatewayName,
+      spec: {
+        httpRoute: {
+          action: {
+            target: {
+              virtualService: {
+                virtualServiceName: virtualService.virtualServiceName,
+              },
+            },
+          },
+          match: {
+            prefix: '/',
+          },
+        },
+      },
+    });
+    appmesh.GatewayRoute.fromCfnGatewayRoute(cfnGatewayRoute);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
+      VirtualGatewayName: Match.anyValue(),
+      Spec: {
+        HttpRoute: {
+          Match: {
+            Prefix: '/',
+          },
+          Action: {
+            Target: {
+              VirtualService: {
+                VirtualServiceName: Match.anyValue(),
+              },
+            },
+          },
+        },
+      },
+    });
+  });
 });
