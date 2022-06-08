@@ -157,7 +157,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       resourceName,
     });
-    return this.fromStateMachineArn(scope, id, stateMachineArn)
+    return this.fromStateMachineArn(scope, id, stateMachineArn);
   }
 
   public abstract readonly stateMachineArn: string;

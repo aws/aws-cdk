@@ -309,29 +309,29 @@ describe('State Machine', () => {
     });
   });
 
-  describe("StateMachine.fromStateMachineName()", () => {
+  describe('StateMachine.fromStateMachineName()', () => {
     let stack: cdk.Stack;
 
     beforeEach(() => {
       const app = new cdk.App();
-      stack = new cdk.Stack(app, "Base", {
-        env: { account: '111111111111', region: "stack-region" },
+      stack = new cdk.Stack(app, 'Base', {
+        env: { account: '111111111111', region: 'stack-region' },
       });
     });
 
-    describe("for a state machine in a different account and region", () => {
+    describe('for a state machine in a different account and region', () => {
       let mach: stepfunctions.IStateMachine;
 
       beforeEach(() => {
         mach = stepfunctions.StateMachine.fromStateMachineName(
           stack,
-          "iMach",
-          "machine-name"
+          'iMach',
+          'machine-name',
         );
       });
 
       test("the state machine's region is taken from the current stack", () => {
-        expect(mach.env.region).toBe("stack-region");
+        expect(mach.env.region).toBe('stack-region');
       });
 
       test("the state machine's account is taken from the current stack", () => {
@@ -340,7 +340,7 @@ describe('State Machine', () => {
 
       test("the state machine's account is taken from the current stack", () => {
         expect(mach.stateMachineArn).toBe(
-          "arn:aws:states:stack-region:111111111111:stateMachine:machine-name"
+          'arn:aws:states:stack-region:111111111111:stateMachine:machine-name',
         );
       });
     });
