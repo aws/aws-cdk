@@ -1,4 +1,4 @@
-import {info} from 'console';
+import { info } from 'console';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { warning } from '../../logging';
@@ -210,6 +210,8 @@ const CREATE_NEW_KEY = '';
  * An empty string is the empty array (instead of `['']`).
  */
 function splitCfnArray(xs: string | undefined): string[] {
-  if (xs === '' || xs === undefined) { return []; }
+  if (xs === '' || xs === undefined) {
+    return [];
+  }
   return xs.split(',');
 }
