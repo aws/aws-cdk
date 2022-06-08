@@ -101,7 +101,7 @@ describe('bundling', () => {
     fingerprintStub.callsFake(() => imageHash);
     const platform = 'linux/someArch99';
 
-    const image = DockerImage.fromBuild('docker-path', { platform });
+    const image = DockerImage.fromBuild('docker-path', { platform: platform });
     image.run();
 
     const tagHash = crypto.createHash('sha256').update(JSON.stringify({
@@ -121,6 +121,44 @@ describe('bundling', () => {
       tag,
     ])).toEqual(true);
   });
+
+  test('bundling with image from asset with target stage', () => {
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    const imageHash = '123456abcdef';
+    const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
+    fingerprintStub.callsFake(() => imageHash);
+    const targetStage = 'i-love-testing';
+
+    const image = DockerImage.fromBuild('docker-path', { targetStage: targetStage });
+    image.run();
+
+    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
+      path: 'docker-path',
+      targetStage,
+    })).digest('hex');
+    const tag = `cdk-${tagHash}`;
+
+    expect(spawnSyncStub.firstCall.calledWith('docker', [
+      'build', '-t', tag,
+      '--target', targetStage,
+      'docker-path',
+    ])).toEqual(true);
+
+    expect(spawnSyncStub.secondCall.calledWith('docker', [
+      'run', '--rm',
+      tag,
+    ])).toEqual(true);
+
+  });
+
 
   test('throws in case of spawnSync error', () => {
     sinon.stub(child_process, 'spawnSync').returns({
