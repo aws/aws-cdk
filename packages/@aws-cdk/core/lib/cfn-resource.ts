@@ -108,7 +108,12 @@ export class CfnResource extends CfnRefElement {
    * to be replaced.
    *
    * The resource can be deleted (`RemovalPolicy.DESTROY`), or left in your AWS
-   * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
+   * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`). In some
+   * cases, a snapshot can be taken of the resource prior to deletion
+   * (`RemovalPolicy.SNAPSHOT`). A list of resources that support this policy
+   * can be found in the following link:
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html#aws-attribute-deletionpolicy-options
    */
   public applyRemovalPolicy(policy: RemovalPolicy | undefined, options: RemovalPolicyOptions = {}) {
     policy = policy || options.default || RemovalPolicy.RETAIN;
@@ -125,6 +130,21 @@ export class CfnResource extends CfnRefElement {
         break;
 
       case RemovalPolicy.SNAPSHOT:
+        // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
+        const snapshottableResourceTypes = [
+          'AWS::EC2::Volume',
+          'AWS::ElastiCache::CacheCluster',
+          'AWS::ElastiCache::ReplicationGroup',
+          'AWS::Neptune::DBCluster',
+          'AWS::RDS::DBCluster',
+          'AWS::RDS::DBInstance',
+          'AWS::Redshift::Cluster',
+        ];
+
+        if (!snapshottableResourceTypes.includes(this.cfnResourceType)) {
+          throw new Error(`${this.cfnResourceType} does not support snapshot removal policy`);
+        }
+
         deletionPolicy = CfnDeletionPolicy.SNAPSHOT;
         break;
 

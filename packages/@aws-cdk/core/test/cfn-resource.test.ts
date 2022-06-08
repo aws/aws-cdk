@@ -47,6 +47,52 @@ describe('cfn resource', () => {
     });
   });
 
+  describe('snapshot removal policy', () => {
+    const supportedResources = [
+      'AWS::EC2::Volume',
+      'AWS::ElastiCache::CacheCluster',
+      'AWS::ElastiCache::ReplicationGroup',
+      'AWS::Neptune::DBCluster',
+      'AWS::RDS::DBCluster',
+      'AWS::RDS::DBInstance',
+      'AWS::Redshift::Cluster',
+    ];
+
+    test.each(supportedResources) (
+      'works as expected when used on supported resources', (resourceType) => {
+        // GIVEN
+        const app = new core.App();
+        const stack = new core.Stack(app, 'TestStack');
+        const resource = new core.CfnResource(stack, 'Resource', {
+          type: resourceType,
+        });
+
+        // WHEN
+        resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT);
+
+        // THEN
+        expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+          Resource: {
+            Type: resourceType,
+            DeletionPolicy: 'Snapshot',
+            UpdateReplacePolicy: 'Snapshot',
+          },
+        });
+      },
+    );
+
+    test('fails on unsupported resources', () => {
+      // GIVEN
+      const stack = new core.Stack();
+      const resource = new core.CfnResource(stack, 'Resource', {
+        type: 'AWS::Lambda::Function',
+      });
+
+      // THEN
+      expect(() => resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT)).toThrowError();
+    });
+  });
+
   test('applyRemovalPolicy default includes Update policy', () => {
     // GIVEN
     const app = new core.App();
