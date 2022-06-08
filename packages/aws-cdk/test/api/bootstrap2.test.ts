@@ -314,6 +314,8 @@ describe('Bootstrapping v2', () => {
       ['', ''],
       // Use given key
       ['my-key-id', 'my-key-id'],
+      ['AWS_DEFAULT_KEY', 'AWS_DEFAULT_KEY'],
+      ['arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab', 'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab'],
     ])('(new stack) ecrKey=%p => parameter becomes %p ', async (ecrKey, paramKeyId) => {
       // GIVEN: no existing stack
 
