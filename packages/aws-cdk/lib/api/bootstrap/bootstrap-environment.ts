@@ -198,7 +198,7 @@ export class Bootstrapper {
 const USE_AWS_MANAGED_KEY = 'AWS_MANAGED_KEY';
 
 /**
- * Magic parameter value that will cause the bootstrap-template.yml to NOT create a CMK but use the default key
+ * Predefined value indicating that the default key must be used for bootstrap-template.yml, no CMK will be created.
  */
 const USE_DEFAULT_KEY = 'AWS_DEFAULT_KEY';
 
