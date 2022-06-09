@@ -223,6 +223,36 @@ describe('Product', () => {
     expect(snapshotExists).toBe(true);
   }),
 
+  test('product test from product stack history with nested directory', () => {
+    const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
+
+    const productStackHistory = new ProductStackHistory(stack, 'MyProductStackHistory', {
+      productStack: productStack,
+      currentVersionName: 'v1',
+      currentVersionLocked: false,
+      directory: 'product-stack-snapshots/nested',
+    });
+
+    new sns.Topic(productStack, 'SNSTopicProductStack');
+
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        productStackHistory.currentVersion(),
+      ],
+    });
+
+    const assembly = app.synth();
+    expect(assembly.artifacts.length).toEqual(2);
+    expect(assembly.stacks[0].assets.length).toBe(1);
+    expect(assembly.stacks[0].assets[0].path).toEqual('StackProductStack190B56DE.product.template.json');
+
+    const expectedTemplateFileKey = 'StackMyProductStackHistory8F05371C.StackProductStack190B56DE.v1.product.template.json';
+    const snapshotExists = fs.existsSync(path.join('product-stack-snapshots/nested', expectedTemplateFileKey));
+    expect(snapshotExists).toBe(true);
+  }),
+
   test('fails product test from product stack when template changes and locked', () => {
     const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
 
