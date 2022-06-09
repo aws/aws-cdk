@@ -18,7 +18,7 @@
     "@types/prettier": "2.6.0",
     "jest": "^27.5.1",
     "ts-jest": "^27.1.4",
-    "ts-node": "^10.7.0",
+    "ts-node": "^10.8.1",
     "typescript": "~3.9.7"
   },
   "dependencies": {

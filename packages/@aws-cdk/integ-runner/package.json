@@ -57,7 +57,7 @@
     "mock-fs": "^4.14.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.5.0",
+    "@types/jest": "^27.5.2",
     "@types/node": "^10.17.60",
     "@types/workerpool": "^6.1.0",
     "@types/yargs": "^15.0.14",
@@ -86,7 +86,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "nozem": {
     "ostools": [
