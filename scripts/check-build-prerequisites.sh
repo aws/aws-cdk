@@ -40,7 +40,7 @@ app_v=$(node -p 'process.version')
 
 # Check for version 10.*.* - 29.*.*
 echo -e "Checking node version... \c"
-if [ $(node -p "const [major, minor, _patch] = process.version.slice(1).split('.'); major > 14 || (major === 14 && minor >= 15)") = 'true' ]
+if [ $(node -p "const [major, minor, _patch] = process.version.slice(1).split('.').map((v) => parseInt(v, 10)); major > 14 || (major === 14 && minor >= 15)") = 'true' ]
 then
     echo "Ok (${app_v})"
 else
