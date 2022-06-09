@@ -16,7 +16,7 @@
     "postinstall": "patch-package --error-on-fail"
   },
   "devDependencies": {
-    "@types/prettier": "2.6.3",
+    "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "cdk-generate-synthetic-examples": "^0.1.12",
     "conventional-changelog-cli": "^2.2.2",
@@ -34,7 +34,6 @@
     "typescript": "~3.9.10"
   },
   "resolutions": {
-    "@types/prettier": "2.6.0",
     "colors": "1.4.0",
     "markdown-it": "^12.3.2",
     "string-width": "^4.2.3"
