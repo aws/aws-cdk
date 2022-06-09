@@ -34,9 +34,10 @@
     "typescript": "~3.9.10"
   },
   "resolutions": {
+    "@types/prettier": "2.6.0",
     "colors": "1.4.0",
-    "string-width": "^4.2.3",
-    "markdown-it": "^12.3.2"
+    "markdown-it": "^12.3.2",
+    "string-width": "^4.2.3"
   },
   "repository": {
     "type": "git",
