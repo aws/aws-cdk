@@ -231,7 +231,7 @@ export class SecretStringValueBeta1 {
    * // Creates a new IAM user, access and secret keys, and stores the secret access key in a Secret.
    * const user = new iam.User(this, 'User');
    * const accessKey = new iam.AccessKey(this, 'AccessKey', { user });
-   * const secret = new secrets.Secret(this, 'Secret', { 
+   * const secret = new secrets.Secret(this, 'Secret', {
    * 	secretStringValue: accessKey.secretAccessKey,
    * });
    * ```
