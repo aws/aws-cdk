@@ -1,4 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { Annotations } from './annotations';
 import { CfnCondition } from './cfn-condition';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 /* eslint-disable import/order */
@@ -142,9 +143,14 @@ export class CfnResource extends CfnRefElement {
           'AWS::Redshift::Cluster',
         ];
 
-        if (FeatureFlags.of(this).isEnabled(cxapi.VALIDATE_SNAPSHOT_REMOVAL_POLICY) &&
-          !snapshottableResourceTypes.includes(this.cfnResourceType)) {
-          throw new Error(`${this.cfnResourceType} does not support snapshot removal policy`);
+        // error if flag is set, warn if flag is not
+        const problematicSnapshotPolicy = !snapshottableResourceTypes.includes(this.cfnResourceType);
+        if (problematicSnapshotPolicy) {
+          if (FeatureFlags.of(this).isEnabled(cxapi.VALIDATE_SNAPSHOT_REMOVAL_POLICY) ) {
+            throw new Error(`${this.cfnResourceType} does not support snapshot removal policy`);
+          } else {
+            Annotations.of(this).addWarning(`${this.cfnResourceType} does not support snapshot removal policy. This policy will be ignored.`);
+          }
         }
 
         deletionPolicy = CfnDeletionPolicy.SNAPSHOT;

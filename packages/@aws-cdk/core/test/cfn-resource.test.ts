@@ -1,6 +1,7 @@
 import { VALIDATE_SNAPSHOT_REMOVAL_POLICY } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as core from '../lib';
+import { getWarnings } from './util';
 
 describe('cfn resource', () => {
   describe('._toCloudFormation', () => {
@@ -100,6 +101,26 @@ describe('cfn resource', () => {
         });
       },
     );
+
+    test('warns on unsupported resources (without feature flag)', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app);
+      const resource = new core.CfnResource(stack, 'Resource', {
+        type: 'AWS::Lambda::Function',
+      });
+
+      // WHEN
+      resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT);
+
+      // THEN
+      expect(getWarnings(app.synth())).toEqual([
+        {
+          path: '/Default/Resource',
+          message: 'AWS::Lambda::Function does not support snapshot removal policy. This policy will be ignored.',
+        },
+      ]);
+    });
 
     test('fails on unsupported resources (under feature flag)', () => {
       // GIVEN
