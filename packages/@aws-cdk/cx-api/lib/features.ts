@@ -173,6 +173,16 @@ export const EFS_DEFAULT_ENCRYPTION_AT_REST = '@aws-cdk/aws-efs:defaultEncryptio
  */
 export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVersionProps';
 
+/**
+ * Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the
+ * `fn.currentVersion`.
+ *
+ * This flag correct incorporates Lambda Layer properties into the Lambda Function Version.
+ *
+ * See 'currentVersion' section in the aws-lambda module's README for more details.
+ *
+ * [PERMANENT]
+ */
 export const LAMBDA_RECOGNIZE_LAYER_VERSION = '@aws-cdk/aws-lambda:recognizeLayerVersion';
 
 /**
