@@ -59,17 +59,21 @@ export class NotificationsResourceHandler extends Construct {
   constructor(scope: Construct, id: string, props: NotificationsResourceHandlerProps = {}) {
     super(scope, id);
 
-    this.role = props.role ?? new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
+    if (props.role) {
+      this.role = props.role;
+    } else {
+      this.role = new iam.Role(this, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
 
-    this.role.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
-    );
-    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:PutBucketNotification'],
-      resources: ['*'],
-    }));
+      this.role.addManagedPolicy(
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+      );
+      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['s3:PutBucketNotification'],
+        resources: ['*'],
+      }));
+    }
 
     const resourceType = 'AWS::Lambda::Function';
     class InLineLambda extends cdk.CfnResource {
