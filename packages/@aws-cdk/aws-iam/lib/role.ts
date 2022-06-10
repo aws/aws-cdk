@@ -166,7 +166,8 @@ export interface FromRoleArnOptions {
   /**
    * Any policies created by this role will use this value as their ID, if specified.
    * Specify this if importing the same role in multiple stacks, and granting it
-   * different permissions in at least two stacks. If this is not specified,
+   * different permissions in at least two stacks. If this is not specified
+   * (or if the same name is specified in more than one stack),
    * a CloudFormation issue will result in the policy created in whichever stack
    * is deployed last overwriting the policies created by the others.
    *
