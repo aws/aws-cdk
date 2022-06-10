@@ -337,9 +337,9 @@ abstract class SecretBase extends Resource implements ISecret {
 
     if (this.encryptionKey) {
       // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html
-      this.encryptionKey.grantDecrypt(
-        new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal),
-      );
+      const principal =
+      new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, new iam.AccountPrincipal(Stack.of(this).account));
+      this.encryptionKey.grantDecrypt(principal);
     }
 
     const crossAccount = Token.compareStrings(Stack.of(this).account, grantee.grantPrincipal.principalAccount || '');
@@ -363,9 +363,9 @@ abstract class SecretBase extends Resource implements ISecret {
 
     if (this.encryptionKey) {
       // See https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html
-      this.encryptionKey.grantEncrypt(
-        new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal),
-      );
+      const principal =
+      new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, new iam.AccountPrincipal(Stack.of(this).account));
+      this.encryptionKey.grantEncrypt(principal);
     }
 
     // Throw if secret is not imported and it's shared cross account and no KMS key is provided
