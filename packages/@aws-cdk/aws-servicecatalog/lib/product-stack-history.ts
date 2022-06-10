@@ -94,7 +94,7 @@ export class ProductStackHistory extends Construct {
   public _writeTemplateToSnapshot(cfn: string) {
     const productStackSnapshotDirectory = this.props.directory || DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY;
     if (!fs.existsSync(productStackSnapshotDirectory)) {
-      fs.mkdirSync(productStackSnapshotDirectory);
+      fs.mkdirSync(productStackSnapshotDirectory, { recursive: true });
     }
     const templateFileKey = `${Names.uniqueId(this)}.${this.props.productStack.artifactId}.${this.props.currentVersionName}.product.template.json`;
     const templateFilePath = path.join(productStackSnapshotDirectory, templateFileKey);
