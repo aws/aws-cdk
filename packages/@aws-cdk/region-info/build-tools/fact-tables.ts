@@ -131,6 +131,9 @@ export const ELBV2_ACCOUNTS: { [region: string]: string } = {
   'us-gov-west-1': '048591011584',
   'us-west-1': '027434742980',
   'us-west-2': '797873946194',
+  'us-iso-east-1': '770363063475',
+  'us-iso-west-1': '121062877647',
+  'us-isob-east-1': '740734521339',
 };
 
 // https://aws.amazon.com/releasenotes/available-deep-learning-containers-images
