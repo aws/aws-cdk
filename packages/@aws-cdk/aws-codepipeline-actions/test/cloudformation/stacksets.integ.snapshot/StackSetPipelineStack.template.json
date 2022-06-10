@@ -1,860 +1,860 @@
 {
- "Resources": {
-  "ArtifactBucket7410C9EF": {
-   "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "aws-cdk:auto-delete-objects",
-      "Value": "true"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "ArtifactBucketPolicy4B4B7752": {
-   "Type": "AWS::S3::BucketPolicy",
-   "Properties": {
-    "Bucket": {
-     "Ref": "ArtifactBucket7410C9EF"
-    },
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "s3:DeleteObject*",
-        "s3:GetBucket*",
-        "s3:List*"
-       ],
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-          "Arn"
-         ]
-        }
-       },
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "ArtifactBucket7410C9EF",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "ArtifactBucket7410C9EF",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "ArtifactBucketAutoDeleteObjectsCustomResource0BB47FD6": {
-   "Type": "Custom::S3AutoDeleteObjects",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-      "Arn"
-     ]
-    },
-    "BucketName": {
-     "Ref": "ArtifactBucket7410C9EF"
-    }
-   },
-   "DependsOn": [
-    "ArtifactBucketPolicy4B4B7752"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-     }
-    ]
-   }
-  },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Ref": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232"
-     },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
+  "Resources": {
+    "ArtifactBucket7410C9EF": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "Tags": [
           {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE"
-            }
-           ]
+            "Key": "aws-cdk:auto-delete-objects",
+            "Value": "true"
           }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
-    },
-    "Timeout": 900,
-    "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs12.x",
-    "Description": {
-     "Fn::Join": [
-      "",
-      [
-       "Lambda function for auto-deleting objects in ",
-       {
-        "Ref": "ArtifactBucket7410C9EF"
-       },
-       " S3 bucket."
-      ]
-     ]
-    }
-   },
-   "DependsOn": [
-    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-   ]
-  },
-  "PipelineRoleD68726F7": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "codepipeline.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "PipelineRoleDefaultPolicyC7A05455": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "s3:Abort*",
-        "s3:DeleteObject*",
-        "s3:GetBucket*",
-        "s3:GetObject*",
-        "s3:List*",
-        "s3:PutObject",
-        "s3:PutObjectLegalHold",
-        "s3:PutObjectRetention",
-        "s3:PutObjectTagging",
-        "s3:PutObjectVersionTagging"
-       ],
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "ArtifactBucket7410C9EF",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "ArtifactBucket7410C9EF",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
+        ]
       },
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "PipelineCfnInstancesCodePipelineActionRole289FD062",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "PipelineCfnStackSetCodePipelineActionRole9EA256DB",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "PipelineSourceCodePipelineActionRoleC6F9E7F5",
-          "Arn"
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
-    "PolicyName": "PipelineRoleDefaultPolicyC7A05455",
-    "Roles": [
-     {
-      "Ref": "PipelineRoleD68726F7"
-     }
-    ]
-   }
-  },
-  "PipelineC660917D": {
-   "Type": "AWS::CodePipeline::Pipeline",
-   "Properties": {
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "PipelineRoleD68726F7",
-      "Arn"
-     ]
-    },
-    "Stages": [
-     {
-      "Actions": [
-       {
-        "ActionTypeId": {
-         "Category": "Source",
-         "Owner": "AWS",
-         "Provider": "S3",
-         "Version": "1"
+    "ArtifactBucketPolicy4B4B7752": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "ArtifactBucket7410C9EF"
         },
-        "Configuration": {
-         "S3Bucket": {
-          "Ref": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3Bucket3C8B9651"
-         },
-         "S3ObjectKey": {
-          "Fn::Join": [
-           "",
-           [
+        "PolicyDocument": {
+          "Statement": [
             {
-             "Fn::Select": [
-              0,
-              {
-               "Fn::Split": [
-                "||",
-                {
-                 "Ref": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3VersionKeyD144071F"
+              "Action": [
+                "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                    "Arn"
+                  ]
                 }
-               ]
-              }
-             ]
-            },
-            {
-             "Fn::Select": [
-              1,
-              {
-               "Fn::Split": [
-                "||",
+              },
+              "Resource": [
                 {
-                 "Ref": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3VersionKeyD144071F"
+                  "Fn::GetAtt": [
+                    "ArtifactBucket7410C9EF",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ArtifactBucket7410C9EF",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
                 }
-               ]
-              }
-             ]
+              ]
             }
-           ]
-          ]
-         }
-        },
-        "Name": "Source",
-        "OutputArtifacts": [
-         {
-          "Name": "SourceArtifact"
-         }
-        ],
-        "RoleArn": {
-         "Fn::GetAtt": [
-          "PipelineSourceCodePipelineActionRoleC6F9E7F5",
-          "Arn"
-         ]
-        },
-        "RunOrder": 1
-       }
-      ],
-      "Name": "Source"
-     },
-     {
-      "Actions": [
-       {
-        "ActionTypeId": {
-         "Category": "Deploy",
-         "Owner": "AWS",
-         "Provider": "CloudFormationStackSet",
-         "Version": "1"
-        },
-        "Configuration": {
-         "StackSetName": "TestStackSet",
-         "TemplatePath": "SourceArtifact::template.yaml",
-         "DeploymentTargets": "1111,2222",
-         "Regions": "us-east-1,eu-west-1",
-         "PermissionModel": "SELF_MANAGED",
-         "AdministrationRoleArn": {
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "ArtifactBucketAutoDeleteObjectsCustomResource0BB47FD6": {
+      "Type": "Custom::S3AutoDeleteObjects",
+      "Properties": {
+        "ServiceToken": {
           "Fn::GetAtt": [
-           "PipelineCfnStackSetStackSetAdministrationRoleAE2E9C50",
-           "Arn"
+            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+            "Arn"
           ]
-         }
         },
-        "InputArtifacts": [
-         {
-          "Name": "SourceArtifact"
-         }
-        ],
-        "Name": "StackSet",
-        "RoleArn": {
-         "Fn::GetAtt": [
-          "PipelineCfnStackSetCodePipelineActionRole9EA256DB",
-          "Arn"
-         ]
-        },
-        "RunOrder": 1
-       },
-       {
-        "ActionTypeId": {
-         "Category": "Deploy",
-         "Owner": "AWS",
-         "Provider": "CloudFormationStackInstances",
-         "Version": "1"
-        },
-        "Configuration": {
-         "StackSetName": "TestStackSet",
-         "DeploymentTargets": "1111,2222",
-         "Regions": "us-east-1,eu-west-1"
-        },
-        "Name": "Instances",
-        "RoleArn": {
-         "Fn::GetAtt": [
-          "PipelineCfnInstancesCodePipelineActionRole289FD062",
-          "Arn"
-         ]
-        },
-        "RunOrder": 2
-       }
+        "BucketName": {
+          "Ref": "ArtifactBucket7410C9EF"
+        }
+      },
+      "DependsOn": [
+        "ArtifactBucketPolicy4B4B7752"
       ],
-      "Name": "Cfn"
-     }
-    ],
-    "ArtifactStore": {
-     "Location": {
-      "Ref": "ArtifactBucket7410C9EF"
-     },
-     "Type": "S3"
-    }
-   },
-   "DependsOn": [
-    "PipelineRoleDefaultPolicyC7A05455",
-    "PipelineRoleD68726F7"
-   ]
-  },
-  "PipelineSourceCodePipelineActionRoleC6F9E7F5": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "PipelineSourceCodePipelineActionRoleDefaultPolicy2D565925": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "s3:GetBucket*",
-        "s3:GetObject*",
-        "s3:List*"
-       ],
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":s3:::",
-           {
-            "Ref": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3Bucket3C8B9651"
-           },
-           "/",
-           {
-            "Fn::Select": [
-             0,
-             {
-              "Fn::Split": [
-               "||",
-               {
-                "Ref": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3VersionKeyD144071F"
-               }
-              ]
-             }
-            ]
-           },
-           {
-            "Fn::Select": [
-             1,
-             {
-              "Fn::Split": [
-               "||",
-               {
-                "Ref": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3VersionKeyD144071F"
-               }
-              ]
-             }
-            ]
-           }
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":s3:::",
-           {
-            "Ref": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3Bucket3C8B9651"
-           }
-          ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": [
-        "s3:Abort*",
-        "s3:DeleteObject*",
-        "s3:PutObject",
-        "s3:PutObjectLegalHold",
-        "s3:PutObjectRetention",
-        "s3:PutObjectTagging",
-        "s3:PutObjectVersionTagging"
-       ],
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "ArtifactBucket7410C9EF",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "ArtifactBucket7410C9EF",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
-    "PolicyName": "PipelineSourceCodePipelineActionRoleDefaultPolicy2D565925",
-    "Roles": [
-     {
-      "Ref": "PipelineSourceCodePipelineActionRoleC6F9E7F5"
-     }
-    ]
-   }
-  },
-  "PipelineCfnStackSetCodePipelineActionRole9EA256DB": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
           ]
-         ]
-        }
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "PipelineCfnStackSetCodePipelineActionRoleDefaultPolicyE5B66E2C": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "cloudformation:CreateStackInstances",
-        "cloudformation:CreateStackSet",
-        "cloudformation:DescribeStackSet",
-        "cloudformation:DescribeStackSetOperation",
-        "cloudformation:ListStackInstances",
-        "cloudformation:UpdateStackSet"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":cloudformation:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":stackset/TestStackSet:*"
-         ]
-        ]
-       }
-      },
-      {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "PipelineCfnStackSetStackSetAdministrationRoleAE2E9C50",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": [
-        "s3:GetBucket*",
-        "s3:GetObject*",
-        "s3:List*"
-       ],
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "ArtifactBucket7410C9EF",
-          "Arn"
-         ]
         },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "ArtifactBucket7410C9EF",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          }
+        ]
       }
-     ],
-     "Version": "2012-10-17"
     },
-    "PolicyName": "PipelineCfnStackSetCodePipelineActionRoleDefaultPolicyE5B66E2C",
-    "Roles": [
-     {
-      "Ref": "PipelineCfnStackSetCodePipelineActionRole9EA256DB"
-     }
-    ]
-   }
-  },
-  "PipelineCfnStackSetStackSetAdministrationRoleAE2E9C50": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Condition": {
-        "StringLike": {
-         "aws:SourceArn": {
+    "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Timeout": 900,
+        "MemorySize": 128,
+        "Handler": "__entrypoint__.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs14.x",
+        "Description": {
           "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":cloudformation:*:",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":stackset/*"
-           ]
+            "",
+            [
+              "Lambda function for auto-deleting objects in ",
+              {
+                "Ref": "ArtifactBucket7410C9EF"
+              },
+              " S3 bucket."
+            ]
           ]
-         }
         }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "cloudformation.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "PipelineCfnStackSetStackSetAdministrationRoleDefaultPolicy55145C4E": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":iam::*:role/AWSCloudFormationStackSetExecutionRole"
-         ]
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
+      },
+      "DependsOn": [
+        "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+      ]
     },
-    "PolicyName": "PipelineCfnStackSetStackSetAdministrationRoleDefaultPolicy55145C4E",
-    "Roles": [
-     {
-      "Ref": "PipelineCfnStackSetStackSetAdministrationRoleAE2E9C50"
-     }
-    ]
-   }
-  },
-  "PipelineCfnInstancesCodePipelineActionRole289FD062": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
+    "PipelineRoleD68726F7": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codepipeline.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PipelineRoleDefaultPolicyC7A05455": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:Abort*",
+                "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ArtifactBucket7410C9EF",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ArtifactBucket7410C9EF",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineCfnInstancesCodePipelineActionRole289FD062",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "PipelineCfnStackSetCodePipelineActionRole9EA256DB",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "PipelineSourceCodePipelineActionRoleC6F9E7F5",
+                    "Arn"
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineRoleDefaultPolicyC7A05455",
+        "Roles": [
+          {
+            "Ref": "PipelineRoleD68726F7"
+          }
+        ]
+      }
+    },
+    "PipelineC660917D": {
+      "Type": "AWS::CodePipeline::Pipeline",
+      "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "PipelineRoleD68726F7",
+            "Arn"
           ]
-         ]
+        },
+        "Stages": [
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Source",
+                  "Owner": "AWS",
+                  "Provider": "S3",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "S3Bucket": {
+                    "Ref": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3Bucket3C8B9651"
+                  },
+                  "S3ObjectKey": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::Split": [
+                                "||",
+                                {
+                                  "Ref": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3VersionKeyD144071F"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::Split": [
+                                "||",
+                                {
+                                  "Ref": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3VersionKeyD144071F"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    ]
+                  }
+                },
+                "Name": "Source",
+                "OutputArtifacts": [
+                  {
+                    "Name": "SourceArtifact"
+                  }
+                ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineSourceCodePipelineActionRoleC6F9E7F5",
+                    "Arn"
+                  ]
+                },
+                "RunOrder": 1
+              }
+            ],
+            "Name": "Source"
+          },
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Deploy",
+                  "Owner": "AWS",
+                  "Provider": "CloudFormationStackSet",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "StackSetName": "TestStackSet",
+                  "TemplatePath": "SourceArtifact::template.yaml",
+                  "DeploymentTargets": "1111,2222",
+                  "Regions": "us-east-1,eu-west-1",
+                  "PermissionModel": "SELF_MANAGED",
+                  "AdministrationRoleArn": {
+                    "Fn::GetAtt": [
+                      "PipelineCfnStackSetStackSetAdministrationRoleAE2E9C50",
+                      "Arn"
+                    ]
+                  }
+                },
+                "InputArtifacts": [
+                  {
+                    "Name": "SourceArtifact"
+                  }
+                ],
+                "Name": "StackSet",
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineCfnStackSetCodePipelineActionRole9EA256DB",
+                    "Arn"
+                  ]
+                },
+                "RunOrder": 1
+              },
+              {
+                "ActionTypeId": {
+                  "Category": "Deploy",
+                  "Owner": "AWS",
+                  "Provider": "CloudFormationStackInstances",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "StackSetName": "TestStackSet",
+                  "DeploymentTargets": "1111,2222",
+                  "Regions": "us-east-1,eu-west-1"
+                },
+                "Name": "Instances",
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineCfnInstancesCodePipelineActionRole289FD062",
+                    "Arn"
+                  ]
+                },
+                "RunOrder": 2
+              }
+            ],
+            "Name": "Cfn"
+          }
+        ],
+        "ArtifactStore": {
+          "Location": {
+            "Ref": "ArtifactBucket7410C9EF"
+          },
+          "Type": "S3"
         }
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "PipelineCfnInstancesCodePipelineActionRoleDefaultPolicy38A9673E": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "cloudformation:CreateStackInstances",
-        "cloudformation:CreateStackSet",
-        "cloudformation:DescribeStackSet",
-        "cloudformation:DescribeStackSetOperation",
-        "cloudformation:ListStackInstances",
-        "cloudformation:UpdateStackSet"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":cloudformation:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":stackset/TestStackSet:*"
-         ]
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
+      },
+      "DependsOn": [
+        "PipelineRoleDefaultPolicyC7A05455",
+        "PipelineRoleD68726F7"
+      ]
     },
-    "PolicyName": "PipelineCfnInstancesCodePipelineActionRoleDefaultPolicy38A9673E",
-    "Roles": [
-     {
-      "Ref": "PipelineCfnInstancesCodePipelineActionRole289FD062"
-     }
-    ]
-   }
+    "PipelineSourceCodePipelineActionRoleC6F9E7F5": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PipelineSourceCodePipelineActionRoleDefaultPolicy2D565925": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3Bucket3C8B9651"
+                      },
+                      "/",
+                      {
+                        "Fn::Select": [
+                          0,
+                          {
+                            "Fn::Split": [
+                              "||",
+                              {
+                                "Ref": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3VersionKeyD144071F"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "Fn::Select": [
+                          1,
+                          {
+                            "Fn::Split": [
+                              "||",
+                              {
+                                "Ref": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3VersionKeyD144071F"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3Bucket3C8B9651"
+                      }
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:Abort*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ArtifactBucket7410C9EF",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ArtifactBucket7410C9EF",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineSourceCodePipelineActionRoleDefaultPolicy2D565925",
+        "Roles": [
+          {
+            "Ref": "PipelineSourceCodePipelineActionRoleC6F9E7F5"
+          }
+        ]
+      }
+    },
+    "PipelineCfnStackSetCodePipelineActionRole9EA256DB": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PipelineCfnStackSetCodePipelineActionRoleDefaultPolicyE5B66E2C": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "cloudformation:CreateStackInstances",
+                "cloudformation:CreateStackSet",
+                "cloudformation:DescribeStackSet",
+                "cloudformation:DescribeStackSetOperation",
+                "cloudformation:ListStackInstances",
+                "cloudformation:UpdateStackSet"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":cloudformation:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":stackset/TestStackSet:*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineCfnStackSetStackSetAdministrationRoleAE2E9C50",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ArtifactBucket7410C9EF",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ArtifactBucket7410C9EF",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineCfnStackSetCodePipelineActionRoleDefaultPolicyE5B66E2C",
+        "Roles": [
+          {
+            "Ref": "PipelineCfnStackSetCodePipelineActionRole9EA256DB"
+          }
+        ]
+      }
+    },
+    "PipelineCfnStackSetStackSetAdministrationRoleAE2E9C50": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "StringLike": {
+                  "aws:SourceArn": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":cloudformation:*:",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":stackset/*"
+                      ]
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "cloudformation.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PipelineCfnStackSetStackSetAdministrationRoleDefaultPolicy55145C4E": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":iam::*:role/AWSCloudFormationStackSetExecutionRole"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineCfnStackSetStackSetAdministrationRoleDefaultPolicy55145C4E",
+        "Roles": [
+          {
+            "Ref": "PipelineCfnStackSetStackSetAdministrationRoleAE2E9C50"
+          }
+        ]
+      }
+    },
+    "PipelineCfnInstancesCodePipelineActionRole289FD062": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PipelineCfnInstancesCodePipelineActionRoleDefaultPolicy38A9673E": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "cloudformation:CreateStackInstances",
+                "cloudformation:CreateStackSet",
+                "cloudformation:DescribeStackSet",
+                "cloudformation:DescribeStackSetOperation",
+                "cloudformation:ListStackInstances",
+                "cloudformation:UpdateStackSet"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":cloudformation:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":stackset/TestStackSet:*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineCfnInstancesCodePipelineActionRoleDefaultPolicy38A9673E",
+        "Roles": [
+          {
+            "Ref": "PipelineCfnInstancesCodePipelineActionRole289FD062"
+          }
+        ]
+      }
+    }
+  },
+  "Parameters": {
+    "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
+    },
+    "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
+    },
+    "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824ArtifactHash76F8FCF2": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
+    },
+    "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3Bucket3C8B9651": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2\""
+    },
+    "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3VersionKeyD144071F": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2\""
+    },
+    "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2ArtifactHashA83BA1E9": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2\""
+    }
   }
- },
- "Parameters": {
-  "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
-  },
-  "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
-  },
-  "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824ArtifactHash76F8FCF2": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
-  },
-  "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3Bucket3C8B9651": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2\""
-  },
-  "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3VersionKeyD144071F": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2\""
-  },
-  "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2ArtifactHashA83BA1E9": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2\""
-  }
- }
 }

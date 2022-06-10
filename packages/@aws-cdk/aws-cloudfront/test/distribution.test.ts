@@ -854,7 +854,7 @@ describe('with Lambda@Edge functions', () => {
 
   test('with incompatible env vars', () => {
     const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('whateverwithenv'),
       handler: 'index.handler',
       environment: {
@@ -880,7 +880,7 @@ describe('with Lambda@Edge functions', () => {
   test('with singleton function', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: 'singleton-for-cloudfront',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('code'),
       handler: 'index.handler',
     });
@@ -904,7 +904,7 @@ describe('with Lambda@Edge functions', () => {
             {
               EventType: 'origin-request',
               LambdaFunctionARN: {
-                Ref: 'SingletonLambdasingletonforcloudfrontCurrentVersion0078406348a0962a52448a200cd0dbc0e22edb2a',
+                Ref: 'SingletonLambdasingletonforcloudfrontCurrentVersion00784063008ecc45a35dc7c5ca3ba4584c8e9625',
               },
             },
           ],

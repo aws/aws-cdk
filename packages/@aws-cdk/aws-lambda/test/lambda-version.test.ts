@@ -160,7 +160,7 @@ describe('lambda version', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
@@ -168,7 +168,7 @@ describe('lambda version', () => {
 
     // WHEN
     new lambda.Function(stack, 'OtherFn', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
       environment: {
