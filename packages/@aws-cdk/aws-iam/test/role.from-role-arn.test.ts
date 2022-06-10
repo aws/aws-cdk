@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
-import { App, Aws, CfnElement, Lazy, Stack } from '@aws-cdk/core';
-import { AnyPrincipal, ArnPrincipal, IRole, Policy, PolicyStatement, Role } from '../lib';
+import { App, Aws, CfnElement, CfnResource, Lazy, Stack } from '@aws-cdk/core';
+import { AnyPrincipal, ArnPrincipal, IRole, Policy, PolicyStatement, Role, Grant } from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -323,6 +323,34 @@ describe('IAM Role.fromRoleArn', () => {
 
         test("does NOT generate a default Policy resource pointing at the imported role's physical name", () => {
           Template.fromStack(roleStack).resourceCountIs('AWS::IAM::Policy', 0);
+        });
+      });
+    });
+
+    describe('imported with a user specified default policy name', () => {
+      test('user specified default policy is used when fromRoleArn() creates a default policy', () => {
+        roleStack = new Stack(app, 'RoleStack');
+        new CfnResource(roleStack, 'SomeResource', {
+          type: 'CDK::Test::SomeResource',
+        });
+        importedRole = Role.fromRoleArn(roleStack, 'ImportedRole',
+          `arn:aws:iam::${roleAccount}:role/${roleName}`, { defaultPolicyName: 'UserSpecifiedDefaultPolicy' });
+
+        Grant.addToPrincipal({
+          actions: ['service:DoAThing'],
+          grantee: importedRole,
+          resourceArns: ['*'],
+        });
+
+        Template.fromStack(roleStack).templateMatches({
+          Resources: {
+            ImportedRoleUserSpecifiedDefaultPolicy7CBF6E85: {
+              Type: 'AWS::IAM::Policy',
+              Properties: {
+                PolicyName: 'ImportedRoleUserSpecifiedDefaultPolicy7CBF6E85',
+              },
+            },
+          },
         });
       });
     });

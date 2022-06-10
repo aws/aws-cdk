@@ -162,6 +162,17 @@ export interface FromRoleArnOptions {
    * @default false
    */
   readonly addGrantsToResources?: boolean;
+
+  /**
+   * Any policies created by this role will use this value as their ID, if specified.
+   * Specify this if importing the same role in multiple stacks, and granting it
+   * different permissions in at least two stacks. If this is not specified,
+   * a CloudFormation issue will result in the policy created in whichever stack
+   * is deployed last overwriting the policies created by the others.
+   *
+   * @default 'Policy'
+   */
+  readonly defaultPolicyName?: string;
 }
 
 /**
@@ -206,12 +217,15 @@ export class Role extends Resource implements IRole {
       public readonly roleArn = roleArn;
       public readonly roleName = roleName;
       private readonly attachedPolicies = new AttachedPolicies();
+      private readonly defaultPolicyName?: string;
       private defaultPolicy?: Policy;
 
       constructor(_scope: Construct, _id: string) {
         super(_scope, _id, {
           account: roleAccount,
         });
+
+        this.defaultPolicyName = options.defaultPolicyName;
       }
 
       public addToPolicy(statement: PolicyStatement): boolean {
@@ -220,7 +234,7 @@ export class Role extends Resource implements IRole {
 
       public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
         if (!this.defaultPolicy) {
-          this.defaultPolicy = new Policy(this, 'Policy');
+          this.defaultPolicy = new Policy(this, this.defaultPolicyName ?? 'Policy');
           this.attachInlinePolicy(this.defaultPolicy);
         }
         this.defaultPolicy.addStatements(statement);
