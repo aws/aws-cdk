@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import { App, Aws, CfnElement, CfnResource, Lazy, Stack } from '@aws-cdk/core';
-import { AnyPrincipal, ArnPrincipal, IRole, Policy, PolicyStatement, Role, Grant } from '../lib';
+import { AnyPrincipal, ArnPrincipal, Grant, IRole, Policy, PolicyStatement, Role } from '../lib';
 
 /* eslint-disable quote-props */
 
