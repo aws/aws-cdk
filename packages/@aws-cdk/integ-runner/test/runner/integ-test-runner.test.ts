@@ -3,7 +3,7 @@ import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY } from '@aws-cdk/cx-api';
 import { SynthFastOptions, DestroyOptions, ListOptions, SynthOptions, DeployOptions } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
-import { IntegTestRunner } from '../../lib/runner';
+import { IntegTestRunner, IntegTest } from '../../lib/runner';
 import { MockCdkProvider } from '../helpers';
 
 let cdkMock: MockCdkProvider;
@@ -55,8 +55,10 @@ describe('IntegTest runIntegTests', () => {
     // WHEN
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.test-with-snapshot.js',
-      directory: 'test/test-data',
+      test: new IntegTest({
+        fileName: 'test/test-data/integ.test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
+      }),
     });
     integTest.runIntegTestCase({
       testCaseName: 'integ.test-with-snapshot',
@@ -78,7 +80,7 @@ describe('IntegTest runIntegTests', () => {
       stacks: ['test-stack'],
     });
     expect(deployMock).toHaveBeenCalledWith({
-      app: 'cdk-integ.out.test-with-snapshot',
+      app: 'node integ.test-with-snapshot.js',
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
@@ -107,8 +109,10 @@ describe('IntegTest runIntegTests', () => {
     // WHEN
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.integ-test1.js',
-      directory: 'test/test-data',
+      test: new IntegTest({
+        fileName: 'test/test-data/integ.integ-test1.js',
+        discoveryRoot: 'test/test-data',
+      }),
     });
     integTest.runIntegTestCase({
       testCaseName: 'integ.integ-test1',
@@ -149,8 +153,10 @@ describe('IntegTest runIntegTests', () => {
     // WHEN
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.test-with-snapshot-assets-diff.js',
-      directory: 'test/test-data',
+      test: new IntegTest({
+        fileName: 'test/test-data/integ.test-with-snapshot-assets-diff.js',
+        discoveryRoot: 'test/test-data',
+      }),
     });
     integTest.runIntegTestCase({
       testCaseName: 'integ.test-with-snapshot-assets-diff',
@@ -206,8 +212,10 @@ describe('IntegTest runIntegTests', () => {
     // WHEN
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.integ-test1.js',
-      directory: 'test/test-data',
+      test: new IntegTest({
+        fileName: 'test/test-data/integ.integ-test1.js',
+        discoveryRoot: 'test/test-data',
+      }),
     });
     integTest.runIntegTestCase({
       testCaseName: 'integ.integ-test1',
@@ -224,8 +232,10 @@ describe('IntegTest runIntegTests', () => {
     // WHEN
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.integ-test1.js',
-      directory: 'test/test-data',
+      test: new IntegTest({
+        fileName: 'test/test-data/integ.integ-test1.js',
+        discoveryRoot: 'test/test-data',
+      }),
     });
     integTest.runIntegTestCase({
       testCaseName: 'integ.integ-test1',
@@ -242,8 +252,10 @@ describe('IntegTest runIntegTests', () => {
     // WHEN
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.integ-test1.js',
-      directory: 'test',
+      test: new IntegTest({
+        fileName: 'test/test-data/integ.integ-test1.js',
+        discoveryRoot: 'test',
+      }),
     });
 
     // THEN
@@ -261,8 +273,10 @@ describe('IntegTest runIntegTests', () => {
     // WHEN
     new IntegTestRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.integ-test1.js',
-      directory: 'test/test-data',
+      test: new IntegTest({
+        fileName: 'test/test-data/integ.integ-test1.js',
+        discoveryRoot: 'test/test-data',
+      }),
     });
 
     // THEN
@@ -280,8 +294,10 @@ describe('IntegTest runIntegTests', () => {
     // WHEN
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.integ-test2.js',
-      directory: 'test',
+      test: new IntegTest({
+        fileName: 'test/test-data/integ.integ-test2.js',
+        discoveryRoot: 'test',
+      }),
     });
 
     // THEN
@@ -307,9 +323,11 @@ describe('IntegTest runIntegTests', () => {
     // WHEN
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.integ-test1.js',
+      test: new IntegTest({
+        fileName: 'test/test-data/integ.integ-test1.js',
+        discoveryRoot: 'test/test-data',
+      }),
       profile: 'test-profile',
-      directory: 'test/test-data',
     });
     integTest.runIntegTestCase({
       testCaseName: 'integ.integ-test1',
@@ -348,8 +366,10 @@ describe('IntegTest runIntegTests', () => {
   test('with hooks', () => {
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.test-with-snapshot-assets.js',
-      directory: 'test/test-data',
+      test: new IntegTest({
+        fileName: 'test/test-data/integ.test-with-snapshot-assets.js',
+        discoveryRoot: 'test/test-data',
+      }),
     });
     integTest.runIntegTestCase({
       testCaseName: 'integ.test-with-snapshot-assets',
@@ -393,8 +413,10 @@ describe('IntegTest runIntegTests', () => {
     // WHEN
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.test-with-snapshot.js',
-      directory: 'test/test-data',
+      test: new IntegTest({
+        fileName: 'test/test-data/integ.test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
+      }),
     });
     integTest.runIntegTestCase({
       testCaseName: 'integ.test-with-snapshot',
@@ -429,8 +451,10 @@ describe('IntegTest runIntegTests', () => {
     // WHEN
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.test-with-snapshot.js',
-      directory: 'test/test-data',
+      test: new IntegTest({
+        fileName: 'test/test-data/integ.test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
+      }),
     });
     integTest.runIntegTestCase({
       testCaseName: 'integ.test-with-snapshot',
@@ -466,8 +490,10 @@ describe('IntegTest runIntegTests', () => {
     // WHEN
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.test-with-snapshot.js',
-      directory: 'test/test-data',
+      test: new IntegTest({
+        fileName: 'test/test-data/integ.test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
+      }),
     });
     integTest.runIntegTestCase({
       testCaseName: 'integ.test-with-snapshot',
@@ -484,8 +510,10 @@ describe('IntegTest runIntegTests', () => {
   test('with assets manifest, assets are removed if stackUpdateWorkflow is disabled', () => {
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.test-with-snapshot-assets.js',
-      directory: 'test/test-data',
+      test: new IntegTest({
+        fileName: 'test/test-data/integ.test-with-snapshot-assets.js',
+        discoveryRoot: 'test/test-data',
+      }),
     });
     integTest.runIntegTestCase({
       testCaseName: 'integ.test-with-snapshot-assets',
@@ -503,8 +531,10 @@ describe('IntegTest runIntegTests', () => {
   test('with assembly manifest, assets are removed if stackUpdateWorkflow is disabled', () => {
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.test-with-snapshot-assets-diff.js',
-      directory: 'test/test-data',
+      test: new IntegTest({
+        fileName: 'test/test-data/integ.test-with-snapshot-assets-diff.js',
+        discoveryRoot: 'test/test-data',
+      }),
     });
     integTest.runIntegTestCase({
       testCaseName: 'integ.test-with-snapshot-assets-diff',

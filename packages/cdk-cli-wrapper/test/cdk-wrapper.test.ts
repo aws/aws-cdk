@@ -32,7 +32,7 @@ test('default deploy', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     ['deploy', '--app', 'node bin/my-app.js', 'test-stack1'],
     expect.objectContaining({
       env: expect.anything(),
@@ -86,7 +86,7 @@ test('deploy with all arguments', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     expect.arrayContaining([
       'deploy',
       '--no-strict',
@@ -146,7 +146,7 @@ test('can parse boolean arguments', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     [
       'deploy',
       '--app',
@@ -179,7 +179,7 @@ test('can parse parameters', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     [
       'deploy',
       '--parameters', 'myparam=test',
@@ -211,7 +211,7 @@ test('can parse context', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     [
       'deploy',
       '--app',
@@ -243,7 +243,7 @@ test('can parse array arguments', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     [
       'deploy',
       '--notification-arns', 'arn:aws:us-east-1:1111111111:some:resource',
@@ -274,7 +274,7 @@ test('can provide additional environment', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     ['deploy', '--app', 'node bin/my-app.js', 'test-stack1'],
     expect.objectContaining({
       env: expect.objectContaining({
@@ -300,7 +300,7 @@ test('default synth', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     ['synth', '--app', 'node bin/my-app.js', 'test-stack1'],
     expect.objectContaining({
       env: expect.objectContaining({
@@ -326,7 +326,7 @@ test('synth arguments', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     ['destroy', '--app', 'node bin/my-app.js', 'test-stack1'],
     expect.objectContaining({
       env: expect.objectContaining({
@@ -354,7 +354,7 @@ test('destroy arguments', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     ['destroy', '--force', '--no-exclusively', '--app', 'node bin/my-app.js', 'test-stack1'],
     expect.objectContaining({
       env: expect.objectContaining({
@@ -380,7 +380,7 @@ test('default ls', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     ['ls', '--app', 'node bin/my-app.js', '*'],
     expect.objectContaining({
       env: expect.objectContaining({
@@ -415,7 +415,7 @@ test('ls arguments', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     ['ls', '--long', '--app', 'node bin/my-app.js', '*'],
     expect.objectContaining({
       env: expect.objectContaining({
