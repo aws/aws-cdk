@@ -1,4 +1,4 @@
-import { App, CfnCondition, CfnMapping, CfnOutput, CfnParameter, CfnResource, Fn, NestedStack, Stack } from '@aws-cdk/core';
+import { App, CfnCondition, CfnMapping, CfnOutput, CfnParameter, CfnResource, Fn, LegacyStackSynthesizer, NestedStack, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Capture, Match, Template } from '../lib';
 
@@ -126,7 +126,10 @@ describe('Template', () => {
 
   describe('templateMatches', () => {
     test('matches', () => {
-      const stack = new Stack();
+      const app = new App();
+      const stack = new Stack(app, 'Stack', {
+        synthesizer: new LegacyStackSynthesizer(),
+      });
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
         properties: { baz: 'qux' },
@@ -811,7 +814,8 @@ describe('Template', () => {
       expectToThrow(
         () => inspect.hasParameter('*', { Type: 'CommaDelimitedList' }),
         [
-          /2 parameters/,
+          // Third parameter is automatically included as part of DefaultSynthesizer
+          /3 parameters/,
           /Expected CommaDelimitedList but received String/,
         ],
         done,

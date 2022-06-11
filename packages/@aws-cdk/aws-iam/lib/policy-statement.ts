@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { IConstruct } from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 import { Group } from './group';
 import {
   AccountPrincipal, AccountRootPrincipal, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal,

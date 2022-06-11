@@ -1,5 +1,7 @@
-import { CfnElement, CfnResource, Construct, Stack } from '../lib';
+import { Construct } from 'constructs';
+import { App, CfnElement, CfnResource, Stack } from '../lib';
 import { toCloudFormation } from './util';
+import * as cxapi from '@aws-cdk/cx-api';
 
 /**
  * These tests are executed once (for specific ID schemes)
@@ -17,8 +19,6 @@ describe('logical id', () => {
     new CfnResource(AB, 'C', { type: 'Resource' });
 
     // THEN: no exception
-
-
   });
 
   test('special case: if the resource is top-level, a hash is not added', () => {
@@ -34,8 +34,6 @@ describe('logical id', () => {
     expect(stack.resolve(r.logicalId)).toEqual('MyAwesomeness');
     expect(stack.resolve(r2.logicalId)).toEqual('x'.repeat(255));
     expect(stack.resolve(r3.logicalId)).toEqual('y'.repeat(255));
-
-
   });
 
   test('if resource is top-level and logical id is longer than allowed, it is trimmed with a hash', () => {
@@ -47,7 +45,6 @@ describe('logical id', () => {
 
     // THEN
     expect(stack.resolve(r.logicalId)).toEqual('x'.repeat(240) + 'C7A139A2');
-
   });
 
   test('Logical IDs can be renamed at the stack level', () => {
@@ -62,8 +59,6 @@ describe('logical id', () => {
     // THEN
     const template = toCloudFormation(stack);
     expect('Renamed' in template.Resources).toEqual(true);
-
-
   });
 
   test('Renames for objects that don\'t exist fail', () => {
@@ -76,8 +71,6 @@ describe('logical id', () => {
 
     // THEN
     expect(() => toCloudFormation(stack)).toThrow();
-
-
   });
 
   test('ID Renames that collide with existing IDs should fail', () => {
@@ -92,7 +85,6 @@ describe('logical id', () => {
 
     // THEN
     expect(() => toCloudFormation(stack)).toThrow(/Two objects have been assigned the same Logical ID/);
-
   });
 
   test('hashed naming scheme filters constructs named "Resource" from the human portion', () => {
@@ -115,8 +107,6 @@ describe('logical id', () => {
         },
       },
     });
-
-
   });
 
   test('can transparently wrap constructs using "Default" id', () => {
@@ -142,8 +132,6 @@ describe('logical id', () => {
 
     // THEN: same ID, same object
     expect(theId1).toEqual(theId2);
-
-
   });
 
   test('non-alphanumeric characters are removed from the human part of the logical ID', () => {
@@ -153,7 +141,6 @@ describe('logical id', () => {
     // same human part, different hash
     expect(val1).toEqual('FoobarB00mHelloWorldHorrayHorray640E99FB');
     expect(val2).toEqual('FoobarB00mHelloWorldHorrayHorray744334FD');
-
   });
 
   test('non-alphanumeric characters are removed even if the ID has only one component', () => {
@@ -161,7 +148,6 @@ describe('logical id', () => {
 
     // same human part, different hash
     expect(val1).toEqual('Foobar');
-
   });
 
   test('empty identifiers are not allowed', () => {
@@ -173,7 +159,6 @@ describe('logical id', () => {
 
     // THEN
     expect(() => toCloudFormation(stack)).toThrow(/Logical ID must adhere to the regular expression/);
-
   });
 
   test('too large identifiers are truncated yet still remain unique', () => {
@@ -194,8 +179,6 @@ describe('logical id', () => {
     expect(C1.logicalId.length).toBeLessThanOrEqual(255);
     expect(C2.logicalId.length).toBeLessThanOrEqual(255);
     expect(C1).not.toEqual(C2);
-
-
   });
 
   test('Refs and dependencies will correctly reflect renames done at the stack level', () => {
@@ -221,8 +204,6 @@ describe('logical id', () => {
         },
       },
     });
-
-
   });
 
   test('customize logical id allocation behavior by overriding `Stack.allocateLogicalId`', () => {
@@ -234,7 +215,12 @@ describe('logical id', () => {
       }
     }
 
-    const stack = new MyStack();
+    const app = new App({
+      context: {
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const stack = new MyStack(app);
     new CfnResource(stack, 'A', { type: 'Type::Of::A' });
     const group = new Construct(stack, 'Group');
     new CfnResource(group, 'B', { type: 'Type::Of::B' });
@@ -252,7 +238,6 @@ describe('logical id', () => {
         TheC: { Type: 'Type::Of::C' },
       },
     });
-
   });
 
   test('detects duplicate logical IDs in the same Stack caused by overrideLogicalId', () => {
@@ -266,8 +251,6 @@ describe('logical id', () => {
     expect(() => {
       toCloudFormation(stack);
     }).toThrow(/section 'Resources' already contains 'C'/);
-
-
   });
 });
 

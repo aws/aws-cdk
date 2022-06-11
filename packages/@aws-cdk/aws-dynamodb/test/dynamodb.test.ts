@@ -5,7 +5,7 @@ import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as kms from '@aws-cdk/aws-kms';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
-import { App, Aws, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '@aws-cdk/core';
+import { App, Aws, CfnDeletionPolicy, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import {
@@ -1491,10 +1491,10 @@ test('error when validating construct if a local secondary index exists without 
     sortKey: LSI_SORT_KEY,
   });
 
-  const errors = ConstructNode.validate(table.node);
+  const errors = table.node.validate();
 
   expect(errors.length).toBe(1);
-  expect(errors[0]?.message).toBe('a sort key of the table must be specified to add local secondary indexes');
+  expect(errors[0]).toBe('a sort key of the table must be specified to add local secondary indexes');
 });
 
 test('can enable Read AutoScaling', () => {

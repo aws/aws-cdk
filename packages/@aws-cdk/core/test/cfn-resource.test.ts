@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import * as core from '../lib';
 
 describe('cfn resource', () => {
@@ -13,16 +14,12 @@ describe('cfn resource', () => {
         expect(val).not.toBeNull();
       };
 
-      expect(app.synth().getStackByName(stack.stackName).template).toEqual({
-        Resources: {
-          DefaultResource: {
-            Type: 'Test::Resource::Fake',
-          },
+      expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+        DefaultResource: {
+          Type: 'Test::Resource::Fake',
         },
       });
       expect(called).toEqual(true);
-
-
     });
 
     test('renders "Properties" for a resource that has only properties set to "false"', () => {
@@ -35,18 +32,14 @@ describe('cfn resource', () => {
         },
       });
 
-      expect(app.synth().getStackByName(stack.stackName).template).toEqual({
-        Resources: {
-          Resource: {
-            Type: 'Test::Resource::Fake',
-            Properties: {
-              FakeProperty: false,
-            },
+      expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+        Resource: {
+          Type: 'Test::Resource::Fake',
+          Properties: {
+            FakeProperty: false,
           },
         },
       });
-
-
     });
   });
 
@@ -60,17 +53,13 @@ describe('cfn resource', () => {
     resource.applyRemovalPolicy(core.RemovalPolicy.RETAIN);
 
     // THEN
-    expect(app.synth().getStackByName(stack.stackName).template).toEqual({
-      Resources: {
-        DefaultResource: {
-          Type: 'Test::Resource::Fake',
-          DeletionPolicy: 'Retain',
-          UpdateReplacePolicy: 'Retain',
-        },
+    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+      DefaultResource: {
+        Type: 'Test::Resource::Fake',
+        DeletionPolicy: 'Retain',
+        UpdateReplacePolicy: 'Retain',
       },
     });
-
-
   });
 
   test('can switch off updating Update policy', () => {
@@ -85,16 +74,12 @@ describe('cfn resource', () => {
     });
 
     // THEN
-    expect(app.synth().getStackByName(stack.stackName).template).toEqual({
-      Resources: {
-        DefaultResource: {
-          Type: 'Test::Resource::Fake',
-          DeletionPolicy: 'Retain',
-        },
+    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+      DefaultResource: {
+        Type: 'Test::Resource::Fake',
+        DeletionPolicy: 'Retain',
       },
     });
-
-
   });
 
   test('can add metadata', () => {
@@ -107,18 +92,14 @@ describe('cfn resource', () => {
     resource.addMetadata('Beep', 'Boop');
 
     // THEN
-    expect(app.synth().getStackByName(stack.stackName).template).toEqual({
-      Resources: {
-        DefaultResource: {
-          Type: 'Test::Resource::Fake',
-          Metadata: {
-            Beep: 'Boop',
-          },
+    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+      DefaultResource: {
+        Type: 'Test::Resource::Fake',
+        Metadata: {
+          Beep: 'Boop',
         },
       },
     });
-
-
   });
 
   test('can read metadata', () => {
@@ -130,8 +111,6 @@ describe('cfn resource', () => {
 
     // THEN
     expect(resource.getMetadata('Beep')).toEqual('Boop');
-
-
   });
 
   test('subclasses can override "shouldSynthesize" to lazy-determine if the resource should be included', () => {
@@ -144,7 +123,7 @@ describe('cfn resource', () => {
 
     const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
-    const subtree = new core.Construct(stack, 'subtree');
+    const subtree = new Construct(stack, 'subtree');
 
     // WHEN
     new HiddenCfnResource(subtree, 'R1', { type: 'Foo::R1' });
@@ -154,13 +133,12 @@ describe('cfn resource', () => {
     r2.node.addDependency(subtree);
 
     // THEN - only R2 is synthesized
-    expect(app.synth().getStackByName(stack.stackName).template).toEqual({
-      Resources: { R2: { Type: 'Foo::R2' } },
-
-      // No DependsOn!
+    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+      R2: {
+        Type: 'Foo::R2',
+        // No DependsOn!
+      },
     });
-
-
   });
 
   test('CfnResource cannot be created outside Stack', () => {
@@ -170,8 +148,6 @@ describe('cfn resource', () => {
         type: 'Some::Resource',
       });
     }).toThrow(/should be created in the scope of a Stack, but no Stack found/);
-
-
   });
 
   /**
@@ -186,7 +162,5 @@ describe('cfn resource', () => {
         type: 'Some::Resource',
       });
     }).toThrow(/should be created in the scope of a Stack, but no Stack found/);
-
-
   });
 });

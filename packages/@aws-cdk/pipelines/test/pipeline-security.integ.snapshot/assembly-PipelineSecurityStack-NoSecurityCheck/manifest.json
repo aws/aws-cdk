@@ -1,5 +1,5 @@
 {
-  "version": "19.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "PipelineSecurityStackNoSecurityCheckMyStack3484019E.assets": {
       "type": "cdk:asset-manifest",
@@ -37,94 +37,25 @@
         "/PipelineSecurityStack/NoSecurityCheck/MyStack/Topic/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TopicBFC7AF6E",
-            "trace": [
-              "new Topic (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/aws-sns/lib/topic.js:43:26)",
-              "new MyStage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/test/integ.pipeline-security.js:17:23)",
-              "new TestCdkStack (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/test/integ.pipeline-security.js:72:53)",
-              "Object.<anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/test/integ.pipeline-security.js:82:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1105:14)",
-              "Module._extensions..js (node:internal/modules/cjs/loader:1159:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Module._load (node:internal/modules/cjs/loader:827:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "TopicBFC7AF6E"
           }
         ],
         "/PipelineSecurityStack/NoSecurityCheck/MyStack/Topic/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TopicPolicyA1747468",
-            "trace": [
-              "new TopicPolicy (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/aws-sns/lib/policy.js:48:9)",
-              "Topic.addToResourcePolicy (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/aws-sns/lib/topic-base.js:53:27)",
-              "Function.addToPrincipalOrResource (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/aws-iam/lib/grant.js:76:49)",
-              "Topic.grantPublish (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/aws-sns/lib/topic-base.js:71:26)",
-              "new MyStage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/test/integ.pipeline-security.js:18:15)",
-              "new TestCdkStack (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/test/integ.pipeline-security.js:72:53)",
-              "Object.<anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/test/integ.pipeline-security.js:82:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1105:14)",
-              "Module._extensions..js (node:internal/modules/cjs/loader:1159:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Module._load (node:internal/modules/cjs/loader:827:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "TopicPolicyA1747468"
           }
         ],
         "/PipelineSecurityStack/NoSecurityCheck/MyStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion",
-            "trace": [
-              "addBootstrapVersionRule (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:285:19)",
-              "DefaultStackSynthesizer.synthesize (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:175:13)",
-              "/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:155:35",
-              "visit (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:200:9)",
-              "visit (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:197:9)",
-              "synthesizeTree (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:148:5)",
-              "Object.synthesize (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:33:5)",
-              "MyStage.synth (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/stage.js:105:41)",
-              "Object.pipelineSynth (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/lib/private/construct-internals.js:25:18)",
-              "CdkStage.addApplication (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/lib/legacy/stage.js:82:43)",
-              "CdkPipeline.addApplicationStage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/lib/legacy/pipeline.js:206:15)",
-              "new TestCdkStack (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/test/integ.pipeline-security.js:72:33)",
-              "Object.<anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/test/integ.pipeline-security.js:82:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1105:14)",
-              "Module._extensions..js (node:internal/modules/cjs/loader:1159:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Module._load (node:internal/modules/cjs/loader:827:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "BootstrapVersion"
           }
         ],
         "/PipelineSecurityStack/NoSecurityCheck/MyStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion",
-            "trace": [
-              "addBootstrapVersionRule (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:293:5)",
-              "DefaultStackSynthesizer.synthesize (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:175:13)",
-              "/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:155:35",
-              "visit (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:200:9)",
-              "visit (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:197:9)",
-              "synthesizeTree (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:148:5)",
-              "Object.synthesize (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:33:5)",
-              "MyStage.synth (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/stage.js:105:41)",
-              "Object.pipelineSynth (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/lib/private/construct-internals.js:25:18)",
-              "CdkStage.addApplication (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/lib/legacy/stage.js:82:43)",
-              "CdkPipeline.addApplicationStage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/lib/legacy/pipeline.js:206:15)",
-              "new TestCdkStack (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/test/integ.pipeline-security.js:72:33)",
-              "Object.<anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/test/integ.pipeline-security.js:82:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1105:14)",
-              "Module._extensions..js (node:internal/modules/cjs/loader:1159:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Module._load (node:internal/modules/cjs/loader:827:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

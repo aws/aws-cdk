@@ -26,10 +26,6 @@ import { RichAction } from './private/rich-action';
 import { Stage } from './private/stage';
 import { validateName, validateNamespaceName, validateSourceAction } from './private/validation';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Allows you to control where to place a new Stage when it's added to the Pipeline.
  * Note that you can provide only one of the below properties -
@@ -461,6 +457,8 @@ export class Pipeline extends PipelineBase {
     for (const stage of props.stages || []) {
       this.addStage(stage);
     }
+
+    this.node.addValidation({ validate: () => this.validatePipeline() });
   }
 
   /**
@@ -551,7 +549,7 @@ export class Pipeline extends PipelineBase {
     validateNamespaceName(richAction.actionProperties.variablesNamespace);
 
     // bind the Action (type h4x)
-    const actionConfig = richAction.bind(actionScope as CoreConstruct, stage, {
+    const actionConfig = richAction.bind(actionScope, stage, {
       role: actionRole ? actionRole : this.role,
       bucket: crossRegionInfo.artifactBucket,
     });
@@ -574,9 +572,8 @@ export class Pipeline extends PipelineBase {
    * Validation happens according to the rules documented at
    *
    * https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#pipeline-requirements
-   * @override
    */
-  protected validate(): string[] {
+  private validatePipeline(): string[] {
     return [
       ...this.validateSourceActionLocations(),
       ...this.validateHasStages(),

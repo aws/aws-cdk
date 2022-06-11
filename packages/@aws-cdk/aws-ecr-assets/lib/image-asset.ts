@@ -8,9 +8,6 @@ import { Construct } from 'constructs';
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line
 import { FingerprintOptions, FollowMode, IAsset } from '@aws-cdk/assets';
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * networking mode on build time supported by docker
@@ -222,7 +219,7 @@ export interface DockerImageAssetProps extends DockerImageAssetOptions {
  *
  * The image will be created in build time and uploaded to an ECR repository.
  */
-export class DockerImageAsset extends CoreConstruct implements IAsset {
+export class DockerImageAsset extends Construct implements IAsset {
   /**
    * The full URI of the image (including a tag). Use this reference to pull
    * the asset.

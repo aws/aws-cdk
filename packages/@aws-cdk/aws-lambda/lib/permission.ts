@@ -1,10 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
-
 import { FunctionUrlAuthType } from './function-url';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Represents a permission statement that can be added to a Lambda function's
