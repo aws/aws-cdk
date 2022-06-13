@@ -304,6 +304,8 @@
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.SSM",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.SSM_MESSAGES",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.STS",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.TEXTRACT",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.TEXTRACT_FIPS",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.TRANSFER",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.STORAGE_GATEWAY",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.REKOGNITION",

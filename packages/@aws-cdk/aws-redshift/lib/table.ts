@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
 import { ICluster } from './cluster';
 import { DatabaseOptions } from './database-options';
 import { DatabaseQuery } from './private/database-query';
@@ -6,10 +7,6 @@ import { HandlerName } from './private/database-query-provider/handler-name';
 import { getDistKeyColumn, getSortKeyColumns } from './private/database-query-provider/util';
 import { TableHandlerProps } from './private/handler-props';
 import { IUser } from './user';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct, IConstruct } from 'constructs';
 
 /**
  * An action that a Redshift user can be granted privilege to perform on a table.
