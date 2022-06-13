@@ -458,4 +458,31 @@ describe('fargate', () => {
     });
 
   });
+
+  test('supports cluster logging with FargateCluster', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+
+    new eks.FargateCluster(stack, 'FargateCluster', {
+      version: CLUSTER_VERSION,
+      clusterLogging: [
+        eks.ClusterLoggingTypes.API,
+        eks.ClusterLoggingTypes.AUTHENTICATOR,
+        eks.ClusterLoggingTypes.SCHEDULER,
+      ],
+    });
+
+    //THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        logging: {
+          clusterLogging: [
+            { enabled: true, types: ['api', 'authenticator', 'scheduler'] },
+          ],
+        },
+      },
+    });
+  });
 });
