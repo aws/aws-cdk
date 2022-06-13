@@ -1,5 +1,5 @@
 {
-  "$version": "53.1.0",
+  "$version": "75.0.0",
   "PropertyTypes": {},
   "ResourceTypes": {
     "AWS::Inspector::AssessmentTarget": {
@@ -52,6 +52,7 @@
         },
         "RulesPackageArns": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-inspector-assessmenttemplate.html#cfn-inspector-assessmenttemplate-rulespackagearns",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": true,
           "Type": "List",
@@ -59,6 +60,7 @@
         },
         "UserAttributesForFindings": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-inspector-assessmenttemplate.html#cfn-inspector-assessmenttemplate-userattributesforfindings",
+          "DuplicatesAllowed": true,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",
@@ -76,6 +78,7 @@
       "Properties": {
         "ResourceGroupTags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-inspector-resourcegroup.html#cfn-inspector-resourcegroup-resourcegrouptags",
+          "DuplicatesAllowed": true,
           "ItemType": "Tag",
           "Required": true,
           "Type": "List",

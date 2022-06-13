@@ -1167,6 +1167,8 @@ If your training job or model uses resources from AWS Marketplace,
 [network isolation is required](https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html).
 To do so, set the `enableNetworkIsolation` property to `true` for `SageMakerCreateModel` or `SageMakerCreateTrainingJob`.
 
+To set environment variables for the Docker container use the `environment` property.
+
 ### Create Training Job
 
 You can call the [`CreateTrainingJob`](https://docs.aws.amazon.com/sagemaker/latest/dg/API_CreateTrainingJob.html) API from a `Task` state.

@@ -198,10 +198,11 @@ export class CloudWatchLogEventMonitor {
 
         }
       }
-      // if we have > 100 events let the user know some
-      // messages have been supressed. We are essentially
-      // showing them a sampling (10000 events printed out is not very useful)
-      if (filteredEvents.length > 0 && response.nextToken) {
+      // As long as there are _any_ events in the log group `filterLogEvents` will return a nextToken.
+      // This is true even if these events are before `startTime`. So if we have 100 events and a nextToken
+      // then assume that we have hit the limit and let the user know some messages have been supressed.
+      // We are essentially showing them a sampling (10000 events printed out is not very useful)
+      if (filteredEvents.length === 100 && response.nextToken) {
         events.push({
           message: '>>> `watch` shows only the first 100 log messages - the rest have been truncated...',
           logGroupName,

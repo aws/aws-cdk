@@ -70,26 +70,26 @@ test.each([
   Duration.seconds(0),
   Duration.seconds(0.5),
   Duration.seconds(60.5),
-  Duration.seconds(61),
+  Duration.seconds(181),
   Duration.minutes(5),
-])('validates readTimeout is an integer between 1 and 60 seconds', (readTimeout) => {
+])('validates readTimeout is an integer between 1 and 180 seconds', (readTimeout) => {
   expect(() => {
     new HttpOrigin('www.example.com', {
       readTimeout,
     });
-  }).toThrow(`readTimeout: Must be an int between 1 and 60 seconds (inclusive); received ${readTimeout.toSeconds()}.`);
+  }).toThrow(`readTimeout: Must be an int between 1 and 180 seconds (inclusive); received ${readTimeout.toSeconds()}.`);
 });
 
 test.each([
   Duration.seconds(0),
   Duration.seconds(0.5),
   Duration.seconds(60.5),
-  Duration.seconds(61),
+  Duration.seconds(181),
   Duration.minutes(5),
-])('validates keepaliveTimeout is an integer between 1 and 60 seconds', (keepaliveTimeout) => {
+])('validates keepaliveTimeout is an integer between 1 and 180 seconds', (keepaliveTimeout) => {
   expect(() => {
     new HttpOrigin('www.example.com', {
       keepaliveTimeout,
     });
-  }).toThrow(`keepaliveTimeout: Must be an int between 1 and 60 seconds (inclusive); received ${keepaliveTimeout.toSeconds()}.`);
+  }).toThrow(`keepaliveTimeout: Must be an int between 1 and 180 seconds (inclusive); received ${keepaliveTimeout.toSeconds()}.`);
 });

@@ -31,6 +31,10 @@ sign-in options for your app users.
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
+```ts nofixture
+import { IdentityPool, UserPoolAuthenticationProvider } from '@aws-cdk/aws-cognito-identitypool';
+```
+
 ## Table of Contents
 
 - [Identity Pools](#identity-pools)
@@ -66,26 +70,28 @@ A basic Identity Pool with minimal configuration has no required props, with def
 unauthenticated (guest) roles applied to the identity pool: 
 
 ```ts
-new cognito.IdentityPool(this, 'myIdentityPool');
+new IdentityPool(this, 'myIdentityPool');
 ```
 
 By default, both the authenticated and unauthenticated roles will have no permissions attached. Grant permissions 
 to roles using the public `authenticatedRole` and `unauthenticatedRole` properties: 
 
 ```ts
-const identityPool = new cognito.IdentityPool(this, 'myIdentityPool');
-const table = new dynamodb.Table(this, 'MyTable');
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
+
+const identityPool = new IdentityPool(this, 'myIdentityPool');
+declare const table: dynamodb.Table;
 
 // Grant permissions to authenticated users
 table.grantReadWriteData(identityPool.authenticatedRole);
 // Grant permissions to unauthenticated guest users
-table.grantRead(identityPool.unauthenticatedRole);
+table.grantReadData(identityPool.unauthenticatedRole);
 
 //Or add policy statements straight to the role
-identityPool.authenticatedRole.addToPrincipalPolicy(new PolicyStatement({
-  effect: Effect.ALLOW,
+identityPool.authenticatedRole.addToPrincipalPolicy(new iam.PolicyStatement({
+  effect: iam.Effect.ALLOW,
   actions: ['dynamodb:*'],
-  resources: ['*']
+  resources: ['*'],
 }));
 ```
 
@@ -93,14 +99,15 @@ The default roles can also be supplied in `IdentityPoolProps`:
 
 ```ts
 const stack = new Stack();
-const authenticatedRole = new Role(stack, 'authRole', {
-  assumedBy: new ServicePrincipal('service.amazonaws.com'),
+const authenticatedRole = new iam.Role(this, 'authRole', {
+  assumedBy: new iam.ServicePrincipal('service.amazonaws.com'),
 });
-const unauthenticatedRole = new Role(stack, 'unauthRole', {
-  assumedBy: new ServicePrincipal('service.amazonaws.com'),
+const unauthenticatedRole = new iam.Role(this, 'unauthRole', {
+  assumedBy: new iam.ServicePrincipal('service.amazonaws.com'),
 });
-const identityPool = new IdentityPool(stack, 'TestIdentityPoolActions', {
-  authenticatedRole, unauthenticatedRole
+const identityPool = new IdentityPool(this, 'TestIdentityPoolActions', {
+  authenticatedRole,
+  unauthenticatedRole,
 });
 ```
 
@@ -122,7 +129,7 @@ to gather the necessary properties from the user pool constructs.
 ```ts
 const userPool = new cognito.UserPool(this, 'Pool');
 
-new cognito.IdentityPool(this, 'myidentitypool', {
+new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   authenticationProviders: {
     userPools: [new UserPoolAuthenticationProvider({ userPool })],
@@ -134,10 +141,11 @@ User pools can also be associated with an identity pool after instantiation. The
 returns the User Pool Client that has been created:
 
 ```ts
+declare const identityPool: IdentityPool;
 const userPool = new cognito.UserPool(this, 'Pool');
-const userPoolClient = identityPool.addUserPoolAuthentication({
-  userPools: [new UserPoolAuthenticationProvider({ userPool })];
-});
+const userPoolClient = identityPool.addUserPoolAuthentication(new UserPoolAuthenticationProvider({
+  userPool,
+}));
 ```
 
 #### Server Side Token Check
@@ -153,13 +161,12 @@ Setting `disableServerSideTokenCheck` to true will change the default behavior t
 more [here](https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_CognitoIdentityProvider.html#CognitoIdentity-Type-CognitoIdentityProvider-ServerSideTokenCheck):
 
 ```ts
+declare const identityPool: IdentityPool;
 const userPool = new cognito.UserPool(this, 'Pool');
-identityPool.addUserPoolAuthentication({
-  userPool: new UserPoolAuthenticationProvider({ 
-    userPool,
-    disableServerSideTokenCheck: true, 
-  }),
-});
+identityPool.addUserPoolAuthentication(new UserPoolAuthenticationProvider({ 
+  userPool,
+  disableServerSideTokenCheck: true, 
+}));
 ```
 
 #### Associating an External Provider Directly
@@ -168,7 +175,7 @@ One or more [external identity providers](https://docs.aws.amazon.com/cognito/la
 `authenticationProviders`:
 
 ```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
+new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   authenticationProviders: {
     amazon: {
@@ -179,7 +186,7 @@ new cognito.IdentityPool(this, 'myidentitypool', {
     },
     google: {
       clientId: '12345678012.apps.googleusercontent.com',
-    }
+    },
     apple: {
       servicesId: 'com.myappleapp.auth',
     },
@@ -206,15 +213,15 @@ so that different users can be granted different sets of permissions. Associatin
 with an identity pool:
 
 ```ts
-const openIdConnectProvider = new iam.OpenIdConnectProvider(this, 'my-openid-connect-provider', ...);
-const samlProvider = new iam.SamlProvider(this, 'my-saml-provider', ...);
+declare const openIdConnectProvider: iam.OpenIdConnectProvider;
+declare const samlProvider: iam.SamlProvider;
 
-new cognito.IdentityPool(this, 'myidentitypool', {
+new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   authenticationProviders: {
-    openIdConnectProvider: openIdConnectProvider,
-    samlProvider: samlProvider,
-  }
+    openIdConnectProviders: [openIdConnectProvider],
+    samlProviders: [samlProvider],
+  },
 });
 ```
 
@@ -228,13 +235,16 @@ Like the supported external providers, though, only one custom provider can be d
 pool.
 
 ```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
+declare const openIdConnectProvider: iam.OpenIdConnectProvider;
+new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   authenticationProviders: {
-    google: '12345678012.apps.googleusercontent.com',
-    openIdConnectProvider: openIdConnectProvider,
+    google: {
+      clientId: '12345678012.apps.googleusercontent.com',
+    },
+    openIdConnectProviders: [openIdConnectProvider],
     customProvider: 'my-custom-provider.example.com',
-  }
+  },
 });
 ```
 
@@ -249,7 +259,9 @@ Using a [token-based approach](https://docs.aws.amazon.com/cognito/latest/develo
 `cognito:preferred_role` claims from the identity provider:
 
 ```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
+import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool';
+
+new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   roleMappings: [{
     providerUrl: IdentityPoolProviderUrl.AMAZON,
@@ -261,7 +273,11 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 Using a rule-based approach to role mapping allows roles to be assigned based on custom claims passed from the identity  provider:
 
 ```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
+import { IdentityPoolProviderUrl, RoleMappingMatchType } from '@aws-cdk/aws-cognito-identitypool';
+
+declare const adminRole: iam.Role;
+declare const nonAdminRole: iam.Role;
+new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   // Assign specific roles to users based on whether or not the custom admin claim is passed from the identity provider
   roleMappings: [{
@@ -286,6 +302,13 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 Role mappings can also be added after instantiation with the Identity Pool's `addRoleMappings` method:
 
 ```ts
+import { IdentityPoolRoleMapping } from '@aws-cdk/aws-cognito-identitypool';
+
+declare const identityPool: IdentityPool;
+declare const myAddedRoleMapping1: IdentityPoolRoleMapping;
+declare const myAddedRoleMapping2: IdentityPoolRoleMapping;
+declare const myAddedRoleMapping3: IdentityPoolRoleMapping;
+
 identityPool.addRoleMappings(myAddedRoleMapping1, myAddedRoleMapping2, myAddedRoleMapping3);
 ```
 
@@ -295,7 +318,9 @@ Role mappings must be associated with the url of an Identity Provider which can 
 `IdentityPoolProviderUrl`. Supported Providers have static Urls that can be used:
 
 ```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
+import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool';
+
+new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   roleMappings: [{
     providerUrl: IdentityPoolProviderUrl.FACEBOOK,
@@ -307,7 +332,9 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 For identity providers that don't have static Urls, a custom Url or User Pool Client Url can be supplied:
 
 ```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
+import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool';
+
+new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   roleMappings: [
     {
@@ -330,7 +357,7 @@ Identity Pool [Authentication Flow](https://docs.aws.amazon.com/cognito/latest/d
 can also be implemented using `allowClassicFlow`:
 
 ```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
+new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   allowClassicFlow: true,
 });

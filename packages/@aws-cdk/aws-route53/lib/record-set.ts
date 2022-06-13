@@ -9,10 +9,6 @@ import { determineFullyQualifiedDomainName } from './util';
 
 const CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE = 'Custom::CrossAccountZoneDelegation';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * A record set
  */
@@ -671,7 +667,7 @@ export interface CrossAccountZoneDelegationRecordProps {
 /**
  * A Cross Account Zone Delegation record
  */
-export class CrossAccountZoneDelegationRecord extends CoreConstruct {
+export class CrossAccountZoneDelegationRecord extends Construct {
   constructor(scope: Construct, id: string, props: CrossAccountZoneDelegationRecordProps) {
     super(scope, id);
 
@@ -685,18 +681,18 @@ export class CrossAccountZoneDelegationRecord extends CoreConstruct {
 
     const provider = CustomResourceProvider.getOrCreateProvider(this, CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'cross-account-zone-delegation-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
     });
 
     const role = iam.Role.fromRoleArn(this, 'cross-account-zone-delegation-handler-role', provider.roleArn);
 
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
+    const addToPrinciplePolicyResult = role.addToPrincipalPolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['sts:AssumeRole'],
       resources: [props.delegationRole.roleArn],
     }));
 
-    new CustomResource(this, 'CrossAccountZoneDelegationCustomResource', {
+    const customResource = new CustomResource(this, 'CrossAccountZoneDelegationCustomResource', {
       resourceType: CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       removalPolicy: props.removalPolicy,
@@ -709,5 +705,9 @@ export class CrossAccountZoneDelegationRecord extends CoreConstruct {
         TTL: (props.ttl || Duration.days(2)).toSeconds(),
       },
     });
+
+    if (addToPrinciplePolicyResult.policyDependable) {
+      customResource.node.addDependency(addToPrinciplePolicyResult.policyDependable);
+    }
   }
 }

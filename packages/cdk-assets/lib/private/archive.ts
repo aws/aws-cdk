@@ -1,7 +1,10 @@
 import { createWriteStream, promises as fs } from 'fs';
 import * as path from 'path';
-import * as archiver from 'archiver';
 import * as glob from 'glob';
+
+// namespace object imports won't work in the bundle for function exports
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const archiver = require('archiver');
 
 export function zipDirectory(directory: string, outputFile: string): Promise<void> {
   return new Promise(async (ok, fail) => {

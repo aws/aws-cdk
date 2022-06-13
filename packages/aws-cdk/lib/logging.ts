@@ -13,6 +13,16 @@ const logger = (stream: Writable, styles?: StyleFn[]) => (fmt: string, ...args: 
   stream.write(str + '\n');
 };
 
+export enum LogLevel {
+  /** Not verbose at all */
+  DEFAULT = 0,
+  /** Pretty verbose */
+  DEBUG = 1,
+  /** Extremely verbose */
+  TRACE = 2
+}
+
+
 export let logLevel = LogLevel.DEFAULT;
 
 export function setLogLevel(newLogLevel: LogLevel) {
@@ -46,13 +56,4 @@ export type LoggerFunction = (fmt: string, ...args: any[]) => void;
  */
 export function prefix(prefixString: string, fn: LoggerFunction): LoggerFunction {
   return (fmt: string, ...args: any[]) => fn(`%s ${fmt}`, prefixString, ...args);
-}
-
-export const enum LogLevel {
-  /** Not verbose at all */
-  DEFAULT = 0,
-  /** Pretty verbose */
-  DEBUG = 1,
-  /** Extremely verbose */
-  TRACE = 2
 }

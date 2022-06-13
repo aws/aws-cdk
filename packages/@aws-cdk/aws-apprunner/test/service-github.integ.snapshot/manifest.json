@@ -1,0 +1,46 @@
+{
+  "version": "19.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-apprunner": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-apprunner.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-apprunner/Service4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Service429949929"
+          }
+        ],
+        "/integ-apprunner/URL4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL4"
+          }
+        ],
+        "/integ-apprunner/Service5/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Service5AD92B5A5"
+          }
+        ],
+        "/integ-apprunner/URL5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL5"
+          }
+        ]
+      },
+      "displayName": "integ-apprunner"
+    }
+  }
+}

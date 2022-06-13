@@ -560,6 +560,14 @@ describe('IAM Role.fromRoleArn', () => {
   });
 });
 
+test('Role.fromRoleName', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Stack', { env: { region: 'asdf', account: '1234' } });
+  const role = Role.fromRoleName(stack, 'MyRole', 'MyRole');
+
+  expect(stack.resolve(role.roleArn)).toEqual({ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::1234:role/MyRole']] });
+});
+
 function somePolicyStatement() {
   return new PolicyStatement({
     actions: ['s3:*'],

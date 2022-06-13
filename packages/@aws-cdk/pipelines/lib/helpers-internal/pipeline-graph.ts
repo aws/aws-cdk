@@ -342,5 +342,5 @@ export type AGraphNode = GraphNode<GraphAnnotation>;
 export type AGraph = Graph<GraphAnnotation>;
 
 function stripPrefix(s: string, prefix: string) {
-  return s.startsWith(prefix) ? s.substr(prefix.length) : s;
+  return s.startsWith(prefix) ? s.slice(prefix.length) : s;
 }

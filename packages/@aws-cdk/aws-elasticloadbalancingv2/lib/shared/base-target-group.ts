@@ -1,13 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, DependencyGroup, IConstruct, IDependable } from 'constructs';
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 import { Protocol, TargetType } from './enums';
 import { Attributes, renderAttributes } from './util';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Basic properties of both Application and Network Target Groups
@@ -45,7 +41,8 @@ export interface BaseTargetGroupProps {
   /**
    * Health check configuration
    *
-   * @default - None.
+   * @default - The default value for each property in this configuration varies depending on the target.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-targetgroup.html#aws-resource-elasticloadbalancingv2-targetgroup-properties
    */
   readonly healthCheck?: HealthCheck;
 
@@ -159,7 +156,7 @@ export interface HealthCheck {
 /**
  * Define the target of a load balancer
  */
-export abstract class TargetGroupBase extends CoreConstruct implements ITargetGroup {
+export abstract class TargetGroupBase extends Construct implements ITargetGroup {
   /**
    * The ARN of the target group
    */
@@ -208,7 +205,7 @@ export abstract class TargetGroupBase extends CoreConstruct implements ITargetGr
   /**
    * Configurable dependable with all resources that lead to load balancer attachment
    */
-  protected readonly loadBalancerAttachedDependencies = new cdk.ConcreteDependable();
+  protected readonly loadBalancerAttachedDependencies = new DependencyGroup();
 
   /**
    * The types of the directly registered members of this target group
@@ -284,12 +281,14 @@ export abstract class TargetGroupBase extends CoreConstruct implements ITargetGr
     this.loadBalancerArns = this.resource.attrLoadBalancerArns.toString();
     this.targetGroupName = this.resource.attrTargetGroupName;
     this.defaultPort = additionalProps.port;
+
+    this.node.addValidation({ validate: () => this.validateTargetGroup() });
   }
 
   /**
    * List of constructs that need to be depended on to ensure the TargetGroup is associated to a load balancer
    */
-  public get loadBalancerAttached(): cdk.IDependable {
+  public get loadBalancerAttached(): IDependable {
     return this.loadBalancerAttachedDependencies;
   }
 
@@ -327,8 +326,8 @@ export abstract class TargetGroupBase extends CoreConstruct implements ITargetGr
     }
   }
 
-  protected validate(): string[] {
-    const ret = super.validate();
+  protected validateTargetGroup(): string[] {
+    const ret = new Array<string>();
 
     if (this.targetType === undefined && this.targetsJson.length === 0) {
       cdk.Annotations.of(this).addWarning("When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
@@ -336,6 +335,20 @@ export abstract class TargetGroupBase extends CoreConstruct implements ITargetGr
 
     if (this.targetType !== TargetType.LAMBDA && this.vpc === undefined) {
       ret.push("'vpc' is required for a non-Lambda TargetGroup");
+    }
+
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-targetgroup.html#cfn-elasticloadbalancingv2-targetgroup-name
+    const targetGroupName = this.resource.name;
+    if (!cdk.Token.isUnresolved(targetGroupName) && targetGroupName !== undefined) {
+      if (targetGroupName.length > 32) {
+        ret.push(`Target group name: "${targetGroupName}" can have a maximum of 32 characters.`);
+      }
+      if (targetGroupName.startsWith('-') || targetGroupName.endsWith('-')) {
+        ret.push(`Target group name: "${targetGroupName}" must not begin or end with a hyphen.`);
+      }
+      if (!/^[0-9a-z-]+$/i.test(targetGroupName)) {
+        ret.push(`Target group name: "${targetGroupName}" must contain only alphanumeric characters or hyphens.`);
+      }
     }
 
     return ret;
@@ -375,7 +388,7 @@ export interface TargetGroupImportProps extends TargetGroupAttributes {
 /**
  * A target group
  */
-export interface ITargetGroup extends cdk.IConstruct {
+export interface ITargetGroup extends IConstruct {
   /**
    * The name of the target group
    */
@@ -394,7 +407,7 @@ export interface ITargetGroup extends cdk.IConstruct {
   /**
    * Return an object to depend on the listeners added to this target group
    */
-  readonly loadBalancerAttached: cdk.IDependable;
+  readonly loadBalancerAttached: IDependable;
 }
 
 /**

@@ -1,13 +1,11 @@
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { RemovalPolicy } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { DatabaseSecret } from '../database-secret';
 import { IEngine } from '../engine';
-import { Credentials } from '../props';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { CommonRotationUserOptions, Credentials } from '../props';
 
 /**
  * The default set of characters we exclude from generated passwords for database users.
@@ -133,4 +131,15 @@ export function helperRemovalPolicy(basePolicy?: RemovalPolicy): RemovalPolicy {
  */
 export function renderUnless<A>(value: A, suppressValue: A): A | undefined {
   return value === suppressValue ? undefined : value;
+}
+
+/**
+ * Applies defaults for rotation options
+ */
+export function applyDefaultRotationOptions(options: CommonRotationUserOptions, defaultvpcSubnets?: ec2.SubnetSelection): CommonRotationUserOptions {
+  return {
+    excludeCharacters: DEFAULT_PASSWORD_EXCLUDE_CHARS,
+    vpcSubnets: defaultvpcSubnets,
+    ...options,
+  };
 }

@@ -1,4 +1,4 @@
-/// !cdk-integ *
+/// !cdk-integ * pragma:enable-lookups
 
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';

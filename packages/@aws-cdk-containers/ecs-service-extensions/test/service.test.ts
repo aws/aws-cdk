@@ -1,5 +1,4 @@
-import { ABSENT } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Container, Environment, Service, ServiceDescription } from '../lib';
@@ -20,8 +19,6 @@ describe('service', () => {
         serviceDescription,
       });
     }).toThrow(/Service 'my-service' must have a Container extension/);
-
-
   });
 
   test('allows scaling on a target CPU utilization', () => {
@@ -49,16 +46,16 @@ describe('service', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
-      DesiredCount: ABSENT,
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DesiredCount: Match.absent(),
     });
 
-    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       MaxCapacity: 5,
       MinCapacity: 1,
     });
 
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: { PredefinedMetricType: 'ECSServiceAverageCPUUtilization' },
@@ -92,16 +89,16 @@ describe('service', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
-      DesiredCount: ABSENT,
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DesiredCount: Match.absent(),
     });
 
-    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       MaxCapacity: 5,
       MinCapacity: 1,
     });
 
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: { PredefinedMetricType: 'ECSServiceAverageMemoryUtilization' },
@@ -136,5 +133,4 @@ describe('service', () => {
       });
     }).toThrow(/The auto scaling target for the service 'my-service' has been created but no auto scaling policies have been configured./);
   });
-
 });

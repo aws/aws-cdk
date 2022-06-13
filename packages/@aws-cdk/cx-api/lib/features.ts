@@ -3,8 +3,18 @@
 // implemented behind a flag in order to preserve backwards compatibility for
 // existing apps. When a new app is initialized through `cdk init`, the CLI will
 // automatically add enable these features by adding them to the generated
-// `cdk.json` file. In the next major release of the CDK, these feature flags
-// will be removed and will become the default behavior.
+// `cdk.json` file.
+//
+// Some of these flags only affect the behavior of the construct library --
+// these will be removed in the next major release and the behavior they are
+// gating will become the only behavior.
+//
+// Other flags also affect the generated CloudFormation templates, in a way
+// that prevents seamless upgrading. In the next major version, their
+// behavior will become the default, but the flag still exists so users can
+// switch it *off* in order to revert to the old behavior. These flags
+// are marked with with the [PERMANENT] tag below.
+//
 // See https://github.com/aws/aws-cdk-rfcs/blob/master/text/0055-feature-flags.md
 // --------------------------------------------------------------------------------
 
@@ -31,6 +41,8 @@ export const ENABLE_DIFF_NO_FAIL = ENABLE_DIFF_NO_FAIL_CONTEXT;
 
 /**
  * Switch to new stack synthesis method which enable CI/CD
+ *
+ * [PERMANENT]
  */
 export const NEW_STYLE_STACK_SYNTHESIS_CONTEXT = '@aws-cdk/core:newStyleStackSynthesis';
 
@@ -41,6 +53,8 @@ export const NEW_STYLE_STACK_SYNTHESIS_CONTEXT = '@aws-cdk/core:newStyleStackSyn
  * ensure uniqueness, and makes the export names robust against refactoring
  * the location of the stack in the construct tree (specifically, moving the Stack
  * into a Stage).
+ *
+ * [PERMANENT]
  */
 export const STACK_RELATIVE_EXPORTS_CONTEXT = '@aws-cdk/core:stackRelativeExports';
 
@@ -116,6 +130,8 @@ export const ECS_REMOVE_DEFAULT_DESIRED_COUNT = '@aws-cdk/aws-ecs-patterns:remov
  *
  * This feature flag make correct the ServerlessCluster.clusterArn when
  * clusterIdentifier contains a Upper case letters.
+ *
+ * [PERMANENT]
  */
 export const RDS_LOWERCASE_DB_IDENTIFIER = '@aws-cdk/aws-rds:lowercaseDbIdentifier';
 
@@ -132,6 +148,8 @@ export const RDS_LOWERCASE_DB_IDENTIFIER = '@aws-cdk/aws-rds:lowercaseDbIdentifi
  *
  * In effect, there is no way to get out of this mess in a backwards compatible way, while supporting existing stacks.
  * This flag changes the logical id layout of UsagePlanKey to not be sensitive to order.
+ *
+ * [PERMANENT]
  */
 export const APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID = '@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId';
 
@@ -150,15 +168,40 @@ export const EFS_DEFAULT_ENCRYPTION_AT_REST = '@aws-cdk/aws-efs:defaultEncryptio
  * not constitute creating a new Version.
  *
  * See 'currentVersion' section in the aws-lambda module's README for more details.
+ *
+ * [PERMANENT]
  */
 export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVersionProps';
+
+/**
+ * Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the
+ * `fn.currentVersion`.
+ *
+ * This flag correct incorporates Lambda Layer properties into the Lambda Function Version.
+ *
+ * See 'currentVersion' section in the aws-lambda module's README for more details.
+ *
+ * [PERMANENT]
+ */
+export const LAMBDA_RECOGNIZE_LAYER_VERSION = '@aws-cdk/aws-lambda:recognizeLayerVersion';
 
 /**
  * Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default.
  *
  * The security policy can also be configured explicitly using the `minimumProtocolVersion` property.
+ *
+ * [PERMANENT]
  */
 export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021';
+
+/**
+ * Enable this flag to make it impossible to accidentally use SecretValues in unsafe locations
+ *
+ * With this flag enabled, `SecretValue` instances can only be passed to
+ * constructs that accept `SecretValue`s; otherwise, `unsafeUnwrap()` must be
+ * called to use it as a regular string.
+ */
+export const CHECK_SECRET_USAGE = '@aws-cdk/core:checkSecretUsage';
 
 /**
  * What regions to include in lookup tables of environment agnostic stacks
@@ -167,6 +210,8 @@ export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cl
  * of unnecessary regions included in stacks without a known region.
  *
  * The type of this value should be a list of strings.
+ *
+ * [PERMANENT]
  */
 export const TARGET_PARTITIONS = '@aws-cdk/core:target-partitions';
 
@@ -175,6 +220,8 @@ export const TARGET_PARTITIONS = '@aws-cdk/core:target-partitions';
  * `awslogs` log driver for the application container of the service to send the container logs to CloudWatch Logs.
  *
  * This is a feature flag as the new behavior provides a better default experience for the users.
+ *
+ * [PERMANENT]
  */
 export const ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER = '@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver';
 
@@ -190,15 +237,30 @@ export const ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER = '@aws-cdk-contai
 export const EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME = '@aws-cdk/aws-ec2:uniqueImdsv2TemplateName';
 
 /**
- * This map includes context keys and values for feature flags that enable
- * capabilities "from the future", which we could not introduce as the default
- * behavior due to backwards compatibility for existing projects.
+ * Minimize IAM policies by combining Principals, Actions and Resources of two
+ * Statements in the policies, as long as it doesn't change the meaning of the
+ * policy.
  *
- * New projects generated through `cdk init` will include these flags in their
- * generated `cdk.json` file.
+ * [PERMANENT]
+ */
+export const IAM_MINIMIZE_POLICIES = '@aws-cdk/aws-iam:minimizePolicies';
+
+/**
+ * Makes sure we do not allow snapshot removal policy on resources that do not support it.
+ * If supplied on an unsupported resource, CloudFormation ignores the policy altogether.
+ * This flag will reduce confusion and unexpected loss of data when erroneously supplying
+ * the snapshot removal policy.
  *
- * When we release the next major version of the CDK, we will flip the logic of
- * these features and clean up the `cdk.json` generated by `cdk init`.
+ * [PERMANENT]
+ */
+export const VALIDATE_SNAPSHOT_REMOVAL_POLICY = '@aws-cdk/core:validateSnapshotRemovalPolicy';
+
+/**
+ * Flag values that should apply for new projects
+ *
+ * Add a flag in here (typically with the value `true`), to enable
+ * backwards-breaking behavior changes only for new projects.  New projects
+ * generated through `cdk init` will include these flags in their generated
  *
  * Tests must cover the default (disabled) case and the future (enabled) case.
  */
@@ -215,12 +277,13 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [RDS_LOWERCASE_DB_IDENTIFIER]: true,
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
   [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
+  [LAMBDA_RECOGNIZE_LAYER_VERSION]: true,
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
   [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: true,
   [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: true,
-
-  // We will advertise this flag when the feature is complete
-  // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
+  [CHECK_SECRET_USAGE]: true,
+  [IAM_MINIMIZE_POLICIES]: true,
+  [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true,
 };
 
 /**
@@ -235,31 +298,46 @@ export const NEW_PROJECT_DEFAULT_CONTEXT: { [key: string]: any} = {
  * and block usages of old feature flags in the new major version of CDK.
  */
 export const FUTURE_FLAGS_EXPIRED: string[] = [
+  DOCKER_IGNORE_SUPPORT,
+  ECS_REMOVE_DEFAULT_DESIRED_COUNT,
+  EFS_DEFAULT_ENCRYPTION_AT_REST,
+  ENABLE_DIFF_NO_FAIL_CONTEXT,
+  ENABLE_STACK_NAME_DUPLICATES_CONTEXT,
+  KMS_DEFAULT_KEY_POLICIES,
+  S3_GRANT_WRITE_WITHOUT_ACL,
+  SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME,
 ];
 
 /**
- * The set of defaults that should be applied if the feature flag is not
- * explicitly configured.
+ * The default values of each of these flags.
+ *
+ * This is the effective value of the flag, unless it's overriden via
+ * context.
+ *
+ * Adding new flags here is only allowed during the pre-release period of a new
+ * major version!
  */
 const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
-  [APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID]: false,
-  [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: false,
-  [ENABLE_DIFF_NO_FAIL_CONTEXT]: false,
-  [STACK_RELATIVE_EXPORTS_CONTEXT]: false,
-  [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
-  [DOCKER_IGNORE_SUPPORT]: false,
-  [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: false,
-  [KMS_DEFAULT_KEY_POLICIES]: false,
-  [S3_GRANT_WRITE_WITHOUT_ACL]: false,
-  [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: false,
-  [RDS_LOWERCASE_DB_IDENTIFIER]: false,
-  [EFS_DEFAULT_ENCRYPTION_AT_REST]: false,
-  [LAMBDA_RECOGNIZE_VERSION_PROPS]: false,
-  [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: false,
+  [APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID]: true,
+  [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: true,
+  [ENABLE_DIFF_NO_FAIL_CONTEXT]: true,
+  [STACK_RELATIVE_EXPORTS_CONTEXT]: true,
+  [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: true,
+  [DOCKER_IGNORE_SUPPORT]: true,
+  [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: true,
+  [KMS_DEFAULT_KEY_POLICIES]: true,
+  [S3_GRANT_WRITE_WITHOUT_ACL]: true,
+  [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: true,
+  [RDS_LOWERCASE_DB_IDENTIFIER]: true,
+  [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
+  [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
+  [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
+  // Every feature flag below this should have its default behavior set to "not
+  // activated", as it was introduced AFTER v2 was released.
   [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: false,
   [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: false,
 };
 
-export function futureFlagDefault(flag: string): boolean | undefined {
-  return FUTURE_FLAGS_DEFAULTS[flag];
+export function futureFlagDefault(flag: string): boolean {
+  return FUTURE_FLAGS_DEFAULTS[flag] ?? false;
 }

@@ -42,6 +42,25 @@ This is what happens under the hood:
    `websiteBucket`). If there is more than one source, the sources will be
    downloaded and merged pre-deployment at this step.
 
+If you are referencing the filled bucket in another construct that depends on
+the files already be there, be sure to use `deployment.deployedBucket`. This
+will ensure the bucket deployment has finished before the resource that uses
+the bucket is created:
+
+```ts
+declare const websiteBucket: s3.Bucket;
+
+const deployment = new s3deploy.BucketDeployment(this, 'DeployWebsite', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  destinationBucket: websiteBucket,
+});
+
+new ConstructThatReadsFromTheBucket(this, 'Consumer', {
+  // Use 'deployment.deployedBucket' instead of 'websiteBucket' here
+  bucket: deployment.deployedBucket,
+});
+```
+
 ## Supported sources
 
 The following source types are supported for bucket deployments:
@@ -49,6 +68,10 @@ The following source types are supported for bucket deployments:
 - Local .zip file: `s3deploy.Source.asset('/path/to/local/file.zip')`
 - Local directory: `s3deploy.Source.asset('/path/to/local/directory')`
 - Another bucket: `s3deploy.Source.bucket(bucket, zipObjectKey)`
+- String data: `s3deploy.Source.data('object-key.txt', 'hello, world!')`
+  (supports [deploy-time values](#data-with-deploy-time-values))
+- JSON data: `s3deploy.Source.jsonData('object-key.json', { json: 'object' })`
+  (supports [deploy-time values](#data-with-deploy-time-values))
 
 To create a source from a single file, you can pass `AssetOptions` to exclude
 all but a single file:
@@ -116,7 +139,8 @@ new s3deploy.BucketDeployment(this, 'DeployMeWithoutDeletingFilesOnDestination',
 });
 ```
 
-This option also enables you to specify multiple bucket deployments for the same destination bucket & prefix,
+This option also enables you to 
+multiple bucket deployments for the same destination bucket & prefix,
 each with its own characteristics. For example, you can set different cache-control headers
 based on file extensions:
 
@@ -236,14 +260,19 @@ new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
 });
 ```
 
-## Memory Limit
+## Size Limits
 
 The default memory limit for the deployment resource is 128MiB. If you need to
-copy larger files, you can use the `memoryLimit` configuration to specify the
+copy larger files, you can use the `memoryLimit` configuration to increase the
 size of the AWS Lambda resource handler.
 
-> NOTE: a new AWS Lambda handler will be created in your stack for each memory
-> limit configuration.
+The default ephemeral storage size for the deployment resource is 512MiB. If you
+need to upload larger files, you may hit this limit. You can use the 
+`ephemeralStorageSize` configuration to increase the storage size of the AWS Lambda
+resource handler.
+
+> NOTE: a new AWS Lambda handler will be created in your stack for each combination
+> of memory and storage size.
 
 ## EFS Support
 
@@ -268,9 +297,37 @@ new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
 });
 ```
 
+## Data with deploy-time values
+
+The content passed to `Source.data()` or `Source.jsonData()` can include
+references that will get resolved only during deployment.
+
+For example:
+
+```ts
+import * as sns from '@aws-cdk/aws-sns';
+
+declare const destinationBucket: s3.Bucket;
+declare const topic: sns.Topic;
+
+const appConfig = {
+  topic_arn: topic.topicArn,
+  base_url: 'https://my-endpoint',
+};
+
+new s3deploy.BucketDeployment(this, 'BucketDeployment', {
+  sources: [s3deploy.Source.jsonData('config.json', appConfig)],
+  destinationBucket,
+});
+```
+
+The value in `topic.topicArn` is a deploy-time value. It only gets resolved
+during deployment by placing a marker in the generated source file and
+substituting it when its deployed to the destination with the actual value.
+
 ## Notes
 
-- This library uses an AWS CloudFormation custom resource which about 10MiB in
+- This library uses an AWS CloudFormation custom resource which is about 10MiB in
   size. The code of this resource is bundled with this library.
 - AWS Lambda execution time is limited to 15min. This limits the amount of data
   which can be deployed into the bucket by this timeout.
@@ -282,16 +339,16 @@ new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
   be good enough: the custom resource will simply not run if the properties don't
   change.
   - If you use assets (`s3deploy.Source.asset()`) you don't need to worry
-    about this: the asset system will make sure that if the files have changed, 
+    about this: the asset system will make sure that if the files have changed,
     the file name is unique and the deployment will run.
 
 ## Development
 
-The custom resource is implemented in Python 3.6 in order to be able to leverage
-the AWS CLI for "aws s3 sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment/lib/lambda) and
-unit tests are under [`test/lambda`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment/test/lambda).
+The custom resource is implemented in Python 3.7 in order to be able to leverage
+the AWS CLI for "aws s3 sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-s3-deployment/lib/lambda) and
+unit tests are under [`test/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-s3-deployment/test/lambda).
 
-This package requires Python 3.6 during build time in order to create the custom
+This package requires Python 3.7 during build time in order to create the custom
 resource Lambda bundle and test it. It also relies on a few bash scripts, so
 might be tricky to build on Windows.
 

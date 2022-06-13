@@ -1,6 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Names, IConstruct } from '@aws-cdk/core';
+import { Names } from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 
 /**
@@ -87,20 +88,21 @@ export class BatchJob implements events.IRuleTarget {
       addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);
     }
 
+    // When scoping resource-level access for job submission, you must provide both job queue and job definition resource types.
+    // https://docs.aws.amazon.com/batch/latest/userguide/ExamplePolicies_BATCH.html#iam-example-restrict-job-def
+    const role = singletonEventRole(this.jobDefinitionScope);
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['batch:SubmitJob'],
+      resources: [
+        this.jobDefinitionArn,
+        this.jobQueueArn,
+      ],
+    }));
+
     return {
       ...bindBaseTargetConfig(this.props),
       arn: this.jobQueueArn,
-      // When scoping resource-level access for job submission, you must provide both job queue and job definition resource types.
-      // https://docs.aws.amazon.com/batch/latest/userguide/ExamplePolicies_BATCH.html#iam-example-restrict-job-def
-      role: singletonEventRole(this.jobDefinitionScope, [
-        new iam.PolicyStatement({
-          actions: ['batch:SubmitJob'],
-          resources: [
-            this.jobDefinitionArn,
-            this.jobQueueArn,
-          ],
-        }),
-      ]),
+      role,
       input: this.props.event,
       targetResource: this.jobQueueScope,
       batchParameters,

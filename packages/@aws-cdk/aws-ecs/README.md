@@ -139,7 +139,10 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   // ... other options here ...
 });
 
-cluster.addAutoScalingGroup(autoScalingGroup);
+const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
+  autoScalingGroup,
+});
+cluster.addAsgCapacityProvider(capacityProvider);
 ```
 
 If you omit the property `vpc`, the construct will create a new VPC with two AZs.
@@ -393,8 +396,8 @@ obtained from either DockerHub or from ECR repositories, built directly from a l
 
 - `ecs.ContainerImage.fromRegistry(imageName)`: use a public image.
 - `ecs.ContainerImage.fromRegistry(imageName, { credentials: mySecret })`: use a private image that requires credentials.
-- `ecs.ContainerImage.fromEcrRepository(repo, tag)`: use the given ECR repository as the image
-  to start. If no tag is provided, "latest" is assumed.
+- `ecs.ContainerImage.fromEcrRepository(repo, tagOrDigest)`: use the given ECR repository as the image
+  to start. If no tag or digest is provided, "latest" is assumed.
 - `ecs.ContainerImage.fromAsset('./image')`: build and upload an
   image directly from a `Dockerfile` in your source directory.
 - `ecs.ContainerImage.fromDockerImageAsset(asset)`: uses an existing
@@ -427,6 +430,7 @@ const newContainer = taskDefinition.addContainer('container', {
   secrets: { // Retrieved from AWS Secrets Manager or AWS Systems Manager Parameter Store at container start-up.
     SECRET: ecs.Secret.fromSecretsManager(secret),
     DB_PASSWORD: ecs.Secret.fromSecretsManager(dbSecret, 'password'), // Reference a specific JSON field, (requires platform version 1.4.0 or later for Fargate tasks)
+    API_KEY: ecs.Secret.fromSecretsManagerVersion(secret, { versionId: '12345' }, 'apiKey'), // Reference a specific version of the secret by its version id or version stage (requires platform version 1.4.0 or later for Fargate tasks)
     PARAMETER: ecs.Secret.fromSsmParameter(parameter),
   },
 });

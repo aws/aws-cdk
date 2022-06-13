@@ -11,6 +11,7 @@
       "noUnusedLocals": true,
       "noUnusedParameters": true,
       "noImplicitReturns": true,
+      "experimentalDecorators": true,
       "noFallthroughCasesInSwitch": true,
       "resolveJsonModule": true,
       "composite": true,

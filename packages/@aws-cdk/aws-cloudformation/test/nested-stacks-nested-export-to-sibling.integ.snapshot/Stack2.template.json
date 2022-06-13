@@ -1,0 +1,22 @@
+{
+ "Resources": {
+  "TopicInStack27FD9238C": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::Split": [
+        "-",
+        {
+         "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1TopicInNestedUnderStack136BDF841TopicNameD753D416"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  }
+ }
+}

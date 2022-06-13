@@ -65,7 +65,7 @@ export interface LogOptions {
   /**
    * Determines whether execution data is included in your log.
    *
-   * @default true
+   * @default false
    */
   readonly includeExecutionData?: boolean;
 
@@ -142,7 +142,9 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
       public readonly stateMachineArn = stateMachineArn;
       public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
     }
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: stateMachineArn,
+    });
   }
 
   public abstract readonly stateMachineArn: string;

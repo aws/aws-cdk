@@ -1,4 +1,5 @@
-import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
+import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '@aws-cdk/aws-ecs';
+import { FeatureFlags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
@@ -63,6 +64,22 @@ export interface ApplicationLoadBalancedEc2ServiceProps extends ApplicationLoadB
    * @default - No memory reserved.
    */
   readonly memoryReservationMiB?: number;
+
+  /**
+   * The placement constraints to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
+   *
+   * @default - No constraints.
+   */
+  readonly placementConstraints?: PlacementConstraint[];
+
+  /**
+   * The placement strategies to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
+   *
+   * @default - No strategies.
+  */
+  readonly placementStrategies?: PlacementStrategy[];
 }
 
 /**
@@ -119,7 +136,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       throw new Error('You must specify one of: taskDefinition or image');
     }
 
-    const desiredCount = this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
+    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
 
     this.service = new Ec2Service(this, 'Service', {
       cluster: this.cluster,
@@ -135,6 +152,8 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       cloudMapOptions: props.cloudMapOptions,
       deploymentController: props.deploymentController,
       circuitBreaker: props.circuitBreaker,
+      placementConstraints: props.placementConstraints,
+      placementStrategies: props.placementStrategies,
     });
     this.addServiceAsTarget(this.service);
   }

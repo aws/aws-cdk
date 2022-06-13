@@ -1,10 +1,13 @@
 import { Writable } from 'stream';
-import * as archiver from 'archiver';
 import * as AWS from 'aws-sdk';
 import { flatMap } from '../../util';
 import { ISDK } from '../aws-auth';
 import { CfnEvaluationException, EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate } from './common';
+
+// namespace object imports won't work in the bundle for function exports
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const archiver = require('archiver');
 
 /**
  * Returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if the change cannot be short-circuited,
@@ -366,7 +369,7 @@ function zipString(fileName: string, rawString: string): Promise<Buffer> {
 
     const archive = archiver('zip');
 
-    archive.on('error', (err) => {
+    archive.on('error', (err: any) => {
       reject(err);
     });
 

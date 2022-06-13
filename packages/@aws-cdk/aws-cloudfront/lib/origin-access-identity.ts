@@ -108,7 +108,7 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
     super(scope, id);
 
     // Comment has a max length of 128.
-    const comment = (props?.comment ?? 'Allows CloudFront to reach the bucket').substr(0, 128);
+    const comment = (props?.comment ?? 'Allows CloudFront to reach the bucket').slice(0, 128);
     this.resource = new CfnCloudFrontOriginAccessIdentity(this, 'Resource', {
       cloudFrontOriginAccessIdentityConfig: { comment },
     });

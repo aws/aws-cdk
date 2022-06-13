@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 import * as elbv2 from '../lib';
 
 /* IPv6 workaround found here: https://github.com/aws/aws-cdk/issues/894 */
@@ -37,10 +38,33 @@ const ipv6Block = new ec2.CfnVPCCidrBlock(
 
 // Get the vpc's internet gateway so we can create default routes for the
 // public subnets.
-const internetGateway = valueOrDie<cdk.IConstruct, ec2.CfnInternetGateway>(
+const internetGateway = valueOrDie<IConstruct, ec2.CfnInternetGateway>(
   vpc.node.children.find(c => c instanceof ec2.CfnInternetGateway),
   new Error('Couldnt find an internet gateway'),
 );
+
+
+const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+  internetFacing: true,
+});
+
+const listener = lb.addListener('Listener', {
+  port: 80,
+});
+
+const group1 = listener.addTargets('Target', {
+  port: 80,
+  targets: [new elbv2.IpTarget('10.0.128.6')],
+});
+
+const group2 = listener.addTargets('ConditionalTarget', {
+  priority: 10,
+  hostHeader: 'example.com',
+  port: 80,
+  targets: [new elbv2.IpTarget('10.0.128.5')],
+});
 
 vpc.publicSubnets.forEach((subnet, idx) => {
   // Add a default ipv6 route to the subnet's route table.
@@ -53,7 +77,7 @@ vpc.publicSubnets.forEach((subnet, idx) => {
 
   // Find a CfnSubnet (raw cloudformation resources) child to the public
   // subnet nodes.
-  const cfnSubnet = valueOrDie<cdk.IConstruct, ec2.CfnSubnet>(
+  const cfnSubnet = valueOrDie<IConstruct, ec2.CfnSubnet>(
     subnet.node.children.find(c => c instanceof ec2.CfnSubnet),
     new Error('Couldnt find a CfnSubnet'),
   );
@@ -71,28 +95,9 @@ vpc.publicSubnets.forEach((subnet, idx) => {
 
   // The subnet depends on the ipv6 cidr being allocated.
   cfnSubnet.addDependsOn(ipv6Block);
-});
 
-const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
-  vpc,
-  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
-  internetFacing: true,
-});
-
-const listener = lb.addListener('Listener', {
-  port: 80,
-});
-
-const group1 = listener.addTargets('Target', {
-  port: 80,
-  targets: [new elbv2.IpTarget('10.0.128.4')],
-});
-
-const group2 = listener.addTargets('ConditionalTarget', {
-  priority: 10,
-  hostHeader: 'example.com',
-  port: 80,
-  targets: [new elbv2.IpTarget('10.0.128.5')],
+  group1.node.addDependency(subnet);
+  group2.node.addDependency(subnet);
 });
 
 listener.addAction('action1', {

@@ -1,0 +1,52 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-user-pool-idp-amazon": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-user-pool-idp-amazon.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-user-pool-idp-amazon/pool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pool056F3F7E"
+          }
+        ],
+        "/integ-user-pool-idp-amazon/pool/client/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "poolclient2623294C"
+          }
+        ],
+        "/integ-user-pool-idp-amazon/pool/domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pooldomain430FA744"
+          }
+        ],
+        "/integ-user-pool-idp-amazon/amazon/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amazon2D32744A"
+          }
+        ],
+        "/integ-user-pool-idp-amazon/SignInLink": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SignInLink"
+          }
+        ]
+      },
+      "displayName": "integ-user-pool-idp-amazon"
+    }
+  }
+}

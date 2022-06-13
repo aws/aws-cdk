@@ -1,3 +1,4 @@
+import { readdirSync, readFileSync, existsSync } from 'fs';
 import * as path from 'path';
 import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
@@ -16,7 +17,8 @@ const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 test('deploy from local directory asset', () => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+  const stack = new cdk.Stack(app);
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // WHEN
@@ -93,7 +95,8 @@ test('deploy with configured log retention', () => {
 
 test('deploy from local directory assets', () => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+  const stack = new cdk.Stack(app);
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // WHEN
@@ -302,7 +305,8 @@ testDeprecated('honors passed asset options', () => {
   // When the deprecated property is removed from source, this block can be dropped.
 
   // GIVEN
-  const stack = new cdk.Stack();
+  const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+  const stack = new cdk.Stack(app);
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // WHEN
@@ -707,15 +711,53 @@ testFutureBehavior('lambda execution role gets permissions to read from the sour
   });
 });
 
+testFutureBehavior('lambda execution role gets putObjectAcl permission when deploying with accessControl', s3GrantWriteCtx, cdk.App, (app) => {
+  // GIVEN
+  const stack = new cdk.Stack(app);
+  const source = new s3.Bucket(stack, 'Source');
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.bucket(source, 'file.zip')],
+    destinationBucket: bucket,
+    accessControl: s3.BucketAccessControl.PUBLIC_READ,
+  });
+
+  // THEN
+  const map = Template.fromStack(stack).findResources('AWS::IAM::Policy');
+  expect(map).toBeDefined();
+  const resource = map[Object.keys(map)[0]];
+  expect(resource.Properties.PolicyDocument.Statement).toContainEqual({
+    Action: [
+      's3:PutObjectAcl',
+      's3:PutObjectVersionAcl',
+    ],
+    Effect: 'Allow',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          {
+            'Fn::GetAtt': [
+              'DestC383B82A',
+              'Arn',
+            ],
+          },
+          '/*',
+        ],
+      ],
+    },
+  });
+});
+
 test('memoryLimit can be used to specify the memory limit for the deployment resource handler', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // WHEN
-
   // we define 3 deployments with 2 different memory configurations
-
   new s3deploy.BucketDeployment(stack, 'Deploy256-1', {
     sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
     destinationBucket: bucket,
@@ -735,12 +777,50 @@ test('memoryLimit can be used to specify the memory limit for the deployment res
   });
 
   // THEN
-
   // we expect to find only two handlers, one for each configuration
-
   Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 256 });
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 1024 });
+});
+
+test('ephemeralStorageSize can be used to specify the storage size for the deployment resource handler', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  // we define 3 deployments with 2 different memory configurations
+  new s3deploy.BucketDeployment(stack, 'Deploy256-1', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    ephemeralStorageSize: cdk.Size.mebibytes(512),
+  });
+
+  new s3deploy.BucketDeployment(stack, 'Deploy256-2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    ephemeralStorageSize: cdk.Size.mebibytes(512),
+  });
+
+  new s3deploy.BucketDeployment(stack, 'Deploy1024', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    ephemeralStorageSize: cdk.Size.mebibytes(1024),
+  });
+
+  // THEN
+  // we expect to find only two handlers, one for each configuration
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    EphemeralStorage: {
+      Size: 512,
+    },
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    EphemeralStorage: {
+      Size: 1024,
+    },
+  });
 });
 
 test('deployment allows custom role to be supplied', () => {
@@ -944,6 +1024,68 @@ test('deployment allows vpc and subnets to be implicitly supplied to lambda', ()
   });
 });
 
+test('s3 deployment bucket is identical to destination bucket', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  const bd = new s3deploy.BucketDeployment(stack, 'Deployment', {
+    destinationBucket: bucket,
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  });
+
+  // Call this function
+  void(bd.deployedBucket);
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('Custom::CDKBucketDeployment', {
+    // Since this utilizes GetAtt, we know CFN will deploy the bucket first
+    // before deploying other resources that rely call the destination bucket.
+    DestinationBucketArn: { 'Fn::GetAtt': ['DestC383B82A', 'Arn'] },
+  });
+});
+
+test('using deployment bucket references the destination bucket by means of the CustomResource', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deployment', {
+    destinationBucket: bucket,
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  });
+
+  // WHEN
+  new cdk.CfnOutput(stack, 'DestinationArn', {
+    value: deployment.deployedBucket.bucketArn,
+  });
+  new cdk.CfnOutput(stack, 'DestinationName', {
+    value: deployment.deployedBucket.bucketName,
+  });
+
+  // THEN
+
+  const template = Template.fromStack(stack);
+  expect(template.findOutputs('*')).toEqual({
+    DestinationArn: {
+      Value: { 'Fn::GetAtt': ['DeploymentCustomResource47E8B2E6', 'DestinationBucketArn'] },
+    },
+    DestinationName: {
+      Value: {
+        'Fn::Select': [0, {
+          'Fn::Split': ['/', {
+            'Fn::Select': [5, {
+              'Fn::Split': [':',
+                { 'Fn::GetAtt': ['DeploymentCustomResource47E8B2E6', 'DestinationBucketArn'] }],
+            }],
+          }],
+        }],
+      },
+    },
+  });
+});
+
 test('resource id includes memory and vpc', () => {
 
   // GIVEN
@@ -1060,3 +1202,88 @@ test('bucket has multiple deployments', () => {
     ],
   });
 });
+
+test('"SourceMarkers" is not included if none of the sources have markers', () => {
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+
+  const map = Template.fromStack(stack).findResources('Custom::CDKBucketDeployment');
+  expect(map).toBeDefined();
+  const resource = map[Object.keys(map)[0]];
+  expect(Object.keys(resource.Properties)).toStrictEqual([
+    'ServiceToken',
+    'SourceBucketNames',
+    'SourceObjectKeys',
+    'DestinationBucketName',
+    'Prune',
+  ]);
+});
+
+test('Source.data() can be used to create a file with string contents', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  const source = s3deploy.Source.data('my/path.txt', 'hello, world');
+
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
+    sources: [source],
+    destinationBucket: bucket,
+    destinationKeyPrefix: '/x/z',
+  });
+
+  const result = app.synth();
+  const content = readDataFile(result, 'my/path.txt');
+  expect(content).toStrictEqual('hello, world');
+});
+
+test('Source.jsonData() can be used to create a file with a JSON object', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  const config = {
+    foo: 'bar',
+    sub: {
+      hello: bucket.bucketArn,
+    },
+  };
+
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
+    sources: [s3deploy.Source.jsonData('app-config.json', config)],
+    destinationBucket: bucket,
+  });
+
+  const result = app.synth();
+  const obj = JSON.parse(readDataFile(result, 'app-config.json'));
+  expect(obj).toStrictEqual({
+    foo: 'bar',
+    sub: {
+      hello: '<<marker:0xbaba:0>>',
+    },
+  });
+
+  // verify marker is mapped to the bucket ARN in the resource props
+  Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceMarkers: [
+      { '<<marker:0xbaba:0>>': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] } },
+    ],
+  });
+});
+
+
+function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
+  const assetDirs = readdirSync(casm.directory).filter(f => f.startsWith('asset.'));
+  for (const dir of assetDirs) {
+    const candidate = path.join(casm.directory, dir, relativePath);
+    if (existsSync(candidate)) {
+      return readFileSync(candidate, 'utf8');
+    }
+  }
+
+  throw new Error(`File ${relativePath} not found in any of the assets of the assembly`);
+}

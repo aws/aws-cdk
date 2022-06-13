@@ -1,0 +1,120 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-glue-job": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-glue-job.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-glue-job": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py",
+              "id": "432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855",
+              "packaging": "file",
+              "sourceHash": "432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855",
+              "s3BucketParameter": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469",
+              "s3KeyParameter": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763",
+              "artifactHashParameter": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855ArtifactHash0C610005"
+            }
+          }
+        ],
+        "/aws-glue-job/EtlJob/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EtlJobServiceRole837F781B"
+          }
+        ],
+        "/aws-glue-job/EtlJob/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EtlJobServiceRoleDefaultPolicy8BFE343B"
+          }
+        ],
+        "/aws-glue-job/EtlJob/SparkUIBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EtlJobSparkUIBucketBF23744B"
+          }
+        ],
+        "/aws-glue-job/EtlJob/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EtlJob7FC88E45"
+          }
+        ],
+        "/aws-glue-job/EtlJob/SuccessMetricRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EtlJobSuccessMetricRuleA72A3EF6"
+          }
+        ],
+        "/aws-glue-job/AssetParameters/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+          }
+        ],
+        "/aws-glue-job/AssetParameters/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763"
+          }
+        ],
+        "/aws-glue-job/AssetParameters/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855ArtifactHash0C610005"
+          }
+        ],
+        "/aws-glue-job/StreamingJob/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StreamingJobServiceRole1B4B8BF9"
+          }
+        ],
+        "/aws-glue-job/StreamingJob/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StreamingJobServiceRoleDefaultPolicyA0CC4C68"
+          }
+        ],
+        "/aws-glue-job/StreamingJob/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StreamingJob3783CC17"
+          }
+        ],
+        "/aws-glue-job/ShellJob/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ShellJobServiceRoleCF97BC4B"
+          }
+        ],
+        "/aws-glue-job/ShellJob/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ShellJobServiceRoleDefaultPolicy7F22D315"
+          }
+        ],
+        "/aws-glue-job/ShellJob/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ShellJob42E81F95"
+          }
+        ]
+      },
+      "displayName": "aws-glue-job"
+    }
+  }
+}

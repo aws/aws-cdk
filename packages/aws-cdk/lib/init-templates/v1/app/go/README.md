@@ -1,6 +1,6 @@
 # Welcome to your CDK Go project!
 
-This is a blank project for Go development with CDK.
+This is a blank project for CDK development with Go.
 
 **NOTICE**: Go support is still in Developer Preview. This implies that APIs may
 change while we address early feedback from the community. We would love to hear

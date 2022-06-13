@@ -1,5 +1,5 @@
 {
-  "$version": "53.1.0",
+  "$version": "75.0.0",
   "PropertyTypes": {},
   "ResourceTypes": {
     "AWS::CodeGuruReviewer::RepositoryAssociation": {

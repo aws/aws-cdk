@@ -34,6 +34,13 @@ export interface BundlingProps extends BundlingOptions {
    * @default Architecture.X86_64
    */
   readonly architecture?: Architecture;
+
+  /**
+   * Whether or not the bundling process should be skipped
+   *
+   * @default - Does not skip bundling
+   */
+  readonly skip?: boolean;
 }
 
 /**
@@ -45,12 +52,13 @@ export class Bundling implements CdkBundlingOptions {
       assetHash: options.assetHash,
       assetHashType: options.assetHashType,
       exclude: DEPENDENCY_EXCLUDES,
-      bundling: new Bundling(options),
+      bundling: options.skip ? undefined : new Bundling(options),
     });
   }
 
   public readonly image: DockerImage;
   public readonly command: string[];
+  public readonly environment?: { [key: string]: string };
 
   constructor(props: BundlingProps) {
     const {
@@ -61,7 +69,7 @@ export class Bundling implements CdkBundlingOptions {
       image,
     } = props;
 
-    const outputPath = path.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
+    const outputPath = path.posix.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
 
     const bundlingCommands = this.createBundlingCommand({
       entry,
@@ -69,15 +77,15 @@ export class Bundling implements CdkBundlingOptions {
       outputDir: outputPath,
     });
 
-    const defaultImage = DockerImage.fromBuild(path.join(__dirname, '../lib'), {
+    this.image = image ?? DockerImage.fromBuild(path.join(__dirname, '../lib'), {
       buildArgs: {
-        ...props.buildArgs ?? {},
+        ...props.buildArgs,
         IMAGE: runtime.bundlingImage.image,
       },
       platform: architecture.dockerPlatform,
     });
-    this.image = image ?? defaultImage;
     this.command = ['bash', '-c', chain(bundlingCommands)];
+    this.environment = props.environment;
   }
 
   private createBundlingCommand(options: BundlingCommandOptions): string[] {

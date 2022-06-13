@@ -1,0 +1,76 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "CognitoUserPoolsAuthorizerInteg": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "CognitoUserPoolsAuthorizerInteg.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/CognitoUserPoolsAuthorizerInteg/UserPool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPool6BA7E5F2"
+          }
+        ],
+        "/CognitoUserPoolsAuthorizerInteg/myauthorizer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myauthorizer23CB99DD"
+          }
+        ],
+        "/CognitoUserPoolsAuthorizerInteg/myrestapi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myrestapi551C8392"
+          }
+        ],
+        "/CognitoUserPoolsAuthorizerInteg/myrestapi/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myrestapiCloudWatchRoleC48DA1DD"
+          }
+        ],
+        "/CognitoUserPoolsAuthorizerInteg/myrestapi/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myrestapiAccountA49A05BE"
+          }
+        ],
+        "/CognitoUserPoolsAuthorizerInteg/myrestapi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myrestapiDeployment419B1464b903292b53d7532ca4296973bcb95b1a"
+          }
+        ],
+        "/CognitoUserPoolsAuthorizerInteg/myrestapi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myrestapiDeploymentStageprodA9250EA4"
+          }
+        ],
+        "/CognitoUserPoolsAuthorizerInteg/myrestapi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myrestapiEndpointE06F9D98"
+          }
+        ],
+        "/CognitoUserPoolsAuthorizerInteg/myrestapi/Default/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myrestapiANY94B0497F"
+          }
+        ]
+      },
+      "displayName": "CognitoUserPoolsAuthorizerInteg"
+    }
+  }
+}

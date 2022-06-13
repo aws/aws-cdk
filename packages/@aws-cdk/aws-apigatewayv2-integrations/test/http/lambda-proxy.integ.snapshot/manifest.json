@@ -1,0 +1,70 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-lambda-proxy": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-lambda-proxy.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-lambda-proxy/AlwaysSuccess/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlwaysSuccessServiceRole6DB8C2F6"
+          }
+        ],
+        "/integ-lambda-proxy/AlwaysSuccess/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlwaysSuccess099EAB05"
+          }
+        ],
+        "/integ-lambda-proxy/LambdaProxyApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaProxyApi67594471"
+          }
+        ],
+        "/integ-lambda-proxy/LambdaProxyApi/DefaultRoute/DefaultIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaProxyApiDefaultRouteDefaultIntegrationAE9908C8"
+          }
+        ],
+        "/integ-lambda-proxy/LambdaProxyApi/DefaultRoute/DefaultIntegration-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaProxyApiDefaultRouteDefaultIntegrationPermission39F587FC"
+          }
+        ],
+        "/integ-lambda-proxy/LambdaProxyApi/DefaultRoute/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaProxyApiDefaultRoute1EB30A46"
+          }
+        ],
+        "/integ-lambda-proxy/LambdaProxyApi/DefaultStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaProxyApiDefaultStage07C38681"
+          }
+        ],
+        "/integ-lambda-proxy/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Endpoint"
+          }
+        ]
+      },
+      "displayName": "integ-lambda-proxy"
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '@aws-cdk/core';
 import { LambdaInvocationType, LambdaInvoke } from '../../lib';
 
@@ -16,7 +17,7 @@ describe('LambdaInvoke', () => {
     lambdaFunction = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
       handler: 'handler',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
   });
 
@@ -66,7 +67,7 @@ describe('LambdaInvoke', () => {
     });
   });
 
-  test('optional settings', () => {
+  testDeprecated('optional settings', () => {
     // WHEN
     const task = new LambdaInvoke(stack, 'Task', {
       lambdaFunction,
@@ -163,7 +164,7 @@ describe('LambdaInvoke', () => {
     }));
   });
 
-  test('invoke Lambda function and wait for task token', () => {
+  testDeprecated('invoke Lambda function and wait for task token', () => {
     // GIVEN
     const task = new LambdaInvoke(stack, 'Task', {
       lambdaFunction,
@@ -360,7 +361,7 @@ describe('LambdaInvoke', () => {
     }).toThrow(/The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified./);
   });
 
-  test('fails when qualifier used with payloadResponseOnly', () => {
+  testDeprecated('fails when qualifier used with payloadResponseOnly', () => {
     expect(() => {
       new LambdaInvoke(stack, 'Task', {
         lambdaFunction,

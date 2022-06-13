@@ -1,0 +1,102 @@
+{
+ "Resources": {
+  "myuserpool01998219": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "Schema": [
+     {
+      "AttributeDataType": "String",
+      "Name": "attribute_one"
+     },
+     {
+      "AttributeDataType": "String",
+      "Name": "attribute_two"
+     }
+    ],
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "myuserpoolmyuserpoolclientAFB2274E": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "UserPoolId": {
+     "Ref": "myuserpool01998219"
+    },
+    "AllowedOAuthFlows": [
+     "implicit",
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "phone",
+     "email",
+     "openid",
+     "profile",
+     "aws.cognito.signin.user.admin"
+    ],
+    "CallbackURLs": [
+     "https://redirect-here.myapp.com"
+    ],
+    "ClientName": "myuserpoolclient",
+    "ExplicitAuthFlows": [
+     "ALLOW_USER_PASSWORD_AUTH",
+     "ALLOW_ADMIN_USER_PASSWORD_AUTH",
+     "ALLOW_CUSTOM_AUTH",
+     "ALLOW_USER_SRP_AUTH",
+     "ALLOW_REFRESH_TOKEN_AUTH"
+    ],
+    "GenerateSecret": true,
+    "PreventUserExistenceErrors": "ENABLED",
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "WriteAttributes": [
+     "address",
+     "birthdate",
+     "custom:attribute_one",
+     "custom:attribute_two",
+     "email",
+     "family_name",
+     "gender",
+     "given_name",
+     "locale",
+     "middle_name",
+     "name",
+     "nickname",
+     "phone_number",
+     "picture",
+     "preferred_username",
+     "profile",
+     "updated_at",
+     "website",
+     "zoneinfo"
+    ]
+   }
+  }
+ }
+}

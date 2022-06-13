@@ -1,0 +1,106 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "ExampleResourceIntegTestStack": {
+        "id": "ExampleResourceIntegTestStack",
+        "path": "ExampleResourceIntegTestStack",
+        "children": {
+          "ExampleResource": {
+            "id": "ExampleResource",
+            "path": "ExampleResourceIntegTestStack/ExampleResource",
+            "children": {
+              "WaitConditionHandle": {
+                "id": "WaitConditionHandle",
+                "path": "ExampleResourceIntegTestStack/ExampleResource/WaitConditionHandle",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFormation::WaitConditionHandle",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnWaitConditionHandle",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "ExampleResourceIntegTestStack/ExampleResource/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFormation::WaitCondition",
+                  "aws:cdk:cloudformation:props": {
+                    "count": 0,
+                    "handle": {
+                      "Ref": "ExampleResourceWaitConditionHandle9C53A8D3"
+                    },
+                    "timeout": "10"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnWaitCondition",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "ExampleResourceIntegTestStack/ExampleResource/Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "ExampleResourceIntegTestStack/ExampleResource/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "cloudformation.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/example-construct-library.ExampleResource",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -63,7 +63,7 @@ A secret can set `RemovalPolicy`. If it set to `RETAIN`, that removing a secret 
 ## Grant permission to use the secret to a role
 
 You must grant permission to a resource for that resource to be allowed to
-use a secret. This can be achieved with the `Secret.grantRead` and/or `Secret.grantUpdate`
+use a secret. This can be achieved with the `Secret.grantRead` and/or `Secret.grantWrite`
  method, depending on your need:
 
 ```ts
@@ -198,7 +198,7 @@ new secretsmanager.SecretRotation(this, 'SecretRotation', {
 });
 ```
 
-See also [aws-rds](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-rds/README.md) where
+See also [aws-rds](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-rds/README.md) where
 credentials generation and rotation is integrated.
 
 ## Importing Secrets

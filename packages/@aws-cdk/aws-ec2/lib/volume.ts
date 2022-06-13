@@ -7,11 +7,6 @@ import { Construct } from 'constructs';
 import { CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
-
 /**
  * Block device
  */
@@ -89,6 +84,17 @@ export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
    * @default false
    */
   readonly encrypted?: boolean;
+
+  /**
+   * The ARN of the AWS Key Management Service (AWS KMS) CMK used for encryption.
+   *
+   * You have to ensure that the KMS CMK has the correct permissions to be used by the service launching the ec2 instances.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#ebs-encryption-requirements
+   *
+   * @default - If encrypted is true, the default aws/ebs KMS key will be used.
+   */
+  readonly kmsKey?: IKey;
 }
 
 /**
@@ -108,7 +114,7 @@ export interface EbsDeviceSnapshotOptions extends EbsDeviceOptionsBase {
 /**
  * Properties of an EBS block device
  */
-export interface EbsDeviceProps extends EbsDeviceSnapshotOptions {
+export interface EbsDeviceProps extends EbsDeviceSnapshotOptions, EbsDeviceOptions {
   /**
    * The snapshot ID of the volume to use
    *
@@ -510,7 +516,7 @@ abstract class VolumeBase extends Resource implements IVolume {
     // The ResourceTag condition requires that all resources involved in the operation have
     // the given tag, so we tag this and all constructs given.
     Tags.of(this).add(tagKey, tagValue);
-    constructs.forEach(construct => Tags.of(construct as CoreConstruct).add(tagKey, tagValue));
+    constructs.forEach(construct => Tags.of(construct).add(tagKey, tagValue));
 
     return result;
   }
@@ -539,7 +545,7 @@ abstract class VolumeBase extends Resource implements IVolume {
     // The ResourceTag condition requires that all resources involved in the operation have
     // the given tag, so we tag this and all constructs given.
     Tags.of(this).add(tagKey, tagValue);
-    constructs.forEach(construct => Tags.of(construct as CoreConstruct).add(tagKey, tagValue));
+    constructs.forEach(construct => Tags.of(construct).add(tagKey, tagValue));
 
     return result;
   }

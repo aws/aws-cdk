@@ -19,7 +19,7 @@ test('check that instantiation works', () => {
   new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
-      masterPassword: cdk.SecretValue.plainText('tooshort'),
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
     },
     vpc,
   });
@@ -69,7 +69,7 @@ test('can create a cluster with imported vpc and security group', () => {
   new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
-      masterPassword: cdk.SecretValue.plainText('tooshort'),
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
     },
     vpc,
     securityGroups: [sg],
@@ -344,7 +344,7 @@ test('throws when trying to add rotation to a cluster without secret', () => {
   const cluster = new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
-      masterPassword: cdk.SecretValue.plainText('tooshort'),
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
     },
     vpc,
   });

@@ -1,4 +1,4 @@
-import { Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Lazy, Resource, Stack, Token, Annotations } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from './layout';
@@ -75,6 +75,21 @@ export interface DashboardProps {
  * A CloudWatch dashboard
  */
 export class Dashboard extends Resource {
+
+  /**
+   * The name of this dashboard
+   *
+   * @attribute
+  */
+  public readonly dashboardName: string;
+
+  /**
+   * ARN of this dashboard
+   *
+   * @attribute
+   */
+  public readonly dashboardArn: string;
+
   private readonly rows: IWidget[] = [];
 
   constructor(scope: Construct, id: string, props: DashboardProps = {}) {
@@ -92,7 +107,7 @@ export class Dashboard extends Resource {
       }
     }
 
-    new CfnDashboard(this, 'Resource', {
+    const dashboard = new CfnDashboard(this, 'Resource', {
       dashboardName: this.physicalName,
       dashboardBody: Lazy.string({
         produce: () => {
@@ -108,8 +123,16 @@ export class Dashboard extends Resource {
       }),
     });
 
+    this.dashboardName = this.getResourceNameAttribute(dashboard.ref);
+
     (props.widgets || []).forEach(row => {
       this.addWidgets(...row);
+    });
+
+    this.dashboardArn = Stack.of(this).formatArn({
+      service: 'cloudwatch',
+      resource: 'dashboard',
+      resourceName: this.physicalName,
     });
   }
 
@@ -127,7 +150,29 @@ export class Dashboard extends Resource {
       return;
     }
 
+    const warnings = allWidgetsDeep(widgets).flatMap(w => w.warnings ?? []);
+    for (const w of warnings) {
+      Annotations.of(this).addWarning(w);
+    }
+
     const w = widgets.length > 1 ? new Row(...widgets) : widgets[0];
     this.rows.push(w);
   }
+}
+
+function allWidgetsDeep(ws: IWidget[]) {
+  const ret = new Array<IWidget>();
+  ws.forEach(recurse);
+  return ret;
+
+  function recurse(w: IWidget) {
+    ret.push(w);
+    if (hasSubWidgets(w)) {
+      w.widgets.forEach(recurse);
+    }
+  }
+}
+
+function hasSubWidgets(w: IWidget): w is IWidget & { widgets: IWidget[] } {
+  return 'widgets' in w;
 }

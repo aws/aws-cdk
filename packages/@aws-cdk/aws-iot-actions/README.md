@@ -21,6 +21,7 @@ supported AWS Services. Instances of these classes should be passed to
 
 Currently supported are:
 
+- Republish a message to another MQTT topic
 - Invoke a Lambda function
 - Put objects to a S3 bucket
 - Put logs to CloudWatch Logs
@@ -29,6 +30,23 @@ Currently supported are:
 - Put records to Kinesis Data stream
 - Put records to Kinesis Data Firehose stream
 - Send messages to SQS queues
+- Publish messages on SNS topics
+
+## Republish a message to another MQTT topic
+
+The code snippet below creates an AWS IoT Rule that republish a message to
+another MQTT topic when it is triggered.
+
+```ts
+new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, timestamp() as timestamp, temperature FROM 'device/+/data'"),
+  actions: [
+    new actions.IotRepublishMqttAction('${topic()}/republish', {
+      qualityOfService: actions.MqttQualityOfService.AT_LEAST_ONCE, // optional property, default is MqttQualityOfService.ZERO_OR_MORE_TIMES
+    }),
+  ],
+});
+```
 
 ## Invoke a Lambda function
 
@@ -235,6 +253,27 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
   actions: [
     new actions.SqsQueueAction(queue, {
       useBase64: true, // optional property, default is 'false'
+    }),
+  ],
+});
+```
+
+## Publish messages on an SNS topic
+
+The code snippet below creates and AWS IoT Rule that publishes messages to an SNS topic when it is triggered:
+
+```ts
+import * as sns from '@aws-cdk/aws-sns';
+
+const topic = new sns.Topic(this, 'MyTopic');
+
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323(
+    "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'",
+  ),
+  actions: [
+    new actions.SnsTopicAction(topic, {
+      messageFormat: actions.SnsActionMessageFormat.JSON, // optional property, default is SnsActionMessageFormat.RAW
     }),
   ],
 });

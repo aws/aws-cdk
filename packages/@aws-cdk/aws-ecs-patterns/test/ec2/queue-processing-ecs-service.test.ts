@@ -6,7 +6,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { AsgCapacityProvider } from '@aws-cdk/aws-ecs';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { testDeprecated, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecsPatterns from '../../lib';
@@ -33,7 +33,6 @@ test('test ECS queue worker service construct - with only required props', () =>
 
   // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: 1,
     LaunchType: 'EC2',
   });
 
@@ -88,9 +87,9 @@ test('test ECS queue worker service construct - with only required props', () =>
   });
 });
 
-test('test ECS queue worker service construct - with remove default desiredCount feature flag', () => {
+testLegacyBehavior('test ECS queue worker service construct - with remove default desiredCount feature flag', cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(app);
   stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
 
   const vpc = new ec2.Vpc(stack, 'VPC');
@@ -142,7 +141,6 @@ test('test ECS queue worker service construct - with optional props for queues',
 
   // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: 1,
     LaunchType: 'EC2',
   });
 
@@ -221,7 +219,6 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
     image: ecs.ContainerImage.fromRegistry('test'),
     command: ['-c', '4', 'amazon.com'],
     enableLogging: false,
-    desiredTaskCount: 2,
     environment: {
       TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
       TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
@@ -234,11 +231,12 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
     family: 'ecs-task-family',
     circuitBreaker: { rollback: true },
     gpuCount: 256,
+    placementStrategies: [ecs.PlacementStrategy.spreadAcrossInstances(), ecs.PlacementStrategy.packedByCpu(), ecs.PlacementStrategy.randomly()],
+    placementConstraints: [ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ m5a.*')],
   });
 
   // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all optional properties are set.
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: 2,
     DeploymentConfiguration: {
       MinimumHealthyPercent: 60,
       MaximumPercent: 150,
@@ -252,6 +250,8 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
     DeploymentController: {
       Type: 'ECS',
     },
+    PlacementConstraints: [{ Type: 'memberOf', Expression: 'attribute:ecs.instance-type =~ m5a.*' }],
+    PlacementStrategies: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'cpu', Type: 'binpack' }, { Type: 'random' }],
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
@@ -299,9 +299,9 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
   });
 });
 
-testDeprecated('can set desiredTaskCount to 0', () => {
+testLegacyBehavior('can set desiredTaskCount to 0', cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(app);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {

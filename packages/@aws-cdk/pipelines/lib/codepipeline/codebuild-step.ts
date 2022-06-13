@@ -1,8 +1,10 @@
-import { Duration } from '@aws-cdk/core';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import { Duration } from '@aws-cdk/core';
 import { ShellStep, ShellStepProps } from '../blueprint';
+import { mergeBuildSpecs } from './private/buildspecs';
+import { makeCodePipelineOutput } from './private/outputs';
 
 /**
  * Construction props for a CodeBuildStep
@@ -65,6 +67,13 @@ export interface CodeBuildStepProps extends ShellStepProps {
   readonly role?: iam.IRole;
 
   /**
+   * Custom execution role to be used for the Code Build Action
+   *
+   * @default - A role is automatically created
+   */
+  readonly actionRole?: iam.IRole;
+
+  /**
    * Changes to environment
    *
    * This environment will be combined with the pipeline's default
@@ -96,6 +105,17 @@ export interface CodeBuildStepProps extends ShellStepProps {
 
 /**
  * Run a script as a CodeBuild Project
+ *
+ * The BuildSpec must be available inline--it cannot reference a file
+ * on disk. If your current build instructions are in a file like
+ * `buildspec.yml` in your repository, extract them to a script
+ * (say, `build.sh`) and invoke that script as part of the build:
+ *
+ * ```ts
+ * new pipelines.CodeBuildStep('Synth', {
+ *   commands: ['./build.sh'],
+ * });
+ * ```
  */
 export class CodeBuildStep extends ShellStep {
   /**
@@ -104,13 +124,6 @@ export class CodeBuildStep extends ShellStep {
    * @default - No value specified at construction time, use defaults
    */
   public readonly projectName?: string;
-
-  /**
-   * Additional configuration that can only be configured via BuildSpec
-   *
-   * @default - No value specified at construction time, use defaults
-   */
-  public readonly partialBuildSpec?: codebuild.BuildSpec;
 
   /**
    * The VPC where to execute the SimpleSynth.
@@ -141,6 +154,13 @@ export class CodeBuildStep extends ShellStep {
   public readonly role?: iam.IRole;
 
   /**
+   * Custom execution role to be used for the Code Build Action
+   *
+   * @default - A role is automatically created
+   */
+  readonly actionRole?: iam.IRole;
+
+  /**
    * Build environment
    *
    * @default - No value specified at construction time, use defaults
@@ -164,16 +184,20 @@ export class CodeBuildStep extends ShellStep {
   readonly timeout?: Duration;
 
   private _project?: codebuild.IProject;
+  private _partialBuildSpec?: codebuild.BuildSpec;
+  private readonly exportedVariables = new Set<string>();
+  private exportedVarsRendered = false;
 
   constructor(id: string, props: CodeBuildStepProps) {
     super(id, props);
 
     this.projectName = props.projectName;
     this.buildEnvironment = props.buildEnvironment;
-    this.partialBuildSpec = props.partialBuildSpec;
+    this._partialBuildSpec = props.partialBuildSpec;
     this.vpc = props.vpc;
     this.subnetSelection = props.subnetSelection;
     this.role = props.role;
+    this.actionRole = props.actionRole;
     this.rolePolicyStatements = props.rolePolicyStatements;
     this.securityGroups = props.securityGroups;
     this.timeout = props.timeout;
@@ -196,6 +220,58 @@ export class CodeBuildStep extends ShellStep {
    */
   public get grantPrincipal(): iam.IPrincipal {
     return this.project.grantPrincipal;
+  }
+
+  /**
+   * Additional configuration that can only be configured via BuildSpec
+   *
+   * Contains exported variables
+   *
+   * @default - Contains the exported variables
+   */
+  public get partialBuildSpec(): codebuild.BuildSpec | undefined {
+    this.exportedVarsRendered = true;
+
+    const varsBuildSpec = this.exportedVariables.size > 0 ? codebuild.BuildSpec.fromObject({
+      version: '0.2',
+      env: {
+        'exported-variables': Array.from(this.exportedVariables),
+      },
+    }) : undefined;
+
+    return mergeBuildSpecs(varsBuildSpec, this._partialBuildSpec);
+  }
+
+  /**
+   * Reference a CodePipeline variable defined by the CodeBuildStep.
+   *
+   * The variable must be set in the shell of the CodeBuild step when
+   * it finishes its `post_build` phase.
+   *
+   * @param variableName the name of the variable for reference.
+   * @example
+   * // Access the output of one CodeBuildStep in another CodeBuildStep
+   * declare const pipeline: pipelines.CodePipeline;
+   *
+   * const step1 = new pipelines.CodeBuildStep('Step1', {
+   *   commands: ['export MY_VAR=hello'],
+   * });
+   *
+   * const step2 = new pipelines.CodeBuildStep('Step2', {
+   *   env: {
+   *     IMPORTED_VAR: step1.exportedVariable('MY_VAR'),
+   *   },
+   *   commands: ['echo $IMPORTED_VAR'],
+   * });
+   */
+  public exportedVariable(variableName: string): string {
+    if (this.exportedVarsRendered && !this.exportedVariables.has(variableName)) {
+      throw new Error('exportVariable(): Pipeline has already been produced, cannot call this function anymore');
+    }
+
+    this.exportedVariables.add(variableName);
+
+    return makeCodePipelineOutput(this, variableName);
   }
 
   /**

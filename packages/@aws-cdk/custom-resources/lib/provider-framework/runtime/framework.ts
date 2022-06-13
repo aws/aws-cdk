@@ -73,6 +73,7 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
 
   const response = {
     ...event,
+    ...isCompleteResult,
     Data: {
       ...event.Data,
       ...isCompleteResult.Data,

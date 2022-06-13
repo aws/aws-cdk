@@ -144,3 +144,65 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
 
   return dependencies;
 }
+
+export function getTsconfigCompilerOptions(tsconfigPath: string): string {
+  const compilerOptions = extractTsConfig(tsconfigPath);
+  const excludedCompilerOptions = [
+    'composite',
+    'tsBuildInfoFile',
+  ];
+
+  const options: Record<string, any> = {
+    ...compilerOptions,
+    // Overrides
+    incremental: false,
+    // Intentionally Setting rootDir and outDir, so that the compiled js file always end up next to .ts file.
+    rootDir: './',
+    outDir: './',
+  };
+
+  let compilerOptionsString = '';
+  Object.keys(options).sort().forEach((key: string) => {
+
+    if (excludedCompilerOptions.includes(key)) {
+      return;
+    }
+
+    const value = options[key];
+    const option = '--' + key;
+    const type = typeof value;
+
+    if (type === 'boolean') {
+      if (value) {
+        compilerOptionsString += option + ' ';
+      }
+    } else if (type === 'string') {
+      compilerOptionsString += option + ' ' + value + ' ';
+    } else if (type === 'object') {
+      if (Array.isArray(value)) {
+        compilerOptionsString += option + ' ' + value.join(',') + ' ';
+      }
+    } else {
+      throw new Error(`Missing support for compilerOption: [${key}]: { ${type}, ${value}} \n`);
+    }
+  });
+
+  return compilerOptionsString.trim();
+}
+
+
+function extractTsConfig(tsconfigPath: string, previousCompilerOptions?: Record<string, any>): Record<string, any> | undefined {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { extends: extendedConfig, compilerOptions } = require(tsconfigPath);
+  const updatedCompilerOptions = {
+    ...(previousCompilerOptions ?? {}),
+    ...compilerOptions,
+  };
+  if (extendedConfig) {
+    return extractTsConfig(
+      path.resolve(tsconfigPath.replace(/[^\/]+$/, ''), extendedConfig),
+      updatedCompilerOptions,
+    );
+  }
+  return updatedCompilerOptions;
+}

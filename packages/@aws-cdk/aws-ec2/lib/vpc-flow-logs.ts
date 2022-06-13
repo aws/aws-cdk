@@ -6,10 +6,6 @@ import { Construct } from 'constructs';
 import { CfnFlowLog } from './ec2.generated';
 import { ISubnet, IVpc } from './vpc';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * A FlowLog
  *
@@ -140,7 +136,7 @@ export abstract class FlowLogDestination {
   /**
    * Generates a flow log destination configuration
    */
-  public abstract bind(scope: CoreConstruct, flowLog: FlowLog): FlowLogDestinationConfig;
+  public abstract bind(scope: Construct, flowLog: FlowLog): FlowLogDestinationConfig;
 }
 
 /**
@@ -193,12 +189,11 @@ class S3Destination extends FlowLogDestination {
     super();
   }
 
-  public bind(scope: CoreConstruct, _flowLog: FlowLog): FlowLogDestinationConfig {
+  public bind(scope: Construct, _flowLog: FlowLog): FlowLogDestinationConfig {
     let s3Bucket: s3.IBucket;
     if (this.props.s3Bucket === undefined) {
       s3Bucket = new s3.Bucket(scope, 'Bucket', {
         encryption: s3.BucketEncryption.UNENCRYPTED,
-        enforceSSL: true,
         removalPolicy: RemovalPolicy.RETAIN,
       });
     } else {
@@ -220,7 +215,7 @@ class CloudWatchLogsDestination extends FlowLogDestination {
     super();
   }
 
-  public bind(scope: CoreConstruct, _flowLog: FlowLog): FlowLogDestinationConfig {
+  public bind(scope: Construct, _flowLog: FlowLog): FlowLogDestinationConfig {
     let iamRole: iam.IRole;
     let logGroup: logs.ILogGroup;
     if (this.props.iamRole === undefined) {

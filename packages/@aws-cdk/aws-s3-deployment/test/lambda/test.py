@@ -7,6 +7,7 @@ import sys
 import traceback
 import logging
 import botocore
+import tempfile
 from botocore.vendored import requests
 from botocore.exceptions import ClientError
 from unittest.mock import MagicMock
@@ -584,7 +585,45 @@ class TestHandler(unittest.TestCase):
         self.assertAwsCommands(
             ["s3", "rm", "s3://<dest-bucket-name>/", "--recursive"]
         )
+    
+    def test_replace_markers(self):
+        index.extract_and_replace_markers("test.zip", "/tmp/out", {
+            "_marker2_": "boom-marker2-replaced",
+            "_marker1_": "<<foo>>",
+        })
 
+        # assert that markers were replaced in the output
+        with open("/tmp/out/subfolder/boom.txt", "r") as file:
+            self.assertEqual(file.read().rstrip(), "Another <<foo>> file with boom-marker2-replaced hey!\nLine 2 with <<foo>> again :-)")
+
+        with open("/tmp/out/test.txt") as file:
+            self.assertEqual(file.read().rstrip(), "Hello, <<foo>> world")
+
+    def test_marker_substitution(self):
+        outdir = tempfile.mkdtemp()
+
+        invoke_handler("Create", {
+            "SourceBucketNames": ["<source-bucket>", "<source2>"],
+            "SourceObjectKeys": ["<source-object-key>", "<source2-object-key>"],
+            "DestinationBucketName": "<dest-bucket-name>",
+            "Prune": "false",
+            "SourceMarkers": [
+                { "_marker1_": "value1-source1", "_marker2_": "value2-source1" },
+                { "_marker1_": "value1-source2" },
+            ],
+        }, outdir=outdir)
+
+        # outdir is expected to have a single directory that contains the workdir
+        files = os.listdir(outdir)
+        self.assertEqual(len(files), 1) # defensive
+
+        workdir = os.path.join(outdir, files[0], "contents")
+
+        with open(os.path.join(workdir, "test.txt"), "r") as file:
+            self.assertEqual(file.read().rstrip(), "Hello, value1-source2 world")
+
+        with open(os.path.join(workdir, "subfolder", "boom.txt"), "r") as file:
+            self.assertEqual(file.read().rstrip(), "Another value1-source2 file with _marker2_ hey!\nLine 2 with value1-source2 again :-)")
 
 
     # asserts that a given list of "aws xxx" commands have been invoked (in order)
@@ -609,7 +648,7 @@ def read_aws_out():
 #   requestType: CloudFormation request type ("Create", "Update", "Delete")
 #   resourceProps: map to pass to "ResourceProperties"
 #   expected_status: "SUCCESS" or "FAILED"
-def invoke_handler(requestType, resourceProps, old_resource_props=None, physical_id=None, expected_status='SUCCESS'):
+def invoke_handler(requestType, resourceProps, old_resource_props=None, physical_id=None, expected_status='SUCCESS', outdir=None):
     response_url = 'http://<response-url>'
 
     event={
@@ -635,6 +674,11 @@ def invoke_handler(requestType, resourceProps, old_resource_props=None, physical
 
     context = ContextMock()
     index.urlopen = MagicMock(return_value=ResponseMock())
+
+    # control the output directory and skip cleanup so we can examine the output
+    if outdir:
+        os.environ[index.ENV_KEY_MOUNT_PATH] = outdir
+        os.environ[index.ENV_KEY_SKIP_CLEANUP] = "1"
 
     #--------------------
     # invoke the handler

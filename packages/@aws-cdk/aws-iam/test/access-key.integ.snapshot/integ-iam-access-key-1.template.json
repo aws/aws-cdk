@@ -1,0 +1,22 @@
+{
+ "Resources": {
+  "TestUser6A619381": {
+   "Type": "AWS::IAM::User"
+  },
+  "TestAccessKey4BFC5CF5": {
+   "Type": "AWS::IAM::AccessKey",
+   "Properties": {
+    "UserName": {
+     "Ref": "TestUser6A619381"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AccessKeyId": {
+   "Value": {
+    "Ref": "TestAccessKey4BFC5CF5"
+   }
+  }
+ }
+}

@@ -58,8 +58,6 @@ describe('mappings', () => {
          },
       },
     });
-
-
   });
 
   test('allow using unresolved tokens in find-in-map', () => {
@@ -67,26 +65,25 @@ describe('mappings', () => {
 
     const mapping = new CfnMapping(stack, 'mapping', {
       mapping: {
-        instanceCount: {
-          'us-east-1': 12,
+        'us-east-1': {
+          instanceCount: 12,
         },
       },
     });
 
-    const v1 = mapping.findInMap('instanceCount', Aws.REGION);
-    const v2 = Fn.findInMap(mapping.logicalId, 'instanceCount', Aws.REGION);
+    const v1 = mapping.findInMap(Aws.REGION, 'instanceCount');
+    const v2 = Fn.findInMap(mapping.logicalId, Aws.REGION, 'instanceCount');
 
-    const expected = { 'Fn::FindInMap': ['mapping', 'instanceCount', { Ref: 'AWS::Region' }] };
+    const expected = { 'Fn::FindInMap': ['mapping', { Ref: 'AWS::Region' }, 'instanceCount'] };
     expect(stack.resolve(v1)).toEqual(expected);
     expect(stack.resolve(v2)).toEqual(expected);
     expect(toCloudFormation(stack).Mappings).toEqual({
       mapping: {
-        instanceCount: {
-          'us-east-1': 12,
+        'us-east-1': {
+          instanceCount: 12,
         },
       },
     });
-
   });
 
   test('no validation if first key is token and second is a static string', () => {
@@ -114,7 +111,6 @@ describe('mappings', () => {
         },
       },
     });
-
   });
 
   test('validate first key if it is a string and second is a token', () => {
@@ -122,26 +118,36 @@ describe('mappings', () => {
     const stack = new Stack();
     const mapping = new CfnMapping(stack, 'mapping', {
       mapping: {
-        size: {
-          'us-east-1': 12,
+        'us-east-1': {
+          size: 12,
         },
       },
     });
 
     // WHEN
-    const v = mapping.findInMap('size', Aws.REGION);
+    const v = mapping.findInMap(Aws.REGION, 'size');
 
     // THEN
-    expect(() => mapping.findInMap('not-found', Aws.REGION)).toThrow(/Mapping doesn't contain top-level key 'not-found'/);
-    expect(stack.resolve(v)).toEqual({ 'Fn::FindInMap': ['mapping', 'size', { Ref: 'AWS::Region' }] });
+    expect(() => mapping.findInMap('not-found', 'size')).toThrow(/Mapping doesn't contain top-level key 'not-found'/);
+    expect(stack.resolve(v)).toEqual({ 'Fn::FindInMap': ['mapping', { Ref: 'AWS::Region' }, 'size'] });
     expect(toCloudFormation(stack).Mappings).toEqual({
+      mapping: {
+        'us-east-1': {
+          size: 12,
+        },
+      },
+    });
+  });
+
+  test('throws if mapping attribute name not alphanumeric', () => {
+    const stack = new Stack();
+    expect(() => new CfnMapping(stack, 'mapping', {
       mapping: {
         size: {
           'us-east-1': 12,
         },
       },
-    });
-
+    })).toThrowError(/Attribute name 'us-east-1' must contain only alphanumeric characters./);
   });
 });
 

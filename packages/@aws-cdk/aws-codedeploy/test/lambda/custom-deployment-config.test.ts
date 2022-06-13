@@ -7,7 +7,7 @@ function mockFunction(stack: cdk.Stack, id: string) {
   return new lambda.Function(stack, id, {
     code: lambda.Code.fromInline('mock'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
   });
 }
 function mockAlias(stack: cdk.Stack) {
@@ -95,6 +95,32 @@ test('custom resource created with specific name', () => {
     Update: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":"1","canaryPercentage":"5"}}},"physicalResourceId":{"id":"MyDeploymentConfig"}}',
     Delete: '{"service":"CodeDeploy","action":"deleteDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig"}}',
   });
+});
+
+test('fail with more than 100 characters in name', () => {
+  const app = new cdk.App();
+  const stackWithApp = new cdk.Stack(app);
+  new codedeploy.CustomLambdaDeploymentConfig(stackWithApp, 'CustomConfig', {
+    type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
+    interval: cdk.Duration.minutes(1),
+    percentage: 5,
+    deploymentConfigName: 'a'.repeat(101),
+  });
+
+  expect(() => app.synth()).toThrow(`Deployment config name: "${'a'.repeat(101)}" can be a max of 100 characters.`);
+});
+
+test('fail with unallowed characters in name', () => {
+  const app = new cdk.App();
+  const stackWithApp = new cdk.Stack(app);
+  new codedeploy.CustomLambdaDeploymentConfig(stackWithApp, 'CustomConfig', {
+    type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
+    interval: cdk.Duration.minutes(1),
+    percentage: 5,
+    deploymentConfigName: 'my name',
+  });
+
+  expect(() => app.synth()).toThrow('Deployment config name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).');
 });
 
 test('can create linear custom config', () => {

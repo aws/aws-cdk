@@ -1,0 +1,52 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "ProfilerGroupIntegrationTest": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ProfilerGroupIntegrationTest.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/ProfilerGroupIntegrationTest/MyProfilingGroup/ProfilingGroup": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProfilingGroup829F0507"
+          }
+        ],
+        "/ProfilerGroupIntegrationTest/PublishAppRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublishAppRole9FEBD682"
+          }
+        ],
+        "/ProfilerGroupIntegrationTest/PublishAppRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublishAppRoleDefaultPolicyCA1E15C3"
+          }
+        ],
+        "/ProfilerGroupIntegrationTest/ReadAppRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReadAppRole52FE6317"
+          }
+        ],
+        "/ProfilerGroupIntegrationTest/ReadAppRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReadAppRoleDefaultPolicy4BB8955C"
+          }
+        ]
+      },
+      "displayName": "ProfilerGroupIntegrationTest"
+    }
+  }
+}

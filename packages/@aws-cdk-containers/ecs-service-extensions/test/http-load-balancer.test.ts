@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Container, Environment, HttpLoadBalancerExtension, Service, ServiceDescription } from '../lib';
@@ -27,7 +27,7 @@ describe('http load balancer', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -66,10 +66,8 @@ describe('http load balancer', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer');
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener');
-
-
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 1);
   });
 
   test('allows scaling on request count for the HTTP load balancer', () => {
@@ -98,12 +96,12 @@ describe('http load balancer', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       MaxCapacity: 5,
       MinCapacity: 1,
     });
 
-    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: {
@@ -139,5 +137,4 @@ describe('http load balancer', () => {
       });
     }).toThrow(/Auto scaling target for the service 'my-service' hasn't been configured. Please use Service construct to configure 'minTaskCount' and 'maxTaskCount'./);
   });
-
 });

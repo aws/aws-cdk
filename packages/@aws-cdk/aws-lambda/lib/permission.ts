@@ -1,9 +1,11 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { FunctionUrlAuthType } from './function-url';
+
 
 /**
  * Represents a permission statement that can be added to a Lambda function's
- * resource policy via the `addPermissions()` method.
+ * resource policy via the `addPermission()` method.
  */
 export interface Permission {
   /**
@@ -64,4 +66,11 @@ export interface Permission {
    * can invoke the function.
    */
   readonly sourceArn?: string;
+
+  /**
+   * The authType for the function URL that you are granting permissions for.
+   *
+   * @default - No functionUrlAuthType
+   */
+  readonly functionUrlAuthType?: FunctionUrlAuthType;
 }

@@ -1,8 +1,6 @@
 # base lambda image
 FROM public.ecr.aws/lambda/nodejs:latest
 
-ARG PROXY_AGENT_VERSION=5.0.0
-
 USER root
 RUN mkdir -p /opt
 WORKDIR /tmp
@@ -19,7 +17,8 @@ RUN yum update -y \
 #
 
 RUN mkdir -p /opt/nodejs
-RUN cd /opt/nodejs && npm install proxy-agent@${PROXY_AGENT_VERSION}
+COPY package*.json /opt/nodejs/
+RUN cd /opt/nodejs && npm ci && rm package*.json
 
 #
 # create the bundle

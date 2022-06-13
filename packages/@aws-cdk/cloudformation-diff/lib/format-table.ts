@@ -1,5 +1,5 @@
 import * as chalk from 'chalk';
-import * as stringWidth from 'string-width';
+import stringWidth from 'string-width';
 import * as table from 'table';
 
 /**
@@ -10,7 +10,7 @@ import * as table from 'table';
 export function formatTable(cells: string[][], columns: number | undefined): string {
   return table.table(cells, {
     border: TABLE_BORDER_CHARACTERS,
-    columns: buildColumnConfig(columns !== undefined ? calculcateColumnWidths(cells, columns) : undefined),
+    columns: buildColumnConfig(columns !== undefined ? calculateColumnWidths(cells, columns) : undefined),
     drawHorizontalLine: (line) => {
       // Numbering like this: [line 0] [header = row[0]] [line 1] [row 1] [line 2] [content 2] [line 3]
       return (line < 2 || line === cells.length) || lineBetween(cells[line - 1], cells[line]);
@@ -48,7 +48,7 @@ function buildColumnConfig(widths: number[] | undefined): { [index: number]: tab
  * than the fair share is evenly distributed over all columns that exceed their
  * fair share.
  */
-function calculcateColumnWidths(rows: string[][], terminalWidth: number): number[] {
+function calculateColumnWidths(rows: string[][], terminalWidth: number): number[] {
   // The terminal is sometimes reported to be 0. Also if the terminal is VERY narrow,
   // just assume a reasonable minimum size.
   terminalWidth = Math.max(terminalWidth, 40);

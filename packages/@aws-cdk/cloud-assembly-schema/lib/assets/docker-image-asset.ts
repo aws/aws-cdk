@@ -62,6 +62,24 @@ export interface DockerImageSource {
    * @default - No additional build arguments
    */
   readonly dockerBuildArgs?: { [name: string]: string };
+
+  /**
+   * Networking mode for the RUN commands during build. _Requires Docker Engine API v1.25+_.
+   *
+   * Specify this property to build images on a specific networking mode.
+   *
+   * @default - no networking mode specified
+   */
+  readonly networkMode?: string;
+
+  /**
+   * Platform to build for. _Requires Docker Buildx_.
+   *
+   * Specify this property to build images on a specific platform/architecture.
+   *
+   * @default - current machine platform
+   */
+  readonly platform?: string;
 }
 
 /**

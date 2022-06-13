@@ -1,10 +1,10 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
-  Annotations, ConcreteDependable, ContextProvider, DependableTrait, IConstruct,
-  IDependable, IResource, Lazy, Resource, Stack, Token, Tags, Names, Arn,
+  Arn, Annotations, ContextProvider,
+  IResource, Lazy, Resource, Stack, Token, Tags, Names,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct, Node } from 'constructs';
+import { Construct, Dependable, DependencyGroup, IConstruct, IDependable, Node } from 'constructs';
 import { ClientVpnEndpoint, ClientVpnEndpointOptions } from './client-vpn-endpoint';
 import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
@@ -19,10 +19,6 @@ import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOpt
 import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
 import { VpcLookupOptions } from './vpc-lookup';
 import { EnableVpnGatewayOptions, VpnConnection, VpnConnectionOptions, VpnConnectionType, VpnGateway } from './vpn';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 const VPC_SUBNET_SYMBOL = Symbol.for('@aws-cdk/aws-ec2.VpcSubnet');
 
@@ -174,10 +170,8 @@ export enum SubnetType {
    *
    * This can be good for subnets with RDS or Elasticache instances,
    * or which route Internet traffic through a peer VPC.
-   *
-   * @deprecated use `SubnetType.PRIVATE_ISOLATED`
    */
-  ISOLATED = 'Isolated',
+  PRIVATE_ISOLATED = 'Isolated',
 
   /**
    * Isolated Subnets do not route traffic to the Internet (in this VPC),
@@ -189,8 +183,27 @@ export enum SubnetType {
    *
    * This can be good for subnets with RDS or Elasticache instances,
    * or which route Internet traffic through a peer VPC.
+   *
+   * @deprecated use `SubnetType.PRIVATE_ISOLATED`
    */
-  PRIVATE_ISOLATED = 'Isolated',
+  ISOLATED = 'Isolated',
+
+  /**
+   * Subnet that routes to the internet (via a NAT gateway), but not vice versa.
+   *
+   * Instances in a private subnet can connect to the Internet, but will not
+   * allow connections to be initiated from the Internet. NAT Gateway(s) are
+   * required with this subnet type to route the Internet traffic through.
+   * If a NAT Gateway is not required or desired, use `SubnetType.PRIVATE_ISOLATED` instead.
+   *
+   * By default, a NAT gateway is created in every public subnet for maximum availability.
+   * Be aware that you will be charged for NAT gateways.
+   *
+   * Normally a Private subnet will use a NAT gateway in the same AZ, but
+   * if `natGateways` is used to reduce the number of NAT gateways, a NAT
+   * gateway from another AZ will be used instead.
+   */
+  PRIVATE_WITH_NAT = 'Private',
 
   /**
    * Subnet that routes to the internet, but not vice versa.
@@ -210,23 +223,6 @@ export enum SubnetType {
    * @deprecated use `PRIVATE_WITH_NAT`
    */
   PRIVATE = 'Private',
-
-  /**
-   * Subnet that routes to the internet (via a NAT gateway), but not vice versa.
-   *
-   * Instances in a private subnet can connect to the Internet, but will not
-   * allow connections to be initiated from the Internet. NAT Gateway(s) are
-   * required with this subnet type to route the Internet traffic through.
-   * If a NAT Gateway is not required or desired, use `SubnetType.PRIVATE_ISOLATED` instead.
-   *
-   * By default, a NAT gateway is created in every public subnet for maximum availability.
-   * Be aware that you will be charged for NAT gateways.
-   *
-   * Normally a Private subnet will use a NAT gateway in the same AZ, but
-   * if `natGateways` is used to reduce the number of NAT gateways, a NAT
-   * gateway from another AZ will be used instead.
-   */
-  PRIVATE_WITH_NAT = 'Private',
 
   /**
    * Subnet connected to the Internet
@@ -845,9 +841,20 @@ export interface VpcProps {
    * only 2 AZs, so to use more than 2 AZs, be sure to specify the account and
    * region on your stack.
    *
+   * Specify this option only if you do not specify `availabilityZones`.
+   *
    * @default 3
    */
   readonly maxAzs?: number;
+
+  /**
+   * Availability zones this VPC spans.
+   *
+   * Specify this option only if you do not specify `maxAzs`.
+   *
+   * @default - a subset of AZs of the stack
+   */
+  readonly availabilityZones?: string[];
 
   /**
    * The number of NAT Gateways/Instances to create.
@@ -968,6 +975,8 @@ export interface VpcProps {
 
   /**
    * The VPC name.
+   *
+   * Since the VPC resource doesn't support providing a physical name, the value provided here will be recorded in the `Name` tag
    *
    * @default this.node.path
    */
@@ -1273,7 +1282,7 @@ export class Vpc extends VpcBase {
    */
   private subnetConfiguration: SubnetConfiguration[] = [];
 
-  private readonly _internetConnectivityEstablished = new ConcreteDependable();
+  private readonly _internetConnectivityEstablished = new DependencyGroup();
 
   /**
    * Vpc creates a VPC that spans a whole region.
@@ -1289,6 +1298,10 @@ export class Vpc extends VpcBase {
     // Can't have enabledDnsHostnames without enableDnsSupport
     if (props.enableDnsHostnames && !props.enableDnsSupport) {
       throw new Error('To use DNS Hostnames, DNS Support must be enabled, however, it was explicitly disabled.');
+    }
+
+    if (props.availabilityZones && props.maxAzs) {
+      throw new Error('Vpc supports \'availabilityZones\' or \'maxAzs\', but not both.');
     }
 
     const cidrBlock = ifUndefined(props.cidr, Vpc.DEFAULT_CIDR_RANGE);
@@ -1319,10 +1332,22 @@ export class Vpc extends VpcBase {
 
     Tags.of(this).add(NAME_TAG, props.vpcName || this.node.path);
 
-    this.availabilityZones = stack.availabilityZones;
+    if (props.availabilityZones) {
+      // If given AZs and stack AZs are both resolved, then validate their compatibility.
+      const resolvedStackAzs = stack.availabilityZones.filter(az => !Token.isUnresolved(az));
+      const areGivenAzsSubsetOfStack = resolvedStackAzs.length === 0 // stack AZs are tokenized, so we cannot validate it
+        || props.availabilityZones.every(
+          az => Token.isUnresolved(az) // given AZ is tokenized, such as in integ tests, so we cannot validate it
+            || resolvedStackAzs.includes(az));
+      if (!areGivenAzsSubsetOfStack) {
+        throw new Error(`Given VPC 'availabilityZones' ${props.availabilityZones} must be a subset of the stack's availability zones ${stack.availabilityZones}`);
+      }
+      this.availabilityZones = props.availabilityZones;
+    } else {
+      const maxAZs = props.maxAzs ?? 3;
+      this.availabilityZones = stack.availabilityZones.slice(0, maxAZs);
+    }
 
-    const maxAZs = props.maxAzs ?? 3;
-    this.availabilityZones = this.availabilityZones.slice(0, maxAZs);
 
     this.vpcId = this.resource.ref;
     this.vpcArn = Arn.format({
@@ -1641,7 +1666,7 @@ export class Subnet extends Resource implements ISubnet {
 
   public readonly internetConnectivityEstablished: IDependable;
 
-  private readonly _internetConnectivityEstablished = new ConcreteDependable();
+  private readonly _internetConnectivityEstablished = new DependencyGroup();
 
   private _networkAcl: INetworkAcl;
 
@@ -1755,8 +1780,8 @@ export class Subnet extends Resource implements ISubnet {
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
     this._networkAcl = networkAcl;
 
-    const scope = CoreConstruct.isConstruct(networkAcl) ? networkAcl : this;
-    const other = CoreConstruct.isConstruct(networkAcl) ? this : networkAcl;
+    const scope = networkAcl instanceof Construct ? networkAcl : this;
+    const other = networkAcl instanceof Construct ? this : networkAcl;
     new SubnetNetworkAclAssociation(scope, id + Names.nodeUniqueId(other.node), {
       networkAcl,
       subnet: this,
@@ -1810,6 +1835,11 @@ export interface AddRouteOptions {
  */
 export enum RouterType {
   /**
+   * Carrier gateway
+   */
+  CARRIER_GATEWAY = 'CarrierGateway',
+
+  /**
    * Egress-only Internet Gateway
    */
   EGRESS_ONLY_INTERNET_GATEWAY = 'EgressOnlyInternetGateway',
@@ -1825,6 +1855,11 @@ export enum RouterType {
   INSTANCE = 'Instance',
 
   /**
+   * Local Gateway
+   */
+  LOCAL_GATEWAY = 'LocalGateway',
+
+  /**
    * NAT Gateway
    */
   NAT_GATEWAY = 'NatGateway',
@@ -1835,19 +1870,33 @@ export enum RouterType {
   NETWORK_INTERFACE = 'NetworkInterface',
 
   /**
+   * Transit Gateway
+   */
+  TRANSIT_GATEWAY = 'TransitGateway',
+
+  /**
    * VPC peering connection
    */
   VPC_PEERING_CONNECTION = 'VpcPeeringConnection',
+
+  /**
+   * VPC Endpoint for gateway load balancers
+   */
+  VPC_ENDPOINT = 'VpcEndpoint',
 }
 
 function routerTypeToPropName(routerType: RouterType) {
   return ({
+    [RouterType.CARRIER_GATEWAY]: 'carrierGatewayId',
     [RouterType.EGRESS_ONLY_INTERNET_GATEWAY]: 'egressOnlyInternetGatewayId',
     [RouterType.GATEWAY]: 'gatewayId',
     [RouterType.INSTANCE]: 'instanceId',
+    [RouterType.LOCAL_GATEWAY]: 'localGatewayId',
     [RouterType.NAT_GATEWAY]: 'natGatewayId',
     [RouterType.NETWORK_INTERFACE]: 'networkInterfaceId',
+    [RouterType.TRANSIT_GATEWAY]: 'transitGatewayId',
     [RouterType.VPC_PEERING_CONNECTION]: 'vpcPeeringConnectionId',
+    [RouterType.VPC_ENDPOINT]: 'vpcEndpointId',
   })[routerType];
 }
 
@@ -1922,7 +1971,7 @@ class ImportedVpc extends VpcBase {
   public readonly privateSubnets: ISubnet[];
   public readonly isolatedSubnets: ISubnet[];
   public readonly availabilityZones: string[];
-  public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
+  public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
   private readonly cidr?: string | undefined;
 
   constructor(scope: Construct, id: string, props: VpcAttributes, isIncomplete: boolean) {
@@ -1968,7 +2017,7 @@ class ImportedVpc extends VpcBase {
 class LookedUpVpc extends VpcBase {
   public readonly vpcId: string;
   public readonly vpcArn: string;
-  public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
+  public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
   public readonly availabilityZones: string[];
   public readonly publicSubnets: ISubnet[];
   public readonly privateSubnets: ISubnet[];
@@ -2042,11 +2091,11 @@ class CompositeDependable implements IDependable {
 
   constructor() {
     const self = this;
-    DependableTrait.implement(this, {
+    Dependable.implement(this, {
       get dependencyRoots() {
         const ret = new Array<IConstruct>();
         for (const dep of self.dependables) {
-          ret.push(...DependableTrait.get(dep).dependencyRoots);
+          ret.push(...Dependable.of(dep).dependencyRoots);
         }
         return ret;
       },
@@ -2070,7 +2119,7 @@ function tap<T>(x: T, fn: (x: T) => void): T {
 }
 
 class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivateSubnet {
-  public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
+  public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
   public readonly subnetId: string;
   public readonly routeTable: IRouteTable;
   private readonly _availabilityZone?: string;
@@ -2127,8 +2176,8 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
   }
 
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl): void {
-    const scope = CoreConstruct.isConstruct(networkAcl) ? networkAcl : this;
-    const other = CoreConstruct.isConstruct(networkAcl) ? this : networkAcl;
+    const scope = networkAcl instanceof Construct ? networkAcl : this;
+    const other = networkAcl instanceof Construct ? this : networkAcl;
     new SubnetNetworkAclAssociation(scope, id + Names.nodeUniqueId(other.node), {
       networkAcl,
       subnet: this,
@@ -2205,6 +2254,24 @@ const DUMMY_VPC_PROPS: cxapi.VpcContextResponse = {
     {
       name: 'Private',
       type: cxapi.VpcSubnetGroupType.PRIVATE,
+      subnets: [
+        {
+          availabilityZone: 'dummy1a',
+          subnetId: 'p-12345',
+          routeTableId: 'rtb-12345p',
+          cidr: '1.2.3.4/5',
+        },
+        {
+          availabilityZone: 'dummy1b',
+          subnetId: 'p-67890',
+          routeTableId: 'rtb-57890p',
+          cidr: '1.2.3.4/5',
+        },
+      ],
+    },
+    {
+      name: 'Isolated',
+      type: cxapi.VpcSubnetGroupType.ISOLATED,
       subnets: [
         {
           availabilityZone: 'dummy1a',

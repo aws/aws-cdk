@@ -1,0 +1,743 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "integ-servicecatalog-portfolio": {
+        "id": "integ-servicecatalog-portfolio",
+        "path": "integ-servicecatalog-portfolio",
+        "children": {
+          "TestRole": {
+            "id": "TestRole",
+            "path": "integ-servicecatalog-portfolio/TestRole",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-servicecatalog-portfolio/TestRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "TestGroup": {
+            "id": "TestGroup",
+            "path": "integ-servicecatalog-portfolio/TestGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-servicecatalog-portfolio/TestGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Group",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Group",
+              "version": "0.0.0"
+            }
+          },
+          "TestPortfolio": {
+            "id": "TestPortfolio",
+            "path": "integ-servicecatalog-portfolio/TestPortfolio",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-servicecatalog-portfolio/TestPortfolio/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::Portfolio",
+                  "aws:cdk:cloudformation:props": {
+                    "displayName": "TestPortfolio",
+                    "providerName": "TestProvider",
+                    "acceptLanguage": "en",
+                    "description": "This is our Service Catalog Portfolio"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnPortfolio",
+                  "version": "0.0.0"
+                }
+              },
+              "PortolioPrincipalAssociation20e1afa20ac2": {
+                "id": "PortolioPrincipalAssociation20e1afa20ac2",
+                "path": "integ-servicecatalog-portfolio/TestPortfolio/PortolioPrincipalAssociation20e1afa20ac2",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::PortfolioPrincipalAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "portfolioId": {
+                      "Ref": "TestPortfolio4AC794EB"
+                    },
+                    "principalArn": {
+                      "Fn::GetAtt": [
+                        "TestRole6C9272DF",
+                        "Arn"
+                      ]
+                    },
+                    "principalType": "IAM"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnPortfolioPrincipalAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "PortolioPrincipalAssociation44a1ca1c2338": {
+                "id": "PortolioPrincipalAssociation44a1ca1c2338",
+                "path": "integ-servicecatalog-portfolio/TestPortfolio/PortolioPrincipalAssociation44a1ca1c2338",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::PortfolioPrincipalAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "portfolioId": {
+                      "Ref": "TestPortfolio4AC794EB"
+                    },
+                    "principalArn": {
+                      "Fn::GetAtt": [
+                        "TestGroupAF88660E",
+                        "Arn"
+                      ]
+                    },
+                    "principalType": "IAM"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnPortfolioPrincipalAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "TagOptionAssociation517ba9dbaf19": {
+                "id": "TagOptionAssociation517ba9dbaf19",
+                "path": "integ-servicecatalog-portfolio/TestPortfolio/TagOptionAssociation517ba9dbaf19",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::TagOptionAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "resourceId": {
+                      "Ref": "TestPortfolio4AC794EB"
+                    },
+                    "tagOptionId": {
+                      "Ref": "TagOptions5f31c54ba705F110F743"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnTagOptionAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "TagOptionAssociationb38e9aae7f1b": {
+                "id": "TagOptionAssociationb38e9aae7f1b",
+                "path": "integ-servicecatalog-portfolio/TestPortfolio/TagOptionAssociationb38e9aae7f1b",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::TagOptionAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "resourceId": {
+                      "Ref": "TestPortfolio4AC794EB"
+                    },
+                    "tagOptionId": {
+                      "Ref": "TagOptions8d263919cebb6764AC10"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnTagOptionAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "TagOptionAssociationeeabbf0db0e3": {
+                "id": "TagOptionAssociationeeabbf0db0e3",
+                "path": "integ-servicecatalog-portfolio/TestPortfolio/TagOptionAssociationeeabbf0db0e3",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::TagOptionAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "resourceId": {
+                      "Ref": "TestPortfolio4AC794EB"
+                    },
+                    "tagOptionId": {
+                      "Ref": "TagOptionsa260cbbd99c416C40F73"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnTagOptionAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "PortfolioSharebf5b82f04250": {
+                "id": "PortfolioSharebf5b82f04250",
+                "path": "integ-servicecatalog-portfolio/TestPortfolio/PortfolioSharebf5b82f04250",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::PortfolioShare",
+                  "aws:cdk:cloudformation:props": {
+                    "accountId": "123456789012",
+                    "portfolioId": {
+                      "Ref": "TestPortfolio4AC794EB"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnPortfolioShare",
+                  "version": "0.0.0"
+                }
+              },
+              "PortfolioProductAssociationa0185761d231": {
+                "id": "PortfolioProductAssociationa0185761d231",
+                "path": "integ-servicecatalog-portfolio/TestPortfolio/PortfolioProductAssociationa0185761d231",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::PortfolioProductAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "portfolioId": {
+                      "Ref": "TestPortfolio4AC794EB"
+                    },
+                    "productId": {
+                      "Ref": "TestProduct7606930B"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnPortfolioProductAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "ResourceUpdateConstrainta0185761d231": {
+                "id": "ResourceUpdateConstrainta0185761d231",
+                "path": "integ-servicecatalog-portfolio/TestPortfolio/ResourceUpdateConstrainta0185761d231",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::ResourceUpdateConstraint",
+                  "aws:cdk:cloudformation:props": {
+                    "portfolioId": {
+                      "Ref": "TestPortfolio4AC794EB"
+                    },
+                    "productId": {
+                      "Ref": "TestProduct7606930B"
+                    },
+                    "tagUpdateOnProvisionedProduct": "ALLOWED"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnResourceUpdateConstraint",
+                  "version": "0.0.0"
+                }
+              },
+              "LaunchNotificationConstraintf2572fdcecad": {
+                "id": "LaunchNotificationConstraintf2572fdcecad",
+                "path": "integ-servicecatalog-portfolio/TestPortfolio/LaunchNotificationConstraintf2572fdcecad",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::LaunchNotificationConstraint",
+                  "aws:cdk:cloudformation:props": {
+                    "notificationArns": [
+                      {
+                        "Ref": "Topic198E71B3E"
+                      }
+                    ],
+                    "portfolioId": {
+                      "Ref": "TestPortfolio4AC794EB"
+                    },
+                    "productId": {
+                      "Ref": "TestProduct7606930B"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnLaunchNotificationConstraint",
+                  "version": "0.0.0"
+                }
+              },
+              "LaunchNotificationConstrainta9675fc4d6aa": {
+                "id": "LaunchNotificationConstrainta9675fc4d6aa",
+                "path": "integ-servicecatalog-portfolio/TestPortfolio/LaunchNotificationConstrainta9675fc4d6aa",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::LaunchNotificationConstraint",
+                  "aws:cdk:cloudformation:props": {
+                    "notificationArns": [
+                      {
+                        "Ref": "specialTopic7664DE4C"
+                      }
+                    ],
+                    "portfolioId": {
+                      "Ref": "TestPortfolio4AC794EB"
+                    },
+                    "productId": {
+                      "Ref": "TestProduct7606930B"
+                    },
+                    "acceptLanguage": "en",
+                    "description": "special topic description"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnLaunchNotificationConstraint",
+                  "version": "0.0.0"
+                }
+              },
+              "LaunchRoleConstrainta0185761d231": {
+                "id": "LaunchRoleConstrainta0185761d231",
+                "path": "integ-servicecatalog-portfolio/TestPortfolio/LaunchRoleConstrainta0185761d231",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::LaunchRoleConstraint",
+                  "aws:cdk:cloudformation:props": {
+                    "portfolioId": {
+                      "Ref": "TestPortfolio4AC794EB"
+                    },
+                    "productId": {
+                      "Ref": "TestProduct7606930B"
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "LaunchRole2CFB2E44",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnLaunchRoleConstraint",
+                  "version": "0.0.0"
+                }
+              },
+              "LaunchTemplateConstraintfac7b49c426e": {
+                "id": "LaunchTemplateConstraintfac7b49c426e",
+                "path": "integ-servicecatalog-portfolio/TestPortfolio/LaunchTemplateConstraintfac7b49c426e",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::LaunchTemplateConstraint",
+                  "aws:cdk:cloudformation:props": {
+                    "portfolioId": {
+                      "Ref": "TestPortfolio4AC794EB"
+                    },
+                    "productId": {
+                      "Ref": "TestProduct7606930B"
+                    },
+                    "rules": "{\"SubnetsinVPC\":{\"Assertions\":[{\"Assert\":{\"Fn::EachMemberIn\":[{\"Fn::ValueOfAll\":[\"AWs::EC2::Subnet::Id\",\"VpcId\"]},{\"Fn::RefAll\":\"AWS::EC2::VPC::Id\"}]},\"AssertDescription\":\"test description\"}]}}"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnLaunchTemplateConstraint",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicecatalog.Portfolio",
+              "version": "0.0.0"
+            }
+          },
+          "TagOptions": {
+            "id": "TagOptions",
+            "path": "integ-servicecatalog-portfolio/TagOptions",
+            "children": {
+              "5f31c54ba705": {
+                "id": "5f31c54ba705",
+                "path": "integ-servicecatalog-portfolio/TagOptions/5f31c54ba705",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::TagOption",
+                  "aws:cdk:cloudformation:props": {
+                    "key": "key1",
+                    "value": "value1",
+                    "active": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnTagOption",
+                  "version": "0.0.0"
+                }
+              },
+              "8d263919cebb": {
+                "id": "8d263919cebb",
+                "path": "integ-servicecatalog-portfolio/TagOptions/8d263919cebb",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::TagOption",
+                  "aws:cdk:cloudformation:props": {
+                    "key": "key1",
+                    "value": "value2",
+                    "active": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnTagOption",
+                  "version": "0.0.0"
+                }
+              },
+              "a260cbbd99c4": {
+                "id": "a260cbbd99c4",
+                "path": "integ-servicecatalog-portfolio/TagOptions/a260cbbd99c4",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::TagOption",
+                  "aws:cdk:cloudformation:props": {
+                    "key": "key2",
+                    "value": "value1",
+                    "active": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnTagOption",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicecatalog.TagOptions",
+              "version": "0.0.0"
+            }
+          },
+          "TestProduct": {
+            "id": "TestProduct",
+            "path": "integ-servicecatalog-portfolio/TestProduct",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-servicecatalog-portfolio/TestProduct/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::CloudFormationProduct",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "testProduct",
+                    "owner": "testOwner",
+                    "provisioningArtifactParameters": [
+                      {
+                        "disableTemplateValidation": true,
+                        "info": {
+                          "LoadTemplateFromURL": "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnCloudFormationProduct",
+                  "version": "0.0.0"
+                }
+              },
+              "TagOptionAssociation667d45e6d8a1": {
+                "id": "TagOptionAssociation667d45e6d8a1",
+                "path": "integ-servicecatalog-portfolio/TestProduct/TagOptionAssociation667d45e6d8a1",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::TagOptionAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "resourceId": {
+                      "Ref": "TestProduct7606930B"
+                    },
+                    "tagOptionId": {
+                      "Ref": "TagOptions5f31c54ba705F110F743"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnTagOptionAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "TagOptionAssociationec68fcd0154f": {
+                "id": "TagOptionAssociationec68fcd0154f",
+                "path": "integ-servicecatalog-portfolio/TestProduct/TagOptionAssociationec68fcd0154f",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::TagOptionAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "resourceId": {
+                      "Ref": "TestProduct7606930B"
+                    },
+                    "tagOptionId": {
+                      "Ref": "TagOptions8d263919cebb6764AC10"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnTagOptionAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "TagOptionAssociation259ba31b62cc": {
+                "id": "TagOptionAssociation259ba31b62cc",
+                "path": "integ-servicecatalog-portfolio/TestProduct/TagOptionAssociation259ba31b62cc",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::TagOptionAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "resourceId": {
+                      "Ref": "TestProduct7606930B"
+                    },
+                    "tagOptionId": {
+                      "Ref": "TagOptionsa260cbbd99c416C40F73"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnTagOptionAssociation",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicecatalog.CloudFormationProduct",
+              "version": "0.0.0"
+            }
+          },
+          "Topic1": {
+            "id": "Topic1",
+            "path": "integ-servicecatalog-portfolio/Topic1",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-servicecatalog-portfolio/Topic1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sns.Topic",
+              "version": "0.0.0"
+            }
+          },
+          "specialTopic": {
+            "id": "specialTopic",
+            "path": "integ-servicecatalog-portfolio/specialTopic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-servicecatalog-portfolio/specialTopic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sns.Topic",
+              "version": "0.0.0"
+            }
+          },
+          "LaunchRole": {
+            "id": "LaunchRole",
+            "path": "integ-servicecatalog-portfolio/LaunchRole",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-servicecatalog-portfolio/LaunchRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "servicecatalog.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "SecondTestPortfolio": {
+            "id": "SecondTestPortfolio",
+            "path": "integ-servicecatalog-portfolio/SecondTestPortfolio",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-servicecatalog-portfolio/SecondTestPortfolio/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::Portfolio",
+                  "aws:cdk:cloudformation:props": {
+                    "displayName": "SecondTestPortfolio",
+                    "providerName": "TestProvider"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnPortfolio",
+                  "version": "0.0.0"
+                }
+              },
+              "PortfolioProductAssociationcda67a671c20": {
+                "id": "PortfolioProductAssociationcda67a671c20",
+                "path": "integ-servicecatalog-portfolio/SecondTestPortfolio/PortfolioProductAssociationcda67a671c20",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::PortfolioProductAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "portfolioId": {
+                      "Ref": "SecondTestPortfolio96C8F4BA"
+                    },
+                    "productId": {
+                      "Ref": "TestProduct7606930B"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnPortfolioProductAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "StackSetConstraintcda67a671c20": {
+                "id": "StackSetConstraintcda67a671c20",
+                "path": "integ-servicecatalog-portfolio/SecondTestPortfolio/StackSetConstraintcda67a671c20",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalog::StackSetConstraint",
+                  "aws:cdk:cloudformation:props": {
+                    "accountList": [
+                      "000000000000",
+                      "111111111111",
+                      "222222222222"
+                    ],
+                    "adminRole": {
+                      "Fn::GetAtt": [
+                        "AdminRole38563C57",
+                        "Arn"
+                      ]
+                    },
+                    "description": "",
+                    "executionRole": "StackSetExecutionRole",
+                    "portfolioId": {
+                      "Ref": "SecondTestPortfolio96C8F4BA"
+                    },
+                    "productId": {
+                      "Ref": "TestProduct7606930B"
+                    },
+                    "regionList": [
+                      "us-east-1",
+                      "us-west-2",
+                      "eu-west-1"
+                    ],
+                    "stackInstanceControl": "ALLOWED"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalog.CfnStackSetConstraint",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicecatalog.Portfolio",
+              "version": "0.0.0"
+            }
+          },
+          "AdminRole": {
+            "id": "AdminRole",
+            "path": "integ-servicecatalog-portfolio/AdminRole",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-servicecatalog-portfolio/AdminRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

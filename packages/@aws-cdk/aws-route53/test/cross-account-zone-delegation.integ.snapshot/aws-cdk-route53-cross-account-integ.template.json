@@ -1,0 +1,342 @@
+{
+ "Resources": {
+  "ParentHostedZoneC2BD86E1": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "myzone.com."
+   }
+  },
+  "ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "route53:ChangeResourceRecordSets",
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":route53:::hostedzone/",
+            {
+             "Ref": "ParentHostedZoneC2BD86E1"
+            }
+           ]
+          ]
+         }
+        },
+        {
+         "Action": "route53:ListHostedZonesByName",
+         "Effect": "Allow",
+         "Resource": "*"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "delegation"
+     }
+    ]
+   }
+  },
+  "ChildHostedZoneWithZoneId729259E6": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "sub.myzone.com."
+   }
+  },
+  "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicy5170A69B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicy5170A69B",
+    "Roles": [
+     {
+      "Fn::Select": [
+       1,
+       {
+        "Fn::Split": [
+         "/",
+         {
+          "Fn::Select": [
+           5,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::GetAtt": [
+               "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B",
+               "Arn"
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "DelegationWithZoneIdCrossAccountZoneDelegationCustomResourceFFD766E7": {
+   "Type": "Custom::CrossAccountZoneDelegation",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265",
+      "Arn"
+     ]
+    },
+    "AssumeRoleArn": {
+     "Fn::GetAtt": [
+      "ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E",
+      "Arn"
+     ]
+    },
+    "ParentZoneId": {
+     "Ref": "ParentHostedZoneC2BD86E1"
+    },
+    "DelegatedZoneName": "sub.myzone.com",
+    "DelegatedZoneNameServers": {
+     "Fn::GetAtt": [
+      "ChildHostedZoneWithZoneId729259E6",
+      "NameServers"
+     ]
+    },
+    "TTL": 172800
+   },
+   "DependsOn": [
+    "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicy5170A69B"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aS3BucketC1366C27"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aS3VersionKeyEE72CEF8"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aS3VersionKeyEE72CEF8"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B"
+   ]
+  },
+  "ChildHostedZoneWithZoneNameBC2C15F6": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "anothersub.myzone.com."
+   }
+  },
+  "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicy86996882": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicy86996882",
+    "Roles": [
+     {
+      "Fn::Select": [
+       1,
+       {
+        "Fn::Split": [
+         "/",
+         {
+          "Fn::Select": [
+           5,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::GetAtt": [
+               "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B",
+               "Arn"
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "DelegationWithZoneNameCrossAccountZoneDelegationCustomResourceA1A1C94A": {
+   "Type": "Custom::CrossAccountZoneDelegation",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265",
+      "Arn"
+     ]
+    },
+    "AssumeRoleArn": {
+     "Fn::GetAtt": [
+      "ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E",
+      "Arn"
+     ]
+    },
+    "ParentZoneName": "myzone.com",
+    "DelegatedZoneName": "anothersub.myzone.com",
+    "DelegatedZoneNameServers": {
+     "Fn::GetAtt": [
+      "ChildHostedZoneWithZoneNameBC2C15F6",
+      "NameServers"
+     ]
+    },
+    "TTL": 172800
+   },
+   "DependsOn": [
+    "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicy86996882"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aS3BucketC1366C27": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a\""
+  },
+  "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aS3VersionKeyEE72CEF8": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a\""
+  },
+  "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aArtifactHashAADF3168": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a\""
+  }
+ }
+}

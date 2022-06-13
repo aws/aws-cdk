@@ -539,7 +539,7 @@ To deploy the controller on your EKS cluster, configure the `albController` prop
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_21,
   albController: {
-    version: eks.AlbControllerVersion.V2_3_1,
+    version: eks.AlbControllerVersion.V2_4_1,
   },
 });
 ```
@@ -579,7 +579,7 @@ declare const vpc: ec2.Vpc;
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_21,
   vpc,
-  vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }],
+  vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }],
 });
 ```
 
@@ -686,9 +686,9 @@ awscli/aws
 ```
 
 See more information in the
-[Dockerfile](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/lambda-layer-awscli/layer) for @aws-cdk/lambda-layer-awscli
+[Dockerfile](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/lambda-layer-awscli/layer) for @aws-cdk/lambda-layer-awscli
 and the
-[Dockerfile](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/lambda-layer-kubectl/layer) for @aws-cdk/lambda-layer-kubectl.
+[Dockerfile](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/lambda-layer-kubectl/layer) for @aws-cdk/lambda-layer-kubectl.
 
 ```ts
 const layer = new lambda.LayerVersion(this, 'KubectlLayer', {
@@ -903,6 +903,21 @@ new CfnOutput(this, 'ServiceAccountIamRole', { value: serviceAccount.role.roleAr
 Note that using `serviceAccount.serviceAccountName` above **does not** translate into a resource dependency.
 This is why an explicit dependency is needed. See <https://github.com/aws/aws-cdk/issues/9910> for more details.
 
+It is possible to pass annotations and labels to the service account.
+
+```ts
+declare const cluster: eks.Cluster;
+// add service account with annotations and labels
+const serviceAccount = cluster.addServiceAccount('MyServiceAccount', {
+  annotations: {
+    'eks.amazonaws.com/sts-regional-endpoints': 'false',
+  },
+  labels: {
+    'some-label': 'with-some-value',
+  },
+});
+```
+
 You can also add service accounts to existing clusters.
 To do so, pass the `openIdConnectProvider` property when you import the cluster into the application.
 
@@ -930,7 +945,7 @@ bucket.grantReadWrite(serviceAccount);
 
 Note that adding service accounts requires running `kubectl` commands against the cluster.
 This means you must also pass the `kubectlRoleArn` when importing the cluster.
-See [Using existing Clusters](https://github.com/aws/aws-cdk/tree/master/packages/@aws-cdk/aws-eks#using-existing-clusters).
+See [Using existing Clusters](https://github.com/aws/aws-cdk/tree/main/packages/@aws-cdk/aws-eks#using-existing-clusters).
 
 ## Applying Kubernetes Resources
 
@@ -1144,6 +1159,24 @@ cluster.addHelmChart('test-chart', {
 });
 ```
 
+### OCI Charts
+
+OCI charts are also supported.
+Also replace the `${VARS}` with appropriate values.
+
+```ts
+declare const cluster: eks.Cluster;
+// option 1: use a construct
+new eks.HelmChart(this, 'MyOCIChart', {
+  cluster,
+  chart: 'some-chart',
+  repository: 'oci://${ACCOUNT_ID}.dkr.ecr.${ACCOUNT_REGION}.amazonaws.com/${REPO_NAME}',
+  namespace: 'oci',
+  version: '0.0.1'
+});
+
+```
+
 Helm charts are implemented as CloudFormation resources in CDK.
 This means that if the chart is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `helm uninstall` command and the
@@ -1174,11 +1207,11 @@ chart2.node.addDependency(chart1);
 
 [CDK8s](https://cdk8s.io/) is an open-source library that enables Kubernetes manifest authoring using familiar programming languages. It is founded on the same technologies as the AWS CDK, such as [`constructs`](https://github.com/aws/constructs) and [`jsii`](https://github.com/aws/jsii).
 
-> To learn more about cdk8s, visit the [Getting Started](https://github.com/awslabs/cdk8s/tree/master/docs/getting-started) tutorials.
+> To learn more about cdk8s, visit the [Getting Started](https://cdk8s.io/docs/latest/getting-started/) tutorials.
 
 The EKS module natively integrates with cdk8s and allows you to apply cdk8s charts on AWS EKS clusters via the `cluster.addCdk8sChart` method.
 
-In addition to `cdk8s`, you can also use [`cdk8s+`](https://github.com/awslabs/cdk8s/tree/master/packages/cdk8s-plus), which provides higher level abstraction for the core kubernetes api objects.
+In addition to `cdk8s`, you can also use [`cdk8s+`](https://cdk8s.io/docs/latest/plus/), which provides higher level abstraction for the core kubernetes api objects.
 You can think of it like the `L2` constructs for Kubernetes. Any other `cdk8s` based libraries are also supported, for example [`cdk8s-debore`](https://github.com/toricls/cdk8s-debore).
 
 To get started, add the following dependencies to your `package.json` file:
@@ -1290,7 +1323,7 @@ export class LoadBalancedWebService extends constructs.Construct {
 
 If you find yourself unable to use `cdk8s+`, or just like to directly use the `k8s` native objects or CRD's, you can do so by manually importing them using the `cdk8s-cli`.
 
-See [Importing kubernetes objects](https://github.com/awslabs/cdk8s/tree/master/packages/cdk8s-cli#import) for detailed instructions.
+See [Importing kubernetes objects](https://cdk8s.io/docs/latest/cli/import/) for detailed instructions.
 
 ## Patching Kubernetes Resources
 
@@ -1396,6 +1429,31 @@ Kubernetes [endpoint access](#endpoint-access), you must also specify:
   connections to the cluster's control security group. For example, the EKS managed [cluster security group](#cluster-security-group).
 * `kubectlPrivateSubnetIds` - a list of private VPC subnets IDs that will be used
   to access the Kubernetes endpoint.
+
+## Logging
+
+EKS supports cluster logging for 5 different types of events:
+
+* API requests to the cluster.
+* Cluster access via the Kubernetes API.
+* Authentication requests into the cluster.
+* State of cluster controllers.
+* Scheduling decisions.
+
+You can enable logging for each one separately using the `clusterLogging`
+property. For example:
+
+```ts
+const cluster = new eks.Cluster(this, 'Cluster', {
+  // ...
+  version: eks.KubernetesVersion.V1_21,
+  clusterLogging: [
+    eks.ClusterLoggingTypes.API,
+    eks.ClusterLoggingTypes.AUTHENTICATOR,
+    eks.ClusterLoggingTypes.SCHEDULER,
+  ],
+});
+```
 
 ## Known Issues and Limitations
 
