@@ -167,11 +167,6 @@ export interface OpenIdConnectConfig {
 export interface LambdaAuthorizerConfig {
   /**
    * The authorizer lambda function.
-   * Note: This Lambda function must have the following resource-based policy assigned to it.
-   * When configuring Lambda authorizers in the console, this is done for you.
-   * To do so with the AWS CLI, run the following:
-   *
-   * `aws lambda add-permission --function-name "arn:aws:lambda:us-east-2:111122223333:function:my-function" --statement-id "appsync" --principal appsync.amazonaws.com --action lambda:InvokeFunction`
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-lambdaauthorizerconfig.html
    */
