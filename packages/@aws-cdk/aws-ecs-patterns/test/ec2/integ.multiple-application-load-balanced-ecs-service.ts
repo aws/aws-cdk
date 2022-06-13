@@ -17,6 +17,7 @@ new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
   taskImageOptions: {
     image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
+  enableExecuteCommand: true,
   targetGroups: [
     {
       containerPort: 80,

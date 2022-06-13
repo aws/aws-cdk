@@ -196,6 +196,89 @@ test('test ECS queue worker service construct - with optional props for queues',
   });
 });
 
+test('test ECS queue worker service construct - with ECS Exec', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    memoryLimitMiB: 512,
+    image: ecs.ContainerImage.fromRegistry('test'),
+    enableExecuteCommand: true,
+  });
+
+
+  // THEN
+  // ECS Exec
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    EnableExecuteCommand: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'ssmmessages:CreateControlChannel',
+            'ssmmessages:CreateDataChannel',
+            'ssmmessages:OpenControlChannel',
+            'ssmmessages:OpenDataChannel',
+          ],
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: 'logs:DescribeLogGroups',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: [
+            'logs:CreateLogStream',
+            'logs:DescribeLogStreams',
+            'logs:PutLogEvents',
+          ],
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: [
+            'sqs:ReceiveMessage',
+            'sqs:ChangeMessageVisibility',
+            'sqs:GetQueueUrl',
+            'sqs:DeleteMessage',
+            'sqs:GetQueueAttributes',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': [
+              'ServiceEcsProcessingQueueC266885C',
+              'Arn',
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    PolicyName: 'ServiceQueueProcessingTaskDefTaskRoleDefaultPolicy11D50174',
+    Roles: [
+      {
+        Ref: 'ServiceQueueProcessingTaskDefTaskRoleBDE5D3C6',
+      },
+    ],
+  });
+});
+
 testDeprecated('test ECS queue worker service construct - with optional props', () => {
   // GIVEN
   const stack = new cdk.Stack();

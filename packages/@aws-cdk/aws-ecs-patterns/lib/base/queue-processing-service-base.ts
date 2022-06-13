@@ -211,6 +211,13 @@ export interface QueueProcessingServiceBaseProps {
    *
    */
   readonly capacityProviderStrategies?: CapacityProviderStrategy[];
+
+  /**
+   * Whether ECS Exec should be enabled
+   *
+   * @default - false
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**

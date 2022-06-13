@@ -184,6 +184,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
       platformVersion: props.platformVersion,
+      enableExecuteCommand: props.enableExecuteCommand,
     });
   }
 }

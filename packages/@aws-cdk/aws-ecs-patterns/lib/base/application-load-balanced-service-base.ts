@@ -254,6 +254,12 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    */
   readonly loadBalancerName?: string;
 
+  /**
+   * Whether ECS Exec should be enabled
+   *
+   * @default - false
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {

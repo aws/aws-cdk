@@ -175,6 +175,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       circuitBreaker: props.circuitBreaker,
       securityGroups: props.securityGroups,
       vpcSubnets: props.taskSubnets,
+      enableExecuteCommand: props.enableExecuteCommand,
     });
     this.addServiceAsTarget(this.service);
   }
