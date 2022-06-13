@@ -1,13 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { FingerprintOptions, FollowMode, IAsset } from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, CfnResource } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line
-import { FingerprintOptions, FollowMode, IAsset } from '@aws-cdk/assets';
 
 /**
  * networking mode on build time supported by docker
