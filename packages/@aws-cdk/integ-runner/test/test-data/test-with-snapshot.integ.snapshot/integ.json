@@ -1,7 +1,7 @@
 {
   "version": "v1.0.0",
   "testCases": {
-    "integ.test-with-snapshot": {
+    "xxxxx.test-with-snapshot": {
       "stacks": ["test-stack"],
       "diffAssets": true,
       "allowDestroy": [
