@@ -1,10 +1,7 @@
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import { Construct } from 'constructs';
 import { hashValues } from './private/util';
 import { ProductStack } from './product-stack';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
 
 /**
  * Represents the Product Provisioning Artifact Template.
