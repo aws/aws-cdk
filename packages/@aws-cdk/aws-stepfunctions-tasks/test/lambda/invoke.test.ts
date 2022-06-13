@@ -1,8 +1,8 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '@aws-cdk/core';
 import { LambdaInvocationType, LambdaInvoke } from '../../lib';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 
 /* eslint-disable quote-props */
 

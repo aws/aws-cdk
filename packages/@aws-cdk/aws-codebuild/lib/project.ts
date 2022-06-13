@@ -10,6 +10,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
+import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
 import { CodeBuildMetrics } from './codebuild-canned-metrics.generated';
@@ -23,7 +24,6 @@ import { LoggingOptions } from './project-logs';
 import { renderReportGroupArn } from './report-group-utils';
 import { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
-import { IArtifacts } from './artifacts';
 
 const VPC_POLICY_SYM = Symbol.for('@aws-cdk/aws-codebuild.roleVpcPolicy');
 

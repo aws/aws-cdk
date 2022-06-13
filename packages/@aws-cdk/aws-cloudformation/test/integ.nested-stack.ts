@@ -3,9 +3,6 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as sns_subscriptions from '@aws-cdk/aws-sns-subscriptions';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { App, CfnParameter, NestedStack, Stack } from '@aws-cdk/core';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from 'constructs';
 
 /* eslint-disable @aws-cdk/no-core-construct */

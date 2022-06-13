@@ -2,12 +2,9 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ProductStackSynthesizer } from './private/product-stack-synthesizer';
 import { ProductStackHistory } from './product-stack-history';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
 
 /**
  * A Service Catalog product stack, which is similar in form to a Cloudformation nested stack.
