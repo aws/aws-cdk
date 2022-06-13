@@ -304,6 +304,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly SSM = new InterfaceVpcEndpointAwsService('ssm');
   public static readonly SSM_MESSAGES = new InterfaceVpcEndpointAwsService('ssmmessages');
   public static readonly STS = new InterfaceVpcEndpointAwsService('sts');
+  public static readonly TEXTRACT = new InterfaceVpcEndpointAwsService('textract');
+  public static readonly TEXTRACT_FIPS = new InterfaceVpcEndpointAwsService('textract-fips');
   public static readonly TRANSFER = new InterfaceVpcEndpointAwsService('transfer.server');
   public static readonly STORAGE_GATEWAY = new InterfaceVpcEndpointAwsService('storagegateway');
   public static readonly REKOGNITION = new InterfaceVpcEndpointAwsService('rekognition');
@@ -612,8 +614,8 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
   private validateCanLookupSupportedAzs(subnets: ISubnet[], serviceName: string) {
 
     // Having any of these be true will cause the AZ lookup to fail at synthesis time
-    const agnosticAcct = Token.isUnresolved(this.stack.account);
-    const agnosticRegion = Token.isUnresolved(this.stack.region);
+    const agnosticAcct = Token.isUnresolved(this.env.account);
+    const agnosticRegion = Token.isUnresolved(this.env.region);
     const agnosticService = Token.isUnresolved(serviceName);
 
     // Having subnets with Token AZs can cause the endpoint to be created with no subnets, failing at deployment time

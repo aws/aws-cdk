@@ -34,7 +34,7 @@ to the new version if possible.
 > allows more control of CodeBuild project generation; supports deployment
 > engines other than CodePipeline.
 >
-> The README for the original API, as well as a migration guide, can be found in [our GitHub repository](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
+> The README for the original API, as well as a migration guide, can be found in [our GitHub repository](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
 
 ## At a glance
 
@@ -149,7 +149,7 @@ application stages in the source code, or new stacks to `MyApplication`, the
 pipeline will automatically reconfigure itself to deploy those new stages and
 stacks.
 
-(Note that have to *bootstrap* all environments before the above code
+(Note that you have to *bootstrap* all environments before the above code
 will work, and switch on "Modern synthesis" if you are using
 CDKv1. See the section **CDK Environment Bootstrapping** below for
 more information).
@@ -725,7 +725,7 @@ new pipelines.CodeBuildStep('Synth', {
 
   // Control Elastic Network Interface creation
   vpc: vpc,
-  subnetSelection: { subnetType: ec2.SubnetType.PRIVATE },
+  subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
   securityGroups: [mySecurityGroup],
 
   // Additional policy statements for the execution role
@@ -770,7 +770,7 @@ new pipelines.CodePipeline(this, 'Pipeline', {
 
     // Control Elastic Network Interface creation
     vpc: vpc,
-    subnetSelection: { subnetType: ec2.SubnetType.PRIVATE },
+    subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
     securityGroups: [mySecurityGroup],
 
     // Additional policy statements for the execution role
@@ -801,7 +801,7 @@ class MyJenkinsStep extends pipelines.Step implements pipelines.ICodePipelineAct
   ) {
     super('MyJenkinsStep');
 
-    // This is necessary if your step accepts things like environment variables
+    // This is necessary if your step accepts parametres, like environment variables,
     // that may contain outputs from other steps. It doesn't matter what the
     // structure is, as long as it contains the values that may contain outputs.
     this.discoverReferencedOutputs({

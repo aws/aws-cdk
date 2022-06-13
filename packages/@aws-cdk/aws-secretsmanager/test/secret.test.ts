@@ -183,7 +183,7 @@ describe('secretStringBeta1', () => {
     accessKey = new iam.AccessKey(stack, 'MyKey', { user });
   });
 
-  test('fromUnsafePlaintext allows specifying a plaintext string', () => {
+  testDeprecated('fromUnsafePlaintext allows specifying a plaintext string', () => {
     new secretsmanager.Secret(stack, 'Secret', {
       secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromUnsafePlaintext('unsafeP@$$'),
     });
@@ -194,13 +194,13 @@ describe('secretStringBeta1', () => {
     });
   });
 
-  test('toToken throws when provided an unsafe plaintext string', () => {
+  testDeprecated('toToken throws when provided an unsafe plaintext string', () => {
     expect(() => new secretsmanager.Secret(stack, 'Secret', {
       secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken('unsafeP@$$'),
     })).toThrow(/appears to be plaintext/);
   });
 
-  test('toToken allows referencing a construct attribute', () => {
+  testDeprecated('toToken allows referencing a construct attribute', () => {
     new secretsmanager.Secret(stack, 'Secret', {
       secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString()),
     });
@@ -211,7 +211,7 @@ describe('secretStringBeta1', () => {
     });
   });
 
-  test('toToken allows referencing a construct attribute in nested JSON', () => {
+  testDeprecated('toToken allows referencing a construct attribute in nested JSON', () => {
     const secretString = secretsmanager.SecretStringValueBeta1.fromToken(JSON.stringify({
       key: accessKey.secretAccessKey.toString(),
       username: 'myUser',
@@ -240,7 +240,7 @@ describe('secretStringBeta1', () => {
     });
   });
 
-  test('toToken throws if provided a resolved token', () => {
+  testDeprecated('toToken throws if provided a resolved token', () => {
     // NOTE - This is actually not desired behavior, but the simple `!Token.isUnresolved`
     // check is the simplest and most consistent to implement. Covering this edge case of
     // a resolved Token representing a Ref/Fn::GetAtt is out of scope for this initial pass.
@@ -250,16 +250,31 @@ describe('secretStringBeta1', () => {
     })).toThrow(/appears to be plaintext/);
   });
 
-  test('throws if both generateSecretString and secretStringBeta1 are provided', () => {
+  testDeprecated('throws if both generateSecretString and secretStringBeta1 are provided', () => {
     expect(() => new secretsmanager.Secret(stack, 'Secret', {
       generateSecretString: {
         generateStringKey: 'username',
         secretStringTemplate: JSON.stringify({ username: 'username' }),
       },
       secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString()),
-    })).toThrow(/Cannot specify both `generateSecretString` and `secretStringBeta1`./);
+    })).toThrow(/Cannot specify/);
   });
+});
 
+describe('secretStringValue', () => {
+  test('can reference an IAM user access key', () => {
+    const user = new iam.User(stack, 'User');
+    const accessKey = new iam.AccessKey(stack, 'MyKey', { user });
+
+    new secretsmanager.Secret(stack, 'Secret', {
+      secretStringValue: accessKey.secretAccessKey,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+      GenerateSecretString: Match.absent(),
+      SecretString: { 'Fn::GetAtt': ['MyKey6AB29FA6', 'SecretAccessKey'] },
+    });
+  });
 });
 
 test('grantRead', () => {
@@ -1194,7 +1209,7 @@ test('add a rotation schedule to an attached secret', () => {
     }),
   });
   const rotationLambda = new lambda.Function(stack, 'Lambda', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
     code: lambda.Code.fromInline('export.handler = event => event;'),
     handler: 'index.handler',
   });

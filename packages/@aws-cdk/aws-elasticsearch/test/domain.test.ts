@@ -7,8 +7,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as route53 from '@aws-cdk/aws-route53';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '@aws-cdk/core';
-import { Domain, ElasticsearchVersion } from '../lib';
+
+import { Domain, ElasticsearchVersion } from '../lib/domain';
 
 let app: App;
 let stack: Stack;
@@ -29,7 +31,7 @@ const readWriteActions = [
   ...writeActions,
 ];
 
-test('connections throws if domain is placed inside a vpc', () => {
+testDeprecated('connections throws if domain is placed inside a vpc', () => {
 
   expect(() => {
     new Domain(stack, 'Domain', {
@@ -38,7 +40,7 @@ test('connections throws if domain is placed inside a vpc', () => {
   }).toThrowError("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
 });
 
-test('subnets and security groups can be provided when vpc is used', () => {
+testDeprecated('subnets and security groups can be provided when vpc is used', () => {
 
   const vpc = new Vpc(stack, 'Vpc');
   const securityGroup = new SecurityGroup(stack, 'CustomSecurityGroup', {
@@ -71,7 +73,7 @@ test('subnets and security groups can be provided when vpc is used', () => {
   });
 });
 
-test('default subnets and security group when vpc is used', () => {
+testDeprecated('default subnets and security group when vpc is used', () => {
 
   const vpc = new Vpc(stack, 'Vpc');
   const domain = new Domain(stack, 'Domain', {
@@ -105,7 +107,7 @@ test('default subnets and security group when vpc is used', () => {
   });
 });
 
-test('default removalpolicy is retain', () => {
+testDeprecated('default removalpolicy is retain', () => {
   new Domain(stack, 'Domain', {
     version: ElasticsearchVersion.V7_1,
   });
@@ -115,7 +117,7 @@ test('default removalpolicy is retain', () => {
   });
 });
 
-test('grants kms permissions if needed', () => {
+testDeprecated('grants kms permissions if needed', () => {
 
   const key = new kms.Key(stack, 'Key');
 
@@ -153,7 +155,7 @@ test('grants kms permissions if needed', () => {
 
 });
 
-test('minimal example renders correctly', () => {
+testDeprecated('minimal example renders correctly', () => {
   new Domain(stack, 'Domain', { version: ElasticsearchVersion.V7_1 });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
@@ -187,7 +189,7 @@ test('minimal example renders correctly', () => {
   });
 });
 
-test('can enable version upgrade update policy', () => {
+testDeprecated('can enable version upgrade update policy', () => {
   new Domain(stack, 'Domain', {
     version: ElasticsearchVersion.V7_1,
     enableVersionUpgrade: true,
@@ -200,7 +202,7 @@ test('can enable version upgrade update policy', () => {
   });
 });
 
-test('can set a self-referencing custom policy', () => {
+testDeprecated('can set a self-referencing custom policy', () => {
   const domain = new Domain(stack, 'Domain', {
     version: ElasticsearchVersion.V7_1,
   });
@@ -263,7 +265,7 @@ test('can set a self-referencing custom policy', () => {
 
 describe('UltraWarm instances', () => {
 
-  test('can enable UltraWarm instances', () => {
+  testDeprecated('can enable UltraWarm instances', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_1,
       capacity: {
@@ -282,7 +284,7 @@ describe('UltraWarm instances', () => {
     });
   });
 
-  test('can enable UltraWarm instances with specific instance type', () => {
+  testDeprecated('can enable UltraWarm instances with specific instance type', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_1,
       capacity: {
@@ -304,7 +306,7 @@ describe('UltraWarm instances', () => {
 
 });
 
-test('can use tokens in capacity configuration', () => {
+testDeprecated('can use tokens in capacity configuration', () => {
   new Domain(stack, 'Domain', {
     version: ElasticsearchVersion.V7_10,
     capacity: {
@@ -345,7 +347,7 @@ test('can use tokens in capacity configuration', () => {
 
 describe('log groups', () => {
 
-  test('slowSearchLogEnabled should create a custom log group', () => {
+  testDeprecated('slowSearchLogEnabled should create a custom log group', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_4,
       logging: {
@@ -371,7 +373,7 @@ describe('log groups', () => {
     });
   });
 
-  test('slowIndexLogEnabled should create a custom log group', () => {
+  testDeprecated('slowIndexLogEnabled should create a custom log group', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_4,
       logging: {
@@ -397,7 +399,7 @@ describe('log groups', () => {
     });
   });
 
-  test('appLogEnabled should create a custom log group', () => {
+  testDeprecated('appLogEnabled should create a custom log group', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_4,
       logging: {
@@ -423,7 +425,7 @@ describe('log groups', () => {
     });
   });
 
-  test('auditLogEnabled should create a custom log group', () => {
+  testDeprecated('auditLogEnabled should create a custom log group', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_4,
       logging: {
@@ -457,7 +459,7 @@ describe('log groups', () => {
     });
   });
 
-  test('two domains with logging enabled can be created in same stack', () => {
+  testDeprecated('two domains with logging enabled can be created in same stack', () => {
     new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_7,
       logging: {
@@ -540,7 +542,7 @@ describe('log groups', () => {
     });
   });
 
-  test('log group policy is uniquely named for each domain', () => {
+  testDeprecated('log group policy is uniquely named for each domain', () => {
     new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
       logging: {
@@ -592,7 +594,7 @@ describe('log groups', () => {
     });
   });
 
-  test('enabling audit logs throws without fine grained access control enabled', () => {
+  testDeprecated('enabling audit logs throws without fine grained access control enabled', () => {
     expect(() => new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V6_7,
       logging: {
@@ -601,7 +603,7 @@ describe('log groups', () => {
     })).toThrow(/Fine-grained access control is required when audit logs publishing is enabled\./);
   });
 
-  test('slowSearchLogGroup should use a custom log group', () => {
+  testDeprecated('slowSearchLogGroup should use a custom log group', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_4,
       logging: {
@@ -630,7 +632,7 @@ describe('log groups', () => {
     });
   });
 
-  test('slowIndexLogEnabled should use a custom log group', () => {
+  testDeprecated('slowIndexLogEnabled should use a custom log group', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_4,
       logging: {
@@ -659,7 +661,7 @@ describe('log groups', () => {
     });
   });
 
-  test('appLogGroup should use a custom log group', () => {
+  testDeprecated('appLogGroup should use a custom log group', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_4,
       logging: {
@@ -688,7 +690,7 @@ describe('log groups', () => {
     });
   });
 
-  test('auditLOgGroup should use a custom log group', () => {
+  testDeprecated('auditLOgGroup should use a custom log group', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_4,
       fineGrainedAccessControl: {
@@ -729,19 +731,19 @@ describe('log groups', () => {
 
 describe('grants', () => {
 
-  test('"grantRead" allows read actions associated with this domain resource', () => {
+  testDeprecated('"grantRead" allows read actions associated with this domain resource', () => {
     testGrant(readActions, (p, d) => d.grantRead(p));
   });
 
-  test('"grantWrite" allows write actions associated with this domain resource', () => {
+  testDeprecated('"grantWrite" allows write actions associated with this domain resource', () => {
     testGrant(writeActions, (p, d) => d.grantWrite(p));
   });
 
-  test('"grantReadWrite" allows read and write actions associated with this domain resource', () => {
+  testDeprecated('"grantReadWrite" allows read and write actions associated with this domain resource', () => {
     testGrant(readWriteActions, (p, d) => d.grantReadWrite(p));
   });
 
-  test('"grantIndexRead" allows read actions associated with an index in this domain resource', () => {
+  testDeprecated('"grantIndexRead" allows read actions associated with an index in this domain resource', () => {
     testGrant(
       readActions,
       (p, d) => d.grantIndexRead('my-index', p),
@@ -750,7 +752,7 @@ describe('grants', () => {
     );
   });
 
-  test('"grantIndexWrite" allows write actions associated with an index in this domain resource', () => {
+  testDeprecated('"grantIndexWrite" allows write actions associated with an index in this domain resource', () => {
     testGrant(
       writeActions,
       (p, d) => d.grantIndexWrite('my-index', p),
@@ -759,7 +761,7 @@ describe('grants', () => {
     );
   });
 
-  test('"grantIndexReadWrite" allows read and write actions associated with an index in this domain resource', () => {
+  testDeprecated('"grantIndexReadWrite" allows read and write actions associated with an index in this domain resource', () => {
     testGrant(
       readWriteActions,
       (p, d) => d.grantIndexReadWrite('my-index', p),
@@ -768,7 +770,7 @@ describe('grants', () => {
     );
   });
 
-  test('"grantPathRead" allows read actions associated with a given path in this domain resource', () => {
+  testDeprecated('"grantPathRead" allows read actions associated with a given path in this domain resource', () => {
     testGrant(
       readActions,
       (p, d) => d.grantPathRead('my-index/my-path', p),
@@ -777,7 +779,7 @@ describe('grants', () => {
     );
   });
 
-  test('"grantPathWrite" allows write actions associated with a given path in this domain resource', () => {
+  testDeprecated('"grantPathWrite" allows write actions associated with a given path in this domain resource', () => {
     testGrant(
       writeActions,
       (p, d) => d.grantPathWrite('my-index/my-path', p),
@@ -786,7 +788,7 @@ describe('grants', () => {
     );
   });
 
-  test('"grantPathReadWrite" allows read and write actions associated with a given path in this domain resource', () => {
+  testDeprecated('"grantPathReadWrite" allows read and write actions associated with a given path in this domain resource', () => {
     testGrant(
       readWriteActions,
       (p, d) => d.grantPathReadWrite('my-index/my-path', p),
@@ -795,7 +797,7 @@ describe('grants', () => {
     );
   });
 
-  test('"grant" for an imported domain', () => {
+  testDeprecated('"grant" for an imported domain', () => {
     const domainEndpoint = 'https://test-domain-2w2x2u3tifly-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com';
     const domain = Domain.fromDomainEndpoint(stack, 'Domain', domainEndpoint);
     const user = new iam.User(stack, 'user');
@@ -858,7 +860,7 @@ describe('grants', () => {
 
 describe('metrics', () => {
 
-  test('Can use metricClusterStatusRed on an Elasticsearch Domain', () => {
+  testDeprecated('Can use metricClusterStatusRed on an Elasticsearch Domain', () => {
     testMetric(
       (domain) => domain.metricClusterStatusRed(),
       'ClusterStatus.red',
@@ -866,7 +868,7 @@ describe('metrics', () => {
     );
   });
 
-  test('Can use metricClusterStatusYellow on an Elasticsearch Domain', () => {
+  testDeprecated('Can use metricClusterStatusYellow on an Elasticsearch Domain', () => {
     testMetric(
       (domain) => domain.metricClusterStatusYellow(),
       'ClusterStatus.yellow',
@@ -874,7 +876,7 @@ describe('metrics', () => {
     );
   });
 
-  test('Can use metricFreeStorageSpace on an Elasticsearch Domain', () => {
+  testDeprecated('Can use metricFreeStorageSpace on an Elasticsearch Domain', () => {
     testMetric(
       (domain) => domain.metricFreeStorageSpace(),
       'FreeStorageSpace',
@@ -882,7 +884,7 @@ describe('metrics', () => {
     );
   });
 
-  test('Can use metricClusterIndexWriteBlocked on an Elasticsearch Domain', () => {
+  testDeprecated('Can use metricClusterIndexWriteBlocked on an Elasticsearch Domain', () => {
     testMetric(
       (domain) => domain.metricClusterIndexWritesBlocked(),
       'ClusterIndexWritesBlocked',
@@ -891,7 +893,7 @@ describe('metrics', () => {
     );
   });
 
-  test('Can use metricNodes on an Elasticsearch Domain', () => {
+  testDeprecated('Can use metricNodes on an Elasticsearch Domain', () => {
     testMetric(
       (domain) => domain.metricNodes(),
       'Nodes',
@@ -900,7 +902,7 @@ describe('metrics', () => {
     );
   });
 
-  test('Can use metricAutomatedSnapshotFailure on an Elasticsearch Domain', () => {
+  testDeprecated('Can use metricAutomatedSnapshotFailure on an Elasticsearch Domain', () => {
     testMetric(
       (domain) => domain.metricAutomatedSnapshotFailure(),
       'AutomatedSnapshotFailure',
@@ -908,7 +910,7 @@ describe('metrics', () => {
     );
   });
 
-  test('Can use metricCPUUtilization on an Elasticsearch Domain', () => {
+  testDeprecated('Can use metricCPUUtilization on an Elasticsearch Domain', () => {
     testMetric(
       (domain) => domain.metricCPUUtilization(),
       'CPUUtilization',
@@ -916,7 +918,7 @@ describe('metrics', () => {
     );
   });
 
-  test('Can use metricJVMMemoryPressure on an Elasticsearch Domain', () => {
+  testDeprecated('Can use metricJVMMemoryPressure on an Elasticsearch Domain', () => {
     testMetric(
       (domain) => domain.metricJVMMemoryPressure(),
       'JVMMemoryPressure',
@@ -924,7 +926,7 @@ describe('metrics', () => {
     );
   });
 
-  test('Can use metricMasterCPUUtilization on an Elasticsearch Domain', () => {
+  testDeprecated('Can use metricMasterCPUUtilization on an Elasticsearch Domain', () => {
     testMetric(
       (domain) => domain.metricMasterCPUUtilization(),
       'MasterCPUUtilization',
@@ -932,7 +934,7 @@ describe('metrics', () => {
     );
   });
 
-  test('Can use metricMasterJVMMemoryPressure on an Elasticsearch Domain', () => {
+  testDeprecated('Can use metricMasterJVMMemoryPressure on an Elasticsearch Domain', () => {
     testMetric(
       (domain) => domain.metricMasterJVMMemoryPressure(),
       'MasterJVMMemoryPressure',
@@ -940,7 +942,7 @@ describe('metrics', () => {
     );
   });
 
-  test('Can use metricKMSKeyError on an Elasticsearch Domain', () => {
+  testDeprecated('Can use metricKMSKeyError on an Elasticsearch Domain', () => {
     testMetric(
       (domain) => domain.metricKMSKeyError(),
       'KMSKeyError',
@@ -948,7 +950,7 @@ describe('metrics', () => {
     );
   });
 
-  test('Can use metricKMSKeyInaccessible on an Elasticsearch Domain', () => {
+  testDeprecated('Can use metricKMSKeyInaccessible on an Elasticsearch Domain', () => {
     testMetric(
       (domain) => domain.metricKMSKeyInaccessible(),
       'KMSKeyInaccessible',
@@ -956,7 +958,7 @@ describe('metrics', () => {
     );
   });
 
-  test('Can use metricSearchableDocuments on an Elasticsearch Domain', () => {
+  testDeprecated('Can use metricSearchableDocuments on an Elasticsearch Domain', () => {
     testMetric(
       (domain) => domain.metricSearchableDocuments(),
       'SearchableDocuments',
@@ -964,7 +966,7 @@ describe('metrics', () => {
     );
   });
 
-  test('Can use metricSearchLatency on an Elasticsearch Domain', () => {
+  testDeprecated('Can use metricSearchLatency on an Elasticsearch Domain', () => {
     testMetric(
       (domain) => domain.metricSearchLatency(),
       'SearchLatency',
@@ -972,7 +974,7 @@ describe('metrics', () => {
     );
   });
 
-  test('Can use metricIndexingLatency on an Elasticsearch Domain', () => {
+  testDeprecated('Can use metricIndexingLatency on an Elasticsearch Domain', () => {
     testMetric(
       (domain) => domain.metricIndexingLatency(),
       'IndexingLatency',
@@ -984,7 +986,7 @@ describe('metrics', () => {
 
 describe('import', () => {
 
-  test('static fromDomainEndpoint(endpoint) allows importing an external/existing domain', () => {
+  testDeprecated('static fromDomainEndpoint(endpoint) allows importing an external/existing domain', () => {
     const domainName = 'test-domain-2w2x2u3tifly';
     const domainEndpointWithoutHttps = `${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
     const domainEndpoint = `https://${domainEndpointWithoutHttps}`;
@@ -997,7 +999,7 @@ describe('import', () => {
     Template.fromStack(stack).resourceCountIs('AWS::Elasticsearch::Domain', 0);
   });
 
-  test('static fromDomainAttributes(attributes) allows importing an external/existing domain', () => {
+  testDeprecated('static fromDomainAttributes(attributes) allows importing an external/existing domain', () => {
     const domainName = 'test-domain-2w2x2u3tifly';
     const domainArn = `arn:aws:es:testregion:1234:domain/${domainName}`;
     const domainEndpointWithoutHttps = `${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
@@ -1014,7 +1016,7 @@ describe('import', () => {
     Template.fromStack(stack).resourceCountIs('AWS::Elasticsearch::Domain', 0);
   });
 
-  test('static fromDomainAttributes(attributes) allows importing with token arn and endpoint', () => {
+  testDeprecated('static fromDomainAttributes(attributes) allows importing with token arn and endpoint', () => {
     const domainArn = new CfnParameter(stack, 'domainArn', { type: 'String' }).valueAsString;
     const domainEndpoint = new CfnParameter(stack, 'domainEndpoint', { type: 'String' }).valueAsString;
     const imported = Domain.fromDomainAttributes(stack, 'Domain', {
@@ -1057,9 +1059,9 @@ describe('advanced security options', () => {
   const masterUserArn = 'arn:aws:iam::123456789012:user/JohnDoe';
   const masterUserName = 'JohnDoe';
   const password = 'password';
-  const masterUserPassword = SecretValue.plainText(password);
+  const masterUserPassword = SecretValue.unsafePlainText(password);
 
-  test('enable fine-grained access control with a master user ARN', () => {
+  testDeprecated('enable fine-grained access control with a master user ARN', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_1,
       fineGrainedAccessControl: {
@@ -1092,7 +1094,7 @@ describe('advanced security options', () => {
     });
   });
 
-  test('enable fine-grained access control with a master user name and password', () => {
+  testDeprecated('enable fine-grained access control with a master user name and password', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_1,
       fineGrainedAccessControl: {
@@ -1127,7 +1129,7 @@ describe('advanced security options', () => {
     });
   });
 
-  test('enable fine-grained access control with a master user name and dynamically generated password', () => {
+  testDeprecated('enable fine-grained access control with a master user name and dynamically generated password', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_1,
       fineGrainedAccessControl: {
@@ -1178,7 +1180,7 @@ describe('advanced security options', () => {
     });
   });
 
-  test('enabling fine-grained access control throws with Elasticsearch < 6.7', () => {
+  testDeprecated('enabling fine-grained access control throws with Elasticsearch < 6.7', () => {
     expect(() => new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V6_5,
       fineGrainedAccessControl: {
@@ -1192,7 +1194,7 @@ describe('advanced security options', () => {
     })).toThrow(/Fine-grained access control requires Elasticsearch version 6\.7 or later/);
   });
 
-  test('enabling fine-grained access control throws without node-to-node encryption enabled', () => {
+  testDeprecated('enabling fine-grained access control throws without node-to-node encryption enabled', () => {
     expect(() => new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_7,
       fineGrainedAccessControl: {
@@ -1206,7 +1208,7 @@ describe('advanced security options', () => {
     })).toThrow(/Node-to-node encryption is required when fine-grained access control is enabled/);
   });
 
-  test('enabling fine-grained access control throws without encryption-at-rest enabled', () => {
+  testDeprecated('enabling fine-grained access control throws without encryption-at-rest enabled', () => {
     expect(() => new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_7,
       fineGrainedAccessControl: {
@@ -1220,7 +1222,7 @@ describe('advanced security options', () => {
     })).toThrow(/Encryption-at-rest is required when fine-grained access control is enabled/);
   });
 
-  test('enabling fine-grained access control throws without enforceHttps enabled', () => {
+  testDeprecated('enabling fine-grained access control throws without enforceHttps enabled', () => {
     expect(() => new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_7,
       fineGrainedAccessControl: {
@@ -1238,7 +1240,7 @@ describe('advanced security options', () => {
 describe('custom endpoints', () => {
   const customDomainName = 'search.example.com';
 
-  test('custom domain without hosted zone and default cert', () => {
+  testDeprecated('custom domain without hosted zone and default cert', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_1,
       nodeToNodeEncryption: true,
@@ -1264,7 +1266,7 @@ describe('custom endpoints', () => {
     });
   });
 
-  test('custom domain with hosted zone and default cert', () => {
+  testDeprecated('custom domain with hosted zone and default cert', () => {
     const zone = new route53.HostedZone(stack, 'DummyZone', { zoneName: 'example.com' });
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_1,
@@ -1315,7 +1317,7 @@ describe('custom endpoints', () => {
     });
   });
 
-  test('custom domain with hosted zone and given cert', () => {
+  testDeprecated('custom domain with hosted zone and given cert', () => {
     const zone = new route53.HostedZone(stack, 'DummyZone', {
       zoneName: 'example.com',
     });
@@ -1365,7 +1367,7 @@ describe('custom endpoints', () => {
 
 describe('custom error responses', () => {
 
-  test('error when availabilityZoneCount does not match vpcOptions.subnets length', () => {
+  testDeprecated('error when availabilityZoneCount does not match vpcOptions.subnets length', () => {
     const vpc = new Vpc(stack, 'Vpc', {
       maxAzs: 1,
     });
@@ -1380,7 +1382,7 @@ describe('custom error responses', () => {
     })).toThrow(/you need to provide a subnet for each AZ you are using/);
   });
 
-  test('error when master, data or Ultra Warm instance types do not end with .elasticsearch', () => {
+  testDeprecated('error when master, data or Ultra Warm instance types do not end with .elasticsearch', () => {
     const error = /instance types must end with ".elasticsearch"/;
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
@@ -1402,7 +1404,7 @@ describe('custom error responses', () => {
     })).toThrow(error);
   });
 
-  test('error when Ultra Warm instance types do not start with ultrawarm', () => {
+  testDeprecated('error when Ultra Warm instance types do not start with ultrawarm', () => {
     const error = /UltraWarm node instance type must start with "ultrawarm"./;
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
@@ -1412,13 +1414,13 @@ describe('custom error responses', () => {
     })).toThrow(error);
   });
 
-  test('error when elasticsearchVersion is unsupported/unknown', () => {
+  testDeprecated('error when elasticsearchVersion is unsupported/unknown', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.of('5.4'),
     })).toThrow(/Unknown Elasticsearch version: 5\.4/);
   });
 
-  test('error when invalid domain name is given', () => {
+  testDeprecated('error when invalid domain name is given', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
       domainName: 'InvalidName',
@@ -1433,7 +1435,7 @@ describe('custom error responses', () => {
     })).toThrow(/It must start with a lowercase letter/);
   });
 
-  test('error when error log publishing is enabled for elasticsearch version < 5.1', () => {
+  testDeprecated('error when error log publishing is enabled for elasticsearch version < 5.1', () => {
     const error = /Error logs publishing requires Elasticsearch version 5.1 or later/;
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V2_3,
@@ -1443,7 +1445,7 @@ describe('custom error responses', () => {
     })).toThrow(error);
   });
 
-  test('error when encryption at rest is enabled for elasticsearch version < 5.1', () => {
+  testDeprecated('error when encryption at rest is enabled for elasticsearch version < 5.1', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V2_3,
       encryptionAtRest: {
@@ -1452,7 +1454,7 @@ describe('custom error responses', () => {
     })).toThrow(/Encryption of data at rest requires Elasticsearch version 5.1 or later/);
   });
 
-  test('error when cognito for kibana is enabled for elasticsearch version < 5.1', () => {
+  testDeprecated('error when cognito for kibana is enabled for elasticsearch version < 5.1', () => {
     const user = new iam.User(stack, 'user');
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V2_3,
@@ -1464,7 +1466,7 @@ describe('custom error responses', () => {
     })).toThrow(/Cognito authentication for Kibana requires Elasticsearch version 5.1 or later/);
   });
 
-  test('error when C5, I3, M5, or R5 instance types are specified for elasticsearch version < 5.1', () => {
+  testDeprecated('error when C5, I3, M5, or R5 instance types are specified for elasticsearch version < 5.1', () => {
     const error = /C5, I3, M5, and R5 instance types require Elasticsearch version 5.1 or later/;
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V2_3,
@@ -1492,14 +1494,14 @@ describe('custom error responses', () => {
     })).toThrow(error);
   });
 
-  test('error when node to node encryption is enabled for elasticsearch version < 6.0', () => {
+  testDeprecated('error when node to node encryption is enabled for elasticsearch version < 6.0', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V5_6,
       nodeToNodeEncryption: true,
     })).toThrow(/Node-to-node encryption requires Elasticsearch version 6.0 or later/);
   });
 
-  test('error when i3 or r6g instance types are specified with EBS enabled', () => {
+  testDeprecated('error when i3 or r6g instance types are specified with EBS enabled', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
       capacity: {
@@ -1522,7 +1524,7 @@ describe('custom error responses', () => {
     })).toThrow(/I3 and R6GD instance types do not support EBS storage volumes/);
   });
 
-  test('error when m3, r3, or t2 instance types are specified with encryption at rest enabled', () => {
+  testDeprecated('error when m3, r3, or t2 instance types are specified with encryption at rest enabled', () => {
     const error = /M3, R3, and T2 instance types do not support encryption of data at rest/;
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
@@ -1553,7 +1555,7 @@ describe('custom error responses', () => {
     })).toThrow(error);
   });
 
-  test('error when t2.micro is specified with elasticsearch version > 2.3', () => {
+  testDeprecated('error when t2.micro is specified with elasticsearch version > 2.3', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V6_7,
       capacity: {
@@ -1562,7 +1564,7 @@ describe('custom error responses', () => {
     })).toThrow(/t2.micro.elasticsearch instance type supports only Elasticsearch 1.5 and 2.3/);
   });
 
-  test('error when any instance type other than R3, I3 and R6GD are specified without EBS enabled', () => {
+  testDeprecated('error when any instance type other than R3, I3 and R6GD are specified without EBS enabled', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
       ebs: {
@@ -1583,7 +1585,7 @@ describe('custom error responses', () => {
     })).toThrow(/EBS volumes are required when using instance types other than r3, i3 or r6gd/);
   });
 
-  test('can use compatible master instance types that does not have local storage when data node type is i3 or r6gd', () => {
+  testDeprecated('can use compatible master instance types that does not have local storage when data node type is i3 or r6gd', () => {
     new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
       ebs: {
@@ -1609,7 +1611,7 @@ describe('custom error responses', () => {
     Template.fromStack(stack).resourceCountIs('AWS::Elasticsearch::Domain', 2);
   });
 
-  test('error when availabilityZoneCount is not 2 or 3', () => {
+  testDeprecated('error when availabilityZoneCount is not 2 or 3', () => {
     const vpc = new Vpc(stack, 'Vpc');
 
     expect(() => new Domain(stack, 'Domain1', {
@@ -1621,7 +1623,7 @@ describe('custom error responses', () => {
     })).toThrow(/Invalid zone awareness configuration; availabilityZoneCount must be 2 or 3/);
   });
 
-  test('error when UltraWarm instance is used and not supported by elasticsearchVersion', () => {
+  testDeprecated('error when UltraWarm instance is used and not supported by elasticsearchVersion', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V6_7,
       capacity: {
@@ -1631,7 +1633,7 @@ describe('custom error responses', () => {
     })).toThrow(/UltraWarm requires Elasticsearch 6\.8 or later/);
   });
 
-  test('error when t2 or t3 instance types are specified with UltramWarm enabled', () => {
+  testDeprecated('error when t2 or t3 instance types are specified with UltramWarm enabled', () => {
     const error = /T2 and T3 instance types do not support UltraWarm storage/;
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
@@ -1649,7 +1651,7 @@ describe('custom error responses', () => {
     })).toThrow(error);
   });
 
-  test('error when UltraWarm instance is used and no dedicated master instance specified', () => {
+  testDeprecated('error when UltraWarm instance is used and no dedicated master instance specified', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
       capacity: {
@@ -1661,7 +1663,7 @@ describe('custom error responses', () => {
 
 });
 
-test('can specify future version', () => {
+testDeprecated('can specify future version', () => {
   new Domain(stack, 'Domain', { version: ElasticsearchVersion.of('8.2') });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
@@ -1670,7 +1672,7 @@ test('can specify future version', () => {
 });
 
 describe('unsigned basic auth', () => {
-  test('can create a domain with unsigned basic auth', () => {
+  testDeprecated('can create a domain with unsigned basic auth', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_7,
       useUnsignedBasicAuth: true,
@@ -1696,7 +1698,7 @@ describe('unsigned basic auth', () => {
     });
   });
 
-  test('does not overwrite master user ARN configuration', () => {
+  testDeprecated('does not overwrite master user ARN configuration', () => {
     const masterUserArn = 'arn:aws:iam::123456789012:user/JohnDoe';
 
     new Domain(stack, 'Domain', {
@@ -1727,10 +1729,10 @@ describe('unsigned basic auth', () => {
     });
   });
 
-  test('does not overwrite master user name and password', () => {
+  testDeprecated('does not overwrite master user name and password', () => {
     const masterUserName = 'JohnDoe';
     const password = 'password';
-    const masterUserPassword = SecretValue.plainText(password);
+    const masterUserPassword = SecretValue.unsafePlainText(password);
 
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_1,
@@ -1762,7 +1764,7 @@ describe('unsigned basic auth', () => {
     });
   });
 
-  test('fails to create a domain with unsigned basic auth when enforce HTTPS is disabled', () => {
+  testDeprecated('fails to create a domain with unsigned basic auth when enforce HTTPS is disabled', () => {
     expect(() => new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_7,
       useUnsignedBasicAuth: true,
@@ -1770,7 +1772,7 @@ describe('unsigned basic auth', () => {
     })).toThrow(/You cannot disable HTTPS and use unsigned basic auth/);
   });
 
-  test('fails to create a domain with unsigned basic auth when node to node encryption is disabled', () => {
+  testDeprecated('fails to create a domain with unsigned basic auth when node to node encryption is disabled', () => {
     expect(() => new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_7,
       useUnsignedBasicAuth: true,
@@ -1778,7 +1780,7 @@ describe('unsigned basic auth', () => {
     })).toThrow(/You cannot disable node to node encryption and use unsigned basic auth/);
   });
 
-  test('fails to create a domain with unsigned basic auth when encryption at rest is disabled', () => {
+  testDeprecated('fails to create a domain with unsigned basic auth when encryption at rest is disabled', () => {
     expect(() => new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_7,
       useUnsignedBasicAuth: true,
@@ -1786,7 +1788,7 @@ describe('unsigned basic auth', () => {
     })).toThrow(/You cannot disable encryption at rest and use unsigned basic auth/);
   });
 
-  test('using unsigned basic auth throws with Elasticsearch < 6.7', () => {
+  testDeprecated('using unsigned basic auth throws with Elasticsearch < 6.7', () => {
     expect(() => new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V6_5,
       useUnsignedBasicAuth: true,
@@ -1795,7 +1797,7 @@ describe('unsigned basic auth', () => {
 });
 
 describe('advanced options', () => {
-  test('use advanced options', () => {
+  testDeprecated('use advanced options', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_1,
       advancedOptions: {
@@ -1812,7 +1814,7 @@ describe('advanced options', () => {
     });
   });
 
-  test('advanced options absent by default', () => {
+  testDeprecated('advanced options absent by default', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_1,
     });

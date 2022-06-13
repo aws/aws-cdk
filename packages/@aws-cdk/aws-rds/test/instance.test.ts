@@ -403,7 +403,7 @@ describe('instance', () => {
         snapshotIdentifier: 'my-snapshot',
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
         vpc,
-        credentials: rds.SnapshotCredentials.fromPassword(cdk.SecretValue.plainText('mysecretpassword')),
+        credentials: rds.SnapshotCredentials.fromPassword(cdk.SecretValue.unsafePlainText('mysecretpassword')),
       });
 
       // TODO - Expect this to be broken
@@ -505,7 +505,7 @@ describe('instance', () => {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('dummy'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN
@@ -957,7 +957,7 @@ describe('instance', () => {
   test('throws when trying to add rotation to an instance without secret', () => {
     const instance = new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
-      credentials: rds.Credentials.fromUsername('syscdk', { password: cdk.SecretValue.plainText('tooshort') }),
+      credentials: rds.Credentials.fromUsername('syscdk', { password: cdk.SecretValue.unsafePlainText('tooshort') }),
       vpc,
     });
 
@@ -1519,7 +1519,7 @@ describe('instance', () => {
       }),
       vpc,
       vpcSubnets: {
-        subnetType: ec2.SubnetType.PRIVATE,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
       },
       publiclyAccessible: true,
     });

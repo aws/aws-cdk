@@ -1,11 +1,8 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { SecretValue } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * If and how the GitHub source action should be triggered
@@ -132,7 +129,7 @@ export class GitHubSourceAction extends Action {
       new codepipeline.CfnWebhook(scope, 'WebhookResource', {
         authentication: 'GITHUB_HMAC',
         authenticationConfiguration: {
-          secretToken: this.props.oauthToken.toString(),
+          secretToken: this.props.oauthToken.unsafeUnwrap(), // Safe usage
         },
         filters: [
           {
@@ -152,7 +149,7 @@ export class GitHubSourceAction extends Action {
         Owner: this.props.owner,
         Repo: this.props.repo,
         Branch: this.props.branch || 'master',
-        OAuthToken: this.props.oauthToken.toString(),
+        OAuthToken: this.props.oauthToken.unsafeUnwrap(),
         PollForSourceChanges: this.props.trigger === GitHubTrigger.POLL,
       },
     };

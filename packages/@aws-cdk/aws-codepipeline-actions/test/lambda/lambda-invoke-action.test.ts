@@ -347,7 +347,7 @@ function stackIncludingLambdaInvokeCodePipeline(props: HelperProps, app?: App) {
           new cpactions.GitHubSourceAction({
             actionName: 'GitHub',
             output: props.lambdaInput || new codepipeline.Artifact(),
-            oauthToken: SecretValue.plainText('secret'),
+            oauthToken: SecretValue.unsafePlainText('secret'),
             owner: 'awslabs',
             repo: 'aws-cdk',
           }),
@@ -361,7 +361,7 @@ function stackIncludingLambdaInvokeCodePipeline(props: HelperProps, app?: App) {
             lambda: new lambda.Function(stack, 'Lambda', {
               code: lambda.Code.fromCfnParameters(),
               handler: 'index.handler',
-              runtime: lambda.Runtime.NODEJS_10_X,
+              runtime: lambda.Runtime.NODEJS_14_X,
             }),
             userParameters: props.userParams,
             userParametersString: props.userParamsString,

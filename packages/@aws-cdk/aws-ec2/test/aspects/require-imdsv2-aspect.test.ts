@@ -1,7 +1,8 @@
-import { Template } from '@aws-cdk/assertions';
+import { Annotations, Template, Match } from '@aws-cdk/assertions';
 import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import {
   CfnLaunchTemplate,
   Instance,
@@ -34,18 +35,14 @@ describe('RequireImdsv2Aspect', () => {
       // @ts-ignore
       aspect.warn(node, errmsg);
     });
-    const construct = new cdk.Construct(stack, 'Construct');
+    const construct = new Construct(stack, 'Construct');
 
     // WHEN
     aspect.visit(construct);
 
     // THEN
     expect(visitMock).toHaveBeenCalled();
-    expect(construct.node.metadataEntry).not.toContainEqual({
-      data: expect.stringContaining(errmsg),
-      type: 'aws:cdk:warning',
-      trace: undefined,
-    });
+    Annotations.fromStack(stack).hasNoWarning('/Stack/Construct', errmsg);
   });
 
   describe('InstanceRequireImdsv2Aspect', () => {
@@ -100,11 +97,7 @@ describe('RequireImdsv2Aspect', () => {
       // Aspect normally creates a LaunchTemplate for the Instance to toggle IMDSv1,
       // so we can assert that one was not created
       Template.fromStack(stack).resourceCountIs('AWS::EC2::LaunchTemplate', 0);
-      expect(instance.node.metadataEntry).toContainEqual({
-        data: expect.stringContaining('Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.'),
-        type: 'aws:cdk:warning',
-        trace: undefined,
-      });
+      Annotations.fromStack(stack).hasWarning('/Stack/Instance', Match.stringLikeRegexp('.*Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.'));
     });
 
     test('suppresses Launch Template warnings', () => {
@@ -126,11 +119,7 @@ describe('RequireImdsv2Aspect', () => {
       aspect.visit(instance);
 
       // THEN
-      expect(instance.node.metadataEntry).not.toContainEqual({
-        data: expect.stringContaining('Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.'),
-        type: 'aws:cdk:warning',
-        trace: undefined,
-      });
+      Annotations.fromStack(stack).hasNoWarning('/Stack/Instance', 'Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.');
     });
 
     testFutureBehavior('launch template name is unique with feature flag', { [cxapi.EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: true }, cdk.App, (app2) => {
@@ -197,11 +186,7 @@ describe('RequireImdsv2Aspect', () => {
       aspect.visit(launchTemplate);
 
       // THEN
-      expect(launchTemplate.node.metadataEntry).toContainEqual({
-        data: expect.stringContaining('LaunchTemplateData is a CDK token.'),
-        type: 'aws:cdk:warning',
-        trace: undefined,
-      });
+      Annotations.fromStack(stack).hasWarning('/Stack/LaunchTemplate', Match.stringLikeRegexp('.*LaunchTemplateData is a CDK token.'));
     });
 
     test('warns when MetadataOptions is a CDK token', () => {
@@ -217,11 +202,7 @@ describe('RequireImdsv2Aspect', () => {
       aspect.visit(launchTemplate);
 
       // THEN
-      expect(launchTemplate.node.metadataEntry).toContainEqual({
-        data: expect.stringContaining('LaunchTemplateData.MetadataOptions is a CDK token.'),
-        type: 'aws:cdk:warning',
-        trace: undefined,
-      });
+      Annotations.fromStack(stack).hasWarning('/Stack/LaunchTemplate', Match.stringLikeRegexp('.*LaunchTemplateData.MetadataOptions is a CDK token.'));
     });
 
     test('requires IMDSv2', () => {

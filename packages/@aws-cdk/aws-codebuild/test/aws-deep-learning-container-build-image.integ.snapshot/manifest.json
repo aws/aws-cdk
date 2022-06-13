@@ -1,0 +1,46 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-deep-learning-container-build-image": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-deep-learning-container-build-image.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-deep-learning-container-build-image/Project/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProjectRole4CCB274E"
+          }
+        ],
+        "/aws-deep-learning-container-build-image/Project/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProjectRoleDefaultPolicy7F29461B"
+          }
+        ],
+        "/aws-deep-learning-container-build-image/Project/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProjectC78D97AD"
+          }
+        ],
+        "/aws-deep-learning-container-build-image/DlcRepositoryAccountMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DlcRepositoryAccountMap"
+          }
+        ]
+      },
+      "displayName": "aws-deep-learning-container-build-image"
+    }
+  }
+}

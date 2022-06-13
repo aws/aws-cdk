@@ -1,0 +1,34 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cloudfront-geo-restrictions": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cloudfront-geo-restrictions.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cloudfront-geo-restrictions/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77"
+          }
+        ],
+        "/cloudfront-geo-restrictions/MyDistribution/CFDistribution": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDistributionCFDistributionDE147309"
+          }
+        ]
+      },
+      "displayName": "cloudfront-geo-restrictions"
+    }
+  }
+}

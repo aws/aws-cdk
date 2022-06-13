@@ -1,0 +1,52 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codecommit": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codecommit.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-codecommit/MyCodecommitRepository/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyCodecommitRepository26DB372B"
+          }
+        ],
+        "/aws-cdk-codecommit/MyCodecommitRepository/NotifyOnPullRequestCreated/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyCodecommitRepositoryNotifyOnPullRequestCreated4CAB0621"
+          }
+        ],
+        "/aws-cdk-codecommit/MyCodecommitRepository/NotifyOnPullRequestMerged/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyCodecommitRepositoryNotifyOnPullRequestMerged80574FED"
+          }
+        ],
+        "/aws-cdk-codecommit/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434"
+          }
+        ],
+        "/aws-cdk-codecommit/MyTopic/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopicPolicy12A5EC17"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codecommit"
+    }
+  }
+}

@@ -18,16 +18,16 @@
     "awslint": "bin/awslint"
   },
   "dependencies": {
-    "@jsii/spec": "^1.54.0",
+    "@jsii/spec": "^1.60.1",
     "camelcase": "^6.3.0",
     "chalk": "^4",
     "fs-extra": "^9.1.0",
-    "jsii-reflect": "^1.54.0",
+    "jsii-reflect": "^1.60.1",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "@types/yargs": "^15.0.14",
     "@aws-cdk/pkglint": "0.0.0",
     "typescript": "~3.9.10",
@@ -35,9 +35,9 @@
     "@typescript-eslint/parser": "^4.33.0",
     "eslint": "^7.32.0",
     "eslint-import-resolver-node": "^0.3.6",
-    "eslint-import-resolver-typescript": "^2.5.0",
+    "eslint-import-resolver-typescript": "^2.7.1",
     "@aws-cdk/eslint-plugin": "0.0.0",
-    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jest": "^24.7.0",
     "jest": "^27.5.1"
   },
@@ -60,7 +60,7 @@
   "maturity": "developer-preview",
   "stability": "experimental",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "nozem": {
     "ostools": [
@@ -69,6 +69,6 @@
     ]
   },
   "publishConfig": {
-    "tag": "latest-1"
+    "tag": "latest"
   }
 }

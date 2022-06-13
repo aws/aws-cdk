@@ -521,7 +521,7 @@ export class ServerlessCluster extends ServerlessClusterNew {
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       masterUsername: credentials.username,
-      masterUserPassword: credentials.password?.toString(),
+      masterUserPassword: credentials.password?.unsafeUnwrap(),
       kmsKeyId: props.storageEncryptionKey?.keyArn,
     });
 
@@ -692,7 +692,7 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       snapshotIdentifier: props.snapshotIdentifier,
-      masterUserPassword: secret?.secretValueFromJson('password')?.toString() ?? credentials?.password?.toString(),
+      masterUserPassword: secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
     this.clusterIdentifier = cluster.ref;

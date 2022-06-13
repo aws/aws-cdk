@@ -299,8 +299,8 @@ This module includes a few examples for custom resource implementations:
 
 Provisions an object in an S3 bucket with textual contents. See the source code
 for the
-[construct](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.ts) and
-[handler](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
+[construct](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.ts) and
+[handler](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
 
 The following example will create the file `folder/file1.txt` inside `myBucket`
 with the contents `hello!`.
@@ -354,7 +354,7 @@ This sample demonstrates the following concepts:
 
 ### Customizing Provider Function name
 
-In multi-account environments or when the custom resource may be re-utilized across several 
+In multi-account environments or when the custom resource may be re-utilized across several
 stacks it may be useful to manually set a name for the Provider Function Lambda and therefore
 have a predefined service token ARN.
 
@@ -401,9 +401,19 @@ the `installLatestAwsSdk` prop to `false`.
 You must provide the `policy` property defining the IAM Policy that will be applied to the API calls.
 The library provides two factory methods to quickly configure this:
 
-* **`AwsCustomResourcePolicy.fromSdkCalls`** - Use this to auto-generate IAM Policy statements based on the configured SDK calls.
-Note that you will have to either provide specific ARN's, or explicitly use `AwsCustomResourcePolicy.ANY_RESOURCE` to allow access to any resource.
-* **`AwsCustomResourcePolicy.fromStatements`** - Use this to specify your own custom statements.
+* **`AwsCustomResourcePolicy.fromSdkCalls`** - Use this to auto-generate IAM
+  Policy statements based on the configured SDK calls. Keep two things in mind
+  when using this policy:
+  * This policy variant assumes the IAM policy name has the same name as the API
+    call. This is true in 99% of cases, but there are exceptions (for example,
+    S3's `PutBucketLifecycleConfiguration` requires
+    `s3:PutLifecycleConfiguration` permissions, Lambda's `Invoke` requires
+    `lambda:InvokeFunction` permissions). Use `fromStatements` if you want to
+    do a call that requires different IAM action names.
+  * You will have to either provide specific ARNs, or explicitly use
+    `AwsCustomResourcePolicy.ANY_RESOURCE` to allow access to any resource.
+* **`AwsCustomResourcePolicy.fromStatements`** - Use this to specify your own
+  custom statements.
 
 The custom resource also implements `iam.IGrantable`, making it possible to use the `grantXxx()` methods.
 

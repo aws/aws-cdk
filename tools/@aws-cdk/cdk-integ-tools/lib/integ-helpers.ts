@@ -1,7 +1,9 @@
 // Helper functions for integration tests
+import * as assert from 'assert';
 import { spawnSync } from 'child_process';
 import * as path from 'path';
-import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS, TARGET_PARTITIONS } from '@aws-cdk/cx-api';
+import { TARGET_PARTITIONS } from '@aws-cdk/cx-api';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 
 const CDK_OUTDIR = 'cdk-integ.out';
@@ -58,7 +60,7 @@ export class IntegrationTests {
       for (const file of files) {
         const fullPath = path.join(dir, file);
         const statf = await fs.stat(fullPath);
-        if (statf.isFile()) { ret.push(fullPath.substr(rootDir.length + 1)); }
+        if (statf.isFile()) { ret.push(fullPath.slice(rootDir.length + 1)); }
         if (statf.isDirectory()) { await recurse(path.join(fullPath)); }
       }
     }
@@ -80,7 +82,7 @@ export class IntegrationTest {
   private readonly sourceFilePath: string;
 
   constructor(private readonly directory: string, public readonly name: string) {
-    const baseName = this.name.endsWith('.js') ? this.name.substr(0, this.name.length - 3) : this.name;
+    const baseName = this.name.endsWith('.js') ? this.name.slice(0, -3) : this.name;
     this.expectedFileName = baseName + '.expected.json';
     this.expectedFilePath = path.join(this.directory, this.expectedFileName);
     this.sourceFilePath = path.join(this.directory, this.name);
@@ -245,7 +247,21 @@ export class IntegrationTest {
     return JSON.parse(await fs.readFile(this.expectedFilePath, { encoding: 'utf-8' }));
   }
 
+  /**
+   * Write the expected JSON to the given file
+   *
+   * Only write the file if the evaluated contents of the JSON are actually
+   * different. This prevents silly diffs where different JSON stringifications
+   * lead to different spacings or ordering, even if nothing actually changed in
+   * the file.
+   */
   public async writeExpected(actual: any) {
+    if (await fs.pathExists(this.expectedFilePath)) {
+      const original = await fs.readJson(this.expectedFilePath);
+      if (deepEqual(original, actual)) {
+        return; // Nothing to do
+      }
+    }
     await fs.writeFile(this.expectedFilePath, JSON.stringify(actual, undefined, 2), { encoding: 'utf-8' });
   }
 
@@ -314,11 +330,18 @@ export class IntegrationTest {
   }
 }
 
+const futureFlags: {[key: string]: any} = {};
+Object.entries(cxapi.FUTURE_FLAGS)
+  .filter(([k, _]) => !cxapi.FUTURE_FLAGS_EXPIRED.includes(k))
+  .forEach(([k, v]) => futureFlags[k] = v);
+
 // Default context we run all integ tests with, so they don't depend on the
 // account of the exercising user.
 export const DEFAULT_SYNTH_OPTIONS = {
   context: {
-    [AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY]: ['test-region-1a', 'test-region-1b', 'test-region-1c'],
+    // use old-style synthesis in snapshot tests
+    [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+    [cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY]: ['test-region-1a', 'test-region-1b', 'test-region-1c'],
     'availability-zones:account=12345678:region=test-region': ['test-region-1a', 'test-region-1b', 'test-region-1c'],
     'ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=test-region': 'ami-1234',
     'ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=test-region': 'ami-1234',
@@ -351,14 +374,12 @@ export const DEFAULT_SYNTH_OPTIONS = {
         },
       ],
     },
-    // Enable feature flags for all integ tests
-    ...FUTURE_FLAGS,
-
     // Restricting to these target partitions makes most service principals synthesize to
     // `service.${URL_SUFFIX}`, which is technically *incorrect* (it's only `amazonaws.com`
     // or `amazonaws.com.cn`, never UrlSuffix for any of the restricted regions) but it's what
     // most existing integ tests contain, and we want to disturb as few as possible.
     [TARGET_PARTITIONS]: ['aws', 'aws-cn'],
+    ...futureFlags,
   },
   env: {
     CDK_INTEG_ACCOUNT: '12345678',
@@ -401,5 +422,14 @@ function exec(commandLine: string[], options: { cwd?: string, json?: boolean, ve
     // eslint-disable-next-line no-console
     console.error('Not JSON: ' + output);
     throw new Error('Command output is not JSON');
+  }
+}
+
+function deepEqual(a: any, b: any) {
+  try {
+    assert.deepEqual(a, b);
+    return true;
+  } catch (e) {
+    return false;
   }
 }

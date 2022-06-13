@@ -19,6 +19,7 @@ Command                               | Description
 [`cdk synth`](#cdk-synthesize)        | Synthesize a CDK app to CloudFormation template(s)
 [`cdk diff`](#cdk-diff)               | Diff stacks against current state
 [`cdk deploy`](#cdk-deploy)           | Deploy a stack into an AWS account
+[`cdk import`](#cdk-import)           | Import existing AWS resources into a CDK stack
 [`cdk watch`](#cdk-watch)             | Watches a CDK app for deployable and hotswappable changes
 [`cdk destroy`](#cdk-destroy)         | Deletes a stack from an AWS account
 [`cdk bootstrap`](#cdk-bootstrap)     | Deploy a toolkit stack to support deploying large stacks & artifacts
@@ -228,7 +229,7 @@ Usage of output in a CDK stack
 const fn = new lambda.Function(this, "fn", {
   handler: "index.handler",
   code: lambda.Code.fromInline(`exports.handler = \${handler.toString()}`),
-  runtime: lambda.Runtime.NODEJS_12_X
+  runtime: lambda.Runtime.NODEJS_14_X
 });
 
 new cdk.CfnOutput(this, 'FunctionArn', {
@@ -450,6 +451,53 @@ $ cdk watch --no-logs
 **Note**: This command is considered experimental,
 and might have breaking changes in the future.
 
+### `cdk import`
+
+Sometimes you want to import AWS resources that were created using other means
+into a CDK stack. For some resources (like Roles, Lambda Functions, Event Rules,
+...), it's feasible to create new versions in CDK and then delete the old
+versions. For other resources, this is not possible: stateful resources like S3
+Buckets, DynamoDB tables, etc., cannot be easily deleted without impact on the
+service.
+
+`cdk import`, which uses [CloudFormation resource
+imports](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import.html),
+makes it possible to bring an existing resource under CDK/CloudFormation's
+management. See the [list of resources that can be imported here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import-supported-resources.html).
+
+To import an existing resource to a CDK stack, follow the following steps:
+
+1. Run a `cdk diff` to make sure there are no pending changes to the CDK stack you want to
+   import resources into. The only changes allowed in an "import" operation are
+   the addition of new resources which you want to import.
+2. Add constructs for the resources you want to import to your Stack (for example,
+   for an S3 bucket, add something like `new s3.Bucket(this, 'ImportedS3Bucket', {});`).
+   **Do not add any other changes!** You must also make sure to exactly model the state
+   that the resource currently has. For the example of the Bucket, be sure to
+   include KMS keys, life cycle policies, and anything else that's relevant
+   about the bucket. If you do not, subsequent update operations may not do what
+   you expect.
+3. Run the `cdk import` - if there are multiple stacks in the CDK app, pass a specific
+   stack name as an argument.
+4. The CLI will prompt you to pass in the actual names of the resources you are
+   importing. After you supply it, the import starts.
+5. When `cdk import` reports success, the resource is managed by CDK. Any subsequent
+   changes in the construct configuration will be reflected on the resource.
+
+#### Limitations
+
+This feature is currently in preview. Be aware of the following limitations:
+
+- Importing resources in nested stacks is not possible.
+- Uses the deploy role credentials (necessary to read the encrypted staging
+  bucket). Requires a new version (version 12) of the bootstrap stack, for the added
+  IAM permissions to the `deploy-role`.
+- There is no check on whether the properties you specify are correct and complete
+  for the imported resource. Try starting a drift detection operation after importing.
+- Resources that depend on other resources must all be imported together, or one-by-one
+  in the right order. The CLI will not help you import dependent resources in the right
+  order, the CloudFormation deployment will fail with unresolved references.
+
 ### `cdk destroy`
 
 Deletes a stack from it's environment. This will cause the resources in the stack to be destroyed (unless they were
@@ -462,10 +510,11 @@ $ cdk destroy --app='node bin/main.js' MyStackName
 
 ### `cdk bootstrap`
 
-Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket that
-`cdk deploy` will use to store synthesized templates and the related assets, before triggering a CloudFormation stack
-update. The name of the deployed stack can be configured using the `--toolkit-stack-name` argument. The S3 Bucket
-Public Access Block Configuration can be configured using the `--public-access-block-configuration` argument.
+Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket 
+and ECR reposity that `cdk deploy` will use to store synthesized templates and the related assets, before 
+triggering a CloudFormation stack update. The name of the deployed stack can be configured using the 
+`--toolkit-stack-name` argument. The S3 Bucket Public Access Block Configuration can be configured using 
+the `--public-access-block-configuration` argument. ECR uses immutable tags for images.
 
 ```console
 $ # Deploys to all environments
@@ -521,10 +570,10 @@ NOTICES
 16603   Toggling off auto_delete_objects for Bucket empties the bucket
 
         Overview: If a stack is deployed with an S3 bucket with
-                  auto_delete_objects=True, and then re-deployed with 
-                  auto_delete_objects=False, all the objects in the bucket 
+                  auto_delete_objects=True, and then re-deployed with
+                  auto_delete_objects=False, all the objects in the bucket
                   will be deleted.
-                 
+
         Affected versions: <1.126.0.
 
         More information at: https://github.com/aws/aws-cdk/issues/16603
@@ -533,12 +582,12 @@ NOTICES
 17061   Error when building EKS cluster with monocdk import
 
         Overview: When using monocdk/aws-eks to build a stack containing
-                  an EKS cluster, error is thrown about missing 
+                  an EKS cluster, error is thrown about missing
                   lambda-layer-node-proxy-agent/layer/package.json.
-         
+
         Affected versions: >=1.126.0 <=1.130.0.
 
-        More information at: https://github.com/aws/aws-cdk/issues/17061 
+        More information at: https://github.com/aws/aws-cdk/issues/17061
 
 
 If you don’t want to see an notice anymore, use "cdk acknowledge ID". For example, "cdk acknowledge 16603".
@@ -580,7 +629,7 @@ $cdk acknowledge 16603
 ### `cdk notices`
 
 List the notices that are relevant to the current CDK repository, regardless of context flags or notices that
-have been acknowledged: 
+have been acknowledged:
 
 ```console
 $ cdk notices
@@ -589,9 +638,9 @@ NOTICES
 
 16603   Toggling off auto_delete_objects for Bucket empties the bucket
 
-        Overview: if a stack is deployed with an S3 bucket with 
-                  auto_delete_objects=True, and then re-deployed with 
-                  auto_delete_objects=False, all the objects in the bucket 
+        Overview: if a stack is deployed with an S3 bucket with
+                  auto_delete_objects=True, and then re-deployed with
+                  auto_delete_objects=False, all the objects in the bucket
                   will be deleted.
 
         Affected versions: framework: <=2.15.0 >=2.10.0
@@ -622,6 +671,11 @@ role_arn=arn:aws:iam::123456789123:role/role_to_be_assumed
 mfa_serial=arn:aws:iam::123456789123:mfa/my_user
 ```
 
+## SSO support
+
+If you create an SSO profile with `aws configure sso` and run `aws sso login`, the CDK can use those credentials
+if you set the profile name as the value of `AWS_PROFILE` or pass it to `--profile`.
+
 ## Configuration
 
 On top of passing configuration through command-line arguments, it is possible to use JSON configuration files. The
@@ -638,7 +692,7 @@ Some of the interesting keys that can be used in the JSON configuration files:
 ```json5
 {
     "app": "node bin/main.js",        // Command to start the CDK app      (--app='node bin/main.js')
-    "build": "mvn package",           // Specify pre-synth build           (no command line option)
+    "build": "mvn package",           // Specify pre-synth build           (--build='mvn package')
     "context": {                      // Context entries                   (--context=key=value)
         "key": "value"
     },

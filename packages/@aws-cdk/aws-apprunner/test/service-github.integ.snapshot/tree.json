@@ -1,0 +1,141 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "integ-apprunner": {
+        "id": "integ-apprunner",
+        "path": "integ-apprunner",
+        "children": {
+          "Service4": {
+            "id": "Service4",
+            "path": "integ-apprunner/Service4",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-apprunner/Service4/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppRunner::Service",
+                  "aws:cdk:cloudformation:props": {
+                    "sourceConfiguration": {
+                      "authenticationConfiguration": {
+                        "connectionArn": "MOCK"
+                      },
+                      "codeRepository": {
+                        "codeConfiguration": {
+                          "configurationSource": "REPOSITORY"
+                        },
+                        "repositoryUrl": "https://github.com/aws-containers/hello-app-runner",
+                        "sourceCodeVersion": {
+                          "type": "BRANCH",
+                          "value": "main"
+                        }
+                      }
+                    },
+                    "instanceConfiguration": {},
+                    "networkConfiguration": {
+                      "egressConfiguration": {
+                        "egressType": "DEFAULT"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apprunner.CfnService",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apprunner.Service",
+              "version": "0.0.0"
+            }
+          },
+          "URL4": {
+            "id": "URL4",
+            "path": "integ-apprunner/URL4",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "Service5": {
+            "id": "Service5",
+            "path": "integ-apprunner/Service5",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-apprunner/Service5/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppRunner::Service",
+                  "aws:cdk:cloudformation:props": {
+                    "sourceConfiguration": {
+                      "authenticationConfiguration": {
+                        "connectionArn": "MOCK"
+                      },
+                      "codeRepository": {
+                        "codeConfiguration": {
+                          "configurationSource": "API",
+                          "codeConfigurationValues": {
+                            "port": "8000",
+                            "buildCommand": "yum install -y pycairo && pip install -r requirements.txt",
+                            "runtime": "PYTHON_3",
+                            "startCommand": "python app.py"
+                          }
+                        },
+                        "repositoryUrl": "https://github.com/aws-containers/hello-app-runner",
+                        "sourceCodeVersion": {
+                          "type": "BRANCH",
+                          "value": "main"
+                        }
+                      }
+                    },
+                    "instanceConfiguration": {},
+                    "networkConfiguration": {
+                      "egressConfiguration": {
+                        "egressType": "DEFAULT"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apprunner.CfnService",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apprunner.Service",
+              "version": "0.0.0"
+            }
+          },
+          "URL5": {
+            "id": "URL5",
+            "path": "integ-apprunner/URL5",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

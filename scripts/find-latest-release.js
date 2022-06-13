@@ -16,10 +16,9 @@ async function main(matchRange) {
     throw new Error(`Not a valid range: ${matchRange}`);
   }
 
-  const { stdout, error } = cp.spawnSync('curl', ['https://api.github.com/repos/aws/aws-cdk/releases?per_page=100'], { maxBuffer: 10_000_000 });
+  const { stdout, error } = cp.spawnSync('npm', ['view', 'aws-cdk', 'versions', '--json'], { maxBuffer: 10_000_000 });
   if (error) { throw error; }
-  const releases = JSON.parse(stdout);
-  const versions = releases.map(r => r.name.replace(/^v/, '')); // v1.2.3 -> 1.2.3
+  const versions = JSON.parse(stdout.toString('utf-8'));
 
   const sat = semver.maxSatisfying(versions, range);
   if (!sat) {

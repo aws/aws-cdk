@@ -3,11 +3,14 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as subs from '../lib';
 
-/// !cdk-integ *
+/// !cdk-integ * pragma:enable-lookups
 const app = new cdk.App();
 
 const topicStack = new cdk.Stack(app, 'TopicStack', {
-  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: 'us-east-1' },
+  env: {
+    account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
+    region: 'us-east-1',
+  },
 });
 const topic = new sns.Topic(topicStack, 'MyTopic', {
   topicName: cdk.PhysicalName.GENERATE_IF_NEEDED,
@@ -18,7 +21,7 @@ const functionStack = new cdk.Stack(app, 'FunctionStack', {
 });
 const fction = new lambda.Function(functionStack, 'Echo', {
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
 });
 

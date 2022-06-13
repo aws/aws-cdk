@@ -83,7 +83,7 @@ const source = new codepipeline_actions.GitHubSourceAction({
   output: sourceOutput,
   owner: 'myName',
   repo: 'myRepo',
-  oauthToken: cdk.SecretValue.plainText('secret'),
+  oauthToken: cdk.SecretValue.unsafePlainText('secret'),
 });
 pipeline.addStage({
   stageName: 'source',

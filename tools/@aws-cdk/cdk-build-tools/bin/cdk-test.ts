@@ -52,7 +52,7 @@ async function main() {
 
   // Run integration test if the package has integ test files
   if (await hasIntegTests()) {
-    await shell(['cdk-integ-assert'], defaultShellOptions);
+    await shell(['integ-runner'], defaultShellOptions);
   }
 }
 

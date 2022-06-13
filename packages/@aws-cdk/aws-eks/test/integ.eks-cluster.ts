@@ -1,25 +1,24 @@
-/// !cdk-integ pragma:ignore-assets
+/// !cdk-integ pragma:ignore-assets pragma:disable-update-workflow
 import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { Asset } from '@aws-cdk/aws-s3-assets';
-import { App, CfnOutput, Duration, Token, Fn } from '@aws-cdk/core';
+import { App, CfnOutput, Duration, Token, Fn, Stack, StackProps } from '@aws-cdk/core';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-21';
 import * as constructs from 'constructs';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
-import { TestStack } from './util';
 
 
-class EksClusterStack extends TestStack {
+class EksClusterStack extends Stack {
 
   private cluster: eks.Cluster;
   private vpc: ec2.IVpc;
 
-  constructor(scope: App, id: string) {
-    super(scope, id);
+  constructor(scope: App, id: string, props?: StackProps) {
+    super(scope, id, props);
 
     // allow all account users to assume this role in order to admin the cluster
     const mastersRole = new iam.Role(this, 'AdminRole', {
@@ -80,6 +79,8 @@ class EksClusterStack extends TestStack {
 
     this.assertServiceAccount();
 
+    this.assertExtendedServiceAccount();
+
     new CfnOutput(this, 'ClusterEndpoint', { value: this.cluster.clusterEndpoint });
     new CfnOutput(this, 'ClusterArn', { value: this.cluster.clusterArn });
     new CfnOutput(this, 'ClusterCertificateAuthorityData', { value: this.cluster.clusterCertificateAuthorityData });
@@ -91,6 +92,18 @@ class EksClusterStack extends TestStack {
   private assertServiceAccount() {
     // add a service account connected to a IAM role
     this.cluster.addServiceAccount('MyServiceAccount');
+  }
+
+  private assertExtendedServiceAccount() {
+    // add a service account connected to a IAM role
+    this.cluster.addServiceAccount('MyExtendedServiceAccount', {
+      annotations: {
+        'eks.amazonaws.com/sts-regional-endpoints': 'false',
+      },
+      labels: {
+        'some-label': 'with-some-value',
+      },
+    });
   }
 
   private assertCreateNamespace() {
@@ -281,7 +294,7 @@ class EksClusterStack extends TestStack {
 }
 
 // this test uses both the bottlerocket image and the inf1 instance, which are only supported in these
-// regions. see https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-eks#bottlerocket
+// regions. see https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-eks#bottlerocket
 // and https://aws.amazon.com/about-aws/whats-new/2019/12/introducing-amazon-ec2-inf1-instances-high-performance-and-the-lowest-cost-machine-learning-inference-in-the-cloud/
 const supportedRegions = [
   'us-east-1',
@@ -292,7 +305,9 @@ const app = new App();
 
 // since the EKS optimized AMI is hard-coded here based on the region,
 // we need to actually pass in a specific region.
-const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-test');
+const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-test', {
+  env: { region: 'us-east-1' },
+});
 
 if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
 
