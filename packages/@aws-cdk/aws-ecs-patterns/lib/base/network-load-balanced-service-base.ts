@@ -1,14 +1,26 @@
-import { IVpc } from '@aws-cdk/aws-ec2';
-import {
-  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
-  ICluster, LogDriver, PropagatedTagSource, Secret,
-} from '@aws-cdk/aws-ecs';
-import { INetworkLoadBalancer, NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
-import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, CnameRecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
-import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
+
+import { AddNetworkTargetsProps, BaseNetworkListenerProps, INetworkLoadBalancer, NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import {
+  AwsLogDriver,
+  BaseService,
+  CloudMapOptions,
+  Cluster,
+  ContainerImage,
+  DeploymentCircuitBreaker,
+  DeploymentController,
+  ICluster,
+  LogDriver,
+  PropagatedTagSource,
+  Secret,
+} from '@aws-cdk/aws-ecs';
+
 import * as cdk from '@aws-cdk/core';
+
+
 import { Construct } from 'constructs';
+import { IRole } from '@aws-cdk/aws-iam';
+import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 
 /**
  * Describes the type of DNS record the service should create
@@ -182,6 +194,22 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * @default - disabled
    */
   readonly circuitBreaker?: DeploymentCircuitBreaker;
+
+  /**
+   * Properties for adding a new Network Target to the Network Listener.
+   * If provided, this will override the 'containerPort' property, as port will already be defined.
+   *
+   * @default - None
+   */
+  readonly networkTargetProps?: AddNetworkTargetsProps;
+
+  /**
+   * Basic properties for a Network Listener.
+   * If provided, this will override the 'containerPort' property, as port will already be defined.
+   *
+   * @default - None
+   */
+  readonly networkListenerProps?: BaseNetworkListenerProps;
 }
 
 export interface NetworkLoadBalancedTaskImageOptions {
@@ -341,12 +369,16 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
     };
 
     const loadBalancer = props.loadBalancer ?? new NetworkLoadBalancer(this, 'LB', lbProps);
-    const listenerPort = props.listenerPort ?? 80;
+    const listenerProps = {
+      port: props.listenerPort ?? 80,
+      ...props.networkListenerProps,
+    };
     const targetProps = {
       port: props.taskImageOptions?.containerPort ?? 80,
+      ...props.networkTargetProps,
     };
 
-    this.listener = loadBalancer.addListener('PublicListener', { port: listenerPort });
+    this.listener = loadBalancer.addListener('PublicListener', listenerProps);
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
     if (typeof props.domainName !== 'undefined') {
