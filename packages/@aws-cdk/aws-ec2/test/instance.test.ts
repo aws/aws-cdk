@@ -104,7 +104,7 @@ describe('instance', () => {
   test('instance architecture is correctly discerned for arm instances', () => {
     // GIVEN
     const sampleInstanceClasses = [
-      'a1', 't4g', 'c6g', 'c6gd', 'c6gn', 'm6g', 'm6gd', 'r6g', 'r6gd', 'g5g', 'im4gn', 'is4gen', // current Graviton-based instance classes
+      'a1', 't4g', 'c6g', 'c7g', 'c6gd', 'c6gn', 'm6g', 'm6gd', 'r6g', 'r6gd', 'g5g', 'im4gn', 'is4gen', // current Graviton-based instance classes
       'a13', 't11g', 'y10ng', 'z11ngd', // theoretical future Graviton-based instance classes
     ];
 
