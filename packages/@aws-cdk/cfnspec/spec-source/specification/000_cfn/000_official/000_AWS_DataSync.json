@@ -1,5 +1,5 @@
 {
-  "$version": "68.0.0",
+  "$version": "75.0.0",
   "PropertyTypes": {
     "AWS::DataSync::LocationEFS.Ec2Config": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datasync-locationefs-ec2config.html",
@@ -177,6 +177,12 @@
         },
         "Mtime": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datasync-task-options.html#cfn-datasync-task-options-mtime",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "ObjectTags": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datasync-task-options.html#cfn-datasync-task-options-objecttags",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"

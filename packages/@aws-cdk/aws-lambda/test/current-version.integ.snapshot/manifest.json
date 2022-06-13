@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -44,7 +44,7 @@
         "/lambda-test-current-version/MyLambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CC132baf6493c3210af4c8c0e36b416660"
+            "data": "MyLambdaCurrentVersionE7A382CC1c5f33e29b34a521d6a59697cc440454"
           }
         ],
         "/lambda-test-current-version/MyLambda/CurrentVersion/EventInvokeConfig/Resource": [

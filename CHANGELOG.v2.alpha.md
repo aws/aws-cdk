@@ -2,6 +2,54 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.27.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.26.0-alpha.0...v2.27.0-alpha.0) (2022-06-02)
+
+
+### Features
+
+* **integ-runner:** publish integ-runner cli ([#20477](https://github.com/aws/aws-cdk/issues/20477)) ([7779531](https://github.com/aws/aws-cdk/commit/777953106ac550b058fdaa3ccde25b62be07defa))
+
+
+### Bug Fixes
+
+* **integ-runner:** catch snapshot errors, treat `--from-file` as command-line ([#20523](https://github.com/aws/aws-cdk/issues/20523)) ([cedfde8](https://github.com/aws/aws-cdk/commit/cedfde8cb07eb879ee384bda93bba813ede91699))
+* **integ-runner:** don't throw error if tests pass ([#20511](https://github.com/aws/aws-cdk/issues/20511)) ([c274c2f](https://github.com/aws/aws-cdk/commit/c274c2f983de2dfd20ed2886a3c50f7fd3f6b3f4)), closes [#20384](https://github.com/aws/aws-cdk/issues/20384)
+
+## [2.26.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.25.0-alpha.0...v2.26.0-alpha.0) (2022-05-27)
+
+
+### Features
+
+* **apprunner:** VpcConnector construct ([#20471](https://github.com/aws/aws-cdk/issues/20471)) ([5052191](https://github.com/aws/aws-cdk/commit/50521911f22f433323d700db77530e883762138a))
+
+
+### Bug Fixes
+
+* **integ-runner:** always resynth on deploy ([#20508](https://github.com/aws/aws-cdk/issues/20508)) ([7138057](https://github.com/aws/aws-cdk/commit/71380571b878a50fe4b754c7dac78da075a98242))
+* **integ-tests:** DeployAssert should be private ([#20466](https://github.com/aws/aws-cdk/issues/20466)) ([0f52813](https://github.com/aws/aws-cdk/commit/0f52813bcf6a48c352f697004a899461dd06935d))
+
+## [2.25.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.24.1-alpha.0...v2.25.0-alpha.0) (2022-05-20)
+
+
+### Features
+
+* **cloud9:** configure Connection Type of Ec2Environment ([#20250](https://github.com/aws/aws-cdk/issues/20250)) ([01708bc](https://github.com/aws/aws-cdk/commit/01708bc7cf842eab7e1d1fc58bf42e4724624c0a)), closes [#17027](https://github.com/aws/aws-cdk/issues/17027)
+* **integ-tests:** enhancements to integ-tests ([#20180](https://github.com/aws/aws-cdk/issues/20180)) ([3ff3fb7](https://github.com/aws/aws-cdk/commit/3ff3fb7c5ec9636022b3046036376c09a3166fb0))
+
+
+### Bug Fixes
+
+* **amplify:** custom headers break with tokens ([#20395](https://github.com/aws/aws-cdk/issues/20395)) ([765f441](https://github.com/aws/aws-cdk/commit/765f44177298b645c88a29587b52619e91a8757c))
+
+## [2.24.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.24.0-alpha.0...v2.24.1-alpha.0) (2022-05-12)
+
+## [2.24.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.23.0-alpha.0...v2.24.0-alpha.0) (2022-05-11)
+
+
+### Bug Fixes
+
+* **appsync:** incorrect region used for imported Cognito user pool ([#20193](https://github.com/aws/aws-cdk/issues/20193)) ([3e0393e](https://github.com/aws/aws-cdk/commit/3e0393e63e84d631545734425482deae687520f1)), closes [#20195](https://github.com/aws/aws-cdk/issues/20195)
+
 ## [2.23.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.22.0-alpha.0...v2.23.0-alpha.0) (2022-05-04)
 
 

@@ -18,7 +18,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CloudFront.Origins",
         "packageId": "Amazon.CDK.AWS.CloudFront.Origins",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-cloudfront-origins",
@@ -83,10 +83,11 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.5.0",
+    "@types/jest": "^27.5.2",
     "aws-sdk": "^2.848.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-cloudfront": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
@@ -96,6 +97,7 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-cloudfront": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",

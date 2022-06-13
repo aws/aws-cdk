@@ -665,7 +665,7 @@
                       }
                     },
                     "handler": "iam-query.handler",
-                    "runtime": "nodejs12.x"
+                    "runtime": "nodejs14.x"
                   }
                 },
                 "constructInfo": {
@@ -863,7 +863,7 @@
                       }
                     },
                     "handler": "iam-query.handler",
-                    "runtime": "nodejs12.x"
+                    "runtime": "nodejs14.x"
                   }
                 },
                 "constructInfo": {

@@ -114,13 +114,6 @@
    ]
   }
  },
- "Outputs": {
-  "stateMachineArn": {
-   "Value": {
-    "Ref": "StateMachine2E01A3A5"
-   }
-  }
- },
  "Mappings": {
   "ServiceprincipalMap": {
    "af-south-1": {
@@ -212,6 +205,16 @@
    },
    "us-west-2": {
     "states": "states.us-west-2.amazonaws.com"
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefStateMachine2E01A3A5BA46F753": {
+   "Value": {
+    "Ref": "StateMachine2E01A3A5"
+   },
+   "Export": {
+    "Name": "aws-stepfunctions-tasks-eventbridge-put-events-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
    }
   }
  }

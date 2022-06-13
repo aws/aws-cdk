@@ -11,5 +11,8 @@ function invokeJest() {
   # This must --runInBand because parallelism is arranged for inside the tests
   # themselves and they must run in the same process in order to coordinate to
   # make sure no 2 tests use the same region at the same time.
-  npx jest --runInBand --verbose "$@"
+  #
+  # Jest is run in a weird way because npx started (NPM 8?) to change directory
+  # into 'package.json' root, which we don't want here.
+  $(npx which jest) --runInBand --verbose "$@"
 }

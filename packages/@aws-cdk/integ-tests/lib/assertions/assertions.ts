@@ -1,36 +1,42 @@
-import { CustomResource } from '@aws-cdk/core';
-import { IAssertion } from './deploy-assert';
-import { AssertionRequest, AssertionsProvider, ASSERT_RESOURCE_TYPE, AssertionType } from './providers';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
+import { CustomResource, CfnOutput } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { ExpectedResult, ActualResult } from './common';
+import { AssertionRequest, AssertionsProvider, ASSERT_RESOURCE_TYPE } from './providers';
 
 /**
  * Options for an EqualsAssertion
  */
 export interface EqualsAssertionProps {
   /**
-   * The CustomResource that continains the "actual" results
+   * The actual results to compare
    */
-  readonly inputResource: CustomResource;
-
-  /**
-   * The CustomResource attribute that continains the "actual" results
-   */
-  readonly inputResourceAtt: string;
+  readonly actual: ActualResult;
 
   /**
    * The expected result to assert
    */
-  readonly expected: any;
+  readonly expected: ExpectedResult;
+
+  /**
+   * Set this to true if a failed assertion should
+   * result in a CloudFormation deployment failure
+   *
+   * This is only necessary if assertions are being
+   * executed outside of `integ-runner`.
+   *
+   * @default false
+   */
+  readonly failDeployment?: boolean;
 }
 
 /**
  * Construct that creates a CustomResource to assert that two
  * values are equal
  */
-export class EqualsAssertion extends Construct implements IAssertion {
+export class EqualsAssertion extends Construct {
+  /**
+   * The result of the assertion
+   */
   public readonly result: string;
 
   constructor(scope: Construct, id: string, props: EqualsAssertionProps) {
@@ -38,15 +44,22 @@ export class EqualsAssertion extends Construct implements IAssertion {
 
     const assertionProvider = new AssertionsProvider(this, 'AssertionProvider');
     const properties: AssertionRequest = {
-      actual: props.inputResource.getAttString(props.inputResourceAtt),
-      expected: props.expected,
-      assertionType: AssertionType.EQUALS,
+      actual: props.actual.result,
+      expected: props.expected.result,
+      failDeployment: props.failDeployment,
     };
     const resource = new CustomResource(this, 'Default', {
       serviceToken: assertionProvider.serviceToken,
-      properties,
+      properties: {
+        ...properties,
+        salt: Date.now().toString(), // always update,
+      },
       resourceType: ASSERT_RESOURCE_TYPE,
     });
     this.result = resource.getAttString('data');
+
+    new CfnOutput(this, 'AssertionResults', {
+      value: this.result,
+    }).overrideLogicalId(`AssertionResults${id}`);
   }
 }

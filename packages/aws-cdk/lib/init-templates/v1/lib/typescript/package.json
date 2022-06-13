@@ -10,7 +10,8 @@
   },
   "devDependencies": {
     "@aws-cdk/assertions": "%cdk-version%",
-    "@types/jest": "^27.5.0",
+    "@types/jest": "^28.1.1",
+    "@types/prettier": "2.6.0",
     "@types/node": "10.17.27",
     "jest": "^27.5.1",
     "ts-jest": "^27.1.4",

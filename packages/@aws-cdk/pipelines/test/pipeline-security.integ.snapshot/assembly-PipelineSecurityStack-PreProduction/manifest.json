@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "PipelineSecurityStackPreProductionMyStackDCCBB4EA.assets": {
       "type": "cdk:asset-manifest",

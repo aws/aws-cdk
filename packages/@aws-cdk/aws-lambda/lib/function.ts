@@ -6,8 +6,10 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Size, Stack, Token } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '@aws-cdk/core';
+import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '@aws-cdk/cx-api';
+import { Construct, IConstruct } from 'constructs';
+import { AliasOptions, Alias } from './alias';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
 import { ICodeSigningConfig } from './code-signing-config';
@@ -21,12 +23,8 @@ import { LambdaInsightsVersion } from './lambda-insights';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
-import { Runtime } from './runtime';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line
 import { LogRetentionRetryOptions } from './log-retention';
-import { AliasOptions, Alias } from './alias';
+import { Runtime } from './runtime';
 import { addAlias } from './util';
 
 /**
@@ -637,10 +635,10 @@ export class Function extends FunctionBase {
 
   public readonly permissionsNode = this.node;
 
-
   protected readonly canCreatePermissions = true;
 
-  private readonly layers: ILayerVersion[] = [];
+  /** @internal */
+  public readonly _layers: ILayerVersion[] = [];
 
   private _logGroup?: logs.ILogGroup;
 
@@ -665,6 +663,12 @@ export class Function extends FunctionBase {
       }
       if (!/^[a-zA-Z0-9-_]+$/.test(props.functionName)) {
         throw new Error(`Function name ${props.functionName} can contain only letters, numbers, hyphens, or underscores with no spaces.`);
+      }
+    }
+
+    if (props.description && !Token.isUnresolved(props.description)) {
+      if (props.description.length > 256) {
+        throw new Error(`Function description can not be longer than 256 characters but has ${props.description.length} characters.`);
       }
     }
 
@@ -771,7 +775,7 @@ export class Function extends FunctionBase {
         zipFile: code.inlineCode,
         imageUri: code.image?.imageUri,
       },
-      layers: Lazy.list({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }), // Evaluated on synthesis
+      layers: Lazy.list({ produce: () => this.renderLayers() }), // Evaluated on synthesis
       handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
       packageType: props.runtime === Runtime.FROM_IMAGE ? 'Image' : undefined,
@@ -903,7 +907,7 @@ export class Function extends FunctionBase {
    */
   public addLayers(...layers: ILayerVersion[]): void {
     for (const layer of layers) {
-      if (this.layers.length === 5) {
+      if (this._layers.length === 5) {
         throw new Error('Unable to add layer: this lambda function already uses 5 layers.');
       }
       if (layer.compatibleRuntimes && !layer.compatibleRuntimes.find(runtime => runtime.runtimeEquals(this.runtime))) {
@@ -914,8 +918,7 @@ export class Function extends FunctionBase {
       // Currently no validations for compatible architectures since Lambda service
       // allows layers configured with one architecture to be used with a Lambda function
       // from another architecture.
-
-      this.layers.push(layer);
+      this._layers.push(layer);
     }
   }
 
@@ -978,6 +981,7 @@ export class Function extends FunctionBase {
    *   aliasName: 'Live',
    *   version: fn.currentVersion,
    * });
+   * ```
    *
    * @param aliasName The name of the alias
    * @param options Alias options
@@ -1042,6 +1046,18 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       this.addLayers(LayerVersion.fromLayerVersionArn(this, 'LambdaInsightsLayer', props.insightsVersion._bind(this, this).arn));
     }
     this.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchLambdaInsightsExecutionRolePolicy'));
+  }
+
+  private renderLayers() {
+    if (!this._layers || this._layers.length === 0) {
+      return undefined;
+    }
+
+    if (FeatureFlags.of(this).isEnabled(LAMBDA_RECOGNIZE_LAYER_VERSION)) {
+      this._layers.sort();
+    }
+
+    return this._layers.map(layer => layer.layerVersionArn);
   }
 
   private renderEnvironment() {
@@ -1115,7 +1131,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     for (const subnetId of subnetIds) {
       if (publicSubnetIds.has(subnetId) && !allowPublicSubnet) {
         throw new Error('Lambda Functions in a public subnet can NOT access the internet. ' +
-          'If you are aware of this limitation and would still like to place the function int a public subnet, set `allowPublicSubnet` to true');
+          'If you are aware of this limitation and would still like to place the function in a public subnet, set `allowPublicSubnet` to true');
       }
     }
 
@@ -1262,4 +1278,24 @@ export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
 function undefinedIfNoKeys<A>(struct: A): A | undefined {
   const allUndefined = Object.values(struct).every(val => val === undefined);
   return allUndefined ? undefined : struct;
+}
+
+/**
+ * Aspect for upgrading function versions when the feature flag
+ * provided feature flag present. This can be necessary when the feature flag
+ * changes the function hash, as such changes must be associated with a new
+ * version. This aspect will change the function description in these cases,
+ * which "validates" the new function hash.
+ */
+export class FunctionVersionUpgrade implements IAspect {
+  constructor(private readonly featureFlag: string, private readonly enabled=true) {}
+
+  public visit(node: IConstruct): void {
+    if (node instanceof Function &&
+      this.enabled === FeatureFlags.of(node).isEnabled(this.featureFlag)) {
+      const cfnFunction = node.node.defaultChild as CfnFunction;
+      const desc = cfnFunction.description ? `${cfnFunction.description} ` : '';
+      cfnFunction.addPropertyOverride('Description', `${desc}version-hash:${calculateFunctionHash(node)}`);
+    }
+  };
 }

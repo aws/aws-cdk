@@ -174,6 +174,18 @@ export const EFS_DEFAULT_ENCRYPTION_AT_REST = '@aws-cdk/aws-efs:defaultEncryptio
 export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVersionProps';
 
 /**
+ * Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the
+ * `fn.currentVersion`.
+ *
+ * This flag correct incorporates Lambda Layer properties into the Lambda Function Version.
+ *
+ * See 'currentVersion' section in the aws-lambda module's README for more details.
+ *
+ * [PERMANENT]
+ */
+export const LAMBDA_RECOGNIZE_LAYER_VERSION = '@aws-cdk/aws-lambda:recognizeLayerVersion';
+
+/**
  * Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default.
  *
  * The security policy can also be configured explicitly using the `minimumProtocolVersion` property.
@@ -234,6 +246,16 @@ export const EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME = '@aws-cdk/aws-ec2:uniqueIm
 export const IAM_MINIMIZE_POLICIES = '@aws-cdk/aws-iam:minimizePolicies';
 
 /**
+ * Makes sure we do not allow snapshot removal policy on resources that do not support it.
+ * If supplied on an unsupported resource, CloudFormation ignores the policy altogether.
+ * This flag will reduce confusion and unexpected loss of data when erroneously supplying
+ * the snapshot removal policy.
+ *
+ * [PERMANENT]
+ */
+export const VALIDATE_SNAPSHOT_REMOVAL_POLICY = '@aws-cdk/core:validateSnapshotRemovalPolicy';
+
+/**
  * Flag values that should apply for new projects
  *
  * Add a flag in here (typically with the value `true`), to enable
@@ -255,11 +277,13 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [RDS_LOWERCASE_DB_IDENTIFIER]: true,
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
   [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
+  [LAMBDA_RECOGNIZE_LAYER_VERSION]: true,
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
   [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: true,
   [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: true,
   [CHECK_SECRET_USAGE]: true,
   [IAM_MINIMIZE_POLICIES]: true,
+  [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true,
 };
 
 /**

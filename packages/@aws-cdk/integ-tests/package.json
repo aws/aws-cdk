@@ -18,7 +18,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.IntegTests",
         "packageId": "Amazon.CDK.IntegTests",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.integ-tests",
@@ -40,6 +40,7 @@
   },
   "scripts": {
     "build": "cdk-build",
+    "bundle": "esbuild --bundle lib/assertions/providers/lambda-handler/index.ts --target=node14 --platform=node --external:aws-sdk --outfile=lib/assertions/providers/lambda-handler.bundle/index.js",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -61,13 +62,14 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.5.0",
+    "@types/jest": "^27.5.2",
     "@types/node": "^10.17.60",
     "jest": "^27.5.1",
-    "nock": "^13.2.4",
+    "nock": "^13.2.6",
     "aws-sdk-mock": "5.6.0",
     "sinon": "^9.2.4",
     "aws-sdk": "^2.1093.0"
@@ -75,22 +77,12 @@
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/triggers": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0",
     "constructs": "^10.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/triggers": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^10.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0"
+    "constructs": "^10.0.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -104,6 +96,19 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 14.15.0"
+  },
+  "cdk-build": {
+    "pre": [
+      "yarn bundle"
+    ],
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "awslint": {
+    "exclude": [
+      "construct-ctor:@aws-cdk/integ-tests.DeployAssert.<initializer>"
+    ]
   },
   "nozem": {
     "ostools": [

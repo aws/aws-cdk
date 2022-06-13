@@ -1901,7 +1901,10 @@ export class Bucket extends BucketBase {
         expirationDate: rule.expirationDate,
         expirationInDays: rule.expiration?.toDays(),
         id: rule.id,
-        noncurrentVersionExpirationInDays: rule.noncurrentVersionExpiration && rule.noncurrentVersionExpiration.toDays(),
+        noncurrentVersionExpiration: rule.noncurrentVersionExpiration && {
+          noncurrentDays: rule.noncurrentVersionExpiration.toDays(),
+          newerNoncurrentVersions: rule.noncurrentVersionsToRetain,
+        },
         noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
           storageClass: t.storageClass.value,
           transitionInDays: t.transitionAfter.toDays(),
@@ -1916,6 +1919,8 @@ export class Bucket extends BucketBase {
         })),
         expiredObjectDeleteMarker: rule.expiredObjectDeleteMarker,
         tagFilters: self.parseTagFilters(rule.tagFilters),
+        objectSizeLessThan: rule.objectSizeLessThan,
+        objectSizeGreaterThan: rule.objectSizeGreaterThan,
       };
 
       return x;
@@ -2120,7 +2125,7 @@ export class Bucket extends BucketBase {
   private enableAutoDeleteObjects() {
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
     });
 
