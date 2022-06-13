@@ -304,6 +304,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly SSM = new InterfaceVpcEndpointAwsService('ssm');
   public static readonly SSM_MESSAGES = new InterfaceVpcEndpointAwsService('ssmmessages');
   public static readonly STS = new InterfaceVpcEndpointAwsService('sts');
+  public static readonly TEXTRACT = new InterfaceVpcEndpointAwsService('textract');
+  public static readonly TEXTRACT_FIPS = new InterfaceVpcEndpointAwsService('textract-fips');
   public static readonly TRANSFER = new InterfaceVpcEndpointAwsService('transfer.server');
   public static readonly STORAGE_GATEWAY = new InterfaceVpcEndpointAwsService('storagegateway');
   public static readonly REKOGNITION = new InterfaceVpcEndpointAwsService('rekognition');
