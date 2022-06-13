@@ -141,7 +141,7 @@ export interface RoleProps {
 }
 
 /**
- * Options allowing customizing the behavior of {@link Role.fromRoleArn}.
+ * Options allowing customizing the behavior of {@link Role.fromRoleArn} and {@link Role.fromRoleName}.
  */
 export interface FromRoleArnOptions {
   /**
@@ -313,14 +313,19 @@ export class Role extends Resource implements IRole {
    *
    * The imported role is assumed to exist in the same account as the account
    * the scope's containing Stack is being deployed to.
+
+   * @param scope construct scope
+   * @param id construct id
+   * @param roleName the name of the role to import
+   * @param options allow customizing the behavior of the returned role
    */
-  public static fromRoleName(scope: Construct, id: string, roleName: string) {
+  public static fromRoleName(scope: Construct, id: string, roleName: string, options: FromRoleArnOptions = {}) {
     return Role.fromRoleArn(scope, id, Stack.of(scope).formatArn({
       region: '',
       service: 'iam',
       resource: 'role',
       resourceName: roleName,
-    }));
+    }), options);
   }
 
   public readonly grantPrincipal: IPrincipal = this;
