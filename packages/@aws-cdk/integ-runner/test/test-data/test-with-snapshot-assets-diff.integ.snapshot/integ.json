@@ -2,7 +2,7 @@
   "version": "v1.0.0",
   "testCases": {
     "enableLookups": true,
-    "integ.test-with-snapshot-assets-diff": {
+    "xxxxx.test-with-snapshot-assets-diff": {
       "stacks": ["test-stack"],
       "diffAssets": true,
       "allowDestroy": [

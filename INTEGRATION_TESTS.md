@@ -85,6 +85,7 @@ _integ.lambda.ts_
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
+import * as integ from '@aws-cdk/integ-tests';
 
 const app = new cdk.App();
 
@@ -94,6 +95,10 @@ const fn = new lambda.Function(stack, 'MyLambda', {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_14_X,
+});
+
+new integ.IntegTest(app, 'LambdaTest', {
+  testCases: [stack],
 });
 
 app.synth();
@@ -223,7 +228,52 @@ but it will not validate that the Lambda function can be invoked. Because of thi
 to deploy the Lambda Function _and_ then rerun the assertions to ensure that the function can still be invoked.
 
 ### Assertions
-...Coming soon...
+
+Sometimes it is necessary to perform some form of _assertion_ against the deployed infrastructure to validate that the
+test succeeds. A good example of this is the `@aws-cdk/aws-stepfunctions-tasks` module which creates integrations between
+AWS StepFunctions and other AWS services. 
+
+If we look at the [integ.put-events.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-stepfunctions-tasks/test/eventbridge/integ.put-events.ts)
+integration test we can see that we are creating an `@aws-cdk/aws-events.EventBus` along with a `@aws-cdk/aws-stepfunctions.StateMachine`
+which will send an event to the `EventBus`. In a typical integration test we would just deploy the test and the fact that the
+infrastructure deployed successfully would be enough of a validation that the test succeeded. In this case though, we ideally
+want to validate that the _integration_ connecting `StepFunctions` to the `EventBus` has been setup correctly, and the only
+way to do that is to actually trigger the `StateMachine` and validate that it was successful.
+
+```ts
+declare const app: App;
+declare const sm: sfn.StateMachine;
+declare const stack: Stack;
+
+const testCase = new IntegTest(app, 'PutEvents', {
+  testCases: [stack],
+});
+
+// Start an execution
+const start = testCase.assertions.awsApiCall('StepFunctions', 'startExecution', {
+  stateMachineArn: sm.stateMachineArn,
+});
+
+// describe the results of the execution
+const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecution', {
+  executionArn: start.getAttString('executionArn'),
+});
+
+// assert the results
+describe.expect(ExpectedResult.objectLike({
+  status: 'SUCCEEDED',
+}));
+```
+
+Not every test requires an assertion. We typically do not need to assert CloudFormation behavior. For example, if we create an S3 Bucket
+with Encryption, we do not need to assert that Encryption is set on the bucket. We can trust that the CloudFormation behavior works.
+Some things you should look for in deciding if the test needs an assertion:
+
+- Integrations between services (i.e. integration libraries like `@aws-cdk/aws-lambda-destinations`, `@aws-cdk/aws-stepfunctions-tasks`, etc)
+- Anything that bundles or deploys custom code (i.e. does a Lambda function bundled with `@aws-cdk/aws-lambda-nodejs` still invoke or did we break bundling behavior)
+- IAM/Networking connections.
+  - This one is a bit of a judgement call. Most things do not need assertions, but sometimes we handle complicated configurations involving IAM permissions or
+    Networking access.
 
 ## Running Integration Tests
 
