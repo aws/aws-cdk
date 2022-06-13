@@ -1,9 +1,9 @@
 import { Template } from '@aws-cdk/assertions';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import { App, Duration, SecretValue, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */

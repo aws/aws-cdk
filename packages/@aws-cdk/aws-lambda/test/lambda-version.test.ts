@@ -31,7 +31,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
@@ -63,7 +63,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
@@ -108,7 +108,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
@@ -124,7 +124,7 @@ describe('lambda version', () => {
       },
       FunctionVersion: {
         'Fn::GetAtt': [
-          'FnCurrentVersion17A89ABBab5c765f3c55e4e61583b51b00a95742',
+          'FnCurrentVersion17A89ABB7cfc294c86ef030f28b22c2ab54f718a',
           'Version',
         ],
       },
@@ -136,14 +136,14 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
     const version = fn.currentVersion;
 
     // THEN
-    expect(stack.resolve(version.edgeArn)).toEqual({ Ref: 'FnCurrentVersion17A89ABB19ed45993ff69fd011ae9fd4ab6e2005' });
+    expect(stack.resolve(version.edgeArn)).toEqual({ Ref: 'FnCurrentVersion17A89ABB7cfc294c86ef030f28b22c2ab54f718a' });
   });
 
   test('edgeArn throws with $LATEST', () => {
@@ -160,7 +160,7 @@ describe('lambda version', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
@@ -168,7 +168,7 @@ describe('lambda version', () => {
 
     // WHEN
     new lambda.Function(stack, 'OtherFn', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
       environment: {
@@ -189,7 +189,7 @@ describe('lambda version', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
     const version = new lambda.Version(stack, 'Version', {
       lambda: fn,

@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ArnFormat, FeatureFlags, Fn, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token, TokenComparison } from '@aws-cdk/core';
+import { ArnFormat, FeatureFlags, Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretValue, Stack, Token, TokenComparison } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { ResourcePolicy } from './policy';
@@ -231,9 +231,8 @@ export class SecretStringValueBeta1 {
    * // Creates a new IAM user, access and secret keys, and stores the secret access key in a Secret.
    * const user = new iam.User(this, 'User');
    * const accessKey = new iam.AccessKey(this, 'AccessKey', { user });
-   * const secretValue = secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString());
-   * new secretsmanager.Secret(this, 'Secret', {
-   *   secretStringBeta1: secretValue,
+   * const secret = new secrets.Secret(this, 'Secret', {
+   * 	secretStringValue: accessKey.secretAccessKey,
    * });
    * ```
    *
@@ -309,6 +308,12 @@ abstract class SecretBase extends Resource implements ISecret {
   protected abstract readonly autoCreatePolicy: boolean;
 
   private policy?: ResourcePolicy;
+
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
+
+    this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
+  }
 
   public get secretFullArn(): string | undefined { return this.secretArn; }
 
@@ -395,12 +400,6 @@ abstract class SecretBase extends Resource implements ISecret {
       return { statementAdded: true, policyDependable: this.policy };
     }
     return { statementAdded: false };
-  }
-
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
-    return errors;
   }
 
   public denyAccountRootDelete() {
@@ -660,6 +659,11 @@ export interface ISecretAttachmentTarget {
  */
 export enum AttachmentTargetType {
   /**
+   * AWS::RDS::DBInstance
+   */
+  RDS_DB_INSTANCE = 'AWS::RDS::DBInstance',
+
+  /**
    * A database instance
    *
    * @deprecated use RDS_DB_INSTANCE instead
@@ -667,21 +671,16 @@ export enum AttachmentTargetType {
   INSTANCE = 'AWS::RDS::DBInstance',
 
   /**
+   * AWS::RDS::DBCluster
+   */
+  RDS_DB_CLUSTER = 'AWS::RDS::DBCluster',
+
+  /**
    * A database cluster
    *
    * @deprecated use RDS_DB_CLUSTER instead
    */
   CLUSTER = 'AWS::RDS::DBCluster',
-
-  /**
-   * AWS::RDS::DBInstance
-   */
-  RDS_DB_INSTANCE = 'AWS::RDS::DBInstance',
-
-  /**
-   * AWS::RDS::DBCluster
-   */
-  RDS_DB_CLUSTER = 'AWS::RDS::DBCluster',
 
   /**
    * AWS::RDS::DBProxy

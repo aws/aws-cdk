@@ -1,8 +1,8 @@
 ///! show
 import * as path from 'path';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as core from '@aws-cdk/core';
 import * as flink from '../lib';
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 
 const app = new core.App();
 const stack = new core.Stack(app, 'FlinkAppTest');

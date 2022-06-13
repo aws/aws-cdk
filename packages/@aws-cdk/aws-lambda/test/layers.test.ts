@@ -15,7 +15,7 @@ describe('layers', () => {
     // WHEN
     new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NODEJS_10_X],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
     });
 
     // THEN
@@ -24,7 +24,7 @@ describe('layers', () => {
         S3Bucket: stack.resolve(bucket.bucketName),
         S3Key: 'ObjectKey',
       },
-      CompatibleRuntimes: ['nodejs10.x'],
+      CompatibleRuntimes: ['nodejs14.x'],
     });
   });
 
@@ -35,7 +35,7 @@ describe('layers', () => {
     const code = new lambda.S3Code(bucket, 'ObjectKey');
     const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NODEJS_10_X],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
     });
 
     // WHEN
@@ -69,7 +69,12 @@ describe('layers', () => {
 
   test('asset metadata is added to the cloudformation resource', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App({
+      context: {
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const stack = new cdk.Stack(app);
     stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
     // WHEN

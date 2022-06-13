@@ -1,8 +1,8 @@
 import * as workerpool from 'workerpool';
 import * as logger from '../logger';
-import { IntegTestConfig } from '../runner/integration-tests';
-import { flatten } from '../utils';
-import { printSummary, printResults, IntegTestWorkerConfig, SnapshotVerificationOptions } from './common';
+import { IntegTest } from '../runner/integration-tests';
+import { flatten, WorkList } from '../utils';
+import { printSummary, printResults, IntegTestWorkerConfig, SnapshotVerificationOptions, printLaggards } from './common';
 
 /**
  * Run Snapshot tests
@@ -11,19 +11,28 @@ import { printSummary, printResults, IntegTestWorkerConfig, SnapshotVerification
  */
 export async function runSnapshotTests(
   pool: workerpool.WorkerPool,
-  tests: IntegTestConfig[],
+  tests: IntegTest[],
   options: SnapshotVerificationOptions,
 ): Promise<IntegTestWorkerConfig[]> {
   logger.highlight('\nVerifying integration test snapshots...\n');
 
+  const todo = new WorkList(tests.map(t => t.testName), {
+    onTimeout: printLaggards,
+  });
+
   const failedTests: IntegTestWorkerConfig[][] = await Promise.all(
-    tests.map((test) => pool.exec('snapshotTestWorker', [test, options], {
-      on: printResults,
+    tests.map((test) => pool.exec('snapshotTestWorker', [test.info /* Dehydrate class -> data */, options], {
+      on: (x) => {
+        todo.crossOff(x.testName);
+        printResults(x);
+      },
     })),
   );
+  todo.done();
   const testsToRun = flatten(failedTests);
 
   logger.highlight('\nSnapshot Results: \n');
   printSummary(tests.length, testsToRun.length);
   return testsToRun;
+
 }
