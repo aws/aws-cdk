@@ -31,8 +31,6 @@ describe('condition', () => {
         },
       },
     });
-
-
   });
 
   test('condition expressions can be embedded as strings', () => {
@@ -60,6 +58,5 @@ describe('condition', () => {
         },
       },
     });
-
   });
 });

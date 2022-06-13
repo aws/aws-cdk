@@ -19,10 +19,10 @@
     "include": [
         "**/*.ts",
         "**/*.d.ts",
-        "lib/init-templates/**/add-project.hook.ts"
+        "lib/init-templates/**/*.hook.ts"
     ],
     "exclude": [
-        "lib/init-templates/**/typescript/**/*.ts",
+        "lib/init-templates/**/typescript/*/*.ts",
         "test/integ/cli/sam_cdk_integ_app/**/*"
     ],
     "references": [

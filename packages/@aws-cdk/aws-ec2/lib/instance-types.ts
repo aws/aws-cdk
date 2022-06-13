@@ -369,6 +369,16 @@ export enum InstanceClass {
   C6G = 'c6g',
 
   /**
+   * Compute optimized instances for high performance computing, 7th generation with Graviton3 processors
+   */
+  COMPUTE7_GRAVITON3 = 'c7g',
+
+  /**
+   * Compute optimized instances for high performance computing, 7th generation with Graviton3 processors
+   */
+  C7G = 'c7g',
+
+  /**
    * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
    * and local NVME drive
    */
@@ -451,6 +461,16 @@ export enum InstanceClass {
    * I/O-optimized instances with local NVME drive, 3rd generation
    */
   I3EN = 'i3en',
+
+  /**
+   * I/O-optimized instances with local NVME drive powered by Intel Xeon Scalable processors (code named Ice Lake), 4th generation
+   */
+  IO4_INTEL = 'i4i',
+
+  /**
+   * I/O-optimized instances with local NVME drive powered by Intel Xeon Scalable processors (code named Ice Lake), 4th generation
+   */
+  I4I = 'i4i',
 
   /**
    * Storage optimized instances powered by Graviton2 processor, 4th generation

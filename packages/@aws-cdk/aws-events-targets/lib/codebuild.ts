@@ -44,15 +44,16 @@ export class CodeBuildProject implements events.IRuleTarget {
       addToDeadLetterQueueResourcePolicy(_rule, this.props.deadLetterQueue);
     }
 
+    const role = this.props.eventRole || singletonEventRole(this.project);
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['codebuild:StartBuild'],
+      resources: [this.project.projectArn],
+    }));
+
     return {
       ...bindBaseTargetConfig(this.props),
       arn: this.project.projectArn,
-      role: this.props.eventRole || singletonEventRole(this.project, [
-        new iam.PolicyStatement({
-          actions: ['codebuild:StartBuild'],
-          resources: [this.project.projectArn],
-        }),
-      ]),
+      role,
       input: this.props.event,
       targetResource: this.project,
     };

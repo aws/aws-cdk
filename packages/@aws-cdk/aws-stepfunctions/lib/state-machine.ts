@@ -65,7 +65,7 @@ export interface LogOptions {
   /**
    * Determines whether execution data is included in your log.
    *
-   * @default true
+   * @default false
    */
   readonly includeExecutionData?: boolean;
 

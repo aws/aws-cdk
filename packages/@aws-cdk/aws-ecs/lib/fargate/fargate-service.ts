@@ -110,10 +110,10 @@ export class FargateService extends BaseService implements IFargateService {
   }
 
   /**
-   * Imports from the specified service attrributes.
+   * Imports from the specified service attributes.
    */
   public static fromFargateServiceAttributes(scope: Construct, id: string, attrs: FargateServiceAttributes): IBaseService {
-    return fromServiceAtrributes(scope, id, attrs);
+    return fromServiceAttributes(scope, id, attrs);
   }
 
   /**

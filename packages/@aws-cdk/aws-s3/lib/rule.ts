@@ -24,7 +24,7 @@ export interface LifecycleRule {
    * When Amazon S3 aborts a multipart upload, it deletes all parts
    * associated with the multipart upload.
    *
-   * @default Incomplete uploads are never aborted
+   * @default - Incomplete uploads are never aborted
    */
   readonly abortIncompleteMultipartUploadAfter?: Duration;
 
@@ -37,7 +37,7 @@ export interface LifecycleRule {
    * time unit for both properties (either in days or by date). The
    * expiration time must also be later than the transition time.
    *
-   * @default No expiration date
+   * @default - No expiration date
    */
   readonly expirationDate?: Date;
 
@@ -48,7 +48,7 @@ export interface LifecycleRule {
    * time unit for both properties (either in days or by date). The
    * expiration time must also be later than the transition time.
    *
-   * @default No expiration timeout
+   * @default - No expiration timeout
    */
   readonly expiration?: Duration;
 
@@ -62,9 +62,19 @@ export interface LifecycleRule {
    * and expiration time, the expiration time must be later than the
    * transition time.
    *
-   * @default No noncurrent version expiration
+   * @default - No noncurrent version expiration
    */
   readonly noncurrentVersionExpiration?: Duration;
+
+  /**
+   * Indicates a maximum number of noncurrent versions to retain.
+   *
+   * If there are this many more noncurrent versions,
+   * Amazon S3 permanently deletes them.
+   *
+   * @default - No noncurrent versions to retain
+   */
+  readonly noncurrentVersionsToRetain?: number;
 
   /**
    * One or more transition rules that specify when non-current objects transition to a specified storage class.
@@ -83,21 +93,21 @@ export interface LifecycleRule {
    * time unit for both properties (either in days or by date). The
    * expiration time must also be later than the transition time.
    *
-   * @default No transition rules
+   * @default - No transition rules
    */
   readonly transitions?: Transition[];
 
   /**
    * Object key prefix that identifies one or more objects to which this rule applies.
    *
-   * @default Rule applies to all objects
+   * @default - Rule applies to all objects
    */
   readonly prefix?: string;
 
   /**
    * The TagFilter property type specifies tags to use to identify a subset of objects for an Amazon S3 bucket.
    *
-   * @default Rule applies to all objects
+   * @default - Rule applies to all objects
    */
   readonly tagFilters?: {[tag: string]: any};
 
@@ -108,6 +118,19 @@ export interface LifecycleRule {
    * @default false
    */
   readonly expiredObjectDeleteMarker?: boolean;
+
+  /**
+   * Specifies the maximum object size in bytes for this rule to apply to.
+   *
+   * @default - No rule
+   */
+  readonly objectSizeLessThan?: number;
+
+  /** Specifies the minimum object size in bytes for this rule to apply to.
+   *
+   * @default - No rule
+   */
+  readonly objectSizeGreaterThan?: number;
 }
 
 /**
@@ -124,14 +147,14 @@ export interface Transition {
    *
    * The date value must be in ISO 8601 format. The time is always midnight UTC.
    *
-   * @default No transition date.
+   * @default - No transition date.
    */
   readonly transitionDate?: Date;
 
   /**
    * Indicates the number of days after creation when objects are transitioned to the specified storage class.
    *
-   * @default No transition count.
+   * @default - No transition count.
    */
   readonly transitionAfter?: Duration;
 }
@@ -148,14 +171,14 @@ export interface NoncurrentVersionTransition {
   /**
    * Indicates the number of days after creation when objects are transitioned to the specified storage class.
    *
-   * @default No transition count.
+   * @default - No transition count.
    */
   readonly transitionAfter: Duration;
 
   /**
    * Indicates the number of noncurrent version objects to be retained. Can be up to 100 noncurrent versions retained.
    *
-   * @default No noncurrent version retained.
+   * @default - No noncurrent version retained.
    */
   readonly noncurrentVersionsToRetain?: number;
 }

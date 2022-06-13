@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "integ.eks-cluster-private-endpoint": {
+      "stacks": [
+        "aws-cdk-eks-cluster-private-endpoint-test"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": false
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

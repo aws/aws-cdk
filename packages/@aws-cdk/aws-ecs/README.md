@@ -139,7 +139,10 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   // ... other options here ...
 });
 
-cluster.addAutoScalingGroup(autoScalingGroup);
+const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
+  autoScalingGroup,
+});
+cluster.addAsgCapacityProvider(capacityProvider);
 ```
 
 If you omit the property `vpc`, the construct will create a new VPC with two AZs.

@@ -1,0 +1,19 @@
+{
+  "version": "17.0.0",
+  "files": {
+    "0df01470a24f63a2d7cd65e62872709a320ccc9b851d1b3cc2509a46bff46305": {
+      "source": {
+        "path": "ProfilerGroupIntegrationTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0df01470a24f63a2d7cd65e62872709a320ccc9b851d1b3cc2509a46bff46305.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

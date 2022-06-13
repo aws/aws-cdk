@@ -15,10 +15,6 @@ import { Stack } from './stack';
 import { NestedStackSynthesizer } from './stack-synthesizers';
 import { Token } from './token';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from './construct-compat';
-
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/core.NestedStack');
 
 /**
@@ -120,8 +116,7 @@ export class NestedStack extends Stack {
 
     this._parentStack = parentStack;
 
-    // @deprecate: remove this in v2.0 (redundent)
-    const parentScope = new CoreConstruct(scope, id + '.NestedStack');
+    const parentScope = new Construct(scope, id + '.NestedStack');
 
     Object.defineProperty(this, NESTED_STACK_SYMBOL, { value: true });
 
@@ -140,6 +135,7 @@ export class NestedStack extends Stack {
     this.resource.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.DESTROY);
 
     this.nestedStackResource = this.resource;
+    this.node.defaultChild = this.resource;
 
     // context-aware stack name: if resolved from within this stack, return AWS::StackName
     // if resolved from the outer stack, use the { Ref } of the AWS::CloudFormation::Stack resource

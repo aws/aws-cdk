@@ -20,7 +20,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          node-version: 12
+          node-version: 14
 
       - name: Locate Yarn cache
         id: yarn-cache
@@ -60,11 +60,15 @@ jobs:
           # Upgrade dependencies at repository root
           ncu --upgrade --filter=@types/node,@types/fs-extra --target=minor
           ncu --upgrade --filter=typescript --target=patch
-          ncu --upgrade --reject=@types/node,@types/fs-extra,constructs,typescript,lerna --target=minor
+          ncu --upgrade --reject=@types/node,@types/prettier,@types/fs-extra,constructs,typescript,lerna --target=minor
           # Upgrade all the packages
           lerna exec --parallel ncu -- --upgrade --filter=@types/node,@types/fs-extra --target=minor
           lerna exec --parallel ncu -- --upgrade --filter=typescript --target=patch
-          lerna exec --parallel ncu -- --upgrade --reject='@types/node,@types/fs-extra,constructs,typescript,aws-sdk,aws-sdk-mock,${{ steps.list-packages.outputs.list }}'  --target=minor
+          lerna exec --parallel ncu -- --upgrade --reject='@types/node,@types/prettier,@types/fs-extra,constructs,typescript,aws-sdk,aws-sdk-mock,${{ steps.list-packages.outputs.list }}'  --target=minor
+          # Upgrade package.jsons in init templates
+          for pj in $(find packages/aws-cdk/lib/init-templates -name package.json); do
+            (cd $(dirname $pj) && ncu --upgrade --reject='@types/node,@types/prettier,@types/fs-extra,constructs,typescript,aws-sdk,aws-sdk-mock,ts-jest,jest,${{ steps.list-packages.outputs.list }}')
+          done
 
       # This will ensure the current lockfile is up-to-date with the dependency specifications (necessary for "yarn update" to run)
       - name: Run "yarn install"
@@ -116,6 +120,7 @@ jobs:
         with:
           # Git commit details
           branch: automation/yarn-upgrade
+          author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
           commit-message: |-
             chore: npm-check-updates && yarn upgrade
             Ran npm-check-updates and yarn upgrade to keep the `yarn.lock` file up-to-date.

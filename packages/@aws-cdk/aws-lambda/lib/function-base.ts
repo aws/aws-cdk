@@ -1,7 +1,9 @@
+import { createHash } from 'crypto';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Annotations, ArnFormat, ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
+import { Annotations, ArnFormat, IResource, Resource, Token } from '@aws-cdk/core';
+import { Construct, Node } from 'constructs';
 import { AliasOptions } from './alias';
 import { Architecture } from './architecture';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
@@ -12,10 +14,6 @@ import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 import { addAlias, flatMap } from './util';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
@@ -60,7 +58,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   /**
    * The construct node where permissions are attached.
    */
-  readonly permissionsNode: ConstructNode;
+  readonly permissionsNode: Node;
 
   /**
    * The system architectures compatible with this lambda function.
@@ -250,7 +248,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   /**
    * The construct node where permissions are attached.
    */
-  public abstract readonly permissionsNode: ConstructNode;
+  public abstract readonly permissionsNode: Node;
 
   /**
    * The architecture of this Lambda Function.
@@ -414,7 +412,13 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * Grant the given identity permissions to invoke this Lambda
    */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {
-    const identifier = `Invoke${grantee.grantPrincipal}`; // calls the .toString() of the principal
+    const hash = createHash('sha256')
+      .update(JSON.stringify({
+        principal: grantee.grantPrincipal.toString(),
+        conditions: grantee.grantPrincipal.policyFragment.conditions,
+      }), 'utf8')
+      .digest('base64');
+    const identifier = `Invoke${hash}`;
 
     // Memoize the result so subsequent grantInvoke() calls are idempotent
     let grant = this._invocationGrants[identifier];
@@ -469,7 +473,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * For use internally for constructs, when the tree is set up in non-standard ways. Ex: SingletonFunction.
    * @internal
    */
-  protected _functionNode(): ConstructNode {
+  protected _functionNode(): Node {
     return this.node;
   }
 
