@@ -48,8 +48,6 @@ describe('cross environment', () => {
           },
         },
       });
-
-
     });
 
     test('can reference a fixed physical name directly in a different account', () => {
@@ -82,8 +80,6 @@ describe('cross environment', () => {
           },
         },
       });
-
-
     });
 
     test('can reference an ARN with an assigned physical name directly in a different account', () => {
@@ -128,8 +124,6 @@ describe('cross environment', () => {
           },
         },
       });
-
-
     });
 
     test('can reference an assigned physical name directly in a different account', () => {
@@ -162,8 +156,6 @@ describe('cross environment', () => {
           },
         },
       });
-
-
     });
   });
 
@@ -192,8 +184,6 @@ describe('cross environment', () => {
     // THEN
     expect(() => toCloudFormation(stack2)).toThrow(
       /Cannot use resource 'Stack1\/MyResource' in a cross-environment fashion/);
-
-
   });
 
   test('cross environment when stack is a substack', () => {
@@ -235,8 +225,6 @@ describe('cross environment', () => {
         },
       },
     });
-
-
   });
 });
 
