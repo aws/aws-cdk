@@ -959,6 +959,7 @@ new ec2.Instance(this, 'Instance4', {
   machineImage: new ec2.AmazonLinuxImage({ 
     generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
   }),
+});
 
 // Graviton 3 Processor
 new ec2.Instance(this, 'Instance5', {
