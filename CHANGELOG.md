@@ -5,10 +5,9 @@ All notable changes to this project will be documented in this file. See [standa
 ## [1.160.0](https://github.com/aws/aws-cdk/compare/v1.159.0...v1.160.0) (2022-06-14)
 
 
-### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+### ⚠Removal of Node 12
 
-* **deps:** Starting with this release, Node 12 is no longer
-supported and customers should upgrade to Node 14, 16, or 18.
+- Starting with this release, Node 12 is no longer supported and customers should upgrade to Node 14, 16, or 18.
 
 ### Features
 
@@ -776,13 +775,13 @@ languages, and required convoluted workarounds, which can now be removed.
 
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
-* **appsync:** The `CachingConfig#ttl` property is now required. 
+* **appsync:** The `CachingConfig#ttl` property is now required.
 
 [1]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-resolver-cachingconfig.html#cfn-appsync-resolver-cachingconfig-ttl
 * **glue:** the grantRead API previously included 'glue:BatchDeletePartition', and now it does not.
 
 
- 
+
 
 ### Features
 
