@@ -542,3 +542,35 @@ you can use the following widgets to pack widgets together in different ways:
 - `Column`: stack two or more widgets vertically.
 - `Row`: lay out two or more widgets horizontally.
 - `Spacer`: take up empty space
+
+### Column widget
+
+A column widget contains other widgets and they will be laid out in a 
+vertical column. Widgets will be put one after another in order.
+
+```ts
+declare const widgetA: cloudwatch.IWidget;
+declare const widgetB: cloudwatch.IWidget;
+
+new cloudwatch.Column(widgetA, widgetB);
+```
+
+You can add a widget after object instantiation with the method
+`addWidget()`. Each new widget will be put at the bottom of the column.
+
+### Row widget
+
+A row widget contains other widgets and they will be laid out in a 
+horizontal row. Widgets will be put one after another in order.
+If the total width of the row exceeds the max width of the grid of 24
+columns, the row will wrap automatically and adapt its height.
+
+```ts
+declare const widgetA: cloudwatch.IWidget;
+declare const widgetB: cloudwatch.IWidget;
+
+new cloudwatch.Row(widgetA, widgetB);
+```
+
+You can add a widget after object instantiation with the method
+`addWidget()`.
