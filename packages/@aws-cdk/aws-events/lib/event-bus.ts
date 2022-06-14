@@ -269,16 +269,18 @@ export class EventBus extends EventBusBase {
     }
 
     if (eventSourceName !== undefined) {
-      // Ex: aws.partner/PartnerName/acct1/repo1
-      const eventSourceNameRegex = /^aws\.partner(\/[\.\-_A-Za-z0-9]+){2,}$/;
-      if (!eventSourceNameRegex.test(eventSourceName)) {
-        throw new Error(
-          `'eventSourceName' must satisfy: ${eventSourceNameRegex}`,
-        );
-      } else if (!eventBusNameRegex.test(eventSourceName)) {
-        throw new Error(
-          `'eventSourceName' must satisfy: ${eventBusNameRegex}`,
-        );
+      if (!Token.isUnresolved(eventSourceName)) {
+        // Ex: aws.partner/PartnerName/acct1/repo1
+        const eventSourceNameRegex = /^aws\.partner(\/[\.\-_A-Za-z0-9]+){2,}$/;
+        if (!eventSourceNameRegex.test(eventSourceName)) {
+          throw new Error(
+            `'eventSourceName' must satisfy: ${eventSourceNameRegex}`,
+          );
+        } else if (!eventBusNameRegex.test(eventSourceName)) {
+          throw new Error(
+            `'eventSourceName' must satisfy: ${eventBusNameRegex}`,
+          );
+        }
       }
       return { eventBusName: eventSourceName, eventSourceName };
     }
