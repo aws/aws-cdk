@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. See [standa
 ## [1.160.0](https://github.com/aws/aws-cdk/compare/v1.159.0...v1.160.0) (2022-06-14)
 
 
-### ⚠Removal of Node 12
+### ⚠  Removal of Node 12
 
 - Starting with this release, Node 12 is no longer supported and customers should upgrade to Node 14, 16, or 18.
 
