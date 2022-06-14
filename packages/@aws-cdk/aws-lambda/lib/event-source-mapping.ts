@@ -127,6 +127,13 @@ export interface EventSourceMappingOptions {
   readonly startingPosition?: StartingPosition;
 
   /**
+   * The time from which to start reading, in Unix time seconds.
+   *
+   * @default Required when startingPosition is AT_TIMESTAMP.
+   */
+  readonly startingPositionTimestamp?: number;
+
+  /**
    * Allow functions to return partially successful responses for a batch of records.
    *
    * @see https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-ddb-batchfailurereporting
@@ -299,6 +306,9 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       throw new Error(`tumblingWindow cannot be over 900 seconds, got ${props.tumblingWindow.toSeconds()}`);
     }
 
+    if (props.startingPosition === StartingPosition.AT_TIMESTAMP && !props.startingPositionTimestamp) {
+      throw new Error('startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
+    }
 
     let destinationConfig;
 
@@ -321,6 +331,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       eventSourceArn: props.eventSourceArn,
       functionName: props.target.functionName,
       startingPosition: props.startingPosition,
+      startingPositionTimestamp: props.startingPositionTimestamp,
       functionResponseTypes: props.reportBatchItemFailures ? ['ReportBatchItemFailures'] : undefined,
       maximumBatchingWindowInSeconds: props.maxBatchingWindow?.toSeconds(),
       maximumRecordAgeInSeconds: props.maxRecordAge?.toSeconds(),
@@ -351,4 +362,10 @@ export enum StartingPosition {
    * always read the most recent data in the shard
    */
   LATEST = 'LATEST',
+
+  /**
+   * Start reading from a position defined by a time stamp.
+   * Only supported for Amazon Kinesis streams.
+   */
+  AT_TIMESTAMP = 'AT_TIMESTAMP',
 }

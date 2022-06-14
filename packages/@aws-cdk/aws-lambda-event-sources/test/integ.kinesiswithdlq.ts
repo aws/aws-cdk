@@ -35,7 +35,8 @@ class KinesisWithDLQTest extends Stack {
     new CfnOutput(this, 'DlqSqsQueueUrl', { value: dlq.queueUrl });
 
     fn.addEventSource(new KinesisEventSource(stream, {
-      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1655237653,
       onFailure: new SqsDlq(dlq),
       retryAttempts: 0,
     }));

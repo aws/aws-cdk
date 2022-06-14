@@ -1,6 +1,6 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { Code, EventSourceMapping, Function, Runtime, Alias } from '../lib';
+import { Code, EventSourceMapping, Function, Runtime, Alias, StartingPosition } from '../lib';
 
 let stack: cdk.Stack;
 let fn: Function;
@@ -240,5 +240,27 @@ describe('event source mapping', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       FunctionResponseTypes: Match.absent(),
     });
+  });
+
+  test('AT_TIMESTAMP starting position', () => {
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      startingPosition: StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1640995200,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      StartingPosition: 'AT_TIMESTAMP',
+      StartingPositionTimestamp: 1640995200,
+    });
+  });
+
+  test('startingPositionTimestamp missing throws error', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      startingPosition: StartingPosition.AT_TIMESTAMP,
+    })).toThrow(/startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP/);
   });
 });
