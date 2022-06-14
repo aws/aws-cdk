@@ -141,6 +141,7 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
       deploymentController: props.deploymentController,
       circuitBreaker: props.circuitBreaker,
       capacityProviderStrategies: props.capacityProviderStrategies,
+      enableExecuteCommand: props.enableExecuteCommand,
       placementConstraints: props.placementConstraints,
       placementStrategies: props.placementStrategies,
     });

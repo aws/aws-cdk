@@ -91,8 +91,8 @@
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/cfnspec": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.97",
-    "@types/jest": "^27.5.0",
+    "@types/aws-lambda": "^8.10.99",
+    "@types/jest": "^27.5.2",
     "@types/lodash": "^4.14.182",
     "jest": "^27.5.1",
     "lodash": "^4.17.21"

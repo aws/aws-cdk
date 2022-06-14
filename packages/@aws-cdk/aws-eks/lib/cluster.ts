@@ -612,6 +612,12 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - The controller is not installed.
    */
   readonly albController?: AlbControllerOptions;
+  /**
+   * The cluster log types which you want to enable.
+   *
+   * @default - none
+   */
+  readonly clusterLogging?: ClusterLoggingTypes[];
 }
 
 /**
@@ -753,13 +759,6 @@ export interface ClusterProps extends ClusterOptions {
    * @default - none
    */
   readonly tags?: { [key: string]: string };
-
-  /**
-   * The cluster log types which you want to enable.
-   *
-   * @default - none
-   */
-  readonly clusterLogging?: ClusterLoggingTypes[];
 }
 
 /**
