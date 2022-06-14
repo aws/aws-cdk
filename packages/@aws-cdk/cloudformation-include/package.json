@@ -466,9 +466,9 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.5.0",
+    "@types/jest": "^27.5.2",
     "jest": "^27.5.1",
-    "ts-jest": "^27.1.4"
+    "ts-jest": "^27.1.5"
   },
   "bundledDependencies": [
     "yaml"
@@ -486,7 +486,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "awslint": {
     "exclude": [
