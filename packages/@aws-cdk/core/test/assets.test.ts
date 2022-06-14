@@ -49,8 +49,6 @@ describe('assets', () => {
         },
       },
     });
-
-
   });
 
   test('addFileAsset correctly sets object urls', () => {
@@ -69,8 +67,6 @@ describe('assets', () => {
       assetLocation.s3ObjectUrl.replace(expectedS3UrlPrefix, '')).toEqual(
       assetLocation.httpUrl.replace(expectedHttpUrlPrefix, ''),
     );
-
-
   });
 
   test('addDockerImageAsset correctly sets metadata', () => {

@@ -24,8 +24,6 @@ describe('context', () => {
 
     const azs = stack.availabilityZones;
     expect(azs).toEqual(['us-east-1a', 'us-east-1b']);
-
-
   });
 
   test('AvailabilityZoneProvider will complain if not given a list', () => {
@@ -40,8 +38,6 @@ describe('context', () => {
     expect(
       () => stack.availabilityZones,
     ).toThrow();
-
-
   });
 
   test('ContextProvider consistently generates a key', () => {
@@ -82,7 +78,6 @@ describe('context', () => {
         igw: false,
       },
     });
-
   });
 
   test('Key generation can contain arbitrarily deep structures', () => {
@@ -112,8 +107,6 @@ describe('context', () => {
         ],
       },
     });
-
-
   });
 
   test('Keys with undefined values are not serialized', () => {
@@ -139,8 +132,6 @@ describe('context', () => {
         p2: undefined,
       },
     });
-
-
   });
 
   test('context provider errors are attached to tree', () => {
@@ -167,8 +158,6 @@ describe('context', () => {
     // THEN
     const error = construct.node.metadata.find(m => m.type === 'aws:cdk:error');
     expect(error && error.data).toEqual('I had a boo-boo');
-
-
   });
 
   test('can skip account/region from attach to context', () => {

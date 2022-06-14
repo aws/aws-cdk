@@ -230,7 +230,9 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
   // The IP space will be divided over the configured subnets.
   cidr: '10.0.0.0/21',
 
-  // 'maxAzs' configures the maximum number of availability zones to use
+  // 'maxAzs' configures the maximum number of availability zones to use.
+  // If you want to specify the exact availability zones you want the VPC
+  // to use, use `availabilityZones` instead.
   maxAzs: 3,
 
   // 'subnetConfiguration' specifies the "subnet groups" to create.
@@ -958,6 +960,16 @@ new ec2.Instance(this, 'Instance4', {
   instanceType,
   machineImage: new ec2.AmazonLinuxImage({ 
     generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
+  }),
+});
+
+// Graviton 3 Processor
+new ec2.Instance(this, 'Instance5', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  machineImage: new ec2.AmazonLinuxImage({
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+    cpuType: ec2.AmazonLinuxCpuType.ARM_64,
   }),
 });
 ```

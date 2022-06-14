@@ -167,6 +167,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
+      enableExecuteCommand: props.enableExecuteCommand,
       placementConstraints: props.placementConstraints,
       placementStrategies: props.placementStrategies,
     });
