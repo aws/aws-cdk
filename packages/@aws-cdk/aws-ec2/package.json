@@ -87,8 +87,8 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.97",
-    "@types/jest": "^27.5.0",
+    "@types/aws-lambda": "^8.10.99",
+    "@types/jest": "^27.5.2",
     "jest": "^27.5.1"
   },
   "dependencies": {
@@ -304,6 +304,8 @@
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.SSM",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.SSM_MESSAGES",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.STS",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.TEXTRACT",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.TEXTRACT_FIPS",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.TRANSFER",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.STORAGE_GATEWAY",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.REKOGNITION",

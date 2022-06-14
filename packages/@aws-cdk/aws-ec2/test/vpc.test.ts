@@ -588,6 +588,38 @@ describe('vpc', () => {
       });
 
     });
+
+    test('throws error when both availabilityZones and maxAzs are set', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          availabilityZones: stack.availabilityZones,
+          maxAzs: 1,
+        });
+      }).toThrow(/Vpc supports 'availabilityZones' or 'maxAzs', but not both./);
+    });
+
+    test('with availabilityZones set correctly', () => {
+      const stack = getTestStack();
+      const specificAz = stack.availabilityZones[1]; // not the first item
+      new Vpc(stack, 'VPC', {
+        availabilityZones: [specificAz],
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Subnet', 2);
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+        AvailabilityZone: specificAz,
+      });
+    });
+
+    test('with availabilityZones set to zones different from stack', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          availabilityZones: [stack.availabilityZones[0] + 'invalid'],
+        });
+      }).toThrow(/must be a subset of the stack/);
+    });
+
     test('with natGateway set to 1', () => {
       const stack = getTestStack();
       new Vpc(stack, 'VPC', {
