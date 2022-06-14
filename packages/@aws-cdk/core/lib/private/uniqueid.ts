@@ -20,6 +20,29 @@ const HASH_LEN = 8;
 const MAX_HUMAN_LEN = 240; // max ID len is 255
 const MAX_ID_LEN = 255;
 
+function findLongestDuplicatedSubstring(str: string) {
+  let j = 1;
+  let start = 0;
+  let end = -1;
+
+  for (let i = 0; i < str.length; i++) {
+    let longest = str.slice(i, i + j);
+    const rest = str.slice(i+1);
+
+    while (rest.includes(longest)) {
+      j += 1;
+      longest = str.slice(i, i+j);
+      start = i;
+      end = i + j - 1;
+    }
+  }
+
+  return {
+    start,
+    end,
+  };
+}
+
 /**
  * Calculates a unique ID for a set of textual components.
  *
@@ -62,13 +85,21 @@ export function makeUniqueId(components: string[], maxLength?: number) {
   }
 
   const hash = pathHash(components);
-  const human = removeDupes(components)
+  let human = removeDupes(components)
     .filter(x => x !== HIDDEN_FROM_HUMAN_ID)
     .map(removeNonAlphanumeric)
     .join('')
     .slice(0, MAX_HUMAN_LEN);
 
   if (maxLength && human.length + hash.length > maxLength) {
+    const indices = findLongestDuplicatedSubstring(human);
+    if (indices.end > -1) {
+      human = human.slice(0, indices.start) + human.slice(indices.end);
+      if (human.length + hash.length <= maxLength) {
+        return human + hash;
+      }
+    }
+
     return human.slice(0, maxLength - hash.length) + hash;
   }
 
