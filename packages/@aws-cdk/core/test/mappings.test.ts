@@ -184,6 +184,7 @@ describe('mappings', () => {
     const mappingCopyLogicalId = 'MappingCopyMyMappingc843c23de60b3672d919ab3e4cb2c14042794164d8';
     v2 = Fn.findInMap(mappingCopyLogicalId, 'boo', 'bah');
     const consumingStackExpected = { 'Fn::FindInMap': [mappingCopyLogicalId, 'boo', 'bah'] };
+
     expect(consumingStack.resolve(v1)).toEqual(consumingStackExpected);
     expect(consumingStack.resolve(v2)).toEqual(consumingStackExpected);
     expect(toCloudFormation(consumingStack).Mappings).toEqual({
