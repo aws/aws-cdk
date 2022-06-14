@@ -40,7 +40,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.Assertions",
         "packageId": "Amazon.CDK.Assertions",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.assertions",
@@ -70,10 +70,10 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^27.5.0",
+    "@types/jest": "^27.5.2",
     "jest": "^27.5.1",
     "constructs": "^10.0.0",
-    "ts-jest": "^27.1.4"
+    "ts-jest": "^27.1.5"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
