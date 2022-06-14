@@ -86,7 +86,7 @@ export class CfnMapping extends CfnRefElement {
       this.lazyRender = true;
     }
 
-    return new CfnMappingEmbedder(this.node.id, this.mapping, Fn.findInMap(this.logicalId, key1, key2)).toString();
+    return new CfnMappingEmbedder(this, this.mapping, key1, key2).toString();
   }
 
   /**
@@ -130,34 +130,25 @@ export class CfnMapping extends CfnRefElement {
 class CfnMappingEmbedder implements IResolvable {
   readonly creationStack: string[] = [];
 
-  constructor(private readonly mappingId: string, private readonly mapping: Mapping, private readonly value: string) { }
-
-  private tryFindChildRecurse(scope: Construct): boolean {
-    if (scope.node.tryFindChild(this.mappingId)) {
-      return true;
-    }
-
-    for (const child of scope.node.children) {
-      if (this.tryFindChildRecurse(child)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
+  constructor(private readonly cfnMapping: CfnMapping, readonly mapping: Mapping, private readonly key1: string, private readonly key2: string) { }
 
   public resolve(context: IResolveContext): string {
     const consumingStack = Stack.of(context.scope);
-    // we must check the entire tree because CfnMappings can be
-    // added to Constructs and won't be direct children of the
-    // stack. This is done in aws-secretsmanager/lib/secret-rotation.ts
-    if (!this.tryFindChildRecurse(consumingStack)) {
-      new CfnMapping(consumingStack, this.mappingId, {
+    if (consumingStack === Stack.of(this.cfnMapping)) {
+      return Fn.findInMap(this.cfnMapping.logicalId, this.key1, this.key2);
+    }
+
+    const constructScope = consumingStack;
+    const constructId = `MappingCopy-${this.cfnMapping.node.id}-${this.cfnMapping.node.addr}`;
+
+    let mappingCopy = constructScope.node.tryFindChild(constructId) as CfnMapping | undefined;
+    if (!mappingCopy) {
+      mappingCopy = new CfnMapping(constructScope, constructId, {
         mapping: this.mapping,
       });
     }
 
-    return this.value;
+    return Fn.findInMap(mappingCopy.logicalId, this.key1, this.key2);
   }
 
   public toString() {

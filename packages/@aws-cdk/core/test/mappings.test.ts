@@ -152,10 +152,10 @@ describe('mappings', () => {
 
   test('using the value of a mapping in a different stack copies the mapping to the consuming stack', () => {
     const app = new App();
-    const stack1 = new Stack(app, 'stack1');
-    const stack2 = new Stack(app, 'stack2');
+    const creationStack = new Stack(app, 'creationStack');
+    const consumingStack = new Stack(app, 'consumingStack');
 
-    const mapping = new CfnMapping(stack1, 'MyMapping', {
+    const mapping = new CfnMapping(creationStack, 'MyMapping', {
       mapping: {
         boo: {
           bah: 'foo',
@@ -163,37 +163,41 @@ describe('mappings', () => {
       },
     });
 
-    new CfnOutput(stack2, 'Output', {
+    new CfnOutput(consumingStack, 'Output', {
       value: mapping.findInMap('boo', 'bah'),
     });
 
     const v1 = mapping.findInMap('boo', 'bah');
-    const v2 = Fn.findInMap(mapping.logicalId, 'boo', 'bah');
+    let v2 = Fn.findInMap(mapping.logicalId, 'boo', 'bah');
 
-    const expected = { 'Fn::FindInMap': ['MyMapping', 'boo', 'bah'] };
-    expect(stack1.resolve(v1)).toEqual(expected);
-    expect(stack1.resolve(v2)).toEqual(expected);
-    expect(toCloudFormation(stack1).Mappings).toEqual({
+    const creationStackExpected = { 'Fn::FindInMap': ['MyMapping', 'boo', 'bah'] };
+    expect(creationStack.resolve(v1)).toEqual(creationStackExpected);
+    expect(creationStack.resolve(v2)).toEqual(creationStackExpected);
+    expect(toCloudFormation(creationStack).Mappings).toEqual({
       MyMapping: {
         boo: {
           bah: 'foo',
         },
       },
     });
-    expect(stack2.resolve(v1)).toEqual(expected);
-    expect(stack2.resolve(v2)).toEqual(expected);
-    expect(toCloudFormation(stack2).Mappings).toEqual({
-      MyMapping: {
+
+    const mappingCopyLogicalId = 'MappingCopyMyMappingc843c23de60b3672d919ab3e4cb2c14042794164d8';
+    v2 = Fn.findInMap(mappingCopyLogicalId, 'boo', 'bah');
+    const consumingStackExpected = { 'Fn::FindInMap': [mappingCopyLogicalId, 'boo', 'bah'] };
+    expect(consumingStack.resolve(v1)).toEqual(consumingStackExpected);
+    expect(consumingStack.resolve(v2)).toEqual(consumingStackExpected);
+    expect(toCloudFormation(consumingStack).Mappings).toEqual({
+      [mappingCopyLogicalId]: {
         boo: {
           bah: 'foo',
         },
       },
     });
-    expect(toCloudFormation(stack2).Outputs).toEqual({
+    expect(toCloudFormation(consumingStack).Outputs).toEqual({
       Output: {
         Value: {
           'Fn::FindInMap': [
-            'MyMapping',
+            mappingCopyLogicalId,
             'boo',
             'bah',
           ],
