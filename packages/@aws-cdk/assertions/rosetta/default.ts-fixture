@@ -1,4 +1,3 @@
-// Fixture with packages imported, but nothing else
 import { Construct } from 'constructs';
 import { Aspects, CfnResource, Stack } from '@aws-cdk/core';
 import { Annotations, Capture, Match, Template } from '@aws-cdk/assertions';

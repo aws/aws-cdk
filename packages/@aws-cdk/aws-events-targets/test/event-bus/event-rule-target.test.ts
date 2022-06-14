@@ -167,3 +167,81 @@ test('with a Dead Letter Queue specified', () => {
     ],
   });
 });
+
+test('event buses are correctly added to the rule\'s principal policy', () => {
+  const stack = new Stack();
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  const bus1 = new events.EventBus(stack, 'bus' + 1);
+  const bus2 = new events.EventBus(stack, 'bus' + 2);
+
+  rule.addTarget(new targets.EventBus(bus1));
+  rule.addTarget(new targets.EventBus(bus2));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'bus110C385DC',
+            'Arn',
+          ],
+        },
+        Id: 'Target0',
+        RoleArn: {
+          'Fn::GetAtt': [
+            'RuleEventsRoleC51A4248',
+            'Arn',
+          ],
+        },
+      },
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'bus22D01F126',
+            'Arn',
+          ],
+        },
+        Id: 'Target1',
+        RoleArn: {
+          'Fn::GetAtt': [
+            'RuleEventsRoleC51A4248',
+            'Arn',
+          ],
+        },
+      },
+    ],
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Effect: 'Allow',
+          Action: 'events:PutEvents',
+          Resource: {
+            'Fn::GetAtt': [
+              'bus110C385DC',
+              'Arn',
+            ],
+          },
+        },
+        {
+          Effect: 'Allow',
+          Action: 'events:PutEvents',
+          Resource: {
+            'Fn::GetAtt': [
+              'bus22D01F126',
+              'Arn',
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Roles: [{
+      Ref: 'RuleEventsRoleC51A4248',
+    }],
+  });
+});

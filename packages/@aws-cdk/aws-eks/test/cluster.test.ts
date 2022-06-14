@@ -8,9 +8,10 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as cdk8s from 'cdk8s';
-import * as constructs from 'constructs';
+import { Construct } from 'constructs';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
+import { HelmChart } from '../lib';
 import { KubectlProvider } from '../lib/kubectl-provider';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
 import { testFixture, testFixtureNoVpc } from './util';
@@ -135,7 +136,7 @@ describe('cluster', () => {
     test('throws if selecting more than one subnet group', () => {
       expect(() => new eks.Cluster(stack, 'Cluster', {
         vpc: vpc,
-        vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }],
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }],
         defaultCapacity: 0,
         version: eks.KubernetesVersion.V1_21,
       })).toThrow(/cannot select multiple subnet groups/);
@@ -363,7 +364,7 @@ describe('cluster', () => {
     });
 
     // create a plain construct, not a cdk8s chart
-    const someConstruct = new constructs.Construct(stack, 'SomeConstruct');
+    const someConstruct = new Construct(stack, 'SomeConstruct');
 
     expect(() => cluster.addCdk8sChart('chart', someConstruct)).toThrow(/Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
   });
@@ -378,7 +379,7 @@ describe('cluster', () => {
     });
 
     // create a plain construct, not a cdk8s chart
-    const someConstruct = new cdk.Construct(stack, 'SomeConstruct');
+    const someConstruct = new Construct(stack, 'SomeConstruct');
 
     expect(() => cluster.addCdk8sChart('chart', someConstruct)).toThrow(/Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
   });
@@ -447,7 +448,7 @@ describe('cluster', () => {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: constructs.Construct, id: string, props: { sg: ec2.ISecurityGroup, vpc: ec2.IVpc }) {
+      constructor(scope: Construct, id: string, props: { sg: ec2.ISecurityGroup, vpc: ec2.IVpc }) {
         super(scope, id);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: CLUSTER_VERSION,
@@ -463,7 +464,7 @@ describe('cluster', () => {
       public readonly securityGroup: ec2.ISecurityGroup;
       public readonly vpc: ec2.IVpc;
 
-      constructor(scope: constructs.Construct, id: string) {
+      constructor(scope: Construct, id: string) {
         super(scope, id);
         this.vpc = new ec2.Vpc(this, 'Vpc');
         this.securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.vpc });
@@ -484,7 +485,7 @@ describe('cluster', () => {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: CLUSTER_VERSION,
@@ -494,7 +495,7 @@ describe('cluster', () => {
     }
 
     class ManifestStack extends cdk.Stack {
-      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         // this role creates a dependency between this stack and the cluster stack
@@ -536,7 +537,7 @@ describe('cluster', () => {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: CLUSTER_VERSION,
@@ -546,7 +547,7 @@ describe('cluster', () => {
     }
 
     class ChartStack extends cdk.Stack {
-      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         // this role creates a dependency between this stack and the cluster stack
@@ -579,7 +580,7 @@ describe('cluster', () => {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: CLUSTER_VERSION,
@@ -589,7 +590,7 @@ describe('cluster', () => {
     }
 
     class ChartStack extends cdk.Stack {
-      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         const resource = new cdk.CfnResource(this, 'resource', { type: 'MyType' });
@@ -613,7 +614,7 @@ describe('cluster', () => {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: CLUSTER_VERSION,
@@ -626,7 +627,7 @@ describe('cluster', () => {
 
       public group: asg.AutoScalingGroup;
 
-      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         // the role is create in this stack implicitly by the ASG
@@ -659,7 +660,7 @@ describe('cluster', () => {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'EKSCluster', {
           version: CLUSTER_VERSION,
@@ -669,7 +670,7 @@ describe('cluster', () => {
     }
 
     class AppStack extends cdk.Stack {
-      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         new eks.ServiceAccount(this, 'testAccount', { cluster: props.cluster, name: 'test-account', namespace: 'test' });
@@ -2422,43 +2423,77 @@ describe('cluster', () => {
 
   });
 
-  test('kubectl provider passes iam role environment to kube ctl lambda', () => {
+  describe('kubectl provider passes iam role environment to kube ctl lambda', ()=>{
+    test('new cluster', () => {
 
-    const { stack } = testFixture();
+      const { stack } = testFixture();
 
-    const kubectlRole = new iam.Role(stack, 'KubectlIamRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      const kubectlRole = new iam.Role(stack, 'KubectlIamRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      // using _ syntax to silence warning about _cluster not being used, when it is
+      const cluster = new eks.Cluster(stack, 'Cluster1', {
+        version: CLUSTER_VERSION,
+        prune: false,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlLambdaRole: kubectlRole,
+      });
+
+      cluster.addManifest('resource', {
+        kind: 'ConfigMap',
+        apiVersion: 'v1',
+        data: {
+          hello: 'world',
+        },
+        metadata: {
+          name: 'config-map',
+        },
+      });
+
+      // the kubectl provider is inside a nested stack.
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+        Role: {
+          Ref: 'referencetoStackKubectlIamRole02F8947EArn',
+        },
+      });
+
     });
+    test('imported cluster', ()=> {
 
-    // using _ syntax to silence warning about _cluster not being used, when it is
-    const cluster = new eks.Cluster(stack, 'Cluster1', {
-      version: CLUSTER_VERSION,
-      prune: false,
-      endpointAccess: eks.EndpointAccess.PRIVATE,
-      kubectlLambdaRole: kubectlRole,
+      const clusterName = 'my-cluster';
+      const stack = new cdk.Stack();
+      const kubectlLambdaRole = new iam.Role(stack, 'KubectlLambdaRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+      const cluster = eks.Cluster.fromClusterAttributes(stack, 'Imported', {
+        clusterName,
+        kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+        kubectlLambdaRole: kubectlLambdaRole,
+      });
+
+      const chart = 'hello-world';
+      cluster.addHelmChart('test-chart', {
+        chart,
+      });
+
+      const nested = stack.node.tryFindChild('Imported-KubectlProvider') as cdk.NestedStack;
+      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+        Role: {
+          Ref: 'referencetoKubectlLambdaRole7D084D94Arn',
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties(HelmChart.RESOURCE_TYPE, {
+        ClusterName: clusterName,
+        RoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+        Release: 'importedcharttestchartf3acd6e5',
+        Chart: chart,
+        Namespace: 'default',
+        CreateNamespace: true,
+      });
     });
-
-    cluster.addManifest('resource', {
-      kind: 'ConfigMap',
-      apiVersion: 'v1',
-      data: {
-        hello: 'world',
-      },
-      metadata: {
-        name: 'config-map',
-      },
-    });
-
-    // the kubectl provider is inside a nested stack.
-    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-    Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
-      Role: {
-        Ref: 'referencetoStackKubectlIamRole02F8947EArn',
-      },
-    });
-
   });
-
   describe('endpoint access', () => {
 
     test('public restricted', () => {
@@ -2807,7 +2842,7 @@ describe('cluster', () => {
         natGateways: 1,
         subnetConfiguration: [
           {
-            subnetType: ec2.SubnetType.PRIVATE,
+            subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
             name: 'Private1',
           },
           {
@@ -2866,7 +2901,7 @@ describe('cluster', () => {
 
       for (let i = 0; i < 20; i++) {
         subnetConfiguration.push({
-          subnetType: ec2.SubnetType.PRIVATE,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
           name: `Private${i}`,
         },
         );
@@ -2915,7 +2950,7 @@ describe('cluster', () => {
 
       for (let i = 0; i < 20; i++) {
         subnetConfiguration.push({
-          subnetType: ec2.SubnetType.PRIVATE,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
           name: `Private${i}`,
         },
         );

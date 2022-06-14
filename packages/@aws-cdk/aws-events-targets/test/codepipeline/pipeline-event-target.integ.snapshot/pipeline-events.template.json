@@ -44,7 +44,7 @@
   "pipelinePipeline22F2A91DArtifactsBucketEncryptionKeyAlias9530209A": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": "alias/codepipeline-pipeline-events-pipelinepipeline22f2a91d-fbb66895",
+    "AliasName": "alias/codepipeline-pipelineeventspipelinepipeline22f2a91dfbb66895",
     "TargetKeyId": {
      "Fn::GetAtt": [
       "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2",

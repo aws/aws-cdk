@@ -1,11 +1,8 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
 import { CfnTagOption } from './servicecatalog.generated';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
 
 /**
  * Properties for TagOptions.

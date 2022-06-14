@@ -402,7 +402,7 @@ describe('tests', () => {
       subnetConfiguration: [{
         cidrMask: 20,
         name: 'Isolated',
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       }],
     });
 
@@ -433,11 +433,11 @@ describe('tests', () => {
       }, {
         cidrMask: 24,
         name: 'Private',
-        subnetType: ec2.SubnetType.PRIVATE,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
       }, {
         cidrMask: 28,
         name: 'Isolated',
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       }],
     });
 
@@ -468,11 +468,11 @@ describe('tests', () => {
       }, {
         cidrMask: 24,
         name: 'Private',
-        subnetType: ec2.SubnetType.PRIVATE,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
       }, {
         cidrMask: 28,
         name: 'Isolated',
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       }],
     });
 
@@ -525,11 +525,11 @@ describe('tests', () => {
       }, {
         cidrMask: 24,
         name: 'Private',
-        subnetType: ec2.SubnetType.PRIVATE,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
       }, {
         cidrMask: 28,
         name: 'Isolated',
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       }],
     });
 
@@ -537,7 +537,7 @@ describe('tests', () => {
     new elbv2.NetworkLoadBalancer(stack, 'LB', {
       vpc,
       internetFacing: false,
-      vpcSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
     });
 
     // THEN

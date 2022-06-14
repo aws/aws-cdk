@@ -1,0 +1,16 @@
+{
+    "PropertyTypes": {
+        "AWS::Cognito::UserPool.UsernameConfiguration": {
+            "patch": {
+                "description": "make UserPool.UsernameConfiguration.CaseSensitive optional",
+                "operations": [
+                    {
+                        "op": "replace",
+                        "path": "/Properties/CaseSensitive/Required",
+                        "value": false
+                    }
+                ]
+            }
+        }
+    }
+}
