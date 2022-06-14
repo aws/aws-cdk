@@ -43,7 +43,7 @@ export class CfnMapping extends CfnRefElement {
   private lazyRender = false;
   private lazyInformed = false;
 
-  constructor(scope: Construct, readonly id: string, props: CfnMappingProps = {}) {
+  constructor(scope: Construct, id: string, props: CfnMappingProps = {}) {
     super(scope, id);
     this.mapping = props.mapping ? this.validateMapping(props.mapping) : {};
     this.lazy = props.lazy;
@@ -86,7 +86,7 @@ export class CfnMapping extends CfnRefElement {
       this.lazyRender = true;
     }
 
-    return new CfnMappingEmbedder(this.id, this.mapping, Fn.findInMap(this.logicalId, key1, key2)).toString();
+    return new CfnMappingEmbedder(this.node.id, this.mapping, Fn.findInMap(this.logicalId, key1, key2)).toString();
   }
 
   /**
