@@ -81,4 +81,6 @@ describe('schedule', () => {
       events.Schedule.rate(Duration.seconds(Lazy.number({ produce: () => 5 })));
     }).toThrow(/Allowed units for scheduling/);
   });
+
+  // putting a new test here
 });
