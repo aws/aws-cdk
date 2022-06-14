@@ -27,18 +27,6 @@ describe('schedule', () => {
     }).expressionString);
   });
 
-  test('rate must be whole number of minutes', () => {
-    expect(() => {
-      events.Schedule.rate(Duration.minutes(0.13456));
-    }).toThrow(/'0.13456 minutes' cannot be converted into a whole number of seconds/);
-  });
-
-  test('rate must be whole number', () => {
-    expect(() => {
-      events.Schedule.rate(Duration.minutes(1/8));
-    }).toThrow(/'0.125 minutes' cannot be converted into a whole number of seconds/);
-  });
-
   test('rate cannot be 0', () => {
     expect(() => {
       events.Schedule.rate(Duration.days(0));
@@ -82,5 +70,33 @@ describe('schedule', () => {
     }).toThrow(/Allowed units for scheduling/);
   });
 
-  // putting a new test here
+  test('rate cannot be a fractional amount of minutes (defined with seconds)', () => {
+    expect(() => {
+      events.Schedule.rate(Duration.seconds(150));
+    }).toThrow(/'150 seconds' cannot be converted into a whole number of minutes./);
+  });
+
+  test('rate cannot be a fractional amount of minutes (defined with minutes)', () => {
+    expect(()=> {
+      events.Schedule.rate(Duration.minutes(5/3));
+    }).toThrow(/Duration must be a whole number of minutes, Duration provided was 1.6666666666666667 minutes/);
+  });
+
+  test('rate cannot be less than 1 minute (defined with seconds)', () => {
+    expect(() => {
+      events.Schedule.rate(Duration.seconds(30));
+    }).toThrow(/'30 seconds' cannot be converted into a whole number of minutes./);
+  });
+
+  test('rate cannot be less than 1 minute (defined with minutes as fractions)', () => {
+    expect(() => {
+      events.Schedule.rate(Duration.minutes(1/2));
+    }).toThrow(/Duration must be a whole number of minutes, Duration provided was 0.5 minutes/);
+  });
+
+  test('rate cannot be less than 1 minute (defined with minutes as decimals)', () => {
+    expect(() => {
+      events.Schedule.rate(Duration.minutes(0.25));
+    }).toThrow(/Duration must be a whole number of minutes, Duration provided was 0.25 minutes/);
+  });
 });

@@ -31,6 +31,9 @@ export abstract class Schedule {
     if (duration.toSeconds() === 0) {
       throw new Error('Duration cannot be 0');
     }
+    if (duration.toSeconds() % 60 !== 0) {
+      throw new Error(`'Duration must be a whole number of minutes, Duration provided was ${duration.toMinutes()} minutes'`);
+    }
 
     let rate = maybeRate(duration.toDays({ integral: false }), 'day');
     if (rate === undefined) { rate = maybeRate(duration.toHours({ integral: false }), 'hour'); }
