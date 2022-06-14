@@ -18,7 +18,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CodePipeline.Actions",
         "packageId": "Amazon.CDK.AWS.CodePipeline.Actions",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-codepipeline-actions",
@@ -84,7 +84,7 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.5.0",
+    "@types/jest": "^27.5.2",
     "@types/lodash": "^4.14.182",
     "jest": "^27.5.1",
     "lodash": "^4.17.21"

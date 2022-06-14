@@ -636,7 +636,7 @@ describe('AppSync Lambda Authorization', () => {
   let fn: lambda.Function;
   beforeEach(() => {
     fn = new lambda.Function(stack, 'auth-function', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('/* lambda authentication code here.*/'),
     });
@@ -669,6 +669,18 @@ describe('AppSync Lambda Authorization', () => {
         },
       },
     });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'authfunction96361832',
+          'Arn',
+        ],
+      },
+    });
+
+
   });
 
   test('Lambda authorization configurable in default authorization', () => {
@@ -702,6 +714,15 @@ describe('AppSync Lambda Authorization', () => {
         IdentityValidationExpression: 'custom-.*',
       },
     });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'authfunction96361832',
+          'Arn',
+        ],
+      },
+    });
   });
 
   test('Lambda authorization configurable in additional authorization has default configuration', () => {
@@ -732,6 +753,15 @@ describe('AppSync Lambda Authorization', () => {
           },
         },
       }],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'authfunction96361832',
+          'Arn',
+        ],
+      },
     });
   });
 
@@ -767,6 +797,15 @@ describe('AppSync Lambda Authorization', () => {
           IdentityValidationExpression: 'custom-.*',
         },
       }],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'authfunction96361832',
+          'Arn',
+        ],
+      },
     });
   });
 

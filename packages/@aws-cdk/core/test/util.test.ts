@@ -24,43 +24,35 @@ describe('util', () => {
     expect(capitalizePropertyNames(c,
       { hello: { resolve: () => ({ foo: 'bar' }) }, world: new SomeToken() })).toEqual(
       { Hello: { Foo: 'bar' }, World: 100 });
-
-
   });
 
   describe('ignoreEmpty', () => {
-
     test('[]', () => {
       const stack = new Stack();
       expect(stack.resolve(ignoreEmpty([]))).toEqual(undefined);
-
     });
 
     test('{}', () => {
       const stack = new Stack();
       expect(stack.resolve(ignoreEmpty({}))).toEqual(undefined);
-
     });
 
     test('undefined/null', () => {
       const stack = new Stack();
       expect(stack.resolve(ignoreEmpty(undefined))).toEqual(undefined);
       expect(stack.resolve(ignoreEmpty(null))).toEqual(null);
-
     });
 
     test('primitives', () => {
       const stack = new Stack();
       expect(stack.resolve(ignoreEmpty(12))).toEqual(12);
       expect(stack.resolve(ignoreEmpty('12'))).toEqual('12');
-
     });
 
     test('non-empty arrays/objects', () => {
       const stack = new Stack();
       expect(stack.resolve(ignoreEmpty([1, 2, 3, undefined]))).toEqual([1, 2, 3]); // undefined array values is cleaned up by "resolve"
       expect(stack.resolve(ignoreEmpty({ o: 1, b: 2, j: 3 }))).toEqual({ o: 1, b: 2, j: 3 });
-
     });
 
     test('resolve first', () => {
@@ -69,19 +61,16 @@ describe('util', () => {
       expect(stack.resolve(ignoreEmpty({ xoo: { resolve: () => undefined } }))).toEqual(undefined);
       expect(stack.resolve(ignoreEmpty({ xoo: { resolve: () => [] } }))).toEqual({ xoo: [] });
       expect(stack.resolve(ignoreEmpty({ xoo: { resolve: () => [undefined, undefined] } }))).toEqual({ xoo: [] });
-
     });
   });
 
   describe('filterUnderined', () => {
     test('is null-safe (aka treats null and undefined the same)', () => {
       expect(filterUndefined({ 'a null': null, 'a not null': true })).toEqual({ 'a not null': true });
-
     });
 
     test('removes undefined, but leaves the rest', () => {
       expect(filterUndefined({ 'an undefined': undefined, 'yes': true })).toEqual({ yes: true });
-
     });
   });
 
@@ -93,8 +82,6 @@ describe('util', () => {
     expect(path(aaa)).toEqual(['a', 'aa', 'aaa']);
     expect(path(aa)).toEqual(['a', 'aa']);
     expect(path(a)).toEqual(['a']);
-
-
     function path(s: Stack) {
       return pathToTopLevelStack(s).map(x => x.node.id);
     }
@@ -126,7 +113,6 @@ describe('util', () => {
     expect(lca(aaa, b)).toEqual(undefined);
     expect(lca(aaa, ba)).toEqual(undefined);
     expect(lca(baa, ba)).toEqual('ba');
-
 
     function lca(s1: Stack, s2: Stack) {
       const res = findLastCommonElement(pathToTopLevelStack(s1), pathToTopLevelStack(s2));

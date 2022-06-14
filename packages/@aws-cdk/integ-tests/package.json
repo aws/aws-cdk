@@ -18,7 +18,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.IntegTests",
         "packageId": "Amazon.CDK.IntegTests",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.integ-tests",
@@ -66,10 +66,10 @@
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.5.0",
+    "@types/jest": "^27.5.2",
     "@types/node": "^10.17.60",
     "jest": "^27.5.1",
-    "nock": "^13.2.4",
+    "nock": "^13.2.6",
     "aws-sdk-mock": "5.6.0",
     "sinon": "^9.2.4",
     "aws-sdk": "^2.1093.0"

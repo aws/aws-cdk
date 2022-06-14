@@ -216,7 +216,6 @@ describe('stack', () => {
     const stack = new Stack(new App(), 'MyStack', { description: 'My stack, hands off!' });
     const output = toCloudFormation(stack);
     expect(output.Description).toEqual('My stack, hands off!');
-
   });
 
   test('Stack descriptions have a limited length', () => {
@@ -233,7 +232,6 @@ describe('stack', () => {
      aliquam malesuada bibendum arcu vitae. Augue neque gravida in fermentum et sollicitudin ac orci phasellus.
      Ultrices tincidunt arcu non sodales neque sodales.`;
     expect(() => new Stack(new App(), 'MyStack', { description: desc }));
-
   });
 
   testDeprecated('Include should support non-hash top-level template elements like "Description"', () => {
@@ -1206,7 +1204,6 @@ describe('stack', () => {
     const stack = new Stack(app, 'Stack');
     stack.node.setContext(cxapi.BUNDLING_STACKS, ['Stac']);
     expect(stack.bundlingRequired).toBe(false);
-
   });
 
   test('does not require bundling when BUNDLING_STACKS is empty', () => {
@@ -1214,7 +1211,6 @@ describe('stack', () => {
     const stack = new Stack(app, 'Stack');
     stack.node.setContext(cxapi.BUNDLING_STACKS, []);
     expect(stack.bundlingRequired).toBe(false);
-
   });
 });
 

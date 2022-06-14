@@ -14,10 +14,6 @@ describe('code', () => {
       expect(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.GO_1_X)).toThrow(/Inline source not allowed for go1\.x/);
       expect(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.JAVA_8)).toThrow(/Inline source not allowed for java8/);
     });
-    test('fails if larger than 4096 bytes', () => {
-      expect(() => defineFunction(lambda.Code.fromInline(generateRandomString(4097)), lambda.Runtime.NODEJS_10_X))
-        .toThrow(/Lambda source is too large, must be <= 4096 but is 4097/);
-    });
   });
 
   describe('lambda.Code.fromAsset', () => {
@@ -42,13 +38,13 @@ describe('code', () => {
       // WHEN
       new lambda.Function(stack, 'Func1', {
         handler: 'foom',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: directoryAsset,
       });
 
       new lambda.Function(stack, 'Func2', {
         handler: 'foom',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: directoryAsset,
       });
 
@@ -70,7 +66,7 @@ describe('code', () => {
       // WHEN
       new lambda.Function(stack, 'Func1', {
         code: lambda.Code.fromAsset(location),
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         handler: 'foom',
       });
 
@@ -92,14 +88,14 @@ describe('code', () => {
       const stack1 = new cdk.Stack(app, 'Stack1');
       new lambda.Function(stack1, 'Func', {
         code: asset,
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         handler: 'foom',
       });
 
       const stack2 = new cdk.Stack(app, 'Stack2');
       expect(() => new lambda.Function(stack2, 'Func', {
         code: asset,
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         handler: 'foom',
       })).toThrow(/already associated/);
     });
@@ -111,7 +107,7 @@ describe('code', () => {
       const code = new lambda.CfnParametersCode();
       new lambda.Function(stack, 'Function', {
         code,
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         handler: 'index.handler',
       });
 
@@ -157,7 +153,7 @@ describe('code', () => {
 
       new lambda.Function(stack, 'Function', {
         code,
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         handler: 'index.handler',
       });
 
@@ -465,7 +461,7 @@ describe('code', () => {
       new lambda.Function(stack, 'Fn', {
         code: lambda.Code.fromDockerBuild(path.join(__dirname, 'docker-build-lambda')),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       });
 
       // then
@@ -491,7 +487,7 @@ describe('code', () => {
           imagePath: '/my/image/path',
         }),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       });
 
       // then
@@ -508,7 +504,7 @@ describe('code', () => {
           imagePath: '/my/image/path/',
         }),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       });
 
       // then
@@ -517,19 +513,11 @@ describe('code', () => {
   });
 });
 
-function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NODEJS_10_X) {
+function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NODEJS_14_X) {
   const stack = new cdk.Stack();
   return new lambda.Function(stack, 'Func', {
     handler: 'foom',
     code,
     runtime,
   });
-}
-
-function generateRandomString(bytes: number) {
-  let s = '';
-  for (let i = 0; i < bytes; ++i) {
-    s += String.fromCharCode(Math.round(Math.random() * 256));
-  }
-  return s;
 }
