@@ -18,7 +18,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.IAM",
         "packageId": "Amazon.CDK.AWS.IAM",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-iam",
@@ -109,6 +109,7 @@
   "awslint": {
     "exclude": [
       "from-signature:@aws-cdk/aws-iam.Role.fromRoleArn",
+      "from-signature:@aws-cdk/aws-iam.Role.fromRoleName",
       "from-method:@aws-cdk/aws-iam.AccessKey",
       "construct-interface-extends-iconstruct:@aws-cdk/aws-iam.IManagedPolicy",
       "props-physical-name:@aws-cdk/aws-iam.OpenIdConnectProviderProps",

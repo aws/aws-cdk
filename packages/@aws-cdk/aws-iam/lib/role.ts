@@ -141,7 +141,7 @@ export interface RoleProps {
 }
 
 /**
- * Options allowing customizing the behavior of {@link Role.fromRoleArn} and {@link Role.fromRoleName}.
+ * Options allowing customizing the behavior of {@link Role.fromRoleArn}.
  */
 export interface FromRoleArnOptions {
   /**
@@ -175,6 +175,11 @@ export interface FromRoleArnOptions {
    */
   readonly defaultPolicyName?: string;
 }
+
+/**
+ * Options allowing customizing the behavior of {@link Role.fromRoleName}.
+ */
+export interface FromRoleNameOptions extends FromRoleArnOptions { }
 
 /**
  * IAM Role
@@ -319,7 +324,7 @@ export class Role extends Resource implements IRole {
    * @param roleName the name of the role to import
    * @param options allow customizing the behavior of the returned role
    */
-  public static fromRoleName(scope: Construct, id: string, roleName: string, options: FromRoleArnOptions = {}) {
+  public static fromRoleName(scope: Construct, id: string, roleName: string, options: FromRoleNameOptions = {}) {
     return Role.fromRoleArn(scope, id, Stack.of(scope).formatArn({
       region: '',
       service: 'iam',
