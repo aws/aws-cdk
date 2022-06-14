@@ -43,7 +43,6 @@ describe('stack', () => {
       AWSTemplateFormatVersion: 'MyTemplateVersion',
       Transform: 'SAMy',
     });
-
   });
 
   test('Stack.isStack indicates that a construct is a stack', () => {
@@ -51,7 +50,6 @@ describe('stack', () => {
     const c = new Construct(stack, 'Construct');
     expect(Stack.isStack(stack)).toBeDefined();
     expect(!Stack.isStack(c)).toBeDefined();
-
   });
 
   test('stack.id is not included in the logical identities of resources within it', () => {
@@ -59,7 +57,6 @@ describe('stack', () => {
     new CfnResource(stack, 'MyResource', { type: 'MyResourceType' });
 
     expect(toCloudFormation(stack)).toEqual({ Resources: { MyResource: { Type: 'MyResourceType' } } });
-
   });
 
   test('when stackResourceLimit is default, should give error', () => {
@@ -76,8 +73,6 @@ describe('stack', () => {
     expect(() => {
       app.synth();
     }).toThrow('Number of resources in stack \'MyStack\': 1000 is greater than allowed maximum of 500');
-
-
   });
 
   test('when stackResourceLimit is defined, should give the proper error', () => {
@@ -98,8 +93,6 @@ describe('stack', () => {
     expect(() => {
       app.synth();
     }).toThrow('Number of resources in stack \'MyStack\': 200 is greater than allowed maximum of 100');
-
-
   });
 
   test('when stackResourceLimit is 0, should not give error', () => {
@@ -120,8 +113,6 @@ describe('stack', () => {
     expect(() => {
       app.synth();
     }).not.toThrow();
-
-
   });
 
   test('stack.templateOptions can be used to set template-level options', () => {
@@ -141,8 +132,6 @@ describe('stack', () => {
       AWSTemplateFormatVersion: 'TemplateVersion',
       Metadata: { MetadataKey: 'MetadataValue' },
     });
-
-
   });
 
   test('stack.templateOptions.transforms removes duplicate values', () => {
@@ -153,8 +142,6 @@ describe('stack', () => {
     expect(toCloudFormation(stack)).toEqual({
       Transform: ['A', 'B', 'C'],
     });
-
-
   });
 
   test('stack.addTransform() adds a transform', () => {
@@ -167,8 +154,6 @@ describe('stack', () => {
     expect(toCloudFormation(stack)).toEqual({
       Transform: ['A', 'B', 'C'],
     });
-
-
   });
 
   // This approach will only apply to TypeScript code, but at least it's a temporary
@@ -205,8 +190,6 @@ describe('stack', () => {
          },
       },
     });
-
-
   });
 
   test('Stack.getByPath can be used to find any CloudFormation element (Parameter, Output, etc)', () => {
@@ -220,8 +203,6 @@ describe('stack', () => {
     expect(stack.node.findChild(p.node.id)).toEqual(p);
     expect(stack.node.findChild(o.node.id)).toEqual(o);
     expect(stack.node.findChild(c.node.id)).toEqual(c);
-
-
   });
 
   test('Stack names can have hyphens in them', () => {
@@ -229,15 +210,12 @@ describe('stack', () => {
 
     new Stack(root, 'Hello-World');
     // Did not throw
-
-
   });
 
   test('Stacks can have a description given to them', () => {
     const stack = new Stack(new App(), 'MyStack', { description: 'My stack, hands off!' });
     const output = toCloudFormation(stack);
     expect(output.Description).toEqual('My stack, hands off!');
-
   });
 
   test('Stack descriptions have a limited length', () => {
@@ -254,7 +232,6 @@ describe('stack', () => {
      aliquam malesuada bibendum arcu vitae. Augue neque gravida in fermentum et sollicitudin ac orci phasellus.
      Ultrices tincidunt arcu non sodales neque sodales.`;
     expect(() => new Stack(new App(), 'MyStack', { description: desc }));
-
   });
 
   testDeprecated('Include should support non-hash top-level template elements like "Description"', () => {
@@ -269,7 +246,6 @@ describe('stack', () => {
     const output = toCloudFormation(stack);
 
     expect(typeof output.Description).toEqual('string');
-
   });
 
   test('Pseudo values attached to one stack can be referenced in another stack', () => {
@@ -304,8 +280,6 @@ describe('stack', () => {
         },
       },
     });
-
-
   });
 
   test('Cross-stack references are detected in resource properties', () => {
@@ -367,7 +341,6 @@ describe('stack', () => {
 
     const theOutput = template1.Outputs[Object.keys(template1.Outputs)[0]];
     expect(theOutput.Export.Name.length).toEqual(255);
-
   });
 
   test('Cross-stack reference export names are relative to the stack (when the flag is set)', () => {
@@ -439,8 +412,6 @@ describe('stack', () => {
         },
       },
     });
-
-
   });
 
   test('Cross-stack use of Region and account returns nonscoped intrinsic because the two stacks must be in the same region anyway', () => {
@@ -677,8 +648,6 @@ describe('stack', () => {
 
     // THEN
     resolveReferences(app);
-
-
   });
 
   test('Stacks can be children of other stacks (substack) and they will be synthesized separately', () => {
@@ -736,7 +705,6 @@ describe('stack', () => {
         }),
       },
     }));
-
   });
 
   test('cross-stack reference (substack references parent stack)', () => {
@@ -777,7 +745,6 @@ describe('stack', () => {
         },
       },
     });
-
   });
 
   test('cross-stack reference (parent stack references substack)', () => {
@@ -841,8 +808,6 @@ describe('stack', () => {
       app.synth();
       // eslint-disable-next-line max-len
     }).toThrow("'Stack1' depends on 'Stack2' (Stack1 -> Stack2.AWS::AccountId). Adding this dependency (Stack2 -> Stack1.AWS::AccountId) would create a cyclic reference.");
-
-
   });
 
   test('stacks know about their dependencies', () => {
@@ -859,8 +824,6 @@ describe('stack', () => {
 
     // THEN
     expect(stack2.dependencies.map(s => s.node.id)).toEqual(['Stack1']);
-
-
   });
 
   test('cannot create references to stacks in other regions/accounts', () => {
@@ -876,8 +839,6 @@ describe('stack', () => {
     expect(() => {
       app.synth();
     }).toThrow(/Stack "Stack2" cannot consume a cross reference from stack "Stack1"/);
-
-
   });
 
   test('urlSuffix does not imply a stack dependency', () => {
@@ -895,8 +856,6 @@ describe('stack', () => {
     app.synth();
 
     expect(second.dependencies.length).toEqual(0);
-
-
   });
 
   test('stack with region supplied via props returns literal value', () => {
@@ -906,8 +865,6 @@ describe('stack', () => {
 
     // THEN
     expect(stack.resolve(stack.region)).toEqual('es-norst-1');
-
-
   });
 
   test('overrideLogicalId(id) can be used to override the logical ID of a resource', () => {
@@ -942,7 +899,6 @@ describe('stack', () => {
          },
       },
     });
-
   });
 
   test('Stack name can be overridden via properties', () => {
@@ -951,8 +907,6 @@ describe('stack', () => {
 
     // THEN
     expect(stack.stackName).toEqual('otherName');
-
-
   });
 
   test('Stack name is inherited from App name if available', () => {
@@ -963,8 +917,6 @@ describe('stack', () => {
 
     // THEN
     expect(stack.stackName).toEqual('ProdStackD5279B22');
-
-
   });
 
   test('stack construct id does not go through stack name validation if there is an explicit stack name', () => {
@@ -980,7 +932,6 @@ describe('stack', () => {
     const session = app.synth();
     expect(stack.stackName).toEqual('valid-stack-name');
     expect(session.tryGetArtifact(stack.artifactId)).toBeDefined();
-
   });
 
   test('stack validation is performed on explicit stack name', () => {
@@ -990,8 +941,6 @@ describe('stack', () => {
     // THEN
     expect(() => new Stack(app, 'boom', { stackName: 'invalid:stack:name' }))
       .toThrow(/Stack name must match the regular expression/);
-
-
   });
 
   test('Stack.of(stack) returns the correct stack', () => {
@@ -1000,14 +949,12 @@ describe('stack', () => {
     const parent = new Construct(stack, 'Parent');
     const construct = new Construct(parent, 'Construct');
     expect(Stack.of(construct)).toBe(stack);
-
   });
 
   test('Stack.of() throws when there is no parent Stack', () => {
     const root = new Construct(undefined as any, 'Root');
     const construct = new Construct(root, 'Construct');
     expect(() => Stack.of(construct)).toThrow(/should be created in the scope of a Stack, but no Stack found/);
-
   });
 
   test('Stack.of() works for substacks', () => {
@@ -1027,7 +974,6 @@ describe('stack', () => {
     expect(Stack.of(parentResource)).toBe(parentStack);
     expect(Stack.of(childStack)).toBe(childStack);
     expect(Stack.of(childResource)).toBe(childStack);
-
   });
 
   test('stack.availabilityZones falls back to Fn::GetAZ[0],[2] if region is not specified', () => {
@@ -1043,7 +989,6 @@ describe('stack', () => {
       { 'Fn::Select': [0, { 'Fn::GetAZs': '' }] },
       { 'Fn::Select': [1, { 'Fn::GetAZs': '' }] },
     ]);
-
   });
 
   describe('@aws-cdk/core:enableStackNameDuplicates', () => {
@@ -1109,7 +1054,6 @@ describe('stack', () => {
         expect(stack2.templateFile).toEqual('MyStack2.template.json');
       });
     });
-
   });
 
   test('metadata is collected at the stack boundary', () => {
@@ -1131,7 +1075,6 @@ describe('stack', () => {
     expect(asm.getStackByName(child.stackName).findMetadataByType('foo')).toEqual([
       { path: '/parent/child', type: 'foo', data: 'bar' },
     ]);
-
   });
 
   test('stack tags are reflected in the stack cloud assembly artifact metadata', () => {
@@ -1155,7 +1098,6 @@ describe('stack', () => {
 
     expect(asm.getStackArtifact(stack1.artifactId).manifest.metadata).toEqual({ '/stack1': expected });
     expect(asm.getStackArtifact(stack2.artifactId).manifest.metadata).toEqual({ '/stack1/stack2': expected });
-
   });
 
   test('stack tags are reflected in the stack artifact properties', () => {
@@ -1173,7 +1115,6 @@ describe('stack', () => {
 
     expect(asm.getStackArtifact(stack1.artifactId).tags).toEqual(expected);
     expect(asm.getStackArtifact(stack2.artifactId).tags).toEqual(expected);
-
   });
 
   test('Termination Protection is reflected in Cloud Assembly artifact', () => {
@@ -1185,8 +1126,6 @@ describe('stack', () => {
     const artifact = assembly.getStackArtifact(stack.artifactId);
 
     expect(artifact.terminationProtection).toEqual(true);
-
-
   });
 
   test('context can be set on a stack using a LegacySynthesizer', () => {
@@ -1197,8 +1136,6 @@ describe('stack', () => {
     stack.node.setContext('something', 'value');
 
     // THEN: no exception
-
-
   });
 
   test('context can be set on a stack using a DefaultSynthesizer', () => {
@@ -1209,26 +1146,21 @@ describe('stack', () => {
     stack.node.setContext('something', 'value');
 
     // THEN: no exception
-
-
   });
 
   test('version reporting can be configured on the app', () => {
     const app = new App({ analyticsReporting: true });
     expect(new Stack(app, 'Stack')._versionReportingEnabled).toBeDefined();
-
   });
 
   test('version reporting can be configured with context', () => {
     const app = new App({ context: { 'aws:cdk:version-reporting': true } });
     expect(new Stack(app, 'Stack')._versionReportingEnabled).toBeDefined();
-
   });
 
   test('version reporting can be configured on the stack', () => {
     const app = new App();
     expect(new Stack(app, 'Stack', { analyticsReporting: true })._versionReportingEnabled).toBeDefined();
-
   });
 
   test('requires bundling when wildcard is specified in BUNDLING_STACKS', () => {
@@ -1236,7 +1168,6 @@ describe('stack', () => {
     const stack = new Stack(app, 'Stack');
     stack.node.setContext(cxapi.BUNDLING_STACKS, ['*']);
     expect(stack.bundlingRequired).toBe(true);
-
   });
 
   test('requires bundling when stackName has an exact match in BUNDLING_STACKS', () => {
@@ -1244,7 +1175,6 @@ describe('stack', () => {
     const stack = new Stack(app, 'Stack');
     stack.node.setContext(cxapi.BUNDLING_STACKS, ['Stack']);
     expect(stack.bundlingRequired).toBe(true);
-
   });
 
   test('does not require bundling when no item from BUILDING_STACKS matches stackName', () => {
@@ -1252,7 +1182,6 @@ describe('stack', () => {
     const stack = new Stack(app, 'Stack');
     stack.node.setContext(cxapi.BUNDLING_STACKS, ['Stac']);
     expect(stack.bundlingRequired).toBe(false);
-
   });
 
   test('does not require bundling when BUNDLING_STACKS is empty', () => {
@@ -1260,7 +1189,6 @@ describe('stack', () => {
     const stack = new Stack(app, 'Stack');
     stack.node.setContext(cxapi.BUNDLING_STACKS, []);
     expect(stack.bundlingRequired).toBe(false);
-
   });
 });
 

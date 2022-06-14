@@ -12,7 +12,7 @@ class TestStack extends Stack {
     // This function uses aws-sdk but it will not be included
     new lambda.NodejsFunction(this, 'external', {
       entry: path.join(__dirname, 'integ-handlers/dependencies.ts'),
-      runtime: Runtime.NODEJS_12_X,
+      runtime: Runtime.NODEJS_14_X,
       bundling: {
         minify: true,
         // Will be installed, not bundled

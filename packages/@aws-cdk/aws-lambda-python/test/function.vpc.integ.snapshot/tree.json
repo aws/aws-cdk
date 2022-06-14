@@ -458,7 +458,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParameters559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edbS3Bucket616AA48B"
+                        "Ref": "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994S3Bucket4B2FECC5"
                       },
                       "s3Key": {
                         "Fn::Join": [
@@ -471,7 +471,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameters559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edbS3VersionKey47E0D73B"
+                                      "Ref": "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994S3VersionKey38A78B56"
                                     }
                                   ]
                                 }
@@ -484,7 +484,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameters559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edbS3VersionKey47E0D73B"
+                                      "Ref": "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994S3VersionKey38A78B56"
                                     }
                                   ]
                                 }
@@ -501,7 +501,7 @@
                       ]
                     },
                     "handler": "index.handler",
-                    "runtime": "python3.6",
+                    "runtime": "python3.9",
                     "vpcConfig": {
                       "subnetIds": [
                         {
@@ -537,13 +537,13 @@
             "id": "AssetParameters",
             "path": "cdk-integ-lambda-python-vpc/AssetParameters",
             "children": {
-              "559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edb": {
-                "id": "559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edb",
-                "path": "cdk-integ-lambda-python-vpc/AssetParameters/559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edb",
+              "74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994": {
+                "id": "74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994",
+                "path": "cdk-integ-lambda-python-vpc/AssetParameters/74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "cdk-integ-lambda-python-vpc/AssetParameters/559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edb/S3Bucket",
+                    "path": "cdk-integ-lambda-python-vpc/AssetParameters/74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -551,7 +551,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "cdk-integ-lambda-python-vpc/AssetParameters/559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edb/S3VersionKey",
+                    "path": "cdk-integ-lambda-python-vpc/AssetParameters/74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -559,7 +559,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "cdk-integ-lambda-python-vpc/AssetParameters/559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edb/ArtifactHash",
+                    "path": "cdk-integ-lambda-python-vpc/AssetParameters/74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"

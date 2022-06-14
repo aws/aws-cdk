@@ -57,7 +57,7 @@ The following tools need to be installed on your system prior to installing the 
 - [Node.js >= 14.15.0](https://nodejs.org/download/release/latest-v14.x/)
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
 - [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
-- [.NET Core SDK 3.1.x](https://www.microsoft.com/net/download)
+- [.NET Core SDK >= 3.1.x](https://www.microsoft.com/net/download)
 - [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
 - [Docker >= 19.03](https://docs.docker.com/get-docker/)
   - the Docker daemon must also be running
@@ -256,7 +256,7 @@ Work your magic. Here are some guidelines:
 
 Integration tests perform a few functions in the CDK code base -
 1. Acts as a regression detector. It does this by running `cdk synth` on the integration test and comparing it against
-   the `*.expected.json` file. This highlights how a change affects the synthesized stacks.
+   the `*.integ.snapshot` directory. This highlights how a change affects the synthesized stacks.
 2. Allows for a way to verify if the stacks are still valid CloudFormation templates, as part of an intrusive change.
    This is done by running `yarn integ` which will run `cdk deploy` across all of the integration tests in that package. If you are developing a new integration test or for some other reason want to work on a single integration test over and over again without running through all the integration tests you can do so using `yarn integ integ.test-name.js`
    Remember to set up AWS credentials before doing this.
@@ -275,9 +275,10 @@ new features unless there is a good reason why one is not needed.
 4. Adding a new supported version (e.g. a new [AuroraMysqlEngineVersion](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_rds.AuroraMysqlEngineVersion.html))
 5. Adding any functionality via a [Custom Resource](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.custom_resources-readme.html)
 
-To the extent possible, include a section (like below) in the integration test file that specifies how the successfully
-deployed stack can be verified for correctness. Correctness here implies that the resources have been set up correctly.
-The steps here are usually AWS CLI commands but they need not be.
+All integration tests going forward should use the [IntegTest](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests)
+construct. Over time we will be updating all of our existing tests to use this construct. It
+allows for more control over configuring each tests as well as the ability to perform
+assertions against the deployed infrastructure.
 
 ```ts
 /*
@@ -288,8 +289,8 @@ The steps here are usually AWS CLI commands but they need not be.
 ```
 
 Examples:
-* [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
-* [integ.token-authorizer.lit.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.lit.ts#L7-L12)
+* [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
+* [integ.put-events.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-stepfunctions-tasks/test/eventbridge/integ.put-events.ts)
 
 **What do do if you cannot run integration tests**
 
@@ -827,16 +828,7 @@ $ <path to the AWS CDK repo>/link-all.sh
 
 ### Running integration tests in parallel
 
-Integration tests may take a long time to complete. We can speed this up by running them in parallel
-in different regions.
-
-```shell
-# Install GNU parallel (may require uninstall 'moreutils' if you have it)
-$ apt-get install parallel
-$ brew install parallel
-
-$ scripts/run-integ-parallel @aws-cdk/aws-ec2 @aws-cdk/aws-autoscaling ...
-```
+See the [Integration testing guide](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#running-large-numbers-of-tests)
 
 ### Visualizing dependencies in a CloudFormation Template
 

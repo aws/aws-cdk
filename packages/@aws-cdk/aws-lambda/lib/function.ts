@@ -23,11 +23,8 @@ import { LambdaInsightsVersion } from './lambda-insights';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
-import { Runtime } from './runtime';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line
 import { LogRetentionRetryOptions } from './log-retention';
+import { Runtime } from './runtime';
 import { addAlias } from './util';
 
 /**
@@ -984,6 +981,7 @@ export class Function extends FunctionBase {
    *   aliasName: 'Live',
    *   version: fn.currentVersion,
    * });
+   * ```
    *
    * @param aliasName The name of the alias
    * @param options Alias options

@@ -1,9 +1,6 @@
 import { Stack } from '@aws-cdk/core';
-import { IHostedZone } from './hosted-zone-ref';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from 'constructs';
+import { IHostedZone } from './hosted-zone-ref';
 
 /**
  * Validates a zone name is valid by Route53 specifc naming rules,

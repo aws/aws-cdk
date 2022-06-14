@@ -162,7 +162,7 @@ export function getTsconfigCompilerOptions(tsconfigPath: string): string {
   };
 
   let compilerOptionsString = '';
-  Object.keys(options).forEach((key: string) => {
+  Object.keys(options).sort().forEach((key: string) => {
 
     if (excludedCompilerOptions.includes(key)) {
       return;

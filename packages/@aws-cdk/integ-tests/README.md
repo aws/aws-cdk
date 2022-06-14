@@ -33,7 +33,7 @@ we would need to create a file to contain our integration test application.
 const app = new App();
 const stack = new Stack();
 new lambda.Function(stack, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
@@ -75,7 +75,7 @@ class StackUnderTest extends Stack {
     super(scope, id, props);
 	
     new lambda.Function(this, 'Handler', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
       architecture: props.architecture,
@@ -99,7 +99,7 @@ class StackUnderTest extends Stack {
     super(scope, id, props);
 	
     new lambda.Function(this, 'Handler', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
       architecture: props.architecture,

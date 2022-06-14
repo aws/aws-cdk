@@ -532,7 +532,7 @@
      }
     },
     "Handler": "index.lambda_handler",
-    "Runtime": "python3.6",
+    "Runtime": "python3.9",
     "Tags": [
      {
       "Key": "Name",

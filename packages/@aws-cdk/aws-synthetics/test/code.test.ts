@@ -1,8 +1,8 @@
 import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
 import * as s3 from '@aws-cdk/aws-s3';
-import * as cxapi from '@aws-cdk/cx-api';
 import { App, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as synthetics from '../lib';
 import { RuntimeFamily } from '../lib';
 

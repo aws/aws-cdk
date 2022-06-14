@@ -19,11 +19,11 @@ class TestStack extends Stack {
     const projectDirectory = path.join(__dirname, 'lambda-handler-project');
     const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: path.join(projectDirectory, 'lambda'),
-      runtime: Runtime.PYTHON_3_6,
+      runtime: Runtime.PYTHON_3_9,
       layers: [
         new lambda.PythonLayerVersion(this, 'Shared', {
           entry: path.join(projectDirectory, 'shared'),
-          compatibleRuntimes: [Runtime.PYTHON_3_6],
+          compatibleRuntimes: [Runtime.PYTHON_3_9],
         }),
       ],
     });

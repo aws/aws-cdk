@@ -51,6 +51,9 @@ export interface IntegRunnerOptions {
 }
 
 /**
+ * The different components of a test name
+ */
+/**
  * Represents an Integration test runner
  */
 export abstract class IntegRunner {
@@ -123,6 +126,7 @@ export abstract class IntegRunner {
 
   protected _destructiveChanges?: DestructiveChange[];
   private legacyContext?: Record<string, any>;
+  protected isLegacyTest?: boolean;
 
   constructor(options: IntegRunnerOptions) {
     this.test = options.test;
@@ -211,6 +215,7 @@ export abstract class IntegRunner {
         },
       });
       this.legacyContext = LegacyIntegTestSuite.getPragmaContext(this.test.fileName);
+      this.isLegacyTest = true;
       return testCases;
     }
   }

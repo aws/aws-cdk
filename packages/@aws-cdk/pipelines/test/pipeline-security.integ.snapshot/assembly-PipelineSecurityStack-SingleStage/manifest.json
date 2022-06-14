@@ -1,5 +1,5 @@
 {
-  "version": "19.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "PipelineSecurityStackSingleStageMyStack29962269.assets": {
       "type": "cdk:asset-manifest",

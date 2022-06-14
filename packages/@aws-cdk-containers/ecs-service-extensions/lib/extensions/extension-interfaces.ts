@@ -1,7 +1,7 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-import { Service, ConnectToProps } from '../service';
 import { Construct } from 'constructs';
+import { Service, ConnectToProps } from '../service';
 
 /**
  * The types of capacity that are supported. These capacity types may change the

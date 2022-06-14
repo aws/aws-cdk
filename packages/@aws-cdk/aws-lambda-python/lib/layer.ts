@@ -1,12 +1,9 @@
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
 
 /**
  * Properties for PythonLayerVersion

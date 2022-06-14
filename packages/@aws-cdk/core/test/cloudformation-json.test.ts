@@ -123,7 +123,6 @@ describe('tokens that return literals', () => {
     });
   });
 
-
   test('tokens in strings survive additional TokenJSON.stringification()', () => {
     // GIVEN
     for (const token of tokensThatResolveTo('pong!')) {
@@ -160,7 +159,6 @@ describe('tokens that return literals', () => {
     // THEN
     expect(evaluateCFN(resolved)).toEqual('{"information":"Did you know that Fido says: \\"woof\\""}');
   });
-
 });
 
 describe('tokens returning CloudFormation intrinsics', () => {
@@ -405,7 +403,6 @@ test('JSON strings nested inside JSON strings have correct quoting', () => {
   // Is this even correct? Let's ask JavaScript because I have trouble reading this many backslashes.
   expect(JSON.parse(JSON.parse(evaluated).payload).message).toEqual('I am in account "1234"');
 });
-
 
 /**
  * Return two Tokens, one of which evaluates to a Token directly, one which evaluates to it lazily

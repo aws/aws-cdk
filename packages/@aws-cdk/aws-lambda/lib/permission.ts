@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
+import { Construct } from 'constructs';
 import { FunctionUrlAuthType } from './function-url';
 
-import { Construct } from 'constructs';
 
 /**
  * Represents a permission statement that can be added to a Lambda function's

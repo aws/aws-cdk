@@ -21,7 +21,7 @@ describe('lambda + vpc', () => {
       fn = new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         vpc: vpc,
         allowAllOutbound: false,
       });
@@ -47,7 +47,7 @@ describe('lambda + vpc', () => {
       new lambda.Function(stack, 'LambdaWithCustomSG', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         vpc,
         securityGroup: new ec2.SecurityGroup(stack, 'CustomSecurityGroupX', { vpc }),
       });
@@ -70,7 +70,7 @@ describe('lambda + vpc', () => {
       new lambda.Function(stack, 'LambdaWithCustomSGList', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         vpc,
         securityGroups: [
           new ec2.SecurityGroup(stack, 'CustomSecurityGroupA', { vpc }),
@@ -98,7 +98,7 @@ describe('lambda + vpc', () => {
         new lambda.Function(stack, 'LambdaWithWrongProps', {
           code: new lambda.InlineCode('foo'),
           handler: 'index.handler',
-          runtime: lambda.Runtime.NODEJS_10_X,
+          runtime: lambda.Runtime.NODEJS_14_X,
           vpc,
           securityGroup: new ec2.SecurityGroup(stack, 'CustomSecurityGroupB', { vpc }),
           securityGroups: [
@@ -189,7 +189,7 @@ describe('lambda + vpc', () => {
     const lambdaFn = new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN
@@ -208,7 +208,7 @@ describe('lambda + vpc', () => {
       allowPublicSubnet: true,
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       vpc,
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
     });
@@ -236,7 +236,7 @@ describe('lambda + vpc', () => {
     new lambda.Function(stack, 'PrivateLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       vpc,
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
     });
@@ -272,7 +272,7 @@ describe('lambda + vpc', () => {
     new lambda.Function(stack, 'IsolatedLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       vpc,
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
     });
@@ -317,7 +317,7 @@ describe('lambda + vpc', () => {
       new lambda.Function(stack, 'PublicLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         vpc,
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       });

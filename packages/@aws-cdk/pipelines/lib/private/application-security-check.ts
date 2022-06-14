@@ -58,7 +58,7 @@ export class ApplicationSecurityCheck extends Construct {
 
     this.preApproveLambda = new lambda.Function(this, 'CDKPipelinesAutoApprove', {
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromAsset(path.resolve(__dirname, 'approve-lambda')),
       timeout: Duration.minutes(5),
     });

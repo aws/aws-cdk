@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-cloudformation/test/integ.core-custom-resources": {
+    "integ.core-custom-resources": {
       "stacks": [
         "custom-resource-test"
       ],

@@ -4,6 +4,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as codebuild from '../lib';
+import { ReportGroupType } from '../lib';
 
 /* eslint-disable quote-props */
 /* eslint-disable quotes */
@@ -140,6 +141,28 @@ describe('Test Reports Groups', () => {
     Template.fromStack(stack).hasResource('AWS::CodeBuild::ReportGroup', {
       "DeletionPolicy": "Delete",
       "UpdateReplacePolicy": "Delete",
+    });
+  });
+
+  test('can be created with type=CODE_COVERAGE', () => {
+    const stack = new cdk.Stack();
+
+    new codebuild.ReportGroup(stack, 'ReportGroup', {
+      type: ReportGroupType.CODE_COVERAGE,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
+      "Type": "CODE_COVERAGE",
+    });
+  });
+
+  test('defaults to report group type=TEST when not specified explicitly', () => {
+    const stack = new cdk.Stack();
+
+    new codebuild.ReportGroup(stack, 'ReportGroup', {});
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
+      "Type": "TEST",
     });
   });
 });

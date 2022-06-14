@@ -14,7 +14,14 @@ import {
  * The properties for a task definition run on an External cluster.
  */
 export interface ExternalTaskDefinitionProps extends CommonTaskDefinitionProps {
-
+  /**
+   * The networking mode to use for the containers in the task.
+   *
+   * With ECS Anywhere, supported modes are bridge, host and none.
+   *
+   * @default NetworkMode.BRIDGE
+   */
+  readonly networkMode?: NetworkMode;
 }
 
 /**
@@ -37,7 +44,6 @@ export interface ExternalTaskDefinitionAttributes extends CommonTaskDefinitionAt
  * @resource AWS::ECS::TaskDefinition
  */
 export class ExternalTaskDefinition extends TaskDefinition implements IExternalTaskDefinition {
-
   /**
    * Imports a task definition from the specified task definition ARN.
    */
@@ -58,7 +64,7 @@ export class ExternalTaskDefinition extends TaskDefinition implements IExternalT
     return new ImportedTaskDefinition(scope, id, {
       taskDefinitionArn: attrs.taskDefinitionArn,
       compatibility: Compatibility.EXTERNAL,
-      networkMode: NetworkMode.BRIDGE,
+      networkMode: attrs.networkMode,
       taskRole: attrs.taskRole,
     });
   }
@@ -70,7 +76,7 @@ export class ExternalTaskDefinition extends TaskDefinition implements IExternalT
     super(scope, id, {
       ...props,
       compatibility: Compatibility.EXTERNAL,
-      networkMode: NetworkMode.BRIDGE,
+      networkMode: props.networkMode ?? NetworkMode.BRIDGE,
     });
   }
 

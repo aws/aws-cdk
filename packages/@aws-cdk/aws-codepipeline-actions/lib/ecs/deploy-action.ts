@@ -2,12 +2,9 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import { Duration } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
 
 /**
  * Construction properties of {@link EcsDeployAction}.

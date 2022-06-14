@@ -1,12 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { IAsset } from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { AssetStaging, Stack, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line
-import { IAsset } from '@aws-cdk/assets';
 
 /**
  * Options for TarballImageAsset

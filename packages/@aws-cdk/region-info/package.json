@@ -63,7 +63,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.5.0",
+    "@types/jest": "^27.5.2",
     "fs-extra": "^9.1.0"
   },
   "repository": {

@@ -1,3 +1,53 @@
+# CloudFormation Resource Specification v75.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::EC2::NatGateway NatGatewayId (__added__)
+
+## Property Changes
+
+* AWS::KinesisAnalyticsV2::Application Tags.DuplicatesAllowed (__added__)
+* AWS::RDS::EventSubscription SubscriptionName (__added__)
+* AWS::RDS::EventSubscription Tags (__added__)
+* AWS::RDS::EventSubscription SourceIds.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::RDS::EventSubscription SourceType.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::ResilienceHub::App AppAssessmentSchedule (__added__)
+
+## Property Type Changes
+
+* AWS::ImageBuilder::DistributionConfiguration.FastLaunchConfiguration (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.FastLaunchLaunchTemplateSpecification (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.FastLaunchSnapshotConfiguration (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.Distribution FastLaunchConfigurations (__added__)
+* AWS::KinesisAnalyticsV2::Application.EnvironmentProperties PropertyGroups.DuplicatesAllowed (__added__)
+* AWS::KinesisAnalyticsV2::Application.InputSchema RecordColumns.DuplicatesAllowed (__added__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.PrimitiveType (__deleted__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.PrimitiveItemType (__added__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.Type (__added__)
+* AWS::KinesisAnalyticsV2::Application.S3ContentBaseLocation BasePath.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisAnalyticsV2::Application.S3ContentLocation BucketARN.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::KinesisAnalyticsV2::Application.S3ContentLocation FileKey.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::KinesisAnalyticsV2::Application.SqlApplicationConfiguration Inputs.DuplicatesAllowed (__added__)
+* AWS::ResilienceHub::App.ResourceMapping TerraformSourceName (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+
 # CloudFormation Resource Specification v73.1.0
 
 ## New Resource Types

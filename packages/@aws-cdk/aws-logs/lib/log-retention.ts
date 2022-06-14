@@ -2,12 +2,9 @@ import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
+import { ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { RetentionDays } from './log-group';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { ArnFormat } from '@aws-cdk/core';
 
 /**
  * Construction properties for a LogRetention.

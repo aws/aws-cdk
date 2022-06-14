@@ -668,7 +668,7 @@ const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
 
 declare const code: lambda.Code;
 const fn = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code,
   environment: {
