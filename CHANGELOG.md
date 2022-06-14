@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.160.0](https://github.com/aws/aws-cdk/compare/v1.159.0...v1.160.0) (2022-06-14)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **deps:** Starting with this release, Node 12 is no longer
+supported and customers should upgrade to Node 14, 16, or 18.
+
+### Features
+
+* **cfnspec:** cloudformation spec v75.0.0 ([#20615](https://github.com/aws/aws-cdk/issues/20615)) ([0a13e09](https://github.com/aws/aws-cdk/commit/0a13e09af6299afed031c4c1814f621e4dd8e975))
+
+
+### Bug Fixes
+
+* **lambda:** deprecate Python3.6 ([#19988](https://github.com/aws/aws-cdk/issues/19988)) ([9602229](https://github.com/aws/aws-cdk/commit/9602229b6c9105fc4c0ade3348d0c250a2f39c6d)), closes [#20085](https://github.com/aws/aws-cdk/issues/20085)
+
+
+### Miscellaneous Chores
+
+* **deps:** npm-check-updates && yarn upgrade  ([#20684](https://github.com/aws/aws-cdk/issues/20684)) ([e661fe9](https://github.com/aws/aws-cdk/commit/e661fe9fa8c4978ea321507063d6739089bc69db))
+
 ## [1.159.0](https://github.com/aws/aws-cdk/compare/v1.158.0...v1.159.0) (2022-06-02)
 
 
