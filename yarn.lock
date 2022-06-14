@@ -4538,6 +4538,11 @@ eslint-plugin-jest@^24.7.0:
   dependencies:
     "@typescript-eslint/experimental-utils" "^4.0.1"
 
+eslint-plugin-no-instanceof@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/eslint-plugin-no-instanceof/-/eslint-plugin-no-instanceof-1.0.1.tgz#5d9fc86d160df6991b654b294a62390207f1bb97"
+  integrity sha512-zlqQ7EsfzbRO68uI+p8FIE7zYB4njs+nNbkNjSb5QmLi2et67zQLqSeaao5U9SpnlZTTJC87nS2oyHo2ACtajw==
+
 eslint-plugin-node@^11.1.0:
   version "11.1.0"
   resolved "https://registry.npmjs.org/eslint-plugin-node/-/eslint-plugin-node-11.1.0.tgz#c95544416ee4ada26740a30474eefc5402dc671d"
