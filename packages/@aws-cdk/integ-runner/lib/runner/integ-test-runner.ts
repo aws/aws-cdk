@@ -58,6 +58,16 @@ export class IntegTestRunner extends IntegRunner {
   constructor(options: IntegRunnerOptions, destructiveChanges?: DestructiveChange[]) {
     super(options);
     this._destructiveChanges = destructiveChanges;
+
+    // We don't want new tests written in the legacy mode.
+    // If there is no existing snapshot _and_ this is a legacy
+    // test then point the user to the new `IntegTest` construct
+    if (!this.hasSnapshot() && this.isLegacyTest) {
+      throw new Error(`${this.testName} is a new test. Please use the IntegTest construct ` +
+       'to configure the test\n' +
+        'https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests',
+      );
+    }
   }
 
   /**

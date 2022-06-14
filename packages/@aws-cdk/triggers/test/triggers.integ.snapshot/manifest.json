@@ -62,7 +62,7 @@
         "/MyStack/MyFunction/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunctionCurrentVersion197490AFd41a8aa4109c7b22dd39d6bef408da46"
+            "data": "MyFunctionCurrentVersion197490AF2cb2bc11080c1ef11d3b49c1f1603957"
           }
         ],
         "/MyStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider/Role": [
@@ -95,10 +95,10 @@
             "data": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2ArtifactHash29DBC1FA"
           }
         ],
-        "MyFunctionCurrentVersion197490AFd134f68e4774c24a4ca6cc78849e3dfd": [
+        "MyFunctionCurrentVersion197490AFd41a8aa4109c7b22dd39d6bef408da46": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunctionCurrentVersion197490AFd134f68e4774c24a4ca6cc78849e3dfd",
+            "data": "MyFunctionCurrentVersion197490AFd41a8aa4109c7b22dd39d6bef408da46",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
