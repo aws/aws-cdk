@@ -14,10 +14,6 @@ describe('code', () => {
       expect(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.GO_1_X)).toThrow(/Inline source not allowed for go1\.x/);
       expect(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.JAVA_8)).toThrow(/Inline source not allowed for java8/);
     });
-    test('fails if larger than 4096 bytes', () => {
-      expect(() => defineFunction(lambda.Code.fromInline(generateRandomString(4097)), lambda.Runtime.NODEJS_14_X))
-        .toThrow(/Lambda source is too large, must be <= 4096 but is 4097/);
-    });
   });
 
   describe('lambda.Code.fromAsset', () => {
@@ -524,12 +520,4 @@ function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runt
     code,
     runtime,
   });
-}
-
-function generateRandomString(bytes: number) {
-  let s = '';
-  for (let i = 0; i < bytes; ++i) {
-    s += String.fromCharCode(Math.round(Math.random() * 256));
-  }
-  return s;
 }
