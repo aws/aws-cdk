@@ -5,7 +5,7 @@ import * as ecs from '../lib';
 
 describe('task definition', () => {
   describe('When creating a new TaskDefinition', () => {
-    test('A task definition with both compatibilities defaults to networkmode AwsVpc', () => {
+    test('A task definition with EC2 and Fargate compatibilities defaults to networkmode AwsVpc', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -22,6 +22,23 @@ describe('task definition', () => {
       });
 
 
+    });
+
+    test('A task definition with External compatibility defaults to networkmode Bridge', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new ecs.TaskDefinition(stack, 'TD', {
+        cpu: '512',
+        memoryMiB: '512',
+        compatibility: ecs.Compatibility.EXTERNAL,
+      });
+
+      //THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        NetworkMode: 'bridge',
+      });
     });
   });
 
