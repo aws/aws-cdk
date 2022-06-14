@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.28.0](https://github.com/aws/aws-cdk/compare/v2.27.0...v2.28.0) (2022-06-14)
+
+
+### Features
+
+* **aws-ec2:** control over VPC AZs ([#20562](https://github.com/aws/aws-cdk/issues/20562)) ([58dffd8](https://github.com/aws/aws-cdk/commit/58dffd86f49ced2465fe2d044602a79f173a37a4)), closes [#5847](https://github.com/aws/aws-cdk/issues/5847)
+* **cfnspec:** cloudformation spec v75.0.0 ([#20605](https://github.com/aws/aws-cdk/issues/20605)) ([d19e706](https://github.com/aws/aws-cdk/commit/d19e7064f4246ce0c166b40a2474b8d69fc31874))
+* **cloudwatch:** add `addWidget` method in widget container classes ([#18615](https://github.com/aws/aws-cdk/issues/18615)) ([9c31446](https://github.com/aws/aws-cdk/commit/9c31446df6bbf7d15a56fc91148f4568da0093eb)), closes [#18466](https://github.com/aws/aws-cdk/issues/18466)
+* **codebuild:** adds report group type property ([#20178](https://github.com/aws/aws-cdk/issues/20178)) ([15bcc3c](https://github.com/aws/aws-cdk/commit/15bcc3c5feb36f069538d89d7e6c36a2671bb2c5)), closes [#14279](https://github.com/aws/aws-cdk/issues/14279)
+* **core:** allow specifying Docker build targets ([#20654](https://github.com/aws/aws-cdk/issues/20654)) ([f243f9e](https://github.com/aws/aws-cdk/commit/f243f9eb6c5dddb71488173a4cc1b45357e03623))
+* **ec2:** allow the use of graviton3 processors ([#20541](https://github.com/aws/aws-cdk/issues/20541)) ([b8d6cc7](https://github.com/aws/aws-cdk/commit/b8d6cc79454b1533571e1c3f41b819523beac658))
+* **ecs:** add external network modes to ExternalTaskDefinition and TaskDefinition ([#17762](https://github.com/aws/aws-cdk/issues/17762)) ([dd90feb](https://github.com/aws/aws-cdk/commit/dd90feb401899dc370d5c45a308b5657877c2feb))
+* **ecs-patterns:** add ecs exec support ([#18663](https://github.com/aws/aws-cdk/issues/18663)) ([23ee450](https://github.com/aws/aws-cdk/commit/23ee450ecaff49070736d9908bcb50440fe5c3db)), closes [#15769](https://github.com/aws/aws-cdk/issues/15769) [#15197](https://github.com/aws/aws-cdk/issues/15197) [#15497](https://github.com/aws/aws-cdk/issues/15497)
+* **lambda:** Migrate away from NODEJS_10_X and NODEJS_12_X to NODEJS_14_X ([#20595](https://github.com/aws/aws-cdk/issues/20595)) ([4537b3f](https://github.com/aws/aws-cdk/commit/4537b3fc1b726dd8cbaadd0c52c35b6f31328e3d)), closes [#20531](https://github.com/aws/aws-cdk/issues/20531) [#20568](https://github.com/aws/aws-cdk/issues/20568) [#19992](https://github.com/aws/aws-cdk/issues/19992) [#20474](https://github.com/aws/aws-cdk/issues/20474)
+* **opensearchservice:** When a Domain has enforceHttps true, set the connections defaultPort ([#20602](https://github.com/aws/aws-cdk/issues/20602)) ([a6fe2cb](https://github.com/aws/aws-cdk/commit/a6fe2cbb5af2fe03efdc0fc364bec0fcec1148d5)), closes [#16251](https://github.com/aws/aws-cdk/issues/16251)
+
+
+### Bug Fixes
+
+* **core:** property overrides sometimes don't work with intrinsics ([#20608](https://github.com/aws/aws-cdk/issues/20608)) ([49b397c](https://github.com/aws/aws-cdk/commit/49b397c343b1a2581b2f4d2c098729b21b4b0290)), closes [#19971](https://github.com/aws/aws-cdk/issues/19971) [#19447](https://github.com/aws/aws-cdk/issues/19447)
+* **core:** RemovalPolicy.SNAPSHOT can be added to resources that do not support it ([#20668](https://github.com/aws/aws-cdk/issues/20668)) ([d035c5a](https://github.com/aws/aws-cdk/commit/d035c5ad36b5109825ff401c8327d1dc405ab41e)), closes [#20653](https://github.com/aws/aws-cdk/issues/20653)
+* **eks:** add clusterLogging props to Fargate Cluster ([#20707](https://github.com/aws/aws-cdk/issues/20707)) ([1882d7c](https://github.com/aws/aws-cdk/commit/1882d7c14745ab60cb633c232c8c4d0f1eaafd82)), closes [#19302](https://github.com/aws/aws-cdk/issues/19302)
+* **events:** eventSourceName does not accept tokens ([#20719](https://github.com/aws/aws-cdk/issues/20719)) ([9b36f2e](https://github.com/aws/aws-cdk/commit/9b36f2eeed7c48a0a8e6b41518d0e8d198092821)), closes [#20718](https://github.com/aws/aws-cdk/issues/20718) [#10772](https://github.com/aws/aws-cdk/issues/10772)
+* **iam:** conditions in FederatedPrincipal should be optional ([#20621](https://github.com/aws/aws-cdk/issues/20621)) ([8c388a8](https://github.com/aws/aws-cdk/commit/8c388a8e78bae6da4e4d4ab42bc7825700839277))
+* **lambda:** deprecate Python3.6 ([#19988](https://github.com/aws/aws-cdk/issues/19988)) ([#20647](https://github.com/aws/aws-cdk/issues/20647)) ([c8f5cd2](https://github.com/aws/aws-cdk/commit/c8f5cd24c3b52b55eea1b19e71bdc1b8eae68627)), closes [#20085](https://github.com/aws/aws-cdk/issues/20085)
+* **servicecatalog:** ProductStackHistory does not accept nested directories ([#20688](https://github.com/aws/aws-cdk/issues/20688)) ([d4fdb4e](https://github.com/aws/aws-cdk/commit/d4fdb4eab834e5cbdb7df45f56dde1e3243ca856)), closes [#20658](https://github.com/aws/aws-cdk/issues/20658)
+
 ## [2.27.0](https://github.com/aws/aws-cdk/compare/v2.26.0...v2.27.0) (2022-06-02)
 
 
