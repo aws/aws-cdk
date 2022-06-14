@@ -935,12 +935,12 @@ describe('stack', () => {
   test('generated stack names will not exceed 128 characters, even after the longest duplicated substring has been removed', () => {
     // WHEN
     const root = new App();
-    const app = new Construct(root, 'ProdAppThisNameButItWillOnlyBeTooLongWhenCombinedWithTheStackNamezzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz');
-    const stack = new Stack(app, 'ThisNameIsVeryLongButItWillOnlyBeTooLongWhenCombinedWithTheAppNameStackzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz');
+    const app = new Construct(root, 'ProdAppThisNameButItWillOnlyBeTooLongWhenCombinedWithTheStackName' + 'z'.repeat(60));
+    const stack = new Stack(app, 'ThisNameIsVeryLongButItWillOnlyBeTooLongWhenCombinedWithTheAppNameStack');
 
     // THEN
     expect(stack.stackName.length).toEqual(128);
-    expect(stack.stackName).toEqual('ProdAppThisNameButItWillOnlyBeTooLongWhenCombinedWithTheStackNamezThisNameIsVeryLongButItWillOnlyBeTooLongWhenCombinedWiC2172B29');
+    expect(stack.stackName).toEqual('ProdAppThisNameButItWillOnlyBeTooLongWhenCombinedWithTheStackNamezThisNameIsVeryLongButItWillOnlyBeTooLongWhenCombinedWi864CC1D3');
   });
 
   test('stack construct id does not go through stack name validation if there is an explicit stack name', () => {
