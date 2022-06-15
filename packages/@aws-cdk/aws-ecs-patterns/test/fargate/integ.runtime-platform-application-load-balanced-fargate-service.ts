@@ -18,7 +18,7 @@ new ApplicationLoadBalancedFargateService(stack, 'myService', {
     image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
   runtimePlatform: {
-    cpuArchitecture: CpuArchitecture.X86_64,
+    cpuArchitecture: CpuArchitecture.ARM64,
     operatingSystemFamily: OperatingSystemFamily.LINUX,
   },
 });

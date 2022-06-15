@@ -1131,7 +1131,7 @@
                         "containerDefinitions": [
                           {
                             "essential": true,
-                            "image": "amazon/amazon-ecs-sample",
+                            "image": "mcr.microsoft.com/windows/servercore/iis:windowsservercore-ltsc2019",
                             "name": "web",
                             "portMappings": [
                               {
@@ -1157,7 +1157,7 @@
                             }
                           }
                         ],
-                        "cpu": "256",
+                        "cpu": "1024",
                         "executionRoleArn": {
                           "Fn::GetAtt": [
                             "myServiceTaskDefExecutionRole618CD311",
@@ -1165,14 +1165,14 @@
                           ]
                         },
                         "family": "awsecsruntimeintegmyServiceTaskDef4A80C357",
-                        "memory": "512",
+                        "memory": "2048",
                         "networkMode": "awsvpc",
                         "requiresCompatibilities": [
                           "FARGATE"
                         ],
                         "runtimePlatform": {
                           "cpuArchitecture": "X86_64",
-                          "operatingSystemFamily": "LINUX"
+                          "operatingSystemFamily": "WINDOWS_SERVER_2019_CORE"
                         },
                         "taskRoleArn": {
                           "Fn::GetAtt": [
