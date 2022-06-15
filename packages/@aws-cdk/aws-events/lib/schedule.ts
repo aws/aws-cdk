@@ -6,6 +6,10 @@ import { Construct } from 'constructs';
 
 /**
  * Schedule for scheduled event rules
+ * 
+ * Note that rates cannot be defined in fractions of minutes.
+ * 
+ * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html
  */
 export abstract class Schedule {
   /**
@@ -19,6 +23,8 @@ export abstract class Schedule {
 
   /**
    * Construct a schedule from an interval and a time unit
+   * 
+   * Rates cannot be defined in fractions of minutes and cannot be 0
    */
   public static rate(duration: Duration): Schedule {
     if (duration.isUnresolved()) {
