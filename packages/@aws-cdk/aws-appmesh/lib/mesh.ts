@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnMesh } from './appmesh.generated';
+import { MeshServiceDiscovery } from './service-discovery';
 import { VirtualGateway, VirtualGatewayBaseProps } from './virtual-gateway';
 import { VirtualNode, VirtualNodeBaseProps } from './virtual-node';
 import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
@@ -124,6 +125,14 @@ export interface MeshProps {
    * @default DROP_ALL
    */
   readonly egressFilter?: MeshFilterType;
+
+  /**
+   * Defines how upstream clients will discover VirtualNodes in the Mesh
+   *
+   * @default - No Service Discovery
+   */
+  readonly serviceDiscovery?: MeshServiceDiscovery;
+
 }
 
 /**
@@ -187,6 +196,7 @@ export class Mesh extends MeshBase {
         egressFilter: props.egressFilter ? {
           type: props.egressFilter,
         } : undefined,
+        serviceDiscovery: props.serviceDiscovery,
       },
     });
 

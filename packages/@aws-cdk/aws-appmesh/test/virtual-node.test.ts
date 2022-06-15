@@ -1,7 +1,9 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import * as appmesh from '../lib';
 
@@ -975,6 +977,69 @@ describe('virtual node', () => {
               DNS: {
                 Hostname: 'test',
                 ResponseType: 'LOADBALANCER',
+              },
+            },
+          },
+        });
+      });
+
+      test('has an IP Preference applied', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        // WHEN
+        new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test', appmesh.DnsResponseType.LOAD_BALANCER, appmesh.IpPreference.IPV4_ONLY),
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            ServiceDiscovery: {
+              DNS: {
+                Hostname: 'test',
+                ResponseType: 'LOADBALANCER',
+                IpPreference: 'IPv4_ONLY',
+              },
+            },
+          },
+        });
+      });
+    });
+
+    describe('with CloudMap service discovery', () => {
+      test('has an IP Preference applied', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+        const vpc = new ec2.Vpc(stack, 'vpc');
+        const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+          vpc,
+          name: 'domain.local',
+        });
+        const service = namespace.createService('Svc');
+
+        // WHEN
+        new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service, undefined, appmesh.IpPreference.IPV4_ONLY),
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            ServiceDiscovery: {
+              AWSCloudMap: {
+                NamespaceName: 'domain.local',
+                ServiceName: { 'Fn::GetAtt': ['testnamespaceSvcB55702EC', 'Name'] },
+                IpPreference: 'IPv4_ONLY',
               },
             },
           },

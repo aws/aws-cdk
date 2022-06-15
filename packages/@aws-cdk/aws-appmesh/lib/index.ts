@@ -23,3 +23,4 @@ export * from './http-route-method';
 export * from './header-match';
 export * from './query-parameter-match';
 export * from './http-route-path-match';
+export * from './ip-preference';
