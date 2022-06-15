@@ -1,5 +1,5 @@
 import { Vpc } from '@aws-cdk/aws-ec2';
-import { Cluster, ContainerImage } from '@aws-cdk/aws-ecs';
+import { Cluster, CpuArchitecture, ContainerImage, OperatingSystemFamily } from '@aws-cdk/aws-ecs';
 import { App, Stack } from '@aws-cdk/core';
 
 import { NetworkMultipleTargetGroupsFargateService } from '../../lib';
@@ -44,6 +44,10 @@ new NetworkMultipleTargetGroupsFargateService(stack, 'myService', {
       listener: 'listener2',
     },
   ],
+  runtimePlatform: {
+    cpuArchitecture: CpuArchitecture.X86_64,
+    operatingSystemFamily: OperatingSystemFamily.LINUX,
+  },
 });
 
 app.synth();

@@ -36,10 +36,6 @@ const queueProcessing = new QueueProcessingFargateService(stack, 'IsolatedQueueS
   image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
   securityGroups: [securityGroup],
   taskSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
-  runtimePlatform: {
-    cpuArchitecture: ecs.CpuArchitecture.X86_64,
-    operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
-  },
 });
 
 queueProcessing.service.node.addDependency(
