@@ -246,6 +246,26 @@ export const EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME = '@aws-cdk/aws-ec2:uniqueIm
 export const IAM_MINIMIZE_POLICIES = '@aws-cdk/aws-iam:minimizePolicies';
 
 /**
+ * Makes sure we do not allow snapshot removal policy on resources that do not support it.
+ * If supplied on an unsupported resource, CloudFormation ignores the policy altogether.
+ * This flag will reduce confusion and unexpected loss of data when erroneously supplying
+ * the snapshot removal policy.
+ *
+ * [PERMANENT]
+ */
+export const VALIDATE_SNAPSHOT_REMOVAL_POLICY = '@aws-cdk/core:validateSnapshotRemovalPolicy';
+
+/**
+ * Enable this feature flag to have CodePipeline generate a unique cross account key alias name using the stack name.
+ *
+ * Previously, when creating multiple pipelines with similar naming conventions and when crossAccountKeys is true,
+ * the KMS key alias name created for these pipelines may be the same due to how the uniqueId is generated.
+ *
+ * This new implementation creates a stack safe resource name for the alias using the stack name instead of the stack ID.
+ */
+export const CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME = '@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName';
+
+/**
  * Flag values that should apply for new projects
  *
  * Add a flag in here (typically with the value `true`), to enable
@@ -273,6 +293,8 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: true,
   [CHECK_SECRET_USAGE]: true,
   [IAM_MINIMIZE_POLICIES]: true,
+  [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true,
+  [CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME]: true,
 };
 
 /**

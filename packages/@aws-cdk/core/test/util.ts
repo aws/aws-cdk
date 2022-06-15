@@ -1,3 +1,4 @@
+import { CloudAssembly } from '@aws-cdk/cx-api';
 import { Stack } from '../lib';
 import { CDK_DEBUG } from '../lib/debug';
 import { synthesize } from '../lib/private/synthesis';
@@ -29,4 +30,18 @@ export function reEnableStackTraceCollection(): string | undefined {
 export function restoreStackTraceColection(previousValue: string | undefined): void {
   process.env.CDK_DISABLE_STACK_TRACE = previousValue;
   delete process.env[CDK_DEBUG];
+}
+
+export function getWarnings(casm: CloudAssembly) {
+  const result = new Array<{ path: string, message: string }>();
+  for (const stack of Object.values(casm.manifest.artifacts ?? {})) {
+    for (const [path, md] of Object.entries(stack.metadata ?? {})) {
+      for (const x of md) {
+        if (x.type === 'aws:cdk:warning') {
+          result.push({ path, message: x.data as string });
+        }
+      }
+    }
+  }
+  return result;
 }
