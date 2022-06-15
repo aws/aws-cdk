@@ -1,5 +1,7 @@
 import { Template, Match } from '@aws-cdk/assertions';
+import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Duration, Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
 import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, AppWithOutput } from '../testhelpers';
@@ -271,6 +273,27 @@ test('exportedVariables', () => {
           'exported-variables': ['MY_VAR'],
         },
       })),
+    },
+  });
+});
+
+test('step has caching set', () => {
+  // WHEN
+  const myCachingBucket = new s3.Bucket(pipelineStack, 'MyCachingBucket');
+  new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
+    synth: new cdkp.CodeBuildStep('Synth', {
+      cache: codebuild.Cache.bucket(myCachingBucket),
+      commands: ['/bin/true'],
+      input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+    }),
+  });
+
+  // THEN
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Cache: {
+      Location: {
+        'Fn::Join': ['/', [{ Ref: 'MyCachingBucket8C98C553' }, { Ref: 'AWS::NoValue' }]],
+      },
     },
   });
 });
