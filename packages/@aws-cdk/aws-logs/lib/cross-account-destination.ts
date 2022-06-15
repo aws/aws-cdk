@@ -66,7 +66,7 @@ export class CrossAccountDestination extends CrossAccountDestinationBase {
    * Import an existing CloudWatch Logs Destination given its ARN.
    *
    * @param scope The parent creating construct (usually `this`).
-   * @param id The construct's name.
+   * @param id construct id
    * @param destinationArn AWS CloudWatch Logs Destination ARN (i.e. arn:aws:logs:<region>:<account-id>:destination:MyDestination).
    */
   public static fromDestinationArn(scope: Construct, id: string, destinationArn: string): ILogSubscriptionDestination {
