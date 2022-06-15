@@ -73,13 +73,19 @@ describe('schedule', () => {
   test('rate cannot be a fractional amount of minutes (defined with seconds)', () => {
     expect(() => {
       events.Schedule.rate(Duration.seconds(150));
-    }).toThrow(/'150 seconds' cannot be converted into a whole number of minutes./);
+    }).toThrow(/cannot be converted into a whole number of/);
   });
 
   test('rate cannot be a fractional amount of minutes (defined with minutes)', () => {
     expect(()=> {
       events.Schedule.rate(Duration.minutes(5/3));
-    }).toThrow(/Duration must be a whole number of minutes, Duration provided was 1.6666666666666667 minutes/);
+    }).toThrow(/must be a whole number of/);
+  });
+
+  test('rate cannot be a fractional amount of minutes (defined with hours)', () => {
+    expect(()=> {
+      events.Schedule.rate(Duration.hours(1.03));
+    }).toThrow(/cannot be converted into a whole number of/);
   });
 
   test('rate cannot be less than 1 minute (defined with seconds)', () => {
@@ -91,12 +97,12 @@ describe('schedule', () => {
   test('rate cannot be less than 1 minute (defined with minutes as fractions)', () => {
     expect(() => {
       events.Schedule.rate(Duration.minutes(1/2));
-    }).toThrow(/Duration must be a whole number of minutes, Duration provided was 0.5 minutes/);
+    }).toThrow(/must be a whole number of/);
   });
 
   test('rate cannot be less than 1 minute (defined with minutes as decimals)', () => {
     expect(() => {
       events.Schedule.rate(Duration.minutes(0.25));
-    }).toThrow(/Duration must be a whole number of minutes, Duration provided was 0.25 minutes/);
+    }).toThrow(/must be a whole number of/);
   });
 });

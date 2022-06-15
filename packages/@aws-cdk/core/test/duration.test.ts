@@ -181,6 +181,52 @@ describe('duration', () => {
     expect(lazyDuration.isUnresolved()).toEqual(true);
     expect(Duration.hours(10).isUnresolved()).toEqual(false);
   });
+
+  test('convert fractional minutes to minutes', () => {
+    expect(() => {
+      Duration.minutes(0.5).toMinutes();
+    }).toThrow(/must be a whole number of/);
+  });
+
+  test('convert fractional minutes to minutes - integral: false', () => {
+    expect(Duration.minutes(5.5).toMinutes({ integral: false })).toEqual(5.5);
+  });
+
+  test('convert whole minutes to minutes', () => {
+    expect(Duration.minutes(5).toMinutes()).toEqual(5);
+  });
+
+  test('convert fractional minutes to fractional seconds', () => {
+    expect(() => {
+      Duration.minutes(9/8).toSeconds();
+    }).toThrow(/cannot be converted into a whole number of/);
+  });
+
+  test('convert fractional minutes to fractional seconds - integral: false', () => {
+    expect(Duration.minutes(9/8).toSeconds({ integral: false })).toEqual(67.5);
+  });
+
+  test('convert fractional minutes to whole seconds', () => {
+    expect(Duration.minutes(5/4).toSeconds({ integral: false })).toEqual(75);
+  });
+
+  test('convert whole minutes to whole seconds', () => {
+    expect(Duration.minutes(10).toSeconds({ integral: false })).toEqual(600);
+  });
+
+  test('convert seconds to fractional minutes', () => {
+    expect(() => {
+      Duration.seconds(45).toMinutes();
+    }).toThrow(/cannot be converted into a whole number of/);
+  });
+
+  test('convert seconds to fractional minutes - integral: false', () => {
+    expect(Duration.seconds(45).toMinutes({ integral: false })).toEqual(0.75);
+  });
+
+  test('convert seconds to whole minutes', () => {
+    expect(Duration.seconds(120).toMinutes()).toEqual(2);
+  });
 });
 
 function floatEqual(actual: number, expected: number) {

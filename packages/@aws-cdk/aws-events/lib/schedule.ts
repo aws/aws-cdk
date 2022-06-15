@@ -28,11 +28,8 @@ export abstract class Schedule {
       }
       return new LiteralSchedule(`rate(${duration.formatTokenToNumber()})`);
     }
-    if (duration.toSeconds() === 0) {
+    if (duration.toMinutes() === 0) {
       throw new Error('Duration cannot be 0');
-    }
-    if (duration.toSeconds() % 60 !== 0) {
-      throw new Error(`'Duration must be a whole number of minutes, Duration provided was ${duration.toMinutes()} minutes'`);
     }
 
     let rate = maybeRate(duration.toDays({ integral: false }), 'day');
