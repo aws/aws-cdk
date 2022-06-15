@@ -4,6 +4,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../../lib';
+import { LogGroupTargetInput } from '../../lib';
 
 
 test('use log group as an event rule target', () => {
@@ -56,7 +57,8 @@ test('use log group as an event rule target', () => {
 
 test('use log group as an event rule target with rule target input', () => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app);
   const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
     logGroupName: '/aws/events/MyLogGroup',
   });
@@ -67,7 +69,111 @@ test('use log group as an event rule target with rule target input', () => {
   // WHEN
   rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
     event: events.RuleTargetInput.fromObject({
-      data: events.EventField.fromPath('$'),
+      message: events.EventField.fromPath('$'),
+    }),
+  }));
+
+
+  // THEN
+  expect(() => {
+    app.synth();
+  }).toThrow(/CloudWatchLogGroup targets only support input templates in the format/);
+});
+
+test('cannot use both logEvent and event', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app);
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
+  const rule1 = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+  // THEN
+  expect(() => {
+    rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
+      event: events.RuleTargetInput.fromObject({
+        message: events.EventField.fromPath('$'),
+      }),
+      logEvent: LogGroupTargetInput.fromObject(),
+    }));
+  }).toThrow(/Only one of "event" or "logEvent" can be specified/);
+});
+
+test('logEvent with defaults', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
+  const rule1 = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+  // WHEN
+  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
+    logEvent: LogGroupTargetInput.fromObject(),
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 minute)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':logs:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              ':log-group:',
+              {
+                Ref: 'MyLogGroup5C0DAD85',
+              },
+            ],
+          ],
+        },
+        Id: 'Target0',
+        InputTransformer: {
+          InputPathsMap: {
+            'time': '$.time',
+            'detail-type': '$.detail-type',
+          },
+          InputTemplate: '{"timestamp":<time>,"message":<detail-type>}',
+        },
+      },
+    ],
+  });
+});
+
+test('can use logEvent', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
+  const rule1 = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+  // WHEN
+  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
+    logEvent: LogGroupTargetInput.fromObject({
+      timestamp: events.EventField.time,
+      message: events.EventField.fromPath('$'),
     }),
   }));
 
@@ -103,9 +209,10 @@ test('use log group as an event rule target with rule target input', () => {
         Id: 'Target0',
         InputTransformer: {
           InputPathsMap: {
-            f1: '$',
+            time: '$.time',
+            f2: '$',
           },
-          InputTemplate: '{"data":<f1>}',
+          InputTemplate: '{"timestamp":<time>,"message":<f2>}',
         },
       },
     ],
@@ -127,7 +234,8 @@ test('specifying retry policy and dead letter queue', () => {
   // WHEN
   rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
     event: events.RuleTargetInput.fromObject({
-      data: events.EventField.fromPath('$'),
+      timestamp: events.EventField.time,
+      message: events.EventField.fromPath('$'),
     }),
     retryAttempts: 2,
     maxEventAge: cdk.Duration.hours(2),
@@ -174,9 +282,10 @@ test('specifying retry policy and dead letter queue', () => {
         Id: 'Target0',
         InputTransformer: {
           InputPathsMap: {
-            f1: '$',
+            time: '$.time',
+            f2: '$',
           },
-          InputTemplate: '{"data":<f1>}',
+          InputTemplate: '{"timestamp":<time>,"message":<f2>}',
         },
         RetryPolicy: {
           MaximumEventAgeInSeconds: 7200,
