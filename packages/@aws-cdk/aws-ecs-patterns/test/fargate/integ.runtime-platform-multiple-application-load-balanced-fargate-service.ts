@@ -2,6 +2,7 @@ import { Vpc } from '@aws-cdk/aws-ec2';
 import { Cluster, CpuArchitecture, ContainerImage, OperatingSystemFamily } from '@aws-cdk/aws-ecs';
 import { App, Stack } from '@aws-cdk/core';
 import { IntegTest } from '@aws-cdk/integ-tests';
+
 import { ApplicationMultipleTargetGroupsFargateService } from '../../lib';
 
 const app = new App();
