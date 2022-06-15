@@ -364,7 +364,11 @@
    "Type": "AWS::AppMesh::Mesh",
    "Properties": {
     "MeshName": "meshstackmesh680D3CEB",
-    "Spec": {}
+    "Spec": {
+     "ServiceDiscovery": {
+      "IpPreference": "IPv4_ONLY"
+     }
+    }
    }
   },
   "meshrouter81B8087E": {
@@ -969,7 +973,8 @@
      ],
      "ServiceDiscovery": {
       "DNS": {
-       "Hostname": "node1.domain.local"
+       "Hostname": "node1.domain.local",
+       "IpPreference": "IPv4_ONLY"
       }
      }
     },

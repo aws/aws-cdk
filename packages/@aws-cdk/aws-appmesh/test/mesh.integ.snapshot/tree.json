@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "mesh-stack": {
@@ -649,7 +649,11 @@
                   "aws:cdk:cloudformation:type": "AWS::AppMesh::Mesh",
                   "aws:cdk:cloudformation:props": {
                     "meshName": "meshstackmesh680D3CEB",
-                    "spec": {}
+                    "spec": {
+                      "serviceDiscovery": {
+                        "ipPreference": "IPv4_ONLY"
+                      }
+                    }
                   }
                 },
                 "constructInfo": {
@@ -1464,7 +1468,8 @@
                           ],
                           "serviceDiscovery": {
                             "dns": {
-                              "hostname": "node1.domain.local"
+                              "hostname": "node1.domain.local",
+                              "ipPreference": "IPv4_ONLY"
                             }
                           }
                         },
