@@ -222,6 +222,8 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
   /**
    * Import a Route 53 public hosted zone defined either outside the CDK, or in a different CDK stack
    *
+   * Use when hosted zone ID is known. Hosted zone name becomes unavailable through this query.
+   *
    * @param scope the parent Construct for this Construct
    * @param id the logical name of this Construct
    * @param publicHostedZoneId the ID of the public hosted zone to import
@@ -229,7 +231,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
   public static fromPublicHostedZoneId(scope: Construct, id: string, publicHostedZoneId: string): IPublicHostedZone {
     class Import extends Resource implements IPublicHostedZone {
       public readonly hostedZoneId = publicHostedZoneId;
-      public get zoneName(): string { throw new Error('cannot retrieve "zoneName" from an an imported hosted zone'); }
+      public get zoneName(): string { throw new Error('Cannot reference `zoneName` when using `PublicHostedZone.fromPublicHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromPublicHostedZoneAttributes()` instead'); }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
@@ -368,6 +370,8 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
   /**
    * Import a Route 53 private hosted zone defined either outside the CDK, or in a different CDK stack
    *
+   * Use when hosted zone ID is known. Hosted zone name becomes unavailable through this query.
+   *
    * @param scope the parent Construct for this Construct
    * @param id the logical name of this Construct
    * @param privateHostedZoneId the ID of the private hosted zone to import
@@ -375,7 +379,7 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
   public static fromPrivateHostedZoneId(scope: Construct, id: string, privateHostedZoneId: string): IPrivateHostedZone {
     class Import extends Resource implements IPrivateHostedZone {
       public readonly hostedZoneId = privateHostedZoneId;
-      public get zoneName(): string { throw new Error('cannot retrieve "zoneName" from an an imported hosted zone'); }
+      public get zoneName(): string { throw new Error('Cannot reference `zoneName` when using `PrivateHostedZone.fromPrivateHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`'); }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
