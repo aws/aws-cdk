@@ -69,7 +69,9 @@ describe('schedule', () => {
       events.Schedule.rate(Duration.seconds(Lazy.number({ produce: () => 5 })));
     }).toThrow(/Allowed units for scheduling/);
   });
+});
 
+describe('fractional minutes checks', () => {
   test('rate cannot be a fractional amount of minutes (defined with seconds)', () => {
     expect(() => {
       events.Schedule.rate(Duration.seconds(150));

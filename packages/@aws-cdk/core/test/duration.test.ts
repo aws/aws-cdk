@@ -181,7 +181,9 @@ describe('duration', () => {
     expect(lazyDuration.isUnresolved()).toEqual(true);
     expect(Duration.hours(10).isUnresolved()).toEqual(false);
   });
+});
 
+describe('integral flag checks', () => {
   test('convert fractional minutes to minutes', () => {
     expect(() => {
       Duration.minutes(0.5).toMinutes();
