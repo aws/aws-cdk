@@ -248,7 +248,7 @@ class EksClusterStack extends Stack {
   }
   private assertNodeGroupGraviton3() {
     // add a Graviton3 nodegroup
-    this.cluster.addNodegroupCapacity('extra-ng-arm', {
+    this.cluster.addNodegroupCapacity('extra-ng-arm3', {
       instanceType: new ec2.InstanceType('c7g.large'),
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
