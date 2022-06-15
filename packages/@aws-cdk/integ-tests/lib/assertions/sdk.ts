@@ -1,11 +1,8 @@
 import { CustomResource, Reference, Lazy, CfnResource, Stack, ArnFormat } from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
 import { EqualsAssertion } from './assertions';
 import { ExpectedResult, ActualResult } from './common';
 import { AssertionsProvider, SDK_RESOURCE_TYPE_PREFIX } from './providers';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct, IConstruct } from 'constructs';
 
 /**
  * Interface for creating a custom resource that will perform

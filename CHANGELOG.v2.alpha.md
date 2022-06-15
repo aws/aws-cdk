@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.28.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.27.0-alpha.0...v2.28.0-alpha.0) (2022-06-14)
+
+
+### Bug Fixes
+
+* **appsync:** Create Lambda permission when using Lambda Authorizer(#… ([#20641](https://github.com/aws/aws-cdk/issues/20641)) ([6176400](https://github.com/aws/aws-cdk/commit/61764009648a4602ffa403adda903442c48c45df)), closes [#20234](https://github.com/aws/aws-cdk/issues/20234)
+* **integ-runner:** don't allow new legacy tests ([#20614](https://github.com/aws/aws-cdk/issues/20614)) ([c946615](https://github.com/aws/aws-cdk/commit/c94661508e2a97b52e9284ba4093d9864d2d5f0b))
+
 ## [2.27.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.26.0-alpha.0...v2.27.0-alpha.0) (2022-06-02)
 
 

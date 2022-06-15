@@ -3,11 +3,8 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import { CustomResource, CustomResourceProvider } from '../lib';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from 'constructs';
+import { CustomResource, CustomResourceProvider } from '../lib';
 
 /* eslint-disable @aws-cdk/no-core-construct */
 /* eslint-disable quote-props */
