@@ -2,11 +2,12 @@ import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import { App, Stack } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 
 import { QueueProcessingFargateService } from '../../lib';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-patterns-queue');
+const stack = new Stack(app, 'aws-ecs-patterns-runtime-queue');
 const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAzs: 2,
 });
@@ -21,5 +22,7 @@ new QueueProcessingFargateService(stack, 'QueueProcessingService', {
     operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
   },
 });
+
+new IntegTest(app, 'Integ', { testCases: [stack] });
 
 app.synth();
