@@ -1,11 +1,11 @@
 import { Vpc } from '@aws-cdk/aws-ec2';
 import { Cluster, CpuArchitecture, ContainerImage, OperatingSystemFamily } from '@aws-cdk/aws-ecs';
 import { App, Stack } from '@aws-cdk/core';
-
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { ApplicationMultipleTargetGroupsFargateService } from '../../lib';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-integ');
+const stack = new Stack(app, 'aws-ecs-runtime-integ');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 
@@ -49,5 +49,7 @@ new ApplicationMultipleTargetGroupsFargateService(stack, 'myService', {
     },
   ],
 });
+
+new IntegTest(app, 'Integ', { testCases: [stack] });
 
 app.synth();
