@@ -3,11 +3,6 @@ import { Construct } from 'constructs';
 import { ExpectedResult, ActualResult } from './common';
 import { AssertionRequest, AssertionsProvider, ASSERT_RESOURCE_TYPE } from './providers';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
-
 /**
  * Options for an EqualsAssertion
  */
@@ -38,7 +33,7 @@ export interface EqualsAssertionProps {
  * Construct that creates a CustomResource to assert that two
  * values are equal
  */
-export class EqualsAssertion extends CoreConstruct {
+export class EqualsAssertion extends Construct {
   /**
    * The result of the assertion
    */

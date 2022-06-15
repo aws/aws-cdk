@@ -5,6 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as core from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as flink from '../lib';
 
 describe('Application', () => {
@@ -208,6 +209,13 @@ describe('Application', () => {
   });
 
   test('using an asset for code', () => {
+    const app = new core.App({
+      context: {
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    stack = new core.Stack(app);
+
     const code = flink.ApplicationCode.fromAsset(path.join(__dirname, 'code-asset'));
     new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,

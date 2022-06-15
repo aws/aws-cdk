@@ -16,11 +16,11 @@
     },
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.ServiceCatalogAppRegistry",
+        "namespace": "Amazon.CDK.AWS.Servicecatalogappregistry",
         "packageId": "Amazon.CDK.AWS.ServiceCatalogAppRegistry",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
         "package": "software.amazon.awscdk.services.servicecatalogappregistry",
@@ -32,7 +32,7 @@
       "python": {
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ],
         "distName": "aws-cdk.aws-servicecatalogappregistry",
         "module": "aws_cdk.aws_servicecatalogappregistry"
@@ -88,18 +88,18 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.5.0"
+    "@types/jest": "^27.5.2"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "experimental",
   "maturity": "experimental",
@@ -108,5 +108,6 @@
   },
   "publishConfig": {
     "tag": "latest"
-  }
+  },
+  "private": true
 }

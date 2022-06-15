@@ -25,10 +25,6 @@ import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
 const DEFAULT_CAPACITY_TYPE = ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
@@ -564,7 +560,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    * ```ts
    * const layer = new lambda.LayerVersion(this, 'proxy-agent-layer', {
    *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`),
-   *   compatibleRuntimes: [lambda.Runtime.NODEJS_12_X],
+   *   compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
    * });
    * ```
    *
@@ -616,6 +612,12 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - The controller is not installed.
    */
   readonly albController?: AlbControllerOptions;
+  /**
+   * The cluster log types which you want to enable.
+   *
+   * @default - none
+   */
+  readonly clusterLogging?: ClusterLoggingTypes[];
 }
 
 /**
@@ -757,13 +759,6 @@ export interface ClusterProps extends ClusterOptions {
    * @default - none
    */
   readonly tags?: { [key: string]: string };
-
-  /**
-   * The cluster log types which you want to enable.
-   *
-   * @default - none
-   */
-  readonly clusterLogging?: ClusterLoggingTypes[];
 }
 
 /**
@@ -1055,10 +1050,10 @@ abstract class ClusterBase extends Resource implements ICluster {
       this.addSpotInterruptHandler();
     }
 
-    if (this instanceof Cluster) {
+    if (this instanceof Cluster && this.albController) {
       // the controller runs on the worker nodes so they cannot
       // be deleted before the controller.
-      this.albController?.node.addDependency(autoScalingGroup);
+      Node.of(this.albController).addDependency(autoScalingGroup);
     }
   }
 }
@@ -2186,7 +2181,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
   /**
    * Return the correct image
    */
-  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
+  public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return {
       imageId: ami,

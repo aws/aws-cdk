@@ -305,7 +305,7 @@ class EksClusterStack extends Stack {
 }
 
 // this test uses both the bottlerocket image and the inf1 instance, which are only supported in these
-// regions. see https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-eks#bottlerocket
+// regions. see https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-eks#bottlerocket
 // and https://aws.amazon.com/about-aws/whats-new/2019/12/introducing-amazon-ec2-inf1-instances-high-performance-and-the-lowest-cost-machine-learning-inference-in-the-cloud/
 const supportedRegions = [
   'us-east-1',

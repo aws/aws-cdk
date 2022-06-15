@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.33"
         }
       },
       "VariablePipelineStack": {
@@ -716,14 +716,14 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Construct",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.33"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.33"
                     }
                   },
                   "Build": {
@@ -981,14 +981,14 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Construct",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.33"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.33"
                     }
                   },
                   "MyWave": {
@@ -1239,8 +1239,8 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Construct",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.33"
                         }
                       },
                       "Consume": {
@@ -1487,14 +1487,14 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Construct",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.33"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.33"
                     }
                   }
                 },

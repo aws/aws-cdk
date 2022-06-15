@@ -1,5 +1,4 @@
-import { Construct, Node } from 'constructs';
-import { ConstructNode } from './construct-compat';
+import { IConstruct, Node } from 'constructs';
 import { makeUniqueId } from './private/uniqueid';
 
 /**
@@ -15,7 +14,7 @@ export class Names {
    * @param construct The construct
    * @returns a unique id based on the construct path
    */
-  public static uniqueId(construct: Construct): string {
+  public static uniqueId(construct: IConstruct): string {
     const node = Node.of(construct);
     const components = node.scopes.slice(1).map(c => Node.of(c).id);
     return components.length > 0 ? makeUniqueId(components) : '';
@@ -31,8 +30,8 @@ export class Names {
    * @param node The construct node
    * @returns a unique id based on the construct path
    */
-  public static nodeUniqueId(node: ConstructNode): string {
-    const components = node.scopes.slice(1).map(c => c.node.id);
+  public static nodeUniqueId(node: Node): string {
+    const components = node.scopes.slice(1).map(c => Node.of(c).id);
     return components.length > 0 ? makeUniqueId(components) : '';
   }
 

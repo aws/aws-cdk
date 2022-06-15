@@ -254,23 +254,7 @@ test('create a service with local assets(image repository type: ECR)', () => {
           Port: '8000',
         },
         ImageIdentifier: {
-          'Fn::Join': [
-            '',
-            [
-              {
-                Ref: 'AWS::AccountId',
-              },
-              '.dkr.ecr.',
-              {
-                Ref: 'AWS::Region',
-              },
-              '.',
-              {
-                Ref: 'AWS::URLSuffix',
-              },
-              '/aws-cdk/assets:e9db95c5eb5c683b56dbb8a1930ab8b028babb58b58058d72fa77071e38e66a4',
-            ],
-          ],
+          'Fn::Sub': '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967',
         },
         ImageRepositoryType: 'ECR',
       },
@@ -536,23 +520,7 @@ test('custom IAM access role and instance role are allowed', () => {
           Port: '8000',
         },
         ImageIdentifier: {
-          'Fn::Join': [
-            '',
-            [
-              {
-                Ref: 'AWS::AccountId',
-              },
-              '.dkr.ecr.',
-              {
-                Ref: 'AWS::Region',
-              },
-              '.',
-              {
-                Ref: 'AWS::URLSuffix',
-              },
-              '/aws-cdk/assets:e9db95c5eb5c683b56dbb8a1930ab8b028babb58b58058d72fa77071e38e66a4',
-            ],
-          ],
+          'Fn::Sub': '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967',
         },
         ImageRepositoryType: 'ECR',
       },
