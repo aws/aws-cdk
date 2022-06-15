@@ -555,7 +555,7 @@ function calculateCacheKey<A extends object>(props: A): string {
  * Recursively sort object keys
  */
 function sortObject(object: { [key: string]: any }): { [key: string]: any } {
-  if (typeof object !== 'object' || object instanceof Array) {
+  if (typeof object !== 'object' || Array.isArray(object)) {
     return object;
   }
   const ret: { [key: string]: any } = {};

@@ -10,6 +10,8 @@ import { ConstructInfo, constructInfoFromConstruct } from './runtime-info';
 
 const FILE_PATH = 'tree.json';
 
+const TREE_METADATA_SYMBOL = Symbol.for('@aws-cdk/core.TreeMetadata');
+
 /**
  * Construct that is automatically attached to the top-level `App`.
  * This generates, as part of synthesis, a file containing the construct tree and the metadata for each node in the tree.
@@ -17,6 +19,13 @@ const FILE_PATH = 'tree.json';
  *
  */
 export class TreeMetadata extends Construct {
+  /**
+   * Return whether the given object is a TreeMetadata.
+   */
+  public static isTreeMetadata(x: any): x is TreeMetadata {
+    return x !== null && typeof(x) === 'object' && TREE_METADATA_SYMBOL in x;
+  }
+
   constructor(scope: Construct) {
     super(scope, 'Tree');
   }
@@ -98,3 +107,12 @@ interface Node {
    */
   readonly constructInfo?: ConstructInfo;
 }
+
+/**
+ * Mark all instances of 'TreeMetadata'.
+ */
+Object.defineProperty(TreeMetadata.prototype, TREE_METADATA_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});

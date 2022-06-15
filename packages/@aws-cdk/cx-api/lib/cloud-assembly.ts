@@ -80,7 +80,7 @@ export class CloudAssembly {
    * @returns a `CloudFormationStackArtifact` object.
    */
   public getStackByName(stackName: string): CloudFormationStackArtifact {
-    const artifacts = this.artifacts.filter(a => a instanceof CloudFormationStackArtifact && a.stackName === stackName);
+    const artifacts = this.artifacts.filter(a => CloudFormationStackArtifact.isCloudFormationStackArtifact(a) && a.stackName === stackName);
     if (!artifacts || artifacts.length === 0) {
       throw new Error(`Unable to find stack with stack name "${stackName}"`);
     }
@@ -115,7 +115,7 @@ export class CloudAssembly {
       throw new Error(`Unable to find artifact with id "${artifactId}"`);
     }
 
-    if (!(artifact instanceof CloudFormationStackArtifact)) {
+    if (!CloudFormationStackArtifact.isCloudFormationStackArtifact(artifact)) {
       throw new Error(`Artifact ${artifactId} is not a CloudFormation stack`);
     }
 
@@ -154,7 +154,7 @@ export class CloudAssembly {
       throw new Error(`Unable to find artifact with id "${artifactId}"`);
     }
 
-    if (!(artifact instanceof NestedCloudAssemblyArtifact)) {
+    if (!NestedCloudAssemblyArtifact.isNestedCloudAssemblyArtifact(artifact)) {
       throw new Error(`Found artifact '${artifactId}' but it's not a nested cloud assembly`);
     }
 
@@ -184,7 +184,7 @@ export class CloudAssembly {
     }
     const tree = trees[0];
 
-    if (!(tree instanceof TreeCloudArtifact)) {
+    if (!TreeCloudArtifact.isTreeCloudArtifact(tree)) {
       throw new Error('"Tree" artifact is not of expected type');
     }
 
@@ -195,22 +195,14 @@ export class CloudAssembly {
    * @returns all the CloudFormation stack artifacts that are included in this assembly.
    */
   public get stacks(): CloudFormationStackArtifact[] {
-    return this.artifacts.filter(isCloudFormationStackArtifact);
-
-    function isCloudFormationStackArtifact(x: any): x is CloudFormationStackArtifact {
-      return x instanceof CloudFormationStackArtifact;
-    }
+    return this.artifacts.filter(CloudFormationStackArtifact.isCloudFormationStackArtifact);
   }
 
   /**
    * The nested assembly artifacts in this assembly
    */
   public get nestedAssemblies(): NestedCloudAssemblyArtifact[] {
-    return this.artifacts.filter(isNestedCloudAssemblyArtifact);
-
-    function isNestedCloudAssemblyArtifact(x: any): x is NestedCloudAssemblyArtifact {
-      return x instanceof NestedCloudAssemblyArtifact;
-    }
+    return this.artifacts.filter(NestedCloudAssemblyArtifact.isNestedCloudAssemblyArtifact);
   }
 
   private validateDeps() {

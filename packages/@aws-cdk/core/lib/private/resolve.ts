@@ -184,6 +184,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
   // primitives - as-is
   //
 
+  // eslint-disable-next-line no-instanceof/no-instanceof
   if (typeof(obj) !== 'object' || obj instanceof Date) {
     return obj;
   }

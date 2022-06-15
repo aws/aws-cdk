@@ -1,12 +1,21 @@
 import { schema } from '@aws-cdk/cfnspec';
 import { joinIf } from './util';
 
+const SPEC_NAME_SYMBOL = Symbol.for('@aws-cdk/cfn2ts.SpecName');
+
 /**
  * Name of an object in the CloudFormation spec
  *
  * This refers to a Resource, parsed from a string like 'AWS::S3::Bucket'.
  */
 export class SpecName {
+  /**
+   * Return whether the given object is a SpecName.
+   */
+  public static isSpecName(x: any): x is SpecName {
+    return x !== null && typeof(x) === 'object' && SPEC_NAME_SYMBOL in x;
+  }
+
   /**
    * Parse a string representing a name from the CloudFormation spec to a CfnName object
    */
@@ -35,6 +44,7 @@ export class SpecName {
     return new PropertyAttributeName(this.module, this.resourceName, propName);
   }
 }
+
 
 /**
  * Name of a property type or attribute in the CloudFormation spec.
@@ -121,3 +131,12 @@ function primitiveScalarTypeNames(spec: schema.ScalarProperty): string[] {
   }
   return [];
 }
+
+/**
+ * Mark all instances of 'SpecName'.
+ */
+Object.defineProperty(SpecName.prototype, SPEC_NAME_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});

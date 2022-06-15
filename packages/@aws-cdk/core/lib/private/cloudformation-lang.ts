@@ -167,6 +167,7 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
     if (Array.isArray(obj)) {
       return renderCollection('[', ']', obj, recurse);
     }
+    // eslint-disable-next-line no-instanceof/no-instanceof
     if (typeof obj === 'object' && obj != null && !(obj instanceof Date)) {
       // Treat as an intrinsic if this LOOKS like a CFN intrinsic (`{ Ref: ... }`)
       // AND it's the result of a token resolution. Otherwise, we just treat this

@@ -393,7 +393,7 @@ function evalCFN(value: any) {
 }
 
 function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifact {
-  return x instanceof cxapi.AssetManifestArtifact;
+  return cxapi.AssetManifestArtifact.isAssetManifestArtifact(x);
 }
 
 function getAssetManifest(asm: cxapi.CloudAssembly): cxapi.AssetManifestArtifact {

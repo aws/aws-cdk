@@ -111,7 +111,7 @@ export class Attribute {
  * Example: AWS::EC2 -> ec2
  */
 export function packageName(module: SpecName | string): string {
-  if (module instanceof SpecName) {
+  if (SpecName.isSpecName(module)) {
     module = module.module;
   }
 

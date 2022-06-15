@@ -5,7 +5,16 @@ import { CloudArtifact } from '../cloud-artifact';
 import type { CloudAssembly } from '../cloud-assembly';
 import { Environment, EnvironmentUtils } from '../environment';
 
+const CLOUDFORMATION_STACK_ARTIFACT_SYMBOL = Symbol.for('@aws-cdk/cx-api.CloudFormationStackArtifact');
+
 export class CloudFormationStackArtifact extends CloudArtifact {
+  /**
+   * Return whether the given object is a CloudFormationStackArtifact.
+   */
+  public static isCloudFormationStackArtifact(x: any): x is CloudFormationStackArtifact {
+    return x !== null && typeof(x) === 'object' && CLOUDFORMATION_STACK_ARTIFACT_SYMBOL in x;
+  }
+
   /**
    * The file name of the template.
    */
@@ -183,3 +192,12 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     return ret;
   }
 }
+
+/**
+ * Mark all instances of 'CloudFormationStackArtifact'.
+ */
+Object.defineProperty(CloudFormationStackArtifact.prototype, CLOUDFORMATION_STACK_ARTIFACT_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});

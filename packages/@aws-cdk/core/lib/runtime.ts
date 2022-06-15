@@ -231,6 +231,7 @@ export function validateBoolean(x: any): ValidationResult {
 }
 
 export function validateDate(x: any): ValidationResult {
+  // eslint-disable-next-line no-instanceof/no-instanceof
   if (canInspect(x) && !(x instanceof Date)) {
     return new ValidationResult(`${JSON.stringify(x)} should be a Date`);
   }

@@ -50,7 +50,7 @@ describe('stage', () => {
     // THEN -- app manifest contains a nested cloud assembly
     const appAsm = app.synth();
 
-    const artifact = appAsm.artifacts.find(x => x instanceof cxapi.NestedCloudAssemblyArtifact);
+    const artifact = appAsm.artifacts.find(x => cxapi.NestedCloudAssemblyArtifact.isNestedCloudAssemblyArtifact(x));
     expect(artifact).toBeDefined();
 
 
