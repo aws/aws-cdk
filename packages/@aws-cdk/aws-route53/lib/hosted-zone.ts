@@ -71,7 +71,7 @@ export class HostedZone extends Resource implements IHostedZone {
     class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = hostedZoneId;
       public get zoneName(): string {
-        throw new Error('HostedZone.fromHostedZoneId doesn\'t support "zoneName"');
+        throw new Error('Cannot reference `zoneName` when using `HostedZone.fromHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromHostedZoneAttributes()` or `fromLookup()` instead.');
       }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
