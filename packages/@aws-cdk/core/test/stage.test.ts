@@ -18,8 +18,6 @@ describe('stage', () => {
     // THEN
     expect(acctRegion(stack1)).toEqual(['account', 'elsewhere']);
     expect(acctRegion(stack2)).toEqual(['tnuocca', 'region']);
-
-
   });
 
   test('envs are inherited deeply', () => {
@@ -38,8 +36,6 @@ describe('stage', () => {
     expect(acctRegion(new Stack(innerAcct, 'Stack'))).toEqual(['tnuocca', 'region']);
     expect(acctRegion(new Stack(innerRegion, 'Stack'))).toEqual(['account', 'elsewhere']);
     expect(acctRegion(new Stack(innerNeither, 'Stack'))).toEqual(['account', 'region']);
-
-
   });
 
   test('The Stage Assembly is in the app Assembly\'s manifest', () => {
@@ -53,8 +49,6 @@ describe('stage', () => {
 
     const artifact = appAsm.artifacts.find(x => x instanceof cxapi.NestedCloudAssemblyArtifact);
     expect(artifact).toBeDefined();
-
-
   });
 
   test('Stacks in Stage are in a different cxasm than Stacks in App', () => {
@@ -70,8 +64,6 @@ describe('stage', () => {
 
     const appAsm = app.synth();
     expect(appAsm.stacks.map(s => s.stackName)).toEqual([stack1.stackName]);
-
-
   });
 
   test('Can nest Stages inside other Stages', () => {
@@ -87,8 +79,6 @@ describe('stage', () => {
     const innerAsm = outerAsm.getNestedAssembly(inner.artifactId);
 
     expect(innerAsm.tryGetArtifact(stack.artifactId)).toBeDefined();
-
-
   });
 
   test('Default stack name in Stage objects incorporates the Stage name and no hash', () => {
@@ -100,8 +90,6 @@ describe('stage', () => {
     // THEN
     expect(stage.stageName).toEqual('MyStage');
     expect(stack.stackName).toEqual('MyStage-MyStack');
-
-
   });
 
   test('Can not have dependencies to stacks outside the nested asm', () => {
@@ -115,7 +103,6 @@ describe('stage', () => {
     expect(() => {
       stack2.addDependency(stack1);
     }).toThrow(/dependency cannot cross stage boundaries/);
-
   });
 
   test('When we synth() a stage, aspects inside it must have been applied', () => {
@@ -134,8 +121,6 @@ describe('stage', () => {
       'MyStage/Stack',
       'MyStage/Stack/Resource',
     ]);
-
-
   });
 
   test('Aspects do not apply inside a Stage', () => {
@@ -154,7 +139,6 @@ describe('stage', () => {
       '',
       'Tree',
     ]);
-
   });
 
   test('Automatic dependencies inside a stage are available immediately after synth', () => {
@@ -181,8 +165,6 @@ describe('stage', () => {
     expect(
       asm.getStackArtifact(stack2.artifactId).dependencies.map(d => d.id)).toEqual(
       [stack1.artifactId]);
-
-
   });
 
   test('Assemblies can be deeply nested', () => {
@@ -228,8 +210,6 @@ describe('stage', () => {
         },
       },
     });
-
-
   });
 
   test('stage name validation', () => {
@@ -246,8 +226,6 @@ describe('stage', () => {
     expect(() => new Stage(app, '&')).toThrow(/invalid stage name "&"/);
     expect(() => new Stage(app, '45hello')).toThrow(/invalid stage name "45hello"/);
     expect(() => new Stage(app, 'f')).toThrow(/invalid stage name "f"/);
-
-
   });
 
   test('outdir cannot be specified for nested stages', () => {
@@ -256,7 +234,6 @@ describe('stage', () => {
 
     // THEN
     expect(() => new Stage(app, 'mystage', { outdir: '/tmp/foo/bar' })).toThrow(/"outdir" cannot be specified for nested stages/);
-
   });
 
   test('Stage.isStage indicates that a construct is a stage', () => {
@@ -269,7 +246,6 @@ describe('stage', () => {
     expect(Stage.isStage(stage)).toEqual(true);
     expect(Stage.isStage(app)).toEqual(true);
     expect(Stage.isStage(stack)).toEqual(false);
-
   });
 
   test('Stage.isStage indicates that a construct is a stage based on symbol', () => {
@@ -285,7 +261,6 @@ describe('stage', () => {
     expect(Stage.isStage(stage)).toEqual(true);
     expect(Stage.isStage(app)).toEqual(true);
     expect(Stage.isStage(externalStage)).toEqual(true);
-
   });
 });
 

@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.33"
         }
       },
       "VariablePipelineStack": {
@@ -717,13 +717,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.33"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.33"
                     }
                   },
                   "Build": {
@@ -982,13 +982,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.33"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.33"
                     }
                   },
                   "MyWave": {
@@ -1044,6 +1044,43 @@
                                           "aws:cdk:cloudformation:props": {
                                             "policyDocument": {
                                               "Statement": [
+                                                {
+                                                  "Action": [
+                                                    "s3:Abort*",
+                                                    "s3:DeleteObject*",
+                                                    "s3:GetBucket*",
+                                                    "s3:GetObject*",
+                                                    "s3:List*",
+                                                    "s3:PutObject",
+                                                    "s3:PutObjectLegalHold",
+                                                    "s3:PutObjectRetention",
+                                                    "s3:PutObjectTagging",
+                                                    "s3:PutObjectVersionTagging"
+                                                  ],
+                                                  "Effect": "Allow",
+                                                  "Resource": [
+                                                    {
+                                                      "Fn::GetAtt": [
+                                                        "TestCacheBucketA6BDC126",
+                                                        "Arn"
+                                                      ]
+                                                    },
+                                                    {
+                                                      "Fn::Join": [
+                                                        "",
+                                                        [
+                                                          {
+                                                            "Fn::GetAtt": [
+                                                              "TestCacheBucketA6BDC126",
+                                                              "Arn"
+                                                            ]
+                                                          },
+                                                          "/*"
+                                                        ]
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
                                                 {
                                                   "Action": [
                                                     "logs:CreateLogGroup",
@@ -1220,7 +1257,20 @@
                                       "buildSpec": "{\n  \"version\": \"0.2\",\n  \"env\": {\n    \"exported-variables\": [\n      \"MY_VAR\"\n    ]\n  },\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"export MY_VAR=hello\"\n      ]\n    }\n  }\n}"
                                     },
                                     "cache": {
-                                      "type": "NO_CACHE"
+                                      "type": "S3",
+                                      "location": {
+                                        "Fn::Join": [
+                                          "/",
+                                          [
+                                            {
+                                              "Ref": "TestCacheBucketA6BDC126"
+                                            },
+                                            {
+                                              "Ref": "AWS::NoValue"
+                                            }
+                                          ]
+                                        ]
+                                      }
                                     },
                                     "description": "Pipeline step VariablePipelineStack/Pipeline/MyWave/Produce",
                                     "encryptionKey": "alias/aws/s3"
@@ -1240,7 +1290,7 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.33"
                         }
                       },
                       "Consume": {
@@ -1292,6 +1342,43 @@
                                           "aws:cdk:cloudformation:props": {
                                             "policyDocument": {
                                               "Statement": [
+                                                {
+                                                  "Action": [
+                                                    "s3:Abort*",
+                                                    "s3:DeleteObject*",
+                                                    "s3:GetBucket*",
+                                                    "s3:GetObject*",
+                                                    "s3:List*",
+                                                    "s3:PutObject",
+                                                    "s3:PutObjectLegalHold",
+                                                    "s3:PutObjectRetention",
+                                                    "s3:PutObjectTagging",
+                                                    "s3:PutObjectVersionTagging"
+                                                  ],
+                                                  "Effect": "Allow",
+                                                  "Resource": [
+                                                    {
+                                                      "Fn::GetAtt": [
+                                                        "TestCacheBucketA6BDC126",
+                                                        "Arn"
+                                                      ]
+                                                    },
+                                                    {
+                                                      "Fn::Join": [
+                                                        "",
+                                                        [
+                                                          {
+                                                            "Fn::GetAtt": [
+                                                              "TestCacheBucketA6BDC126",
+                                                              "Arn"
+                                                            ]
+                                                          },
+                                                          "/*"
+                                                        ]
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
                                                 {
                                                   "Action": [
                                                     "logs:CreateLogGroup",
@@ -1468,7 +1555,20 @@
                                       "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"echo \\\"The variable was: $THE_VAR\\\"\"\n      ]\n    }\n  }\n}"
                                     },
                                     "cache": {
-                                      "type": "NO_CACHE"
+                                      "type": "S3",
+                                      "location": {
+                                        "Fn::Join": [
+                                          "/",
+                                          [
+                                            {
+                                              "Ref": "TestCacheBucketA6BDC126"
+                                            },
+                                            {
+                                              "Ref": "AWS::NoValue"
+                                            }
+                                          ]
+                                        ]
+                                      }
                                     },
                                     "description": "Pipeline step VariablePipelineStack/Pipeline/MyWave/Consume",
                                     "encryptionKey": "alias/aws/s3"
@@ -1488,13 +1588,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.33"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.33"
                     }
                   }
                 },
@@ -1623,6 +1723,28 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/pipelines.CodePipeline",
+              "version": "0.0.0"
+            }
+          },
+          "TestCacheBucket": {
+            "id": "TestCacheBucket",
+            "path": "VariablePipelineStack/TestCacheBucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "VariablePipelineStack/TestCacheBucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-s3.Bucket",
               "version": "0.0.0"
             }
           }
