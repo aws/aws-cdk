@@ -16,6 +16,10 @@ new QueueProcessingFargateService(stack, 'QueueProcessingService', {
   memoryLimitMiB: 512,
   image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
   minScalingCapacity: 0,
+  runtimePlatform: {
+    cpuArchitecture: ecs.CpuArchitecture.X86_64,
+    operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+  },
 });
 
 app.synth();

@@ -1,4 +1,4 @@
-import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { FargatePlatformVersion, FargateService, FargateTaskDefinition, RuntimePlatform } from '@aws-cdk/aws-ecs';
 import { NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { FeatureFlags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -82,6 +82,12 @@ export interface NetworkMultipleTargetGroupsFargateServiceProps extends NetworkM
    * @default Latest
    */
   readonly platformVersion?: FargatePlatformVersion;
+  /**
+   * The runtime platform of the task definition
+   *
+   * @default - undefined
+   */
+  readonly runtimePlatform?: RuntimePlatform;
 }
 
 /**
@@ -129,6 +135,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
         executionRole: taskImageOptions.executionRole,
         taskRole: taskImageOptions.taskRole,
         family: taskImageOptions.family,
+        runtimePlatform: props.runtimePlatform,
       });
 
       const containerName = taskImageOptions.containerName ?? 'web';

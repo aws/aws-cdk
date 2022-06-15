@@ -1,5 +1,5 @@
 import { SubnetSelection } from '@aws-cdk/aws-ec2';
-import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { FargatePlatformVersion, FargateService, FargateTaskDefinition, RuntimePlatform } from '@aws-cdk/aws-ecs';
 import { FeatureFlags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
@@ -85,6 +85,12 @@ export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalan
    * @default Latest
    */
   readonly platformVersion?: FargatePlatformVersion;
+  /**
+   * The runtime platform of the task definition
+   *
+   * @default - undefined
+   */
+  readonly runtimePlatform?: RuntimePlatform;
 }
 
 /**
@@ -122,6 +128,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
         executionRole: taskImageOptions.executionRole,
         taskRole: taskImageOptions.taskRole,
         family: taskImageOptions.family,
+        runtimePlatform: props.runtimePlatform,
       });
 
       // Create log driver if logging is enabled

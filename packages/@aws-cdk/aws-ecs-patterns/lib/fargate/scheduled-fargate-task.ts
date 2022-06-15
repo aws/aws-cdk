@@ -1,4 +1,4 @@
-import { FargateTaskDefinition, FargatePlatformVersion } from '@aws-cdk/aws-ecs';
+import { FargateTaskDefinition, FargatePlatformVersion, RuntimePlatform } from '@aws-cdk/aws-ecs';
 import { EcsTask } from '@aws-cdk/aws-events-targets';
 import { Construct } from 'constructs';
 import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
@@ -69,6 +69,12 @@ export interface ScheduledFargateTaskImageOptions extends ScheduledTaskImageProp
    * @default 512
    */
   readonly memoryLimitMiB?: number;
+  /**
+   * The runtime platform of the task definition
+   *
+   * @default - undefined
+   */
+  readonly runtimePlatform?: RuntimePlatform;
 }
 
 /**
@@ -114,6 +120,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
       this.taskDefinition = new FargateTaskDefinition(this, 'ScheduledTaskDef', {
         memoryLimitMiB: taskImageOptions.memoryLimitMiB || 512,
         cpu: taskImageOptions.cpu || 256,
+        runtimePlatform: taskImageOptions.runtimePlatform,
       });
       this.taskDefinition.addContainer('ScheduledContainer', {
         image: taskImageOptions.image,

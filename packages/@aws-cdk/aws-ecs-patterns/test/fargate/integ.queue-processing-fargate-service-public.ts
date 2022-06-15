@@ -19,6 +19,10 @@ new QueueProcessingFargateService(stack, 'PublicQueueService', {
     interval: Duration.seconds(6),
     retries: 10,
   },
+  runtimePlatform: {
+    cpuArchitecture: ecs.CpuArchitecture.X86_64,
+    operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+  },
 });
 
 app.synth();
