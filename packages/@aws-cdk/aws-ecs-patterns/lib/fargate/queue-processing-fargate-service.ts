@@ -1,5 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { FargatePlatformVersion, FargateService, FargateTaskDefinition, HealthCheck } from '@aws-cdk/aws-ecs';
+import { FargatePlatformVersion, FargateService, FargateTaskDefinition, HealthCheck, RuntimePlatform } from '@aws-cdk/aws-ecs';
 import { FeatureFlags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
@@ -99,6 +99,12 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    * @default false
    */
   readonly assignPublicIp?: boolean;
+  /**
+   * The runtime platform of the task definition
+   *
+   * @default - undefined
+   */
+  readonly runtimePlatform?: RuntimePlatform;
 }
 
 /**
@@ -125,6 +131,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       memoryLimitMiB: props.memoryLimitMiB || 512,
       cpu: props.cpu || 256,
       family: props.family,
+      runtimePlatform: props.runtimePlatform,
     });
 
     const containerName = props.containerName ?? 'QueueProcessingContainer';
