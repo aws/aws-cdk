@@ -3,7 +3,7 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Annotations, ArnFormat, IResource, Resource, Token } from '@aws-cdk/core';
-import { Node } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { AliasOptions } from './alias';
 import { Architecture } from './architecture';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
@@ -14,10 +14,6 @@ import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 import { addAlias, flatMap } from './util';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 

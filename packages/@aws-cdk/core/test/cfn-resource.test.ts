@@ -1,5 +1,7 @@
+import { VALIDATE_SNAPSHOT_REMOVAL_POLICY } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as core from '../lib';
+import { getWarnings } from './util';
 
 describe('cfn resource', () => {
   describe('._toCloudFormation', () => {
@@ -20,8 +22,6 @@ describe('cfn resource', () => {
         },
       });
       expect(called).toEqual(true);
-
-
     });
 
     test('renders "Properties" for a resource that has only properties set to "false"', () => {
@@ -42,8 +42,96 @@ describe('cfn resource', () => {
           },
         },
       });
+    });
+  });
 
+  describe('snapshot removal policy', () => {
+    const supportedResources = [
+      'AWS::EC2::Volume',
+      'AWS::ElastiCache::CacheCluster',
+      'AWS::ElastiCache::ReplicationGroup',
+      'AWS::Neptune::DBCluster',
+      'AWS::RDS::DBCluster',
+      'AWS::RDS::DBInstance',
+      'AWS::Redshift::Cluster',
+    ];
 
+    test.each(supportedResources) (
+      'works as expected when used on supported resources (old behavior)', (resourceType) => {
+        // GIVEN
+        const app = new core.App();
+        const stack = new core.Stack(app, 'TestStack');
+        const resource = new core.CfnResource(stack, 'Resource', {
+          type: resourceType,
+        });
+
+        // WHEN
+        resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT);
+
+        // THEN
+        expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+          Resource: {
+            Type: resourceType,
+            DeletionPolicy: 'Snapshot',
+            UpdateReplacePolicy: 'Snapshot',
+          },
+        });
+      },
+    );
+
+    test.each(supportedResources) (
+      'works as expected when used on supported resources (under feature flag)', (resourceType) => {
+        // GIVEN
+        const app = new core.App({ context: { [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true } });
+        const stack = new core.Stack(app, 'TestStack');
+        const resource = new core.CfnResource(stack, 'Resource', {
+          type: resourceType,
+        });
+
+        // WHEN
+        resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT);
+
+        // THEN
+        expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+          Resource: {
+            Type: resourceType,
+            DeletionPolicy: 'Snapshot',
+            UpdateReplacePolicy: 'Snapshot',
+          },
+        });
+      },
+    );
+
+    test('warns on unsupported resources (without feature flag)', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app);
+      const resource = new core.CfnResource(stack, 'Resource', {
+        type: 'AWS::Lambda::Function',
+      });
+
+      // WHEN
+      resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT);
+
+      // THEN
+      expect(getWarnings(app.synth())).toEqual([
+        {
+          path: '/Default/Resource',
+          message: 'AWS::Lambda::Function does not support snapshot removal policy. This policy will be ignored.',
+        },
+      ]);
+    });
+
+    test('fails on unsupported resources (under feature flag)', () => {
+      // GIVEN
+      const app = new core.App({ context: { [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true } });
+      const stack = new core.Stack(app);
+      const resource = new core.CfnResource(stack, 'Resource', {
+        type: 'AWS::Lambda::Function',
+      });
+
+      // THEN
+      expect(() => resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT)).toThrowError('AWS::Lambda::Function does not support snapshot removal policy');
     });
   });
 
@@ -64,8 +152,6 @@ describe('cfn resource', () => {
         UpdateReplacePolicy: 'Retain',
       },
     });
-
-
   });
 
   test('can switch off updating Update policy', () => {
@@ -86,8 +172,6 @@ describe('cfn resource', () => {
         DeletionPolicy: 'Retain',
       },
     });
-
-
   });
 
   test('can add metadata', () => {
@@ -108,8 +192,6 @@ describe('cfn resource', () => {
         },
       },
     });
-
-
   });
 
   test('can read metadata', () => {
@@ -121,8 +203,6 @@ describe('cfn resource', () => {
 
     // THEN
     expect(resource.getMetadata('Beep')).toEqual('Boop');
-
-
   });
 
   test('subclasses can override "shouldSynthesize" to lazy-determine if the resource should be included', () => {
@@ -151,8 +231,6 @@ describe('cfn resource', () => {
         // No DependsOn!
       },
     });
-
-
   });
 
   test('CfnResource cannot be created outside Stack', () => {
@@ -162,8 +240,6 @@ describe('cfn resource', () => {
         type: 'Some::Resource',
       });
     }).toThrow(/should be created in the scope of a Stack, but no Stack found/);
-
-
   });
 
   /**
@@ -178,7 +254,5 @@ describe('cfn resource', () => {
         type: 'Some::Resource',
       });
     }).toThrow(/should be created in the scope of a Stack, but no Stack found/);
-
-
   });
 });

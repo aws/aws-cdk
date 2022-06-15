@@ -198,7 +198,7 @@ new secretsmanager.SecretRotation(this, 'SecretRotation', {
 });
 ```
 
-See also [aws-rds](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-rds/README.md) where
+See also [aws-rds](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-rds/README.md) where
 credentials generation and rotation is integrated.
 
 ## Importing Secrets

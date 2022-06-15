@@ -9,10 +9,11 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
+import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
-import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions } from './props';
+import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -471,6 +472,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   /**
    * Adds the single user rotation of the master password to this cluster.
+   * See [Single user rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-one-user-one-password)
    */
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
     if (!this.secret) {
@@ -494,6 +496,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   /**
    * Adds the multi user rotation to this cluster.
+   * See [Alternating users rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users)
    */
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
@@ -661,9 +664,27 @@ export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBasePro
   /**
    * Credentials for the administrative user
    *
+   * Note - using this prop only works with `Credentials.fromPassword()` with the
+   * username of the snapshot, `Credentials.fromUsername()` with the username and
+   * password of the snapshot or `Credentials.fromSecret()` with a secret containing
+   * the username and password of the snapshot.
+   *
    * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
+   * that **will not be applied** to the cluster, use `snapshotCredentials` for the correct behavior.
+   *
+   * @deprecated use `snapshotCredentials` which allows to generate a new password
    */
   readonly credentials?: Credentials;
+
+  /**
+   * Master user credentials.
+   *
+   * Note - It is not possible to change the master username for a snapshot;
+   * however, it is possible to provide (or generate) a new password.
+   *
+   * @default - The existing username and password from the snapshot will be used.
+   */
+  readonly snapshotCredentials?: SnapshotCredentials;
 }
 
 /**
@@ -687,18 +708,47 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
   constructor(scope: Construct, id: string, props: DatabaseClusterFromSnapshotProps) {
     super(scope, id, props);
 
-    const credentials = renderCredentials(this, props.engine, props.credentials);
-    const secret = credentials.secret;
+    if (props.credentials && !props.credentials.password && !props.credentials.secret) {
+      Annotations.of(this).addWarning('Use `snapshotCredentials` to modify password of a cluster created from a snapshot.');
+    }
+    if (!props.credentials && !props.snapshotCredentials) {
+      Annotations.of(this).addWarning('Generated credentials will not be applied to cluster. Use `snapshotCredentials` instead. `addRotationSingleUser()` and `addRotationMultiUser()` cannot be used on tbis cluster.');
+    }
+    const deprecatedCredentials = renderCredentials(this, props.engine, props.credentials);
+
+    let credentials = props.snapshotCredentials;
+    let secret = credentials?.secret;
+    if (!secret && credentials?.generatePassword) {
+      if (!credentials.username) {
+        throw new Error('`snapshotCredentials` `username` must be specified when `generatePassword` is set to true');
+      }
+
+      secret = new DatabaseSecret(this, 'SnapshotSecret', {
+        username: credentials.username,
+        encryptionKey: credentials.encryptionKey,
+        excludeCharacters: credentials.excludeCharacters,
+        replaceOnPasswordCriteriaChanges: credentials.replaceOnPasswordCriteriaChanges,
+        replicaRegions: credentials.replicaRegions,
+      });
+    }
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       snapshotIdentifier: props.snapshotIdentifier,
+      masterUserPassword: secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
     this.clusterIdentifier = cluster.ref;
 
     if (secret) {
       this.secret = secret.attach(this);
+    }
+
+    if (deprecatedCredentials.secret) {
+      const deprecatedSecret = deprecatedCredentials.secret.attach(this);
+      if (!this.secret) {
+        this.secret = deprecatedSecret;
+      }
     }
 
     // create a number token that represents the port of the cluster

@@ -339,7 +339,7 @@ instance.addRotationSingleUser({
 });
 ```
 
-See also [@aws-cdk/aws-secretsmanager](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-secretsmanager/README.md) for credentials rotation of existing clusters/instances.
+See also [@aws-cdk/aws-secretsmanager](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-secretsmanager/README.md) for credentials rotation of existing clusters/instances.
 
 ## IAM Authentication
 
@@ -668,7 +668,7 @@ const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
 
 declare const code: lambda.Code;
 const fn = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code,
   environment: {

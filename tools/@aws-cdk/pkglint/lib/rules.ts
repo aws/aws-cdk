@@ -731,7 +731,7 @@ export class JSIIPythonTarget extends ValidationRule {
 
     const moduleName = cdkModuleName(pkg.json.name);
 
-    // See: https://github.com/aws/jsii/blob/master/docs/configuration.md#configuring-python
+    // See: https://aws.github.io/jsii/user-guides/lib-author/configuration/targets/python/
 
     expectJSON(this.name, pkg, 'jsii.targets.python.distName', moduleName.python.distName);
     expectJSON(this.name, pkg, 'jsii.targets.python.module', moduleName.python.module);
@@ -945,7 +945,7 @@ export class JSIIDotNetIconUrlIsRequired extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!isJSII(pkg)) { return; }
 
-    const CDK_LOGO_URL = 'https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png';
+    const CDK_LOGO_URL = 'https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png';
     expectJSON(this.name, pkg, 'jsii.targets.dotnet.iconUrl', CDK_LOGO_URL);
   }
 }
