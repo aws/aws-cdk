@@ -623,7 +623,7 @@
     "ContainerDefinitions": [
      {
       "Essential": true,
-      "Image": "amazon/amazon-ecs-sample",
+      "Image": "mcr.microsoft.com/windows/servercore/iis:windowsservercore-ltsc2019",
       "LogConfiguration": {
        "LogDriver": "awslogs",
        "Options": {
@@ -649,7 +649,7 @@
       ]
      }
     ],
-    "Cpu": "256",
+    "Cpu": "1024",
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
       "myServiceTaskDefExecutionRole618CD311",
@@ -657,14 +657,14 @@
      ]
     },
     "Family": "awsecsruntimeintegmyServiceTaskDef4A80C357",
-    "Memory": "512",
+    "Memory": "2048",
     "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
      "FARGATE"
     ],
     "RuntimePlatform": {
      "CpuArchitecture": "X86_64",
-     "OperatingSystemFamily": "LINUX"
+     "OperatingSystemFamily": "WINDOWS_SERVER_2019_CORE"
     },
     "TaskRoleArn": {
      "Fn::GetAtt": [

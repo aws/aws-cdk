@@ -12,13 +12,14 @@ const cluster = new Cluster(stack, 'Cluster', { vpc });
 // Two load balancers with two listeners and two target groups.
 new ApplicationMultipleTargetGroupsFargateService(stack, 'myService', {
   cluster,
-  memoryLimitMiB: 512,
+  cpu: 1024,
+  memoryLimitMiB: 2048,
   taskImageOptions: {
-    image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    image: ContainerImage.fromRegistry('mcr.microsoft.com/windows/servercore/iis:windowsservercore-ltsc2019'),
   },
   runtimePlatform: {
     cpuArchitecture: CpuArchitecture.X86_64,
-    operatingSystemFamily: OperatingSystemFamily.LINUX,
+    operatingSystemFamily: OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
   },
   loadBalancers: [
     {
