@@ -721,6 +721,27 @@ describe('role with too large inline policy', () => {
   });
 });
 
+test('many copies of the same statement do not result in overflow policies', () => {
+  const N = 100;
+
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  const role = new Role(stack, 'MyRole', {
+    assumedBy: new ServicePrincipal('service.amazonaws.com'),
+  });
+
+  for (let i = 0; i < N; i++) {
+    role.addToPrincipalPolicy(new PolicyStatement({
+      actions: ['aws:DoAThing'],
+      resources: ['arn:aws:service:us-east-1:111122223333:someResource/SomeSpecificResource'],
+    }));
+  }
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.resourceCountIs('AWS::IAM::ManagedPolicy', 0);
+});
+
 test('cross-env role ARNs include path', () => {
   const app = new App();
   const roleStack = new Stack(app, 'role-stack', { env: { account: '123456789012', region: 'us-east-1' } });
