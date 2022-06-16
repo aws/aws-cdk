@@ -32,32 +32,19 @@ app=""
 app_min=""
 app_v=""
 
-# [Node.js >= 10.13.0]
-#   ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
+# [Node.js >= 14.15.0]
 app="node"
-app_min="v10.13.0"
+app_min="v14.15.0"
 check_which $app $app_min
-app_v=$(node --version)
+app_v=$(node -p 'process.version')
 
 # Check for version 10.*.* - 29.*.*
 echo -e "Checking node version... \c"
-if [ $(echo $app_v | grep -c -E "v[12][0-9]\.[0-9]+\.[0-9]+") -eq 1 ]
+if [ $(node -p "const [major, minor, _patch] = process.version.slice(1).split('.').map((v) => parseInt(v, 10)); major > 14 || (major === 14 && minor >= 15)") = 'true' ]
 then
-    # Check for version 13.0 to 13.6
-    if [ $(echo $app_v | grep -c -E "v13\.[0-6]\.[0-9]+") -eq 1 ]
-    then
-        die "node versions 13.0.0 to 13.6.0 are not supported due to compatibility issues with our dependencies."
-    else
-        # Check for version < 10.13
-        if [ $(echo $app_v | grep -c -E "v10\.([0-9]|1[0-2])\.[0-9]+") -eq 1 ]
-        then
-            wrong_version
-        else
-            echo "Ok"
-        fi
-    fi
+    echo "Ok (${app_v})"
 else
-    echo "Not 12"
+    echo "Not >= ${app_min}"
     wrong_version
 fi
 

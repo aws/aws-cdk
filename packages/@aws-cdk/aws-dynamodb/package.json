@@ -84,14 +84,14 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.97",
-    "@types/jest": "^27.5.0",
+    "@types/aws-lambda": "^8.10.99",
+    "@types/jest": "^27.5.2",
     "@types/sinon": "^9.0.11",
     "aws-sdk": "^2.848.0",
     "aws-sdk-mock": "5.6.0",
     "jest": "^27.5.1",
     "sinon": "^9.2.4",
-    "ts-jest": "^27.1.4"
+    "ts-jest": "^27.1.5"
   },
   "dependencies": {
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
@@ -117,7 +117,7 @@
     "constructs": "^3.3.69"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "stable",
   "awscdkio": {

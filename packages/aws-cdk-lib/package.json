@@ -109,7 +109,7 @@
     "case": "1.6.3",
     "fs-extra": "^9.1.0",
     "ignore": "^5.2.0",
-    "jsonschema": "^1.4.0",
+    "jsonschema": "^1.4.1",
     "minimatch": "^3.1.2",
     "punycode": "^2.1.1",
     "semver": "^7.3.7",
@@ -361,7 +361,7 @@
     "@types/fs-extra": "^8.1.2",
     "@types/node": "^10.17.60",
     "constructs": "^3.3.69",
-    "esbuild": "^0.14.38",
+    "esbuild": "^0.14.43",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3"
@@ -371,7 +371,7 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "keywords": [
     "aws",
@@ -476,6 +476,7 @@
     "./aws-elasticsearch": "./aws-elasticsearch/index.js",
     "./aws-emr": "./aws-emr/index.js",
     "./aws-emrcontainers": "./aws-emrcontainers/index.js",
+    "./aws-emrserverless": "./aws-emrserverless/index.js",
     "./aws-events": "./aws-events/index.js",
     "./aws-events-targets": "./aws-events-targets/index.js",
     "./aws-eventschemas": "./aws-eventschemas/index.js",
@@ -600,6 +601,7 @@
     "./aws-synthetics": "./aws-synthetics/index.js",
     "./aws-timestream": "./aws-timestream/index.js",
     "./aws-transfer": "./aws-transfer/index.js",
+    "./aws-voiceid": "./aws-voiceid/index.js",
     "./aws-waf": "./aws-waf/index.js",
     "./aws-wafregional": "./aws-wafregional/index.js",
     "./aws-wafv2": "./aws-wafv2/index.js",
@@ -608,6 +610,7 @@
     "./aws-xray": "./aws-xray/index.js",
     "./cloud-assembly-schema": "./cloud-assembly-schema/index.js",
     "./cloudformation-include": "./cloudformation-include/index.js",
+    "./core/lib/helpers-internal": "./core/lib/helpers-internal/index.js",
     "./custom-resources": "./custom-resources/index.js",
     "./cx-api": "./cx-api/index.js",
     "./lambda-layer-awscli": "./lambda-layer-awscli/index.js",
