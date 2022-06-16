@@ -92,6 +92,8 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
   public readonly taskDefinition: Ec2TaskDefinition;
   /**
    * The default target group for the service.
+   *
+   * @deprecated - Use `targetGroups` instead.
    */
   public readonly targetGroup: ApplicationTargetGroup;
 

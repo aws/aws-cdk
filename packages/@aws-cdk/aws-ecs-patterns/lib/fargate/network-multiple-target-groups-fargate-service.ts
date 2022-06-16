@@ -106,6 +106,8 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
 
   /**
    * The default target group for the service.
+   *
+   * @deprecated - Use `targetGroups` instead.
    */
   public readonly targetGroup: NetworkTargetGroup;
 

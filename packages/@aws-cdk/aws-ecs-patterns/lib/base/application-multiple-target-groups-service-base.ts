@@ -371,24 +371,36 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
 
   /**
    * The default Application Load Balancer for the service (first added load balancer).
+   *
+   * @deprecated - Use `loadBalancers` instead.
    */
   public readonly loadBalancer: ApplicationLoadBalancer;
 
   /**
-   * The default listener for the service (first added listener).
-   */
+    * The default listener for the service (first added listener).
+    *
+    * @deprecated - Use `listeners` instead.
+    */
   public readonly listener: ApplicationListener;
 
   /**
-   * The cluster that hosts the service.
-   */
+    * The cluster that hosts the service.
+    */
   public readonly cluster: ICluster;
 
   protected logDriver?: LogDriver;
-  protected listeners = new Array<ApplicationListener>();
-  protected targetGroups = new Array<ApplicationTargetGroup>();
-
-  private loadBalancers = new Array<ApplicationLoadBalancer>();
+  /**
+    * The listeners of the service.
+    */
+  public readonly listeners = new Array<ApplicationListener>();
+  /**
+       * The target groups of the service.
+       */
+  public readonly targetGroups = new Array<ApplicationTargetGroup>();
+  /**
+       * The load balancers of the service.
+       */
+  public readonly loadBalancers = new Array<ApplicationLoadBalancer>();
 
   /**
    * Constructs a new instance of the ApplicationMultipleTargetGroupsServiceBase class.

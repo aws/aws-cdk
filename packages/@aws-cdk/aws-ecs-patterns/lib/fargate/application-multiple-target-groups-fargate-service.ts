@@ -106,6 +106,8 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
 
   /**
    * The default target group for the service.
+   *
+   * @deprecated - Use `targetGroups` instead.
    */
   public readonly targetGroup: ApplicationTargetGroup;
 
