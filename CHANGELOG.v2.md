@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.28.1](https://github.com/aws/aws-cdk/compare/v2.28.0...v2.28.1) (2022-06-15)
+
+
+### Bug Fixes
+
+* **init-templates:** unable to initialize typescript templates ([#20752](https://github.com/aws/aws-cdk/issues/20752)) ([7c06164](https://github.com/aws/aws-cdk/commit/7c061640bc829157ecdcf3fc8c470c5d5aebc3a4)), closes [#20751](https://github.com/aws/aws-cdk/issues/20751)
+
 ## [2.28.0](https://github.com/aws/aws-cdk/compare/v2.27.0...v2.28.0) (2022-06-14)
 
 
@@ -1959,7 +1966,7 @@ section is changed from `HttpMethod` to `CorsHttpMethod`.
 
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
-* **ecs-patterns:** ** the desiredCount property stored on the above constructs will be optional, allowing them to be undefined. This is enabled through the `@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount` feature flag. We would recommend all aws-cdk users to set the `REMOVE_DEFAULT_DESIRED_COUNT` flag to true for all of their existing applications. 
+* **ecs-patterns:** ** the desiredCount property stored on the above constructs will be optional, allowing them to be undefined. This is enabled through the `@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount` feature flag. We would recommend all aws-cdk users to set the `REMOVE_DEFAULT_DESIRED_COUNT` flag to true for all of their existing applications.
 
 Fixes: https://github.com/aws/aws-cdk/issues/12990
 * **aws-appsync:** RdsDataSource now takes a ServerlessCluster instead of a DatabaseCluster
