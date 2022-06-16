@@ -145,6 +145,9 @@ secret.addRotationSchedule('RotationSchedule', { hostedRotation: myHostedRotatio
 dbConnections.allowDefaultPortFrom(myHostedRotation);
 ```
 
+Use the `excludeCharacters` option to customize the characters excluded
+from the generated password when it is rotated.
+
 See also [Automating secret creation in AWS CloudFormation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/integrating_cloudformation.html).
 
 ## Rotating database credentials
