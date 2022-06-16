@@ -266,6 +266,21 @@ export const VALIDATE_SNAPSHOT_REMOVAL_POLICY = '@aws-cdk/core:validateSnapshotR
 export const CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME = '@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName';
 
 /**
+ * Enable this feature flag to create Resource Policies by default in cases where
+ * an AWS service would automatically create the Policy if one does not exist.
+ *
+ * For example, in order to send VPC flow logs to an S3 bucket, there is a specific Bucket Policy
+ * that needs to be attached to the bucket. If you create the bucket without a policy and then add the
+ * bucket as the flow log destination, the service will automatically create the bucket policy with the
+ * necessary permissions. If you were to then try and add your own bucket policy CloudFormation will throw
+ * and error indicating that a bucket policy already exists.
+ *
+ * In cases where we know what the required policy is we can go ahead and create the policy so we can
+ * remain in control of it.
+ */
+export const CREATE_DEFAULT_RESOURCE_POLICIES = '@aws-cdk/core:createDefaultResourcePolicies';
+
+/**
  * Flag values that should apply for new projects
  *
  * Add a flag in here (typically with the value `true`), to enable
@@ -295,6 +310,7 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [IAM_MINIMIZE_POLICIES]: true,
   [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true,
   [CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME]: true,
+  [CREATE_DEFAULT_RESOURCE_POLICIES]: true,
 };
 
 /**
