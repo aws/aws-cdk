@@ -62,7 +62,7 @@ export class HostedZone extends Resource implements IHostedZone {
    * Import a Route 53 hosted zone defined either outside the CDK, or in a different CDK stack
    *
    * Use when hosted zone ID is known. If a HostedZone is imported with this method the zoneName cannot be referenced.
-   * If the zoneName is needed then the HostedZone should be imported with `fromHostedZoneAttributes()` or `fromLookup().
+   * If the zoneName is needed then the HostedZone should be imported with `fromHostedZoneAttributes()` or `fromLookup()`.
    *
    * @param scope the parent Construct for this Construct
    * @param id  the logical name of this Construct
