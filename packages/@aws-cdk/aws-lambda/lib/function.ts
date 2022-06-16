@@ -354,7 +354,7 @@ export interface FunctionProps extends FunctionOptions {
    * For valid values, see the Runtime property in the AWS Lambda Developer
    * Guide.
    *
-   * Use `Runtime.FROM_IMAGE` when when defining a function from a Docker image.
+   * Use `Runtime.FROM_IMAGE` when defining a function from a Docker image.
    */
   readonly runtime: Runtime;
 
