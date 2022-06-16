@@ -92,10 +92,11 @@ export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationL
    * @default - A new security group is created.
    */
   readonly securityGroups?: ISecurityGroup[];
+
   /**
    * The runtime platform of the task definition
    *
-   * @default - undefined
+   * @default undefined If not specified, `operatingSystemFamily` is LINUX and `cpuArchitecture` is X86_64
    */
   readonly runtimePlatform?: RuntimePlatform;
 }

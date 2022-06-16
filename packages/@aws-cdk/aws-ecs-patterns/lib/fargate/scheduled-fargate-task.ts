@@ -69,10 +69,11 @@ export interface ScheduledFargateTaskImageOptions extends ScheduledTaskImageProp
    * @default 512
    */
   readonly memoryLimitMiB?: number;
+
   /**
    * The runtime platform of the task definition
    *
-   * @default - undefined
+   * @default undefined If not specified, `operatingSystemFamily` is LINUX and `cpuArchitecture` is X86_64
    */
   readonly runtimePlatform?: RuntimePlatform;
 }
