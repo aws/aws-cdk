@@ -5,8 +5,7 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../../lib';
 import { LogGroupTargetInput } from '../../lib';
-import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
-
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 
 test('use log group as an event rule target', () => {
   // GIVEN
@@ -56,8 +55,9 @@ test('use log group as an event rule target', () => {
   });
 });
 
-testLegacyBehavior('use log group as an event rule target with rule target input', cdk.App, (app) => {
+testDeprecated('use log group as an event rule target with rule target input', () => {
   // GIVEN
+  const app = new cdk.App();
   const stack = new cdk.Stack(app);
   const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
     logGroupName: '/aws/events/MyLogGroup',
@@ -80,8 +80,9 @@ testLegacyBehavior('use log group as an event rule target with rule target input
   }).toThrow(/CloudWatchLogGroup targets only support input templates in the format/);
 });
 
-testLegacyBehavior('cannot use both logEvent and event', cdk.App, (app) => {
+testDeprecated('cannot use both logEvent and event', () => {
   // GIVEN
+  const app = new cdk.App();
   const stack = new cdk.Stack(app);
   const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
     logGroupName: '/aws/events/MyLogGroup',
@@ -218,9 +219,9 @@ test('can use logEvent', () => {
   });
 });
 
-testLegacyBehavior('specifying retry policy and dead letter queue', cdk.App, (app) => {
+testDeprecated('specifying retry policy and dead letter queue', () => {
   // GIVEN
-  const stack = new cdk.Stack(app);
+  const stack = new cdk.Stack();
   const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
     logGroupName: '/aws/events/MyLogGroup',
   });
