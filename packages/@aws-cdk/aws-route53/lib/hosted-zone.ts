@@ -61,7 +61,8 @@ export class HostedZone extends Resource implements IHostedZone {
   /**
    * Import a Route 53 hosted zone defined either outside the CDK, or in a different CDK stack
    *
-   * Use when hosted zone ID is known. Hosted zone name becomes unavailable through this query.
+   * Use when hosted zone ID is known. If a HostedZone is imported with this method the zoneName cannot be referenced.
+   * If the zoneName is needed then the HostedZone should be imported with `fromHostedZoneAttributes()` or `fromLookup().
    *
    * @param scope the parent Construct for this Construct
    * @param id  the logical name of this Construct
@@ -222,7 +223,8 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
   /**
    * Import a Route 53 public hosted zone defined either outside the CDK, or in a different CDK stack
    *
-   * Use when hosted zone ID is known. Hosted zone name becomes unavailable through this query.
+   * Use when hosted zone ID is known. If a PublicHostedZone is imported with this method the zoneName cannot be referenced.
+   * If the zoneName is needed then the PublicHostedZone should be imported with `fromPublicHostedZoneAttributes()`.
    *
    * @param scope the parent Construct for this Construct
    * @param id the logical name of this Construct
@@ -370,7 +372,8 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
   /**
    * Import a Route 53 private hosted zone defined either outside the CDK, or in a different CDK stack
    *
-   * Use when hosted zone ID is known. Hosted zone name becomes unavailable through this query.
+   * Use when hosted zone ID is known. If a HostedZone is imported with this method the zoneName cannot be referenced.
+   * If the zoneName is needed then you cannot import a PrivateHostedZone.
    *
    * @param scope the parent Construct for this Construct
    * @param id the logical name of this Construct
