@@ -844,4 +844,63 @@ describe('record set', () => {
       });
     }
   });
+
+  test('Delete existing record', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.ARecord(stack, 'A', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
+      deleteExisting: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::DeleteExistingRecordSet', {
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      RecordName: 'www.myzone.',
+      RecordType: 'A',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      Policies: [
+        {
+          PolicyName: 'Inline',
+          PolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Action: 'route53:GetChange',
+                Resource: '*',
+              },
+              {
+                Effect: 'Allow',
+                Action: [
+                  'route53:ChangeResourceRecordSets',
+                  'route53:ListResourceRecordSets',
+                ],
+                Resource: {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':route53:::hostedzone/',
+                    { Ref: 'HostedZoneDB99F866' },
+                  ]],
+                },
+              },
+            ],
+          },
+        },
+      ],
+    });
+  });
 });

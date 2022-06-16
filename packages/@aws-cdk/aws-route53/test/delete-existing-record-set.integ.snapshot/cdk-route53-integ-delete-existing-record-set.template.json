@@ -1,0 +1,192 @@
+{
+ "Resources": {
+  "HostedZoneDB99F866": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "cdk.dev."
+   }
+  },
+  "ExistingRecord8E2B2167": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "integ.cdk.dev.",
+    "Type": "A",
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "ResourceRecords": [
+     "1.2.3.4"
+    ],
+    "TTL": "1800"
+   }
+  },
+  "NewRecordB9E8EE35": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "integ.cdk.dev.",
+    "Type": "A",
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "ResourceRecords": [
+     "5.6.7.8"
+    ],
+    "TTL": "7200"
+   },
+   "DependsOn": [
+    "ExistingRecord8E2B2167",
+    "NewRecordDeleteExistingRecordSetCustomResource3CF98631"
+   ]
+  },
+  "NewRecordDeleteExistingRecordSetCustomResource3CF98631": {
+   "Type": "Custom::DeleteExistingRecordSet",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomDeleteExistingRecordSetCustomResourceProviderHandlerAD00231E",
+      "Arn"
+     ]
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "RecordName": "integ.cdk.dev.",
+    "RecordType": "A"
+   },
+   "DependsOn": [
+    "ExistingRecord8E2B2167"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomDeleteExistingRecordSetCustomResourceProviderRole03A7ED08": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": "route53:GetChange",
+         "Resource": "*"
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "route53:ChangeResourceRecordSets",
+          "route53:ListResourceRecordSets"
+         ],
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":route53:::hostedzone/",
+            {
+             "Ref": "HostedZoneDB99F866"
+            }
+           ]
+          ]
+         }
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomDeleteExistingRecordSetCustomResourceProviderHandlerAD00231E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParametersc23b07956b28fe984628bd40d10bd917e27100e0eb632e8b093e789cd110a5adS3Bucket1135A337"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParametersc23b07956b28fe984628bd40d10bd917e27100e0eb632e8b093e789cd110a5adS3VersionKeyD546887D"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParametersc23b07956b28fe984628bd40d10bd917e27100e0eb632e8b093e789cd110a5adS3VersionKeyD546887D"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomDeleteExistingRecordSetCustomResourceProviderRole03A7ED08",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "CustomDeleteExistingRecordSetCustomResourceProviderRole03A7ED08"
+   ]
+  }
+ },
+ "Parameters": {
+  "AssetParametersc23b07956b28fe984628bd40d10bd917e27100e0eb632e8b093e789cd110a5adS3Bucket1135A337": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"c23b07956b28fe984628bd40d10bd917e27100e0eb632e8b093e789cd110a5ad\""
+  },
+  "AssetParametersc23b07956b28fe984628bd40d10bd917e27100e0eb632e8b093e789cd110a5adS3VersionKeyD546887D": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"c23b07956b28fe984628bd40d10bd917e27100e0eb632e8b093e789cd110a5ad\""
+  },
+  "AssetParametersc23b07956b28fe984628bd40d10bd917e27100e0eb632e8b093e789cd110a5adArtifactHash1E4CF7E8": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"c23b07956b28fe984628bd40d10bd917e27100e0eb632e8b093e789cd110a5ad\""
+  }
+ }
+}
