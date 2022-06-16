@@ -162,6 +162,21 @@ describe('hosted zone', () => {
       });
     }).toThrow(/crossAccountZoneDelegationRoleName property is not supported without crossAccountZoneDelegationPrincipal/);
   });
+
+  test('fromHostedZoneId throws error when zoneName is referenced', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    // WHEN
+    const hz = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'abcdefgh');
+
+    // THEN
+    expect(() => {
+      hz.zoneName;
+    }).toThrow('Cannot reference `zoneName` when using `HostedZone.fromHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromHostedZoneAttributes()` or `fromLookup()` instead.');
+  });
 });
 
 describe('Vpc', () => {
