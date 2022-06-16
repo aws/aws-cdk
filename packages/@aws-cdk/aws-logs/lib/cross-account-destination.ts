@@ -6,24 +6,6 @@ import { ILogGroup } from './log-group';
 import { CfnDestination } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
 
-abstract class CrossAccountDestinationBase extends cdk.Resource implements ILogSubscriptionDestination {
-  /**
-   * The name of this CrossAccountDestination object
-   * @attribute
-   */
-  public abstract readonly destinationName: string;
-
-  /**
-   * The ARN of this CrossAccountDestination object
-   * @attribute
-   */
-  public abstract readonly destinationArn: string;
-
-  public bind(_scope: Construct, _sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig {
-    return { arn: this.destinationArn };
-  }
-}
-
 /**
  * Properties for a CrossAccountDestination
  */
@@ -61,7 +43,7 @@ export interface CrossAccountDestinationProps {
  *
  * @resource AWS::Logs::Destination
  */
-export class CrossAccountDestination extends CrossAccountDestinationBase {
+export class CrossAccountDestination extends cdk.Resource implements ILogSubscriptionDestination {
   /**
    * Import an existing CloudWatch Logs Destination given its ARN.
    *
@@ -73,9 +55,13 @@ export class CrossAccountDestination extends CrossAccountDestinationBase {
     const stack = cdk.Stack.of(scope);
     const destinationName = stack.splitArn(destinationArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
 
-    class Import extends CrossAccountDestinationBase {
+    class Import extends cdk.Resource implements ILogSubscriptionDestination {
       public readonly destinationName = destinationName;
       public readonly destinationArn = destinationArn;
+
+      public bind(_scope: Construct, _sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig {
+        return { arn: this.destinationArn };
+      }
     }
 
     return new Import(scope, id);
@@ -129,6 +115,10 @@ export class CrossAccountDestination extends CrossAccountDestinationBase {
 
   public addToPolicy(statement: iam.PolicyStatement) {
     this.policyDocument.addStatements(statement);
+  }
+
+  public bind(_scope: Construct, _sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig {
+    return { arn: this.destinationArn };
   }
 
   /**
