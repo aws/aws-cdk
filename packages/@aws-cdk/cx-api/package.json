@@ -17,7 +17,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.CXAPI",
         "packageId": "Amazon.CDK.CXAPI",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.cx-api",
@@ -67,8 +67,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.5.0",
+    "@types/jest": "^27.5.2",
     "@types/mock-fs": "^4.13.1",
     "@types/semver": "^7.3.9",
     "jest": "^27.5.1",

@@ -103,6 +103,19 @@ test('can have multiple principals the same conditions in the same statement', (
   }));
 });
 
+test('use federated principal', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const principal = new iam.FederatedPrincipal('federated');
+
+  // THEN
+  expect(stack.resolve(principal.federated)).toStrictEqual('federated');
+  expect(stack.resolve(principal.assumeRoleAction)).toStrictEqual('sts:AssumeRole');
+  expect(stack.resolve(principal.conditions)).toStrictEqual({});
+});
+
 test('use Web Identity principal', () => {
   // GIVEN
   const stack = new Stack();

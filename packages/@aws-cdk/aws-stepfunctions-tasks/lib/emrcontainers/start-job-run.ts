@@ -344,7 +344,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     const cliLayer = new awscli.AwsCliLayer(this, 'awsclilayer');
     const shellCliLambda = new lambda.SingletonFunction(this, 'Call Update-Role-Trust-Policy', {
       uuid: '8693BB64-9689-44B6-9AAF-B0CC9EB8757C',
-      runtime: lambda.Runtime.PYTHON_3_6,
+      runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, 'utils/role-policy')),
       timeout: cdk.Duration.seconds(30),

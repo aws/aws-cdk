@@ -12,7 +12,7 @@
         "packageId": "Amazon.CDK.AWS.APIGatewayv2.Authorizers",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
         "package": "software.amazon.awscdk.services.apigatewayv2.authorizers",
@@ -85,8 +85,8 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.97",
-    "@types/jest": "^27.5.0"
+    "@types/aws-lambda": "^8.10.99",
+    "@types/jest": "^27.5.2"
   },
   "dependencies": {
     "@aws-cdk/aws-apigatewayv2": "0.0.0",

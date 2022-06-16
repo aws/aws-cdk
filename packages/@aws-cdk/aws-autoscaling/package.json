@@ -18,7 +18,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.AutoScaling",
         "packageId": "Amazon.CDK.AWS.AutoScaling",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-autoscaling",
@@ -87,7 +87,7 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.5.0",
+    "@types/jest": "^27.5.2",
     "jest": "^27.5.1"
   },
   "dependencies": {

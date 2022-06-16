@@ -6,11 +6,8 @@ import * as sns from '@aws-cdk/aws-sns';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, CfnParameter, CfnResource, ContextProvider, LegacyStackSynthesizer, Names, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { NestedStack } from '../lib/nested-stack';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from 'constructs';
+import { NestedStack } from '../lib/nested-stack';
 
 /* eslint-disable @aws-cdk/no-core-construct */
 /* eslint-disable max-len */

@@ -36,7 +36,7 @@ EventBridge.
 
 ## Event retry policy and using dead-letter queues
 
-The Codebuild, CodePipeline, Lambda, StepFunctions, LogGroup and SQSQueue targets support attaching a [dead letter queue and setting retry policies](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html). See the [lambda example](#invoke-a-lambda-function).
+The Codebuild, CodePipeline, Lambda, StepFunctions, LogGroup, SQSQueue and SNSTopic targets support attaching a [dead letter queue and setting retry policies](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html). See the [lambda example](#invoke-a-lambda-function).
 Use [escape hatches](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html) for the other target types.
 
 ## Invoke a Lambda function
@@ -51,7 +51,7 @@ triggered for every events from `aws.ec2` source. You can optionally attach a
 import * as lambda from '@aws-cdk/aws-lambda';
 
 const fn = new lambda.Function(this, 'MyFunc', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`exports.handler = handler.toString()`),
 });
@@ -243,7 +243,7 @@ const rule = new events.Rule(this, 'Rule', {
 
 const fn = new lambda.Function( this, 'MyFunc', {
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   code: lambda.Code.fromInline( 'exports.handler = e => {}' ),
 } );
 

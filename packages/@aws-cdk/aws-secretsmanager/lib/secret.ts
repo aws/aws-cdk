@@ -7,6 +7,8 @@ import { ResourcePolicy } from './policy';
 import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import * as secretsmanager from './secretsmanager.generated';
 
+const SECRET_SYMBOL = Symbol.for('@aws-cdk/secretsmanager.Secret');
+
 /**
  * A secret in AWS Secrets Manager.
  */
@@ -231,9 +233,8 @@ export class SecretStringValueBeta1 {
    * // Creates a new IAM user, access and secret keys, and stores the secret access key in a Secret.
    * const user = new iam.User(this, 'User');
    * const accessKey = new iam.AccessKey(this, 'AccessKey', { user });
-   * const secretValue = secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString());
-   * new secretsmanager.Secret(this, 'Secret', {
-   *   secretStringBeta1: secretValue,
+   * const secret = new secrets.Secret(this, 'Secret', {
+   * 	secretStringValue: accessKey.secretAccessKey,
    * });
    * ```
    *
@@ -447,6 +448,12 @@ abstract class SecretBase extends Resource implements ISecret {
  * Creates a new secret in AWS SecretsManager.
  */
 export class Secret extends SecretBase {
+  /**
+   * Return whether the given object is a Secret.
+   */
+  public static isSecret(x: any): x is Secret {
+    return x !== null && typeof(x) === 'object' && SECRET_SYMBOL in x;
+  }
 
   /** @deprecated use `fromSecretCompleteArn` or `fromSecretPartialArn` */
   public static fromSecretArn(scope: Construct, id: string, secretArn: string): ISecret {
@@ -554,6 +561,12 @@ export class Secret extends SecretBase {
   public readonly secretArn: string;
   public readonly secretName: string;
 
+  /**
+   * The string of the characters that are excluded in this secret
+   * when it is generated.
+   */
+  public readonly excludeCharacters?: string;
+
   private replicaRegions: secretsmanager.CfnSecret.ReplicaRegionProperty[] = [];
 
   protected readonly autoCreatePolicy = true;
@@ -610,6 +623,8 @@ export class Secret extends SecretBase {
     for (const replica of props.replicaRegions ?? []) {
       this.addReplicaRegion(replica.region, replica.encryptionKey);
     }
+
+    this.excludeCharacters = props.generateSecretString?.excludeCharacters;
   }
 
   /**
@@ -926,3 +941,12 @@ function parseSecretNameForOwnedSecret(construct: Construct, secretArn: string, 
 function arnIsComplete(secretArn: string): boolean {
   return Token.isUnresolved(secretArn) || /-[a-z0-9]{6}$/i.test(secretArn);
 }
+
+/**
+ * Mark all instances of 'Secret'.
+ */
+Object.defineProperty(Secret.prototype, SECRET_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});
