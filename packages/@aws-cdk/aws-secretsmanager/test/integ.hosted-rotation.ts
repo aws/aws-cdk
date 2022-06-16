@@ -6,8 +6,16 @@ class TestStack extends cdk.Stack {
     super(scope, id);
 
     const secret = new secretsmanager.Secret(this, 'Secret');
-
     secret.addRotationSchedule('Schedule', {
+      hostedRotation: secretsmanager.HostedRotation.mysqlSingleUser(),
+    });
+
+    const customSecret = new secretsmanager.Secret(this, 'CustomSecret', {
+      generateSecretString: {
+        excludeCharacters: '&@/',
+      },
+    });
+    customSecret.addRotationSchedule('Schedule', {
       hostedRotation: secretsmanager.HostedRotation.mysqlSingleUser(),
     });
   }

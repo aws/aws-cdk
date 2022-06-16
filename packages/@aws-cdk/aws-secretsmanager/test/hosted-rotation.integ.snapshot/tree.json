@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.33"
         }
       },
       "cdk-integ-secret-hosted-rotation": {
@@ -48,7 +48,8 @@
                           "Ref": "SecretA720EF05"
                         },
                         "hostedRotationLambda": {
-                          "rotationType": "MySQLSingleUser"
+                          "rotationType": "MySQLSingleUser",
+                          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
                         },
                         "rotationRules": {
                           "automaticallyAfterDays": 30
@@ -106,6 +107,119 @@
                         },
                         "secretId": {
                           "Ref": "SecretA720EF05"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-secretsmanager.CfnResourcePolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.ResourcePolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          },
+          "CustomSecret": {
+            "id": "CustomSecret",
+            "path": "cdk-integ-secret-hosted-rotation/CustomSecret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-secret-hosted-rotation/CustomSecret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {
+                      "excludeCharacters": "&@/"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              },
+              "Schedule": {
+                "id": "Schedule",
+                "path": "cdk-integ-secret-hosted-rotation/CustomSecret/Schedule",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-integ-secret-hosted-rotation/CustomSecret/Schedule/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SecretsManager::RotationSchedule",
+                      "aws:cdk:cloudformation:props": {
+                        "secretId": {
+                          "Ref": "CustomSecret5DC95D87"
+                        },
+                        "hostedRotationLambda": {
+                          "rotationType": "MySQLSingleUser",
+                          "excludeCharacters": "&@/"
+                        },
+                        "rotationRules": {
+                          "automaticallyAfterDays": 30
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-secretsmanager.CfnRotationSchedule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.RotationSchedule",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "cdk-integ-secret-hosted-rotation/CustomSecret/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-integ-secret-hosted-rotation/CustomSecret/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SecretsManager::ResourcePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "resourcePolicy": {
+                          "Statement": [
+                            {
+                              "Action": "secretsmanager:DeleteSecret",
+                              "Effect": "Deny",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":iam::",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":root"
+                                    ]
+                                  ]
+                                }
+                              },
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "secretId": {
+                          "Ref": "CustomSecret5DC95D87"
                         }
                       }
                     },
