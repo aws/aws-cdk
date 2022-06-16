@@ -177,6 +177,12 @@
             "data": "PipelineCodeBuildActionRoleDefaultPolicy1D62A6FE"
           }
         ],
+        "/VariablePipelineStack/TestCacheBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestCacheBucketA6BDC126"
+          }
+        ],
         "/VariablePipelineStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
