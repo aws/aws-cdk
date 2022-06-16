@@ -200,6 +200,28 @@ describe('cfn resource', () => {
       resource1.removeDependsOn(resource2);
       expect(stack1.dependencies).toEqual([]);
     });
+
+    test('can explicitly add, then replace dependencies across stacks', () => {
+      const app = new core.App();
+      const stack1 = new core.Stack(app, 'TestStack1');
+      const stack2 = new core.Stack(app, 'TestStack2');
+      const stack3 = new core.Stack(app, 'TestStack3');
+      const resource1 = new core.CfnResource(stack1, 'Resource1', { type: 'Test::Resource::Fake1' });
+      const resource2 = new core.CfnResource(stack2, 'Resource2', { type: 'Test::Resource::Fake2' });
+      const resource3 = new core.CfnResource(stack3, 'Resource3', { type: 'Test::Resource::Fake3' });
+
+      resource1.addDependsOn(resource2);
+      // Adding the same resource dependency twice should be a no-op
+      resource1.replaceDependsOn(resource2, resource3);
+      expect(stack1.dependencies).toEqual([stack3]);
+      // obtainDependsOn should assemble and flatten resource-to-resource dependencies even across stacks
+      expect(resource1.obtainDependsOn().map(x => x.node.path)).toEqual([resource3.node.path]);
+
+      // Replacing a dependency that doesn't exist should raise an exception
+      expect(() => {
+        resource1.replaceDependsOn(resource2, resource3);
+      }).toThrow(/ does not depend on /);
+    });
   });
 
   test('applyRemovalPolicy default includes Update policy', () => {

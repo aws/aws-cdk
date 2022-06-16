@@ -315,6 +315,20 @@ export class CfnResource extends CfnRefElement {
   }
 
   /**
+   * Replaces one dependency with another.
+   * @param target The dependency to replace
+   * @param newTarget The new dependency to add
+   */
+  public replaceDependsOn(target: CfnResource, newTarget: CfnResource) {
+    if (this.obtainDependsOn().includes(target)) {
+      this.removeDependsOn(target);
+      this.addDependsOn(newTarget);
+    } else {
+      throw new Error(`"${Node.of(this).path}" does not depend on "${Node.of(target).path}"`);
+    }
+  }
+
+  /**
    * Add a value to the CloudFormation Resource Metadata
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/metadata-section-structure.html
    *
