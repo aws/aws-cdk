@@ -8,6 +8,14 @@ import { ISecret } from './secret';
 import { CfnRotationSchedule } from './secretsmanager.generated';
 
 /**
+ * The default set of characters we exclude from generated passwords for database users.
+ * It's a combination of characters that have a tendency to cause problems in shell scripts,
+ * some engine-specific characters (for example, Oracle doesn't like '@' in its passwords),
+ * and some that trip up other services, like DMS.
+ */
+const DEFAULT_PASSWORD_EXCLUDE_CHARS = " %+~`#$&*()|[]{}:;<>?!'/@\"\\";
+
+/**
  * Options to add a rotation schedule to a secret.
  */
 export interface RotationScheduleOptions {
@@ -162,6 +170,13 @@ export interface SingleUserHostedRotationOptions {
    * @default - the Vpc default strategy if not specified.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * A string of the characters that you don't want in the password
+   *
+   * @default " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+   */
+  readonly excludeCharacters?: string,
 }
 
 /**
@@ -292,6 +307,7 @@ export class HostedRotation implements ec2.IConnectable {
       rotationLambdaName: this.props.functionName,
       vpcSecurityGroupIds: this._connections?.securityGroups?.map(s => s.securityGroupId).join(','),
       vpcSubnetIds: this.props.vpc?.selectSubnets(this.props.vpcSubnets).subnetIds.join(','),
+      excludeCharacters: this.props.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
     };
   }
 

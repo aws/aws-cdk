@@ -230,6 +230,7 @@ describe('hosted rotation', () => {
       },
       HostedRotationLambda: {
         RotationType: 'MySQLSingleUser',
+        ExcludeCharacters: " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
       },
       RotationRules: {
         AutomaticallyAfterDays: 30,
@@ -513,6 +514,66 @@ describe('hosted rotation', () => {
     // THEN
     expect(() => hostedRotation.connections.allowToAnyIpv4(ec2.Port.allTraffic()))
       .toThrow(/Cannot use connections for a hosted rotation that is not deployed in a VPC/);
+  });
+
+  test('can customize exclude characters', () => {
+    // GIVEN
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack');
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+
+    // WHEN
+    secret.addRotationSchedule('RotationSchedule', {
+      hostedRotation: secretsmanager.HostedRotation.mysqlSingleUser({
+        excludeCharacters: '()',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      HostedRotationLambda: {
+        RotationType: 'MySQLSingleUser',
+        ExcludeCharacters: '()',
+      },
+    });
+
+    expect(app.synth().getStackByName(stack.stackName).template).toEqual(expect.objectContaining({
+      Transform: 'AWS::SecretsManager-2020-07-23',
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::ResourcePolicy', {
+      ResourcePolicy: {
+        Statement: [
+          {
+            Action: 'secretsmanager:DeleteSecret',
+            Effect: 'Deny',
+            Principal: {
+              AWS: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':iam::',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':root',
+                  ],
+                ],
+              },
+            },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      SecretId: {
+        Ref: 'SecretA720EF05',
+      },
+    });
   });
 });
 
