@@ -364,11 +364,7 @@
    "Type": "AWS::AppMesh::Mesh",
    "Properties": {
     "MeshName": "meshstackmesh680D3CEB",
-    "Spec": {
-     "ServiceDiscovery": {
-      "IpPreference": "IPv4_ONLY"
-     }
-    }
+    "Spec": {}
    }
   },
   "meshrouter81B8087E": {
@@ -1675,6 +1671,17 @@
      ]
     },
     "GatewayRouteName": "meshstackmeshgateway1gateway1routegrpc2AE8379FD"
+   }
+  },
+  "meshwithpreferenceCC9682C9": {
+   "Type": "AWS::AppMesh::Mesh",
+   "Properties": {
+    "MeshName": "meshstackmeshwithpreference13C624E1",
+    "Spec": {
+     "ServiceDiscovery": {
+      "IpPreference": "IPv4_ONLY"
+     }
+    }
    }
   },
   "service6D174F83": {

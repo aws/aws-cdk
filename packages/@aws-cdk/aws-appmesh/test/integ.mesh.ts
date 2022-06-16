@@ -16,7 +16,8 @@ const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
   name: 'domain.local',
 });
 
-const mesh = new appmesh.Mesh(stack, 'mesh', {
+const mesh = new appmesh.Mesh(stack, 'mesh');
+new appmesh.Mesh(stack, 'mesh-with-preference', {
   serviceDiscovery: {
     ipPreference: appmesh.IpPreference.IPV4_ONLY,
   },
