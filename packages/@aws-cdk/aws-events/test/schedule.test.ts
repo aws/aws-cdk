@@ -33,6 +33,12 @@ describe('schedule', () => {
     }).toThrow(/Duration cannot be 0/);
   });
 
+  test('rate cannot be negative', () => {
+    expect(() => {
+      events.Schedule.rate(Duration.minutes(-2));
+    }).toThrow(/Duration amounts cannot be negative/);
+  });
+
   test('rate can be from a token', () => {
     const stack = new Stack();
     const lazyDuration = Duration.minutes(Lazy.number({ produce: () => 5 }));

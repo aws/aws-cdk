@@ -24,7 +24,7 @@ export abstract class Schedule {
   /**
    * Construct a schedule from an interval and a time unit
    *
-   * Rates cannot be defined in fractions of minutes and cannot be 0
+   * Rates may be defined with any unit of time, but when converted into minutes, the duration must be a positive whole number of minutes.
    */
   public static rate(duration: Duration): Schedule {
     if (duration.isUnresolved()) {

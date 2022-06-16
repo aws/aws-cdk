@@ -41,8 +41,6 @@ export interface RuleProps {
    *
    * You must specify this property, the `eventPattern` property, or both.
    *
-   * Note that rates cannot be defined in fractions of minutes.
-   *
    * For more information, see Schedule Expression Syntax for
    * Rules in the Amazon EventBridge User Guide.
    *
