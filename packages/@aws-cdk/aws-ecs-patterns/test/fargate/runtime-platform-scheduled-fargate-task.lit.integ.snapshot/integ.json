@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "Integ/DefaultTest": {
+      "stacks": [
+        "aws-ecs-runtime-integ"
+      ],
+      "assertionStack": "IntegDefaultTestDeployAssert4E6713E1"
+    }
+  }
+}
