@@ -1,13 +1,10 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Action } from '../action';
 import { validatePercentage } from '../common';
 import { parseCapabilities, SingletonPolicy } from './private/singleton-policy';
 import { CommonCloudFormationStackSetOptions, StackInstances, StackSetDeploymentModel, StackSetParameters, StackSetTemplate } from './stackset-types';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
 
 /**
  * Properties for the CloudFormationDeployStackSetAction
