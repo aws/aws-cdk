@@ -212,7 +212,7 @@
   "TestPipelineArtifactsBucketEncryptionKeyAliasE8D86DD3": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": "alias/codepipeline-pipelinesecuritystacktestpipelinef7060861",
+    "AliasName": "alias/codepipeline-pipelinesecuritystack-testpipeline-f7060861",
     "TargetKeyId": {
      "Fn::GetAtt": [
       "TestPipelineArtifactsBucketEncryptionKey13258842",

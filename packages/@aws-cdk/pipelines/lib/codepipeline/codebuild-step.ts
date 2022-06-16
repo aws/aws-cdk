@@ -51,6 +51,13 @@ export interface CodeBuildStepProps extends ShellStepProps {
   readonly subnetSelection?: ec2.SubnetSelection;
 
   /**
+   * Caching strategy to use.
+   *
+   * @default - No cache
+   */
+  readonly cache?: codebuild.Cache;
+
+  /**
    * Policy statements to add to role used during the synth
    *
    * Can be used to add acces to a CodeArtifact repository etc.
@@ -140,6 +147,13 @@ export class CodeBuildStep extends ShellStep {
   public readonly subnetSelection?: ec2.SubnetSelection;
 
   /**
+   * Caching strategy to use.
+   *
+   * @default - No cache
+   */
+  public readonly cache?: codebuild.Cache;
+
+  /**
    * Policy statements to add to role used during the synth
    *
    * @default - No value specified at construction time, use defaults
@@ -196,6 +210,7 @@ export class CodeBuildStep extends ShellStep {
     this._partialBuildSpec = props.partialBuildSpec;
     this.vpc = props.vpc;
     this.subnetSelection = props.subnetSelection;
+    this.cache = props.cache;
     this.role = props.role;
     this.actionRole = props.actionRole;
     this.rolePolicyStatements = props.rolePolicyStatements;

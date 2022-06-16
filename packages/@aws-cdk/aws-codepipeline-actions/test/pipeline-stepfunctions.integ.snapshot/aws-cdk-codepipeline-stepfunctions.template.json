@@ -78,7 +78,7 @@
   "MyPipelineArtifactsBucketEncryptionKeyAlias9D4F8C59": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": "alias/codepipeline-awscdkcodepipelinestepfunctionsmypipelinece88aa28",
+    "AliasName": "alias/codepipeline-aws-cdk-codepipeline-stepfunctions-mypipeline-ce88aa28",
     "TargetKeyId": {
      "Fn::GetAtt": [
       "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",

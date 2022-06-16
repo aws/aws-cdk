@@ -1,6 +1,6 @@
 import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
 import { CloudAssembly } from '@aws-cdk/cx-api';
-import { App, Aws, CfnMapping, CfnResource, Fn, Stack } from '../lib';
+import { App, Aws, CfnMapping, CfnResource, CfnOutput, Fn, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 describe('mappings', () => {
@@ -148,6 +148,63 @@ describe('mappings', () => {
         },
       },
     })).toThrowError(/Attribute name 'us-east-1' must contain only alphanumeric characters./);
+  });
+
+  test('using the value of a mapping in a different stack copies the mapping to the consuming stack', () => {
+    const app = new App();
+    const creationStack = new Stack(app, 'creationStack');
+    const consumingStack = new Stack(app, 'consumingStack');
+
+    const mapping = new CfnMapping(creationStack, 'MyMapping', {
+      mapping: {
+        boo: {
+          bah: 'foo',
+        },
+      },
+    });
+
+    new CfnOutput(consumingStack, 'Output', {
+      value: mapping.findInMap('boo', 'bah'),
+    });
+
+    const v1 = mapping.findInMap('boo', 'bah');
+    let v2 = Fn.findInMap(mapping.logicalId, 'boo', 'bah');
+
+    const creationStackExpected = { 'Fn::FindInMap': ['MyMapping', 'boo', 'bah'] };
+    expect(creationStack.resolve(v1)).toEqual(creationStackExpected);
+    expect(creationStack.resolve(v2)).toEqual(creationStackExpected);
+    expect(toCloudFormation(creationStack).Mappings).toEqual({
+      MyMapping: {
+        boo: {
+          bah: 'foo',
+        },
+      },
+    });
+
+    const mappingCopyLogicalId = 'MappingCopyMyMappingc843c23de60b3672d919ab3e4cb2c14042794164d8';
+    v2 = Fn.findInMap(mappingCopyLogicalId, 'boo', 'bah');
+    const consumingStackExpected = { 'Fn::FindInMap': [mappingCopyLogicalId, 'boo', 'bah'] };
+
+    expect(consumingStack.resolve(v1)).toEqual(consumingStackExpected);
+    expect(consumingStack.resolve(v2)).toEqual(consumingStackExpected);
+    expect(toCloudFormation(consumingStack).Mappings).toEqual({
+      [mappingCopyLogicalId]: {
+        boo: {
+          bah: 'foo',
+        },
+      },
+    });
+    expect(toCloudFormation(consumingStack).Outputs).toEqual({
+      Output: {
+        Value: {
+          'Fn::FindInMap': [
+            mappingCopyLogicalId,
+            'boo',
+            'bah',
+          ],
+        },
+      },
+    });
   });
 });
 
