@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-fargate-integ/Vpc"
+      "Value": "aws-ecs-runtime-integ/Vpc"
      }
     ]
    }
@@ -42,7 +42,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-fargate-integ/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-runtime-integ/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -56,7 +56,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-fargate-integ/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-runtime-integ/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-fargate-integ/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-runtime-integ/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-fargate-integ/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-runtime-integ/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -146,7 +146,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-fargate-integ/Vpc/PrivateSubnet1"
+      "Value": "aws-ecs-runtime-integ/Vpc/PrivateSubnet1"
      }
     ]
    }
@@ -160,7 +160,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-fargate-integ/Vpc/PrivateSubnet1"
+      "Value": "aws-ecs-runtime-integ/Vpc/PrivateSubnet1"
      }
     ]
    }
@@ -194,7 +194,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-fargate-integ/Vpc"
+      "Value": "aws-ecs-runtime-integ/Vpc"
      }
     ]
    }
@@ -293,7 +293,23 @@
       ],
       "Essential": true,
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Ref": "AWS::AccountId"
+         },
+         ".dkr.ecr.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/aws-cdk/assets:0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
+        ]
+       ]
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
@@ -317,7 +333,7 @@
       "Arn"
      ]
     },
-    "Family": "awsfargateintegScheduledFargateTaskScheduledTaskDefB0AD4F70",
+    "Family": "awsecsruntimeintegScheduledFargateTaskScheduledTaskDef2C9C1AED",
     "Memory": "512",
     "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
@@ -365,8 +381,8 @@
       {
        "Action": [
         "ecr:BatchCheckLayerAvailability",
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:BatchGetImage"
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -385,10 +401,7 @@
           {
            "Ref": "AWS::AccountId"
           },
-          ":repository/",
-          {
-           "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
-          }
+          ":repository/aws-cdk/assets"
          ]
         ]
        }
@@ -464,22 +477,20 @@
       {
        "Action": "iam:PassRole",
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "ScheduledFargateTaskScheduledTaskDefExecutionRoleD37356D5",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "ScheduledFargateTaskScheduledTaskDefTaskRoleD0FF16AD",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ScheduledFargateTaskScheduledTaskDefExecutionRoleD37356D5",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "ScheduledFargateTaskScheduledTaskDefTaskRoleD0FF16AD",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -495,7 +506,7 @@
   "ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-fargate-integ/ScheduledFargateTask/ScheduledTaskDef/SecurityGroup",
+    "GroupDescription": "aws-ecs-runtime-integ/ScheduledFargateTask/ScheduledTaskDef/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -507,40 +518,6 @@
      "Ref": "Vpc8378EB38"
     }
    }
-  }
- },
- "Parameters": {
-  "BootstrapVersion": {
-   "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/cdk-bootstrap/hnb659fds/version",
-   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
-  }
- },
- "Rules": {
-  "CheckBootstrapVersion": {
-   "Assertions": [
-    {
-     "Assert": {
-      "Fn::Not": [
-       {
-        "Fn::Contains": [
-         [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5"
-         ],
-         {
-          "Ref": "BootstrapVersion"
-         }
-        ]
-       }
-      ]
-     },
-     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
-    }
-   ]
   }
  }
 }
