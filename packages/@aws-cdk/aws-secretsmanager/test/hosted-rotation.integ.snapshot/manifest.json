@@ -32,6 +32,24 @@
             "type": "aws:cdk:logicalId",
             "data": "SecretPolicy06C9821C"
           }
+        ],
+        "/cdk-integ-secret-hosted-rotation/CustomSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomSecret5DC95D87"
+          }
+        ],
+        "/cdk-integ-secret-hosted-rotation/CustomSecret/Schedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomSecretScheduleDD99F351"
+          }
+        ],
+        "/cdk-integ-secret-hosted-rotation/CustomSecret/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomSecretPolicy8E81D2EB"
+          }
         ]
       },
       "displayName": "cdk-integ-secret-hosted-rotation"

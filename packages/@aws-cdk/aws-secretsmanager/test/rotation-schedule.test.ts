@@ -536,42 +536,28 @@ describe('hosted rotation', () => {
         ExcludeCharacters: '()',
       },
     });
+  });
 
-    expect(app.synth().getStackByName(stack.stackName).template).toEqual(expect.objectContaining({
-      Transform: 'AWS::SecretsManager-2020-07-23',
-    }));
-
-    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::ResourcePolicy', {
-      ResourcePolicy: {
-        Statement: [
-          {
-            Action: 'secretsmanager:DeleteSecret',
-            Effect: 'Deny',
-            Principal: {
-              AWS: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':iam::',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':root',
-                  ],
-                ],
-              },
-            },
-            Resource: '*',
-          },
-        ],
-        Version: '2012-10-17',
+  test('exclude characters default to secret exclude characters', () => {
+    // GIVEN
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack');
+    const secret = new secretsmanager.Secret(stack, 'Secret', {
+      generateSecretString: {
+        excludeCharacters: '[]',
       },
-      SecretId: {
-        Ref: 'SecretA720EF05',
+    });
+
+    // WHEN
+    secret.addRotationSchedule('RotationSchedule', {
+      hostedRotation: secretsmanager.HostedRotation.mysqlSingleUser(),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      HostedRotationLambda: {
+        RotationType: 'MySQLSingleUser',
+        ExcludeCharacters: '[]',
       },
     });
   });

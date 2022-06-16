@@ -4,7 +4,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { ISecret } from './secret';
+import { ISecret, Secret } from './secret';
 import { CfnRotationSchedule } from './secretsmanager.generated';
 
 /**
@@ -174,7 +174,8 @@ export interface SingleUserHostedRotationOptions {
   /**
    * A string of the characters that you don't want in the password
    *
-   * @default " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+   * @default the same exclude characters as the ones used for the
+   * secret or " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
    */
   readonly excludeCharacters?: string,
 }
@@ -299,6 +300,10 @@ export class HostedRotation implements ec2.IConnectable {
       this.masterSecret.denyAccountRootDelete();
     }
 
+    const defaultExcludeCharacters = Secret.isSecret(secret)
+      ? secret.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS
+      : DEFAULT_PASSWORD_EXCLUDE_CHARS;
+
     return {
       rotationType: this.type.name,
       kmsKeyArn: secret.encryptionKey?.keyArn,
@@ -307,7 +312,7 @@ export class HostedRotation implements ec2.IConnectable {
       rotationLambdaName: this.props.functionName,
       vpcSecurityGroupIds: this._connections?.securityGroups?.map(s => s.securityGroupId).join(','),
       vpcSubnetIds: this.props.vpc?.selectSubnets(this.props.vpcSubnets).subnetIds.join(','),
-      excludeCharacters: this.props.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
+      excludeCharacters: this.props.excludeCharacters ?? defaultExcludeCharacters,
     };
   }
 
