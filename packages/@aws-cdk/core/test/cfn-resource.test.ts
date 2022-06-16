@@ -156,7 +156,6 @@ describe('cfn resource', () => {
           },
         },
       });
-
     });
 
 
@@ -178,8 +177,6 @@ describe('cfn resource', () => {
           },
         },
       });
-
-
     });
 
     test('can explicitly add, obtain, and remove dependencies across stacks', () => {
@@ -203,8 +200,6 @@ describe('cfn resource', () => {
       resource1.removeDependsOn(resource2);
       expect(stack1.dependencies).toEqual([]);
     });
-
-
   });
 
   test('applyRemovalPolicy default includes Update policy', () => {

@@ -19,7 +19,7 @@ type Element = CfnResource | Stack;
  *   either directly or through the AWS::CloudFormation::Stack resources that
  *   "lead" to them.
  *
- * @param source The source resource/stack (the depedent)
+ * @param source The source resource/stack (the dependent)
  * @param target The target resource/stack (the dependency)
  * @param reason Optional resource to associate with the dependency for
  * diagnostics
@@ -42,9 +42,9 @@ export function addDependency<T extends Element>(source: T, target: T, reason: s
  *   either directly or through the AWS::CloudFormation::Stack resources that
  *   "lead" to them and must remove it there.
  *
- * @param source The source resource/stack (the depedent)
+ * @param source The source resource/stack (the dependent)
  * @param target The target resource/stack (the dependency)
- * @param reason Optional resource to associate with the dependency for
+ * @param reason Optional description to associate with the dependency for
  * diagnostics
  */
 export function removeDependency<T extends Element>(source: T, target: T, reason: string='dependency added using stack.removeDependency()') {
@@ -58,10 +58,6 @@ enum DependencyOperation {
 
 /**
  * Find the appropriate location for a dependency and add or remove it
- * @param operation
- * @param source
- * @param target
- * @param reasonDescription
  *
  * @internal
  */
@@ -149,7 +145,7 @@ function operateOnDependency<T extends Element>(operation: DependencyOperation, 
 
 /**
  * Get a list of all resource-to-resource dependencies assembled from this Element, Stack or assembly-dependencies
- * @param source
+ * @param source The source resource/stack (the dependent)
  */
 export function obtainDependencies(source: Element) {
   let dependencies: Element[] = [];
@@ -167,15 +163,14 @@ export function obtainDependencies(source: Element) {
 
 /**
  * Find the resource in a common stack that 'points' to the given element
- * @param element
- * @param commonStack
  *
  * @internal
  */
 function resourceInCommonStackFor(element: CfnResource | Stack, commonStack: Stack): CfnResource {
   const resource = Stack.isStack(element) ? element.nestedStackResource : element;
   if (!resource) {
-    throw new Error('assertion failure'); // see "assertion" above
+    // see "assertion" in operateOnDependency above
+    throw new Error(`Unexpected value for resource when looking at ${element}!`);
   }
 
   const resourceStack = Stack.of(resource);
@@ -190,6 +185,8 @@ function resourceInCommonStackFor(element: CfnResource | Stack, commonStack: Sta
 
 /**
  * Return a string representation of the given assembler, for use in error messages
+ *
+ * @internal
  */
 function describeStage(assembly: Stage | undefined): string {
   if (!assembly) { return 'an unrooted construct tree'; }

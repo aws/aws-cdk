@@ -292,7 +292,7 @@ export class CfnResource extends CfnRefElement {
   /**
    * Indicates that this resource no longer depends on another resource.
    *
-   * This can be used for resources across stacks (or nested stack) boundaries
+   * This can be used for resources across stacks (including nested stacks)
    * and the dependency will automatically be removed from the relevant scope.
    */
   public removeDependsOn(target: CfnResource) {
@@ -307,8 +307,8 @@ export class CfnResource extends CfnRefElement {
   /**
    * Retrieves an array of resources this resource depends on.
    *
-   * This assembles dependencies on resources across stacks (or nested stack)
-   * boundaries automatically.
+   * This assembles dependencies on resources across stacks (including nested stacks)
+   * automatically.
    */
   public obtainDependsOn() {
     return obtainDependencies(this);
