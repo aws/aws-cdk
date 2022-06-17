@@ -60,7 +60,10 @@ abstract class OriginAccessIdentityBase extends cdk.Resource {
  */
 export class OriginAccessIdentity extends OriginAccessIdentityBase implements IOriginAccessIdentity {
   /**
-   * Creates a OriginAccessIdentity by providing the OriginAccessIdentityName
+   * Creates a OriginAccessIdentity by providing the OriginAccessIdentityId.
+   * It is misnamed and superseded by the correctly named fromOriginAccessIdentityId.
+   *
+   * @deprecated use `fromOriginAccessIdentityId`
    */
   public static fromOriginAccessIdentityName(
     scope: Construct,

@@ -1,5 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { OriginAccessIdentity } from '../lib';
 
 describe('Origin Access Identity', () => {
@@ -61,7 +62,7 @@ describe('Origin Access Identity', () => {
     });
   });
 
-  test('Builds ARN of CloudFront user for fromOriginAccessIdentityName', () => {
+  testDeprecated('Builds ARN of CloudFront user for fromOriginAccessIdentityName', () => {
     const stack = new cdk.Stack();
 
     const oai = OriginAccessIdentity.fromOriginAccessIdentityName(stack, 'OAI', 'OAITest');
