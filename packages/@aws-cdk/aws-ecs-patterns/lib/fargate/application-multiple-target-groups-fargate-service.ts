@@ -86,7 +86,7 @@ export interface ApplicationMultipleTargetGroupsFargateServiceProps extends Appl
   /**
    * The runtime platform of the task definition
    *
-   * @default undefined If not specified, `operatingSystemFamily` is LINUX and `cpuArchitecture` is X86_64
+   * @default - If the property is undefined, `operatingSystemFamily` is LINUX and `cpuArchitecture` is X86_64
    */
   readonly runtimePlatform?: RuntimePlatform;
 }
