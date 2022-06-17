@@ -23,6 +23,12 @@ export interface IOriginAccessIdentity extends cdk.IResource, iam.IGrantable {
    * The Origin Access Identity Name
    */
   readonly originAccessIdentityName: string;
+
+  /**
+   * The Origin Access Identity Id (physical id)
+   * This was called originAccessIdentityName before
+   */
+  readonly originAccessIdentityId: string;
 }
 
 abstract class OriginAccessIdentityBase extends cdk.Resource {
@@ -30,6 +36,13 @@ abstract class OriginAccessIdentityBase extends cdk.Resource {
    * The Origin Access Identity Name (physical id)
    */
   public abstract readonly originAccessIdentityName: string;
+
+  /**
+   * The Origin Access Identity Id (physical id)
+   * This was called originAccessIdentityName before
+   */
+  public abstract readonly originAccessIdentityId: string;
+
   /**
    * Derived principal value for bucket access
    */
@@ -45,7 +58,7 @@ abstract class OriginAccessIdentityBase extends cdk.Resource {
         region: '', // global
         account: 'cloudfront',
         resource: 'user',
-        resourceName: `CloudFront Origin Access Identity ${this.originAccessIdentityName}`,
+        resourceName: `CloudFront Origin Access Identity ${this.originAccessIdentityId}`,
       },
     );
   }
@@ -81,6 +94,7 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
     originAccessIdentityId: string): IOriginAccessIdentity {
 
     class Import extends OriginAccessIdentityBase {
+      public readonly originAccessIdentityId = originAccessIdentityId;
       public readonly originAccessIdentityName = originAccessIdentityId;
       public readonly grantPrincipal = new iam.ArnPrincipal(this.arn());
       constructor(s: Construct, i: string) {
@@ -110,7 +124,17 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
    *
    * @attribute
    */
-  public readonly originAccessIdentityName: string;
+  public get originAccessIdentityName() {
+    return this.originAccessIdentityId;
+  }
+
+  /**
+   * The Origin Access Identity Id (physical id)
+   * This was called originAccessIdentityName before
+   *
+   * @attribute
+   */
+  public readonly originAccessIdentityId: string;
 
   /**
    * CDK L1 resource
@@ -125,8 +149,8 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
     this.resource = new CfnCloudFrontOriginAccessIdentity(this, 'Resource', {
       cloudFrontOriginAccessIdentityConfig: { comment },
     });
-    // physical id - OAI name
-    this.originAccessIdentityName = this.getResourceNameAttribute(this.resource.ref);
+    // physical id - OAI Id
+    this.originAccessIdentityId = this.getResourceNameAttribute(this.resource.ref);
 
     // Canonical user to grant access to in the S3 Bucket Policy
     this.cloudFrontOriginAccessIdentityS3CanonicalUserId = this.resource.attrS3CanonicalUserId;
