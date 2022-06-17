@@ -20,7 +20,10 @@ export interface OriginAccessIdentityProps {
  */
 export interface IOriginAccessIdentity extends cdk.IResource, iam.IGrantable {
   /**
-   * The Origin Access Identity Name
+   * The Origin Access Identity Id (physical id)
+   * It is misnamed and superseded by the correctly named originAccessIdentityId
+   *
+   * @deprecated use originAccessIdentityId instead
    */
   readonly originAccessIdentityName: string;
 
@@ -33,7 +36,10 @@ export interface IOriginAccessIdentity extends cdk.IResource, iam.IGrantable {
 
 abstract class OriginAccessIdentityBase extends cdk.Resource {
   /**
-   * The Origin Access Identity Name (physical id)
+   * The Origin Access Identity Id (physical id)
+   * It is misnamed and superseded by the correctly named originAccessIdentityId
+   *
+   * @deprecated use originAccessIdentityId instead
    */
   public abstract readonly originAccessIdentityName: string;
 
@@ -120,9 +126,11 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
   public readonly grantPrincipal: iam.IPrincipal;
 
   /**
-   * The Origin Access Identity Name (physical id)
+   * The Origin Access Identity Id (physical id)
+   * It is misnamed and superseded by the correctly named originAccessIdentityId
    *
    * @attribute
+   * @deprecated use originAccessIdentityId instead
    */
   public get originAccessIdentityName() {
     return this.originAccessIdentityId;
