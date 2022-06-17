@@ -13,16 +13,25 @@ beforeEach(() => {
 
 test.each([
   Duration.seconds(0),
-  Duration.seconds(0.5),
-  Duration.seconds(10.5),
   Duration.seconds(11),
   Duration.minutes(5),
-])('validates connectionTimeout is an int between 1 and 10 seconds', (connectionTimeout) => {
+])('validates connectionTimeout is an int between 1 and 10 seconds - out of bounds', (connectionTimeout) => {
   expect(() => {
     new TestOrigin('www.example.com', {
       connectionTimeout,
     });
   }).toThrow(`connectionTimeout: Must be an int between 1 and 10 seconds (inclusive); received ${connectionTimeout.toSeconds()}.`);
+});
+
+test.each([
+  Duration.seconds(0.5),
+  Duration.seconds(10.5),
+])('validates connectionTimeout is an int between 1 and 10 seconds - not an int', (connectionTimeout) => {
+  expect(() => {
+    new TestOrigin('www.example.com', {
+      connectionTimeout,
+    });
+  }).toThrow(/must be a whole number of/);
 });
 
 test.each([-0.5, 0.5, 1.5, 4])
