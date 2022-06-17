@@ -1,5 +1,5 @@
 {
-  "$version": "68.0.0",
+  "$version": "75.0.0",
   "PropertyTypes": {
     "AWS::Redshift::Cluster.Endpoint": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshift-cluster-endpoint.html",
@@ -316,7 +316,6 @@
         },
         "IamRoles": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshift-cluster.html#cfn-redshift-cluster-iamroles",
-          "DuplicatesAllowed": false,
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",

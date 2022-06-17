@@ -11,7 +11,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN
@@ -73,7 +73,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
     const alias = new lambda.Alias(stack, 'alias', {
       aliasName: 'my-alias',
@@ -138,7 +138,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN
@@ -202,7 +202,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     expect(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
@@ -223,7 +223,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN
@@ -279,7 +279,7 @@ describe('lambda api', () => {
       handler: new lambda.Function(stack, 'handler', {
         handler: 'index.handler',
         code: lambda.Code.fromInline('boom'),
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       }),
       restApiName: cdk.PhysicalName.GENERATE_IF_NEEDED,
     });

@@ -74,7 +74,7 @@ Here are the main differences:
   Application/Network Load Balancers. Only the AWS log driver is supported.
   Many host features are not supported such as adding kernel capabilities
   and mounting host devices/volumes inside the container.
-- **AWS ECSAnywhere**: tasks are run and managed by AWS ECS Anywhere on infrastructure owned by the customer. Only Bridge networking mode is supported. Does not support autoscaling, load balancing, cloudmap or attachment of volumes.
+- **AWS ECSAnywhere**: tasks are run and managed by AWS ECS Anywhere on infrastructure owned by the customer. Bridge, Host and None networking modes are supported. Does not support autoscaling, load balancing, cloudmap or attachment of volumes.
 
 For more information on Amazon EC2 vs AWS Fargate, networking and ECS Anywhere see the AWS Documentation:
 [AWS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html),
@@ -139,7 +139,10 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   // ... other options here ...
 });
 
-cluster.addAutoScalingGroup(autoScalingGroup);
+const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
+  autoScalingGroup,
+});
+cluster.addAsgCapacityProvider(capacityProvider);
 ```
 
 If you omit the property `vpc`, the construct will create a new VPC with two AZs.

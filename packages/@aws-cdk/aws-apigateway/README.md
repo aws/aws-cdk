@@ -441,7 +441,7 @@ have to define your models and mappings for the request, response, and integrati
 
 ```ts
 const hello = new lambda.Function(this, 'hello', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'hello.handler',
   code: lambda.Code.fromAsset('lambda')
 });

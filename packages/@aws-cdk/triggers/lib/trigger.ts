@@ -1,12 +1,7 @@
 import { join } from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, IConstruct } from '@aws-cdk/core';
-
-import { Construct, Node } from 'constructs';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime } from '@aws-cdk/core';
+import { Construct, IConstruct, Node } from 'constructs';
 
 /**
  * Interface for triggers.
@@ -79,7 +74,7 @@ export interface TriggerProps extends TriggerOptions {
 /**
  * Triggers an AWS Lambda function during deployment.
  */
-export class Trigger extends CoreConstruct implements ITrigger {
+export class Trigger extends Construct implements ITrigger {
   constructor(scope: Construct, id: string, props: TriggerProps) {
     super(scope, id);
 
