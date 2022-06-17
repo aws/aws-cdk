@@ -66,12 +66,22 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
     scope: Construct,
     id: string,
     originAccessIdentityName: string): IOriginAccessIdentity {
+    return OriginAccessIdentity.fromOriginAccessIdentityId(scope, id, originAccessIdentityName);
+  }
+
+  /**
+   * Creates a OriginAccessIdentity by providing the OriginAccessIdentityId.
+   */
+  public static fromOriginAccessIdentityId(
+    scope: Construct,
+    id: string,
+    originAccessIdentityId: string): IOriginAccessIdentity {
 
     class Import extends OriginAccessIdentityBase {
-      public readonly originAccessIdentityName = originAccessIdentityName;
+      public readonly originAccessIdentityName = originAccessIdentityId;
       public readonly grantPrincipal = new iam.ArnPrincipal(this.arn());
       constructor(s: Construct, i: string) {
-        super(s, i, { physicalName: originAccessIdentityName });
+        super(s, i, { physicalName: originAccessIdentityId });
       }
     }
 
