@@ -4,6 +4,7 @@ import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -2573,6 +2574,25 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       BacktrackWindow: 24 * 60 * 60,
     });
+  });
+
+  test('cluster only generates one secret target attachment', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      snapshotIdentifier: 'snapshot-identifier',
+      instanceProps: {
+        vpc,
+      },
+      snapshotCredentials: SnapshotCredentials.fromSecret(secretsmanager.Secret.fromSecretNameV2(stack, 'Secret', 'secretname')),
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::SecretTargetAttachment', 1);
   });
 });
 

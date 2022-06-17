@@ -714,7 +714,6 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     if (!props.credentials && !props.snapshotCredentials) {
       Annotations.of(this).addWarning('Generated credentials will not be applied to cluster. Use `snapshotCredentials` instead. `addRotationSingleUser()` and `addRotationMultiUser()` cannot be used on tbis cluster.');
     }
-    const deprecatedCredentials = renderCredentials(this, props.engine, props.credentials);
 
     let credentials = props.snapshotCredentials;
     let secret = credentials?.secret;
@@ -744,10 +743,13 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
       this.secret = secret.attach(this);
     }
 
-    if (deprecatedCredentials.secret) {
-      const deprecatedSecret = deprecatedCredentials.secret.attach(this);
-      if (!this.secret) {
-        this.secret = deprecatedSecret;
+    if (!props.snapshotCredentials) {
+      const deprecatedCredentials = renderCredentials(this, props.engine, props.credentials);
+      if (deprecatedCredentials.secret) {
+        const deprecatedSecret = deprecatedCredentials.secret.attach(this);
+        if (!this.secret) {
+          this.secret = deprecatedSecret;
+        }
       }
     }
 
