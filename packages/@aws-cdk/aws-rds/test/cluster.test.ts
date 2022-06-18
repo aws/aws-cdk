@@ -2593,6 +2593,7 @@ describe('cluster', () => {
 
     // THEN
     Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::SecretTargetAttachment', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::Secret', 0);
   });
 });
 
