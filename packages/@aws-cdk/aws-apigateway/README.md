@@ -1305,13 +1305,18 @@ in your openApi file.
 ## Metrics
 
 The API Gateway service sends metrics around the performance of Rest APIs to Amazon CloudWatch.
-These metrics can be referred to using the metric APIs available on the `RestApi` construct.
-The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example,
-the method below refers to the client side errors metric for this API.
+These metrics can be referred to using the metric APIs available on the `RestApi`, `Stage` and `Method` constructs.
+Note that detailed metrics must be enabled for a stage to use the `Method` metrics.
+The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example:
 
 ```ts
 const api = new apigateway.RestApi(this, 'my-api');
-const clientErrorMetric = api.metricClientError();
+const stage = api.deploymentStage;
+const method = api.root.addMethod('GET');
+
+const clientErrorApiMetric = api.metricClientError();
+const serverErrorStageMetric = stage.metricServerError();
+const latencyMethodMetric = method.metricLatency(stage);
 ```
 
 ## APIGateway v2
