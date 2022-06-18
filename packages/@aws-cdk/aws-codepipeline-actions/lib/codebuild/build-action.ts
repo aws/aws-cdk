@@ -2,8 +2,8 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { CodeStarConnectionsSourceAction } from '..';
 import { Construct } from 'constructs';
+import { CodeStarConnectionsSourceAction } from '..';
 import { Action } from '../action';
 import { CodeCommitSourceAction } from '../codecommit/source-action';
 

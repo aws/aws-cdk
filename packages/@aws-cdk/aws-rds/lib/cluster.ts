@@ -472,6 +472,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   /**
    * Adds the single user rotation of the master password to this cluster.
+   * See [Single user rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-one-user-one-password)
    */
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
     if (!this.secret) {
@@ -495,6 +496,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   /**
    * Adds the multi user rotation to this cluster.
+   * See [Alternating users rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users)
    */
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {

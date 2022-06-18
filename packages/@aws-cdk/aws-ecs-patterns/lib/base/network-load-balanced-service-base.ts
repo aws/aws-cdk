@@ -1,15 +1,25 @@
-import { IVpc } from '@aws-cdk/aws-ec2';
-import {
-  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
-  ICluster, LogDriver, PropagatedTagSource, Secret,
-} from '@aws-cdk/aws-ecs';
-import { AddNetworkTargetsProps, BaseNetworkListenerProps, INetworkLoadBalancer, NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
-import { IRole } from '@aws-cdk/aws-iam';
-import { ARecord, CnameRecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
-import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
 
+import { ARecord, CnameRecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
+import { AddNetworkTargetsProps, BaseNetworkListenerProps, INetworkLoadBalancer, NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import {
+  AwsLogDriver,
+  BaseService,
+  CloudMapOptions,
+  Cluster,
+  ContainerImage,
+  DeploymentCircuitBreaker,
+  DeploymentController,
+  ICluster,
+  LogDriver,
+  PropagatedTagSource,
+  Secret,
+} from '@aws-cdk/aws-ecs';
+
+import { Construct } from 'constructs';
+import { IRole } from '@aws-cdk/aws-iam';
+import { IVpc } from '@aws-cdk/aws-ec2';
+import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 
 /**
  * Describes the type of DNS record the service should create
@@ -199,6 +209,13 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * @default - None
    */
   readonly networkListenerProps?: BaseNetworkListenerProps;
+
+  /**
+   * Whether ECS Exec should be enabled
+   *
+   * @default - false
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 export interface NetworkLoadBalancedTaskImageOptions {
