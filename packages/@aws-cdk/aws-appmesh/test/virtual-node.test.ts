@@ -956,6 +956,32 @@ describe('virtual node', () => {
     });
 
     describe('with DNS service discovery', () => {
+      test('with basic configuration and without optional fields', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        // WHEN
+        new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            ServiceDiscovery: {
+              DNS: {
+                Hostname: 'test',
+              },
+            },
+          },
+        });
+      });
+
       test('should allow set response type', () => {
         // GIVEN
         const stack = new cdk.Stack();
@@ -1013,6 +1039,38 @@ describe('virtual node', () => {
     });
 
     describe('with CloudMap service discovery', () => {
+      test('with basic configuration and without optional fields', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+        const vpc = new ec2.Vpc(stack, 'vpc');
+        const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+          vpc,
+          name: 'domain.local',
+        });
+        const service = namespace.createService('Svc');
+
+        // WHEN
+        new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service),
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            ServiceDiscovery: {
+              AWSCloudMap: {
+                NamespaceName: 'domain.local',
+                ServiceName: { 'Fn::GetAtt': ['testnamespaceSvcB55702EC', 'Name'] },
+              },
+            },
+          },
+        });
+      });
+
       test('has an IP Preference applied', () => {
         // GIVEN
         const stack = new cdk.Stack();

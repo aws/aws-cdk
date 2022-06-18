@@ -132,7 +132,6 @@ export interface MeshProps {
    * @default - No Service Discovery
    */
   readonly serviceDiscovery?: MeshServiceDiscovery;
-
 }
 
 /**

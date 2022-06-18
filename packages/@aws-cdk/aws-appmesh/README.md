@@ -455,12 +455,11 @@ const mesh = new appmesh.Mesh(stack, 'mesh', {
   meshName: 'mesh-with-preference',
 });
 
-
 // Virtual Node with DNS service discovery and an IP preference
 const dnsNode = new appmesh.VirtualNode(stack, 'dns-node', {
   mesh,
   serviceDiscovery: appmesh.ServiceDiscovery.dns('test', appmesh.DnsResponseType.LOAD_BALANCER, appmesh.IpPreference.IPV4_ONLY),
-})
+});
 
 // Virtual Node with CloudMap service discovery and an IP preference
 const vpc = new ec2.Vpc(stack, 'vpc');
