@@ -1,9 +1,9 @@
-import * as iam from '@aws-cdk/aws-iam';
 import * as crypto from 'crypto';
+import * as iam from '@aws-cdk/aws-iam';
 
 export interface ShareOptions {
   /**
-   * Explicitly allow share of applicaiton with principals outside of your AWS Organization.
+   * Explicitly allow share of application with principals outside of your AWS Organization.
    *
    * @default true
    */
@@ -17,7 +17,7 @@ export interface ShareOptions {
   readonly accounts?: string[];
 
   /**
-   * A list of AWS Organization or Organizationl Units (OUs) ARNs that the application will be shared with.
+   * A list of AWS Organization or Organizational Units (OUs) ARNs that the application will be shared with.
    *
    * @default - No AWS Organizations or OUs specified for share
    */

@@ -1,4 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as appreg from '../lib';
 
@@ -214,6 +215,92 @@ describe('Application', () => {
       application.associateStack(resource);
 
       Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
+    });
+  });
+
+  describe('Resource sharing of an application', () => {
+    let application: appreg.Application;
+
+    beforeEach(() => {
+      application = new appreg.Application(stack, 'MyApplication', {
+        applicationName: 'MyApplication',
+      });
+    });
+
+    test('fails for sharing application without principals', () => {
+      expect(() => {
+        application.shareResource({});
+      }).toThrow(/An entity must be provided for the share/);
+    });
+
+    test('share application with an organization', () => {
+      application.shareResource({
+        organizations: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
+        AllowExternalPrincipals: true,
+        Name: 'RAMShare2bc04f06e3de',
+        Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
+      });
+    });
+
+    test('share application with an account', () => {
+      application.shareResource({
+        accounts: ['123456789012'],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
+        AllowExternalPrincipals: true,
+        Name: 'RAMSharec9a397e51b48',
+        Principals: ['123456789012'],
+        ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
+      });
+    });
+
+    test('share application with an IAM role', () => {
+      const myRole = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/myRole');
+
+      application.shareResource({
+        roles: [myRole],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
+        AllowExternalPrincipals: true,
+        Name: 'RAMSharebcd0cfbb7d94',
+        Principals: ['arn:aws:iam::123456789012:role/myRole'],
+        ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
+      });
+    });
+
+    test('share application with an IAM user', () => {
+      const myUser = iam.User.fromUserArn(stack, 'MyUser', 'arn:aws:iam::123456789012:user/myUser');
+
+      application.shareResource({
+        users: [myUser],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
+        AllowExternalPrincipals: true,
+        Name: 'RAMShare27697fc6a22a',
+        Principals: ['arn:aws:iam::123456789012:user/myUser'],
+        ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
+      });
+    });
+
+    test('share application with organization, do not allow external principals', () => {
+      application.shareResource({
+        allowExternalPrincipals: false,
+        organizations: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
+        AllowExternalPrincipals: false,
+        Name: 'RAMShare2bc04f06e3de',
+        Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
+      });
     });
   });
 });

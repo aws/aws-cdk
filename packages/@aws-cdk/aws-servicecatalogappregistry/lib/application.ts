@@ -100,7 +100,7 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
 
   /**
    * Share application resource with target accounts.
-   * The application will become available to end users within targetss.
+   * The application will become available to end users within targets.
    * @param shareOptions
    */
   public shareResource(shareOptions: ShareOptions): void {
