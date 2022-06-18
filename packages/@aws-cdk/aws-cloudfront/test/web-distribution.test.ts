@@ -1702,7 +1702,7 @@ added the ellipsis so a user would know there was more to r...`,
               customOriginSource: { domainName: 'myorigin.com' },
             }],
           });
-        }).toThrow(/connectionTimeout: You can specify a number of seconds between 1 and 10 \(inclusive\)./);
+        }).toThrow(/must be a whole number of/);
 
       });
       test('connectionTimeout < 1', () => {
