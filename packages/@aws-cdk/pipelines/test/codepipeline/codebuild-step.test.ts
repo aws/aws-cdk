@@ -1,5 +1,7 @@
 import { Template, Match } from '@aws-cdk/assertions';
+import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Duration, Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
 import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, AppWithOutput } from '../testhelpers';
@@ -172,7 +174,8 @@ test('role passed it used for project and code build action', () => {
   });
 
   // THEN
-  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+  const tpl = Template.fromStack(pipelineStack);
+  tpl.hasResourceProperties('AWS::CodeBuild::Project', {
     ServiceRole: {
       'Fn::GetAtt': [
         'ProjectRole5B707505',
@@ -181,7 +184,7 @@ test('role passed it used for project and code build action', () => {
     },
   });
 
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+  tpl.hasResourceProperties('AWS::CodePipeline::Pipeline', {
     Stages: [
       // source stage
       {},
@@ -203,6 +206,8 @@ test('role passed it used for project and code build action', () => {
           },
         ],
       },
+      // Self-update
+      {},
     ],
   });
 });
@@ -268,6 +273,27 @@ test('exportedVariables', () => {
           'exported-variables': ['MY_VAR'],
         },
       })),
+    },
+  });
+});
+
+test('step has caching set', () => {
+  // WHEN
+  const myCachingBucket = new s3.Bucket(pipelineStack, 'MyCachingBucket');
+  new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
+    synth: new cdkp.CodeBuildStep('Synth', {
+      cache: codebuild.Cache.bucket(myCachingBucket),
+      commands: ['/bin/true'],
+      input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+    }),
+  });
+
+  // THEN
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Cache: {
+      Location: {
+        'Fn::Join': ['/', [{ Ref: 'MyCachingBucket8C98C553' }, { Ref: 'AWS::NoValue' }]],
+      },
     },
   });
 });

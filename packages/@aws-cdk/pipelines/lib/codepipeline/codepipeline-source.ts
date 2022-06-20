@@ -38,6 +38,9 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    *
    * * **repo** - to read the repository
    * * **admin:repo_hook** - if you plan to use webhooks (true by default)
+   *
+   * If you need access to symlinks or the repository history, use a source of type
+   * `connection` instead.
    */
   public static gitHub(repoString: string, branch: string, props: GitHubSourceOptions = {}): CodePipelineSource {
     return new GitHubSource(repoString, branch, props);
@@ -92,6 +95,9 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * });
    * ```
    *
+   * If you need access to symlinks or the repository history, be sure to set
+   * `codeBuildCloneOutput`.
+   *
    * @param repoString A string that encodes owner and repository separated by a slash (e.g. 'owner/repo').
    * @param branch The branch to use.
    * @param props The source properties, including the connection ARN.
@@ -104,6 +110,10 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
 
   /**
    * Returns a CodeCommit source.
+   *
+   * If you need access to symlinks or the repository history, be sure to set
+   * `codeBuildCloneOutput`.
+   *
    *
    * @param repository The CodeCommit repository.
    * @param branch The branch to use.
@@ -281,6 +291,14 @@ export interface S3SourceOptions {
    * @default - The bucket name
    */
   readonly actionName?: string;
+
+  /**
+   * The role that will be assumed by the pipeline prior to executing
+   * the `S3Source` action.
+   *
+   * @default - a new role will be generated
+   */
+  readonly role?: iam.IRole;
 }
 
 class S3Source extends CodePipelineSource {
@@ -299,6 +317,7 @@ class S3Source extends CodePipelineSource {
       bucketKey: this.objectKey,
       trigger: this.props.trigger,
       bucket: this.bucket,
+      role: this.props.role,
       variablesNamespace,
     });
   }
@@ -360,12 +379,12 @@ export interface ConnectionSourceOptions {
 
   // long URL in @see
   /**
-   * Whether the output should be the contents of the repository
-   * (which is the default),
-   * or a link that allows CodeBuild to clone the repository before building.
+   * If this is set, the next CodeBuild job clones the repository (instead of CodePipeline downloading the files).
    *
-   * **Note**: if this option is true,
-   * then only CodeBuild actions can use the resulting {@link output}.
+   * This provides access to repository history, and retains symlinks (symlinks would otherwise be
+   * removed by CodePipeline).
+   *
+   * **Note**: if this option is true, only CodeBuild jobs can use the output artifact.
    *
    * @default false
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html#action-reference-CodestarConnectionSource-config
@@ -435,12 +454,12 @@ export interface CodeCommitSourceOptions {
   readonly eventRole?: iam.IRole;
 
   /**
-   * Whether the output should be the contents of the repository
-   * (which is the default),
-   * or a link that allows CodeBuild to clone the repository before building.
+   * If this is set, the next CodeBuild job clones the repository (instead of CodePipeline downloading the files).
    *
-   * **Note**: if this option is true,
-   * then only CodeBuild actions can use the resulting {@link output}.
+   * This provides access to repository history, and retains symlinks (symlinks would otherwise be
+   * removed by CodePipeline).
+   *
+   * **Note**: if this option is true, only CodeBuild jobs can use the output artifact.
    *
    * @default false
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeCommit.html

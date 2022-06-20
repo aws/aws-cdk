@@ -1,12 +1,78 @@
 import { CustomResource, Reference, Lazy, CfnResource, Stack, ArnFormat } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { EqualsAssertion } from './assertions';
 import { ExpectedResult, ActualResult } from './common';
 import { AssertionsProvider, SDK_RESOURCE_TYPE_PREFIX } from './providers';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+/**
+ * Interface for creating a custom resource that will perform
+ * an API call using the AWS SDK
+ */
+export interface IAwsApiCall extends IConstruct {
+  /**
+   * Returns the value of an attribute of the custom resource of an arbitrary
+   * type. Attributes are returned from the custom resource provider through the
+   * `Data` map where the key is the attribute name.
+   *
+   * @param attributeName the name of the attribute
+   * @returns a token for `Fn::GetAtt`. Use `Token.asXxx` to encode the returned `Reference` as a specific type or
+   * use the convenience `getAttString` for string attributes.
+   */
+  getAtt(attributeName: string): Reference;
+
+  /**
+   * Returns the value of an attribute of the custom resource of type string.
+   * Attributes are returned from the custom resource provider through the
+   * `Data` map where the key is the attribute name.
+   *
+   * @param attributeName the name of the attribute
+   * @returns a token for `Fn::GetAtt` encoded as a string.
+   */
+  getAttString(attributeName: string): string;
+
+  /**
+   * Assert that the ExpectedResult is equal
+   * to the result of the AwsApiCall
+   *
+   * @example
+   * declare const integ: IntegTest;
+   * const invoke = integ.assertions.invokeFunction({
+   *   functionName: 'my-func',
+   * });
+   * invoke.expect(ExpectedResult.objectLike({ Payload: 'OK' }));
+   */
+  expect(expected: ExpectedResult): void;
+
+  /**
+   * Assert that the ExpectedResult is equal
+   * to the result of the AwsApiCall at the given path.
+   *
+   * For example the SQS.receiveMessage api response would look
+   * like:
+   *
+   * If you wanted to assert the value of `Body` you could do
+   *
+   * @example
+   * const actual = {
+   *   Messages: [{
+   *     MessageId: '',
+   *     ReceiptHandle: '',
+   *     MD5OfBody: '',
+   *     Body: 'hello',
+   *     Attributes: {},
+   *     MD5OfMessageAttributes: {},
+   *     MessageAttributes: {}
+   *   }]
+   * };
+   *
+   *
+   * declare const integ: IntegTest;
+   * const message = integ.assertions.awsApiCall('SQS', 'receiveMessage');
+   *
+   * message.assertAtPath('Messages.0.Body', ExpectedResult.stringLikeRegexp('hello'));
+   */
+  assertAtPath(path: string, expected: ExpectedResult): void;
+}
 
 /**
  * Options to perform an AWS JavaScript V2 API call
@@ -39,7 +105,7 @@ export interface AwsApiCallProps extends AwsApiCallOptions {}
  * Construct that creates a custom resource that will perform
  * a query using the AWS SDK
  */
-export class AwsApiCall extends CoreConstruct {
+export class AwsApiCall extends Construct implements IAwsApiCall {
   private readonly sdkCallResource: CustomResource;
   private flattenResponse: string = 'false';
   private readonly name: string;
@@ -69,82 +135,23 @@ export class AwsApiCall extends CoreConstruct {
     this.sdkCallResource.node.addDependency(this.provider);
   }
 
-  /**
-   * Returns the value of an attribute of the custom resource of an arbitrary
-   * type. Attributes are returned from the custom resource provider through the
-   * `Data` map where the key is the attribute name.
-   *
-   * @param attributeName the name of the attribute
-   * @returns a token for `Fn::GetAtt`. Use `Token.asXxx` to encode the returned `Reference` as a specific type or
-   * use the convenience `getAttString` for string attributes.
-   */
   public getAtt(attributeName: string): Reference {
     this.flattenResponse = 'true';
     return this.sdkCallResource.getAtt(`apiCallResponse.${attributeName}`);
   }
 
-  /**
-   * Returns the value of an attribute of the custom resource of type string.
-   * Attributes are returned from the custom resource provider through the
-   * `Data` map where the key is the attribute name.
-   *
-   * @param attributeName the name of the attribute
-   * @returns a token for `Fn::GetAtt` encoded as a string.
-   */
   public getAttString(attributeName: string): string {
     this.flattenResponse = 'true';
     return this.sdkCallResource.getAttString(`apiCallResponse.${attributeName}`);
   }
 
-  /**
-   * Assert that the ExpectedResult is equal
-   * to the result of the AwsApiCall
-   *
-   * @example
-   * declare const assert: DeployAssert;
-   * const invoke = new LambdaInvokeFunction(assert, 'Invoke', {
-   *   functionName: 'my-func',
-   * });
-   * invoke.assert(ExpectedResult.objectLike({ Payload: 'OK' }));
-   */
-  public assert(expected: ExpectedResult): void {
+  public expect(expected: ExpectedResult): void {
     new EqualsAssertion(this, `AssertEquals${this.name}`, {
       expected,
       actual: ActualResult.fromCustomResource(this.sdkCallResource, 'apiCallResponse'),
     });
   }
 
-  /**
-   * Assert that the ExpectedResult is equal
-   * to the result of the AwsApiCall at the given path.
-   *
-   * For example the SQS.receiveMessage api response would look
-   * like:
-   *
-   * If you wanted to assert the value of `Body` you could do
-   *
-   * @example
-   * const actual = {
-   *   Messages: [{
-   *     MessageId: '',
-   *     ReceiptHandle: '',
-   *     MD5OfBody: '',
-   *     Body: 'hello',
-   *     Attributes: {},
-   *     MD5OfMessageAttributes: {},
-   *     MessageAttributes: {}
-   *   }]
-   * };
-   *
-   *
-   * declare const assert: DeployAssert;
-   * const message = new AwsApiCall(assert, 'ReceiveMessage', {
-   *   service:  'SQS',
-   *   api: 'receiveMessage'
-   * });
-   *
-   * message.assertAtPath('Messages.0.Body', ExpectedResult.stringLikeRegexp('hello'));
-   */
   public assertAtPath(path: string, expected: ExpectedResult): void {
     new EqualsAssertion(this, `AssertEquals${this.name}`, {
       expected,

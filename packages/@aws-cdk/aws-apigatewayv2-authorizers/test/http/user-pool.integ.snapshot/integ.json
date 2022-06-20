@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-apigatewayv2-authorizers/test/http/integ.user-pool": {
+    "http/integ.user-pool": {
       "stacks": [
         "AuthorizerInteg"
       ],

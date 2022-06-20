@@ -1,5 +1,6 @@
 import { CustomResource } from '@aws-cdk/core';
-import { AwsApiCall } from './sdk';
+import { IAwsApiCall } from './sdk';
+
 /**
  * Represents the "actual" results to compare
  */
@@ -16,7 +17,7 @@ export abstract class ActualResult {
   /**
    * Get the actual results from a AwsApiCall
    */
-  public static fromAwsApiCall(query: AwsApiCall, attribute: string): ActualResult {
+  public static fromAwsApiCall(query: IAwsApiCall, attribute: string): ActualResult {
     return {
       result: query.getAttString(attribute),
     };

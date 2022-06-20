@@ -1,0 +1,19 @@
+{
+  "version": "17.0.0",
+  "files": {
+    "f07328fdb3b364e82aaf239ee52c982566753794c3f144d6b362e7b56ff753e5": {
+      "source": {
+        "path": "aws-cdk-lambda-1.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f07328fdb3b364e82aaf239ee52c982566753794c3f144d6b362e7b56ff753e5.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

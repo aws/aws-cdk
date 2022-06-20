@@ -3,7 +3,6 @@ import {
   IntegTestCase,
   IntegTest,
   IntegTestCaseStack,
-  DeployAssert,
   AwsApiCall,
   EqualsAssertion,
   ActualResult,
@@ -13,9 +12,9 @@ import {
   LambdaInvokeFunction,
   Match,
 } from '@aws-cdk/integ-tests';
+import { Construct } from 'constructs';
 import {
   App,
-  Construct,
   Stack,
   StackProps,
   CustomResource,

@@ -1,12 +1,9 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import { Construct } from 'constructs';
 import { IEngine } from './engine';
 import { EngineVersion } from './engine-version';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * The extra options passed to the {@link IClusterEngine.bindToCluster} method.
@@ -363,6 +360,10 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_2_10_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.10.2');
   /** Version "8.0.mysql_aurora.3.01.0". */
   public static readonly VER_3_01_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.01.0');
+  /** Version "8.0.mysql_aurora.3.01.1". */
+  public static readonly VER_3_01_1 = AuroraMysqlEngineVersion.builtIn_8_0('3.01.1');
+  /** Version "8.0.mysql_aurora.3.02.0". */
+  public static readonly VER_3_02_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.02.0');
 
   /**
    * Create a new AuroraMysqlEngineVersion with an arbitrary version.
