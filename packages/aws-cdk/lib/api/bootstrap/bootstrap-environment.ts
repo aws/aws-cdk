@@ -57,6 +57,9 @@ export class Bootstrapper {
     if (params.qualifier) {
       throw new Error('--qualifier can only be passed for the modern bootstrap experience.');
     }
+    if (params.monitoredEnvironment) {
+      throw new Error('--monitored-environment can only be passed for the modern bootstrap experience.');
+    }
 
     const current = await BootstrapStack.lookup(sdkProvider, environment, options.toolkitStackName);
     return current.update(await this.loadTemplate(params), {}, {
