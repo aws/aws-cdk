@@ -48,12 +48,14 @@ We will add the following resources to the bootstrap stack:
   that has permissions to write to both the S3 bucket and the ECR repository from above.
   This role will be assumable by any principal from the account(s) passed by the `--trust` option,
   and from any principal in the target environment's account.
+  If using the `--monitored-environment` is used, sts:SetSourceIdentity is added to the trust policy.
 
 * An IAM role, called the **Deployment Action Role**,
   that will be assumed when executing the CloudFormation deployment actions
   (CreateChangeSet and ExecuteChangeSet).
   It is also assumable by any principal from the account(s) passed by the `--trust` option,
   and from any principal in the target environment's account.
+  If using the `--monitored-environment` is used, sts:SetSourceIdentity is added to the trust policy.
 
 * An IAM role, called the **CloudFormation Execution Role**,
   that will be used to perform the actual CFN stack deployment in the continuous delivery pipeline to this environment.
@@ -62,6 +64,7 @@ We will add the following resources to the bootstrap stack:
   It will not have any inline policies,
   but will instead have the Managed Policies attached that the user passed in the
   `--cloudformation-execution-policies` option.
+  If using the `--monitored-environment` is used, sts:SetSourceIdentity is added to the trust policy.
 
 #### Physical resource names
 
@@ -117,6 +120,9 @@ These options will be added to the `bootstrap` command:
 * `--cloudformation-execution-policies`: allows specifying the ManagedPolicy ARN(s)
   that should be attached to the **CloudFormation Execution Role**.
   This option is required if `--trust` was passed.
+
+* `--monitored-environment`: allows you to explicitly add sts:SetSourceIdentity to the trust policies of all IAM roles.
+  This is required in order to allow the roles being assumend in monitored environments (disabled by default).
 
 ## Bootstrap resources version
 

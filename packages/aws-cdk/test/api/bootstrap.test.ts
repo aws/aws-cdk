@@ -73,6 +73,7 @@ test('do bootstrap', async () => {
   expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
     .toBeUndefined();
   expect(changeSetTemplate.Conditions.UsePublicAccessBlockConfiguration['Fn::Equals'][0]).toBe('true');
+  expect(changeSetTemplate.Conditions.IsMonitoredEnvironment['Fn::Equals'][0]).toBe('false');
   expect(ret.noOp).toBeFalsy();
   expect(executed).toBeTruthy();
 });
@@ -92,6 +93,7 @@ test('do bootstrap using custom bucket name', async () => {
   expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
     .toBeUndefined();
   expect(changeSetTemplate.Conditions.UsePublicAccessBlockConfiguration['Fn::Equals'][0]).toBe('true');
+  expect(changeSetTemplate.Conditions.IsMonitoredEnvironment['Fn::Equals'][0]).toBe('false');
   expect(ret.noOp).toBeFalsy();
   expect(executed).toBeTruthy();
 });
@@ -111,6 +113,7 @@ test('do bootstrap using KMS CMK', async () => {
   expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
     .toBe('myKmsKey');
   expect(changeSetTemplate.Conditions.UsePublicAccessBlockConfiguration['Fn::Equals'][0]).toBe('true');
+  expect(changeSetTemplate.Conditions.IsMonitoredEnvironment['Fn::Equals'][0]).toBe('false');
   expect(ret.noOp).toBeFalsy();
   expect(executed).toBeTruthy();
 });
@@ -130,6 +133,27 @@ test('bootstrap disable bucket Public Access Block Configuration', async () => {
   expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
     .toBeUndefined();
   expect(changeSetTemplate.Conditions.UsePublicAccessBlockConfiguration['Fn::Equals'][0]).toBe('false');
+  expect(changeSetTemplate.Conditions.IsMonitoredEnvironment['Fn::Equals'][0]).toBe('false');
+  expect(ret.noOp).toBeFalsy();
+  expect(executed).toBeTruthy();
+});
+
+test('bootstrap for an monitored environment', async () => {
+  // WHEN
+  const ret = await bootstrapper.bootstrapEnvironment(env, sdk, {
+    toolkitStackName: 'mockStack',
+    parameters: {
+      monitoredEnvironment: true,
+    },
+  });
+
+  // THEN
+  const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
+  expect(bucketProperties.BucketName).toBeUndefined();
+  expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
+    .toBeUndefined();
+  expect(changeSetTemplate.Conditions.UsePublicAccessBlockConfiguration['Fn::Equals'][0]).toBe('true');
+  expect(changeSetTemplate.Conditions.IsMonitoredEnvironment['Fn::Equals'][0]).toBe('true');
   expect(ret.noOp).toBeFalsy();
   expect(executed).toBeTruthy();
 });
@@ -147,6 +171,7 @@ test('do bootstrap with custom tags for toolkit stack', async () => {
   expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
     .toBeUndefined();
   expect(changeSetTemplate.Conditions.UsePublicAccessBlockConfiguration['Fn::Equals'][0]).toBe('true');
+  expect(changeSetTemplate.Conditions.IsMonitoredEnvironment['Fn::Equals'][0]).toBe('false');
   expect(ret.noOp).toBeFalsy();
   expect(executed).toBeTruthy();
 });

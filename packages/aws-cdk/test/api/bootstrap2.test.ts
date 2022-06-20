@@ -138,6 +138,21 @@ describe('Bootstrapping v2', () => {
     }));
   });
 
+  test('passes true to MonitoredEnvironment', async () => {
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        cloudFormationExecutionPolicies: ['arn:policy'],
+        monitoredEnvironment: true,
+      },
+    });
+
+    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+      parameters: expect.objectContaining({
+        MonitoredEnvironment: 'true',
+      }),
+    }));
+  });
+
   test('allow adding trusted account if there was already a policy on the stack', async () => {
     // GIVEN
     mockTheToolkitInfo({
