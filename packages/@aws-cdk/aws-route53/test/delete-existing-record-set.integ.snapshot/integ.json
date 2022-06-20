@@ -1,9 +1,9 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.hosted-rotation": {
+    "integ.delete-existing-record-set": {
       "stacks": [
-        "cdk-integ-secret-hosted-rotation"
+        "cdk-route53-integ-delete-existing-record-set"
       ],
       "diffAssets": false,
       "stackUpdateWorkflow": true
