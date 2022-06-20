@@ -2210,24 +2210,7 @@ describe('grants', () => {
                 ],
               },
               {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':dynamodb:',
-                    {
-                      Ref: 'AWS::Region',
-                    },
-                    ':',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':table/my-table/index/*',
-                  ],
-                ],
+                Ref: 'AWS::NoValue',
               },
             ],
           },
@@ -2309,7 +2292,7 @@ describe('import', () => {
             'Effect': 'Allow',
             'Resource': [
               tableArn,
-              `${tableArn}/index/*`,
+              { 'Ref': 'AWS::NoValue' },
             ],
           },
         ],
@@ -2376,24 +2359,7 @@ describe('import', () => {
                 ],
               },
               {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      'Ref': 'AWS::Partition',
-                    },
-                    ':dynamodb:',
-                    {
-                      'Ref': 'AWS::Region',
-                    },
-                    ':',
-                    {
-                      'Ref': 'AWS::AccountId',
-                    },
-                    ':table/MyTable/index/*',
-                  ],
-                ],
+                'Ref': 'AWS::NoValue',
               },
             ],
           },
@@ -2491,6 +2457,64 @@ describe('import', () => {
         tableName: 'MyTableName',
         globalIndexes: ['global'],
         localIndexes: ['local'],
+      });
+
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AnyPrincipal(),
+      });
+
+      table.grantReadData(role);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'dynamodb:BatchGetItem',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+                'dynamodb:Query',
+                'dynamodb:GetItem',
+                'dynamodb:Scan',
+                'dynamodb:ConditionCheckItem',
+                'dynamodb:DescribeTable',
+              ],
+              Resource: [
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dynamodb:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':table/MyTableName',
+                  ]],
+                },
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dynamodb:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':table/MyTableName/index/*',
+                  ]],
+                },
+              ],
+            },
+          ],
+        },
+      });
+    });
+
+    test('creates the index permissions if grantIndexPermissions is provided', () => {
+      const stack = new Stack();
+
+      const table = Table.fromTableAttributes(stack, 'ImportedTable', {
+        tableName: 'MyTableName',
+        grantIndexPermissions: true,
       });
 
       const role = new iam.Role(stack, 'Role', {
