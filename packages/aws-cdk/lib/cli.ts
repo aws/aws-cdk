@@ -101,7 +101,8 @@ async function parseCommandLineArguments() {
       .option('termination-protection', { type: 'boolean', default: undefined, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' })
       .option('show-template', { type: 'boolean', desc: 'Instead of actual bootstrapping, print the current CLI\'s bootstrapping template to stdout for customization', default: false })
       .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack to create', requiresArg: true })
-      .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example)' }),
+      .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example)' })
+      .option('monitored-environment', { type: 'boolean', desc: 'Changes the trust policies for roles in the bootstrap stack in order to work in monitored environments (modern bootstrapping only)', default: false }),
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', (yargs: Argv) => yargs
       .option('all', { type: 'boolean', default: false, desc: 'Deploy all available stacks' })
@@ -440,6 +441,7 @@ async function initCommandLine() {
             trustedAccounts: arrayFromYargs(args.trust),
             trustedAccountsForLookup: arrayFromYargs(args.trustForLookup),
             cloudFormationExecutionPolicies: arrayFromYargs(args.cloudformationExecutionPolicies),
+            monitoredEnvironment: args.monitoredEnvironment,
           },
         });
 

@@ -101,4 +101,11 @@ export interface BootstrappingParameters {
    */
   readonly publicAccessBlockConfiguration?: boolean;
 
+  /**
+   * Whether or not to the stack is deployed into a monitored environment
+   *
+   * @default false
+   */
+  readonly monitoredEnvironment?: boolean;
+
 }

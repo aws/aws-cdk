@@ -42,6 +42,11 @@ Parameters:
     Default: 'true'
     Type: 'String'
     AllowedValues: ['true', 'false']
+  MonitoredEnvironment:
+    Description: Whether or not to the stack is deployed into a monitored environment
+    Default: 'false'
+    Type: 'String'
+    AllowedValues: ['true', 'false']
 Conditions:
   HasTrustedAccounts:
     Fn::Not:
@@ -86,6 +91,10 @@ Conditions:
     Fn::Equals:
       - 'true'
       - Ref: PublicAccessBlockConfiguration
+  IsMonitoredEnvironment:
+    Fn::Equals:
+      - 'true'
+      - Ref: MonitoredEnvironment
 Resources:
   FileAssetsBucketEncryptionKey:
     Type: AWS::KMS::Key
@@ -229,14 +238,24 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
-          - Action: sts:AssumeRole
+          - Action:
+            - sts:AssumeRole
+            - Fn::If:
+                - IsMonitoredEnvironment
+                - sts:SetSourceIdentity
+                - !Ref AWS::NoValue
             Effect: Allow
             Principal:
               AWS:
                 Ref: AWS::AccountId
           - Fn::If:
               - HasTrustedAccounts
-              - Action: sts:AssumeRole
+              - Action:
+                - sts:AssumeRole
+                - Fn::If:
+                    - IsMonitoredEnvironment
+                    - sts:SetSourceIdentity
+                    - !Ref AWS::NoValue
                 Effect: Allow
                 Principal:
                   AWS:
@@ -252,14 +271,24 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
-          - Action: sts:AssumeRole
+          - Action:
+              - sts:AssumeRole
+              - Fn::If:
+                  - IsMonitoredEnvironment
+                  - sts:SetSourceIdentity
+                  - !Ref AWS::NoValue
             Effect: Allow
             Principal:
               AWS:
                 Ref: AWS::AccountId
           - Fn::If:
               - HasTrustedAccounts
-              - Action: sts:AssumeRole
+              - Action:
+                - sts:AssumeRole
+                - Fn::If:
+                    - IsMonitoredEnvironment
+                    - sts:SetSourceIdentity
+                    - !Ref AWS::NoValue
                 Effect: Allow
                 Principal:
                   AWS:
@@ -275,14 +304,24 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
-          - Action: sts:AssumeRole
+          - Action:
+            - sts:AssumeRole
+            - Fn::If:
+                - IsMonitoredEnvironment
+                - sts:SetSourceIdentity
+                - !Ref AWS::NoValue
             Effect: Allow
             Principal:
               AWS:
                 Ref: AWS::AccountId
           - Fn::If:
               - HasTrustedAccountsForLookup
-              - Action: sts:AssumeRole
+              - Action:
+                - sts:AssumeRole
+                - Fn::If:
+                    - IsMonitoredEnvironment
+                    - sts:SetSourceIdentity
+                    - !Ref AWS::NoValue
                 Effect: Allow
                 Principal:
                   AWS:
@@ -290,7 +329,12 @@ Resources:
               - Ref: AWS::NoValue
           - Fn::If:
               - HasTrustedAccounts
-              - Action: sts:AssumeRole
+              - Action:
+                - sts:AssumeRole
+                - Fn::If:
+                    - IsMonitoredEnvironment
+                    - sts:SetSourceIdentity
+                    - !Ref AWS::NoValue
                 Effect: Allow
                 Principal:
                   AWS:
@@ -379,14 +423,24 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
-          - Action: sts:AssumeRole
+          - Action:
+            - sts:AssumeRole
+            - Fn::If:
+                - IsMonitoredEnvironment
+                - sts:SetSourceIdentity
+                - !Ref AWS::NoValue
             Effect: Allow
             Principal:
               AWS:
                 Ref: AWS::AccountId
           - Fn::If:
               - HasTrustedAccounts
-              - Action: sts:AssumeRole
+              - Action:
+                - sts:AssumeRole
+                - Fn::If:
+                    - IsMonitoredEnvironment
+                    - sts:SetSourceIdentity
+                    - !Ref AWS::NoValue
                 Effect: Allow
                 Principal:
                   AWS:
@@ -485,7 +539,12 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
-          - Action: sts:AssumeRole
+          - Action:
+            - sts:AssumeRole
+            - Fn::If:
+                - IsMonitoredEnvironment
+                - sts:SetSourceIdentity
+                - !Ref AWS::NoValue
             Effect: Allow
             Principal:
               Service: cloudformation.amazonaws.com
