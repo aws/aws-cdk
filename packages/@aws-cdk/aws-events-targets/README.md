@@ -94,6 +94,39 @@ const rule = new events.Rule(this, 'rule', {
 rule.addTarget(new targets.CloudWatchLogGroup(logGroup));
 ```
 
+A rule target input can also be specified to modify the event that is sent to the log group.
+Unlike other event targets, CloudWatchLogs requires a specific input template format.
+
+```ts
+import * as logs from '@aws-cdk/aws-logs';
+declare const logGroup: logs.LogGroup;
+declare const rule: events.Rule;
+
+rule.addTarget(new targets.CloudWatchLogGroup(logGroup, {
+  logEvent: targets.LogGroupTargetInput({
+    timestamp: events.EventField.from('$.time'),
+    message: events.EventField.from('$.detail-type'),
+  }),
+}));
+```
+
+If you want to use static values to overwrite the `message` make sure that you provide a `string`
+value.
+
+```ts
+import * as logs from '@aws-cdk/aws-logs';
+declare const logGroup: logs.LogGroup;
+declare const rule: events.Rule;
+
+rule.addTarget(new targets.CloudWatchLogGroup(logGroup, {
+  logEvent: targets.LogGroupTargetInput({
+    message: JSON.stringify({
+	  CustomField: 'CustomValue',
+	}),
+  }),
+}));
+```
+
 ## Start a CodeBuild build
 
 Use the `CodeBuildProject` target to trigger a CodeBuild project.
