@@ -39,7 +39,7 @@ export class PackageManager {
       case LockFile.PNPM:
         return new PackageManager({
           lockFile: LockFile.PNPM,
-          installCommand: logLevel && logLevel !== LogLevel.INFO ? ['pnpm', 'install', '--reporter', 'silent'] : ['pnpm', 'install'],
+          installCommand: logLevel && logLevel !== LogLevel.INFO ? ['pnpm', 'install', '--no-frozen-lockfile', '--reporter', 'silent'] : ['pnpm', 'install', '--no-frozen-lockfile'],
           runCommand: ['pnpm', 'exec'],
           argsSeparator: '--',
         });
