@@ -24,11 +24,6 @@ const group = listener.addTargets('Target', {
   targets: [new elbv2.IpTarget('10.0.1.1')],
 });
 
-// const targetGroup = new elbv2.NetworkTargetGroup(stack, 'TG', {
-//   vpc,
-//   port: 443,
-//   connectionTermination
-// })
 group.node.addDependency(vpc.internetConnectivityEstablished);
 
 // The target's security group must allow being routed by the LB and the clients.
