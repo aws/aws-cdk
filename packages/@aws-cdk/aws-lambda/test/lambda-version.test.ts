@@ -1,4 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
@@ -201,5 +202,57 @@ describe('lambda version', () => {
     expect(() => {
       version.addFunctionUrl();
     }).toThrow(/FunctionUrl cannot be used with a Version/);
+  });
+
+  test('metric adds version dimensions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Fn', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('foo'),
+    });
+    const version = new lambda.Version(stack, 'Version', {
+      lambda: fn,
+      maxEventAge: cdk.Duration.hours(1),
+      retryAttempts: 0,
+    });
+
+    // WHEN
+    new cloudwatch.Alarm(stack, 'Alarm', {
+      metric: version.metric('Test'),
+      alarmName: 'Test',
+      threshold: 1,
+      evaluationPeriods: 1,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      Dimensions: [{
+        Name: 'FunctionName',
+        Value: {
+          Ref: 'Fn9270CBC0',
+        },
+      }, {
+        Name: 'Resource',
+        Value: {
+          'Fn::Join': [
+            '',
+            [
+              {
+                Ref: 'Fn9270CBC0',
+              },
+              ':',
+              {
+                'Fn::GetAtt': [
+                  'Version6A868472',
+                  'Version',
+                ],
+              },
+            ],
+          ],
+        },
+      }],
+    });
   });
 });

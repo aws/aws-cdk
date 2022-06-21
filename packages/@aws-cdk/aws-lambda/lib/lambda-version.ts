@@ -231,12 +231,12 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public metric(metricName: string, props: cloudwatch.MetricOptions = {}): cloudwatch.Metric {
     // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differs from the base behavior.
     return super.metric(metricName, {
-      dimensions: {
+      dimensionsMap: {
         FunctionName: this.lambda.functionName,
-        // construct the ARN from the underlying lambda so that alarms on an alias
+        // construct the name from the underlying lambda so that alarms on an alias
         // don't cause a circular dependency with CodeDeploy
         // see: https://github.com/aws/aws-cdk/issues/2231
-        Resource: `${this.lambda.functionArn}:${this.version}`,
+        Resource: `${this.lambda.functionName}:${this.version}`,
       },
       ...props,
     });
