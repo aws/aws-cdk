@@ -5,11 +5,13 @@ import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
 import { DomainMappingOptions } from '../common/stage';
+import { ApiDefinition } from './api-definition';
 import { IHttpRouteAuthorizer } from './authorizer';
 import { HttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { IHttpStage, HttpStage, HttpStageOptions } from './stage';
 import { VpcLink, VpcLinkProps } from './vpc-link';
+export * from './api-definition';
 
 /**
  * Represents an HTTP API
@@ -463,5 +465,42 @@ export class HttpApi extends HttpApiBase {
         authorizationScopes,
       });
     });
+  }
+}
+
+/**
+ * Props to instantiate a new SpecHttpApi
+ */
+ export interface SpecHttpApiProps extends HttpApiProps {
+  /**
+   * An OpenAPI definition compatible with API Gateway.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api.html
+   */
+  readonly apiDefinition: ApiDefinition;
+}
+
+/**
+ * Create a new API Gateway HTTP API endpoint from an OpenAPI Specification file.
+ * @resource AWS::ApiGatewayV2::Api
+ */
+export class SpecHttpApi extends HttpApiBase {
+  readonly apiId: string;
+  readonly httpApiId: string;
+  readonly apiEndpoint: string;
+
+  constructor(scope: Construct, id: string, props: SpecHttpApiProps) {
+    super(scope, id);
+    const apiDefConfig = props.apiDefinition.bind(this);
+    const resource = new CfnApi(this, 'Resource', {
+      name: props.apiName,
+      body: apiDefConfig.inlineDefinition ?? undefined,
+      bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
+    });
+
+    props.apiDefinition.bindAfterCreate(this, this);
+
+    this.apiId = resource.ref;
+    this.httpApiId = resource.ref;
+    this.apiEndpoint = resource.attrApiEndpoint;
   }
 }
