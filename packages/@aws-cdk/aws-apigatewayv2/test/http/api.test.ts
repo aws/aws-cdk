@@ -7,6 +7,7 @@ import {
   CorsHttpMethod, DomainName,
   HttpApi, HttpAuthorizer, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
   HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, HttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
+  SpecHttpApi, ApiDefinition,
 } from '../../lib';
 
 describe('HttpApi', () => {
@@ -528,6 +529,63 @@ describe('HttpApi', () => {
         AuthorizationScopes: ['read:chickens'],
       });
     });
+  });
+});
+
+describe('SpecHttpApi', () => {
+  test('default', () => {
+    const stack = new Stack();
+    const oas = {
+      openapi: '3.0.2',
+      paths: {
+        '/pets': {
+          get: {
+            'responses': {
+              200: {
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/Empty',
+                    },
+                  },
+                },
+              },
+            },
+            'x-amazon-apigateway-integration': {
+              responses: {
+                default: {
+                  statusCode: '200',
+                },
+              },
+              requestTemplates: {
+                'application/json': '{"statusCode": 200}',
+              },
+              passthroughBehavior: 'when_no_match',
+              type: 'mock',
+            },
+          },
+        },
+      },
+      components: {
+        schemas: {
+          Empty: {
+            title: 'Empty Schema',
+            type: 'object',
+          },
+        },
+      },
+    };
+    const api = new SpecHttpApi(stack, 'api', {
+      apiDefinition: ApiDefinition.fromInline(oas),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      Body: oas,
+    });
+
+    expect(api.apiEndpoint).toBeDefined();
+    expect(api.apiId).toBeDefined();
+    expect(api.httpApiId).toBeDefined();
   });
 });
 
