@@ -51,6 +51,14 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
    * @default - No targets.
    */
   readonly targets?: INetworkLoadBalancerTarget[];
+  /**
+   *
+   * Indicates whether the load balancer terminates connections at
+   * the end of the deregistration timeout.
+   *
+   * @default false
+   */
+  readonly connectionTermination?: boolean;
 }
 
 /**
@@ -93,7 +101,9 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     if (props.preserveClientIp !== undefined) {
       this.setAttribute('preserve_client_ip.enabled', props.preserveClientIp ? 'true' : 'false');
     }
-
+    if (props.connectionTermination != undefined) {
+      this.setAttribute('deregistration_delay.connection_termination.enabled', props.connectionTermination ? 'true' : 'false');
+    }
     this.addTarget(...(props.targets || []));
   }
 
