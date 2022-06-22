@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { Annotations } from './annotations';
 import { CfnRefElement } from './cfn-element';
 import { Fn } from './cfn-fn';
+import { IResolvable, IResolveContext } from './resolvable';
+import { Stack } from './stack';
 import { Token } from './token';
 
 type Mapping = { [k1: string]: { [k2: string]: any } };
@@ -83,7 +85,8 @@ export class CfnMapping extends CfnRefElement {
     } else {
       this.lazyRender = true;
     }
-    return Fn.findInMap(this.logicalId, key1, key2);
+
+    return new CfnMappingEmbedder(this, this.mapping, key1, key2).toString();
   }
 
   /**
@@ -121,5 +124,34 @@ export class CfnMapping extends CfnRefElement {
     if (value.match(/[^a-zA-Z0-9]/g)) {
       throw new Error(`Attribute name '${value}' must contain only alphanumeric characters.`);
     }
+  }
+}
+
+class CfnMappingEmbedder implements IResolvable {
+  readonly creationStack: string[] = [];
+
+  constructor(private readonly cfnMapping: CfnMapping, readonly mapping: Mapping, private readonly key1: string, private readonly key2: string) { }
+
+  public resolve(context: IResolveContext): string {
+    const consumingStack = Stack.of(context.scope);
+    if (consumingStack === Stack.of(this.cfnMapping)) {
+      return Fn.findInMap(this.cfnMapping.logicalId, this.key1, this.key2);
+    }
+
+    const constructScope = consumingStack;
+    const constructId = `MappingCopy-${this.cfnMapping.node.id}-${this.cfnMapping.node.addr}`;
+
+    let mappingCopy = constructScope.node.tryFindChild(constructId) as CfnMapping | undefined;
+    if (!mappingCopy) {
+      mappingCopy = new CfnMapping(constructScope, constructId, {
+        mapping: this.mapping,
+      });
+    }
+
+    return Fn.findInMap(mappingCopy.logicalId, this.key1, this.key2);
+  }
+
+  public toString() {
+    return Token.asString(this);
   }
 }

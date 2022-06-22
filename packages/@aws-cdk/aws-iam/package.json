@@ -109,6 +109,7 @@
   "awslint": {
     "exclude": [
       "from-signature:@aws-cdk/aws-iam.Role.fromRoleArn",
+      "from-signature:@aws-cdk/aws-iam.Role.fromRoleName",
       "from-method:@aws-cdk/aws-iam.AccessKey",
       "construct-interface-extends-iconstruct:@aws-cdk/aws-iam.IManagedPolicy",
       "props-physical-name:@aws-cdk/aws-iam.OpenIdConnectProviderProps",

@@ -285,7 +285,7 @@ export class CustomResourceProvider extends Construct {
    * myProvider.addToRolePolicy({
    *   Effect: 'Allow',
    *   Action: 's3:GetObject',
-   *   Resources: '*',
+   *   Resource: '*',
    * });
    */
   public addToRolePolicy(statement: any): void {

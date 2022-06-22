@@ -1776,6 +1776,50 @@ describe('cluster', () => {
 
     });
 
+    test('addNodegroupCapacity with C7g instance type comes with nodegroup with correct AmiType', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 0,
+        version: CLUSTER_VERSION,
+        prune: false,
+        defaultCapacityInstance: new ec2.InstanceType('c7g.large'),
+      }).addNodegroupCapacity('ng', {
+        instanceTypes: [new ec2.InstanceType('c7g.large')],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+        AmiType: 'AL2_ARM_64',
+      });
+
+    });
+
+    test('addAutoScalingGroupCapacity with C7g instance type comes with nodegroup with correct AmiType', () => {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 0,
+        version: CLUSTER_VERSION,
+        prune: false,
+      }).addAutoScalingGroupCapacity('ng', {
+        instanceType: new ec2.InstanceType('c7g.large'),
+      });
+
+      // THEN
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      expect(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes('amazon-linux-2-arm64/'),
+      )).toEqual(true);
+
+    });
+
     test('EKS-Optimized AMI with GPU support when addAutoScalingGroupCapacity', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();

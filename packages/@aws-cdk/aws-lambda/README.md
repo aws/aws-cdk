@@ -29,7 +29,7 @@ runtime code.
  * `lambda.Code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object
    that contains the archive of your runtime code.
  * `lambda.Code.fromInline(code)` - inline the handle code as a string. This is
-   limited to supported runtimes and the code cannot exceed 4KiB.
+   limited to supported runtimes.
  * `lambda.Code.fromAsset(path)` - specify a directory or a .zip file in the local
    filesystem which will be zipped and uploaded to S3 before deployment. See also
    [bundling asset code](#bundling-asset-code).

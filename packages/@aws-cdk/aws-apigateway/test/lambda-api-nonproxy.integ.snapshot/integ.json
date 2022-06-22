@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "integ.lambda-api-nonproxy": {
+      "stacks": [
+        "LambdaApiIntegrationOptionsNonProxyIntegrationStack"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

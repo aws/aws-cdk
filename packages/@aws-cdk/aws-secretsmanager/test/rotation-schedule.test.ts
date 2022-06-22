@@ -230,6 +230,7 @@ describe('hosted rotation', () => {
       },
       HostedRotationLambda: {
         RotationType: 'MySQLSingleUser',
+        ExcludeCharacters: " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
       },
       RotationRules: {
         AutomaticallyAfterDays: 30,
@@ -513,6 +514,52 @@ describe('hosted rotation', () => {
     // THEN
     expect(() => hostedRotation.connections.allowToAnyIpv4(ec2.Port.allTraffic()))
       .toThrow(/Cannot use connections for a hosted rotation that is not deployed in a VPC/);
+  });
+
+  test('can customize exclude characters', () => {
+    // GIVEN
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack');
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+
+    // WHEN
+    secret.addRotationSchedule('RotationSchedule', {
+      hostedRotation: secretsmanager.HostedRotation.mysqlSingleUser({
+        excludeCharacters: '()',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      HostedRotationLambda: {
+        RotationType: 'MySQLSingleUser',
+        ExcludeCharacters: '()',
+      },
+    });
+  });
+
+  test('exclude characters default to secret exclude characters', () => {
+    // GIVEN
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack');
+    const secret = new secretsmanager.Secret(stack, 'Secret', {
+      generateSecretString: {
+        excludeCharacters: '[]',
+      },
+    });
+
+    // WHEN
+    secret.addRotationSchedule('RotationSchedule', {
+      hostedRotation: secretsmanager.HostedRotation.mysqlSingleUser(),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      HostedRotationLambda: {
+        RotationType: 'MySQLSingleUser',
+        ExcludeCharacters: '[]',
+      },
+    });
   });
 });
 

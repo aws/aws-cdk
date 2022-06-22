@@ -1206,7 +1206,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       this._role = this.launchTemplate?.role;
       this.grantPrincipal = this._role || new iam.UnknownPrincipal({ resource: this });
 
-      this.osType = this.launchTemplate?.osType || ec2.OperatingSystemType.UNKNOWN;
+      this.osType = this.launchTemplate?.osType ?? ec2.OperatingSystemType.UNKNOWN;
     } else {
       if (!props.machineImage) {
         throw new Error('Setting \'machineImage\' is required when \'launchTemplate\' and \'mixedInstancesPolicy\' is not set');

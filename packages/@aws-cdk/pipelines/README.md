@@ -728,6 +728,9 @@ new pipelines.CodeBuildStep('Synth', {
   subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
   securityGroups: [mySecurityGroup],
 
+  // Control caching
+  cache: codebuild.Cache.bucket(new s3.Bucket(this, 'Cache')),
+
   // Additional policy statements for the execution role
   rolePolicyStatements: [
     new iam.PolicyStatement({ /* ... */ }),

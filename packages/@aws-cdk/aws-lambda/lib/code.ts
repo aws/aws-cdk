@@ -238,7 +238,7 @@ export class S3Code extends Code {
 }
 
 /**
- * Lambda code from an inline string (limited to 4KiB).
+ * Lambda code from an inline string.
  */
 export class InlineCode extends Code {
   public readonly isInline = true;
@@ -248,10 +248,6 @@ export class InlineCode extends Code {
 
     if (code.length === 0) {
       throw new Error('Lambda inline code cannot be empty');
-    }
-
-    if (code.length > 4096) {
-      throw new Error('Lambda source is too large, must be <= 4096 but is ' + code.length);
     }
   }
 

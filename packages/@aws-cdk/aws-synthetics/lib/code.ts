@@ -13,7 +13,7 @@ export abstract class Code {
   /**
    * Specify code inline.
    *
-   * @param code The actual handler code (limited to 4KiB)
+   * @param code The actual handler code (limited to 5MB)
    *
    * @returns `InlineCode` with inline code.
    */
