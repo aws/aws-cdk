@@ -114,13 +114,13 @@ const paymentDS = api.addDynamoDbDataSource('paymentDs', paymentTable, { name: '
 customerDS.createResolver({
   typeName: 'Query',
   fieldName: 'getCustomers',
-  requestMappingTemplate: MappingTemplate.dynamoDbScanTable(),
+  requestMappingTemplate: MappingTemplate.dynamoDbScanTable(true),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
 customerDS.createResolver({
   typeName: 'Query',
   fieldName: 'getCustomer',
-  requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id'),
+  requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id', true),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 customerDS.createResolver({
@@ -165,13 +165,13 @@ for (const { suffix, op } of ops) {
   orderDS.createResolver({
     typeName: 'Query',
     fieldName: 'getCustomerOrders' + suffix,
-    requestMappingTemplate: MappingTemplate.dynamoDbQuery(op('customer', 'customer')),
+    requestMappingTemplate: MappingTemplate.dynamoDbQuery(op('customer', 'customer'), true),
     responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
   });
   orderDS.createResolver({
     typeName: 'Query',
     fieldName: 'getOrderCustomers' + suffix,
-    requestMappingTemplate: MappingTemplate.dynamoDbQuery(op('order', 'order'), 'orderIndex'),
+    requestMappingTemplate: MappingTemplate.dynamoDbQuery(op('order', 'order'), true, 'orderIndex'),
     responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
   });
 }
@@ -179,35 +179,35 @@ orderDS.createResolver({
   typeName: 'Query',
   fieldName: 'getCustomerOrdersFilter',
   requestMappingTemplate: MappingTemplate.dynamoDbQuery(
-    KeyCondition.eq('customer', 'customer').and(KeyCondition.beginsWith('order', 'order'))),
+    KeyCondition.eq('customer', 'customer').and(KeyCondition.beginsWith('order', 'order')), true),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
 orderDS.createResolver({
   typeName: 'Query',
   fieldName: 'getCustomerOrdersBetween',
   requestMappingTemplate: MappingTemplate.dynamoDbQuery(
-    KeyCondition.eq('customer', 'customer').and(KeyCondition.between('order', 'order1', 'order2'))),
+    KeyCondition.eq('customer', 'customer').and(KeyCondition.between('order', 'order1', 'order2')), true),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
 orderDS.createResolver({
   typeName: 'Query',
   fieldName: 'getOrderCustomersFilter',
   requestMappingTemplate: MappingTemplate.dynamoDbQuery(
-    KeyCondition.eq('order', 'order').and(KeyCondition.beginsWith('customer', 'customer'))),
+    KeyCondition.eq('order', 'order').and(KeyCondition.beginsWith('customer', 'customer')), true),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
 orderDS.createResolver({
   typeName: 'Query',
   fieldName: 'getOrderCustomersBetween',
   requestMappingTemplate: MappingTemplate.dynamoDbQuery(
-    KeyCondition.eq('order', 'order').and(KeyCondition.between('customer', 'customer1', 'customer2')), 'orderIndex'),
+    KeyCondition.eq('order', 'order').and(KeyCondition.between('customer', 'customer1', 'customer2')), true, 'orderIndex'),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
 
 paymentDS.createResolver({
   typeName: 'Query',
   fieldName: 'getPayment',
-  requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id'),
+  requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id', true),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 paymentDS.createResolver({

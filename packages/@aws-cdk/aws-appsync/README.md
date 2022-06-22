@@ -80,7 +80,7 @@ const demoDS = api.addDynamoDbDataSource('demoDataSource', demoTable);
 demoDS.createResolver({
   typeName: 'Query',
   fieldName: 'getDemos',
-  requestMappingTemplate: appsync.MappingTemplate.dynamoDbScanTable(),
+  requestMappingTemplate: appsync.MappingTemplate.dynamoDbScanTable(true),
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultList(),
 });
 
