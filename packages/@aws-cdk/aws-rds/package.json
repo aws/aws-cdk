@@ -147,7 +147,8 @@
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER",
-      "resource-attribute:@aws-cdk/aws-rds.DatabaseProxy.dbProxyVpcId"
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseProxy.dbProxyVpcId",
+      "resource-attribute:@aws-cdk/aws-rds.ParameterGroup.dbParameterGroupName"
     ]
   },
   "stability": "stable",
