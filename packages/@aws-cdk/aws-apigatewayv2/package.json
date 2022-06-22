@@ -100,6 +100,7 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^10.0.0"
   },
   "peerDependencies": {
