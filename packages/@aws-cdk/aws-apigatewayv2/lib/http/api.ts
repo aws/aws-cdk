@@ -471,7 +471,7 @@ export class HttpApi extends HttpApiBase {
 /**
  * Props to instantiate a new SpecHttpApi
  */
- export interface SpecHttpApiProps extends HttpApiProps {
+export interface SpecHttpApiProps extends HttpApiProps {
   /**
    * An OpenAPI definition compatible with API Gateway.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api.html
