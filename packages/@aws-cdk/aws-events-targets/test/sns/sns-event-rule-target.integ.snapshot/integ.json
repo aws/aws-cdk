@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "19.0.0",
   "testCases": {
-    "aws-events-targets/test/sns/integ.sns-event-rule-target": {
+    "sns/integ.sns-event-rule-target": {
       "stacks": [
         "aws-cdk-sns-event-target"
       ],

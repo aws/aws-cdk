@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-secretsmanager/test/integ.hosted-rotation": {
+    "integ.hosted-rotation": {
       "stacks": [
         "cdk-integ-secret-hosted-rotation"
       ],
