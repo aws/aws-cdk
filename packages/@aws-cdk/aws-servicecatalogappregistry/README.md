@@ -124,3 +124,31 @@ const myStack = new Stack(app, 'MyStack');
 declare const application: appreg.Application;
 application.associateStack(myStack);
 ```
+
+## Sharing
+
+You can share your AppRegistry applications and attribute groups with AWS Organizations, Organizational Units (OUs), AWS accounts within an organization, as well as IAM roles and users. AppRegistry requires that AWS Organizations is enabled in an account before deploying a share of an application or attribute group.
+
+### Sharing an application
+
+```ts
+declare const application: appreg.Application;
+application.shareResource({
+  accounts: ['123456789012'],
+  organizations: ['arn:aws:organizations::123456789012:organization/o-<org-ID>'],
+  roles: [iam.Role.fromRoleName(this, 'DeveloperRole', 'Developer')],
+  users: [iam.User.fromUserName(this, 'TesterUser', 'Tester')]
+});
+```
+
+### Sharing an attribute group
+
+```ts
+declare const attributeGroup: appreg.AttributeGroup;
+attributeGroup.shareResource({
+  accounts: ['123456789012'],
+  organizations: ['arn:aws:organizations::123456789012:organization/o-<org-ID>'],
+  roles: [iam.Role.fromRoleName(this, 'DeveloperRole', 'Developer')],
+  users: [iam.User.fromUserName(this, 'TesterUser', 'Tester')]
+});
+```

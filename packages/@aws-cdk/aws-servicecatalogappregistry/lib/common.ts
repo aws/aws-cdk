@@ -1,6 +1,9 @@
 import * as crypto from 'crypto';
 import * as iam from '@aws-cdk/aws-iam';
 
+/**
+ * The options that are passed into a share of an Application or Attribute Group.
+ */
 export interface ShareOptions {
   /**
    * Explicitly allow share of application with principals outside of your AWS Organization.
