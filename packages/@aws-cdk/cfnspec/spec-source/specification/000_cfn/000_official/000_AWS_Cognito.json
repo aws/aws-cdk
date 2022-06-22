@@ -1,5 +1,5 @@
 {
-  "$version": "75.0.0",
+  "$version": "76.0.0",
   "PropertyTypes": {
     "AWS::Cognito::IdentityPool.CognitoIdentityProvider": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-identitypool-cognitoidentityprovider.html",
@@ -564,7 +564,7 @@
         "CaseSensitive": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-usernameconfiguration.html#cfn-cognito-userpool-usernameconfiguration-casesensitive",
           "PrimitiveType": "Boolean",
-          "Required": true,
+          "Required": false,
           "UpdateType": "Mutable"
         }
       }
