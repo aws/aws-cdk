@@ -46,10 +46,44 @@
                   "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnAttributeGroup",
                   "version": "0.0.0"
                 }
+              },
+              "RAMSharee756785b8818": {
+                "id": "RAMSharee756785b8818",
+                "path": "integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/RAMSharee756785b8818",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RAM::ResourceShare",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "RAMSharee756785b8818",
+                    "allowExternalPrincipals": true,
+                    "principals": [
+                      "arn:aws:iam::279317280375:role/Developer"
+                    ],
+                    "resourceArns": [
+                      {
+                        "Fn::GetAtt": [
+                          "TestAttributeGroupB1CB284F",
+                          "Arn"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ram.CfnResourceShare",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-servicecatalogappregistry.AttributeGroup",
+              "version": "0.0.0"
+            }
+          },
+          "MyRole": {
+            "id": "MyRole",
+            "path": "integ-servicecatalogappregistry-attribute-group/MyRole",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
             }
           }

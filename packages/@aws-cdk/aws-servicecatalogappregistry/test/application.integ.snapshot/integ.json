@@ -1,7 +1,7 @@
 {
   "version": "18.0.0",
   "testCases": {
-    "aws-servicecatalogappregistry/test/integ.application": {
+    "integ.application": {
       "stacks": [
         "integ-servicecatalogappregistry-application"
       ],

@@ -61,6 +61,24 @@
     "Name": "myAttributeGroupTest",
     "Description": "my attribute group description"
    }
+  },
+  "TestAttributeGroupRAMShare8ecfad67abc5A7122106": {
+   "Type": "AWS::RAM::ResourceShare",
+   "Properties": {
+    "Name": "RAMShare8ecfad67abc5",
+    "AllowExternalPrincipals": true,
+    "Principals": [
+     "arn:aws:iam::279317280375:role/Developer"
+    ],
+    "ResourceArns": [
+     {
+      "Fn::GetAtt": [
+       "TestAttributeGroupB1CB284F",
+       "Arn"
+      ]
+     }
+    ]
+   }
   }
  }
 }

@@ -1,3 +1,4 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as appreg from '../lib';
 
@@ -32,6 +33,10 @@ const attributeGroup = new appreg.AttributeGroup(stack, 'TestAttributeGroup', {
 
 application.associateStack(stack);
 application.associateAttributeGroup(attributeGroup);
+const myRole = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::279317280375:role/Developer');
+attributeGroup.shareResource({
+  roles: [myRole],
+});
 
 app.synth();
 

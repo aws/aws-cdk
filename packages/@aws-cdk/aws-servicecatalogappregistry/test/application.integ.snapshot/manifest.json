@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "18.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -37,6 +37,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TestAttributeGroupB1CB284F"
+          }
+        ],
+        "/integ-servicecatalogappregistry-application/TestAttributeGroup/RAMShare8ecfad67abc5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAttributeGroupRAMShare8ecfad67abc5A7122106"
           }
         ]
       },

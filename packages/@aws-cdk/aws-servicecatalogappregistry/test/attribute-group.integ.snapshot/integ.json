@@ -1,7 +1,7 @@
 {
   "version": "18.0.0",
   "testCases": {
-    "aws-servicecatalogappregistry/test/integ.attribute-group": {
+    "integ.attribute-group": {
       "stacks": [
         "integ-servicecatalogappregistry-attribute-group"
       ],
