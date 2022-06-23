@@ -1,5 +1,5 @@
 {
-  "$version": "75.0.0",
+  "$version": "76.0.0",
   "PropertyTypes": {
     "AWS::Location::Map.MapConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-location-map-mapconfiguration.html",
