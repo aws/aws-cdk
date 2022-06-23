@@ -2,6 +2,97 @@
 
 ## New Resource Types
 
+* AWS::Route53::CidrCollection
+
+## Attribute Changes
+
+* AWS::EC2::VPNGateway Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gateway.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html
+* AWS::EC2::VPNGateway VPNGatewayId (__added__)
+* AWS::GlobalAccelerator::Accelerator Ipv4Addresses (__added__)
+* AWS::RDS::DBSubnetGroup Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnet-group.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnetgroup.html
+
+## Property Changes
+
+* AWS::AppStream::Stack StreamingExperienceSettings (__added__)
+* AWS::EC2::EIP NetworkBorderGroup (__added__)
+* AWS::EC2::VPNGateway AmazonSideAsn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gateway.html#cfn-ec2-vpngateway-amazonsideasn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html#cfn-ec2-vpngateway-amazonsideasn
+* AWS::EC2::VPNGateway AmazonSideAsn.PrimitiveType (__changed__)
+  * Old: Long
+  * New: Integer
+* AWS::EC2::VPNGateway Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gateway.html#cfn-ec2-vpngateway-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html#cfn-ec2-vpngateway-tags
+* AWS::EC2::VPNGateway Type.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gateway.html#cfn-ec2-vpngateway-type
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html#cfn-ec2-vpngateway-type
+* AWS::EMR::Cluster AutoTerminationPolicy (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerCertificate Certificates.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Elasticsearch::Domain AdvancedSecurityOptions.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::KinesisAnalyticsV2::Application Tags.DuplicatesAllowed (__added__)
+* AWS::Lambda::Url InvokeMode (__added__)
+* AWS::RDS::DBSubnetGroup DBSubnetGroupDescription.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnet-group.html#cfn-rds-dbsubnetgroup-dbsubnetgroupdescription
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnetgroup.html#cfn-rds-dbsubnetgroup-dbsubnetgroupdescription
+* AWS::RDS::DBSubnetGroup DBSubnetGroupName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnet-group.html#cfn-rds-dbsubnetgroup-dbsubnetgroupname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnetgroup.html#cfn-rds-dbsubnetgroup-dbsubnetgroupname
+* AWS::RDS::DBSubnetGroup SubnetIds.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnet-group.html#cfn-rds-dbsubnetgroup-subnetids
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnetgroup.html#cfn-rds-dbsubnetgroup-subnetids
+* AWS::RDS::DBSubnetGroup SubnetIds.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::RDS::DBSubnetGroup Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnet-group.html#cfn-rds-dbsubnetgroup-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnetgroup.html#cfn-rds-dbsubnetgroup-tags
+* AWS::Route53::RecordSet CidrRoutingConfig (__added__)
+
+## Property Type Changes
+
+* AWS::AppStream::Stack.StreamingExperienceSettings (__added__)
+* AWS::EMR::Cluster.AutoTerminationPolicy (__added__)
+* AWS::Route53::RecordSet.CidrRoutingConfig (__added__)
+* AWS::Route53::RecordSetGroup.CidrRoutingConfig (__added__)
+* AWS::Config::ConfigRule.Source SourceIdentifier.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::Instance.NetworkInterface AssociateCarrierIpAddress (__added__)
+* AWS::EMR::Cluster.JobFlowInstancesConfig TaskInstanceFleets (__added__)
+* AWS::EMR::Cluster.JobFlowInstancesConfig TaskInstanceGroups (__added__)
+* AWS::Elasticsearch::Domain.AdvancedSecurityOptionsInput AnonymousAuthEnabled (__added__)
+* AWS::KinesisAnalyticsV2::Application.EnvironmentProperties PropertyGroups.DuplicatesAllowed (__added__)
+* AWS::KinesisAnalyticsV2::Application.InputSchema RecordColumns.DuplicatesAllowed (__added__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.PrimitiveType (__deleted__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.PrimitiveItemType (__added__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.Type (__added__)
+* AWS::KinesisAnalyticsV2::Application.S3ContentBaseLocation BasePath.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisAnalyticsV2::Application.S3ContentLocation BucketARN.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::KinesisAnalyticsV2::Application.S3ContentLocation FileKey.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::KinesisAnalyticsV2::Application.SqlApplicationConfiguration Inputs.DuplicatesAllowed (__added__)
+* AWS::Route53::RecordSetGroup.RecordSet CidrRoutingConfig (__added__)
+* AWS::S3::MultiRegionAccessPoint.Region AccountId (__added__)
+
+
+# CloudFormation Resource Specification v76.0.0
+
+## New Resource Types
+
 * AWS::Connect::TaskTemplate
 
 ## Attribute Changes
