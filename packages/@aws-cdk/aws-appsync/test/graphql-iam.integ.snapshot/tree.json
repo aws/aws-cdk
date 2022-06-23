@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.33"
         }
       },
       "aws-appsync-integ": {
@@ -273,7 +273,7 @@
                             "typeName": "Query",
                             "dataSourceName": "testDataSource",
                             "kind": "UNIT",
-                            "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+                            "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": \"true\", \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
                             "responseMappingTemplate": "$util.toJson($ctx.result)"
                           }
                         },
@@ -308,7 +308,7 @@
                             "typeName": "Query",
                             "dataSourceName": "testDataSource",
                             "kind": "UNIT",
-                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\"}",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": \"true\"}",
                             "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                           }
                         },
@@ -714,13 +714,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "version": "10.1.33"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.0.9"
+              "version": "10.1.33"
             }
           },
           "testFail": {

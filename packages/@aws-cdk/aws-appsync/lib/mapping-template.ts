@@ -45,7 +45,7 @@ export abstract class MappingTemplate {
    *
    * @param cond the key condition for the query
    */
-   public static dynamoDbQuery(cond: KeyCondition, consistentRead: boolean = false, indexName?: string): MappingTemplate {
+  public static dynamoDbQuery(cond: KeyCondition, consistentRead: boolean = false, indexName?: string): MappingTemplate {
     return this.fromString(`{"version" : "2017-02-28", "operation" : "Query",  "consistentRead": "${consistentRead}", ${indexName ? `"index" : "${indexName}", ` : ''}${cond.renderTemplate()}}`);
   }
 
