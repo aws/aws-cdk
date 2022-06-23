@@ -39,4 +39,3 @@ attributeGroup.shareResource({
 });
 
 app.synth();
-

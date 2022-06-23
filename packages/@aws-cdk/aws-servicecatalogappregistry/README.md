@@ -132,6 +132,7 @@ You can share your AppRegistry applications and attribute groups with AWS Organi
 ### Sharing an application
 
 ```ts
+import * as iam from '@aws-cdk/aws-iam';
 declare const application: appreg.Application;
 application.shareResource({
   accounts: ['123456789012'],
@@ -144,6 +145,7 @@ application.shareResource({
 ### Sharing an attribute group
 
 ```ts
+import * as iam from '@aws-cdk/aws-iam';
 declare const attributeGroup: appreg.AttributeGroup;
 attributeGroup.shareResource({
   accounts: ['123456789012'],
