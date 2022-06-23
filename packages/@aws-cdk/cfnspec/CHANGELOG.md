@@ -1,3 +1,91 @@
+# CloudFormation Resource Specification v76.0.0
+
+## New Resource Types
+
+* AWS::Connect::TaskTemplate
+
+## Attribute Changes
+
+* AWS::RDS::DBClusterParameterGroup DBClusterParameterGroupName (__added__)
+* AWS::RDS::DBParameterGroup Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html
+* AWS::RDS::DBParameterGroup DBParameterGroupName (__added__)
+
+## Property Changes
+
+* AWS::DataSync::LocationEFS AccessPointArn (__added__)
+* AWS::DataSync::LocationEFS FileSystemAccessRoleArn (__added__)
+* AWS::DataSync::LocationEFS InTransitEncryption (__added__)
+* AWS::KinesisAnalyticsV2::Application Tags.DuplicatesAllowed (__deleted__)
+* AWS::RDS::DBClusterParameterGroup Tags.DuplicatesAllowed (__deleted__)
+* AWS::RDS::DBParameterGroup Description.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-description
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-description
+* AWS::RDS::DBParameterGroup Description.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::RDS::DBParameterGroup Family.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-family
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-family
+* AWS::RDS::DBParameterGroup Family.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::RDS::DBParameterGroup Parameters.DuplicatesAllowed (__deleted__)
+* AWS::RDS::DBParameterGroup Parameters.PrimitiveItemType (__deleted__)
+* AWS::RDS::DBParameterGroup Parameters.Type (__deleted__)
+* AWS::RDS::DBParameterGroup Parameters.PrimitiveType (__added__)
+* AWS::RDS::DBParameterGroup Parameters.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-parameters
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-parameters
+* AWS::RDS::DBParameterGroup Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-tags
+* AWS::RDS::EventSubscription SubscriptionName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SES::ConfigurationSet DeliveryOptions (__added__)
+* AWS::SES::ConfigurationSet ReputationOptions (__added__)
+* AWS::SES::ConfigurationSet SendingOptions (__added__)
+* AWS::SES::ConfigurationSet SuppressionOptions (__added__)
+* AWS::SES::ConfigurationSet TrackingOptions (__added__)
+
+## Property Type Changes
+
+* AWS::SES::ConfigurationSet.DeliveryOptions (__added__)
+* AWS::SES::ConfigurationSet.ReputationOptions (__added__)
+* AWS::SES::ConfigurationSet.SendingOptions (__added__)
+* AWS::SES::ConfigurationSet.SuppressionOptions (__added__)
+* AWS::SES::ConfigurationSet.TrackingOptions (__added__)
+* AWS::SES::ConfigurationSetEventDestination.SnsDestination (__added__)
+* AWS::Cognito::UserPool.UsernameConfiguration CaseSensitive.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTEvents::AlarmModel.IotSiteWise PropertyValue.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisAnalyticsV2::Application.EnvironmentProperties PropertyGroups.DuplicatesAllowed (__deleted__)
+* AWS::KinesisAnalyticsV2::Application.InputSchema RecordColumns.DuplicatesAllowed (__deleted__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.PrimitiveItemType (__deleted__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.Type (__deleted__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.PrimitiveType (__added__)
+* AWS::KinesisAnalyticsV2::Application.S3ContentBaseLocation BasePath.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::KinesisAnalyticsV2::Application.S3ContentLocation BucketARN.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisAnalyticsV2::Application.S3ContentLocation FileKey.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisAnalyticsV2::Application.SqlApplicationConfiguration Inputs.DuplicatesAllowed (__deleted__)
+* AWS::SES::ConfigurationSetEventDestination.EventDestination SnsDestination (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+
 # CloudFormation Resource Specification v75.0.0
 
 ## New Resource Types
