@@ -268,7 +268,7 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::KMS::Alias",
                           "aws:cdk:cloudformation:props": {
-                            "aliasName": "alias/codepipeline-pipelinesecuritystacktestpipelinef7060861",
+                            "aliasName": "alias/codepipeline-pipelinesecuritystack-testpipeline-f7060861",
                             "targetKeyId": {
                               "Fn::GetAtt": [
                                 "TestPipelineArtifactsBucketEncryptionKey13258842",
@@ -3519,7 +3519,7 @@
                             },
                             "environment": {
                               "type": "LINUX_CONTAINER",
-                              "image": "aws/codebuild/standard:1.0",
+                              "image": "aws/codebuild/standard:5.0",
                               "imagePullCredentialsType": "CODEBUILD",
                               "privilegedMode": false,
                               "computeType": "BUILD_GENERAL1_SMALL"
@@ -4065,7 +4065,7 @@
                             },
                             "environment": {
                               "type": "LINUX_CONTAINER",
-                              "image": "aws/codebuild/standard:1.0",
+                              "image": "aws/codebuild/standard:5.0",
                               "imagePullCredentialsType": "CODEBUILD",
                               "privilegedMode": false,
                               "computeType": "BUILD_GENERAL1_SMALL"
