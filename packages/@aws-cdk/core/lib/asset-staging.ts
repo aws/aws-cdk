@@ -16,7 +16,7 @@ import { Stage } from './stage';
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from './construct-compat';
 
-const ARCHIVE_EXTENSIONS = ['.zip', '.jar', '.tar', '.gz'];
+const ARCHIVE_EXTENSIONS = ['.zip', '.jar', '.tar'];
 
 /**
  * A previously staged asset
