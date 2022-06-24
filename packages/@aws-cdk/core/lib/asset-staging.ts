@@ -16,7 +16,7 @@ import { Stage } from './stage';
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from './construct-compat';
 
-const ARCHIVE_EXTENSIONS = ['.zip', '.jar'];
+const ARCHIVE_EXTENSIONS = ['.zip', '.jar', '.tar', '.gz'];
 
 /**
  * A previously staged asset
@@ -272,9 +272,19 @@ export class AssetStaging extends CoreConstruct {
    */
   private stageByCopying(): StagedAsset {
     const assetHash = this.calculateHash(this.hashType);
-    const stagedPath = this.stagingDisabled
-      ? this.sourcePath
-      : path.resolve(this.assetOutdir, renderAssetFilename(assetHash, path.extname(this.sourcePath)));
+    let stagedPath: string
+    
+    if (this.stagingDisabled) {
+      stagedPath = this.sourcePath
+    } else {
+      let extname: string = path.extname(this.sourcePath);
+      const filename: string = path.basename(this.sourcePath).replace(extname, "");
+      const double_archive = ARCHIVE_EXTENSIONS.includes(path.extname(filename)) ? true : false;
+      if (double_archive) {
+        extname = path.extname(filename) + extname;
+      };
+      stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash, extname));
+    };
 
     if (!this.sourceStats.isDirectory() && !this.sourceStats.isFile()) {
       throw new Error(`Asset ${this.sourcePath} is expected to be either a directory or a regular file`);
