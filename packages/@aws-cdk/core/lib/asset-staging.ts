@@ -279,8 +279,8 @@ export class AssetStaging extends CoreConstruct {
     } else {
       let extname: string = path.extname(this.sourcePath);
       const filename: string = path.basename(this.sourcePath).replace(extname, "");
-      const double_archive = ARCHIVE_EXTENSIONS.includes(path.extname(filename)) ? true : false;
-      if (double_archive) {
+      const doubleArchive = ARCHIVE_EXTENSIONS.includes(path.extname(filename)) ? true : false;
+      if (doubleArchive) {
         extname = path.extname(filename) + extname;
       };
       stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash, extname));
