@@ -3085,8 +3085,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.33"
+                  "fqn": "@aws-cdk/pipelines.CdkStage",
+                  "version": "0.0.0"
                 }
               },
               "PipelineApplicationSecurityCheck": {
@@ -3621,14 +3621,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.33"
+                  "fqn": "@aws-cdk/pipelines.CdkStage",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.33"
+              "fqn": "@aws-cdk/pipelines.CdkPipeline",
+              "version": "0.0.0"
             }
           },
           "UnattachedStage": {
@@ -4163,8 +4163,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.33"
+              "fqn": "@aws-cdk/pipelines.CdkStage",
+              "version": "0.0.0"
             }
           },
           "SecurityChangesTopic": {
