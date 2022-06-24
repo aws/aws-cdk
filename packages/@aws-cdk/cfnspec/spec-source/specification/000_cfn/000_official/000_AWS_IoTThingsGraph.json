@@ -1,5 +1,5 @@
 {
-  "$version": "76.0.0",
+  "$version": "78.0.0",
   "PropertyTypes": {
     "AWS::IoTThingsGraph::FlowTemplate.DefinitionDocument": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotthingsgraph-flowtemplate-definitiondocument.html",
