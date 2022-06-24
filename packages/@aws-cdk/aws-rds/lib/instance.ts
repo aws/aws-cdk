@@ -1086,6 +1086,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
 
       secret = new DatabaseSecret(this, 'Secret', {
         username: credentials.username,
+        secretName: credentials.secretName,
         encryptionKey: credentials.encryptionKey,
         excludeCharacters: credentials.excludeCharacters,
         replaceOnPasswordCriteriaChanges: credentials.replaceOnPasswordCriteriaChanges,

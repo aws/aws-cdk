@@ -433,6 +433,26 @@ describe('instance', () => {
       });
     });
 
+    test('can set custom secret name for database from snapshot by fromGeneratedSecret', () => {
+      // WHEN
+      const secretName = 'custom-secret-name-for-snapshot';
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        snapshotIdentifier: 'my-snapshot',
+        engine: rds.DatabaseInstanceEngine.mysql({
+          version: rds.MysqlEngineVersion.VER_8_0_19,
+        }),
+        credentials: rds.SnapshotCredentials.fromGeneratedSecret('username', {
+          secretName: secretName,
+        }),
+        vpc,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+        Name: secretName,
+      });
+    });
+
     test('can create a new database instance with fromDatabaseInstanceAttributes using a token for the port', () => {
       // GIVEN
       const databasePort = new cdk.CfnParameter(stack, 'DatabasePort', {
