@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.29.1](https://github.com/aws/aws-cdk/compare/v2.29.0...v2.29.1) (2022-06-24)
+
+
+### Bug Fixes
+
+* **pipelines:** 'ConfirmPermissionsBroadening' uses wrong node version ([#20861](https://github.com/aws/aws-cdk/issues/20861)) ([47b5ca0](https://github.com/aws/aws-cdk/commit/47b5ca06c50a566af8d1fed4202164b85f793d18))
+
 ## [2.29.0](https://github.com/aws/aws-cdk/compare/v2.28.1...v2.29.0) (2022-06-22)
 
 
