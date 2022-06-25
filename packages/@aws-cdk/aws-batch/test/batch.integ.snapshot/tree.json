@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.33"
         }
       },
       "batch-stack": {
@@ -1601,11 +1601,7 @@
                 "path": "batch-stack/batch-job-repo/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
-                  "aws:cdk:cloudformation:props": {
-                    "imageScanningConfiguration": {
-                      "scanOnPush": false
-                    }
-                  }
+                  "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-ecr.CfnRepository",
@@ -1857,8 +1853,8 @@
                           "Statement": [
                             {
                               "Action": [
-                                "secretsmanager:GetSecretValue",
-                                "secretsmanager:DescribeSecret"
+                                "secretsmanager:DescribeSecret",
+                                "secretsmanager:GetSecretValue"
                               ],
                               "Effect": "Allow",
                               "Resource": {

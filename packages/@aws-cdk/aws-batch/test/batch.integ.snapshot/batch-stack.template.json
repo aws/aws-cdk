@@ -1362,11 +1362,6 @@
   },
   "batchjobrepo4C508C51": {
    "Type": "AWS::ECR::Repository",
-   "Properties": {
-    "ImageScanningConfiguration": {
-     "ScanOnPush": false
-    }
-   },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -1506,8 +1501,8 @@
      "Statement": [
       {
        "Action": [
-        "secretsmanager:GetSecretValue",
-        "secretsmanager:DescribeSecret"
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
        ],
        "Effect": "Allow",
        "Resource": {
