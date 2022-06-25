@@ -1,10 +1,7 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 import { Protocol } from './shared-interfaces';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties used to define healthchecks.

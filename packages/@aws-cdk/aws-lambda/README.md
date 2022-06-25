@@ -29,7 +29,7 @@ runtime code.
  * `lambda.Code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object
    that contains the archive of your runtime code.
  * `lambda.Code.fromInline(code)` - inline the handle code as a string. This is
-   limited to supported runtimes and the code cannot exceed 4KiB.
+   limited to supported runtimes.
  * `lambda.Code.fromAsset(path)` - specify a directory or a .zip file in the local
    filesystem which will be zipped and uploaded to S3 before deployment. See also
    [bundling asset code](#bundling-asset-code).
@@ -288,11 +288,20 @@ This has been fixed in the AWS CDK but *existing* users need to opt-in via a
 [feature flag]. Users who have run `cdk init` since this fix will be opted in,
 by default.
 
-Existing users will need to enable the [feature flag]
+Otherwise, you will need to enable the [feature flag]
 `@aws-cdk/aws-lambda:recognizeVersionProps`. Since CloudFormation does not
-allow duplicate versions, they will also need to make some modification to
-their function so that a new version can be created. Any trivial change such as
-a whitespace change in the code or a no-op environment variable will suffice.
+allow duplicate versions, you will also need to make some modification to
+your function so that a new version can be created. To efficiently and trivially
+modify all your lambda functions at once, you can attach the
+`FunctionVersionUpgrade` aspect to the stack, which slightly alters the
+function description. This aspect is intended for one-time use to upgrade the
+version of all your functions at the same time, and can safely be removed after
+deploying once.
+
+```ts
+const stack = new Stack();
+Aspects.of(stack).add(new lambda.FunctionVersionUpgrade(LAMBDA_RECOGNIZE_VERSION_PROPS));
+```
 
 When the new logic is in effect, you may rarely come across the following error:
 `The following properties are not recognized as version properties`. This will
@@ -303,6 +312,32 @@ To overcome this error, use the API `Function.classifyVersionProperty()` to
 record whether a new version should be generated when this property is changed.
 This can be typically determined by checking whether the property can be
 modified using the *[UpdateFunctionConfiguration]* API or not.
+
+### `currentVersion`: Updated hashing logic for layer versions
+
+An additional update to the hashing logic fixes two issues surrounding layers.
+Prior to this change, updating the lambda layer version would have no effect on
+the function version. Also, the order of lambda layers provided to the function
+was unnecessarily baked into the hash.
+
+This has been fixed in the AWS CDK starting with version 2.27. If you ran
+`cdk init` with an earlier version, you will need to opt-in via a [feature flag].
+If you run `cdk init` with v2.27 or later, this fix will be opted in, by default.
+
+Existing users will need to enable the [feature flag]
+`@aws-cdk/aws-lambda:recognizeLayerVersion`. Since CloudFormation does not
+allow duplicate versions, they will also need to make some modification to
+their function so that a new version can be created. To efficiently and trivially
+modify all your lambda functions at once, users can attach the
+`FunctionVersionUpgrade` aspect to the stack, which slightly alters the
+function description. This aspect is intended for one-time use to upgrade the
+version of all your functions at the same time, and can safely be removed after
+deploying once.
+
+```ts
+const stack = new Stack();
+Aspects.of(stack).add(new lambda.FunctionVersionUpgrade(LAMBDA_RECOGNIZE_LAYER_VERSION));
+```
 
 [feature flag]: https://docs.aws.amazon.com/cdk/latest/guide/featureflags.html
 [property overrides]: https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html#cfn_layer_raw
@@ -651,7 +686,7 @@ profiling group -
 
 ```ts
 const fn = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.PYTHON_3_6,
+  runtime: lambda.Runtime.PYTHON_3_9,
   handler: 'index.handler',
   code: lambda.Code.fromAsset('lambda-handler'),
   profiling: true,
@@ -858,8 +893,8 @@ new lambda.Function(this, 'Function', {
 
 Language-specific higher level constructs are provided in separate modules:
 
-* `@aws-cdk/aws-lambda-nodejs`: [Github](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-nodejs) & [CDK Docs](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-nodejs-readme.html)
-* `@aws-cdk/aws-lambda-python`: [Github](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-python) & [CDK Docs](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-python-readme.html)
+* `@aws-cdk/aws-lambda-nodejs`: [Github](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-lambda-nodejs) & [CDK Docs](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-nodejs-readme.html)
+* `@aws-cdk/aws-lambda-python`: [Github](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-lambda-python) & [CDK Docs](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-python-readme.html)
 
 ## Code Signing
 

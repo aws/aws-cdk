@@ -2,16 +2,12 @@ import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
 
 /* eslint-disable quote-props */
 
@@ -490,9 +486,9 @@ describe('', () => {
   describe('cross account key alias name tests', () => {
     const kmsAliasResource = 'AWS::KMS::Alias';
 
-    testFutureBehavior('cross account key alias is named with stack name instead of ID when feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID]: true }, cdk.App, (app) => {
+    test('cross account key alias is named with stack name instead of ID when feature flag is enabled', () => {
       const stack = createPipelineStack({
-        context: app,
+        withFeatureFlag: true,
         suffix: 'Name',
         stackId: 'PipelineStack',
       });
@@ -502,9 +498,8 @@ describe('', () => {
       });
     });
 
-    testLegacyBehavior('cross account key alias is named with stack ID when feature flag is not enabled', cdk.App, (app) => {
+    test('cross account key alias is named with stack ID when feature flag is not enabled', () => {
       const stack = createPipelineStack({
-        context: app,
         suffix: 'Name',
         stackId: 'PipelineStack',
       });
@@ -514,9 +509,9 @@ describe('', () => {
       });
     });
 
-    testFutureBehavior('cross account key alias is named with generated stack name when stack name is undefined and feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID]: true }, cdk.App, (app) => {
+    test('cross account key alias is named with generated stack name when stack name is undefined and feature flag is enabled', () => {
       const stack = createPipelineStack({
-        context: app,
+        withFeatureFlag: true,
         suffix: 'Name',
         stackId: 'PipelineStack',
         undefinedStackName: true,
@@ -527,9 +522,8 @@ describe('', () => {
       });
     });
 
-    testLegacyBehavior('cross account key alias is named with stack ID when stack name is not present and feature flag is not enabled', cdk.App, (app) => {
+    test('cross account key alias is named with stack ID when stack name is not present and feature flag is not enabled', () => {
       const stack = createPipelineStack({
-        context: app,
         suffix: 'Name',
         stackId: 'PipelineStack',
         undefinedStackName: true,
@@ -540,9 +534,9 @@ describe('', () => {
       });
     });
 
-    testFutureBehavior('cross account key alias is named with stack name and nested stack ID when feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID]: true }, cdk.App, (app) => {
+    test('cross account key alias is named with stack name and nested stack ID when feature flag is enabled', () => {
       const stack = createPipelineStack({
-        context: app,
+        withFeatureFlag: true,
         suffix: 'Name',
         stackId: 'TopLevelStack',
         nestedStackId: 'NestedPipelineStack',
@@ -554,9 +548,8 @@ describe('', () => {
       });
     });
 
-    testLegacyBehavior('cross account key alias is named with stack ID and nested stack ID when stack name is present and feature flag is not enabled', cdk.App, (app) => {
+    test('cross account key alias is named with stack ID and nested stack ID when stack name is present and feature flag is not enabled', () => {
       const stack = createPipelineStack({
-        context: app,
         suffix: 'Name',
         stackId: 'TopLevelStack',
         nestedStackId: 'NestedPipelineStack',
@@ -568,9 +561,9 @@ describe('', () => {
       });
     });
 
-    testFutureBehavior('cross account key alias is named with generated stack name and nested stack ID when stack name is undefined and feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID]: true }, cdk.App, (app) => {
+    test('cross account key alias is named with generated stack name and nested stack ID when stack name is undefined and feature flag is enabled', () => {
       const stack = createPipelineStack({
-        context: app,
+        withFeatureFlag: true,
         suffix: 'Name',
         stackId: 'TopLevelStack',
         nestedStackId: 'NestedPipelineStack',
@@ -583,9 +576,8 @@ describe('', () => {
       });
     });
 
-    testLegacyBehavior('cross account key alias is named with stack ID and nested stack ID when stack name is not present and feature flag is not enabled', cdk.App, (app) => {
+    test('cross account key alias is named with stack ID and nested stack ID when stack name is not present and feature flag is not enabled', () => {
       const stack = createPipelineStack({
-        context: app,
         suffix: 'Name',
         stackId: 'TopLevelStack',
         nestedStackId: 'NestedPipelineStack',
@@ -598,9 +590,9 @@ describe('', () => {
       });
     });
 
-    testFutureBehavior('cross account key alias is properly shortened to 256 characters when stack name is too long and feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID]: true }, cdk.App, (app) => {
+    test('cross account key alias is properly shortened to 256 characters when stack name is too long and feature flag is enabled', () => {
       const stack = createPipelineStack({
-        context: app,
+        withFeatureFlag: true,
         suffix: 'NeedsToBeShortenedDueToTheLengthOfThisAbsurdNameThatNoOneShouldUseButItStillMightHappenSoWeMustTestForTheTestCase',
         stackId: 'too-long',
         pipelineId: 'ActualPipelineWithExtraSuperLongNameThatWillNeedToBeShortenedDueToTheAlsoVerySuperExtraLongNameOfTheStack-AlsoWithSomeDifferentCharactersAddedToTheEnd',
@@ -611,9 +603,8 @@ describe('', () => {
       });
     });
 
-    testLegacyBehavior('cross account key alias is properly shortened to 256 characters when stack name is too long and feature flag is not enabled', cdk.App, (app) => {
+    test('cross account key alias is properly shortened to 256 characters when stack name is too long and feature flag is not enabled', () => {
       const stack = createPipelineStack({
-        context: app,
         suffix: 'too-long',
         stackId: 'NeedsToBeShortenedDueToTheLengthOfThisAbsurdNameThatNoOneShouldUseButItStillMightHappenSoWeMustTestForTheTestCase',
         pipelineId: 'ActualPipelineWithExtraSuperLongNameThatWillNeedToBeShortenedDueToTheAlsoVerySuperExtraLongNameOfTheStack-AlsoWithSomeDifferentCharactersAddedToTheEnd',
@@ -624,16 +615,15 @@ describe('', () => {
       });
     });
 
-    testFutureBehavior('cross account key alias names do not conflict when the stack ID is the same and pipeline ID is the same and feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID]: true }, cdk.App, (app1) => {
-      const app2 = new cdk.App(({ context: { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID]: true } }));
+    test('cross account key alias names do not conflict when the stack ID is the same and pipeline ID is the same and feature flag is enabled', () => {
       const stack1 = createPipelineStack({
-        context: app1,
+        withFeatureFlag: true,
         suffix: '1',
         stackId: 'STACK-ID',
       });
 
       const stack2 = createPipelineStack({
-        context: app2,
+        withFeatureFlag: true,
         suffix: '2',
         stackId: 'STACK-ID',
       });
@@ -649,16 +639,13 @@ describe('', () => {
       });
     });
 
-    testLegacyBehavior('cross account key alias names do conflict when the stack ID is the same and pipeline ID is the same when feature flag is not enabled', cdk.App, (app1) => {
-      const app2 = new cdk.App();
+    test('cross account key alias names do conflict when the stack ID is the same and pipeline ID is the same when feature flag is not enabled', () => {
       const stack1 = createPipelineStack({
-        context: app1,
         suffix: '1',
         stackId: 'STACK-ID',
       });
 
       const stack2 = createPipelineStack({
-        context: app2,
         suffix: '2',
         stackId: 'STACK-ID',
       });
@@ -674,17 +661,16 @@ describe('', () => {
       });
     });
 
-    testFutureBehavior('cross account key alias names do not conflict for nested stacks when pipeline ID is the same and nested stacks have the same ID when feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID]: true }, cdk.App, (app1) => {
-      const app2 = new cdk.App(({ context: { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID]: true } }));
+    test('cross account key alias names do not conflict for nested stacks when pipeline ID is the same and nested stacks have the same ID when feature flag is enabled', () => {
       const stack1 = createPipelineStack({
-        context: app1,
+        withFeatureFlag: true,
         suffix: 'Name-1',
         stackId: 'STACK-ID',
         nestedStackId: 'Nested',
         pipelineId: 'PIPELINE-ID',
       });
       const stack2 = createPipelineStack({
-        context: app2,
+        withFeatureFlag: true,
         suffix: 'Name-2',
         stackId: 'STACK-ID',
         nestedStackId: 'Nested',
@@ -703,17 +689,14 @@ describe('', () => {
       });
     });
 
-    testLegacyBehavior('cross account key alias names do conflict for nested stacks when pipeline ID is the same and nested stacks have the same ID when feature flag is not enabled', cdk.App, (app1) => {
-      const app2 = new cdk.App();
+    test('cross account key alias names do conflict for nested stacks when pipeline ID is the same and nested stacks have the same ID when feature flag is not enabled', () => {
       const stack1 = createPipelineStack({
-        context: app1,
         suffix: '1',
         stackId: 'STACK-ID',
         nestedStackId: 'Nested',
         pipelineId: 'PIPELINE-ID',
       });
       const stack2 = createPipelineStack({
-        context: app2,
         suffix: '2',
         stackId: 'STACK-ID',
         nestedStackId: 'Nested',
@@ -732,9 +715,9 @@ describe('', () => {
       });
     });
 
-    testFutureBehavior('cross account key alias names do not conflict for nested stacks when in the same stack but nested stacks have different IDs when feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID]: true }, cdk.App, (app) => {
+    test('cross account key alias names do not conflict for nested stacks when in the same stack but nested stacks have different IDs when feature flag is enabled', () => {
       const stack = createPipelineStack({
-        context: app,
+        withFeatureFlag: true,
         suffix: 'Name-1',
         stackId: 'STACK-ID',
         nestedStackId: 'First',
@@ -755,9 +738,8 @@ describe('', () => {
       });
     });
 
-    testLegacyBehavior('cross account key alias names do not conflict for nested stacks when in the same stack but nested stacks have different IDs when feature flag is not enabled', cdk.App, (app) => {
+    test('cross account key alias names do not conflict for nested stacks when in the same stack but nested stacks have different IDs when feature flag is not enabled', () => {
       const stack = createPipelineStack({
-        context: app,
         suffix: 'Name-1',
         stackId: 'STACK-ID',
         nestedStackId: 'First',
@@ -898,7 +880,7 @@ function createPipelineWithSourceAndBuildStages(scope: Construct, pipelineName?:
 };
 
 interface CreatePipelineStackOptions {
-  readonly context: cdk.App,
+  readonly withFeatureFlag?: boolean,
   readonly suffix: string,
   readonly stackId?: string,
   readonly pipelineId?: string,
@@ -907,7 +889,8 @@ interface CreatePipelineStackOptions {
 }
 
 function createPipelineStack(options: CreatePipelineStackOptions): PipelineStack {
-  return new PipelineStack(options.context, options.stackId, {
+  const context = options.withFeatureFlag ? { context: { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME]: true } } : undefined;
+  return new PipelineStack(new cdk.App(context), options.stackId, {
     stackName: options.undefinedStackName ? undefined : `Actual-Stack-${options.suffix}`,
     nestedStackId: options.nestedStackId,
     pipelineName: `Actual-Pipeline-${options.suffix}`.substring(0, 100),

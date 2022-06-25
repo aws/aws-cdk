@@ -1,12 +1,9 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import { Construct } from 'constructs';
 import { IEngine } from './engine';
 import { EngineVersion } from './engine-version';
 import { IOptionGroup, OptionGroup } from './option-group';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * The options passed to {@link IInstanceEngine.bind}.

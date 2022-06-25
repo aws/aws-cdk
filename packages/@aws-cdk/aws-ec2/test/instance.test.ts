@@ -3,7 +3,8 @@ import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import { Key } from '@aws-cdk/aws-kms';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { StringParameter } from '@aws-cdk/aws-ssm';
-import { Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import {
   AmazonLinuxImage,
   BlockDeviceVolume,
@@ -103,7 +104,7 @@ describe('instance', () => {
   test('instance architecture is correctly discerned for arm instances', () => {
     // GIVEN
     const sampleInstanceClasses = [
-      'a1', 't4g', 'c6g', 'c6gd', 'c6gn', 'm6g', 'm6gd', 'r6g', 'r6gd', 'g5g', 'im4gn', 'is4gen', // current Graviton-based instance classes
+      'a1', 't4g', 'c6g', 'c7g', 'c6gd', 'c6gn', 'm6g', 'm6gd', 'r6g', 'r6gd', 'g5g', 'im4gn', 'is4gen', // current Graviton-based instance classes
       'a13', 't11g', 'y10ng', 'z11ngd', // theoretical future Graviton-based instance classes
     ];
 
@@ -552,6 +553,13 @@ test('add CloudFormation Init to instance', () => {
 
 test('cause replacement from s3 asset in userdata', () => {
   // GIVEN
+  const app = new App({
+    context: {
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+    },
+  });
+  stack = new Stack(app);
+  vpc = new Vpc(stack, 'Vpc)');
   const userData1 = UserData.forLinux();
   const asset1 = new Asset(stack, 'UserDataAssets1', {
     path: path.join(__dirname, 'asset-fixture', 'data.txt'),

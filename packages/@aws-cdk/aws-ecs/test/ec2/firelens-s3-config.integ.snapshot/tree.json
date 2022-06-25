@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-ecs-integ": {
@@ -1130,7 +1130,7 @@
                                   }
                                 },
                                 "handler": "index.lambda_handler",
-                                "runtime": "python3.6",
+                                "runtime": "python3.9",
                                 "tags": [
                                   {
                                     "key": "Name",
@@ -1210,8 +1210,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   },
                   "LifecycleHookDrainHook": {
@@ -1818,14 +1818,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "SsmParameterValue:--aws--service--aws-for-fluent-bit--2.1.0:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {

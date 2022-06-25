@@ -1,5 +1,5 @@
 {
-  "$version": "68.0.0",
+  "$version": "76.0.0",
   "PropertyTypes": {
     "AWS::MSK::Cluster.BrokerLogs": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-msk-cluster-brokerlogs.html",

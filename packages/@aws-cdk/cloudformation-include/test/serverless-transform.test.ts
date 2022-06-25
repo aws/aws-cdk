@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
 import * as core from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
@@ -12,7 +13,8 @@ describe('CDK Include for templates with SAM transform', () => {
   let stack: core.Stack;
 
   beforeEach(() => {
-    stack = new core.Stack();
+    const app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    stack = new core.Stack(app);
   });
 
   test('can ingest a template with only a minimal SAM function using S3Location for CodeUri, and output it unchanged', () => {

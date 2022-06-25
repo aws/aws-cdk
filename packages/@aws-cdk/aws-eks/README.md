@@ -305,6 +305,7 @@ You may specify one `instanceType` in the launch template or multiple `instanceT
 > For more details visit [Launch Template Support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html).
 
 Graviton 2 instance types are supported including `c6g`, `m6g`, `r6g` and `t4g`.
+Graviton 3 instance types are supported including `c7g`.
 
 ### Fargate profiles
 
@@ -579,7 +580,7 @@ declare const vpc: ec2.Vpc;
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_21,
   vpc,
-  vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }],
+  vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }],
 });
 ```
 
@@ -686,9 +687,9 @@ awscli/aws
 ```
 
 See more information in the
-[Dockerfile](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/lambda-layer-awscli/layer) for @aws-cdk/lambda-layer-awscli
+[Dockerfile](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/lambda-layer-awscli/layer) for @aws-cdk/lambda-layer-awscli
 and the
-[Dockerfile](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/lambda-layer-kubectl/layer) for @aws-cdk/lambda-layer-kubectl.
+[Dockerfile](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/lambda-layer-kubectl/layer) for @aws-cdk/lambda-layer-kubectl.
 
 ```ts
 const layer = new lambda.LayerVersion(this, 'KubectlLayer', {
@@ -945,7 +946,7 @@ bucket.grantReadWrite(serviceAccount);
 
 Note that adding service accounts requires running `kubectl` commands against the cluster.
 This means you must also pass the `kubectlRoleArn` when importing the cluster.
-See [Using existing Clusters](https://github.com/aws/aws-cdk/tree/master/packages/@aws-cdk/aws-eks#using-existing-clusters).
+See [Using existing Clusters](https://github.com/aws/aws-cdk/tree/main/packages/@aws-cdk/aws-eks#using-existing-clusters).
 
 ## Applying Kubernetes Resources
 

@@ -3,6 +3,7 @@
 *.d.ts
 tsconfig.json
 node_modules
+product-stack-snapshots
 *.generated.ts
 dist
 .jsii

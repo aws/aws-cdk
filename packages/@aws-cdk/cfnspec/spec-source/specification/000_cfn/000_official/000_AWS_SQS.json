@@ -1,5 +1,5 @@
 {
-  "$version": "68.0.0",
+  "$version": "76.0.0",
   "PropertyTypes": {},
   "ResourceTypes": {
     "AWS::SQS::Queue": {
@@ -91,6 +91,12 @@
         "RedrivePolicy": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-redrivepolicy",
           "PrimitiveType": "Json",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "SqsManagedSseEnabled": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-sqsmanagedsseenabled",
+          "PrimitiveType": "Boolean",
           "Required": false,
           "UpdateType": "Mutable"
         },
