@@ -212,7 +212,7 @@
   "TestPipelineArtifactsBucketEncryptionKeyAliasE8D86DD3": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": "alias/codepipeline-pipelinesecuritystacktestpipelinef7060861",
+    "AliasName": "alias/codepipeline-pipelinesecuritystack-testpipeline-f7060861",
     "TargetKeyId": {
      "Fn::GetAtt": [
       "TestPipelineArtifactsBucketEncryptionKey13258842",
@@ -2603,7 +2603,7 @@
     },
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:1.0",
+     "Image": "aws/codebuild/standard:5.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
@@ -2947,7 +2947,7 @@
     },
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:1.0",
+     "Image": "aws/codebuild/standard:5.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
