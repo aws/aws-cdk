@@ -12,7 +12,7 @@ import { Cache } from './private/cache';
 import { Stack } from './stack';
 import { Stage } from './stage';
 
-const ARCHIVE_EXTENSIONS = ['.zip', '.jar'];
+const ARCHIVE_EXTENSIONS = ['.zip', '.jar', '.tar'];
 
 /**
  * A previously staged asset
@@ -268,9 +268,19 @@ export class AssetStaging extends Construct {
    */
   private stageByCopying(): StagedAsset {
     const assetHash = this.calculateHash(this.hashType);
-    const stagedPath = this.stagingDisabled
-      ? this.sourcePath
-      : path.resolve(this.assetOutdir, renderAssetFilename(assetHash, path.extname(this.sourcePath)));
+    let stagedPath: string;
+
+    if (this.stagingDisabled) {
+      stagedPath = this.sourcePath;
+    } else {
+      let extensionName: string = path.extname(this.sourcePath);
+      const sourceName: string = path.basename(this.sourcePath).replace(extensionName, '');
+      const doubleArchive = ARCHIVE_EXTENSIONS.includes(path.extname(sourceName)) ? true : false;
+      if (doubleArchive) {
+        extensionName = path.extname(sourceName) + extensionName;
+      };
+      stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash, extensionName));
+    };
 
     if (!this.sourceStats.isDirectory() && !this.sourceStats.isFile()) {
       throw new Error(`Asset ${this.sourcePath} is expected to be either a directory or a regular file`);
