@@ -3044,17 +3044,17 @@ cdk-generate-synthetic-examples@^0.1.12:
     jsii-rosetta "^1.59.0"
     yargs "^17.5.1"
 
-cdk8s-plus-21@^1.0.0-beta.186:
-  version "1.0.0-beta.186"
-  resolved "https://registry.npmjs.org/cdk8s-plus-21/-/cdk8s-plus-21-1.0.0-beta.186.tgz#c97555ea5cf8abd4d15b2c6459bc1fc2dce110d5"
-  integrity sha512-aSzl3YPcgyxHOwXTGUHcErm5Y585UVdxl91VoTGuGDmMq/PaS5DCRlQz7DHxA9PZKMtUEVHTXDkWyJHlQikPag==
+cdk8s-plus-22@^2.0.0-rc.30:
+  version "2.0.0-rc.30"
+  resolved "https://registry.npmjs.org/cdk8s-plus-22/-/cdk8s-plus-22-2.0.0-rc.30.tgz#c54da07a990c891256600f544b57728d57b82000"
+  integrity sha512-F7ei9XwnVC1dBOQBKxQZ8hj0DZecP1cd7QU6zgWNqyAorOIKvq2XXQ7TArQunyAGp6YbCk0J7WCTyFHQ+XzoTg==
   dependencies:
     minimatch "^3.1.2"
 
-cdk8s@^1.6.21:
-  version "1.6.21"
-  resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-1.6.21.tgz#8d6d3c8f5d5bc68f37aacf66afa4a4a2e6c4174e"
-  integrity sha512-VCXrTJaj7kd0c8TnEZf3MLcVMPyScCZDZvJKBR+evY8T3reCixxoBhsMMMkXE4Br7ByV2INkR04lMNiL+MbqGg==
+cdk8s@^2.3.37:
+  version "2.3.37"
+  resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-2.3.37.tgz#ff93d1c7a8c18ff2c3347454a58ea02ecb862122"
+  integrity sha512-JDX8yGCuu7GxKYDN84dkz1rgaEf0BcKPgJLbS2B7xYuLQThx4POUDxQdIh15CUqnunYnTa31V6avNj1q6juZvA==
   dependencies:
     fast-json-patch "^3.1.1"
     follow-redirects "^1.15.1"
