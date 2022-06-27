@@ -572,9 +572,13 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       return (principal as iam.ArnPrincipal).arn;
     }
 
-    if ('organizationId' in principal) {
-      // we will move the organization id to the `principalOrgId` property of `Permissions`.
-      return '*';
+    const stringEquals = matchSingleKey('StringEquals', principal.policyFragment.conditions);
+    if (stringEquals) {
+      const orgId = matchSingleKey('aws:PrincipalOrgID', stringEquals);
+      if (orgId) {
+        // we will move the organization id to the `principalOrgId` property of `Permissions`.
+        return '*';
+      }
     }
 
     // Try a best-effort approach to support simple principals that are not any of the predefined
@@ -592,6 +596,17 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
     throw new Error(`Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
       'Supported: AccountPrincipal, ArnPrincipal, ServicePrincipal, OrganizationPrincipal');
+
+    /**
+     * Returns the value at the key if the object contains the key and nothing else. Otherwise,
+     * returns undefined.
+     */
+    function matchSingleKey(key: string, obj: Record<string, any>): any | undefined {
+      if (Object.keys(obj).length !== 1) { return undefined; }
+
+      return obj[key];
+    }
+
   }
 
   private validateConditionCombinations(principal: iam.IPrincipal): {
