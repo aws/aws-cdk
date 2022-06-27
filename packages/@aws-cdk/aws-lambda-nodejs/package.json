@@ -83,12 +83,14 @@
   },
   "dependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-cloudfront": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-cloudfront": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^10.0.0"
   },

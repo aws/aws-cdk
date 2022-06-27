@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Architecture } from '@aws-cdk/aws-lambda';
 import { Construct } from 'constructs';
@@ -119,6 +120,44 @@ export class NodejsFunction extends lambda.Function {
 }
 
 /**
+ * Properties for a NodejsEdgeFunction
+ */
+export interface NodejsEdgeFunctionProps extends NodejsFunctionProps {}
+
+/**
+ * A Node.js Lambda@Edge function bundled using esbuild
+ */
+export class NodejsEdgeFunction extends cloudfront.experimental.EdgeFunction {
+  constructor(scope: Construct, id: string, props: NodejsEdgeFunctionProps = {}) {
+    if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.NODEJS) {
+      throw new Error('Only `NODEJS` runtimes are supported.');
+    }
+
+    // Entry and defaults
+    const entry = path.resolve(findEntry(id, props.entry));
+    const handler = props.handler ?? 'handler';
+    const runtime = props.runtime ?? lambda.Runtime.NODEJS_14_X;
+    const architecture = props.architecture ?? Architecture.X86_64;
+    const depsLockFilePath = findLockFile(props.depsLockFilePath);
+    const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
+
+    super(scope, id, {
+      ...props,
+      runtime,
+      code: Bundling.bundle({
+        ...props.bundling ?? {},
+        entry,
+        runtime,
+        architecture,
+        depsLockFilePath,
+        projectRoot,
+      }),
+      handler: `index.${handler}`,
+    });
+  }
+}
+
+/**
  * Checks given lock file or searches for a lock file
  */
 function findLockFile(depsLockFilePath?: string): string {
@@ -196,7 +235,7 @@ function findDefiningFile(): string {
   let definingIndex;
   const sites = callsites();
   for (const [index, site] of sites.entries()) {
-    if (site.getFunctionName() === 'NodejsFunction') {
+    if (site.getFunctionName() === 'NodejsFunction' || site.getFunctionName() === 'NodejsEdgeFunction') {
       // The next site is the site where the NodejsFunction was created
       definingIndex = index + 1;
       break;
