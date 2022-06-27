@@ -50,7 +50,7 @@
     "MyLambdaServiceRole4539ECB6"
    ]
   },
-  "MyLambdaInvokeAnyPrincipal256ECDE1": {
+  "MyLambdaInvokehlab6Vr41INt1IUXIhhCesB4gzNedP5IURKNgciwD9D5EABD": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -64,7 +64,7 @@
     "PrincipalOrgID": "o-yyyyyyyyyy"
    }
   },
-  "MyLambdaInvokeOrganizationPrincipaloxxxxxxxxxxEB282AD1": {
+  "MyLambdaInvoke138AF9IJcZORjZNKCKShZMMuVQwCnUkbFqMoQf5of0C1F7DFD8": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
