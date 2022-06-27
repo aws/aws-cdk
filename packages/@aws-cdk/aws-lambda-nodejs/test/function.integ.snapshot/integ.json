@@ -3,7 +3,7 @@
   "testCases": {
     "integ.function": {
       "stacks": [
-        "cdk-integ-lambda-nodejs"
+        "*"
       ],
       "diffAssets": false,
       "stackUpdateWorkflow": true

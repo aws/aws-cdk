@@ -698,6 +698,148 @@
    "DependsOn": [
     "tshandlervpcServiceRoleF6D326A3"
    ]
+  },
+  "tshandleredgeArnReader8C8A12F3": {
+   "Type": "Custom::CrossRegionStringParameterReader",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A",
+      "Arn"
+     ]
+    },
+    "Region": "us-east-1",
+    "ParameterName": "/cdk/EdgeFunctionArn/eu-west-1/cdk-integ-lambda-nodejs/ts-handler-edge",
+    "RefreshToken": "tshandleredgeCurrentVersion77862C9168be1bea7cf25f9bf26a53691b62298e"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomCrossRegionStringParameterReaderCustomResourceProviderRole71CD6825": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":ssm:us-east-1:",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":parameter/cdk/EdgeFunctionArn/*"
+           ]
+          ]
+         },
+         "Action": [
+          "ssm:GetParameter"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParameters9529c8a4e0b039e4137e7680eb30e962cef1a2afceefa583c6d372b05a2ae5c9S3Bucket485B74E4"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters9529c8a4e0b039e4137e7680eb30e962cef1a2afceefa583c6d372b05a2ae5c9S3VersionKey60ECE9CA"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters9529c8a4e0b039e4137e7680eb30e962cef1a2afceefa583c6d372b05a2ae5c9S3VersionKey60ECE9CA"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCrossRegionStringParameterReaderCustomResourceProviderRole71CD6825",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "CustomCrossRegionStringParameterReaderCustomResourceProviderRole71CD6825"
+   ]
+  },
+  "jshandleredgeArnReaderB8081C76": {
+   "Type": "Custom::CrossRegionStringParameterReader",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A",
+      "Arn"
+     ]
+    },
+    "Region": "us-east-1",
+    "ParameterName": "/cdk/EdgeFunctionArn/eu-west-1/cdk-integ-lambda-nodejs/js-handler-edge",
+    "RefreshToken": "jshandleredgeCurrentVersion7C878D6965236c03ceb25ec1252940161c8104f2"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {
@@ -736,6 +878,18 @@
   "AssetParametersadc4e66a6895c2e3d4239cc1ccc920834a1c721c5c4869189439b51137c5716aArtifactHashC836B9E8": {
    "Type": "String",
    "Description": "Artifact hash for asset \"adc4e66a6895c2e3d4239cc1ccc920834a1c721c5c4869189439b51137c5716a\""
+  },
+  "AssetParameters9529c8a4e0b039e4137e7680eb30e962cef1a2afceefa583c6d372b05a2ae5c9S3Bucket485B74E4": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"9529c8a4e0b039e4137e7680eb30e962cef1a2afceefa583c6d372b05a2ae5c9\""
+  },
+  "AssetParameters9529c8a4e0b039e4137e7680eb30e962cef1a2afceefa583c6d372b05a2ae5c9S3VersionKey60ECE9CA": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"9529c8a4e0b039e4137e7680eb30e962cef1a2afceefa583c6d372b05a2ae5c9\""
+  },
+  "AssetParameters9529c8a4e0b039e4137e7680eb30e962cef1a2afceefa583c6d372b05a2ae5c9ArtifactHashBE0812C0": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"9529c8a4e0b039e4137e7680eb30e962cef1a2afceefa583c6d372b05a2ae5c9\""
   }
  }
 }

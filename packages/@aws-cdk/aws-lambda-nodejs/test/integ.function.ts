@@ -1,4 +1,4 @@
-/// !cdk-integ pragma:ignore-assets
+/// !cdk-integ *
 import * as path from 'path';
 import { Vpc } from '@aws-cdk/aws-ec2';
 import { Runtime } from '@aws-cdk/aws-lambda';
@@ -30,9 +30,25 @@ class TestStack extends Stack {
       runtime: Runtime.NODEJS_14_X,
       vpc: new Vpc(this, 'Vpc'),
     });
+
+    new lambda.NodejsEdgeFunction(this, 'ts-handler-edge', {
+      entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
+      runtime: Runtime.NODEJS_14_X,
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        sourceMapMode: lambda.SourceMapMode.BOTH,
+      },
+    });
+
+    new lambda.NodejsEdgeFunction(this, 'js-handler-edge', {
+      entry: path.join(__dirname, 'integ-handlers/js-handler.js'),
+      runtime: Runtime.NODEJS_14_X,
+    });
   }
 }
 
 const app = new App();
-new TestStack(app, 'cdk-integ-lambda-nodejs');
+const region = 'eu-west-1';
+new TestStack(app, 'cdk-integ-lambda-nodejs', { env: { region: region } });
 app.synth();
