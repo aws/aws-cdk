@@ -624,7 +624,7 @@ function extNameWithDoubleExtCheck(source: string): string {
   const ext = path.basename(source).split('.');
   if (ext.length > 2) {
     const [, firstExt, lastExt] = ext;
-    if (ARCHIVE_EXTENSIONS.includes(firstExt.toLowerCase())) {
+    if (ARCHIVE_EXTENSIONS.includes(`.${firstExt}`.toLowerCase())) {
       return `.${firstExt}.${lastExt}`;
     };
   };
