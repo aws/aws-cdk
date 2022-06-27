@@ -53,7 +53,7 @@ class EksClusterStack extends Stack {
       chart: 's3-chart',
       release: 's3-chart',
       repository: 'oci://public.ecr.aws/aws-controllers-k8s/s3-chart',
-      version: 'v0.0.19',
+      version: 'v0.1.0',
       namespace: 'ack-system',
       createNamespace: true,
     });

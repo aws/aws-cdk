@@ -94,20 +94,30 @@ def helm_handler(event, context):
 
 
 def get_oci_cmd(repository, version):
-
+    # Generates OCI command based on pattern. Public ECR vs Private ECR are treated differently.
     cmnd = []
-    pattern = '\d+.dkr.ecr.[a-z]+-[a-z]+-\d.amazonaws.com'
+    private_ecr_pattern = '\d+.dkr.ecr.[a-z]+-[a-z]+-\d.amazonaws.com'
+    public_ecr = 'public.ecr.aws'
 
     registry = repository.rsplit('/', 1)[0].replace('oci://', '')
 
-    if re.fullmatch(pattern, registry) is not None:
+    if re.fullmatch(private_ecr_pattern, registry) is not None:
+        logger.info("Found AWS private repository")
         region = registry.replace('.amazonaws.com', '').split('.')[-1]
         cmnd = [
             f"aws ecr get-login-password --region {region} | " \
             f"helm registry login --username AWS --password-stdin {registry}; helm pull {repository} --version {version} --untar"
             ]
+    elif registry.startswith(public_ecr):
+        logger.info("Found AWS public repository, will use default region as deployment")
+        region = os.environ.get('AWS_REGION', 'us-east-1')
+
+        cmnd = [
+            f"aws ecr-public get-login-password --region {region} | " \
+            f"helm registry login --username AWS --password-stdin {public_ecr}; helm pull {repository} --version {version} --untar"
+            ]
     else:
-        logger.info("Non AWS OCI repository found")
+        logger.error("OCI repository format not recognized, falling back to helm pull")
         cmnd = ['helm', 'pull', repository, '--version', version, '--untar']
 
     return cmnd
@@ -122,8 +132,7 @@ def get_chart_from_oci(tmpdir, release, repository = None, version = None):
     while retry > 0:
         try:
             logger.info(cmnd)
-            env = get_env_with_oci_flag()
-            output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=tmpdir, env=env)
+            output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=tmpdir, shell=True)
             logger.info(output)
 
             return os.path.join(tmpdir, release)
@@ -135,13 +144,6 @@ def get_chart_from_oci(tmpdir, release, repository = None, version = None):
             else:
                 raise Exception(output)
     raise Exception(f'Operation failed after {maxAttempts} attempts: {output}')
-
-
-def get_env_with_oci_flag():
-    env = os.environ.copy()
-    env['HELM_EXPERIMENTAL_OCI'] = '1'
-
-    return env
 
 
 def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, timeout = None, create_namespace = None):
@@ -172,8 +174,7 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
     retry = maxAttempts
     while retry > 0:
         try:
-            env = get_env_with_oci_flag()
-            output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=outdir, env=env)
+            output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=outdir)
             logger.info(output)
             return
         except subprocess.CalledProcessError as exc:
