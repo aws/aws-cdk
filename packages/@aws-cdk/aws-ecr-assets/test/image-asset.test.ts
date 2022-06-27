@@ -288,10 +288,6 @@ describe('image asset', () => {
   });
 
   describe('docker file ignores with multiple custom images', () => {
-    testFutureBehavior('Dockerfile w/ .dockerignore', flags, App, (app) => {
-      testDockerDirectoryIsStagedByCustomIgnoreFiles(app, 'Dockerfile', ['.dockerignore', 'default.txt', 'index.py']);
-    });
-
     testFutureBehavior('DockerfileA w/ DockerfileA.dockerignore', flags, App, (app) => {
       testDockerDirectoryIsStagedByCustomIgnoreFiles(app, 'DockerfileA', ['DockerfileA.dockerignore', 'a.txt', 'index.py']);
     });
