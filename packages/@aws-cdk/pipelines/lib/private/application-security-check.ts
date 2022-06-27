@@ -99,6 +99,9 @@ export class ApplicationSecurityCheck extends Construct {
       ` --message "${message.join('\n')}"`;
 
     this.cdkDiffProject = new codebuild.Project(this, 'CDKSecurityCheck', {
+      environment: {
+        buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
+      },
       buildSpec: codebuild.BuildSpec.fromObject({
         version: 0.2,
         phases: {
