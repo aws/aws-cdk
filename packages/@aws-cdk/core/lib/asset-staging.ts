@@ -268,19 +268,9 @@ export class AssetStaging extends Construct {
    */
   private stageByCopying(): StagedAsset {
     const assetHash = this.calculateHash(this.hashType);
-    let stagedPath: string;
-
-    if (this.stagingDisabled) {
-      stagedPath = this.sourcePath;
-    } else {
-      let extensionName: string = path.extname(this.sourcePath);
-      const sourceName: string = path.basename(this.sourcePath).replace(extensionName, '');
-      const doubleArchive = ARCHIVE_EXTENSIONS.includes(path.extname(sourceName)) ? true : false;
-      if (doubleArchive) {
-        extensionName = path.extname(sourceName) + extensionName;
-      };
-      stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash, extensionName));
-    };
+    const stagedPath = this.stagingDisabled
+      ? this.sourcePath
+      : path.resolve(this.assetOutdir, renderAssetFilename(assetHash, extNameWithDoubleExtCheck(this.sourcePath)));
 
     if (!this.sourceStats.isDirectory() && !this.sourceStats.isFile()) {
       throw new Error(`Asset ${this.sourcePath} is expected to be either a directory or a regular file`);
@@ -624,3 +614,20 @@ function determineBundledAsset(bundleDir: string, outputType: BundlingOutput): B
       return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: path.extname(archiveFile) };
   }
 }
+
+/**
+* Return the extension name of a source path
+*
+* Checks if source is a double extension archive, in which case we check if first extension is present in ARCHIVE_EXTENSIONS.
+*/
+function extNameWithDoubleExtCheck(source: string): string {
+  const ext = path.basename(source).split('.');
+  if (ext.length > 2) {
+    const [, firstExt, lastExt] = ext;
+    if (ARCHIVE_EXTENSIONS.includes(firstExt.toLowerCase())) {
+      return `.${firstExt}.${lastExt}`;
+    };
+  };
+
+  return path.extname(source);
+};
