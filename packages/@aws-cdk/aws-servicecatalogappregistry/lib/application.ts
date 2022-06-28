@@ -1,13 +1,10 @@
 import { CfnResourceShare } from '@aws-cdk/aws-ram';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IAttributeGroup } from './attribute-group';
 import { getPrincipalsforSharing, hashValues, ShareOptions } from './common';
 import { InputValidator } from './private/validation';
 import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } from './servicecatalogappregistry.generated';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
 
 /**
  * A Service Catalog AppRegistry Application.

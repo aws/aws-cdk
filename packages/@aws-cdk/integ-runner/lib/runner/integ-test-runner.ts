@@ -1,9 +1,10 @@
 import * as path from 'path';
 import { RequireApproval } from '@aws-cdk/cloud-assembly-schema';
 import { DeployOptions, DestroyOptions } from 'cdk-cli-wrapper';
+import * as fs from 'fs-extra';
 import * as logger from '../logger';
 import { chain, exec } from '../utils';
-import { DestructiveChange } from '../workers/common';
+import { DestructiveChange, AssertionResults, AssertionResult } from '../workers/common';
 import { IntegRunnerOptions, IntegRunner, DEFAULT_SYNTH_OPTIONS } from './runner-base';
 
 /**
@@ -57,6 +58,16 @@ export class IntegTestRunner extends IntegRunner {
   constructor(options: IntegRunnerOptions, destructiveChanges?: DestructiveChange[]) {
     super(options);
     this._destructiveChanges = destructiveChanges;
+
+    // We don't want new tests written in the legacy mode.
+    // If there is no existing snapshot _and_ this is a legacy
+    // test then point the user to the new `IntegTest` construct
+    if (!this.hasSnapshot() && this.isLegacyTest) {
+      throw new Error(`${this.testName} is a new test. Please use the IntegTest construct ` +
+       'to configure the test\n' +
+        'https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests',
+      );
+    }
   }
 
   /**
@@ -71,7 +82,8 @@ export class IntegTestRunner extends IntegRunner {
    * all branches and we then search for one that starts with `HEAD branch: `
    */
   private checkoutSnapshot(): void {
-    const cwd = path.dirname(this.snapshotDir);
+    const cwd = this.directory;
+
     // https://git-scm.com/docs/git-merge-base
     let baseBranch: string | undefined = undefined;
     // try to find the base branch that the working branch was created from
@@ -97,17 +109,19 @@ export class IntegTestRunner extends IntegRunner {
     // if we found the base branch then get the merge-base (most recent common commit)
     // and checkout the snapshot using that commit
     if (baseBranch) {
+      const relativeSnapshotDir = path.relative(this.directory, this.snapshotDir);
+
       try {
         const base = exec(['git', 'merge-base', 'HEAD', baseBranch], {
           cwd,
         });
-        exec(['git', 'checkout', base, '--', this.relativeSnapshotDir], {
+        exec(['git', 'checkout', base, '--', relativeSnapshotDir], {
           cwd,
         });
       } catch (e) {
         logger.warning('%s\n%s',
           `Could not checkout snapshot directory ${this.snapshotDir} using these commands: `,
-          `git merge-base HEAD ${baseBranch} && git checkout {merge-base} -- ${this.relativeSnapshotDir}`,
+          `git merge-base HEAD ${baseBranch} && git checkout {merge-base} -- ${relativeSnapshotDir}`,
         );
         logger.warning('error: %s', e);
       }
@@ -125,14 +139,18 @@ export class IntegTestRunner extends IntegRunner {
    * The update workflow exists to check for cases where a change would cause
    * a failure to an existing stack, but not for a newly created stack.
    */
-  public runIntegTestCase(options: RunOptions): void {
+  public runIntegTestCase(options: RunOptions): AssertionResults | undefined {
+    let assertionResults: AssertionResults | undefined;
     const actualTestCase = this.actualTestSuite.testSuite[options.testCaseName];
+    if (!actualTestCase) {
+      throw new Error(`Did not find test case name '${options.testCaseName}' in '${Object.keys(this.actualTestSuite.testSuite)}'`);
+    }
     const clean = options.clean ?? true;
     const updateWorkflowEnabled = (options.updateWorkflow ?? true)
       && (actualTestCase.stackUpdateWorkflow ?? true);
     try {
       if (!options.dryRun && (actualTestCase.cdkCommandOptions?.deploy?.enabled ?? true)) {
-        this.deploy(
+        assertionResults = this.deploy(
           {
             ...this.defaultArgs,
             profile: this.profile,
@@ -149,10 +167,14 @@ export class IntegTestRunner extends IntegRunner {
         this.cdk.synthFast({
           execCmd: this.cdkApp.split(' '),
           env,
-          output: this.cdkOutDir,
+          output: path.relative(this.directory, this.cdkOutDir),
         });
       }
-      this.createSnapshot();
+      // only create the snapshot if there are no assertion assertion results
+      // (i.e. no failures)
+      if (!assertionResults) {
+        this.createSnapshot();
+      }
     } catch (e) {
       throw e;
     } finally {
@@ -164,7 +186,7 @@ export class IntegTestRunner extends IntegRunner {
             all: true,
             force: true,
             app: this.cdkApp,
-            output: this.cdkOutDir,
+            output: path.relative(this.directory, this.cdkOutDir),
             ...actualTestCase.cdkCommandOptions?.destroy?.args,
             context: this.getContext(actualTestCase.cdkCommandOptions?.destroy?.args?.context),
           });
@@ -172,6 +194,7 @@ export class IntegTestRunner extends IntegRunner {
       }
       this.cleanup();
     }
+    return assertionResults;
   }
 
   /**
@@ -210,7 +233,7 @@ export class IntegTestRunner extends IntegRunner {
     deployArgs: DeployOptions,
     updateWorkflowEnabled: boolean,
     testCaseName: string,
-  ): void {
+  ): AssertionResults | undefined {
     const actualTestCase = this.actualTestSuite.testSuite[testCaseName];
     try {
       if (actualTestCase.hooks?.preDeploy) {
@@ -234,23 +257,38 @@ export class IntegTestRunner extends IntegRunner {
           stacks: expectedTestCase.stacks,
           ...expectedTestCase?.cdkCommandOptions?.deploy?.args,
           context: this.getContext(expectedTestCase?.cdkCommandOptions?.deploy?.args?.context),
-          app: this.relativeSnapshotDir,
+          app: path.relative(this.directory, this.snapshotDir),
           lookups: this.expectedTestSuite?.enableLookups,
         });
       }
+      // now deploy the "actual" test. If there are any assertions
+      // deploy the assertion stack as well
       this.cdk.deploy({
         ...deployArgs,
         lookups: this.actualTestSuite.enableLookups,
-        stacks: actualTestCase.stacks,
-        output: this.cdkOutDir,
+        stacks: [
+          ...actualTestCase.stacks,
+          ...actualTestCase.assertionStack ? [actualTestCase.assertionStack] : [],
+        ],
+        rollback: false,
+        output: path.relative(this.directory, this.cdkOutDir),
         ...actualTestCase?.cdkCommandOptions?.deploy?.args,
+        ...actualTestCase.assertionStack ? { outputsFile: path.relative(this.directory, path.join(this.cdkOutDir, 'assertion-results.json')) } : undefined,
         context: this.getContext(actualTestCase?.cdkCommandOptions?.deploy?.args?.context),
-        app: this.hasTmpActualSnapshot() ? this.cdkOutDir : this.cdkApp,
+        app: this.cdkApp,
       });
+
       if (actualTestCase.hooks?.postDeploy) {
         exec([chain(actualTestCase.hooks?.postDeploy)], {
           cwd: path.dirname(this.snapshotDir),
         });
+      }
+
+      if (actualTestCase.assertionStack) {
+        return this.processAssertionResults(
+          path.join(this.cdkOutDir, 'assertion-results.json'),
+          actualTestCase.assertionStack,
+        );
       }
     } catch (e) {
       this.parseError(e,
@@ -258,6 +296,44 @@ export class IntegTestRunner extends IntegRunner {
         actualTestCase.cdkCommandOptions?.deploy?.expectedMessage,
       );
     }
+    return;
+  }
+
+  /**
+   * Process the outputsFile which contains the assertions results as stack
+   * outputs
+   */
+  private processAssertionResults(file: string, assertionStackId: string): AssertionResults | undefined {
+    const results: AssertionResults = {};
+    if (fs.existsSync(file)) {
+      try {
+        const outputs: { [key: string]: { [key: string]: string } } = fs.readJSONSync(file);
+
+        if (assertionStackId in outputs) {
+          for (const [assertionId, result] of Object.entries(outputs[assertionStackId])) {
+            if (assertionId.startsWith('AssertionResults')) {
+              const assertionResult: AssertionResult = JSON.parse(result.replace(/\n/g, '\\n'));
+              if (assertionResult.status === 'fail') {
+                results[assertionId] = assertionResult;
+              }
+            }
+          }
+        }
+      } catch (e) {
+        // if there are outputs, but they cannot be processed, then throw an error
+        // so that the test fails
+        results[assertionStackId] = {
+          status: 'fail',
+          message: `error processing assertion results: ${e}`,
+        };
+      } finally {
+        // remove the outputs file so it is not part of the snapshot
+        // it will contain env specific information from values
+        // resolved at deploy time
+        fs.unlinkSync(file);
+      }
+    }
+    return Object.keys(results).length > 0 ? results : undefined;
   }
 
   /**
@@ -276,4 +352,3 @@ export class IntegTestRunner extends IntegRunner {
     }
   }
 }
-

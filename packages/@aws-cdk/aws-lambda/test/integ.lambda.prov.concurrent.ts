@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '@aws-cdk/cx-api';
 import * as lambda from '../lib';
 
 const app = new cdk.App();
@@ -60,5 +61,9 @@ const alias2 = new lambda.Alias(stack, 'Alias2', {
 alias2.addPermission('AliasPermission2', {
   principal: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
 });
+
+// Changes the function description when the feature flag is present
+// to validate the changed function hash.
+cdk.Aspects.of(stack).add(new lambda.FunctionVersionUpgrade(LAMBDA_RECOGNIZE_LAYER_VERSION));
 
 app.synth();

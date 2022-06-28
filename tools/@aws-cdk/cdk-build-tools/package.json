@@ -37,7 +37,7 @@
   "devDependencies": {
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "@types/semver": "^7.3.9",
     "@types/yargs": "^15.0.14"
   },
@@ -56,14 +56,14 @@
     "eslint-plugin-jest": "^24.7.0",
     "fs-extra": "^9.1.0",
     "jest": "^27.5.1",
-    "jest-junit": "^13.1.0",
-    "jsii": "^1.57.0",
-    "jsii-pacmak": "^1.57.0",
-    "jsii-reflect": "^1.57.0",
+    "jest-junit": "^13.2.0",
+    "jsii": "^1.60.1",
+    "jsii-pacmak": "^1.60.1",
+    "jsii-reflect": "^1.60.1",
     "markdownlint-cli": "^0.31.1",
     "nyc": "^15.1.0",
-    "semver": "^7.3.6",
-    "ts-jest": "^27.1.4",
+    "semver": "^7.3.7",
+    "ts-jest": "^27.1.5",
     "typescript": "~3.9.10",
     "yargs": "^16.2.0"
   },
@@ -73,7 +73,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "nozem": {
     "ostools": [

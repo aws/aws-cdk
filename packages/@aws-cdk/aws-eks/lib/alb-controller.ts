@@ -1,14 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { Cluster } from './cluster';
 import { HelmChart } from './helm-chart';
 import { ServiceAccount } from './service-account';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
-import { Construct as CoreConstruct, Duration, Names, Stack } from '@aws-cdk/core';
+import { Duration, Names, Stack } from '@aws-cdk/core';
 
 /**
  * Controller version.
@@ -185,7 +185,7 @@ export interface AlbControllerProps extends AlbControllerOptions {
  * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller
  *
  */
-export class AlbController extends CoreConstruct {
+export class AlbController extends Construct {
 
   /**
    * Create the controller construct associated with this cluster and scope.
@@ -251,8 +251,8 @@ export class AlbController extends CoreConstruct {
     });
 
     // the controller relies on permissions deployed using these resources.
-    chart.node.addDependency(serviceAccount);
-    chart.node.addDependency(props.cluster.openIdConnectProvider);
-    chart.node.addDependency(props.cluster.awsAuth);
+    Node.of(chart).addDependency(serviceAccount);
+    Node.of(chart).addDependency(props.cluster.openIdConnectProvider);
+    Node.of(chart).addDependency(props.cluster.awsAuth);
   }
 }
