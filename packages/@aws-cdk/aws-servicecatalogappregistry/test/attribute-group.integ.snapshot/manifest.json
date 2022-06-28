@@ -21,16 +21,22 @@
             "data": "TestAttributeGroupB1CB284F"
           }
         ],
-        "/integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/RAMSharee756785b8818": [
+        "/integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/RAMShareeb39874141ba": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestAttributeGroupRAMSharee756785b881833F2C73F"
+            "data": "TestAttributeGroupRAMShareeb39874141ba1F0BDF3D"
           }
         ],
-        "TestAttributeGroupRAMShare1e50ac3f906a4CA6A705": [
+        "/integ-servicecatalogappregistry-attribute-group/MyRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestAttributeGroupRAMShare1e50ac3f906a4CA6A705",
+            "data": "MyRoleF48FFE04"
+          }
+        ],
+        "TestAttributeGroupRAMSharee756785b881833F2C73F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAttributeGroupRAMSharee756785b881833F2C73F",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

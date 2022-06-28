@@ -33,8 +33,10 @@ const attributeGroup = new appreg.AttributeGroup(stack, 'TestAttributeGroup', {
 
 application.associateStack(stack);
 application.associateAttributeGroup(attributeGroup);
-const myRole = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::279317280375:role/Developer');
-attributeGroup.shareResource({
+const myRole = new iam.Role(stack, 'MyRole', {
+  assumedBy: new iam.AccountPrincipal(stack.account),
+});
+application.shareResource({
   roles: [myRole],
 });
 

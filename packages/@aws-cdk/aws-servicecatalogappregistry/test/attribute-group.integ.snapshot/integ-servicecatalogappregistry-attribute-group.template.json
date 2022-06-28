@@ -19,13 +19,18 @@
     "Description": "my attribute group description"
    }
   },
-  "TestAttributeGroupRAMSharee756785b881833F2C73F": {
+  "TestAttributeGroupRAMShareeb39874141ba1F0BDF3D": {
    "Type": "AWS::RAM::ResourceShare",
    "Properties": {
-    "Name": "RAMSharee756785b8818",
+    "Name": "RAMShareeb39874141ba",
     "AllowExternalPrincipals": true,
     "Principals": [
-     "arn:aws:iam::279317280375:role/Developer"
+     {
+      "Fn::GetAtt": [
+       "MyRoleF48FFE04",
+       "Arn"
+      ]
+     }
     ],
     "ResourceArns": [
      {
@@ -35,6 +40,38 @@
       ]
      }
     ]
+   }
+  },
+  "MyRoleF48FFE04": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
    }
   }
  }

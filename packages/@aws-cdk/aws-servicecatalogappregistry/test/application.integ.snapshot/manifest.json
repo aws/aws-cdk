@@ -33,16 +33,31 @@
             "data": "TestApplicationAttributeGroupAssociation4ba7f5842818B8EE1C6F"
           }
         ],
+        "/integ-servicecatalogappregistry-application/TestApplication/RAMShareb83647b4f06a": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestApplicationRAMShareb83647b4f06a5A88B554"
+          }
+        ],
         "/integ-servicecatalogappregistry-application/TestAttributeGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestAttributeGroupB1CB284F"
           }
         ],
-        "/integ-servicecatalogappregistry-application/TestAttributeGroup/RAMShare8ecfad67abc5": [
+        "/integ-servicecatalogappregistry-application/MyRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestAttributeGroupRAMShare8ecfad67abc5A7122106"
+            "data": "MyRoleF48FFE04"
+          }
+        ],
+        "TestAttributeGroupRAMShare8ecfad67abc5A7122106": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAttributeGroupRAMShare8ecfad67abc5A7122106",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

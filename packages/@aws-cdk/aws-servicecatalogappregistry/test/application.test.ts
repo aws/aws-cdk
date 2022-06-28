@@ -240,7 +240,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: true,
-        Name: 'RAMShare2bc04f06e3de',
+        //Name: 'RAMShare2bc04f06e3de',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
       });
@@ -253,7 +253,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: true,
-        Name: 'RAMSharec9a397e51b48',
+        Name: 'RAMSharedd13de208efe',
         Principals: ['123456789012'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
       });
@@ -268,7 +268,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: true,
-        Name: 'RAMSharebcd0cfbb7d94',
+        Name: 'RAMSharedd13de208efe',
         Principals: ['arn:aws:iam::123456789012:role/myRole'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
       });
@@ -283,7 +283,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: true,
-        Name: 'RAMShare27697fc6a22a',
+        Name: 'RAMSharedd13de208efe',
         Principals: ['arn:aws:iam::123456789012:user/myUser'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
       });
@@ -297,7 +297,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare2bc04f06e3de',
+        Name: 'RAMSharedd13de208efe',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
       });

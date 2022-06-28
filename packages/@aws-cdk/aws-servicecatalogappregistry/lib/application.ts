@@ -101,11 +101,11 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   /**
    * Share application resource with target accounts.
    * The application will become available to end users within targets.
-   * @param shareOptions
+   * @param shareOptions The options for the share.
    */
   public shareResource(shareOptions: ShareOptions): void {
     const principals = getPrincipalsforSharing(shareOptions);
-    const shareName = `RAMShare${hashValues(this.node.addr, ...principals)}`;
+    const shareName = `RAMShare${this.generateUniqueHash(this.node.addr)}`;
     new CfnResourceShare(this, shareName, {
       name: shareName,
       allowExternalPrincipals: shareOptions.allowExternalPrincipals ?? true,

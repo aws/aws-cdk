@@ -39,6 +39,29 @@
     }
    }
   },
+  "TestApplicationRAMShareb83647b4f06a5A88B554": {
+   "Type": "AWS::RAM::ResourceShare",
+   "Properties": {
+    "Name": "RAMShareb83647b4f06a",
+    "AllowExternalPrincipals": true,
+    "Principals": [
+     {
+      "Fn::GetAtt": [
+       "MyRoleF48FFE04",
+       "Arn"
+      ]
+     }
+    ],
+    "ResourceArns": [
+     {
+      "Fn::GetAtt": [
+       "TestApplication2FBC585F",
+       "Arn"
+      ]
+     }
+    ]
+   }
+  },
   "TestAttributeGroupB1CB284F": {
    "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroup",
    "Properties": {
@@ -62,22 +85,36 @@
     "Description": "my attribute group description"
    }
   },
-  "TestAttributeGroupRAMShare8ecfad67abc5A7122106": {
-   "Type": "AWS::RAM::ResourceShare",
+  "MyRoleF48FFE04": {
+   "Type": "AWS::IAM::Role",
    "Properties": {
-    "Name": "RAMShare8ecfad67abc5",
-    "AllowExternalPrincipals": true,
-    "Principals": [
-     "arn:aws:iam::279317280375:role/Developer"
-    ],
-    "ResourceArns": [
-     {
-      "Fn::GetAtt": [
-       "TestAttributeGroupB1CB284F",
-       "Arn"
-      ]
-     }
-    ]
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
    }
   }
  }

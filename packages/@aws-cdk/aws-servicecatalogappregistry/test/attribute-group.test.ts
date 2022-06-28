@@ -199,7 +199,7 @@ describe('Attribute Group', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: true,
-        Name: 'RAMSharefc4e194f8114',
+        Name: 'RAMSharedc3a8ee5fa0b',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
       });
@@ -212,7 +212,7 @@ describe('Attribute Group', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: true,
-        Name: 'RAMShare40c11ba8ae8b',
+        Name: 'RAMSharedc3a8ee5fa0b',
         Principals: ['123456789012'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
       });
@@ -227,7 +227,7 @@ describe('Attribute Group', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: true,
-        Name: 'RAMShare279fc4078356',
+        Name: 'RAMSharedc3a8ee5fa0b',
         Principals: ['arn:aws:iam::123456789012:role/myRole'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
       });
@@ -242,7 +242,7 @@ describe('Attribute Group', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: true,
-        Name: 'RAMShareb3d7b61e1c78',
+        Name: 'RAMSharedc3a8ee5fa0b',
         Principals: ['arn:aws:iam::123456789012:user/myUser'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
       });
@@ -256,7 +256,7 @@ describe('Attribute Group', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMSharefc4e194f8114',
+        Name: 'RAMSharedc3a8ee5fa0b',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
       });

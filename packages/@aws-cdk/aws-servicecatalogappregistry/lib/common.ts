@@ -42,7 +42,7 @@ export interface ShareOptions {
 }
 
 /**
- * Generates a unique hash identfifer using SHA256 encryption algorithm
+ * Generates a unique hash identfifer using SHA256 encryption algorithm.
  */
 export function hashValues(...values: string[]): string {
   const sha256 = crypto.createHash('sha256');

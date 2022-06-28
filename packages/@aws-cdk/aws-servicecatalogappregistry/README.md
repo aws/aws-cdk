@@ -134,11 +134,23 @@ You can share your AppRegistry applications and attribute groups with AWS Organi
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
 declare const application: appreg.Application;
+declare const myRole: iam.IRole;
+declare const myUser: iam.IUser;
 application.shareResource({
   accounts: ['123456789012'],
-  organizations: ['arn:aws:organizations::123456789012:organization/o-<org-ID>'],
-  roles: [iam.Role.fromRoleName(this, 'DeveloperRole', 'Developer')],
-  users: [iam.User.fromUserName(this, 'TesterUser', 'Tester')]
+  organizations: ['arn:aws:organizations::123456789012:organization/o-my-org-id'],
+  roles: [myRole],
+  users: [myUser]
+});
+```
+
+E.g., sharing an application with multiple accounts:
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+declare const application: appreg.Application;
+application.shareResource({
+  accounts: ['123456789012', '234567890123'],
 });
 ```
 
@@ -147,10 +159,22 @@ application.shareResource({
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
 declare const attributeGroup: appreg.AttributeGroup;
+declare const myRole: iam.IRole;
+declare const myUser: iam.IUser;
 attributeGroup.shareResource({
   accounts: ['123456789012'],
-  organizations: ['arn:aws:organizations::123456789012:organization/o-<org-ID>'],
-  roles: [iam.Role.fromRoleName(this, 'DeveloperRole', 'Developer')],
-  users: [iam.User.fromUserName(this, 'TesterUser', 'Tester')]
+  organizations: ['arn:aws:organizations::123456789012:organization/o-my-org-id'],
+  roles: [myRole],
+  users: [myUser]
+});
+```
+
+E.g., sharing an attribute group with multiple accounts:
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+declare const attributeGroup: appreg.AttributeGroup;
+attributeGroup.shareResource({
+  accounts: ['123456789012', '234567890123'],
 });
 ```
