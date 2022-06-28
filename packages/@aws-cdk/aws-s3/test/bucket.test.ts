@@ -2181,23 +2181,6 @@ describe('bucket', () => {
     });
   });
 
-  test('Bucket Allow Log delivery changes bucket Access Control should fail', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    const accessLogBucket = new s3.Bucket(stack, 'AccessLogs', {
-      accessControl: s3.BucketAccessControl.AUTHENTICATED_READ,
-    });
-    expect(() =>
-      new s3.Bucket(stack, 'MyBucket', {
-        serverAccessLogsBucket: accessLogBucket,
-        serverAccessLogsPrefix: 'hello',
-        accessControl: s3.BucketAccessControl.AUTHENTICATED_READ,
-      }),
-    ).toThrow(/Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed/);
-  });
-
   test('Defaults for an inventory bucket', () => {
     // Given
     const stack = new cdk.Stack();

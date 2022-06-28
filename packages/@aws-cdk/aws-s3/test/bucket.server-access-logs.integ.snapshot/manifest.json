@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -19,6 +19,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyAccessLogsBucketF7FE6635"
+          }
+        ],
+        "/aws-cdk-s3-access-logs/MyAccessLogsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAccessLogsBucketPolicyEA9AB063"
           }
         ],
         "/aws-cdk-s3-access-logs/MyBucket/Resource": [

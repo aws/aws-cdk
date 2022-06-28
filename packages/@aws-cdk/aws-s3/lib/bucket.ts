@@ -2,6 +2,7 @@ import { EOL } from 'os';
 import * as path from 'path';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
+import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
   Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Token,
@@ -1658,6 +1659,7 @@ export class Bucket extends BucketBase {
   private readonly cors: CorsRule[] = [];
   private readonly inventories: Inventory[] = [];
   private readonly _resource: CfnBucket;
+  private objectOwnership?: ObjectOwnership;
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
@@ -1685,7 +1687,7 @@ export class Bucket extends BucketBase {
       accessControl: Lazy.string({ produce: () => this.accessControl }),
       loggingConfiguration: this.parseServerAccessLogs(props),
       inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
-      ownershipControls: this.parseOwnershipControls(props),
+      ownershipControls: Lazy.any({ produce: () => this.parseOwnershipControls() }),
       accelerateConfiguration: props.transferAcceleration ? { accelerationStatus: 'Enabled' } : undefined,
       intelligentTieringConfigurations: this.parseTieringConfig(props),
     });
@@ -1713,6 +1715,7 @@ export class Bucket extends BucketBase {
 
     this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
     this.accessControl = props.accessControl;
+    this.objectOwnership = props.objectOwnership;
 
     // Enforce AWS Foundational Security Best Practice
     if (props.enforceSSL) {
@@ -1720,7 +1723,7 @@ export class Bucket extends BucketBase {
     }
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
-      props.serverAccessLogsBucket.allowLogDelivery();
+      props.serverAccessLogsBucket.allowLogDelivery(this, props.serverAccessLogsPrefix);
     }
 
     for (const inventory of props.inventories ?? []) {
@@ -1990,13 +1993,13 @@ export class Bucket extends BucketBase {
     }));
   }
 
-  private parseOwnershipControls({ objectOwnership }: BucketProps): CfnBucket.OwnershipControlsProperty | undefined {
-    if (!objectOwnership) {
+  private parseOwnershipControls(): CfnBucket.OwnershipControlsProperty | undefined {
+    if (!this.objectOwnership) {
       return undefined;
     }
     return {
       rules: [{
-        objectOwnership,
+        objectOwnership: this.objectOwnership,
       }],
     };
   }
@@ -2069,17 +2072,31 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Allows the LogDelivery group to write, fails if ACL was set differently.
+   * Allows the 'logging.s3.amazonaws.com' service principal to write log events
+   * to this bucket.
    *
    * @see
-   * https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl
+   * https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
    */
-  private allowLogDelivery() {
-    if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
-      throw new Error("Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed");
-    }
+  private allowLogDelivery(sourceBucket: IBucket, logFilePrefix?: string) {
+    this.grantLogDeliveryAccessUsingIamPolicy(sourceBucket, logFilePrefix);
+  }
 
-    this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
+  private grantLogDeliveryAccessUsingIamPolicy(sourceBucket: IBucket, logFilePrefix?: string) {
+    const prefix = logFilePrefix ?? '*';
+
+    this.addToResourcePolicy(new PolicyStatement({
+      principals: [new ServicePrincipal('logging.s3.amazonaws.com')],
+      actions: ['s3:PutObject'],
+      conditions: {
+        ArnLike: {
+          'aws:SourceArn': sourceBucket.bucketArn,
+        },
+      },
+      resources: [`${this.bucketArn}/${prefix}`],
+    }));
+
+    this.objectOwnership = ObjectOwnership.BUCKET_OWNER_ENFORCED;
   }
 
   private parseInventoryConfiguration(): CfnBucket.InventoryConfigurationProperty[] | undefined {
