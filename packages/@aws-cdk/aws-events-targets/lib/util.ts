@@ -71,7 +71,7 @@ export function bindBaseTargetConfig(props: TargetBaseProps) {
  * events have the same target, they will share a role.
  * @internal
  */
-export function singletonEventRole(scope: IConstruct, policyStatements: iam.PolicyStatement[]): iam.IRole {
+export function singletonEventRole(scope: IConstruct): iam.IRole {
   const id = 'EventsRole';
   const existing = scope.node.tryFindChild(id) as iam.IRole;
   if (existing) { return existing; }
@@ -80,8 +80,6 @@ export function singletonEventRole(scope: IConstruct, policyStatements: iam.Poli
     roleName: PhysicalName.GENERATE_IF_NEEDED,
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
-
-  policyStatements.forEach(role.addToPolicy.bind(role));
 
   return role;
 }

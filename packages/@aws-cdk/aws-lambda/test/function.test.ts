@@ -264,7 +264,7 @@ describe('function', () => {
       // WHEN
       const fn = new lambda.Function(stack, 'Function', {
         code: new lambda.InlineCode('test'),
-        runtime: lambda.Runtime.PYTHON_3_6,
+        runtime: lambda.Runtime.PYTHON_3_9,
         handler: 'index.test',
         role,
         initialPolicy: [
@@ -449,7 +449,7 @@ describe('function', () => {
         fn = new lambda.Function(stack, 'MyLambda', {
           code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
           handler: 'index.handler',
-          runtime: lambda.Runtime.PYTHON_3_6,
+          runtime: lambda.Runtime.PYTHON_3_9,
         });
       });
 
@@ -557,7 +557,7 @@ describe('function', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
           Name: 'prod',
           FunctionName: { Ref: 'MyLambdaCCE802FB' },
-          FunctionVersion: { 'Fn::GetAtt': ['MyLambdaCurrentVersionE7A382CC60ef151b20ae483ee1018f73f30bc10e', 'Version'] },
+          FunctionVersion: { 'Fn::GetAtt': ['MyLambdaCurrentVersionE7A382CC2eeae0edd9c706f9c3b9dd748e520c30', 'Version'] },
         });
       });
 
@@ -606,7 +606,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_6,
+      runtime: lambda.Runtime.PYTHON_3_9,
     });
 
     // THEN
@@ -629,7 +629,7 @@ describe('function', () => {
           'Arn',
         ],
       },
-      Runtime: 'python3.6',
+      Runtime: 'python3.9',
     });
   });
 
@@ -1507,7 +1507,7 @@ describe('function', () => {
     const stack = new cdk.Stack(undefined, 'TestStack');
     const layer = lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
-      compatibleRuntimes: [lambda.Runtime.NODEJS_12_X],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
     });
 
     // THEN
@@ -1516,7 +1516,7 @@ describe('function', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
       code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
       handler: 'index.main',
-    })).toThrow(/nodejs10.x is not in \[nodejs12.x\]/);
+    })).toThrow(/nodejs10.x is not in \[nodejs14.x\]/);
   });
 
   test('using more than 5 layers', () => {
@@ -1789,7 +1789,7 @@ describe('function', () => {
     const fn = new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
     fn.addEnvironment('KEY', 'value', { removeInEdge: true });
 
@@ -1808,7 +1808,7 @@ describe('function', () => {
     const fn = new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       environment: {
         KEY: 'value',
       },
@@ -2073,7 +2073,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.PYTHON_3_6,
+        runtime: lambda.Runtime.PYTHON_3_9,
         profiling: true,
       });
 
@@ -2122,7 +2122,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.PYTHON_3_6,
+        runtime: lambda.Runtime.PYTHON_3_9,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
       });
 
@@ -2174,7 +2174,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.PYTHON_3_6,
+        runtime: lambda.Runtime.PYTHON_3_9,
         profiling: false,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
       });
@@ -2205,7 +2205,7 @@ describe('function', () => {
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.PYTHON_3_6,
+        runtime: lambda.Runtime.PYTHON_3_9,
         profiling: true,
         environment: {
           AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
@@ -2220,7 +2220,7 @@ describe('function', () => {
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.PYTHON_3_6,
+        runtime: lambda.Runtime.PYTHON_3_9,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
         environment: {
           AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
@@ -2252,7 +2252,7 @@ describe('function', () => {
       // WHEN
       const { timeout } = new lambda.Function(stack, 'MyFunction', {
         handler: 'foo',
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         timeout: cdk.Duration.minutes(2),
       });
@@ -2268,7 +2268,7 @@ describe('function', () => {
       // WHEN
       const { timeout } = new lambda.Function(stack, 'MyFunction', {
         handler: 'foo',
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
       });
 
@@ -2284,7 +2284,7 @@ describe('function', () => {
       const stack1 = new cdk.Stack();
       const fn1 = new lambda.Function(stack1, 'MyFunction', {
         handler: 'foo',
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         environment: {
           FOO: 'bar',
@@ -2293,7 +2293,7 @@ describe('function', () => {
       const stack2 = new cdk.Stack();
       const fn2 = new lambda.Function(stack2, 'MyFunction', {
         handler: 'foo',
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         environment: {
           FOO: 'bear',
@@ -2337,7 +2337,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyFunction', {
         vpc,
         handler: 'foo',
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
       });
@@ -2392,7 +2392,7 @@ describe('function', () => {
       expect(() => {
         new lambda.Function(stack, 'MyFunction', {
           handler: 'foo',
-          runtime: lambda.Runtime.NODEJS_12_X,
+          runtime: lambda.Runtime.NODEJS_14_X,
           code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
           filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
         });
@@ -2420,7 +2420,7 @@ describe('function', () => {
         vpc,
         handler: 'foo',
         securityGroups: [securityGroup],
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
       });
@@ -2614,7 +2614,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
 
       architectures: [lambda.Architecture.ARM_64],
@@ -2629,7 +2629,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
 
       architecture: lambda.Architecture.ARM_64,
@@ -2644,7 +2644,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     expect(() => new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
 
       architecture: lambda.Architecture.ARM_64,
@@ -2656,7 +2656,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     expect(() => new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
 
       architectures: [lambda.Architecture.X86_64, lambda.Architecture.ARM_64],

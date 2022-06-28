@@ -106,7 +106,7 @@
     "case": "1.6.3",
     "fs-extra": "^9.1.0",
     "ignore": "^5.2.0",
-    "jsonschema": "^1.4.0",
+    "jsonschema": "^1.4.1",
     "minimatch": "^3.1.2",
     "punycode": "^2.1.1",
     "semver": "^7.3.7",
@@ -202,6 +202,7 @@
     "@aws-cdk/aws-elasticsearch": "0.0.0",
     "@aws-cdk/aws-emr": "0.0.0",
     "@aws-cdk/aws-emrcontainers": "0.0.0",
+    "@aws-cdk/aws-emrserverless": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-eventschemas": "0.0.0",
@@ -367,7 +368,7 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "keywords": [
     "aws",

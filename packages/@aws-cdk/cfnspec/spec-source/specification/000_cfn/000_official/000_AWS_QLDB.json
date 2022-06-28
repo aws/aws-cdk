@@ -1,5 +1,5 @@
 {
-  "$version": "72.0.0",
+  "$version": "76.0.0",
   "PropertyTypes": {
     "AWS::QLDB::Stream.KinesisConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-qldb-stream-kinesisconfiguration.html",

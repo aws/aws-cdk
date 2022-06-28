@@ -232,7 +232,7 @@ describe('S3 destination', () => {
 
     beforeEach(() => {
       lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromInline('foo'),
         handler: 'bar',
       });

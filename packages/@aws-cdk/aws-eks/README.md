@@ -1257,7 +1257,7 @@ export class MyChart extends cdk8s.Chart {
       containers: [
         new kplus.Container({
           image: 'my-image',
-          env: {
+          envVariables: {
             BUCKET_NAME: kplus.EnvValue.fromValue(props.bucket.bucketName),
           },
         }),

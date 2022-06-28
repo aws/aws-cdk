@@ -2,6 +2,65 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.161.0](https://github.com/aws/aws-cdk/compare/v1.160.0...v1.161.0) (2022-06-22)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v76.0.0 ([#20725](https://github.com/aws/aws-cdk/issues/20725)) ([ae1213f](https://github.com/aws/aws-cdk/commit/ae1213fe1b36f38a35a12c2533bb921d010f7a37))
+
+## [1.160.0](https://github.com/aws/aws-cdk/compare/v1.159.0...v1.160.0) (2022-06-14)
+
+
+### ⚠  Removal of Node 12
+
+- Starting with this release, Node 12 is no longer supported and customers should upgrade to Node 14, 16, or 18.
+
+### Features
+
+* **cfnspec:** cloudformation spec v75.0.0 ([#20615](https://github.com/aws/aws-cdk/issues/20615)) ([0a13e09](https://github.com/aws/aws-cdk/commit/0a13e09af6299afed031c4c1814f621e4dd8e975))
+
+
+### Bug Fixes
+
+* **lambda:** deprecate Python3.6 ([#19988](https://github.com/aws/aws-cdk/issues/19988)) ([9602229](https://github.com/aws/aws-cdk/commit/9602229b6c9105fc4c0ade3348d0c250a2f39c6d)), closes [#20085](https://github.com/aws/aws-cdk/issues/20085)
+
+
+### Miscellaneous Chores
+
+* **deps:** npm-check-updates && yarn upgrade  ([#20684](https://github.com/aws/aws-cdk/issues/20684)) ([e661fe9](https://github.com/aws/aws-cdk/commit/e661fe9fa8c4978ea321507063d6739089bc69db))
+
+## [1.159.0](https://github.com/aws/aws-cdk/compare/v1.158.0...v1.159.0) (2022-06-02)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **core:** so this PR attempts to smooth a rough edge by "locking"
+the `logicalId` when `exportValue` is called. If the user attempts to
+override the id _after_ that point, an error message will be thrown
+
+### Features
+
+* **cfnspec:** cloudformation spec v73.1.0 ([#20587](https://github.com/aws/aws-cdk/issues/20587)) ([419fdae](https://github.com/aws/aws-cdk/commit/419fdaec2770de1d21c0340f294ad72155d991ce))
+* **cognito:** OpenID Connect identity provider ([#20241](https://github.com/aws/aws-cdk/issues/20241)) ([33acc7c](https://github.com/aws/aws-cdk/commit/33acc7cc03c4a6700c05e840393ef90e5d8f68dc))
+* **integ-runner:** publish integ-runner cli ([#20477](https://github.com/aws/aws-cdk/issues/20477)) ([7779531](https://github.com/aws/aws-cdk/commit/777953106ac550b058fdaa3ccde25b62be07defa))
+* **lambda:** add insights version 1.0.135.0 ([#19588](https://github.com/aws/aws-cdk/issues/19588)) ([68761dc](https://github.com/aws/aws-cdk/commit/68761dc3ceadbe77e241fb85544e48544149568a)), closes [/docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versionsx86-64.html#Lambda-Insights-extension-1](https://github.com/aws//docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versionsx86-64.html/issues/Lambda-Insights-extension-1) [/docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versionsARM.html#Lambda-Insights-extension-ARM-1](https://github.com/aws//docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versionsARM.html/issues/Lambda-Insights-extension-ARM-1)
+* **s3:** adds objectSizeLessThan property for s3 lifecycle rule ([#20429](https://github.com/aws/aws-cdk/issues/20429)) ([2bf30df](https://github.com/aws/aws-cdk/commit/2bf30df223cc5bb43c2fcfaaf32669a8438ad19a)), closes [#20425](https://github.com/aws/aws-cdk/issues/20425) [#20372](https://github.com/aws/aws-cdk/issues/20372)
+
+
+### Bug Fixes
+
+* **core:** logicalId is consumed prior to being overridden ([#20560](https://github.com/aws/aws-cdk/issues/20560)) ([e44c2c4](https://github.com/aws/aws-cdk/commit/e44c2c436d41a9993714d7e9ff5a9ed95b5677f1)), closes [#14335](https://github.com/aws/aws-cdk/issues/14335)
+* **ecr-assets:** cannot build ARM images using modern stack synthesis ([#20563](https://github.com/aws/aws-cdk/issues/20563)) ([9a23575](https://github.com/aws/aws-cdk/commit/9a23575f4590a170caf79f4141c16adf431e7c40)), closes [#20439](https://github.com/aws/aws-cdk/issues/20439)
+* **ecs:** canContainersAccessInstanceRole is ignored when passed in AsgCapacityProvider constructor ([#20522](https://github.com/aws/aws-cdk/issues/20522)) ([dacefd6](https://github.com/aws/aws-cdk/commit/dacefd6c4770f06390f853fdf4703d8662beb3f5)), closes [#20293](https://github.com/aws/aws-cdk/issues/20293) [#20293](https://github.com/aws/aws-cdk/issues/20293)
+* **ecs:** fix typo from fromServiceAtrributes to fromServiceAttributes ([#20456](https://github.com/aws/aws-cdk/issues/20456)) ([f4439ce](https://github.com/aws/aws-cdk/commit/f4439ceda079dd762ec30c6f4a893d6bcd7ed100)), closes [#20458](https://github.com/aws/aws-cdk/issues/20458)
+* **events-targets:** EventBus IAM statements are only added for the first target ([#20479](https://github.com/aws/aws-cdk/issues/20479)) ([74318c7](https://github.com/aws/aws-cdk/commit/74318c7d22bfc00de9e005f68a0a6aaa58c7db39)), closes [#19407](https://github.com/aws/aws-cdk/issues/19407)
+* **iam:** referencing the same immutable role twice makes it mutable ([#20497](https://github.com/aws/aws-cdk/issues/20497)) ([264c02e](https://github.com/aws/aws-cdk/commit/264c02e6014552cd73f38acef0df2205811d6c86)), closes [#7255](https://github.com/aws/aws-cdk/issues/7255)
+* **integ-runner:** catch snapshot errors, treat `--from-file` as command-line ([#20523](https://github.com/aws/aws-cdk/issues/20523)) ([cedfde8](https://github.com/aws/aws-cdk/commit/cedfde8cb07eb879ee384bda93bba813ede91699))
+* **integ-runner:** don't throw error if tests pass ([#20511](https://github.com/aws/aws-cdk/issues/20511)) ([c274c2f](https://github.com/aws/aws-cdk/commit/c274c2f983de2dfd20ed2886a3c50f7fd3f6b3f4)), closes [#20384](https://github.com/aws/aws-cdk/issues/20384)
+* **lambda:** function version ignores layer version changes ([#20150](https://github.com/aws/aws-cdk/issues/20150)) ([f19ecef](https://github.com/aws/aws-cdk/commit/f19ecefcdde712dfd951106bec3b1f850b66f2a8)), closes [#19098](https://github.com/aws/aws-cdk/issues/19098)
+* Default username in RoleSessionName ([#20188](https://github.com/aws/aws-cdk/issues/20188)) ([b7bc10c](https://github.com/aws/aws-cdk/commit/b7bc10cc7a734fe3b4a9194dffbc017f2fe3ef43)), closes [#19401](https://github.com/aws/aws-cdk/issues/19401) [#7937](https://github.com/aws/aws-cdk/issues/7937) [#19401](https://github.com/aws/aws-cdk/issues/19401)
+
 ## [1.158.0](https://github.com/aws/aws-cdk/compare/v1.157.0...v1.158.0) (2022-05-27)
 
 
@@ -723,13 +782,13 @@ languages, and required convoluted workarounds, which can now be removed.
 
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
-* **appsync:** The `CachingConfig#ttl` property is now required. 
+* **appsync:** The `CachingConfig#ttl` property is now required.
 
 [1]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-resolver-cachingconfig.html#cfn-appsync-resolver-cachingconfig-ttl
 * **glue:** the grantRead API previously included 'glue:BatchDeletePartition', and now it does not.
 
 
- 
+
 
 ### Features
 

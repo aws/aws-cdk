@@ -25,7 +25,7 @@ test('Eval with Node.js', () => {
         [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': ['Evalda2d1181604e4a4586941a6abd7fe42dF371675D', 'Arn'],
+            'Fn::GetAtt': ['Eval2b81e383aad244db8aafb4809ae0e3b4F6842FF0', 'Arn'],
           },
           '","Parameters":{"expression":"$.a + $.b","expressionAttributeValues":{"$.a.$":"$.a","$.b.$":"$.b"}}}}}',
         ],
@@ -54,7 +54,7 @@ test('expression does not contain paths', () => {
         [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': ['Evalda2d1181604e4a4586941a6abd7fe42dF371675D', 'Arn'],
+            'Fn::GetAtt': ['Eval2b81e383aad244db8aafb4809ae0e3b4F6842FF0', 'Arn'],
           },
           '","Parameters":{"expression":"2 + 2","expressionAttributeValues":{}}}}}',
         ],
@@ -79,7 +79,7 @@ test('with dash and underscore in path', () => {
         [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': ['Evalda2d1181604e4a4586941a6abd7fe42dF371675D', 'Arn'],
+            'Fn::GetAtt': ['Eval2b81e383aad244db8aafb4809ae0e3b4F6842FF0', 'Arn'],
           },
           '","Parameters":{"expression":"$.a_b + $.c-d + $[_e]","expressionAttributeValues":{"$.a_b.$":"$.a_b","$.c-d.$":"$.c-d","$[_e].$":"$[_e]"}}}}}',
         ],

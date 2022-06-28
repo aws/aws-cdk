@@ -1,138 +1,138 @@
 {
- "Resources": {
-  "CustomReflectCustomResourceProviderRoleB4B29AEC": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-     }
-    ]
-   }
-  },
-  "CustomReflectCustomResourceProviderHandler2E189D0B": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Ref": "AssetParametersf668ac061a3c96c2a1ff8d441720965e8a44caf19c1c7efb7e648e51d0f742b2S3Bucket583D2319"
-     },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
+  "Resources": {
+    "CustomReflectCustomResourceProviderRoleB4B29AEC": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
             {
-             "Ref": "AssetParametersf668ac061a3c96c2a1ff8d441720965e8a44caf19c1c7efb7e648e51d0f742b2S3VersionKey9E55A55A"
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
             }
-           ]
-          }
-         ]
+          ]
         },
-        {
-         "Fn::Select": [
-          1,
+        "ManagedPolicyArns": [
           {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParametersf668ac061a3c96c2a1ff8d441720965e8a44caf19c1c7efb7e648e51d0f742b2S3VersionKey9E55A55A"
-            }
-           ]
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
           }
-         ]
-        }
-       ]
+        ]
+      }
+    },
+    "CustomReflectCustomResourceProviderHandler2E189D0B": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersf668ac061a3c96c2a1ff8d441720965e8a44caf19c1c7efb7e648e51d0f742b2S3Bucket583D2319"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersf668ac061a3c96c2a1ff8d441720965e8a44caf19c1c7efb7e648e51d0f742b2S3VersionKey9E55A55A"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersf668ac061a3c96c2a1ff8d441720965e8a44caf19c1c7efb7e648e51d0f742b2S3VersionKey9E55A55A"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Timeout": 900,
+        "MemorySize": 128,
+        "Handler": "__entrypoint__.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomReflectCustomResourceProviderRoleB4B29AEC",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs14.x",
+        "Description": "veni vidi vici"
+      },
+      "DependsOn": [
+        "CustomReflectCustomResourceProviderRoleB4B29AEC"
       ]
-     }
     },
-    "Timeout": 900,
-    "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomReflectCustomResourceProviderRoleB4B29AEC",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs12.x",
-    "Description": "veni vidi vici"
-   },
-   "DependsOn": [
-    "CustomReflectCustomResourceProviderRoleB4B29AEC"
-   ]
-  },
-  "MyResource": {
-   "Type": "Custom::Reflect",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomReflectCustomResourceProviderHandler2E189D0B",
-      "Arn"
-     ]
-    },
-    "physicalResourceId": "MyPhysicalReflectBack",
-    "attributes": {
-     "Attribute1": "foo",
-     "Attribute2": 1234
+    "MyResource": {
+      "Type": "Custom::Reflect",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomReflectCustomResourceProviderHandler2E189D0B",
+            "Arn"
+          ]
+        },
+        "physicalResourceId": "MyPhysicalReflectBack",
+        "attributes": {
+          "Attribute1": "foo",
+          "Attribute2": 1234
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+  },
+  "Parameters": {
+    "AssetParametersf668ac061a3c96c2a1ff8d441720965e8a44caf19c1c7efb7e648e51d0f742b2S3Bucket583D2319": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"f668ac061a3c96c2a1ff8d441720965e8a44caf19c1c7efb7e648e51d0f742b2\""
+    },
+    "AssetParametersf668ac061a3c96c2a1ff8d441720965e8a44caf19c1c7efb7e648e51d0f742b2S3VersionKey9E55A55A": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"f668ac061a3c96c2a1ff8d441720965e8a44caf19c1c7efb7e648e51d0f742b2\""
+    },
+    "AssetParametersf668ac061a3c96c2a1ff8d441720965e8a44caf19c1c7efb7e648e51d0f742b2ArtifactHashD6C9265F": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"f668ac061a3c96c2a1ff8d441720965e8a44caf19c1c7efb7e648e51d0f742b2\""
+    }
+  },
+  "Outputs": {
+    "Ref": {
+      "Value": {
+        "Ref": "MyResource"
+      }
+    },
+    "GetAttAttribute1": {
+      "Value": {
+        "Fn::GetAtt": [
+          "MyResource",
+          "Attribute1"
+        ]
+      }
+    },
+    "GetAttAttribute2": {
+      "Value": {
+        "Fn::GetAtt": [
+          "MyResource",
+          "Attribute2"
+        ]
+      }
+    }
   }
- },
- "Parameters": {
-  "AssetParametersf668ac061a3c96c2a1ff8d441720965e8a44caf19c1c7efb7e648e51d0f742b2S3Bucket583D2319": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"f668ac061a3c96c2a1ff8d441720965e8a44caf19c1c7efb7e648e51d0f742b2\""
-  },
-  "AssetParametersf668ac061a3c96c2a1ff8d441720965e8a44caf19c1c7efb7e648e51d0f742b2S3VersionKey9E55A55A": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"f668ac061a3c96c2a1ff8d441720965e8a44caf19c1c7efb7e648e51d0f742b2\""
-  },
-  "AssetParametersf668ac061a3c96c2a1ff8d441720965e8a44caf19c1c7efb7e648e51d0f742b2ArtifactHashD6C9265F": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"f668ac061a3c96c2a1ff8d441720965e8a44caf19c1c7efb7e648e51d0f742b2\""
-  }
- },
- "Outputs": {
-  "Ref": {
-   "Value": {
-    "Ref": "MyResource"
-   }
-  },
-  "GetAttAttribute1": {
-   "Value": {
-    "Fn::GetAtt": [
-     "MyResource",
-     "Attribute1"
-    ]
-   }
-  },
-  "GetAttAttribute2": {
-   "Value": {
-    "Fn::GetAtt": [
-     "MyResource",
-     "Attribute2"
-    ]
-   }
-  }
- }
 }
