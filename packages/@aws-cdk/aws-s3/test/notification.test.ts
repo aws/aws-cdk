@@ -1,6 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '../lib';
 
 describe('notification', () => {
@@ -51,6 +52,37 @@ describe('notification', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
       Role: 'arn:aws:iam::111111111111:role/DevsNotAllowedToTouch',
+    });
+  });
+
+  test('can specify a vpc for the notifications handler of imported buckets', () => {
+    const stack = new cdk.Stack();
+
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'MyBucket', {
+      bucketName: 'foo-bar',
+      notificationsHandlerVpc: vpc,
+    });
+
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
+      VpcConfig: {
+        SecurityGroupIds: [
+          { 'Fn::GetAtt': ['LambdaSecurityGroupE74659A1', 'GroupId'] },
+        ],
+        SubnetIds: [
+          { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+          { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
+        ],
+      }
     });
   });
 

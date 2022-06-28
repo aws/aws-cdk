@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct } from 'constructs';
 import { Bucket, IBucket, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
@@ -15,6 +16,11 @@ interface NotificationsProps {
    * The role to be used by the lambda handler
    */
   handlerRole?: iam.IRole;
+
+  /**
+   * The vpc to be used by the lambda handler
+   */
+  vpc?: ec2.IVpc;
 }
 
 /**
@@ -40,11 +46,13 @@ export class BucketNotifications extends Construct {
   private resource?: cdk.CfnResource;
   private readonly bucket: IBucket;
   private readonly handlerRole?: iam.IRole;
+  private readonly vpc?: ec2.IVpc;
 
   constructor(scope: Construct, id: string, props: NotificationsProps) {
     super(scope, id);
     this.bucket = props.bucket;
     this.handlerRole = props.handlerRole;
+    this.vpc = props.vpc;
   }
 
   /**
@@ -115,6 +123,7 @@ export class BucketNotifications extends Construct {
     if (!this.resource) {
       const handler = NotificationsResourceHandler.singleton(this, {
         role: this.handlerRole,
+        vpc: this.vpc
       });
 
       const managed = this.bucket instanceof Bucket;

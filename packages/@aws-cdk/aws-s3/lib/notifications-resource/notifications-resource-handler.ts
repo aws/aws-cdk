@@ -1,11 +1,22 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
 export class NotificationsResourceHandlerProps {
+  /**
+   * Role used by the notification resource handler
+   */
   role?: iam.IRole;
+
+  /**
+   * Vpc to which the notification resource handler gets deployed
+   * 
+   * The Vpc requires at least one privat subnet!
+   */
+  vpc?: ec2.IVpc;
 }
 
 /**
@@ -67,9 +78,23 @@ export class NotificationsResourceHandler extends Construct {
       iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
     );
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      sid: "LambdaPutBucketNotificationPolicy",
       actions: ['s3:PutBucketNotification'],
       resources: ['*'],
     }));
+
+    // If the lambda gets deployed to a VPC an additional policy is required
+    if (props.vpc) {
+      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+        sid: "LambdaVpcPolicy",
+        actions: [
+          'ec2:CreateNetworkInterface',
+          'ec2:DescribeNetworkInterfaces',
+          'ec2:DeleteNetworkInterface'
+        ],
+        resources: ['*'],
+      }));
+    }
 
     const resourceType = 'AWS::Lambda::Function';
     class InLineLambda extends cdk.CfnResource {
@@ -100,6 +125,7 @@ export class NotificationsResourceHandler extends Construct {
         Role: this.role.roleArn,
         Runtime: 'python3.7',
         Timeout: 300,
+        VpcConfig: this.getVpcConfig(props.vpc)
       },
     });
     resource.node.addDependency(this.role);
@@ -109,5 +135,25 @@ export class NotificationsResourceHandler extends Construct {
 
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
+  }
+
+  private getVpcConfig(vpc: ec2.IVpc) {
+
+    if (!vpc) { return undefined; }
+
+    const { subnetIds } = vpc.selectSubnets({
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED
+    })
+    const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+      vpc: vpc,
+      description: 'Automatic security group for Lambda Function ' + cdk.Names.uniqueId(this),
+      allowAllOutbound: true,
+    });
+    const securityGroups = [securityGroup];
+
+    return {
+      SubnetIds: subnetIds,
+      SecurityGroupIds: securityGroups.map(sg => sg.securityGroupId),
+    }
   }
 }

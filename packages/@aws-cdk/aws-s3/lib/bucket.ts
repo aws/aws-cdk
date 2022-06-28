@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import {
   Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Token,
   CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags, Tags, Duration,
@@ -434,6 +435,13 @@ export interface BucketAttributes {
    * @default - a new role will be created.
    */
   readonly notificationsHandlerRole?: iam.IRole;
+
+  /**
+   * The vpc to be used by the notifications handler
+   *
+   * @default - the notification handler gets deployed without a vpc assignment.
+   */
+  readonly notificationsHandlerVpc?: ec2.IVpc;
 }
 
 /**
@@ -494,6 +502,8 @@ export abstract class BucketBase extends Resource implements IBucket {
   private notifications?: BucketNotifications;
 
   protected notificationsHandlerRole?: iam.IRole;
+
+  protected notificationsHandlerVpc?: ec2.IVpc;
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
@@ -845,6 +855,7 @@ export abstract class BucketBase extends Resource implements IBucket {
       this.notifications = new BucketNotifications(this, 'Notifications', {
         bucket: this,
         handlerRole: this.notificationsHandlerRole,
+        vpc: this.notificationsHandlerVpc,
       });
     }
     cb(this.notifications);
@@ -1489,6 +1500,13 @@ export interface BucketProps {
   readonly notificationsHandlerRole?: iam.IRole;
 
   /**
+   * The vpc to be used by the notifications handler
+   *
+   * @default - the notification handler gets deployed without a vpc assignment.
+   */
+   readonly notificationsHandlerVpc?: ec2.IVpc;
+
+  /**
    * Inteligent Tiering Configurations
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html
@@ -1572,6 +1590,7 @@ export class Bucket extends BucketBase {
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
       protected notificationsHandlerRole = attrs.notificationsHandlerRole;
+      protected notificationsHandlerVpc = attrs.notificationsHandlerVpc;
 
       /**
        * Exports this bucket from the stack.
@@ -1661,6 +1680,7 @@ export class Bucket extends BucketBase {
     });
 
     this.notificationsHandlerRole = props.notificationsHandlerRole;
+    this.notificationsHandlerVpc = props.notificationsHandlerVpc;
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
