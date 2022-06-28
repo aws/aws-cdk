@@ -24,6 +24,29 @@ describe('mesh', () => {
     });
 
     describe('with spec applied', () => {
+      test('should take IP preference from props', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+          serviceDiscovery: {
+            ipPreference: appmesh.IpPreference.IPV4_ONLY,
+          },
+        });
+
+        // THEN
+        Template.fromStack(stack).
+          hasResourceProperties('AWS::AppMesh::Mesh', {
+            Spec: {
+              ServiceDiscovery: {
+                IpPreference: 'IPv4_ONLY',
+              },
+            },
+          });
+      });
+
       test('should take egress filter from props', () => {
         // GIVEN
         const stack = new cdk.Stack();

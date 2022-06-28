@@ -969,7 +969,8 @@
      ],
      "ServiceDiscovery": {
       "DNS": {
-       "Hostname": "node1.domain.local"
+       "Hostname": "node1.domain.local",
+       "IpPreference": "IPv4_ONLY"
       }
      }
     },
@@ -1670,6 +1671,17 @@
      ]
     },
     "GatewayRouteName": "meshstackmeshgateway1gateway1routegrpc2AE8379FD"
+   }
+  },
+  "meshwithpreferenceCC9682C9": {
+   "Type": "AWS::AppMesh::Mesh",
+   "Properties": {
+    "MeshName": "meshstackmeshwithpreference13C624E1",
+    "Spec": {
+     "ServiceDiscovery": {
+      "IpPreference": "IPv4_ONLY"
+     }
+    }
    }
   },
   "service6D174F83": {
