@@ -1723,7 +1723,7 @@ export class Bucket extends BucketBase {
     }
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
-      props.serverAccessLogsBucket.allowLogDelivery(this, props.serverAccessLogsPrefix);
+      props.serverAccessLogsBucket.allowLogDelivery(this, Stack.of(this).account, props.serverAccessLogsPrefix);
     }
 
     for (const inventory of props.inventories ?? []) {
@@ -2078,11 +2078,7 @@ export class Bucket extends BucketBase {
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
    */
-  private allowLogDelivery(sourceBucket: IBucket, logFilePrefix?: string) {
-    this.grantLogDeliveryAccessUsingIamPolicy(sourceBucket, logFilePrefix);
-  }
-
-  private grantLogDeliveryAccessUsingIamPolicy(sourceBucket: IBucket, logFilePrefix?: string) {
+  private allowLogDelivery(sourceBucket: IBucket, accountId: string, logFilePrefix?: string) {
     const prefix = logFilePrefix ?? '*';
 
     this.addToResourcePolicy(new PolicyStatement({
@@ -2091,6 +2087,9 @@ export class Bucket extends BucketBase {
       conditions: {
         ArnLike: {
           'aws:SourceArn': sourceBucket.bucketArn,
+        },
+        StringEquals: {
+          'aws:SourceAccount': accountId,
         },
       },
       resources: [`${this.bucketArn}/${prefix}`],
