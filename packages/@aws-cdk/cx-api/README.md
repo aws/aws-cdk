@@ -30,6 +30,7 @@ remain in control of it.
 https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html#AWS-logs-infrastructure-S3
 
 _cdk.json_
+
 ```json
 {
   "context": {
@@ -37,3 +38,4 @@ _cdk.json_
   }
 }
 ```
+

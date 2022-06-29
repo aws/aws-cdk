@@ -1,9 +1,8 @@
-/// !cdk-integ *
 import { PolicyStatement, Effect, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
-import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc, Instance, InstanceType, InstanceClass, InstanceSize, MachineImage, AmazonLinuxGeneration } from '../lib';
 import { IntegTest, ExpectedResult, AssertionsProvider } from '@aws-cdk/integ-tests';
+import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc, Instance, InstanceType, InstanceClass, InstanceSize, MachineImage, AmazonLinuxGeneration } from '../lib';
 
 const app = new App();
 
@@ -12,7 +11,6 @@ class FeatureFlagStack extends Stack {
   public readonly bucket: s3.IBucket;
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
-    this.node.setContext('@aws-cdk/aws-s3:createDefaultLoggingPolicy', true);
 
     const vpc = new Vpc(this, 'VPC');
 

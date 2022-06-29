@@ -743,24 +743,44 @@
        "Principal": {
         "Service": "delivery.logs.amazonaws.com"
        },
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          {
-           "Fn::GetAtt": [
-            "Bucket83908E77",
-            "Arn"
-           ]
-          },
-          "/AWSLogs/",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          "/*"
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Bucket83908E77",
+             "Arn"
+            ]
+           },
+           "/AWSLogs/",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           "/*"
+          ]
          ]
-        ]
-       }
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Bucket83908E77",
+             "Arn"
+            ]
+           },
+           "/prefix/AWSLogs/",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [

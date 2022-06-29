@@ -30,7 +30,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1655321451778"
+    "salt": "1656511764157"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -51,7 +51,7 @@
      ]
     },
     "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
-    "salt": "1655321451779"
+    "salt": "1656511764158"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
