@@ -703,6 +703,12 @@ export interface IUserPool extends IResource {
    * Register an identity provider with this user pool.
    */
   registerIdentityProvider(provider: IUserPoolIdentityProvider): void;
+
+  /**
+   * Adds an IAM policy statement associated with this user pool to an
+   * IAM principal's policy.
+   */
+  grant(grantee: IGrantable, ...actions: string[]): Grant;
 }
 
 abstract class UserPoolBase extends Resource implements IUserPool {
@@ -735,10 +741,6 @@ abstract class UserPoolBase extends Resource implements IUserPool {
     this.identityProviders.push(provider);
   }
 
-  /**
-   * Adds an IAM policy statement associated with this user pool to an
-   * IAM principal's policy.
-   */
   public grant(grantee: IGrantable, ...actions: string[]): Grant {
     return Grant.addToPrincipal({
       grantee,
