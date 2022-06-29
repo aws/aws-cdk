@@ -1,0 +1,619 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "integ-distribution-lambda-cross-region": {
+        "id": "integ-distribution-lambda-cross-region",
+        "path": "integ-distribution-lambda-cross-region",
+        "children": {
+          "Lambda": {
+            "id": "Lambda",
+            "path": "integ-distribution-lambda-cross-region/Lambda",
+            "children": {
+              "ArnReader": {
+                "id": "ArnReader",
+                "path": "integ-distribution-lambda-cross-region/Lambda/ArnReader",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "integ-distribution-lambda-cross-region/Lambda/ArnReader/Default",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.experimental.EdgeFunction",
+              "version": "0.0.0"
+            }
+          },
+          "Custom::CrossRegionStringParameterReaderCustomResourceProvider": {
+            "id": "Custom::CrossRegionStringParameterReaderCustomResourceProvider",
+            "path": "integ-distribution-lambda-cross-region/Custom::CrossRegionStringParameterReaderCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "integ-distribution-lambda-cross-region/Custom::CrossRegionStringParameterReaderCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "integ-distribution-lambda-cross-region/Custom::CrossRegionStringParameterReaderCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "integ-distribution-lambda-cross-region/Custom::CrossRegionStringParameterReaderCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CustomResourceProvider",
+              "version": "0.0.0"
+            }
+          },
+          "AssetParameters": {
+            "id": "AssetParameters",
+            "path": "integ-distribution-lambda-cross-region/AssetParameters",
+            "children": {
+              "e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a": {
+                "id": "e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a",
+                "path": "integ-distribution-lambda-cross-region/AssetParameters/e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a",
+                "children": {
+                  "S3Bucket": {
+                    "id": "S3Bucket",
+                    "path": "integ-distribution-lambda-cross-region/AssetParameters/e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a/S3Bucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "S3VersionKey": {
+                    "id": "S3VersionKey",
+                    "path": "integ-distribution-lambda-cross-region/AssetParameters/e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a/S3VersionKey",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ArtifactHash": {
+                    "id": "ArtifactHash",
+                    "path": "integ-distribution-lambda-cross-region/AssetParameters/e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a/ArtifactHash",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Construct",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Construct",
+              "version": "0.0.0"
+            }
+          },
+          "Lambda2": {
+            "id": "Lambda2",
+            "path": "integ-distribution-lambda-cross-region/Lambda2",
+            "children": {
+              "ArnReader": {
+                "id": "ArnReader",
+                "path": "integ-distribution-lambda-cross-region/Lambda2/ArnReader",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "integ-distribution-lambda-cross-region/Lambda2/ArnReader/Default",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.experimental.EdgeFunction",
+              "version": "0.0.0"
+            }
+          },
+          "Dist": {
+            "id": "Dist",
+            "path": "integ-distribution-lambda-cross-region/Dist",
+            "children": {
+              "Origin1": {
+                "id": "Origin1",
+                "path": "integ-distribution-lambda-cross-region/Dist/Origin1",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Construct",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-distribution-lambda-cross-region/Dist/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                  "aws:cdk:cloudformation:props": {
+                    "distributionConfig": {
+                      "enabled": true,
+                      "origins": [
+                        {
+                          "domainName": "www.example.com",
+                          "id": "integdistributionlambdacrossregionDistOrigin167A054D5",
+                          "customOriginConfig": {
+                            "originProtocolPolicy": "https-only"
+                          }
+                        }
+                      ],
+                      "defaultCacheBehavior": {
+                        "pathPattern": "*",
+                        "targetOriginId": "integdistributionlambdacrossregionDistOrigin167A054D5",
+                        "cachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+                        "compress": true,
+                        "viewerProtocolPolicy": "allow-all",
+                        "lambdaFunctionAssociations": [
+                          {
+                            "lambdaFunctionArn": {
+                              "Fn::GetAtt": [
+                                "LambdaArnReaderAB4FC772",
+                                "FunctionArn"
+                              ]
+                            },
+                            "eventType": "origin-request"
+                          },
+                          {
+                            "lambdaFunctionArn": {
+                              "Fn::GetAtt": [
+                                "Lambda2ArnReader5ACFBE1F",
+                                "FunctionArn"
+                              ]
+                            },
+                            "eventType": "origin-response"
+                          }
+                        ]
+                      },
+                      "httpVersion": "http2",
+                      "ipv6Enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CfnDistribution",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.Distribution",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6": {
+        "id": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6",
+        "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6",
+        "children": {
+          "Lambda": {
+            "id": "Lambda",
+            "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": [
+                                  "edgelambda.amazonaws.com",
+                                  "lambda.amazonaws.com"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "foo"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "LambdaServiceRoleA8ED4D3B",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs14.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "CurrentVersion": {
+                "id": "CurrentVersion",
+                "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/CurrentVersion",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/CurrentVersion/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Version",
+                      "aws:cdk:cloudformation:props": {
+                        "functionName": {
+                          "Ref": "LambdaD247545B"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-lambda.CfnVersion",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.Version",
+                  "version": "0.0.0"
+                }
+              },
+              "Parameter": {
+                "id": "Parameter",
+                "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/Parameter",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/Parameter/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                      "aws:cdk:cloudformation:props": {
+                        "type": "String",
+                        "value": {
+                          "Ref": "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d"
+                        },
+                        "name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ssm.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ssm.StringParameter",
+                  "version": "0.0.0"
+                }
+              },
+              "Aliaslive": {
+                "id": "Aliaslive",
+                "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/Aliaslive",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/Aliaslive/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Alias",
+                      "aws:cdk:cloudformation:props": {
+                        "functionName": {
+                          "Ref": "LambdaD247545B"
+                        },
+                        "functionVersion": {
+                          "Fn::GetAtt": [
+                            "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d",
+                            "Version"
+                          ]
+                        },
+                        "name": "live"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-lambda.CfnAlias",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ScalingRole": {
+                    "id": "ScalingRole",
+                    "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/Aliaslive/ScalingRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.Alias",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "edge-lambda-stack-eu-west-1-2": {
+        "id": "edge-lambda-stack-eu-west-1-2",
+        "path": "edge-lambda-stack-eu-west-1-2",
+        "children": {
+          "Lambda2": {
+            "id": "Lambda2",
+            "path": "edge-lambda-stack-eu-west-1-2/Lambda2",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "edge-lambda-stack-eu-west-1-2/Lambda2/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "edge-lambda-stack-eu-west-1-2/Lambda2/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": [
+                                  "edgelambda.amazonaws.com",
+                                  "lambda.amazonaws.com"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "edge-lambda-stack-eu-west-1-2/Lambda2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "foo"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "Lambda2ServiceRole31A072E1",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs14.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "CurrentVersion": {
+                "id": "CurrentVersion",
+                "path": "edge-lambda-stack-eu-west-1-2/Lambda2/CurrentVersion",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "edge-lambda-stack-eu-west-1-2/Lambda2/CurrentVersion/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Version",
+                      "aws:cdk:cloudformation:props": {
+                        "functionName": {
+                          "Ref": "Lambda217CFB423"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-lambda.CfnVersion",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.Version",
+                  "version": "0.0.0"
+                }
+              },
+              "Parameter": {
+                "id": "Parameter",
+                "path": "edge-lambda-stack-eu-west-1-2/Lambda2/Parameter",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "edge-lambda-stack-eu-west-1-2/Lambda2/Parameter/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                      "aws:cdk:cloudformation:props": {
+                        "type": "String",
+                        "value": {
+                          "Ref": "Lambda2CurrentVersion72012B74da2ca4572056a1112d9804f75b5b7491"
+                        },
+                        "name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda2"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ssm.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ssm.StringParameter",
+                  "version": "0.0.0"
+                }
+              },
+              "Aliaslive": {
+                "id": "Aliaslive",
+                "path": "edge-lambda-stack-eu-west-1-2/Lambda2/Aliaslive",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "edge-lambda-stack-eu-west-1-2/Lambda2/Aliaslive/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Alias",
+                      "aws:cdk:cloudformation:props": {
+                        "functionName": {
+                          "Ref": "Lambda217CFB423"
+                        },
+                        "functionVersion": {
+                          "Fn::GetAtt": [
+                            "Lambda2CurrentVersion72012B74da2ca4572056a1112d9804f75b5b7491",
+                            "Version"
+                          ]
+                        },
+                        "name": "live"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-lambda.CfnAlias",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ScalingRole": {
+                    "id": "ScalingRole",
+                    "path": "edge-lambda-stack-eu-west-1-2/Lambda2/Aliaslive/ScalingRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.Alias",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

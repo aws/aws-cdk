@@ -21,3 +21,8 @@ junit.xml
 !jest.config.js
 
 !test/allow-listed-image/node_modules
+
+!**/*.integ.snapshot/**/asset.*/*.js
+!**/*.integ.snapshot/**/asset.*/*.d.ts
+
+!**/*.integ.snapshot/**/asset.*/**

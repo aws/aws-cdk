@@ -20,6 +20,19 @@ describe('stack', () => {
     expect(toCloudFormation(stack)).toEqual({ });
   });
 
+  test('stack name cannot exceed 128 characters', () => {
+    // GIVEN
+    const app = new App({});
+    const reallyLongStackName = 'LookAtMyReallyLongStackNameThisStackNameIsLongerThan128CharactersThatIsNutsIDontThinkThereIsEnoughAWSAvailableToLetEveryoneHaveStackNamesThisLong';
+
+    // THEN
+    expect(() => {
+      new Stack(app, 'MyStack', {
+        stackName: reallyLongStackName,
+      });
+    }).toThrow(`Stack name must be <= 128 characters. Stack name: '${reallyLongStackName}'`);
+  });
+
   test('stack objects have some template-level propeties, such as Description, Version, Transform', () => {
     const stack = new Stack();
     stack.templateOptions.templateFormatVersion = 'MyTemplateVersion';
@@ -561,6 +574,52 @@ describe('stack', () => {
     const templateM = appM.synth().getStackByName(producerM.stackName).template;
 
     expect(templateA).toEqual(templateM);
+  });
+
+  test('throw error if overrideLogicalId is used and logicalId is locked', () => {
+    // GIVEN: manual
+    const appM = new App();
+    const producerM = new Stack(appM, 'Producer');
+    const resourceM = new CfnResource(producerM, 'ResourceXXX', { type: 'AWS::Resource' });
+    producerM.exportValue(resourceM.getAtt('Att'));
+
+    // THEN - producers are the same
+    expect(() => {
+      resourceM.overrideLogicalId('OVERRIDE_LOGICAL_ID');
+    }).toThrow(/The logicalId for resource at path Producer\/ResourceXXX has been locked and cannot be overridden/);
+  });
+
+  test('do not throw error if overrideLogicalId is used and logicalId is not locked', () => {
+    // GIVEN: manual
+    const appM = new App();
+    const producerM = new Stack(appM, 'Producer');
+    const resourceM = new CfnResource(producerM, 'ResourceXXX', { type: 'AWS::Resource' });
+
+    // THEN - producers are the same
+    resourceM.overrideLogicalId('OVERRIDE_LOGICAL_ID');
+    producerM.exportValue(resourceM.getAtt('Att'));
+
+    const template = appM.synth().getStackByName(producerM.stackName).template;
+    expect(template).toMatchObject({
+      Outputs: {
+        ExportsOutputFnGetAttOVERRIDELOGICALIDAtt2DD28019: {
+          Export: {
+            Name: 'Producer:ExportsOutputFnGetAttOVERRIDELOGICALIDAtt2DD28019',
+          },
+          Value: {
+            'Fn::GetAtt': [
+              'OVERRIDE_LOGICAL_ID',
+              'Att',
+            ],
+          },
+        },
+      },
+      Resources: {
+        OVERRIDE_LOGICAL_ID: {
+          Type: 'AWS::Resource',
+        },
+      },
+    });
   });
 
   test('automatic cross-stack references and manual exports look the same: nested stack edition', () => {

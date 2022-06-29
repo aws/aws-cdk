@@ -1,0 +1,226 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-ecs-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-ecs-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-ecs-integ/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/pubSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcpubSubnet1Subnet410C08CF"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/pubSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcpubSubnet1RouteTableE0483FDA"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/pubSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcpubSubnet1RouteTableAssociation68036D8C"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/pubSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcpubSubnet1DefaultRouteF020A9EF"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/pubSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcpubSubnet2Subnet44A37A0D"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/pubSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcpubSubnet2RouteTable5A29DF40"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/pubSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcpubSubnet2RouteTableAssociationFB826925"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/pubSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcpubSubnet2DefaultRouteE6D48BA4"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateCluster7CCD5F93"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityInstanceSecurityGroupCB3AEDA1"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityInstanceRoleBE253D2D"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityInstanceRoleDefaultPolicy90B38927"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityInstanceProfile8294296C"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/LaunchConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityLaunchConfig9B95CCB7"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityASGE4034F96"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunctionServiceRoleA28505D9"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunctionServiceRoleDefaultPolicy53CD1145"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunction3E60E6D0"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/AllowInvoke:awsecsintegFargateClustercapacityLifecycleHookDrainHookTopic07C1229F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunctionAllowInvokeawsecsintegFargateClustercapacityLifecycleHookDrainHookTopic07C1229F3B6FF246"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunctionTopic7D6C4884"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/LifecycleHookDrainHook/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityLifecycleHookDrainHookTopic390A0E34"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/LifecycleHookDrainHook/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityLifecycleHookDrainHookRoleDD26E39B"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityLifecycleHookDrainHookRoleDefaultPolicyACCDDB70"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/LifecycleHookDrainHook/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityLifecycleHookDrainHook8AEDE53B"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/DefaultServiceDiscoveryNamespace/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultServiceDiscoveryNamespace04381E1E"
+          }
+        ],
+        "/aws-ecs-integ/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/aws-ecs-integ/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefTaskRole1EDB4A67"
+          }
+        ],
+        "/aws-ecs-integ/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDef54694570"
+          }
+        ],
+        "/aws-ecs-integ/Service/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceD69D759B"
+          }
+        ],
+        "/aws-ecs-integ/Service/CloudmapService/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceCloudmapService046058A4"
+          }
+        ]
+      },
+      "displayName": "aws-ecs-integ"
+    }
+  }
+}

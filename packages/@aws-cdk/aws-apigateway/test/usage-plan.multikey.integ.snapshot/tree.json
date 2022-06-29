@@ -1,0 +1,141 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "test-apigateway-usageplan-multikey": {
+        "id": "test-apigateway-usageplan-multikey",
+        "path": "test-apigateway-usageplan-multikey",
+        "children": {
+          "myusageplan": {
+            "id": "myusageplan",
+            "path": "test-apigateway-usageplan-multikey/myusageplan",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "test-apigateway-usageplan-multikey/myusageplan/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::UsagePlan",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnUsagePlan",
+                  "version": "0.0.0"
+                }
+              },
+              "UsagePlanKeyResource:testapigatewayusageplanmultikeymyapikey1DDABC389": {
+                "id": "UsagePlanKeyResource:testapigatewayusageplanmultikeymyapikey1DDABC389",
+                "path": "test-apigateway-usageplan-multikey/myusageplan/UsagePlanKeyResource:testapigatewayusageplanmultikeymyapikey1DDABC389",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::UsagePlanKey",
+                  "aws:cdk:cloudformation:props": {
+                    "keyId": {
+                      "Ref": "myapikey18B056ACE"
+                    },
+                    "keyType": "API_KEY",
+                    "usagePlanId": {
+                      "Ref": "myusageplan4B391740"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnUsagePlanKey",
+                  "version": "0.0.0"
+                }
+              },
+              "UsagePlanKeyResource:testapigatewayusageplanmultikeymyapikey29D6460C6": {
+                "id": "UsagePlanKeyResource:testapigatewayusageplanmultikeymyapikey29D6460C6",
+                "path": "test-apigateway-usageplan-multikey/myusageplan/UsagePlanKeyResource:testapigatewayusageplanmultikeymyapikey29D6460C6",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::UsagePlanKey",
+                  "aws:cdk:cloudformation:props": {
+                    "keyId": {
+                      "Ref": "myapikey250C8F11B"
+                    },
+                    "keyType": "API_KEY",
+                    "usagePlanId": {
+                      "Ref": "myusageplan4B391740"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnUsagePlanKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigateway.UsagePlan",
+              "version": "0.0.0"
+            }
+          },
+          "myapikey1": {
+            "id": "myapikey1",
+            "path": "test-apigateway-usageplan-multikey/myapikey1",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "test-apigateway-usageplan-multikey/myapikey1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::ApiKey",
+                  "aws:cdk:cloudformation:props": {
+                    "enabled": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnApiKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigateway.ApiKey",
+              "version": "0.0.0"
+            }
+          },
+          "myapikey2": {
+            "id": "myapikey2",
+            "path": "test-apigateway-usageplan-multikey/myapikey2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "test-apigateway-usageplan-multikey/myapikey2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::ApiKey",
+                  "aws:cdk:cloudformation:props": {
+                    "enabled": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnApiKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigateway.ApiKey",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

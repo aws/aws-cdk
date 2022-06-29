@@ -289,7 +289,7 @@ export interface AdvancedSecurityOptions {
   /**
    * Password for the master user.
    *
-   * You can use `SecretValue.plainText` to specify a password in plain text or
+   * You can use `SecretValue.unsafePlainText` to specify a password in plain text or
    * use `secretsmanager.Secret.fromSecretAttributes` to reference a secret in
    * Secrets Manager.
    *
@@ -883,7 +883,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
       metricName,
       dimensionsMap: {
         DomainName: this.domainName,
-        ClientId: this.stack.account,
+        ClientId: this.env.account,
       },
       ...props,
     }).attachTo(this);
@@ -1605,7 +1605,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           masterUserOptions: {
             masterUserArn: masterUserArn,
             masterUserName: masterUserName,
-            masterUserPassword: this.masterUserPassword?.toString(),
+            masterUserPassword: this.masterUserPassword?.unsafeUnwrap(), // Safe usage
           },
         }
         : undefined,

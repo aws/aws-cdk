@@ -12,7 +12,7 @@ beforeEach(() => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
 });
@@ -38,7 +38,7 @@ test('create a branch', () => {
 test('with basic auth from credentials', () => {
   // WHEN
   app.addBranch('dev', {
-    basicAuth: amplify.BasicAuth.fromCredentials('username', SecretValue.plainText('password')),
+    basicAuth: amplify.BasicAuth.fromCredentials('username', SecretValue.unsafePlainText('password')),
   });
 
   // THEN

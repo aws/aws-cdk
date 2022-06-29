@@ -209,9 +209,11 @@ export class Provider extends CoreConstruct implements ICustomResourceProvider {
 
   private createFunction(entrypoint: string, name?: string) {
     const fn = new lambda.Function(this, `framework-${entrypoint}`, {
-      code: lambda.Code.fromAsset(RUNTIME_HANDLER_PATH),
+      code: lambda.Code.fromAsset(RUNTIME_HANDLER_PATH, {
+        exclude: ['*.ts'],
+      }),
       description: `AWS CDK resource provider framework - ${entrypoint} (${this.node.path})`.slice(0, 256),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: `framework.${entrypoint}`,
       timeout: FRAMEWORK_HANDLER_TIMEOUT,
       logRetention: this.logRetention,

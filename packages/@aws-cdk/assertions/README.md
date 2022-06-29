@@ -550,9 +550,9 @@ Annotations.fromStack(stack).hasError(
 
 Here are the available APIs for `Annotations`:
 
-- `hasError()` and `findError()`
-- `hasWarning()` and `findWarning()`
-- `hasInfo()` and `findInfo()`
+- `hasError()`, `hasNoError()`, and `findError()`
+- `hasWarning()`, `hasNoWarning()`, and `findWarning()`
+- `hasInfo()`, `hasNoInfo()`, and `findInfo()`
 
 The corresponding `findXxx()` API is complementary to the `hasXxx()` API, except instead
 of asserting its presence, it returns the set of matching messages.

@@ -1,0 +1,70 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codepipeline-jenkins": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codepipeline-jenkins.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-codepipeline-jenkins/MyBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucketF68F3FF0"
+          }
+        ],
+        "/aws-cdk-codepipeline-jenkins/Pipeline/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineRoleD68726F7"
+          }
+        ],
+        "/aws-cdk-codepipeline-jenkins/Pipeline/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineRoleDefaultPolicyC7A05455"
+          }
+        ],
+        "/aws-cdk-codepipeline-jenkins/Pipeline/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineC660917D"
+          }
+        ],
+        "/aws-cdk-codepipeline-jenkins/Pipeline/Source/S3/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineSourceS3CodePipelineActionRole3CAFD08F"
+          }
+        ],
+        "/aws-cdk-codepipeline-jenkins/Pipeline/Source/S3/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineSourceS3CodePipelineActionRoleDefaultPolicy8B9DCBCF"
+          }
+        ],
+        "/aws-cdk-codepipeline-jenkins/JenkinsProvider/JenkinsBuildProviderResource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JenkinsProviderJenkinsBuildProviderResourceD9231CAC"
+          }
+        ],
+        "/aws-cdk-codepipeline-jenkins/JenkinsProvider/JenkinsTestProviderResource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JenkinsProviderJenkinsTestProviderResourceF0CF8F0E"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codepipeline-jenkins"
+    }
+  }
+}

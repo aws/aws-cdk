@@ -1,6 +1,6 @@
 import * as fc from 'fast-check';
 import * as _ from 'lodash';
-import { App, CfnOutput, Fn, Stack, Token } from '../lib';
+import { App, Aws, CfnOutput, Fn, Stack, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 
 function asyncTest(cb: () => Promise<void>): () => void {
@@ -27,8 +27,24 @@ describe('fn', () => {
   describe('eager resolution for non-tokens', () => {
     test('Fn.select', () => {
       expect(Fn.select(2, ['hello', 'you', 'dude'])).toEqual('dude');
-
     });
+
+    test('Fn.select does not short-circuit if there are tokens in the array', () => {
+      const stack = new Stack();
+
+      expect(stack.resolve(Fn.select(2, [
+        Fn.conditionIf('xyz', 'yep', Aws.NO_VALUE).toString(),
+        'you',
+        'dude',
+      ]))).toEqual({
+        'Fn::Select': [2, [
+          { 'Fn::If': ['xyz', 'yep', { Ref: 'AWS::NoValue' }] },
+          'you',
+          'dude',
+        ]],
+      });
+    });
+
     test('Fn.split', () => {
       expect(Fn.split(':', 'hello:world:yeah')).toEqual(['hello', 'world', 'yeah']);
 

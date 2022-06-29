@@ -47,7 +47,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -81,16 +81,16 @@
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.92",
-    "@types/jest": "^27.4.1",
+    "@types/aws-lambda": "^8.10.99",
+    "@types/jest": "^27.5.2",
     "@types/sinon": "^9.0.11",
     "@types/yaml": "1.9.6",
     "aws-sdk": "^2.848.0",
-    "cdk8s": "^1.5.24",
-    "cdk8s-plus-21": "^1.0.0-beta.90",
+    "cdk8s": "^1.6.21",
+    "cdk8s-plus-21": "^1.0.0-beta.186",
     "jest": "^27.5.1",
     "sinon": "^9.2.4"
   },
@@ -130,7 +130,7 @@
     "constructs": "^3.3.69"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "awslint": {
     "exclude": [

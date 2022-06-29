@@ -142,11 +142,30 @@ export interface SecretProps {
    * Specifies text data that you want to encrypt and store in this new version of the secret.
    * May be a simple string value, or a string representation of a JSON structure.
    *
-   * Only one of `secretString` and `generateSecretString` can be provided.
+   * Only one of `secretStringBeta1`, `secretStringValue`, and `generateSecretString` can be provided.
+   *
+   * @default - SecretsManager generates a new secret value.
+   * @deprecated Use `secretStringValue` instead.
+   */
+  readonly secretStringBeta1?: SecretStringValueBeta1;
+
+  /**
+   * Initial value for the secret
+   *
+   * **NOTE:** *It is **highly** encouraged to leave this field undefined and allow SecretsManager to create the secret value.
+   * The secret string -- if provided -- will be included in the output of the cdk as part of synthesis,
+   * and will appear in the CloudFormation template in the console. This can be secure(-ish) if that value is merely reference to
+   * another resource (or one of its attributes), but if the value is a plaintext string, it will be visible to anyone with access
+   * to the CloudFormation template (via the AWS Console, SDKs, or CLI).
+   *
+   * Specifies text data that you want to encrypt and store in this new version of the secret.
+   * May be a simple string value, or a string representation of a JSON structure.
+   *
+   * Only one of `secretStringBeta1`, `secretStringValue`, and `generateSecretString` can be provided.
    *
    * @default - SecretsManager generates a new secret value.
    */
-  readonly secretStringBeta1?: SecretStringValueBeta1;
+  readonly secretStringValue?: SecretValue;
 
   /**
    * Policy to apply when the secret is removed from this stack.
@@ -182,13 +201,17 @@ export interface ReplicaRegion {
 
 /**
  * An experimental class used to specify an initial secret value for a Secret.
+ *
  * The class wraps a simple string (or JSON representation) in order to provide some safety checks and warnings
  * about the dangers of using plaintext strings as initial secret seed values via CDK/CloudFormation.
+ *
+ * @deprecated Use `cdk.SecretValue` instead.
  */
 export class SecretStringValueBeta1 {
 
   /**
    * Creates a `SecretStringValueBeta1` from a plaintext value.
+   *
    * This approach is inherently unsafe, as the secret value may be visible in your source control repository
    * and will also appear in plaintext in the resulting CloudFormation template, including in the AWS Console or APIs.
    * Usage of this method is discouraged, especially for production workloads.
@@ -197,27 +220,34 @@ export class SecretStringValueBeta1 {
 
   /**
    * Creates a `SecretValueValueBeta1` from a string value coming from a Token.
+   *
    * The intent is to enable creating secrets from references (e.g., `Ref`, `Fn::GetAtt`) from other resources.
    * This might be the direct output of another Construct, or the output of a Custom Resource.
    * This method throws if it determines the input is an unsafe plaintext string.
    *
    * For example:
+   *
    * ```ts
-   *     // Creates a new IAM user, access and secret keys, and stores the secret access key in a Secret.
-   *     const user = new iam.User(this, 'User');
-   *     const accessKey = new iam.AccessKey(this, 'AccessKey', { user });
-   *     const secretValue = secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString());
-   *     new secretsmanager.Secret(this, 'Secret', {
-   *       secretStringBeta1: secretValue,
-   *     });
+   * // Creates a new IAM user, access and secret keys, and stores the secret access key in a Secret.
+   * const user = new iam.User(this, 'User');
+   * const accessKey = new iam.AccessKey(this, 'AccessKey', { user });
+   * const secretValue = secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString());
+   * new secretsmanager.Secret(this, 'Secret', {
+   *   secretStringBeta1: secretValue,
+   * });
    * ```
    *
    * The secret may also be embedded in a string representation of a JSON structure:
-   *     const secretValue = secretsmanager.SecretStringValueBeta1.fromToken(JSON.stringify({
-   *       username: user.userName,
-   *       database: 'foo',
-   *       password: accessKey.secretAccessKey.toString(),
-   *     }));
+   *
+   * ```ts
+   * const user = new iam.User(this, 'User');
+   * const accessKey = new iam.AccessKey(this, 'AccessKey', { user });
+   * const secretValue = secretsmanager.SecretStringValueBeta1.fromToken(JSON.stringify({
+   *   username: user.userName,
+   *   database: 'foo',
+   *   password: accessKey.secretAccessKey.unsafeUnwrap(),
+   * }));
+   * ```
    *
    * Note that the value being a Token does *not* guarantee safety. For example, a Lazy-evaluated string
    * (e.g., `Lazy.string({ produce: () => 'myInsecurePassword' }))`) is a Token, but as the output is
@@ -539,15 +569,17 @@ export class Secret extends SecretBase {
       throw new Error('`secretStringTemplate` and `generateStringKey` must be specified together.');
     }
 
-    if (props.generateSecretString && props.secretStringBeta1) {
-      throw new Error('Cannot specify both `generateSecretString` and `secretStringBeta1`.');
+    if ((props.generateSecretString ? 1 : 0) + (props.secretStringBeta1 ? 1 : 0) + (props.secretStringValue ? 1 : 0) > 1) {
+      throw new Error('Cannot specify more than one of `generateSecretString`, `secretStringValue`, and `secretStringBeta1`.');
     }
+
+    const secretString = props.secretStringValue?.unsafeUnwrap() ?? props.secretStringBeta1?.secretValue();
 
     const resource = new secretsmanager.CfnSecret(this, 'Resource', {
       description: props.description,
       kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
-      generateSecretString: props.generateSecretString ?? (props.secretStringBeta1 ? undefined : {}),
-      secretString: props.secretStringBeta1?.secretValue(),
+      generateSecretString: props.generateSecretString ?? (secretString ? undefined : {}),
+      secretString,
       name: this.physicalName,
       replicaRegions: Lazy.any({ produce: () => this.replicaRegions }, { omitEmptyArray: true }),
     });
@@ -851,8 +883,8 @@ function parseSecretName(construct: IConstruct, secretArn: string) {
     // Secret resource names are in the format `${secretName}-${6-character SecretsManager suffix}`
     // If there is no hyphen (or 6-character suffix) assume no suffix was provided, and return the whole name.
     const lastHyphenIndex = resourceName.lastIndexOf('-');
-    const hasSecretsSuffix = lastHyphenIndex !== -1 && resourceName.substr(lastHyphenIndex + 1).length === 6;
-    return hasSecretsSuffix ? resourceName.substr(0, lastHyphenIndex) : resourceName;
+    const hasSecretsSuffix = lastHyphenIndex !== -1 && resourceName.slice(lastHyphenIndex + 1).length === 6;
+    return hasSecretsSuffix ? resourceName.slice(0, lastHyphenIndex) : resourceName;
   }
   throw new Error('invalid ARN format; no secret name provided');
 }

@@ -115,10 +115,7 @@ export class LambdaInvokeAction extends Action {
     }));
 
     // allow pipeline to invoke this lambda functionn
-    options.role.addToPolicy(new iam.PolicyStatement({
-      actions: ['lambda:InvokeFunction'],
-      resources: [this.props.lambda.functionArn],
-    }));
+    this.props.lambda.grantInvoke(options.role);
 
     // allow the Role access to the Bucket, if there are any inputs/outputs
     if ((this.actionProperties.inputs || []).length > 0) {

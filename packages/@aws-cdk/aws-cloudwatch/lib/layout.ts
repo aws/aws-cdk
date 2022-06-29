@@ -14,7 +14,7 @@ export class Row implements IWidget {
   /**
    * List of contained widgets
    */
-  private readonly widgets: IWidget[];
+  public readonly widgets: IWidget[];
 
   /**
    * Relative position of each widget inside this row
@@ -70,7 +70,7 @@ export class Column implements IWidget {
   /**
    * List of contained widgets
    */
-  private readonly widgets: IWidget[];
+  public readonly widgets: IWidget[];
 
   constructor(...widgets: IWidget[]) {
     this.widgets = widgets;

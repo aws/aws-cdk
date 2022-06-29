@@ -59,9 +59,9 @@ export class LambdaSubscription implements sns.ITopicSubscription {
       if (topic.stack !== this.fn.stack) {
         // only if we know the region, will not work for
         // env agnostic stacks
-        if (!Token.isUnresolved(topic.stack.region) &&
-          (topic.stack.region !== this.fn.stack.region)) {
-          return topic.stack.region;
+        if (!Token.isUnresolved(topic.env.region) &&
+          (topic.env.region !== this.fn.env.region)) {
+          return topic.env.region;
         }
       }
       return undefined;

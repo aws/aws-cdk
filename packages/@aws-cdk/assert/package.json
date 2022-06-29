@@ -37,11 +37,11 @@
     "@aws-cdk/assert-internal": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "aws-cdk-migration": "0.0.0",
     "constructs": "^3.3.69",
-    "jest": "^27.3.1",
-    "ts-jest": "^27.1.3"
+    "jest": "^27.5.1",
+    "ts-jest": "^27.1.5"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "0.0.0",
@@ -65,7 +65,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "ubergen": {
     "exclude": true

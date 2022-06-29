@@ -1,0 +1,14 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "@aws-cdk/aws-ecs-patterns/test/ec2/integ.scheduled-ecs-task.lit": {
+      "stacks": [
+        "aws-ecs-integ-ecs"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

@@ -111,7 +111,7 @@ describe('LambdaProxyIntegration', () => {
 function fooFunction(stack: Stack, id: string) {
   return new Function(stack, id, {
     code: Code.fromInline('foo'),
-    runtime: Runtime.NODEJS_12_X,
+    runtime: Runtime.NODEJS_14_X,
     handler: 'index.handler',
   });
 }

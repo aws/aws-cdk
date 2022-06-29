@@ -1,0 +1,14 @@
+{
+  "version": "19.0.0",
+  "testCases": {
+    "integ.eks-cluster": {
+      "stacks": [
+        "aws-cdk-eks-cluster-test"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": false
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

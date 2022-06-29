@@ -915,7 +915,7 @@ class Counter extends CfnResource {
 }
 
 function withoutHash(logId: string) {
-  return logId.substr(0, logId.length - 8);
+  return logId.slice(0, -8);
 }
 
 class CustomizableResource extends CfnResource {

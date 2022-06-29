@@ -69,6 +69,10 @@ const logGroup = new logs.LogGroup(this, 'LogGroup');
 logGroup.grantWrite(new iam.ServicePrincipal('es.amazonaws.com'));
 ```
 
+Be aware that any ARNs or tokenized values passed to the resource policy will be converted into AWS Account IDs.
+This is because CloudWatch Logs Resource Policies do not accept ARNs as principals, but they do accept
+Account ID strings. Non-ARN principals, like Service principals or Any princpals, are accepted by CloudWatch.
+
 ## Encrypting Log Groups
 
 By default, log group data is always encrypted in CloudWatch Logs. You have the
@@ -300,6 +304,23 @@ Example:
 const pattern = logs.FilterPattern.spaceDelimited('time', 'component', '...', 'result_code', 'latency')
   .whereString('component', '=', 'HttpServer')
   .whereNumber('result_code', '!=', 200);
+```
+
+## Logs Insights Query Definition
+
+Creates a query definition for CloudWatch Logs Insights.
+
+Example:
+
+```ts
+new logs.QueryDefinition(this, 'QueryDefinition', {
+  queryDefinitionName: 'MyQuery',
+  queryString: new logs.QueryString({
+    fields: ['@timestamp', '@message'],
+    sort: '@timestamp desc',
+    limit: 20,
+  }),
+});
 ```
 
 ## Notes

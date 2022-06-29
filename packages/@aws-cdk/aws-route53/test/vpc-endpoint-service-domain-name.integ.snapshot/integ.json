@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-route53/test/integ.vpc-endpoint-service-domain-name": {
+      "stacks": [
+        "aws-cdk-vpc-endpoint-dns-integ"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

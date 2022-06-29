@@ -4,7 +4,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ContextProvider, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { HostedZoneProviderProps } from './hosted-zone-provider';
-import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
+import { HostedZoneAttributes, IHostedZone, PublicHostedZoneAttributes } from './hosted-zone-ref';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
 import { CfnHostedZone } from './route53.generated';
 import { makeHostedZoneArn, validateZoneName } from './util';
@@ -230,6 +230,26 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     class Import extends Resource implements IPublicHostedZone {
       public readonly hostedZoneId = publicHostedZoneId;
       public get zoneName(): string { throw new Error('cannot retrieve "zoneName" from an an imported hosted zone'); }
+      public get hostedZoneArn(): string {
+        return makeHostedZoneArn(this, this.hostedZoneId);
+      }
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * Imports a public hosted zone from another stack.
+   *
+   * Use when both hosted zone ID and hosted zone name are known.
+   *
+   * @param scope the parent Construct for this Construct
+   * @param id  the logical name of this Construct
+   * @param attrs the PublicHostedZoneAttributes (hosted zone ID and hosted zone name)
+   */
+  public static fromPublicHostedZoneAttributes(scope: Construct, id: string, attrs: PublicHostedZoneAttributes): IHostedZone {
+    class Import extends Resource implements IHostedZone {
+      public readonly hostedZoneId = attrs.hostedZoneId;
+      public readonly zoneName = attrs.zoneName;
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }

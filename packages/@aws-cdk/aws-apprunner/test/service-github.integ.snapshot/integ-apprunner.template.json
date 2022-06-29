@@ -1,0 +1,96 @@
+{
+ "Resources": {
+  "Service429949929": {
+   "Type": "AWS::AppRunner::Service",
+   "Properties": {
+    "SourceConfiguration": {
+     "AuthenticationConfiguration": {
+      "ConnectionArn": "MOCK"
+     },
+     "CodeRepository": {
+      "CodeConfiguration": {
+       "ConfigurationSource": "REPOSITORY"
+      },
+      "RepositoryUrl": "https://github.com/aws-containers/hello-app-runner",
+      "SourceCodeVersion": {
+       "Type": "BRANCH",
+       "Value": "main"
+      }
+     }
+    },
+    "InstanceConfiguration": {},
+    "NetworkConfiguration": {
+     "EgressConfiguration": {
+      "EgressType": "DEFAULT"
+     }
+    }
+   }
+  },
+  "Service5AD92B5A5": {
+   "Type": "AWS::AppRunner::Service",
+   "Properties": {
+    "SourceConfiguration": {
+     "AuthenticationConfiguration": {
+      "ConnectionArn": "MOCK"
+     },
+     "CodeRepository": {
+      "CodeConfiguration": {
+       "CodeConfigurationValues": {
+        "BuildCommand": "yum install -y pycairo && pip install -r requirements.txt",
+        "Port": "8000",
+        "Runtime": "PYTHON_3",
+        "StartCommand": "python app.py"
+       },
+       "ConfigurationSource": "API"
+      },
+      "RepositoryUrl": "https://github.com/aws-containers/hello-app-runner",
+      "SourceCodeVersion": {
+       "Type": "BRANCH",
+       "Value": "main"
+      }
+     }
+    },
+    "InstanceConfiguration": {},
+    "NetworkConfiguration": {
+     "EgressConfiguration": {
+      "EgressType": "DEFAULT"
+     }
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "URL4": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Fn::GetAtt": [
+        "Service429949929",
+        "ServiceUrl"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "URL5": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Fn::GetAtt": [
+        "Service5AD92B5A5",
+        "ServiceUrl"
+       ]
+      }
+     ]
+    ]
+   }
+  }
+ }
+}

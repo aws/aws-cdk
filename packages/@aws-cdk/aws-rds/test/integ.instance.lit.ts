@@ -5,6 +5,7 @@ import * as targets from '@aws-cdk/aws-events-targets';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
+import { RemovalPolicy } from '@aws-cdk/core';
 import * as rds from '../lib';
 
 const app = new cdk.App();
@@ -63,9 +64,10 @@ class DatabaseInstanceStack extends cdk.Stack {
         'listener',
       ],
       cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
-      autoMinorVersionUpgrade: false,
+      autoMinorVersionUpgrade: true, // required to be true if LOCATOR is used in the option group
       optionGroup,
       parameterGroup,
+      removalPolicy: RemovalPolicy.DESTROY,
     });
 
     // Allow connections on default port from any IPV4
@@ -85,7 +87,7 @@ class DatabaseInstanceStack extends cdk.Stack {
     const fn = new lambda.Function(this, 'Function', {
       code: lambda.Code.fromInline('exports.handler = (event) => console.log(event);'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const availabilityRule = instance.onEvent('Availability', { target: new targets.LambdaFunction(fn) });

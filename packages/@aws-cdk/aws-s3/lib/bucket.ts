@@ -878,6 +878,10 @@ export abstract class BucketBase extends Resource implements IBucket {
     return this.addEventNotification(EventType.OBJECT_REMOVED, dest, ...filters);
   }
 
+  protected enableEventBridgeNotification() {
+    this.withNotifications(notifications => notifications.enableEventBridgeNotification());
+  }
+
   private get writeActions(): string[] {
     return [
       ...perms.BUCKET_DELETE_ACTIONS,
@@ -1355,6 +1359,13 @@ export interface BucketProps {
   readonly versioned?: boolean;
 
   /**
+   * Whether this bucket should send notifications to Amazon EventBridge or not.
+   *
+   * @default false
+   */
+  readonly eventBridgeEnabled?: boolean;
+
+  /**
    * Rules that define how Amazon S3 manages objects during their lifetime.
    *
    * @default - No lifecycle rules.
@@ -1642,6 +1653,7 @@ export class Bucket extends BucketBase {
   private accessControl?: BucketAccessControl;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly versioned?: boolean;
+  private readonly eventBridgeEnabled?: boolean;
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
   private readonly inventories: Inventory[] = [];
@@ -1683,6 +1695,7 @@ export class Bucket extends BucketBase {
 
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
+    this.eventBridgeEnabled = props.eventBridgeEnabled;
 
     this.bucketName = this.getResourceNameAttribute(resource.ref);
     this.bucketArn = this.getResourceArnAttribute(resource.attrArn, {
@@ -1732,6 +1745,10 @@ export class Bucket extends BucketBase {
       }
 
       this.enableAutoDeleteObjects();
+    }
+
+    if (this.eventBridgeEnabled) {
+      this.enableEventBridgeNotification();
     }
   }
 
@@ -1888,7 +1905,10 @@ export class Bucket extends BucketBase {
         expirationDate: rule.expirationDate,
         expirationInDays: rule.expiration?.toDays(),
         id: rule.id,
-        noncurrentVersionExpirationInDays: rule.noncurrentVersionExpiration && rule.noncurrentVersionExpiration.toDays(),
+        noncurrentVersionExpiration: rule.noncurrentVersionExpiration && {
+          noncurrentDays: rule.noncurrentVersionExpiration.toDays(),
+          newerNoncurrentVersions: rule.noncurrentVersionsToRetain,
+        },
         noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
           storageClass: t.storageClass.value,
           transitionInDays: t.transitionAfter.toDays(),
@@ -1903,6 +1923,8 @@ export class Bucket extends BucketBase {
         })),
         expiredObjectDeleteMarker: rule.expiredObjectDeleteMarker,
         tagFilters: self.parseTagFilters(rule.tagFilters),
+        objectSizeLessThan: rule.objectSizeLessThan,
+        objectSizeGreaterThan: rule.objectSizeGreaterThan,
       };
 
       return x;
@@ -2107,7 +2129,7 @@ export class Bucket extends BucketBase {
   private enableAutoDeleteObjects() {
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
     });
 

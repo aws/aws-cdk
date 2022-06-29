@@ -60,7 +60,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        resources: [this.evalFn.functionArn],
+        resources: this.evalFn.resourceArnsForGrantInvoke,
         actions: ['lambda:InvokeFunction'],
       }),
     ];
@@ -99,13 +99,13 @@ function createEvalFn(runtime: lambda.Runtime, scope: Construct) {
 
   const nodeJsGuids = {
     [lambda.Runtime.NODEJS_14_X.name]: 'da2d1181-604e-4a45-8694-1a6abd7fe42d',
-    [lambda.Runtime.NODEJS_12_X.name]: '2b81e383-aad2-44db-8aaf-b4809ae0e3b4',
+    [lambda.Runtime.NODEJS_14_X.name]: '2b81e383-aad2-44db-8aaf-b4809ae0e3b4',
     [lambda.Runtime.NODEJS_10_X.name]: 'a0d2ce44-871b-4e74-87a1-f5e63d7c3bdc',
   };
 
   switch (runtime) {
     case lambda.Runtime.NODEJS_14_X:
-    case lambda.Runtime.NODEJS_12_X:
+    case lambda.Runtime.NODEJS_14_X:
     case lambda.Runtime.NODEJS_10_X:
       const uuid = nodeJsGuids[runtime.name];
       if (uuid) {
@@ -114,7 +114,9 @@ function createEvalFn(runtime: lambda.Runtime, scope: Construct) {
           uuid,
           handler: 'index.handler',
           lambdaPurpose,
-          code: lambda.Code.fromAsset(path.join(__dirname, 'eval-nodejs-handler')),
+          code: lambda.Code.fromAsset(path.join(__dirname, 'eval-nodejs-handler'), {
+            exclude: ['*.ts'],
+          }),
         });
       }
       break;

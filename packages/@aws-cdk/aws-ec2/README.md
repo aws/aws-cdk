@@ -131,7 +131,7 @@ new ec2.InterfaceVpcEndpoint(this, 'VPC Endpoint', {
   vpc,
   service: new ec2.InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
   subnets: {
-    subnetType: ec2.SubnetType.ISOLATED,
+    subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
     availabilityZones: ['us-east-1a', 'us-east-1c']
   }
 });
@@ -199,15 +199,16 @@ MachineImage.genericLinux({ ... })` and configure the right AMI ID for the
 regions you want to deploy to.
 
 By default, the NAT instances will route all traffic. To control what traffic
-gets routed, pass `allowAllTraffic: false` and access the
-`NatInstanceProvider.connections` member after having passed it to the VPC:
+gets routed, pass a custom value for `defaultAllowedTraffic` and access the
+`NatInstanceProvider.connections` member after having passed the NAT provider to
+the VPC:
 
 ```ts
 declare const instanceType: ec2.InstanceType;
 
 const provider = ec2.NatProvider.instance({
   instanceType,
-  allowAllTraffic: false,
+  defaultAllowedTraffic: ec2.NatTrafficDirection.OUTBOUND_ONLY,
 });
 new ec2.Vpc(this, 'TheVPC', {
   natGatewayProvider: provider,
@@ -324,7 +325,7 @@ const vpc = new ec2.Vpc(this, "VPC", {
       subnetType: ec2.SubnetType.PUBLIC,
       name: 'Public',
     },{
-      subnetType: ec2.SubnetType.ISOLATED,
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       name: 'Isolated',
     }]
 });
@@ -371,7 +372,7 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
     {
       cidrMask: 27,
       name: 'Database',
-      subnetType: ec2.SubnetType.ISOLATED,
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
     }
   ],
 });
@@ -1473,5 +1474,21 @@ const template = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
   securityGroup: new ec2.SecurityGroup(this, 'LaunchTemplateSG', {
     vpc: vpc,
   }),
+});
+```
+
+## Detailed Monitoring
+
+The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](http://aws.amazon.com/cloudwatch/pricing/).
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+
+new ec2.Instance(this, 'Instance1', {
+  vpc,
+  instanceType,
+  machineImage: new ec2.AmazonLinuxImage(),
+  detailedMonitoring: true,
 });
 ```

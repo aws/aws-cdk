@@ -2,8 +2,11 @@
 
 name: pr-labeler
 on:
-  pull_request:
-    types: [ opened ]
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - reopened
 
 jobs:
   auto-approve:
@@ -13,6 +16,16 @@ jobs:
       pull-requests: write
       issues: write
     steps:
-    - run: gh pr edit ${{ github.event.pull_request.number }} --add-label "auto-approve" -R ${{ github.repository }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: gh pr edit ${{ github.event.pull_request.number }} --add-label "auto-approve" -R ${{ github.repository }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  copy-labels:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: kaizencc/pr-triage-manager@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+

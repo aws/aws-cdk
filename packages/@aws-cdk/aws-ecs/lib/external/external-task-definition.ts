@@ -8,7 +8,6 @@ import {
   ITaskDefinition,
   NetworkMode,
   TaskDefinition,
-  Volume,
 } from '../base/task-definition';
 
 /**
@@ -73,13 +72,6 @@ export class ExternalTaskDefinition extends TaskDefinition implements IExternalT
       compatibility: Compatibility.EXTERNAL,
       networkMode: NetworkMode.BRIDGE,
     });
-  }
-
-  /**
-   * Overridden method to throw error, as volumes are not supported for external task definitions
-   */
-  public addVolume(_volume: Volume) {
-    throw new Error('External task definitions doesnt support volumes');
   }
 
   /**

@@ -48,3 +48,8 @@ export interface HostedZoneAttributes {
    */
   readonly zoneName: string;
 }
+
+/**
+ * Reference to a public hosted zone
+ */
+export interface PublicHostedZoneAttributes extends HostedZoneAttributes { }

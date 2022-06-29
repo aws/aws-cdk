@@ -1,14 +1,13 @@
-/// !cdk-integ pragma:ignore-assets
+/// !cdk-integ pragma:ignore-assets pragma:disable-update-workflow
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { App } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
 import * as eks from '../lib';
-import { TestStack } from './util';
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
 
 
-class EksClusterStack extends TestStack {
+class EksClusterStack extends Stack {
   constructor(scope: App, id: string) {
     super(scope, id);
 

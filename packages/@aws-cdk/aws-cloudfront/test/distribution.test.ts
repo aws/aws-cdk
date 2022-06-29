@@ -17,6 +17,7 @@ import {
   LambdaEdgeEventType,
   PriceClass,
   SecurityPolicyProtocol,
+  SSLMethod,
 } from '../lib';
 import { defaultOrigin, defaultOriginGroup } from './test-origin';
 
@@ -56,7 +57,139 @@ test('minimal example renders correctly', () => {
   });
 });
 
-test('exhaustive example of props renders correctly', () => {
+test('exhaustive example of props renders correctly and SSL method sni-only', () => {
+  const origin = defaultOrigin();
+  const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+
+  new Distribution(stack, 'MyDist', {
+    defaultBehavior: { origin },
+    certificate,
+    comment: 'a test',
+    defaultRootObject: 'index.html',
+    domainNames: ['example.com'],
+    enabled: false,
+    enableIpv6: false,
+    enableLogging: true,
+    geoRestriction: GeoRestriction.denylist('US', 'GB'),
+    httpVersion: HttpVersion.HTTP1_1,
+    logFilePrefix: 'logs/',
+    logIncludesCookies: true,
+    sslSupportMethod: SSLMethod.SNI,
+    minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2019,
+    priceClass: PriceClass.PRICE_CLASS_100,
+    webAclId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      Aliases: ['example.com'],
+      DefaultCacheBehavior: {
+        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+        Compress: true,
+        TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+        ViewerProtocolPolicy: 'allow-all',
+      },
+      Comment: 'a test',
+      DefaultRootObject: 'index.html',
+      Enabled: false,
+      HttpVersion: 'http1.1',
+      IPV6Enabled: false,
+      Logging: {
+        Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
+        IncludeCookies: true,
+        Prefix: 'logs/',
+      },
+      Origins: [{
+        DomainName: 'www.example.com',
+        Id: 'StackMyDistOrigin1D6D5E535',
+        CustomOriginConfig: {
+          OriginProtocolPolicy: 'https-only',
+        },
+      }],
+      PriceClass: 'PriceClass_100',
+      Restrictions: {
+        GeoRestriction: {
+          Locations: ['US', 'GB'],
+          RestrictionType: 'blacklist',
+        },
+      },
+      ViewerCertificate: {
+        AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+        SslSupportMethod: 'sni-only',
+        MinimumProtocolVersion: 'TLSv1.2_2019',
+      },
+      WebACLId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+    },
+  });
+});
+
+test('exhaustive example of props renders correctly and SSL method vip', () => {
+  const origin = defaultOrigin();
+  const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+
+  new Distribution(stack, 'MyDist', {
+    defaultBehavior: { origin },
+    certificate,
+    comment: 'a test',
+    defaultRootObject: 'index.html',
+    domainNames: ['example.com'],
+    enabled: false,
+    enableIpv6: false,
+    enableLogging: true,
+    geoRestriction: GeoRestriction.denylist('US', 'GB'),
+    httpVersion: HttpVersion.HTTP1_1,
+    logFilePrefix: 'logs/',
+    logIncludesCookies: true,
+    sslSupportMethod: SSLMethod.VIP,
+    minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2019,
+    priceClass: PriceClass.PRICE_CLASS_100,
+    webAclId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      Aliases: ['example.com'],
+      DefaultCacheBehavior: {
+        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+        Compress: true,
+        TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+        ViewerProtocolPolicy: 'allow-all',
+      },
+      Comment: 'a test',
+      DefaultRootObject: 'index.html',
+      Enabled: false,
+      HttpVersion: 'http1.1',
+      IPV6Enabled: false,
+      Logging: {
+        Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
+        IncludeCookies: true,
+        Prefix: 'logs/',
+      },
+      Origins: [{
+        DomainName: 'www.example.com',
+        Id: 'StackMyDistOrigin1D6D5E535',
+        CustomOriginConfig: {
+          OriginProtocolPolicy: 'https-only',
+        },
+      }],
+      PriceClass: 'PriceClass_100',
+      Restrictions: {
+        GeoRestriction: {
+          Locations: ['US', 'GB'],
+          RestrictionType: 'blacklist',
+        },
+      },
+      ViewerCertificate: {
+        AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+        SslSupportMethod: 'vip',
+        MinimumProtocolVersion: 'TLSv1.2_2019',
+      },
+      WebACLId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+    },
+  });
+});
+
+test('exhaustive example of props renders correctly and SSL method default', () => {
   const origin = defaultOrigin();
   const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
 
@@ -404,6 +537,7 @@ describe('certificates', () => {
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin: defaultOrigin() },
       domainNames: ['www.example.com'],
+      sslSupportMethod: SSLMethod.SNI,
       minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2016,
       certificate: certificate,
     });
@@ -720,7 +854,7 @@ describe('with Lambda@Edge functions', () => {
 
   test('with incompatible env vars', () => {
     const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('whateverwithenv'),
       handler: 'index.handler',
       environment: {
@@ -746,7 +880,7 @@ describe('with Lambda@Edge functions', () => {
   test('with singleton function', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: 'singleton-for-cloudfront',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('code'),
       handler: 'index.handler',
     });
@@ -770,7 +904,7 @@ describe('with Lambda@Edge functions', () => {
             {
               EventType: 'origin-request',
               LambdaFunctionARN: {
-                Ref: 'SingletonLambdasingletonforcloudfrontCurrentVersion0078406348a0962a52448a200cd0dbc0e22edb2a',
+                Ref: 'SingletonLambdasingletonforcloudfrontCurrentVersion00784063008ecc45a35dc7c5ca3ba4584c8e9625',
               },
             },
           ],

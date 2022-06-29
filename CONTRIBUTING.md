@@ -89,7 +89,7 @@ specific to the CDK.
 
 ### Build
 
-The full build of the CDK takes a long time complete; 1-2 hours depending on the performance of the build machine.
+The full build of the CDK takes a long time to complete; 1-2 hours depending on the performance of the build machine.
 However, most first time contributions will require changing only one CDK module, sometimes two. A full build of the
 CDK is not required in these cases.
 
@@ -136,7 +136,7 @@ To package a specific module, say the `@aws-cdk/aws-ec2` module:
 
 ```console
 $ cd <root-of-cdk-repo>
-$ docker run --rm --net=host -it -v $PWD:$PWD -w $PWD jsii/superchain
+$ docker run --rm --net=host -it -v $PWD:$PWD -w $PWD jsii/superchain:1-buster-slim
 docker$ cd packages/@aws-cdk/aws-ec2
 docker$ ../../../scripts/foreach.sh --up yarn run package
 docker$ exit
@@ -172,23 +172,49 @@ eval $(gp env -e)
 
 ## Pull Requests
 
+Below is a flow chart that describes how your PR may be treated by repository maintainers:
+
+```mermaid
+graph TD
+    A[Incoming PR] -->B[Is an issue attached?]
+    B -->|Yes - labels copied from issue| C[Is it labeled P1?]
+    B -->|No - auto-labeled as P2| D["Is the effort small?"]
+    C -->|Yes - P1| E[Is the PR build succeeding?]
+    C -->|No - it is P2| D
+    D -->|Yes| E
+    D -->|No| F[Can you break down the PR into smaller chunks?]
+    F --->|Yes| I[Please do. This will help get traction on your PR.]
+    F -->|No| J[Try to garner community support on the issue you are <br/> trying to solve. With 20 +1s, the issue will be relabeled as P1.]
+    E --->|Yes| G[We will review your PR as soon as we can]
+    E -->|No| H[If the build is failing for more than 4 weeks <br/> without any work on it, we will close the PR.]
+```
+
+Note that, if we do not have time to review your PR, it is not the end of the road. We are asking
+for more community support on the attached issue before we focus our attention there. Any `P2` issue
+with 20 or more +1s will be automatically upgraded from `P2`to `P1`.
+
 ### Step 1: Find something to work on
 
-If you want to contribute a specific feature or fix you have in mind, look at active [pull
-requests](https://github.com/aws/aws-cdk/pulls) to see if someone else is already working on it. If not, you can start
-contributing your changes.
+If you want to contribute a specific feature or fix you have in mind, look to see if an issue
+already exists in our [backlog](https://github.com/aws/aws-cdk/issues). If not, please contribute
+a feature request or bug report prior to contributing the PR. We will triage this issue promptly,
+and the priority of the issue (`P1` or `P2`) will give indication of how much attention your PR
+may get.
+
+It's not required to submit an issue first, but PRs that come in without attached issues will be
+automatically labeled as `P2`.
 
 On the other hand, if you are here looking for an issue to work on, explore our [backlog of
-issues](https://github.com/aws/aws-cdk/issues) and find something that piques your interest. We have labeled all of our
-issues for easy searching.
-If you are looking for your first contribution, the ['good first issue'
-label](https://github.com/aws/aws-cdk/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) will be of help.
+issues](https://github.com/aws/aws-cdk/issues) and find something that piques your interest.
+We have labeled all of our issues for easy searching. If you are looking for your first contribution,
+the ['good first issue' label](https://github.com/aws/aws-cdk/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+will be of help.
 
 It's a good idea to keep the priority of issues in mind when deciding what to
 work on. If we have labelled an issue as `P2`, it means it's something we won't
 get to soon, and we're waiting on more feedback from the community (in the form
 of +1s and comments) to give it a higher priority. A PR for a `P2` issue may
-take us some time to review, especially if it involves a complex
+be closed by a maintainer, especially if it involves a complex
 implementation. `P1` issues impact a significant number of customers, so we are
 much more likely to give a PR for those issues prompt attention.
 
@@ -202,7 +228,8 @@ sufficient to get clarity on what you plan to do. If the changes are
 significant or intrusive to the existing CDK experience, and especially for a
 brand new L2 construct implementation, please write an RFC in our [RFC
 repository](https://github.com/aws/aws-cdk-rfcs) before jumping into the code
-base.
+base. L2 construct implementation pull requests will not be reviewed without
+linking an approved RFC.
 
 ### Step 3: Work your Magic
 
@@ -234,9 +261,17 @@ Integration tests perform a few functions in the CDK code base -
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
    CloudFormation deployment does not mean that the resources are set up correctly.
 
-If you are working on a new feature that is using previously unused CloudFormation resource types, or involves
-configuring resource types across services, you need to write integration tests that use these resource types or
-features.
+**When are integration tests required?**
+
+The following list contains common scenarios where we _know_ that integration tests are required.
+This is not an exhaustive list and we will, by default, require integration tests for all
+new features unless there is a good reason why one is not needed.
+
+1. Adding a new feature that is using previously unused CloudFormation resource types
+2. Adding a new feature that is using previously unused (or untested) CloudFormation properties
+3. Involves configuring resource types across services (i.e. integrations)
+4. Adding a new supported version (e.g. a new [AuroraMysqlEngineVersion](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_rds.AuroraMysqlEngineVersion.html))
+5. Adding any functionality via a [Custom Resource](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.custom_resources-readme.html)
 
 To the extent possible, include a section (like below) in the integration test file that specifies how the successfully
 deployed stack can be verified for correctness. Correctness here implies that the resources have been set up correctly.
@@ -253,6 +288,16 @@ The steps here are usually AWS CLI commands but they need not be.
 Examples:
 * [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
 * [integ.token-authorizer.lit.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.lit.ts#L7-L12)
+
+**What do do if you cannot run integration tests**
+
+If you are working on a PR that requires an update to an integration test and you are unable
+to run the `cdk-integ` tool to perform a real deployment, please call this out on the pull request
+so a maintainer can run the tests for you. Please **do not** run the `cdk-integ` tool with `--dry-run`
+or manually update the snapshot.
+
+See the [integration test guide](./INTEGRATION_TESTS.md) for a more complete guide on running
+CDK integration tests.
 
 #### yarn watch (Optional)
 
@@ -281,16 +326,23 @@ $ yarn watch & # runs in the background
   [conventionalcommits](https://www.conventionalcommits.org).
   * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
     `chore(module): title`.
+  * Titles for `feat` and `fix` PRs end up in the change log. Think about what makes most sense for users reading the changelog while writing them.
+    * `feat`: describe the feature (not the action of creating the commit or PR, for example, avoid words like "added" or "changed")
+    * `fix`: describe the bug (not the solution)
   * Title should be lowercase.
   * No period at the end of the title.
 
-* Pull request message should describe _motivation_. Think about your code reviewers and what information they need in
+* Pull request body should describe _motivation_. Think about your code reviewers and what information they need in
   order to understand what you did. If it's a big commit (hopefully not), try to provide some good entry points so
   it will be easier to follow.
+  * For bugs, describe bug, root cause, solution, potential alternatives considered but discarded.
+  * For features, describe use case, most salient design aspects (especially if new), potential alternatives.
 
 * Pull request message should indicate which issues are fixed: `fixes #<issue>` or `closes #<issue>`.
 
 * Shout out to collaborators.
+
+* Call out any new [unconventional dependencies](#adding-new-unconventional-dependencies) that are created as part of your PR.
 
 * If not obvious (i.e. from unit tests), describe how you verified that your change works.
 
@@ -305,12 +357,39 @@ $ yarn watch & # runs in the background
 
 * Once the pull request is submitted, a reviewer will be assigned by the maintainers.
 
+* If the PR build is failing, update the PR with fixes until the build succeeds. You may have trouble getting attention
+  from maintainers if your build is failing, and after 4 weeks of staleness, your PR will be automatically closed.
+
 * Discuss review comments and iterate until you get at least one "Approve". When iterating, push new commits to the
   same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
   for you when you finalize your merge commit message.
 
 * Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
   commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
+
+#### Adding new unconventional dependencies
+
+**For the aws-cdk an unconventional dependency is defined as any dependency that is not managed via the module's
+`package.json` file.**
+
+Sometimes constructs introduce new unconventional dependencies.  Any new unconventional dependency that is introduced needs to have
+an auto upgrade process in place. The recommended way to update dependencies is through [dependabot](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates).
+You can find the dependabot config file [here](./.github/dependabot.yml).
+
+An example of this is the [@aws-cdk/lambda-layer-awscli](packages/@aws-cdk/lambda-layer-awscli) module.
+This module creates a lambda layer that bundles the AWS CLI. This is considered an unconventional
+dependency because the AWS CLI is bundled into the CDK as part of the build, and the version
+of the AWS CLI that is bundled is not managed by the `package.json` file.
+
+In order to automatically update the version of the AWS CLI, a custom build process was
+created that takes upgrades into consideration. You can take a look at the files in
+[packages/@aws-cdk/lambda-layer-awscli/layer](packages/@aws-cdk/lambda-layer-awscli/layer)
+to see how the build works, but at a high level a [requirements.txt](packages/@aws-cdk/lambda-layer-awscli/layer/requirements.txt)
+file was created to manage the version. This file was then added to [dependabot.yml](https://github.com/aws/aws-cdk/blob/ab57eb6d1ed69b40ed6ec774853c275785acace8/.github/dependabot.yml#L14-L20)
+so that dependabot will automatically upgrade the version as new versions are released.
+
+**If you think your PR introduces a new unconventional dependency, make sure to call it
+out in the description so that we can discuss the best way to manage that dependency.**
 
 ### Step 5: Merge
 
@@ -342,6 +421,7 @@ Breaking changes come in two flavors:
 
 * API surface changes
 * Behavior changes
+
 
 ### API surface changes
 
@@ -481,7 +561,7 @@ grantAwesomePowerBeta1();
 ```
 
 Times goes by, we get feedback that this method will actually be much better
-if it accept a `Principal`. Since adding a required property is a breaking
+if it accepts a `Principal`. Since adding a required property is a breaking
 change, we will add `grantAwesomePowerBeta2()` and deprecate
 `grantAwesomePowerBeta1`:
 
@@ -592,7 +672,7 @@ cases where some of those do not apply - good judgement is to be applied):
   // An example about adding a stage to a pipeline in the @aws-cdk/pipelines library
   declare const pipeline: pipelines.CodePipeline;
   declare const myStage: Stage;
-  pipeline.addStage(myStage);   
+  pipeline.addStage(myStage);
   ```
 
 - Utilize the `default.ts-fixture` that already exists rather than writing new

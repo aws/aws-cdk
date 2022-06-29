@@ -25,7 +25,6 @@ The CDK is available in the following languages:
 * Java ([Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
 * .NET ([.NET Core ≥ 3.1](https://dotnet.microsoft.com/download))
 * Go ([Go ≥ 1.16.4](https://golang.org/))
-  - Go is currently in developer preview and is not recommended for production use.
 
 \
 Jump To:
@@ -79,7 +78,7 @@ For a detailed walkthrough, see the [tutorial](https://docs.aws.amazon.com/cdk/l
 Install or update the [AWS CDK CLI] from npm (requires [Node.js ≥ 14.15.0](https://nodejs.org/download/release/latest-v14.x/)). We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
 
 ```console
-$ npm i -g aws-cdk
+npm i -g aws-cdk
 ```
 
 (See [Manual Installation](./MANUAL_INSTALLATION.md) for installing the CDK from a signed .zip file).
@@ -87,9 +86,9 @@ $ npm i -g aws-cdk
 Initialize a project:
 
 ```console
-$ mkdir hello-cdk
-$ cd hello-cdk
-$ cdk init sample-app --language=typescript
+mkdir hello-cdk
+cd hello-cdk
+cdk init sample-app --language=typescript
 ```
 
 This creates a sample project looking like this:
@@ -113,7 +112,7 @@ export class HelloCdkStack extends cdk.Stack {
 Deploy this to your account:
 
 ```console
-$ cdk deploy
+cdk deploy
 ```
 
 Use the `cdk` command-line toolkit to interact with your project:

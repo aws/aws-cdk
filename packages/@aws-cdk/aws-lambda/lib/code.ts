@@ -454,8 +454,15 @@ export interface EcrImageCodeProps {
   /**
    * The image tag to use when pulling the image from ECR.
    * @default 'latest'
+   * @deprecated use `tagOrDigest`
    */
   readonly tag?: string;
+
+  /**
+   * The image tag or digest to use when pulling the image from ECR (digests must start with `sha256:`).
+   * @default 'latest'
+   */
+  readonly tagOrDigest?: string;
 }
 
 /**
@@ -473,7 +480,7 @@ export class EcrImageCode extends Code {
 
     return {
       image: {
-        imageUri: this.repository.repositoryUriForTag(this.props?.tag ?? 'latest'),
+        imageUri: this.repository.repositoryUriForTagOrDigest(this.props?.tagOrDigest ?? this.props?.tag ?? 'latest'),
         cmd: this.props.cmd,
         entrypoint: this.props.entrypoint,
         workingDirectory: this.props.workingDirectory,

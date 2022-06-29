@@ -111,7 +111,7 @@ export class CloudFormationInit {
     // as well as include any asset hashes provided so the fingerprint is accurate.
     const resolvedConfig = attachedResource.stack.resolve(bindResult.configData);
     const fingerprintInput = { config: resolvedConfig, assetHash: bindResult.assetHash };
-    const fingerprint = contentHash(JSON.stringify(fingerprintInput)).substr(0, 16);
+    const fingerprint = contentHash(JSON.stringify(fingerprintInput)).slice(0, 16);
 
     attachOptions.instanceRole.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],

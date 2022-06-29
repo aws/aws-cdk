@@ -10,7 +10,7 @@ test('create a domain', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
   const prodBranch = app.addBranch('master');
@@ -71,7 +71,7 @@ test('map a branch to the domain root', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
   const prodBranch = app.addBranch('master');
@@ -111,7 +111,7 @@ test('throws at synthesis without subdomains', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
 
@@ -129,7 +129,7 @@ test('auto subdomain all branches', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
   const prodBranch = app.addBranch('master');
@@ -163,7 +163,7 @@ test('auto subdomain some branches', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
   const prodBranch = app.addBranch('master');
@@ -195,7 +195,7 @@ test('auto subdomain with IAM role', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     role: iam.Role.fromRoleArn(
       stack,

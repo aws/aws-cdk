@@ -29,11 +29,11 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "codemaker": "^1.54.0",
+    "codemaker": "^1.60.0",
     "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "@types/yaml": "1.9.7",
     "jest": "^27.5.1",
     "typescript": "~3.9.10"
@@ -49,6 +49,6 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 14.15.0"
   }
 }

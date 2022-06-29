@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-stepfunctions-tasks/test/lambda/integ.invoke.payload.only": {
+      "stacks": [
+        "aws-stepfunctions-tasks-lambda-invoke-integ"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

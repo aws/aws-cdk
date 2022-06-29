@@ -45,6 +45,13 @@ export interface CodeBuildFactoryProps {
   readonly role?: iam.IRole;
 
   /**
+   * Custom execution role to be used for the Code Build Action
+   *
+   * @default - A role is automatically created
+   */
+  readonly actionRole?: iam.IRole;
+
+  /**
    * If true, the build spec will be passed via the Cloud Assembly instead of rendered onto the Project
    *
    * Doing this has two advantages:
@@ -145,6 +152,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     const factory = CodeBuildFactory.fromShellStep(constructId, step, {
       projectName: step.projectName,
       role: step.role,
+      actionRole: step.actionRole,
       ...additional,
       projectOptions: mergeCodeBuildOptions(additional?.projectOptions, {
         buildEnvironment: step.buildEnvironment,
@@ -315,6 +323,18 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       ? { _PROJECT_CONFIG_HASH: projectConfigHash }
       : {};
 
+
+    // Start all CodeBuild projects from a single (shared) Action Role, so that we don't have to generate an Action Role for each
+    // individual CodeBuild Project and blow out the pipeline policy size (and potentially # of resources in the stack).
+    const actionRoleCid = 'CodeBuildActionRole';
+    const actionRole = this.props.actionRole
+      ?? options.pipeline.node.tryFindChild(actionRoleCid) as iam.IRole
+      ?? new iam.Role(options.pipeline, actionRoleCid, {
+        assumedBy: new iam.PrincipalWithConditions(new iam.AccountRootPrincipal(), {
+          Bool: { 'aws:ViaAWSService': iam.ServicePrincipal.servicePrincipalName('codepipeline.amazonaws.com') },
+        }),
+      });
+
     stage.addAction(new codepipeline_actions.CodeBuildAction({
       actionName: actionName,
       input: inputArtifact,
@@ -323,6 +343,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       project,
       runOrder: options.runOrder,
       variablesNamespace: options.variablesNamespace,
+      role: actionRole,
 
       // Inclusion of the hash here will lead to the pipeline structure for any changes
       // made the config of the underlying CodeBuild Project.
@@ -504,7 +525,7 @@ function filterBuildSpecCommands(buildSpec: codebuild.BuildSpec, osType: ec2.Ope
   function extractTag(x: any): [string | undefined, any] {
     if (typeof x !== 'string') { return [undefined, x]; }
     for (const tag of [winTag, linuxTag]) {
-      if (x.startsWith(tag)) { return [tag, x.substr(tag.length)]; }
+      if (x.startsWith(tag)) { return [tag, x.slice(tag.length)]; }
     }
     return [undefined, x];
   }

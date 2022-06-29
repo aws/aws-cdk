@@ -1999,7 +1999,7 @@ describe('container definition', () => {
                 { Ref: 'AWS::Region' },
                 '.',
                 { Ref: 'AWS::URLSuffix' },
-                '/aws-cdk/assets:8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48',
+                '/aws-cdk/assets:0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
               ],
             ],
           },
@@ -2055,11 +2055,11 @@ describe('container definition', () => {
     const asm = app.synth();
     expect(asm.getStackArtifact(stack.artifactId).assets[0]).toEqual({
       repositoryName: 'aws-cdk/assets',
-      imageTag: '9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
-      id: '9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
+      imageTag: '8b0801d3f897d960240bf5bf3d5a3e367e50a17e04101717320bfd52ebc9d64a',
+      id: '8b0801d3f897d960240bf5bf3d5a3e367e50a17e04101717320bfd52ebc9d64a',
       packaging: 'container-image',
-      path: 'asset.9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
-      sourceHash: '9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
+      path: 'asset.8b0801d3f897d960240bf5bf3d5a3e367e50a17e04101717320bfd52ebc9d64a',
+      sourceHash: '8b0801d3f897d960240bf5bf3d5a3e367e50a17e04101717320bfd52ebc9d64a',
       target: 'build-target',
       file: 'index.py',
     });
@@ -2078,7 +2078,7 @@ describe('container definition', () => {
 
     // THEN
     expect(stack.resolve(container.imageName)).toEqual({
-      'Fn::Sub': '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+      'Fn::Sub': '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:aba53d5f05c76afcd7e420dc8cd283ddc31657866bb4ba4ce221e13d8128d92c',
     });
   });
 });

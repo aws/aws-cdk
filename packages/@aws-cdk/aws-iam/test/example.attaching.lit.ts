@@ -11,7 +11,7 @@ export class ExampleConstruct extends Construct {
     super(scope, id);
 
     /// !show
-    const user = new User(this, 'MyUser', { password: cdk.SecretValue.plainText('1234') });
+    const user = new User(this, 'MyUser', { password: cdk.SecretValue.unsafePlainText('1234') });
     const group = new Group(this, 'MyGroup');
 
     const policy = new Policy(this, 'MyPolicy');

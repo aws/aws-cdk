@@ -1,0 +1,180 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "StackSetPipelineStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "StackSetPipelineStack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/StackSetPipelineStack": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824",
+              "id": "be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824",
+              "packaging": "zip",
+              "sourceHash": "be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824",
+              "s3BucketParameter": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232",
+              "s3KeyParameter": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE",
+              "artifactHashParameter": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824ArtifactHash76F8FCF2"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2",
+              "id": "5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2",
+              "packaging": "zip",
+              "sourceHash": "5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2",
+              "s3BucketParameter": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3Bucket3C8B9651",
+              "s3KeyParameter": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3VersionKeyD144071F",
+              "artifactHashParameter": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2ArtifactHashA83BA1E9"
+            }
+          }
+        ],
+        "/StackSetPipelineStack/ArtifactBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ArtifactBucket7410C9EF"
+          }
+        ],
+        "/StackSetPipelineStack/ArtifactBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ArtifactBucketPolicy4B4B7752"
+          }
+        ],
+        "/StackSetPipelineStack/ArtifactBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ArtifactBucketAutoDeleteObjectsCustomResource0BB47FD6"
+          }
+        ],
+        "/StackSetPipelineStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/StackSetPipelineStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/StackSetPipelineStack/AssetParameters/be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232"
+          }
+        ],
+        "/StackSetPipelineStack/AssetParameters/be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE"
+          }
+        ],
+        "/StackSetPipelineStack/AssetParameters/be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824ArtifactHash76F8FCF2"
+          }
+        ],
+        "/StackSetPipelineStack/AssetParameters/5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3Bucket3C8B9651"
+          }
+        ],
+        "/StackSetPipelineStack/AssetParameters/5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3VersionKeyD144071F"
+          }
+        ],
+        "/StackSetPipelineStack/AssetParameters/5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2ArtifactHashA83BA1E9"
+          }
+        ],
+        "/StackSetPipelineStack/Pipeline/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineRoleD68726F7"
+          }
+        ],
+        "/StackSetPipelineStack/Pipeline/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineRoleDefaultPolicyC7A05455"
+          }
+        ],
+        "/StackSetPipelineStack/Pipeline/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineC660917D"
+          }
+        ],
+        "/StackSetPipelineStack/Pipeline/Source/Source/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineSourceCodePipelineActionRoleC6F9E7F5"
+          }
+        ],
+        "/StackSetPipelineStack/Pipeline/Source/Source/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineSourceCodePipelineActionRoleDefaultPolicy2D565925"
+          }
+        ],
+        "/StackSetPipelineStack/Pipeline/Cfn/StackSet/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineCfnStackSetCodePipelineActionRole9EA256DB"
+          }
+        ],
+        "/StackSetPipelineStack/Pipeline/Cfn/StackSet/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineCfnStackSetCodePipelineActionRoleDefaultPolicyE5B66E2C"
+          }
+        ],
+        "/StackSetPipelineStack/Pipeline/Cfn/StackSet/StackSetAdministrationRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineCfnStackSetStackSetAdministrationRoleAE2E9C50"
+          }
+        ],
+        "/StackSetPipelineStack/Pipeline/Cfn/StackSet/StackSetAdministrationRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineCfnStackSetStackSetAdministrationRoleDefaultPolicy55145C4E"
+          }
+        ],
+        "/StackSetPipelineStack/Pipeline/Cfn/Instances/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineCfnInstancesCodePipelineActionRole289FD062"
+          }
+        ],
+        "/StackSetPipelineStack/Pipeline/Cfn/Instances/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineCfnInstancesCodePipelineActionRoleDefaultPolicy38A9673E"
+          }
+        ]
+      },
+      "displayName": "StackSetPipelineStack"
+    }
+  }
+}

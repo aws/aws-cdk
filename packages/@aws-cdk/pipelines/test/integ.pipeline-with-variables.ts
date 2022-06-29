@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 /// !cdk-integ VariablePipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
-import { GitHubTrigger } from '@aws-cdk/aws-codepipeline-actions';
-import { App, Stack, StackProps } from '@aws-cdk/core';
+import * as s3 from '@aws-cdk/aws-s3';
+import { App, Stack, StackProps, RemovalPolicy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as pipelines from '../lib';
 
@@ -9,11 +9,16 @@ class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
       synth: new pipelines.ShellStep('Synth', {
-        input: pipelines.CodePipelineSource.gitHub('cdklabs/construct-hub-probe', 'main', {
-          trigger: GitHubTrigger.POLL,
-        }),
+        input: pipelines.CodePipelineSource.s3(sourceBucket, 'key'),
+        // input: pipelines.CodePipelineSource.gitHub('cdklabs/construct-hub-probe', 'main', {
+        //   trigger: GitHubTrigger.POLL,
+        // }),
         commands: ['mkdir cdk.out', 'touch cdk.out/dummy'],
       }),
       selfMutation: false,
@@ -45,8 +50,5 @@ const app = new App({
   },
 });
 
-new PipelineStack(app, 'VariablePipelineStack', {
-  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
-});
-
+new PipelineStack(app, 'VariablePipelineStack');
 app.synth();

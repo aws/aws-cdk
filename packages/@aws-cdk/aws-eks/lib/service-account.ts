@@ -29,6 +29,20 @@ export interface ServiceAccountOptions {
    * @default "default"
    */
   readonly namespace?: string;
+
+  /**
+   * Additional annotations of the service account.
+   *
+   * @default - no additional annotations
+   */
+  readonly annotations?: {[key:string]: string};
+
+  /**
+   * Additional labels of the service account.
+   *
+   * @default - no additional labels
+   */
+  readonly labels?: {[key:string]: string};
 }
 
 /**
@@ -113,9 +127,11 @@ export class ServiceAccount extends CoreConstruct implements IPrincipal {
           namespace: this.serviceAccountNamespace,
           labels: {
             'app.kubernetes.io/name': this.serviceAccountName,
+            ...props.labels,
           },
           annotations: {
             'eks.amazonaws.com/role-arn': this.role.roleArn,
+            ...props.annotations,
           },
         },
       }],

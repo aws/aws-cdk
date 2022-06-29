@@ -42,6 +42,6 @@ test('Use web identity when available', async () => {
   const providers = (await AwsCliCompatible.credentialChain()).providers;
 
   // make sure the web identity provider is in the chain
-  const webIdentify = (providers[2] as Function)();
+  const webIdentify = (providers[5] as Function)();
   expect(webIdentify).toBeInstanceOf(AWS.TokenFileWebIdentityCredentials);
 });

@@ -144,6 +144,82 @@ describe('tests', () => {
     }).toThrow(/Health check interval '5' not supported. Must be one of the following values '10,30'./);
   });
 
+  test('targetGroupName unallowed: more than 32 characters', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      targetGroupName: 'a'.repeat(33),
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Target group name: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" can have a maximum of 32 characters.');
+  });
+
+  test('targetGroupName unallowed: starts with hyphen', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      targetGroupName: '-myTargetGroup',
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Target group name: "-myTargetGroup" must not begin or end with a hyphen.');
+  });
+
+  test('targetGroupName unallowed: ends with hyphen', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      targetGroupName: 'myTargetGroup-',
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Target group name: "myTargetGroup-" must not begin or end with a hyphen.');
+  });
+
+  test('targetGroupName unallowed: unallowed characters', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      targetGroupName: 'my target group',
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Target group name: "my target group" must contain only alphanumeric characters or hyphens.');
+  });
+
   test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
     'Throws validation error, when `healthCheck` has `protocol` set to %s',
     (protocol) => {

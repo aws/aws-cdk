@@ -1,11 +1,12 @@
-import { promises as fs } from 'fs';
+import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { retry, sleep } from '../helpers/aws';
 import { cloneDirectory, MAJOR_VERSION, shell, withDefaultFixture } from '../helpers/cdk';
+import { randomInteger, withSamIntegrationFixture } from '../helpers/sam';
 import { integTest } from '../helpers/test-helpers';
 
-jest.setTimeout(600 * 1000);
+jest.setTimeout(600_000);
 
 integTest('VPC Lookup', withDefaultFixture(async (fixture) => {
   fixture.log('Making sure we are clean before starting.');
@@ -757,6 +758,222 @@ integTest('templates on disk contain metadata resource, also in nested assemblie
   expect(JSON.parse(nestedTemplateContents).Resources.CDKMetadata).toBeTruthy();
 }));
 
+integTest('CDK synth add the metadata properties expected by sam', withSamIntegrationFixture(async (fixture) => {
+  // Synth first
+  await fixture.cdkSynth();
+
+  const template = fixture.template('TestStack');
+
+  const expectedResources = [
+    {
+      // Python Layer Version
+      id: 'PythonLayerVersion39495CEF',
+      cdkId: 'PythonLayerVersion',
+      isBundled: true,
+      property: 'Content',
+    },
+    {
+      // Layer Version
+      id: 'LayerVersion3878DA3A',
+      cdkId: 'LayerVersion',
+      isBundled: false,
+      property: 'Content',
+    },
+    {
+      // Bundled layer version
+      id: 'BundledLayerVersionPythonRuntime6BADBD6E',
+      cdkId: 'BundledLayerVersionPythonRuntime',
+      isBundled: true,
+      property: 'Content',
+    },
+    {
+      // Python Function
+      id: 'PythonFunction0BCF77FD',
+      cdkId: 'PythonFunction',
+      isBundled: true,
+      property: 'Code',
+    },
+    {
+      // Log Retention Function
+      id: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+      cdkId: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a',
+      isBundled: false,
+      property: 'Code',
+    },
+    {
+      // Function
+      id: 'FunctionPythonRuntime28CBDA05',
+      cdkId: 'FunctionPythonRuntime',
+      isBundled: false,
+      property: 'Code',
+    },
+    {
+      // Bundled Function
+      id: 'BundledFunctionPythonRuntime4D9A0918',
+      cdkId: 'BundledFunctionPythonRuntime',
+      isBundled: true,
+      property: 'Code',
+    },
+    {
+      // NodeJs Function
+      id: 'NodejsFunction09C1F20F',
+      cdkId: 'NodejsFunction',
+      isBundled: true,
+      property: 'Code',
+    },
+    {
+      // Go Function
+      id: 'GoFunctionCA95FBAA',
+      cdkId: 'GoFunction',
+      isBundled: true,
+      property: 'Code',
+    },
+    {
+      // Docker Image Function
+      id: 'DockerImageFunction28B773E6',
+      cdkId: 'DockerImageFunction',
+      dockerFilePath: 'Dockerfile',
+      property: 'Code.ImageUri',
+    },
+    {
+      // Spec Rest Api
+      id: 'SpecRestAPI7D4B3A34',
+      cdkId: 'SpecRestAPI',
+      property: 'BodyS3Location',
+    },
+  ];
+
+  for (const resource of expectedResources) {
+    fixture.output.write(`validate assets metadata for resource ${resource}`);
+    expect(resource.id in template.Resources).toBeTruthy();
+    expect(template.Resources[resource.id]).toEqual(expect.objectContaining({
+      Metadata: {
+        'aws:cdk:path': `${fixture.fullStackName('TestStack')}/${resource.cdkId}/Resource`,
+        'aws:asset:path': expect.stringMatching(/asset\.[0-9a-zA-Z]{64}/),
+        'aws:asset:is-bundled': resource.isBundled,
+        'aws:asset:dockerfile-path': resource.dockerFilePath,
+        'aws:asset:property': resource.property,
+      },
+    }));
+  }
+
+  // Nested Stack
+  fixture.output.write('validate assets metadata for nested stack resource');
+  expect('NestedStackNestedStackNestedStackNestedStackResourceB70834FD' in template.Resources).toBeTruthy();
+  expect(template.Resources.NestedStackNestedStackNestedStackNestedStackResourceB70834FD).toEqual(expect.objectContaining({
+    Metadata: {
+      'aws:cdk:path': `${fixture.fullStackName('TestStack')}/NestedStack.NestedStack/NestedStack.NestedStackResource`,
+      'aws:asset:path': expect.stringMatching(`${fixture.stackNamePrefix.replace(/-/, '')}TestStackNestedStack[0-9A-Z]{8}\.nested\.template\.json`),
+      'aws:asset:property': 'TemplateURL',
+    },
+  }));
+}));
+
+integTest('CDK synth bundled functions as expected', withSamIntegrationFixture(async (fixture) => {
+  // Synth first
+  await fixture.cdkSynth();
+
+  const template = fixture.template('TestStack');
+
+  const expectedBundledAssets = [
+    {
+      // Python Layer Version
+      id: 'PythonLayerVersion39495CEF',
+      files: [
+        'python/layer_version_dependency.py',
+        'python/geonamescache/__init__.py',
+        'python/geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // Layer Version
+      id: 'LayerVersion3878DA3A',
+      files: [
+        'layer_version_dependency.py',
+        'requirements.txt',
+      ],
+    },
+    {
+      // Bundled layer version
+      id: 'BundledLayerVersionPythonRuntime6BADBD6E',
+      files: [
+        'python/layer_version_dependency.py',
+        'python/geonamescache/__init__.py',
+        'python/geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // Python Function
+      id: 'PythonFunction0BCF77FD',
+      files: [
+        'app.py',
+        'geonamescache/__init__.py',
+        'geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // Function
+      id: 'FunctionPythonRuntime28CBDA05',
+      files: [
+        'app.py',
+        'requirements.txt',
+      ],
+    },
+    {
+      // Bundled Function
+      id: 'BundledFunctionPythonRuntime4D9A0918',
+      files: [
+        'app.py',
+        'geonamescache/__init__.py',
+        'geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // NodeJs Function
+      id: 'NodejsFunction09C1F20F',
+      files: [
+        'index.js',
+      ],
+    },
+    {
+      // Go Function
+      id: 'GoFunctionCA95FBAA',
+      files: [
+        'bootstrap',
+      ],
+    },
+    {
+      // Docker Image Function
+      id: 'DockerImageFunction28B773E6',
+      files: [
+        'app.js',
+        'Dockerfile',
+        'package.json',
+      ],
+    },
+  ];
+
+  for (const resource of expectedBundledAssets) {
+    const assetPath = template.Resources[resource.id].Metadata['aws:asset:path'];
+    for (const file of resource.files) {
+      fixture.output.write(`validate Path ${file} for resource ${resource}`);
+      expect(existsSync(path.join(fixture.integTestDir, 'cdk.out', assetPath, file))).toBeTruthy();
+    }
+  }
+}));
+
+integTest('sam can locally test the synthesized cdk application', withSamIntegrationFixture(async (fixture) => {
+  // Synth first
+  await fixture.cdkSynth();
+
+  const result = await fixture.samLocalStartApi(
+    'TestStack', false, randomInteger(30000, 40000), '/restapis/spec/pythonFunction');
+  expect(result.actionSucceeded).toBeTruthy();
+  expect(result.actionOutput).toEqual(expect.objectContaining({
+    message: 'Hello World',
+  }));
+}));
+
 integTest('skips notice refresh', withDefaultFixture(async (fixture) => {
   const output = await fixture.cdkSynth({
     options: ['--no-notices'],
@@ -769,6 +986,42 @@ integTest('skips notice refresh', withDefaultFixture(async (fixture) => {
   // Neither succeeds nor fails, but skips the refresh
   await expect(output).not.toContain('Notices refreshed');
   await expect(output).not.toContain('Notices refresh failed');
+}));
+
+/**
+ * Create a queue with a fresh name, redeploy orphaning the queue, then import it again
+ */
+integTest('test resource import', withDefaultFixture(async (fixture) => {
+  const outputsFile = path.join(fixture.integTestDir, 'outputs', 'outputs.json');
+  await fs.mkdir(path.dirname(outputsFile), { recursive: true });
+
+  // Initial deploy
+  await fixture.cdkDeploy('importable-stack', {
+    modEnv: { ORPHAN_TOPIC: '1' },
+    options: ['--outputs-file', outputsFile],
+  });
+
+  const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
+  const queueName = outputs.QueueName;
+  const queueLogicalId = outputs.QueueLogicalId;
+  fixture.log(`Setup complete, created queue ${queueName}`);
+  try {
+    // Deploy again, orphaning the queue
+    await fixture.cdkDeploy('importable-stack', {
+      modEnv: { OMIT_TOPIC: '1' },
+    });
+
+    // Write a resource mapping file based on the ID from step one, then run an import
+    const mappingFile = path.join(fixture.integTestDir, 'outputs', 'mapping.json');
+    await fs.writeFile(mappingFile, JSON.stringify({ [queueLogicalId]: { QueueName: queueName } }), { encoding: 'utf-8' });
+
+    await fixture.cdk(['import',
+      '--resource-mapping', mappingFile,
+      fixture.fullStackName('importable-stack')]);
+  } finally {
+    // Cleanup
+    await fixture.cdkDestroy('importable-stack');
+  }
 }));
 
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {

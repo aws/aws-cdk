@@ -1,8 +1,8 @@
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
-import { debug, trace } from '../../logging';
-import { cached } from '../../util/functions';
+import { debug, trace } from './_env';
 import { AccountAccessKeyCache } from './account-cache';
+import { cached } from './cached';
 import { Account } from './sdk-provider';
 
 // We need to map regions to domain suffixes, and the SDK already has a function to do this.

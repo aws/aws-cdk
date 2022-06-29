@@ -1,0 +1,205 @@
+{
+  "Resources": {
+    "LambdaArnReaderAB4FC772": {
+      "Type": "Custom::CrossRegionStringParameterReader",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A",
+            "Arn"
+          ]
+        },
+        "Region": "us-east-1",
+        "ParameterName": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda",
+        "RefreshToken": "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "CustomCrossRegionStringParameterReaderCustomResourceProviderRole71CD6825": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          }
+        ],
+        "Policies": [
+          {
+            "PolicyName": "Inline",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":ssm:us-east-1:",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":parameter/cdk/EdgeFunctionArn/*"
+                      ]
+                    ]
+                  },
+                  "Action": [
+                    "ssm:GetParameter"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3BucketA88C096E"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3VersionKeyF63BD825"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3VersionKeyF63BD825"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Timeout": 900,
+        "MemorySize": 128,
+        "Handler": "__entrypoint__.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomCrossRegionStringParameterReaderCustomResourceProviderRole71CD6825",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs14.x"
+      },
+      "DependsOn": [
+        "CustomCrossRegionStringParameterReaderCustomResourceProviderRole71CD6825"
+      ]
+    },
+    "Lambda2ArnReader5ACFBE1F": {
+      "Type": "Custom::CrossRegionStringParameterReader",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A",
+            "Arn"
+          ]
+        },
+        "Region": "us-east-1",
+        "ParameterName": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda2",
+        "RefreshToken": "Lambda2CurrentVersion72012B74da2ca4572056a1112d9804f75b5b7491"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "DistB3B78991": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "DefaultCacheBehavior": {
+            "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+            "Compress": true,
+            "LambdaFunctionAssociations": [
+              {
+                "EventType": "origin-request",
+                "LambdaFunctionARN": {
+                  "Fn::GetAtt": [
+                    "LambdaArnReaderAB4FC772",
+                    "FunctionArn"
+                  ]
+                }
+              },
+              {
+                "EventType": "origin-response",
+                "LambdaFunctionARN": {
+                  "Fn::GetAtt": [
+                    "Lambda2ArnReader5ACFBE1F",
+                    "FunctionArn"
+                  ]
+                }
+              }
+            ],
+            "TargetOriginId": "integdistributionlambdacrossregionDistOrigin167A054D5",
+            "ViewerProtocolPolicy": "allow-all"
+          },
+          "Enabled": true,
+          "HttpVersion": "http2",
+          "IPV6Enabled": true,
+          "Origins": [
+            {
+              "CustomOriginConfig": {
+                "OriginProtocolPolicy": "https-only"
+              },
+              "DomainName": "www.example.com",
+              "Id": "integdistributionlambdacrossregionDistOrigin167A054D5"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Parameters": {
+    "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3BucketA88C096E": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a\""
+    },
+    "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3VersionKeyF63BD825": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a\""
+    },
+    "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aArtifactHashE4754D11": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a\""
+    }
+  }
+}

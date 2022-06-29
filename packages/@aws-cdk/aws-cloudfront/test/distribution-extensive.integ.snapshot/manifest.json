@@ -1,0 +1,34 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-distribution-extensive": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-distribution-extensive.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-distribution-extensive/MyDist/LoggingBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDistLoggingBucket9B8976BC"
+          }
+        ],
+        "/integ-distribution-extensive/MyDist/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDistDB88FD9A"
+          }
+        ]
+      },
+      "displayName": "integ-distribution-extensive"
+    }
+  }
+}

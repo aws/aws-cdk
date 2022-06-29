@@ -1,0 +1,246 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "lambda-layer-awscli-integ-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-layer-awscli-integ-stack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/lambda-layer-awscli-integ-stack": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.8ad7bbf8be94e05d569da95ddb82511dcc959f25054825394cbb86028ccd1b6a.zip",
+              "id": "8ad7bbf8be94e05d569da95ddb82511dcc959f25054825394cbb86028ccd1b6a",
+              "packaging": "file",
+              "sourceHash": "8ad7bbf8be94e05d569da95ddb82511dcc959f25054825394cbb86028ccd1b6a",
+              "s3BucketParameter": "AssetParameters8ad7bbf8be94e05d569da95ddb82511dcc959f25054825394cbb86028ccd1b6aS3Bucket16472AE2",
+              "s3KeyParameter": "AssetParameters8ad7bbf8be94e05d569da95ddb82511dcc959f25054825394cbb86028ccd1b6aS3VersionKeyFAAA537A",
+              "artifactHashParameter": "AssetParameters8ad7bbf8be94e05d569da95ddb82511dcc959f25054825394cbb86028ccd1b6aArtifactHash08E93340"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48",
+              "id": "5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48",
+              "packaging": "zip",
+              "sourceHash": "5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48",
+              "s3BucketParameter": "AssetParameters5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48S3Bucket1DD21439",
+              "s3KeyParameter": "AssetParameters5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48S3VersionKey77F71A63",
+              "artifactHashParameter": "AssetParameters5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48ArtifactHashA6792482"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9",
+              "id": "8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9",
+              "packaging": "zip",
+              "sourceHash": "8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9",
+              "s3BucketParameter": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90",
+              "s3KeyParameter": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212",
+              "artifactHashParameter": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9ArtifactHash26B5BCAA"
+            }
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsCliLayerF44AAF94"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/AssetParameters/8ad7bbf8be94e05d569da95ddb82511dcc959f25054825394cbb86028ccd1b6a/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8ad7bbf8be94e05d569da95ddb82511dcc959f25054825394cbb86028ccd1b6aS3Bucket16472AE2"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/AssetParameters/8ad7bbf8be94e05d569da95ddb82511dcc959f25054825394cbb86028ccd1b6a/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8ad7bbf8be94e05d569da95ddb82511dcc959f25054825394cbb86028ccd1b6aS3VersionKeyFAAA537A"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/AssetParameters/8ad7bbf8be94e05d569da95ddb82511dcc959f25054825394cbb86028ccd1b6a/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8ad7bbf8be94e05d569da95ddb82511dcc959f25054825394cbb86028ccd1b6aArtifactHash08E93340"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/AssetParameters/5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48S3Bucket1DD21439"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/AssetParameters/5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48S3VersionKey77F71A63"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/AssetParameters/5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48ArtifactHashA6792482"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/AssetParameters/8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/AssetParameters/8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/AssetParameters/8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9ArtifactHash26B5BCAA"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/Lambda$python3.7/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambdapython37ServiceRoleB5A704D4"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/Lambda$python3.7/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambdapython3780349E0A"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/Providerpython3.7/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerpython37frameworkonEventServiceRole9EA6B2B0"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/Providerpython3.7/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerpython37frameworkonEventServiceRoleDefaultPolicyA9099DC2"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/Providerpython3.7/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerpython37frameworkonEvent3AA4F69E"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/CustomResourcepython3.7/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomResourcepython37"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/Lambda$python3.9/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambdapython39ServiceRoleE2CFED77"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/Lambda$python3.9/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambdapython39426A0480"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/Providerpython3.9/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerpython39frameworkonEventServiceRoleA299F5C1"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/Providerpython3.9/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerpython39frameworkonEventServiceRoleDefaultPolicy16A4767C"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/Providerpython3.9/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerpython39frameworkonEvent00AFA742"
+          }
+        ],
+        "/lambda-layer-awscli-integ-stack/CustomResourcepython3.9/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomResourcepython39"
+          }
+        ],
+        "Lambdapython36ServiceRole658256F3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambdapython36ServiceRole658256F3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Lambdapython36B64E8A5D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambdapython36B64E8A5D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Providerpython36frameworkonEventServiceRole0B176429": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerpython36frameworkonEventServiceRole0B176429",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Providerpython36frameworkonEventServiceRoleDefaultPolicy414F3608": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerpython36frameworkonEventServiceRoleDefaultPolicy414F3608",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Providerpython36frameworkonEventA3B6DD44": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerpython36frameworkonEventA3B6DD44",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "CustomResourcepython36": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomResourcepython36",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "lambda-layer-awscli-integ-stack"
+    }
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-lambda-pce-1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-lambda-pce-1.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaAliasPCEServiceRoleF7C9F212"
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaAliasPCEServiceRoleDefaultPolicyE7418D56"
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaAliasPCED0B8D751"
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/CurrentVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaAliasPCECurrentVersion072335D3224448d87cb592b450e76b3259c1d874"
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/Alias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alias325C5727"
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/Alias/AliasPermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AliasAliasPermissionAF30F9E8"
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaVersionPCEServiceRole2ACFB73E"
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaVersionPCEServiceRoleDefaultPolicy229A1552"
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaVersionPCEA3A0D86B"
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/CurrentVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaVersionPCECurrentVersion27FC3932d779c9115684f8f405cbd7282b1508f5"
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/Alias2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alias29455D932"
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/Alias2/AliasPermission2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alias2AliasPermission2448514B6"
+          }
+        ],
+        "MyLambdaAliasPCECurrentVersion072335D369bedb3f5cf56c66c63ccfdba59d5d84": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaAliasPCECurrentVersion072335D369bedb3f5cf56c66c63ccfdba59d5d84",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyLambdaVersionPCECurrentVersion27FC3932fc9df6df91e1aac821ec45a32cf17e32": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaVersionPCECurrentVersion27FC3932fc9df6df91e1aac821ec45a32cf17e32",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-lambda-pce-1"
+    }
+  }
+}

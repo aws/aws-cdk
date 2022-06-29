@@ -1,0 +1,115 @@
+{
+  "version": "19.0.0",
+  "artifacts": {
+    "PipelineStackBetaStack1E6541489.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "PipelineStackBetaStack1E6541489.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "PipelineStackBetaStack1E6541489": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "PipelineStackBetaStack1E6541489.template.json",
+        "validateOnSynth": true,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9b0251342ce12f30650bbf24424c57aba9857cc654420b1deff1533588801ceb.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "PipelineStackBetaStack1E6541489.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        },
+        "stackName": "Beta-Stack1"
+      },
+      "dependencies": [
+        "PipelineStackBetaStack1E6541489.assets"
+      ],
+      "metadata": {
+        "/PipelineStack/Beta/Stack1/OtherQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OtherQueue60B686DC",
+            "trace": [
+              "new Queue (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/aws-sqs/lib/queue.js:89:23)",
+              "new AppStage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:39:9)",
+              "new PipelineStack (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:26:27)",
+              "Object.<anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1105:14)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1159:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Module._load (node:internal/modules/cjs/loader:827:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Beta/Stack1/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion",
+            "trace": [
+              "addBootstrapVersionRule (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:285:19)",
+              "DefaultStackSynthesizer.synthesize (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:175:13)",
+              "/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:155:35",
+              "visit (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:200:9)",
+              "visit (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:197:9)",
+              "synthesizeTree (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:148:5)",
+              "Object.synthesize (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:33:5)",
+              "AppStage.synth (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/stage.js:105:41)",
+              "Object.pipelineSynth (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/lib/private/construct-internals.js:25:18)",
+              "Function.fromStage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/lib/blueprint/stage-deployment.js:44:48)",
+              "Wave.addStage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/lib/blueprint/wave.js:49:56)",
+              "CodePipeline.addStage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:69:46)",
+              "new PipelineStack (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:26:18)",
+              "Object.<anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1105:14)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1159:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Module._load (node:internal/modules/cjs/loader:827:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Beta/Stack1/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion",
+            "trace": [
+              "addBootstrapVersionRule (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:293:5)",
+              "DefaultStackSynthesizer.synthesize (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:175:13)",
+              "/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:155:35",
+              "visit (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:200:9)",
+              "visit (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:197:9)",
+              "synthesizeTree (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:148:5)",
+              "Object.synthesize (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/private/synthesis.js:33:5)",
+              "AppStage.synth (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/core/lib/stage.js:105:41)",
+              "Object.pipelineSynth (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/lib/private/construct-internals.js:25:18)",
+              "Function.fromStage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/lib/blueprint/stage-deployment.js:44:48)",
+              "Wave.addStage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/lib/blueprint/wave.js:49:56)",
+              "CodePipeline.addStage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:69:46)",
+              "new PipelineStack (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:26:18)",
+              "Object.<anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1105:14)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1159:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Module._load (node:internal/modules/cjs/loader:827:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "PipelineStack/Beta/Stack1"
+    }
+  }
+}

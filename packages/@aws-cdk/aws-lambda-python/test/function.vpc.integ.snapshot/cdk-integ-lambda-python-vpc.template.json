@@ -1,0 +1,340 @@
+{
+ "Resources": {
+  "myvpc9455A260": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-integ-lambda-python-vpc/my_vpc"
+     }
+    ]
+   }
+  },
+  "myvpcingressSubnet1Subnet82F0259C": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "myvpc9455A260"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "ingress"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1"
+     }
+    ]
+   }
+  },
+  "myvpcingressSubnet1RouteTableD6322DD5": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "myvpc9455A260"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1"
+     }
+    ]
+   }
+  },
+  "myvpcingressSubnet1RouteTableAssociation12FE9C06": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "myvpcingressSubnet1RouteTableD6322DD5"
+    },
+    "SubnetId": {
+     "Ref": "myvpcingressSubnet1Subnet82F0259C"
+    }
+   }
+  },
+  "myvpcingressSubnet1DefaultRoute6FCDFDDF": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "myvpcingressSubnet1RouteTableD6322DD5"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "myvpcIGW24C0BBAE"
+    }
+   },
+   "DependsOn": [
+    "myvpcVPCGWD483DB64"
+   ]
+  },
+  "myvpcingressSubnet2Subnet56945106": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "myvpc9455A260"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.1.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "ingress"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2"
+     }
+    ]
+   }
+  },
+  "myvpcingressSubnet2RouteTable2112B53A": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "myvpc9455A260"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2"
+     }
+    ]
+   }
+  },
+  "myvpcingressSubnet2RouteTableAssociation08B3BE06": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "myvpcingressSubnet2RouteTable2112B53A"
+    },
+    "SubnetId": {
+     "Ref": "myvpcingressSubnet2Subnet56945106"
+    }
+   }
+  },
+  "myvpcingressSubnet2DefaultRouteBF3C1EC8": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "myvpcingressSubnet2RouteTable2112B53A"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "myvpcIGW24C0BBAE"
+    }
+   },
+   "DependsOn": [
+    "myvpcVPCGWD483DB64"
+   ]
+  },
+  "myvpcIGW24C0BBAE": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-integ-lambda-python-vpc/my_vpc"
+     }
+    ]
+   }
+  },
+  "myvpcVPCGWD483DB64": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Ref": "myvpc9455A260"
+    },
+    "InternetGatewayId": {
+     "Ref": "myvpcIGW24C0BBAE"
+    }
+   }
+  },
+  "myhandlerServiceRole77891068": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "myhandlerSecurityGroupF566A239": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatic security group for Lambda Function cdkinteglambdapythonvpcmyhandlerCA7DB4EE",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "myvpc9455A260"
+    }
+   }
+  },
+  "myhandlerD202FA8E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994S3Bucket4B2FECC5"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994S3VersionKey38A78B56"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994S3VersionKey38A78B56"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "myhandlerServiceRole77891068",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "python3.9",
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "myhandlerSecurityGroupF566A239",
+        "GroupId"
+       ]
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Ref": "myvpcingressSubnet1Subnet82F0259C"
+      },
+      {
+       "Ref": "myvpcingressSubnet2Subnet56945106"
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "myhandlerServiceRole77891068"
+   ]
+  }
+ },
+ "Parameters": {
+  "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994S3Bucket4B2FECC5": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994\""
+  },
+  "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994S3VersionKey38A78B56": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994\""
+  },
+  "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994ArtifactHashF95C5182": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994\""
+  }
+ },
+ "Outputs": {
+  "FunctionArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "myhandlerD202FA8E",
+     "Arn"
+    ]
+   }
+  }
+ }
+}

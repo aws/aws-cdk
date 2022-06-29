@@ -18,3 +18,26 @@ updates:
     labels:
       - "auto-approve"
     open-pull-requests-limit: 5
+
+  # Non-TypeScript init template dependency updates
+  - package-ecosystem: "pip"
+    directory: "/packages/aws-cdk/lib/init-templates"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "auto-approve"
+    open-pull-requests-limit: 5
+  - package-ecosystem: "maven"
+    directory: "/packages/aws-cdk/lib/init-templates"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "auto-approve"
+    open-pull-requests-limit: 5
+  - package-ecosystem: "nuget"
+    directory: "/packages/aws-cdk/lib/init-templates"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "auto-approve"
+    open-pull-requests-limit: 5

@@ -815,7 +815,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
       props.comment && props.comment.length > 128
-        ? `${props.comment.substr(0, 128 - 3)}...`
+        ? `${props.comment.slice(0, 128 - 3)}...`
         : props.comment;
 
     let distributionConfig: CfnDistribution.DistributionConfigProperty = {
@@ -954,7 +954,9 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     }
 
     if (props.loggingConfig) {
-      this.loggingBucket = props.loggingConfig.bucket || new s3.Bucket(this, 'LoggingBucket');
+      this.loggingBucket = props.loggingConfig.bucket || new s3.Bucket(this, 'LoggingBucket', {
+        encryption: s3.BucketEncryption.S3_MANAGED,
+      });
       distributionConfig = {
         ...distributionConfig,
         logging: {

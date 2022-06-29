@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-cloudtrail/test/integ.cloudtrail-supplied-bucket.lit": {
+      "stacks": [
+        "integ-cloudtrail"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

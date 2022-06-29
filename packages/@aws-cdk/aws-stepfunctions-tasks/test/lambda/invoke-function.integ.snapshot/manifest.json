@@ -1,0 +1,102 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-stepfunctions-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-stepfunctions-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-stepfunctions-integ": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232",
+              "id": "9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232",
+              "packaging": "zip",
+              "sourceHash": "9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232",
+              "s3BucketParameter": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3Bucket1354C645",
+              "s3KeyParameter": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC",
+              "artifactHashParameter": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232ArtifactHashFA16AACF"
+            }
+          }
+        ],
+        "/aws-stepfunctions-integ/Handler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HandlerServiceRoleFCDC14AE"
+          }
+        ],
+        "/aws-stepfunctions-integ/Handler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Handler886CB40B"
+          }
+        ],
+        "/aws-stepfunctions-integ/AssetParameters/9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3Bucket1354C645"
+          }
+        ],
+        "/aws-stepfunctions-integ/AssetParameters/9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC"
+          }
+        ],
+        "/aws-stepfunctions-integ/AssetParameters/9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232ArtifactHashFA16AACF"
+          }
+        ],
+        "/aws-stepfunctions-integ/CallbackHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CallbackHandlerServiceRole3689695E"
+          }
+        ],
+        "/aws-stepfunctions-integ/CallbackHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CallbackHandler4434C38D"
+          }
+        ],
+        "/aws-stepfunctions-integ/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/aws-stepfunctions-integ/StateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+          }
+        ],
+        "/aws-stepfunctions-integ/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/aws-stepfunctions-integ/Service-principalMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceprincipalMap"
+          }
+        ]
+      },
+      "displayName": "aws-stepfunctions-integ"
+    }
+  }
+}

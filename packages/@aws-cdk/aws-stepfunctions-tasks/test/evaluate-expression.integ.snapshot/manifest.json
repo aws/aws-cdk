@@ -1,0 +1,114 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-stepfunctions-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-stepfunctions-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-stepfunctions-integ": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.e54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98",
+              "id": "e54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98",
+              "packaging": "zip",
+              "sourceHash": "e54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98",
+              "s3BucketParameter": "AssetParameterse54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98S3Bucket5D9A017D",
+              "s3KeyParameter": "AssetParameterse54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98S3VersionKey03C77D7E",
+              "artifactHashParameter": "AssetParameterse54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98ArtifactHash322DA80B"
+            }
+          }
+        ],
+        "/aws-stepfunctions-integ/Eval2b81e383aad244db8aafb4809ae0e3b4/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Eval2b81e383aad244db8aafb4809ae0e3b4ServiceRoleB225BF12"
+          }
+        ],
+        "/aws-stepfunctions-integ/Eval2b81e383aad244db8aafb4809ae0e3b4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Eval2b81e383aad244db8aafb4809ae0e3b4F6842FF0"
+          }
+        ],
+        "/aws-stepfunctions-integ/AssetParameters/e54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameterse54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98S3Bucket5D9A017D"
+          }
+        ],
+        "/aws-stepfunctions-integ/AssetParameters/e54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameterse54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98S3VersionKey03C77D7E"
+          }
+        ],
+        "/aws-stepfunctions-integ/AssetParameters/e54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameterse54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98ArtifactHash322DA80B"
+          }
+        ],
+        "/aws-stepfunctions-integ/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/aws-stepfunctions-integ/StateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+          }
+        ],
+        "/aws-stepfunctions-integ/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/aws-stepfunctions-integ/StateMachineARN": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineARN"
+          }
+        ],
+        "/aws-stepfunctions-integ/Service-principalMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceprincipalMap"
+          }
+        ],
+        "Evalda2d1181604e4a4586941a6abd7fe42dServiceRoleED144118": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Evalda2d1181604e4a4586941a6abd7fe42dServiceRoleED144118",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Evalda2d1181604e4a4586941a6abd7fe42dF371675D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Evalda2d1181604e4a4586941a6abd7fe42dF371675D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-stepfunctions-integ"
+    }
+  }
+}

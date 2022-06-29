@@ -165,12 +165,28 @@ behavior('pipeline created with auto approve tags and lambda/codebuild w/ valid 
           {
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                stringLike('*AutoApprove*'),
-                'Arn',
-              ],
-            },
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  stringLike('*AutoApprove*'),
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        stringLike('*AutoApprove*'),
+                        'Arn',
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
           },
         ]),
       },

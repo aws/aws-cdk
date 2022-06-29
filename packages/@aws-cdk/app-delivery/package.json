@@ -45,7 +45,7 @@
     "test": "cdk-test",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "awslint": "cdk-awslint",
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test",
@@ -70,10 +70,10 @@
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
-    "fast-check": "^2.22.0",
+    "@types/jest": "^27.5.2",
+    "fast-check": "^2.25.0",
     "jest": "^27.5.1"
   },
   "repository": {
@@ -105,7 +105,7 @@
     "constructs": "^3.3.69"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "deprecated",
   "maturity": "deprecated",

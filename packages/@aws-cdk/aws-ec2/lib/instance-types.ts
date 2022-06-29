@@ -460,6 +460,16 @@ export enum InstanceClass {
   I3EN = 'i3en',
 
   /**
+   * I/O-optimized instances with local NVME drive powered by Intel Xeon Scalable processors (code named Ice Lake), 4th generation
+   */
+  IO4_INTEL = 'i4i',
+
+  /**
+   * I/O-optimized instances with local NVME drive powered by Intel Xeon Scalable processors (code named Ice Lake), 4th generation
+   */
+  I4I = 'i4i',
+
+  /**
    * Storage optimized instances powered by Graviton2 processor, 4th generation
    */
   STORAGE4_GRAVITON_NETWORK_OPTIMIZED = 'storage4-graviton-network-optimized',
@@ -562,6 +572,36 @@ export enum InstanceClass {
    * Memory-intensive instances, 2nd generation with Graviton2 processors and local NVME drive
    */
   X2GD = 'x2gd',
+
+  /**
+   * Memory-intensive instances with higher network bandwith, local NVME drive, and extended memory. Intel Xeon Scalable (Ice Lake) processors
+   */
+  MEMORY_INTENSIVE_2_XT_INTEL = 'x2iedn',
+
+  /**
+   *  Memory-intensive instances with higher network bandwith, local NVME drive, and extended memory. Intel Xeon Scalable (Ice Lake) processors
+   */
+  X2IEDN = 'x2iedn',
+
+  /**
+   * Memory-intensive instances with higher network bandwith and local NVME drive, Intel Xeon Scalable (Ice Lake) processors
+   */
+  MEMORY_INTENSIVE_2_INTEL = 'x2idn',
+
+  /**
+   * Memory-intensive instances with higher network bandwith and local NVME drive, Intel Xeon Scalable (Ice Lake) processors
+   */
+  X2IDN = 'x2idn',
+
+  /**
+   * Memory-intensive instances with higher network bandwith and single-threaded performance, Intel Xeon Scalable (Cascade Lake) processors
+   */
+  MEMORY_INTENSIVE_2_XTZ_INTEL = 'x2iezn',
+
+  /**
+   * Memory-intensive instances with higher network bandwith and single-threaded performance, Intel Xeon Scalable (Cascade Lake) processors
+   */
+  X2IEZN = 'x2iezn',
 
   /**
    * Instances with customizable hardware acceleration, 1st generation

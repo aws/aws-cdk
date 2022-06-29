@@ -1,5 +1,5 @@
-import { Fn, isResolvableObject, Lazy, Stack, Token, Tokenization } from '../lib';
-import { createTokenDouble, extractTokenDouble } from '../lib/private/encoding';
+import { CfnResource, Fn, isResolvableObject, Lazy, Stack, Token, Tokenization } from '../lib';
+import { createTokenDouble, extractTokenDouble, stringContainsNumberTokens, STRINGIFIED_NUMBER_PATTERN } from '../lib/private/encoding';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { findTokens } from '../lib/private/resolve';
 import { IResolvable } from '../lib/resolvable';
@@ -482,15 +482,12 @@ describe('tokens', () => {
       expect(() => {
         resolve({ value: encoded[0] });
       }).toThrow(/Found an encoded list/);
-
-
     });
   });
 
   describe('number encoding', () => {
     test('basic integer encoding works', () => {
       expect(16).toEqual(extractTokenDouble(createTokenDouble(16)));
-
     });
 
     test('arbitrary integers can be encoded, stringified, and recovered', () => {
@@ -504,16 +501,12 @@ describe('tokens', () => {
         const decoded = extractTokenDouble(roundtripped);
         expect(decoded).toEqual(x);
       }
-
-
     });
 
     test('arbitrary numbers are correctly detected as not being tokens', () => {
       expect(undefined).toEqual(extractTokenDouble(0));
       expect(undefined).toEqual(extractTokenDouble(1243));
       expect(undefined).toEqual(extractTokenDouble(4835e+532));
-
-
     });
 
     test('can number-encode and resolve Token objects', () => {
@@ -528,8 +521,57 @@ describe('tokens', () => {
       // THEN
       const resolved = resolve({ value: encoded });
       expect(resolved).toEqual({ value: 123 });
+    });
 
+    test('Tokens are still reversible after having been encoded multiple times', () => {
+      // GIVEN
+      const original = new Intrinsic(123);
 
+      // WHEN
+      let x: any = original;
+      x = Token.asString(x);
+      x = Token.asNumber(x);
+      x = Token.asList(x);
+      x = Token.asString(x);
+
+      // THEN
+      expect(Tokenization.reverse(x)).toBe(original);
+    });
+
+    test('regex detects all stringifications of encoded tokens', () => {
+      expect(stringContainsNumberTokens(`${createTokenDouble(0)}`)).toBeTruthy();
+      expect(stringContainsNumberTokens(`${createTokenDouble(Math.pow(2, 48) - 1)}`)).toBeTruthy(); // MAX_ENCODABLE_INTEGER
+      expect(stringContainsNumberTokens('1234')).toBeFalsy();
+    });
+
+    test('check that the first N encoded numbers can be detected', () => {
+      const re = new RegExp(STRINGIFIED_NUMBER_PATTERN);
+      // Ran this up to 1 million offline
+      for (let i = 0; i < 1000; i++) {
+        expect(`${createTokenDouble(i)}`).toMatch(re);
+      }
+    });
+
+    test('handle stringified number token', () => {
+      // GIVEN
+      const tok = `the answer is: ${Lazy.number({ produce: () => 86 })}`;
+
+      // THEN
+      expect(resolve({ value: `${tok}` })).toEqual({
+        value: 'the answer is: 86',
+      });
+    });
+
+    test('handle stringified number reference', () => {
+      const stack = new Stack();
+      const res = new CfnResource(stack, 'Resource', { type: 'My::Resource' });
+      // GIVEN
+      const tok = `the answer is: ${Token.asNumber(res.ref)}`;
+
+      // THEN
+      expect(resolve({ value: `${tok}` })).toEqual({
+        value: { 'Fn::Join': ['', ['the answer is: ', { Ref: 'Resource' }]] },
+      });
     });
   });
 
@@ -694,25 +736,21 @@ describe('tokens', () => {
   describe('stringifyNumber', () => {
     test('converts number to string', () => {
       expect(Tokenization.stringifyNumber(100)).toEqual('100');
-
     });
 
     test('converts tokenized number to string', () => {
       expect(resolve(Tokenization.stringifyNumber({
         resolve: () => 100,
       } as any))).toEqual('100');
-
     });
 
     test('string remains the same', () => {
       expect(Tokenization.stringifyNumber('123' as any)).toEqual('123');
-
     });
 
     test('Ref remains the same', () => {
       const val = { Ref: 'SomeLogicalId' };
       expect(Tokenization.stringifyNumber(val as any)).toEqual(val);
-
     });
 
     test('lazy Ref remains the same', () => {
@@ -791,3 +829,4 @@ function tokensThatResolveTo(value: any): Token[] {
 function resolve(x: any) {
   return new Stack().resolve(x);
 }
+

@@ -1,0 +1,52 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-amplify-codecommit-app": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-amplify-codecommit-app.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-amplify-codecommit-app/Repo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Repo02AC86CF"
+          }
+        ],
+        "/cdk-amplify-codecommit-app/App/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppRole1AF9B530"
+          }
+        ],
+        "/cdk-amplify-codecommit-app/App/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppRoleDefaultPolicy9CADBAA1"
+          }
+        ],
+        "/cdk-amplify-codecommit-app/App/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppF1B96344"
+          }
+        ],
+        "/cdk-amplify-codecommit-app/App/master/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Appmaster71597E87"
+          }
+        ]
+      },
+      "displayName": "cdk-amplify-codecommit-app"
+    }
+  }
+}

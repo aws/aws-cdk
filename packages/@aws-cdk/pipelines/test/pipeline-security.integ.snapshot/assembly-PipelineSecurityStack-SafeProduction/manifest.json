@@ -1,0 +1,111 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "PipelineSecurityStackSafeProductionMySafeStackC0D87904.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "PipelineSecurityStackSafeProductionMySafeStackC0D87904.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "PipelineSecurityStackSafeProductionMySafeStackC0D87904": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "PipelineSecurityStackSafeProductionMySafeStackC0D87904.template.json",
+        "validateOnSynth": true,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/438cc177ec016e131365f2b864849c84dcb371e8e7ed718c21cc27d6569faf50.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "PipelineSecurityStackSafeProductionMySafeStackC0D87904.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        },
+        "stackName": "SafeProduction-MySafeStack"
+      },
+      "dependencies": [
+        "PipelineSecurityStackSafeProductionMySafeStackC0D87904.assets"
+      ],
+      "metadata": {
+        "/PipelineSecurityStack/SafeProduction/MySafeStack/MySafeTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySafeTopicCC243D11",
+            "trace": [
+              "new Topic (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/aws-sns/lib/topic.js:43:26)",
+              "new MySafeStage (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/pipelines/test/integ.pipeline-security.js:25:9)",
+              "new TestCdkStack (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/pipelines/test/integ.pipeline-security.js:70:31)",
+              "Object.<anonymous> (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/pipelines/test/integ.pipeline-security.js:82:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1105:14)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1159:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Module._load (node:internal/modules/cjs/loader:827:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineSecurityStack/SafeProduction/MySafeStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion",
+            "trace": [
+              "addBootstrapVersionRule (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:282:19)",
+              "DefaultStackSynthesizer.synthesize (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:172:13)",
+              "/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/core/lib/private/synthesis.js:155:35",
+              "visit (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/core/lib/private/synthesis.js:200:9)",
+              "visit (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/core/lib/private/synthesis.js:197:9)",
+              "synthesizeTree (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/core/lib/private/synthesis.js:148:5)",
+              "Object.synthesize (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/core/lib/private/synthesis.js:33:5)",
+              "MySafeStage.synth (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/core/lib/stage.js:104:41)",
+              "Object.pipelineSynth (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/pipelines/lib/private/construct-internals.js:25:18)",
+              "CdkStage.addApplication (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/pipelines/lib/legacy/stage.js:80:43)",
+              "new TestCdkStack (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/pipelines/test/integ.pipeline-security.js:70:16)",
+              "Object.<anonymous> (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/pipelines/test/integ.pipeline-security.js:82:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1105:14)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1159:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Module._load (node:internal/modules/cjs/loader:827:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineSecurityStack/SafeProduction/MySafeStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion",
+            "trace": [
+              "addBootstrapVersionRule (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:290:5)",
+              "DefaultStackSynthesizer.synthesize (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:172:13)",
+              "/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/core/lib/private/synthesis.js:155:35",
+              "visit (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/core/lib/private/synthesis.js:200:9)",
+              "visit (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/core/lib/private/synthesis.js:197:9)",
+              "synthesizeTree (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/core/lib/private/synthesis.js:148:5)",
+              "Object.synthesize (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/core/lib/private/synthesis.js:33:5)",
+              "MySafeStage.synth (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/core/lib/stage.js:104:41)",
+              "Object.pipelineSynth (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/pipelines/lib/private/construct-internals.js:25:18)",
+              "CdkStage.addApplication (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/pipelines/lib/legacy/stage.js:80:43)",
+              "new TestCdkStack (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/pipelines/test/integ.pipeline-security.js:70:16)",
+              "Object.<anonymous> (/Users/rmuller/Development/aws/aws-cdk/packages/@aws-cdk/pipelines/test/integ.pipeline-security.js:82:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1105:14)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1159:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Module._load (node:internal/modules/cjs/loader:827:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "PipelineSecurityStack/SafeProduction/MySafeStack"
+    }
+  }
+}

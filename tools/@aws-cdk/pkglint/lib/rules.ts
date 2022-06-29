@@ -130,7 +130,9 @@ export class RepositoryCorrect extends ValidationRule {
     expectJSON(this.name, pkg, 'repository.type', 'git');
     expectJSON(this.name, pkg, 'repository.url', 'https://github.com/aws/aws-cdk.git');
     const pkgDir = path.relative(monoRepoRoot(), pkg.packageRoot);
-    expectJSON(this.name, pkg, 'repository.directory', pkgDir);
+    // Enforcing '/' separator for builds to work in Windows.
+    const osPkgDir = pkgDir.split(path.sep).join('/');
+    expectJSON(this.name, pkg, 'repository.directory', osPkgDir);
   }
 }
 
@@ -178,7 +180,7 @@ export class BundledCLI extends ValidationRule {
     '0BSD',
   ];
 
-  private static readonly DONT_ATTRIBUTE = '^@aws-cdk\/|^cdk-assets$';
+  private static readonly DONT_ATTRIBUTE = '^@aws-cdk\/|^cdk-assets$|^cdk-cli-wrapper$';
 
   public readonly name = 'bundle';
 
@@ -454,6 +456,12 @@ export class MaturitySetting extends ValidationRule {
   }
 
   private validateReadmeHasBanner(pkg: PackageJson, maturity: string, levelsPresent: string[]) {
+    if (pkg.packageName === '@aws-cdk/aws-elasticsearch') {
+      // Special case for elasticsearch, which is labeled as stable in package.json
+      // but all APIs are now marked 'deprecated'
+      return;
+    }
+
     const badge = this.readmeBadge(maturity, levelsPresent);
     if (!badge) {
       // Somehow, we don't have a badge for this stability level
@@ -803,7 +811,7 @@ export class JSIIPythonTarget extends ValidationRule {
 
     expectJSON(this.name, pkg, 'jsii.targets.python.distName', moduleName.python.distName);
     expectJSON(this.name, pkg, 'jsii.targets.python.module', moduleName.python.module);
-    expectJSON(this.name, pkg, 'jsii.targets.python.classifiers', ['Framework :: AWS CDK', 'Framework :: AWS CDK :: 1']);
+    expectJSON(this.name, pkg, 'jsii.targets.python.classifiers', ['Framework :: AWS CDK', `Framework :: AWS CDK :: ${cdkMajorVersion()}`]);
   }
 }
 
@@ -1237,11 +1245,7 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    if (cdkMajorVersion() === 2) {
-      expectJSON(this.name, pkg, 'engines.node', '>= 14.15.0');
-    } else {
-      expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
-    }
+    expectJSON(this.name, pkg, 'engines.node', '>= 14.15.0');
   }
 }
 
@@ -1256,14 +1260,14 @@ export class MustHaveIntegCommand extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!hasIntegTests(pkg)) { return; }
 
-    expectJSON(this.name, pkg, 'scripts.integ', 'cdk-integ');
+    expectJSON(this.name, pkg, 'scripts.integ', 'integ-runner');
 
     // We can't ACTUALLY require cdk-build-tools/package.json here,
     // because WE don't depend on cdk-build-tools and we don't know if
     // the package does.
     expectDevDependency(this.name,
       pkg,
-      '@aws-cdk/cdk-integ-tools',
+      '@aws-cdk/integ-runner',
       `${PKGLINT_VERSION}`); // eslint-disable-line @typescript-eslint/no-require-imports
   }
 }
@@ -1724,18 +1728,6 @@ export class UbergenPackageVisibility extends ValidationRule {
           fix: () => {
             delete pkg.json.private;
             pkg.json.private = true;
-          },
-        });
-      }
-    } else {
-      if (pkg.json.private && !pkg.json.ubergen?.exclude) {
-        pkg.report({
-          ruleName: this.name,
-          message: 'ubergen.exclude must be configured for private packages',
-          fix: () => {
-            pkg.json.ubergen = {
-              exclude: true,
-            };
           },
         });
       }

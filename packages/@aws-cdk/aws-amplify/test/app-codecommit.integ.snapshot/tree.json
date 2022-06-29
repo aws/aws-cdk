@@ -1,0 +1,205 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "cdk-amplify-codecommit-app": {
+        "id": "cdk-amplify-codecommit-app",
+        "path": "cdk-amplify-codecommit-app",
+        "children": {
+          "Repo": {
+            "id": "Repo",
+            "path": "cdk-amplify-codecommit-app/Repo",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-amplify-codecommit-app/Repo/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CodeCommit::Repository",
+                  "aws:cdk:cloudformation:props": {
+                    "repositoryName": "integ-amplify-app"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-codecommit.CfnRepository",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-codecommit.Repository",
+              "version": "0.0.0"
+            }
+          },
+          "App": {
+            "id": "App",
+            "path": "cdk-amplify-codecommit-app/App",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "cdk-amplify-codecommit-app/App/Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-amplify-codecommit-app/App/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "amplify.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "cdk-amplify-codecommit-app/App/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "cdk-amplify-codecommit-app/App/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "codecommit:GitPull",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "Repo02AC86CF",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "AppRoleDefaultPolicy9CADBAA1",
+                            "roles": [
+                              {
+                                "Ref": "AppRole1AF9B530"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-amplify-codecommit-app/App/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Amplify::App",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "App",
+                    "basicAuthConfig": {
+                      "enableBasicAuth": false
+                    },
+                    "iamServiceRole": {
+                      "Fn::GetAtt": [
+                        "AppRole1AF9B530",
+                        "Arn"
+                      ]
+                    },
+                    "repository": {
+                      "Fn::GetAtt": [
+                        "Repo02AC86CF",
+                        "CloneUrlHttp"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-amplify.CfnApp",
+                  "version": "0.0.0"
+                }
+              },
+              "master": {
+                "id": "master",
+                "path": "cdk-amplify-codecommit-app/App/master",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-amplify-codecommit-app/App/master/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Amplify::Branch",
+                      "aws:cdk:cloudformation:props": {
+                        "appId": {
+                          "Fn::GetAtt": [
+                            "AppF1B96344",
+                            "AppId"
+                          ]
+                        },
+                        "branchName": "master",
+                        "enableAutoBuild": true,
+                        "enablePullRequestPreview": true
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-amplify.CfnBranch",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-amplify.Branch",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-amplify.App",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

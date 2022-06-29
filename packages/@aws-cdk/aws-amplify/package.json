@@ -45,7 +45,7 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
     "build": "cdk-build",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -83,11 +83,10 @@
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
-    "@types/yaml": "1.9.6",
+    "@types/jest": "^27.5.2",
     "aws-sdk": "^2.848.0"
   },
   "dependencies": {
@@ -101,12 +100,8 @@
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.3.69",
-    "yaml": "1.10.2"
+    "constructs": "^3.3.69"
   },
-  "bundledDependencies": [
-    "yaml"
-  ],
   "peerDependencies": {
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
@@ -121,7 +116,7 @@
     "constructs": "^3.3.69"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "experimental",
   "maturity": "experimental",

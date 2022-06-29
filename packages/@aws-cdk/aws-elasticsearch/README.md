@@ -3,20 +3,9 @@
 
 ---
 
-Features                           | Stability
------------------------------------|----------------------------------------------------------------
-CFN Resources                      | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
-Higher level constructs for Domain | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
 
-> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always
-> stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
-<!-- -->
-
-> **Stable:** Higher level constructs in this module that are marked stable will not undergo any
-> breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
+> This API may emit warnings. Backward compatibility is not guaranteed.
 
 ---
 

@@ -1,0 +1,510 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "aws-stepfunctions-tasks-eventbridge-put-events-integ": {
+        "id": "aws-stepfunctions-tasks-eventbridge-put-events-integ",
+        "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ",
+        "children": {
+          "EventBus": {
+            "id": "EventBus",
+            "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ/EventBus",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ/EventBus/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::EventBus",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "MyEventBus1"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-events.CfnEventBus",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-events.EventBus",
+              "version": "0.0.0"
+            }
+          },
+          "Put Custom Events": {
+            "id": "Put Custom Events",
+            "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ/Put Custom Events",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions-tasks.EventBridgePutEvents",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachine": {
+            "id": "StateMachine",
+            "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ/StateMachine",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ/StateMachine/Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ/StateMachine/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": {
+                                  "Fn::FindInMap": [
+                                    "ServiceprincipalMap",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    "states"
+                                  ]
+                                }
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ/StateMachine/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ/StateMachine/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "events:PutEvents",
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "EventBus7B8748AA",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":events:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":event-bus/default"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "StateMachineRoleDefaultPolicyDF1E6607",
+                            "roles": [
+                              {
+                                "Ref": "StateMachineRoleB840431D"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ/StateMachine/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineRoleB840431D",
+                        "Arn"
+                      ]
+                    },
+                    "definitionString": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{\"StartAt\":\"Put Custom Events\",\"States\":{\"Put Custom Events\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::events:putEvents\",\"Parameters\":{\"Entries\":[{\"Detail\":{\"Message\":\"Hello from Step Functions!\"},\"DetailType\":\"MessageFromStepFunctions\",\"Source\":\"step.functions\"},{\"Detail\":{\"Message\":\"Hello from Step Functions!\"},\"DetailType\":\"MessageFromStepFunctions\",\"EventBusName\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "EventBus7B8748AA",
+                              "Arn"
+                            ]
+                          },
+                          "\",\"Source\":\"step.functions\"}]}}},\"TimeoutSeconds\":30}"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+              "version": "0.0.0"
+            }
+          },
+          "Service-principalMap": {
+            "id": "Service-principalMap",
+            "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ/Service-principalMap",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ/Exports",
+            "children": {
+              "Output{\"Ref\":\"StateMachine2E01A3A5\"}": {
+                "id": "Output{\"Ref\":\"StateMachine2E01A3A5\"}",
+                "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Construct",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "PutEvents": {
+        "id": "PutEvents",
+        "path": "PutEvents",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "PutEvents/DefaultTest",
+            "children": {
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "PutEvents/DefaultTest/DeployAssert",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "PutEvents/DefaultTest/DeployAssert/Default",
+                    "children": {
+                      "AwsApiCallStepFunctionsstartExecution": {
+                        "id": "AwsApiCallStepFunctionsstartExecution",
+                        "path": "PutEvents/DefaultTest/DeployAssert/Default/AwsApiCallStepFunctionsstartExecution",
+                        "children": {
+                          "SdkProvider": {
+                            "id": "SdkProvider",
+                            "path": "PutEvents/DefaultTest/DeployAssert/Default/AwsApiCallStepFunctionsstartExecution/SdkProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "PutEvents/DefaultTest/DeployAssert/Default/AwsApiCallStepFunctionsstartExecution/SdkProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.Construct",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Default": {
+                            "id": "Default",
+                            "path": "PutEvents/DefaultTest/DeployAssert/Default/AwsApiCallStepFunctionsstartExecution/Default",
+                            "children": {
+                              "Default": {
+                                "id": "Default",
+                                "path": "PutEvents/DefaultTest/DeployAssert/Default/AwsApiCallStepFunctionsstartExecution/Default/Default",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CustomResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AwsApiCall",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AwsApiCallStepFunctionsdescribeExecution": {
+                        "id": "AwsApiCallStepFunctionsdescribeExecution",
+                        "path": "PutEvents/DefaultTest/DeployAssert/Default/AwsApiCallStepFunctionsdescribeExecution",
+                        "children": {
+                          "SdkProvider": {
+                            "id": "SdkProvider",
+                            "path": "PutEvents/DefaultTest/DeployAssert/Default/AwsApiCallStepFunctionsdescribeExecution/SdkProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "PutEvents/DefaultTest/DeployAssert/Default/AwsApiCallStepFunctionsdescribeExecution/SdkProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.Construct",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Default": {
+                            "id": "Default",
+                            "path": "PutEvents/DefaultTest/DeployAssert/Default/AwsApiCallStepFunctionsdescribeExecution/Default",
+                            "children": {
+                              "Default": {
+                                "id": "Default",
+                                "path": "PutEvents/DefaultTest/DeployAssert/Default/AwsApiCallStepFunctionsdescribeExecution/Default/Default",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CustomResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "AssertEqualsStepFunctionsdescribeExecution": {
+                            "id": "AssertEqualsStepFunctionsdescribeExecution",
+                            "path": "PutEvents/DefaultTest/DeployAssert/Default/AwsApiCallStepFunctionsdescribeExecution/AssertEqualsStepFunctionsdescribeExecution",
+                            "children": {
+                              "AssertionProvider": {
+                                "id": "AssertionProvider",
+                                "path": "PutEvents/DefaultTest/DeployAssert/Default/AwsApiCallStepFunctionsdescribeExecution/AssertEqualsStepFunctionsdescribeExecution/AssertionProvider",
+                                "children": {
+                                  "AssertionsProvider": {
+                                    "id": "AssertionsProvider",
+                                    "path": "PutEvents/DefaultTest/DeployAssert/Default/AwsApiCallStepFunctionsdescribeExecution/AssertEqualsStepFunctionsdescribeExecution/AssertionProvider/AssertionsProvider",
+                                    "constructInfo": {
+                                      "fqn": "@aws-cdk/core.Construct",
+                                      "version": "0.0.0"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "Default": {
+                                "id": "Default",
+                                "path": "PutEvents/DefaultTest/DeployAssert/Default/AwsApiCallStepFunctionsdescribeExecution/AssertEqualsStepFunctionsdescribeExecution/Default",
+                                "children": {
+                                  "Default": {
+                                    "id": "Default",
+                                    "path": "PutEvents/DefaultTest/DeployAssert/Default/AwsApiCallStepFunctionsdescribeExecution/AssertEqualsStepFunctionsdescribeExecution/Default/Default",
+                                    "constructInfo": {
+                                      "fqn": "@aws-cdk/core.CfnResource",
+                                      "version": "0.0.0"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.CustomResource",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "AssertionResults": {
+                                "id": "AssertionResults",
+                                "path": "PutEvents/DefaultTest/DeployAssert/Default/AwsApiCallStepFunctionsdescribeExecution/AssertEqualsStepFunctionsdescribeExecution/AssertionResults",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.CfnOutput",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests.EqualsAssertion",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AwsApiCall",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.DeployAssert",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "PutEvents/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "PutEvents/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "PutEvents/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "PutEvents/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Construct",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetParameters": {
+                    "id": "AssetParameters",
+                    "path": "PutEvents/DefaultTest/DeployAssert/AssetParameters",
+                    "children": {
+                      "1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b": {
+                        "id": "1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b",
+                        "path": "PutEvents/DefaultTest/DeployAssert/AssetParameters/1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b",
+                        "children": {
+                          "S3Bucket": {
+                            "id": "S3Bucket",
+                            "path": "PutEvents/DefaultTest/DeployAssert/AssetParameters/1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b/S3Bucket",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnParameter",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "S3VersionKey": {
+                            "id": "S3VersionKey",
+                            "path": "PutEvents/DefaultTest/DeployAssert/AssetParameters/1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b/S3VersionKey",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnParameter",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "ArtifactHash": {
+                            "id": "ArtifactHash",
+                            "path": "PutEvents/DefaultTest/DeployAssert/AssetParameters/1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b/ArtifactHash",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnParameter",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Construct",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Construct",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Construct",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

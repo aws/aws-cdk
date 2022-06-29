@@ -1,0 +1,79 @@
+{
+  "version": "18.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-integ-secret-lambda-rotation": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-secret-lambda-rotation.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-integ-secret-lambda-rotation/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Key961B73FD"
+          }
+        ],
+        "/cdk-integ-secret-lambda-rotation/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretA720EF05"
+          }
+        ],
+        "/cdk-integ-secret-lambda-rotation/Secret/Schedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretSchedule18F2CB66"
+          }
+        ],
+        "/cdk-integ-secret-lambda-rotation/Secret/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretPolicy06C9821C"
+          }
+        ],
+        "/cdk-integ-secret-lambda-rotation/Lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaServiceRoleA8ED4D3B"
+          }
+        ],
+        "/cdk-integ-secret-lambda-rotation/Lambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaServiceRoleDefaultPolicyDAE46E21"
+          }
+        ],
+        "/cdk-integ-secret-lambda-rotation/Lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaD247545B"
+          }
+        ],
+        "/cdk-integ-secret-lambda-rotation/Lambda/InvokeN0--a2GKfZP0JmDqDE--Vhhu6+A0TUv3NyNbk4YM+FKNc=": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokeN0a2GKfZP0JmDqDEVhhu6A0TUv3NyNbk4YMFKNc69846677"
+          }
+        ],
+        "LambdaInvokeServicePrincipalsecretsmanageramazonawscomB927629E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokeServicePrincipalsecretsmanageramazonawscomB927629E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "cdk-integ-secret-lambda-rotation"
+    }
+  }
+}

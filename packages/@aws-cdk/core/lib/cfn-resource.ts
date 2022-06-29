@@ -361,7 +361,7 @@ export class CfnResource extends CfnRefElement {
       const trace = this.creationStack;
       if (trace) {
         const creationStack = ['--- resource created at ---', ...trace].join('\n  at ');
-        const problemTrace = e.stack.substr(e.stack.indexOf(e.message) + e.message.length);
+        const problemTrace = e.stack.slice(e.stack.indexOf(e.message) + e.message.length);
         e.stack = `${e.message}\n  ${creationStack}\n  --- problem discovered at ---${problemTrace}`;
       }
 

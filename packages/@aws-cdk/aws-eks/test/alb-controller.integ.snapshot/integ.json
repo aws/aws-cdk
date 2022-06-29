@@ -1,0 +1,14 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "@aws-cdk/aws-eks/test/integ.alb-controller": {
+      "stacks": [
+        "aws-cdk-eks-cluster-alb-controller-test"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": false
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

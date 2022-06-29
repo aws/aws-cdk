@@ -135,7 +135,7 @@ function createScopeVariations(names: string[]) {
         // also include in the scopes variants without the prefix,
         // and without the '-' in the prefix
         // (so, 's3' and 'awss3')
-        pkgName.substr('aws-'.length),
+        pkgName.slice('aws-'.length),
         pkgName.replace(/^aws-/, 'aws'),
       ]
       : []

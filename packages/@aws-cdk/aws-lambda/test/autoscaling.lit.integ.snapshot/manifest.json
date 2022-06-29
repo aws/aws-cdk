@@ -1,0 +1,73 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-lambda-autoscaling": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-lambda-autoscaling.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-lambda-autoscaling/MyLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaServiceRole4539ECB6"
+          }
+        ],
+        "/aws-lambda-autoscaling/MyLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaCCE802FB"
+          }
+        ],
+        "/aws-lambda-autoscaling/MyLambda/CurrentVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaCurrentVersionE7A382CC0be4c7f7b82230afaf72d130ee920da9"
+          }
+        ],
+        "/aws-lambda-autoscaling/Alias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alias325C5727"
+          }
+        ],
+        "/aws-lambda-autoscaling/Alias/AliasScaling/Target/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AliasAliasScalingTarget7449FF0E"
+          }
+        ],
+        "/aws-lambda-autoscaling/Alias/AliasScaling/Target/Tracking/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AliasAliasScalingTargetTrackingA7718D48"
+          }
+        ],
+        "/aws-lambda-autoscaling/FunctionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FunctionName"
+          }
+        ],
+        "MyLambdaCurrentVersionE7A382CCa1b19066cadcfb5b078bffbfb5b1e687": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaCurrentVersionE7A382CCa1b19066cadcfb5b078bffbfb5b1e687",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-lambda-autoscaling"
+    }
+  }
+}

@@ -8,6 +8,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
   var ssm = require('@aws-cdk/aws-ssm');
   var iam = require('@aws-cdk/aws-iam');
   var sns = require('@aws-cdk/aws-sns');
+  var sqs = require('@aws-cdk/aws-sqs');
   var lambda = require('@aws-cdk/aws-lambda');
   var docker = require('@aws-cdk/aws-ecr-assets');
 } else {
@@ -18,6 +19,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
     aws_ssm: ssm,
     aws_iam: iam,
     aws_sns: sns,
+    aws_sqs: sqs,
     aws_lambda: lambda,
     aws_ecr_assets: docker
   } = require('aws-cdk-lib');
@@ -58,6 +60,27 @@ class YourStack extends cdk.Stack {
     super(parent, id, props);
     new sns.Topic(this, 'topic1');
     new sns.Topic(this, 'topic2');
+  }
+}
+
+class ImportableStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    if (!process.env.OMIT_TOPIC) {
+      const queue = new sqs.Queue(this, 'Queue', {
+        removalPolicy: process.env.ORPHAN_TOPIC ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY,
+      });
+
+      new cdk.CfnOutput(this, 'QueueName', {
+        value: queue.queueName,
+      });
+      new cdk.CfnOutput(this, 'QueueLogicalId', {
+        value: queue.node.defaultChild.logicalId,
+      });
+    }
+
+    new cdk.CfnWaitConditionHandle(this, 'Handle');
   }
 }
 
@@ -367,6 +390,8 @@ switch (stackSet) {
     new SomeStage(app, `${stackPrefix}-stage`);
 
     new BuiltinLambdaStack(app, `${stackPrefix}-builtin-lambda-function`);
+
+    new ImportableStack(app, `${stackPrefix}-importable-stack`);
     break;
 
   case 'stage-using-context':

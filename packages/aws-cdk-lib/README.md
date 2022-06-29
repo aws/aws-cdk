@@ -292,12 +292,20 @@ const secret = SecretValue.secretsManager('secretId', {
 Using AWS Secrets Manager is the recommended way to reference secrets in a CDK app.
 `SecretValue` also supports the following secret sources:
 
- - `SecretValue.plainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
- - `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM
+- `SecretValue.unsafePlainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
+- `SecretValue.secretsManager(secret)`: refers to a secret stored in Secrets Manager
+- `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM
  Parameter Store. If you don't specify the exact version, AWS CloudFormation uses the latest
  version of the parameter.
- - `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
- - `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
+- `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
+- `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
+- `SecretValue.resourceAttribute(attr)`: refers to a secret returned from a CloudFormation resource creation.
+
+`SecretValue`s should only be passed to constructs that accept properties of type
+`SecretValue`. These constructs are written to ensure your secrets will not be
+exposed where they shouldn't be. If you try to use a `SecretValue` in a
+different location, an error about unsafe secret usage will be thrown at
+synthesis time.
 
 ## ARN manipulation
 

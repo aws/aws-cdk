@@ -238,7 +238,7 @@ describe('lambda + vpc', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
       vpc,
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
     });
 
     // THEN
@@ -263,7 +263,7 @@ describe('lambda + vpc', () => {
       subnetConfiguration: [
         {
           name: 'Isolated',
-          subnetType: ec2.SubnetType.ISOLATED,
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
         },
       ],
     });
@@ -274,7 +274,7 @@ describe('lambda + vpc', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
       vpc,
-      vpcSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
     });
 
     // THEN
@@ -303,11 +303,11 @@ describe('lambda + vpc', () => {
         },
         {
           name: 'Private',
-          subnetType: ec2.SubnetType.PRIVATE,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
         },
         {
           name: 'Isolated',
-          subnetType: ec2.SubnetType.ISOLATED,
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
         },
       ],
     });

@@ -1,9 +1,10 @@
+import { ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { ArnFormat, CfnResource, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
+import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
 import { Schema } from './schema';
 import { IIntermediateType } from './schema-base';
@@ -255,6 +256,21 @@ export interface LogConfig {
 }
 
 /**
+ * Domain name configuration for AppSync
+ */
+export interface DomainOptions {
+  /**
+   * The certificate to use with the domain name.
+   */
+  readonly certificate: ICertificate;
+
+  /**
+   * The actual domain name. For example, `api.example.com`.
+   */
+  readonly domainName: string;
+}
+
+/**
  * Properties for an AppSync GraphQL API
  */
 export interface GraphqlApiProps {
@@ -292,6 +308,16 @@ export interface GraphqlApiProps {
    * @default - false
    */
   readonly xrayEnabled?: boolean;
+
+  /**
+   * The domain name configuration for the GraphQL API
+   *
+   * The Route 53 hosted zone and CName DNS record must be configured in addition to this setting to
+   * enable custom domain URL
+   *
+   * @default - no domain name
+   */
+  readonly domainName?: DomainOptions;
 }
 
 /**
@@ -391,7 +417,7 @@ export class GraphqlApi extends GraphqlApiBase {
     class Import extends GraphqlApiBase {
       public readonly apiId = attrs.graphqlApiId;
       public readonly arn = arn;
-      constructor (s: Construct, i: string) {
+      constructor(s: Construct, i: string) {
         super(s, i);
       }
     }
@@ -450,7 +476,7 @@ export class GraphqlApi extends GraphqlApiBase {
     const additionalModes = props.authorizationConfig?.additionalAuthorizationModes ?? [];
     const modes = [defaultMode, ...additionalModes];
 
-    this.modes = modes.map((mode) => mode.authorizationType );
+    this.modes = modes.map((mode) => mode.authorizationType);
 
     this.validateAuthorizationProps(modes);
 
@@ -471,6 +497,19 @@ export class GraphqlApi extends GraphqlApiBase {
     this.name = this.api.name;
     this.schema = props.schema ?? new Schema();
     this.schemaResource = this.schema.bind(this);
+
+    if (props.domainName) {
+      new CfnDomainName(this, 'DomainName', {
+        domainName: props.domainName.domainName,
+        certificateArn: props.domainName.certificate.certificateArn,
+        description: `domain for ${this.name} at ${this.graphqlUrl}`,
+      });
+
+      new CfnDomainNameApiAssociation(this, 'DomainAssociation', {
+        domainName: props.domainName.domainName,
+        apiId: this.apiId,
+      });
+    }
 
     if (modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY)) {
       const config = modes.find((mode: AuthorizationMode) => {
@@ -594,7 +633,7 @@ export class GraphqlApi extends GraphqlApiBase {
     if (!config) return undefined;
     return {
       userPoolId: config.userPool.userPoolId,
-      awsRegion: config.userPool.stack.region,
+      awsRegion: config.userPool.env.region,
       appIdClientRegex: config.appIdClientRegex,
       defaultAction: config.defaultAction || UserPoolDefaultAction.ALLOW,
     };

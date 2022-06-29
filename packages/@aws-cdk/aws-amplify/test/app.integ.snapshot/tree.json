@@ -1,0 +1,203 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "cdk-amplify-app": {
+        "id": "cdk-amplify-app",
+        "path": "cdk-amplify-app",
+        "children": {
+          "App": {
+            "id": "App",
+            "path": "cdk-amplify-app/App",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "cdk-amplify-app/App/Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-amplify-app/App/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "amplify.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "AppBasicAuth": {
+                "id": "AppBasicAuth",
+                "path": "cdk-amplify-app/App/AppBasicAuth",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-amplify-app/App/AppBasicAuth/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                      "aws:cdk:cloudformation:props": {
+                        "generateSecretString": {
+                          "secretStringTemplate": "{\"username\":\"aws\"}",
+                          "generateStringKey": "password"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-amplify-app/App/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Amplify::App",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "App",
+                    "autoBranchCreationConfig": {
+                      "basicAuthConfig": {
+                        "enableBasicAuth": false
+                      },
+                      "enableAutoBranchCreation": true,
+                      "enableAutoBuild": true,
+                      "enablePullRequestPreview": true
+                    },
+                    "basicAuthConfig": {
+                      "enableBasicAuth": true,
+                      "username": "aws",
+                      "password": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "{{resolve:secretsmanager:",
+                            {
+                              "Ref": "AppAppBasicAuthE743F015"
+                            },
+                            ":SecretString:password::}}"
+                          ]
+                        ]
+                      }
+                    },
+                    "customHeaders": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "customHeaders:\n  - pattern: \"*.json\"\n    headers:\n      - key: \"custom-header-name-1\"\n        value: \"custom-header-value-1\"\n      - key: \"custom-header-name-2\"\n        value: \"custom-header-value-2\"\n  - pattern: \"/path/*\"\n    headers:\n      - key: \"custom-header-name-1\"\n        value: \"custom-header-value-2\"\n      - key: \"x-aws-url-suffix\"\n        value: \"this-is-the-suffix-",
+                          {
+                            "Ref": "AWS::URLSuffix"
+                          },
+                          "\"\n"
+                        ]
+                      ]
+                    },
+                    "customRules": [
+                      {
+                        "source": "/source",
+                        "target": "/target"
+                      }
+                    ],
+                    "iamServiceRole": {
+                      "Fn::GetAtt": [
+                        "AppRole1AF9B530",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-amplify.CfnApp",
+                  "version": "0.0.0"
+                }
+              },
+              "master": {
+                "id": "master",
+                "path": "cdk-amplify-app/App/master",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-amplify-app/App/master/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Amplify::Branch",
+                      "aws:cdk:cloudformation:props": {
+                        "appId": {
+                          "Fn::GetAtt": [
+                            "AppF1B96344",
+                            "AppId"
+                          ]
+                        },
+                        "branchName": "master",
+                        "enableAutoBuild": true,
+                        "enablePullRequestPreview": true,
+                        "environmentVariables": [
+                          {
+                            "name": "key",
+                            "value": "value"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-amplify.CfnBranch",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-amplify.Branch",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-amplify.App",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}
