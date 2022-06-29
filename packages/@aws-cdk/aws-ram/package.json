@@ -99,7 +99,7 @@
   "engines": {
     "node": ">= 14.15.0"
   },
-  "stability": "experimental",
+  "stability": "stable",
   "maturity": "cfn-only",
   "awscdkio": {
     "announce": false
