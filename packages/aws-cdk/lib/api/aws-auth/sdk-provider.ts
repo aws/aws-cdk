@@ -459,7 +459,11 @@ function readIfPossible(filename: string): string | undefined {
  * @see https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
  */
 function safeUsername() {
-  return os.userInfo().username.replace(/[^\w+=,.@-]/g, '@');
+  try {
+    return os.userInfo().username.replace(/[^\w+=,.@-]/g, '@');
+  } catch (e) {
+    return 'noname';
+  }
 }
 
 /**

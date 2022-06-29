@@ -14,10 +14,6 @@ import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
 import { IResponseHeadersPolicy } from './response-headers-policy';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Interface for CloudFront distributions
  */
@@ -357,7 +353,7 @@ export class Distribution extends Resource implements IDistribution {
       return existingOrigin.originGroupId ?? existingOrigin.originId;
     } else {
       const originIndex = this.boundOrigins.length + 1;
-      const scope = new CoreConstruct(this, `Origin${originIndex}`);
+      const scope = new Construct(this, `Origin${originIndex}`);
       const originId = Names.uniqueId(scope).slice(-ORIGIN_ID_MAX_LENGTH);
       const originBindConfig = origin.bind(scope, { originId });
       if (!originBindConfig.failoverConfig) {
@@ -367,7 +363,7 @@ export class Distribution extends Resource implements IDistribution {
           throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
         }
         const groupIndex = this.originGroups.length + 1;
-        const originGroupId = Names.uniqueId(new CoreConstruct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
+        const originGroupId = Names.uniqueId(new Construct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
         this.boundOrigins.push({ origin, originId, originGroupId, ...originBindConfig });
 
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);

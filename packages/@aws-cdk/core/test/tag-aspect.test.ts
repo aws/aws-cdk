@@ -1,4 +1,5 @@
-import { CfnResource, CfnResourceProps, Construct, RemoveTag, Stack, Tag, TagManager, TagType, Aspects, Tags } from '../lib';
+import { Construct } from 'constructs';
+import { CfnResource, CfnResourceProps, RemoveTag, Stack, Tag, TagManager, TagType, Aspects, Tags } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 
 class TaggableResource extends CfnResource {
@@ -61,8 +62,8 @@ describe('tag aspect', () => {
     expect(res2.tags.renderTags()).toEqual([{ key: 'foo', value: 'bar' }]);
     expect(map.tags.renderTags()).toEqual({ foo: 'bar' });
     expect(asg.tags.renderTags()).toEqual([{ key: 'foo', value: 'bar', propagateAtLaunch: true }]);
-
   });
+
   test('The last aspect applied takes precedence', () => {
     const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
@@ -78,8 +79,8 @@ describe('tag aspect', () => {
     synthesize(root);
     expect(res.tags.renderTags()).toEqual([{ key: 'foo', value: 'baz' }]);
     expect(res2.tags.renderTags()).toEqual([{ key: 'foo', value: 'good' }]);
-
   });
+
   test('RemoveTag will remove a tag if it exists', () => {
     const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
@@ -105,8 +106,8 @@ describe('tag aspect', () => {
     expect(map.tags.renderTags()).toEqual({ first: 'there is only 1' });
     expect(asg.tags.renderTags()).toEqual([{ key: 'first', value: 'there is only 1', propagateAtLaunch: true }]);
     expect(res2.tags.renderTags()).toEqual([{ key: 'first', value: 'there is only 1' }]);
-
   });
+
   test('add will add a tag and remove will remove a tag if it exists', () => {
     const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
@@ -133,8 +134,8 @@ describe('tag aspect', () => {
     expect(map.tags.renderTags()).toEqual({ first: 'there is only 1' });
     expect(asg.tags.renderTags()).toEqual([{ key: 'first', value: 'there is only 1', propagateAtLaunch: true }]);
     expect(res2.tags.renderTags()).toEqual([{ key: 'first', value: 'there is only 1' }]);
-
   });
+
   test('the #visit function is idempotent', () => {
     const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
@@ -148,8 +149,8 @@ describe('tag aspect', () => {
     expect(res.tags.renderTags()).toEqual([{ key: 'foo', value: 'bar' }]);
     synthesize(root);
     expect(res.tags.renderTags()).toEqual([{ key: 'foo', value: 'bar' }]);
-
   });
+
   test('removeTag Aspects by default will override child Tag Aspects', () => {
     const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
@@ -163,8 +164,8 @@ describe('tag aspect', () => {
     synthesize(root);
     expect(res.tags.renderTags()).toEqual(undefined);
     expect(res2.tags.renderTags()).toEqual(undefined);
-
   });
+
   test('removeTag Aspects with priority 0 will not override child Tag Aspects', () => {
     const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
@@ -178,8 +179,8 @@ describe('tag aspect', () => {
     synthesize(root);
     expect(res.tags.renderTags()).toEqual(undefined);
     expect(res2.tags.renderTags()).toEqual([{ key: 'key', value: 'value' }]);
-
   });
+
   test('Aspects are merged with tags created by L1 Constructor', () => {
     const root = new Stack();
     const aspectBranch = new TaggableResource(root, 'FakeBranchA', {
@@ -229,8 +230,8 @@ describe('tag aspect', () => {
       cfn: 'is cool',
     });
     expect(cfnBranch.testProperties().tags).toEqual([{ key: 'cfn', value: 'is cool' }]);
-
   });
+
   describe('when invalid tag properties are passed from L1s', () => {
     test('map passed instead of array it raises', () => {
       const root = new Stack();
@@ -257,8 +258,8 @@ describe('tag aspect', () => {
           },
         });
       }).toThrow();
-
     });
+
     test('if array is passed instead of map it raises', () => {
       const root = new Stack();
       expect(() => {
@@ -272,7 +273,6 @@ describe('tag aspect', () => {
           },
         });
       }).toThrow();
-
     });
   });
 });

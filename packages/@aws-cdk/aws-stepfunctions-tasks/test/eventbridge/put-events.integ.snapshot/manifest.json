@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -39,20 +39,102 @@
             "data": "StateMachine2E01A3A5"
           }
         ],
-        "/aws-stepfunctions-tasks-eventbridge-put-events-integ/stateMachineArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "stateMachineArn"
-          }
-        ],
         "/aws-stepfunctions-tasks-eventbridge-put-events-integ/Service-principalMap": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ServiceprincipalMap"
           }
+        ],
+        "/aws-stepfunctions-tasks-eventbridge-put-events-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefStateMachine2E01A3A5BA46F753"
+          }
         ]
       },
       "displayName": "aws-stepfunctions-tasks-eventbridge-put-events-integ"
+    },
+    "PutEventsDefaultTestDeployAssert1A6BA3F3": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "PutEventsDefaultTestDeployAssert1A6BA3F3.template.json",
+        "validateOnSynth": false
+      },
+      "dependencies": [
+        "aws-stepfunctions-tasks-eventbridge-put-events-integ"
+      ],
+      "metadata": {
+        "/PutEvents/DefaultTest/DeployAssert": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736.bundle",
+              "id": "41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736",
+              "packaging": "zip",
+              "sourceHash": "41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736",
+              "s3BucketParameter": "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3BucketA9F12763",
+              "s3KeyParameter": "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3VersionKey589F30A2",
+              "artifactHashParameter": "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736ArtifactHash2CC614EA"
+            }
+          }
+        ],
+        "/PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsstartExecution"
+          }
+        ],
+        "/PutEvents/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/PutEvents/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/PutEvents/DefaultTest/DeployAssert/AssetParameters/41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3BucketA9F12763"
+          }
+        ],
+        "/PutEvents/DefaultTest/DeployAssert/AssetParameters/41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3VersionKey589F30A2"
+          }
+        ],
+        "/PutEvents/DefaultTest/DeployAssert/AssetParameters/41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736ArtifactHash2CC614EA"
+          }
+        ],
+        "/PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeExecution"
+          }
+        ],
+        "/PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution/AssertEqualsStepFunctionsdescribeExecution/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeExecutionAssertEqualsStepFunctionsdescribeExecution58E75A69"
+          }
+        ],
+        "/PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution/AssertEqualsStepFunctionsdescribeExecution/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAssertEqualsStepFunctionsdescribeExecution"
+          }
+        ]
+      },
+      "displayName": "PutEvents/DefaultTest/DeployAssert"
     }
   }
 }

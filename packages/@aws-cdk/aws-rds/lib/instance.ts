@@ -813,7 +813,7 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
   readonly timezone?: string;
 
   /**
-   * The allocated storage size, specified in gigabytes (GB).
+   * The allocated storage size, specified in gibibytes (GiB).
    *
    * @default 100
    */

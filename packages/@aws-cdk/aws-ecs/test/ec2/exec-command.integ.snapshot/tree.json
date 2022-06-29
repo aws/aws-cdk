@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-ecs-integ-exec-command": {
@@ -1321,7 +1321,7 @@
                                   }
                                 },
                                 "handler": "index.lambda_handler",
-                                "runtime": "python3.6",
+                                "runtime": "python3.9",
                                 "tags": [
                                   {
                                     "key": "Name",
@@ -1401,8 +1401,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   },
                   "LifecycleHookDrainHook": {

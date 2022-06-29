@@ -1,7 +1,7 @@
 {
   "version": "18.0.0",
   "testCases": {
-    "aws-servicecatalog/test/integ.portfolio": {
+    "integ.portfolio": {
       "stacks": [
         "integ-servicecatalog-portfolio"
       ],

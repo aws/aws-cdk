@@ -1,3 +1,271 @@
+# CloudFormation Resource Specification v76.0.0
+
+## New Resource Types
+
+* AWS::Connect::TaskTemplate
+
+## Attribute Changes
+
+* AWS::RDS::DBClusterParameterGroup DBClusterParameterGroupName (__added__)
+* AWS::RDS::DBParameterGroup Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html
+* AWS::RDS::DBParameterGroup DBParameterGroupName (__added__)
+
+## Property Changes
+
+* AWS::DataSync::LocationEFS AccessPointArn (__added__)
+* AWS::DataSync::LocationEFS FileSystemAccessRoleArn (__added__)
+* AWS::DataSync::LocationEFS InTransitEncryption (__added__)
+* AWS::KinesisAnalyticsV2::Application Tags.DuplicatesAllowed (__deleted__)
+* AWS::RDS::DBClusterParameterGroup Tags.DuplicatesAllowed (__deleted__)
+* AWS::RDS::DBParameterGroup Description.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-description
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-description
+* AWS::RDS::DBParameterGroup Description.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::RDS::DBParameterGroup Family.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-family
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-family
+* AWS::RDS::DBParameterGroup Family.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::RDS::DBParameterGroup Parameters.DuplicatesAllowed (__deleted__)
+* AWS::RDS::DBParameterGroup Parameters.PrimitiveItemType (__deleted__)
+* AWS::RDS::DBParameterGroup Parameters.Type (__deleted__)
+* AWS::RDS::DBParameterGroup Parameters.PrimitiveType (__added__)
+* AWS::RDS::DBParameterGroup Parameters.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-parameters
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-parameters
+* AWS::RDS::DBParameterGroup Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-tags
+* AWS::RDS::EventSubscription SubscriptionName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SES::ConfigurationSet DeliveryOptions (__added__)
+* AWS::SES::ConfigurationSet ReputationOptions (__added__)
+* AWS::SES::ConfigurationSet SendingOptions (__added__)
+* AWS::SES::ConfigurationSet SuppressionOptions (__added__)
+* AWS::SES::ConfigurationSet TrackingOptions (__added__)
+
+## Property Type Changes
+
+* AWS::SES::ConfigurationSet.DeliveryOptions (__added__)
+* AWS::SES::ConfigurationSet.ReputationOptions (__added__)
+* AWS::SES::ConfigurationSet.SendingOptions (__added__)
+* AWS::SES::ConfigurationSet.SuppressionOptions (__added__)
+* AWS::SES::ConfigurationSet.TrackingOptions (__added__)
+* AWS::SES::ConfigurationSetEventDestination.SnsDestination (__added__)
+* AWS::Cognito::UserPool.UsernameConfiguration CaseSensitive.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTEvents::AlarmModel.IotSiteWise PropertyValue.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisAnalyticsV2::Application.EnvironmentProperties PropertyGroups.DuplicatesAllowed (__deleted__)
+* AWS::KinesisAnalyticsV2::Application.InputSchema RecordColumns.DuplicatesAllowed (__deleted__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.PrimitiveItemType (__deleted__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.Type (__deleted__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.PrimitiveType (__added__)
+* AWS::KinesisAnalyticsV2::Application.S3ContentBaseLocation BasePath.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::KinesisAnalyticsV2::Application.S3ContentLocation BucketARN.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisAnalyticsV2::Application.S3ContentLocation FileKey.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisAnalyticsV2::Application.SqlApplicationConfiguration Inputs.DuplicatesAllowed (__deleted__)
+* AWS::SES::ConfigurationSetEventDestination.EventDestination SnsDestination (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+
+# CloudFormation Resource Specification v75.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::EC2::NatGateway NatGatewayId (__added__)
+
+## Property Changes
+
+* AWS::KinesisAnalyticsV2::Application Tags.DuplicatesAllowed (__added__)
+* AWS::RDS::EventSubscription SubscriptionName (__added__)
+* AWS::RDS::EventSubscription Tags (__added__)
+* AWS::RDS::EventSubscription SourceIds.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::RDS::EventSubscription SourceType.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::ResilienceHub::App AppAssessmentSchedule (__added__)
+
+## Property Type Changes
+
+* AWS::ImageBuilder::DistributionConfiguration.FastLaunchConfiguration (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.FastLaunchLaunchTemplateSpecification (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.FastLaunchSnapshotConfiguration (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.Distribution FastLaunchConfigurations (__added__)
+* AWS::KinesisAnalyticsV2::Application.EnvironmentProperties PropertyGroups.DuplicatesAllowed (__added__)
+* AWS::KinesisAnalyticsV2::Application.InputSchema RecordColumns.DuplicatesAllowed (__added__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.PrimitiveType (__deleted__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.PrimitiveItemType (__added__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.Type (__added__)
+* AWS::KinesisAnalyticsV2::Application.S3ContentBaseLocation BasePath.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisAnalyticsV2::Application.S3ContentLocation BucketARN.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::KinesisAnalyticsV2::Application.S3ContentLocation FileKey.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::KinesisAnalyticsV2::Application.SqlApplicationConfiguration Inputs.DuplicatesAllowed (__added__)
+* AWS::ResilienceHub::App.ResourceMapping TerraformSourceName (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+
+# CloudFormation Resource Specification v73.1.0
+
+## New Resource Types
+
+* AWS::EMRServerless::Application
+* AWS::IoTWireless::NetworkAnalyzerConfiguration
+
+## Attribute Changes
+
+* AWS::EC2::PlacementGroup GroupName (__added__)
+* AWS::EC2::VPCPeeringConnection Id (__added__)
+
+## Property Changes
+
+* AWS::Cognito::UserPool UserAttributeUpdateSettings (__added__)
+* AWS::Cognito::UserPoolClient EnablePropagateAdditionalUserContextData (__added__)
+* AWS::EC2::TransitGatewayAttachment Options (__added__)
+* AWS::EC2::TransitGatewayAttachment SubnetIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGatewayAttachment Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::IoTSiteWise::Asset AssetDescription (__added__)
+* AWS::Lightsail::LoadBalancer TlsPolicyName (__added__)
+* AWS::Lightsail::LoadBalancerTlsCertificate HttpsRedirectionEnabled (__added__)
+* AWS::NetworkManager::CoreNetwork PolicyDocument.PrimitiveType (__changed__)
+  * Old: String
+  * New: Json
+* AWS::Pinpoint::Campaign CustomDeliveryConfiguration (__added__)
+* AWS::Pinpoint::Campaign TemplateConfiguration (__added__)
+* AWS::Pinpoint::Campaign MessageConfiguration.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Property Type Changes
+
+* AWS::Cognito::UserPool.UserAttributeUpdateSettings (__added__)
+* AWS::Pinpoint::Campaign.CampaignCustomMessage (__added__)
+* AWS::Pinpoint::Campaign.CustomDeliveryConfiguration (__added__)
+* AWS::Pinpoint::Campaign.Template (__added__)
+* AWS::Pinpoint::Campaign.TemplateConfiguration (__added__)
+* AWS::SSMIncidents::ResponsePlan.DynamicSsmParameter (__added__)
+* AWS::SSMIncidents::ResponsePlan.DynamicSsmParameterValue (__added__)
+* AWS::AppMesh::Mesh.MeshServiceDiscovery IpPreference (__added__)
+* AWS::AppMesh::Mesh.MeshSpec ServiceDiscovery (__added__)
+* AWS::AppMesh::VirtualNode.AwsCloudMapServiceDiscovery IpPreference (__added__)
+* AWS::AppMesh::VirtualNode.DnsServiceDiscovery IpPreference (__added__)
+* AWS::DataSync::Task.Options ObjectTags (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData DisableApiStop (__added__)
+* AWS::Pinpoint::Campaign.MessageConfiguration CustomMessage (__added__)
+* AWS::Pinpoint::Campaign.WriteTreatmentResource CustomDeliveryConfiguration (__added__)
+* AWS::Pinpoint::Campaign.WriteTreatmentResource TemplateConfiguration (__added__)
+* AWS::SSMIncidents::ResponsePlan.SsmAutomation DynamicParameters (__added__)
+* AWS::Transfer::Server.ProtocolDetails SetStatOption (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Serverless::Api.Auth AddDefaultAuthorizerToCorsPreflight (__added__)
+
+# CloudFormation Resource Specification v72.0.0
+
+## New Resource Types
+
+* AWS::IoT::RoleAlias
+* AWS::NetworkManager::ConnectAttachment
+* AWS::NetworkManager::ConnectPeer
+* AWS::NetworkManager::CoreNetwork
+* AWS::NetworkManager::SiteToSiteVpnAttachment
+* AWS::NetworkManager::VpcAttachment
+
+## Attribute Changes
+
+* AWS::MediaTailor::PlaybackConfiguration DashConfiguration.ManifestEndpointPrefix (__added__)
+* AWS::MediaTailor::PlaybackConfiguration HlsConfiguration.ManifestEndpointPrefix (__added__)
+* AWS::MediaTailor::PlaybackConfiguration PlaybackConfigurationArn (__added__)
+* AWS::MediaTailor::PlaybackConfiguration PlaybackEndpointPrefix (__added__)
+* AWS::MediaTailor::PlaybackConfiguration SessionInitializationEndpointPrefix (__added__)
+
+## Property Changes
+
+* AWS::AutoScaling::AutoScalingGroup DefaultInstanceWarmup (__added__)
+* AWS::MediaTailor::PlaybackConfiguration SessionInitializationEndpointPrefix (__deleted__)
+* AWS::MediaTailor::PlaybackConfiguration DashConfiguration.Type (__changed__)
+  * Old: DashConfigurationForPut
+  * New: DashConfiguration
+* AWS::Redshift::Cluster IamRoles.DuplicatesAllowed (__deleted__)
+
+## Property Type Changes
+
+* AWS::MediaTailor::PlaybackConfiguration.DashConfigurationForPut (__removed__)
+* AWS::MediaTailor::PlaybackConfiguration.DashConfiguration (__added__)
+* AWS::MediaTailor::PlaybackConfiguration.HlsConfiguration (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+
+# CloudFormation Resource Specification v69.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::EC2::TrafficMirrorTarget GatewayLoadBalancerEndpointId (__added__)
+* AWS::Synthetics::Canary DeleteLambdaResourcesOnCanaryDeletion (__added__)
+
+## Property Type Changes
+
+
+
 # CloudFormation Resource Specification v69.0.0
 
 ## New Resource Types

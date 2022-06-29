@@ -124,6 +124,7 @@ async function prepareDockerImageAsset(
     dockerBuildTarget: asset.target,
     dockerFile: asset.file,
     networkMode: asset.networkMode,
+    platform: asset.platform,
   }, {
     repositoryName,
     imageTag,

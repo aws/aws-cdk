@@ -1,5 +1,5 @@
 {
-  "$version": "69.0.0",
+  "$version": "76.0.0",
   "PropertyTypes": {
     "AWS::CodeCommit::Repository.Code": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-code.html",
