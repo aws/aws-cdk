@@ -366,7 +366,7 @@ export class Stage extends Resource implements IStage {
   /**
    * Metric for the number of client-side errors captured in a given period.
    *
-   * Default: sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   public metricClientError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics._4XxErrorSum, props);
@@ -375,7 +375,7 @@ export class Stage extends Resource implements IStage {
   /**
    * Metric for the number of server-side errors captured in a given period.
    *
-   * Default: sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   public metricServerError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics._5XxErrorSum, props);
@@ -384,7 +384,7 @@ export class Stage extends Resource implements IStage {
   /**
    * Metric for the number of requests served from the API cache in a given period.
    *
-   * Default: sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   public metricCacheHitCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.cacheHitCountSum, props);
@@ -394,7 +394,7 @@ export class Stage extends Resource implements IStage {
    * Metric for the number of requests served from the backend in a given period,
    * when API caching is enabled.
    *
-   * Default: sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   public metricCacheMissCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.cacheMissCountSum, props);
@@ -403,7 +403,7 @@ export class Stage extends Resource implements IStage {
   /**
    * Metric for the total number API requests in a given period.
    *
-   * Default: sample count over 5 minutes
+   * @default - sample count over 5 minutes
    */
   public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.countSum, {
@@ -416,7 +416,7 @@ export class Stage extends Resource implements IStage {
    * Metric for the time between when API Gateway relays a request to the backend
    * and when it receives a response from the backend.
    *
-   * Default: average over 5 minutes.
+   * @default - average over 5 minutes.
    */
   public metricIntegrationLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.integrationLatencyAverage, props);
@@ -427,7 +427,7 @@ export class Stage extends Resource implements IStage {
    * and when it returns a response to the client.
    * The latency includes the integration latency and other API Gateway overhead.
    *
-   * Default: average over 5 minutes.
+   * @default - average over 5 minutes.
    */
   public metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.latencyAverage, props);
