@@ -87,3 +87,28 @@ test('with dash and underscore in path', () => {
     },
   });
 });
+
+test('Context parameter', () => {
+  // WHEN
+  const task = new tasks.EvaluateExpression(stack, 'Task', {
+    expression: '`${$$.Execution.Id}`',
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+    DefinitionString: {
+      'Fn::Join': [
+        '',
+        [
+          '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
+          {
+            'Fn::GetAtt': ['Evalda2d1181604e4a4586941a6abd7fe42dF371675D', 'Arn'],
+          },
+          '","Parameters":{"expression":"`${$$.Execution.Id}`","expressionAttributeValues":{"$$.Execution.Id.$":"$$.Execution.Id"}}}}}',
+        ],
+      ],
+    },
+  });
+});

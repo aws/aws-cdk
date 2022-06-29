@@ -87,8 +87,8 @@ Learn more about input and output processing in Step Functions [here](https://do
 
 ## Evaluate Expression
 
-Use the `EvaluateExpression` to perform simple operations referencing state paths. The
-`expression` referenced in the task will be evaluated in a Lambda function
+Use the `EvaluateExpression` to perform simple operations referencing state or context paths.
+The `expression` referenced in the task will be evaluated in a Lambda function
 (`eval()`). This allows you to not have to write Lambda code for simple operations.
 
 Example: convert a wait time from milliseconds to seconds, concat this in a message and wait:
@@ -100,8 +100,8 @@ const convertToSeconds = new tasks.EvaluateExpression(this, 'Convert to seconds'
 });
 
 const createMessage = new tasks.EvaluateExpression(this, 'Create message', {
-  // Note: this is a string inside a string.
-  expression: '`Now waiting ${$.waitSeconds} seconds...`',
+  // Note: these are strings inside a string.
+  expression: '`Now waiting ${$.waitSeconds} seconds from ${$$.Execution.State.EnteredTime}...`',
   runtime: lambda.Runtime.NODEJS_14_X,
   resultPath: '$.message',
 });
