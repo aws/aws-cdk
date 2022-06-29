@@ -97,12 +97,24 @@ const slr = new iam.CfnServiceLinkedRole(this, 'Service Linked Role', {
 
 ## Importing existing domains
 
+### Using a known domain endpoint
+
 To import an existing domain into your CDK application, use the `Domain.fromDomainEndpoint` factory method.
 This method accepts a domain endpoint of an already existing domain:
 
 ```ts
 const domainEndpoint = 'https://my-domain-jcjotrt6f7otem4sqcwbch3c4u.us-east-1.es.amazonaws.com';
 const domain = opensearch.Domain.fromDomainEndpoint(this, 'ImportedDomain', domainEndpoint);
+```
+
+### Using the output of another CloudFormation stack
+
+To import an existing domain with help of an exported value from another CloudFormation stack, use the `Domain.fromDomainAttributes` factory method. This will accept tokens.
+
+```ts
+const domainArn = Fn.importValue(`another-cf-stack-export-domain-arn`)
+const domainEndpoint = Fn.importValue(`another-cf-stack-export-domain-endpoint`)
+const domain = Domain.fromDomainAttributes(this, 'ImportedDomain', { domainArn, domainEndpoint})
 ```
 
 ## Permissions
