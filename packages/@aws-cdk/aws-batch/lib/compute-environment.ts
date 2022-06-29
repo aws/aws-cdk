@@ -72,7 +72,7 @@ export interface LaunchTemplateSpecification {
    */
   readonly launchTemplateId?: string;
   /**
-   * The Launch template name
+   * The Launch template name. Mutually exclusive with `launchTemplateId`
    *
    * @default - no launch template name provided
    */
