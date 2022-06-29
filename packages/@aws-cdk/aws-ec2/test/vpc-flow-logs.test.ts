@@ -103,10 +103,10 @@ describe('vpc flow logs', () => {
 
   });
 
-  describe('s3 bucket policy - @aws-cdk/core:createDefaultResourcePolicies feature flag', () => {
+  describe('s3 bucket policy - @aws-cdk/aws-s3:createDefaultLoggingPolicy feature flag', () => {
     test('creates default S3 bucket policy with options', () => {
       const stack = new Stack();
-      stack.node.setContext('@aws-cdk/core:createDefaultResourcePolicies', true);
+      stack.node.setContext('@aws-cdk/aws-s3:createDefaultLoggingPolicy', true);
       new FlowLog(stack, 'FlowLogs', {
         resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
         destination: FlowLogDestination.toS3(undefined, 'custom-prefix', {
@@ -225,7 +225,7 @@ describe('vpc flow logs', () => {
 
     test('creates default S3 bucket policy', () => {
       const stack = new Stack();
-      stack.node.setContext('@aws-cdk/core:createDefaultResourcePolicies', true);
+      stack.node.setContext('@aws-cdk/aws-s3:createDefaultLoggingPolicy', true);
       new FlowLog(stack, 'FlowLogs', {
         resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
         destination: FlowLogDestination.toS3(),

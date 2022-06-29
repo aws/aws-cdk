@@ -266,7 +266,7 @@ export const VALIDATE_SNAPSHOT_REMOVAL_POLICY = '@aws-cdk/core:validateSnapshotR
 export const CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME = '@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName';
 
 /**
- * Enable this feature flag to create Resource Policies by default in cases where
+ * Enable this feature flag to create an S3 bucket policy by default in cases where
  * an AWS service would automatically create the Policy if one does not exist.
  *
  * For example, in order to send VPC flow logs to an S3 bucket, there is a specific Bucket Policy
@@ -277,8 +277,10 @@ export const CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME = '@a
  *
  * In cases where we know what the required policy is we can go ahead and create the policy so we can
  * remain in control of it.
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html#AWS-logs-infrastructure-S3
  */
-export const CREATE_DEFAULT_RESOURCE_POLICIES = '@aws-cdk/core:createDefaultResourcePolicies';
+export const S3_CREATE_DEFAULT_LOGGING_POLICY = '@aws-cdk/aws-s3:createDefaultLoggingPolicy';
 
 /**
  * Flag values that should apply for new projects
@@ -310,7 +312,7 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [IAM_MINIMIZE_POLICIES]: true,
   [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true,
   [CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME]: true,
-  [CREATE_DEFAULT_RESOURCE_POLICIES]: true,
+  [S3_CREATE_DEFAULT_LOGGING_POLICY]: true,
 };
 
 /**

@@ -12,7 +12,7 @@ import { addressOf } from 'constructs/lib/private/uniqueid';
 import { KafkaVersion } from './';
 import { CfnCluster } from './msk.generated';
 import { FeatureFlags } from '@aws-cdk/core';
-import { CREATE_DEFAULT_RESOURCE_POLICIES } from '@aws-cdk/cx-api';
+import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '@aws-cdk/cx-api';
 
 /**
  * Represents a MSK Cluster
@@ -505,7 +505,7 @@ export class Cluster extends ClusterBase {
         : undefined;
 
     const loggingBucket = props.logging?.s3?.bucket;
-    if (loggingBucket && FeatureFlags.of(this).isEnabled(CREATE_DEFAULT_RESOURCE_POLICIES)) {
+    if (loggingBucket && FeatureFlags.of(this).isEnabled(S3_CREATE_DEFAULT_LOGGING_POLICY)) {
       const stack = core.Stack.of(this);
       loggingBucket.addToResourcePolicy(new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,

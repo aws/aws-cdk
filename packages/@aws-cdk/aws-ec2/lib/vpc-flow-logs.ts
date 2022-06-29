@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack } from '@aws-cdk/core';
-import { CREATE_DEFAULT_RESOURCE_POLICIES } from '@aws-cdk/cx-api';
+import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { CfnFlowLog } from './ec2.generated';
 import { ISubnet, IVpc } from './vpc';
@@ -227,7 +227,7 @@ class S3Destination extends FlowLogDestination {
     }
 
     // https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-s3.html#flow-logs-s3-permissions
-    if (FeatureFlags.of(scope).isEnabled(CREATE_DEFAULT_RESOURCE_POLICIES)) {
+    if (FeatureFlags.of(scope).isEnabled(S3_CREATE_DEFAULT_LOGGING_POLICY)) {
       const stack = Stack.of(scope);
       let keyPrefix = this.props.keyPrefix ?? '';
       if (keyPrefix && !keyPrefix.endsWith('/')) {

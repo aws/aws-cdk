@@ -381,7 +381,7 @@ describe('MSK Cluster', () => {
 
     test('feature flag @aws-cdk/aws-s3:defaultBucketPolicy', () => {
       const localStack = new core.Stack();
-      localStack.node.setContext('@aws-cdk/core:createDefaultResourcePolicies', true);
+      localStack.node.setContext('@aws-cdk/aws-s3:createDefaultLoggingPolicy', true);
       new msk.Cluster(localStack, 'Cluster', {
         clusterName: 'cluster',
         kafkaVersion: msk.KafkaVersion.V2_6_1,

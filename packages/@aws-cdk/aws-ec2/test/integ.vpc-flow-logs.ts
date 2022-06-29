@@ -12,7 +12,7 @@ class FeatureFlagStack extends Stack {
   public readonly bucket: s3.IBucket;
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
-    this.node.setContext('@aws-cdk/core:createDefaultResourcePolicies', true);
+    this.node.setContext('@aws-cdk/aws-s3:createDefaultLoggingPolicy', true);
 
     const vpc = new Vpc(this, 'VPC');
 
