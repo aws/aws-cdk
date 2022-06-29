@@ -120,7 +120,6 @@ The alternative would be to use the `BEST_FIT_PROGRESSIVE` strategy in order for
 Simply define your Launch Template:
 
 ```ts
-// This example is only available in TypeScript
 const myLaunchTemplate = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
   launchTemplateName: 'extra-storage-template',
   launchTemplateData: {
