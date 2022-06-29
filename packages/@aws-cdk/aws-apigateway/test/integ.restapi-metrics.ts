@@ -4,13 +4,9 @@ import * as integ from '@aws-cdk/integ-tests';
 import * as apigw from '../lib';
 
 const app = new cdk.App();
-
 const stack = new cdk.Stack(app, 'restapi-metrics');
-
 const restApi = new apigw.RestApi(stack, 'Api');
-
 const stage = restApi.deploymentStage;
-
 const method = restApi.root.addMethod('GET');
 
 new cloudwatch.Alarm(stack, 'RestApiAlarm', {
