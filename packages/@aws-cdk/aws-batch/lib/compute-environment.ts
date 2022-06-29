@@ -66,7 +66,7 @@ export enum AllocationStrategy {
  */
 export interface LaunchTemplateSpecification {
   /**
-   * The Launch template ID
+   * The Launch template ID. Mutually exclusive with `launchTemplateName`.
    *
    * @default - no launch template id provided
    */
