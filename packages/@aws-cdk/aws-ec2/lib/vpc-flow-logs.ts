@@ -222,62 +222,66 @@ class S3Destination extends FlowLogDestination {
         removalPolicy: RemovalPolicy.RETAIN,
       });
 
-      // https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-s3.html#flow-logs-s3-permissions
-      if (FeatureFlags.of(scope).isEnabled(CREATE_DEFAULT_RESOURCE_POLICIES)) {
-        const stack = Stack.of(scope);
-        const keyPrefix = this.props.keyPrefix ? this.props.keyPrefix + '/' : '';
-        const prefix = this.props.destinationOptions?.hiveCompatiblePartitions
-          ? s3Bucket.arnForObjects(`${keyPrefix}AWSLogs/aws-account-id=${stack.account}/*`)
-          : s3Bucket.arnForObjects(`${keyPrefix}AWSLogs/${stack.account}/*`);
-
-        s3Bucket.addToResourcePolicy(new iam.PolicyStatement({
-          effect: iam.Effect.ALLOW,
-          principals: [
-            new iam.ServicePrincipal('delivery.logs.amazonaws.com'),
-          ],
-          resources: [
-            prefix,
-          ],
-          actions: ['s3:PutObject'],
-          conditions: {
-            StringEquals: {
-              's3:x-amz-acl': 'bucket-owner-full-control',
-              'aws:SourceAccount': stack.account,
-            },
-            ArnLike: {
-              'aws:SourceArn': stack.formatArn({
-                service: 'logs',
-                resource: '*',
-              }),
-            },
-          },
-        }));
-
-        s3Bucket.addToResourcePolicy(new iam.PolicyStatement({
-          effect: iam.Effect.ALLOW,
-          principals: [
-            new iam.ServicePrincipal('delivery.logs.amazonaws.com'),
-          ],
-          resources: [s3Bucket.bucketArn],
-          actions: [
-            's3:GetBucketAcl',
-            's3:ListBucket',
-          ],
-          conditions: {
-            StringEquals: {
-              'aws:SourceAccount': stack.account,
-            },
-            ArnLike: {
-              'aws:SourceArn': stack.formatArn({
-                service: 'logs',
-                resource: '*',
-              }),
-            },
-          },
-        }));
-      }
     } else {
       s3Bucket = this.props.s3Bucket;
+    }
+
+    // https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-s3.html#flow-logs-s3-permissions
+    if (FeatureFlags.of(scope).isEnabled(CREATE_DEFAULT_RESOURCE_POLICIES)) {
+      const stack = Stack.of(scope);
+      let keyPrefix = this.props.keyPrefix ?? '';
+      if (keyPrefix && !keyPrefix.endsWith('/')) {
+        keyPrefix = keyPrefix + '/';
+      }
+      const prefix = this.props.destinationOptions?.hiveCompatiblePartitions
+        ? s3Bucket.arnForObjects(`${keyPrefix}AWSLogs/aws-account-id=${stack.account}/*`)
+        : s3Bucket.arnForObjects(`${keyPrefix}AWSLogs/${stack.account}/*`);
+
+      s3Bucket.addToResourcePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [
+          new iam.ServicePrincipal('delivery.logs.amazonaws.com'),
+        ],
+        resources: [
+          prefix,
+        ],
+        actions: ['s3:PutObject'],
+        conditions: {
+          StringEquals: {
+            's3:x-amz-acl': 'bucket-owner-full-control',
+            'aws:SourceAccount': stack.account,
+          },
+          ArnLike: {
+            'aws:SourceArn': stack.formatArn({
+              service: 'logs',
+              resource: '*',
+            }),
+          },
+        },
+      }));
+
+      s3Bucket.addToResourcePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [
+          new iam.ServicePrincipal('delivery.logs.amazonaws.com'),
+        ],
+        resources: [s3Bucket.bucketArn],
+        actions: [
+          's3:GetBucketAcl',
+          's3:ListBucket',
+        ],
+        conditions: {
+          StringEquals: {
+            'aws:SourceAccount': stack.account,
+          },
+          ArnLike: {
+            'aws:SourceArn': stack.formatArn({
+              service: 'logs',
+              resource: '*',
+            }),
+          },
+        },
+      }));
     }
     return {
       logDestinationType: FlowLogDestinationType.S3,
