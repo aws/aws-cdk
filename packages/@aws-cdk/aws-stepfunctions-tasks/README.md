@@ -124,6 +124,16 @@ new sfn.StateMachine(this, 'StateMachine', {
 });
 ```
 
+You can also reference the whole state or context by surrounding `$` or `$$` with brackets.
+This is useful when dealing with paths that may not exist, leveraging the Lambda runtime specific features,
+without incurring in the error `The JSONPath ... could not be found in the input ...`. For example:
+
+```ts
+new tasks.EvaluateExpression(this, 'Use whole State and Context', {
+  expression: '`${($).optional?.parameter ?? "Default"} ${($$).Task?.Token ?? "No token"}`',
+});
+```
+
 The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
 runtime to use to evaluate the expression. Currently, only runtimes
 of the Node.js family are supported.

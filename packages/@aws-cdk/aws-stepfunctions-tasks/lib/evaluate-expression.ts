@@ -70,7 +70,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-    const matches = this.props.expression.match(/\${1,2}[.\[][.a-zA-Z[\]0-9-_]+/g);
+    const matches = this.props.expression.match(/\${1,2}[.\[][.a-zA-Z[\]0-9-_]+|(?<=\()\${1,2}(?=\))/g);
 
     let expressionAttributeValues = {};
     if (matches) {

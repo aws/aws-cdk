@@ -45,6 +45,20 @@ test('with lists', async () => {
   expect(evaluated).toEqual([2, 4, 6]);
 });
 
+test('with objects', async () => {
+  // GIVEN
+  const event: Event = {
+    expression: '`${($.a).a} ${($.a).b}`',
+    expressionAttributeValues: {
+      '$.a': { a: 'Hello', b: 'world!' },
+    },
+  };
+
+  // THEN
+  const evaluated = await handler(event);
+  expect(evaluated).toEqual('Hello world!');
+});
+
 test('with duplicated entries', async () => {
   // GIVEN
   const event: Event = {
@@ -73,4 +87,19 @@ test('with dash and underscore in path', async () => {
   // THEN
   const evaluated = await handler(event);
   expect(evaluated).toBe(6);
+});
+
+test('with whole State or Context', async () => {
+  // GIVEN
+  const event: Event = {
+    expression: '`${($).optional?.parameter ?? "Default"} ${($$).Task?.Token ?? "No token"}`',
+    expressionAttributeValues: {
+      $: { optional: { parameter: 'Value' } },
+      $$: { Execution: { Id: 'id' } },
+    },
+  };
+
+  // THEN
+  const evaluated = await handler(event);
+  expect(evaluated).toEqual('Value No token');
 });

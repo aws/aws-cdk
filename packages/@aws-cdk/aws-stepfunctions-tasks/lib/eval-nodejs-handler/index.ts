@@ -10,7 +10,13 @@ export async function handler(event: Event): Promise<any> {
 
   const expression = Object.entries(event.expressionAttributeValues)
     .reduce(
-      (exp: string, [k, v]) => exp.replace(new RegExp(escapeRegex(k), 'g'), JSON.stringify(v)),
+      (exp: string, [k, v]) => {
+        const whole = k === '$' || k === '$$' ? ' ' : '';
+        return exp.replace(
+          new RegExp(`${whole && '(?<=\\()'}${escapeRegex(k)}${whole && '(?=\\))'}`, 'g'),
+          JSON.stringify(v),
+        );
+      },
       event.expression,
     );
   console.log(`Expression: ${expression}`);

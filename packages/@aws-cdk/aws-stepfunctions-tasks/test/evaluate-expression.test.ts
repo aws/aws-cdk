@@ -112,3 +112,28 @@ test('Context parameter', () => {
     },
   });
 });
+
+test('with whole State or Context', () => {
+  // WHEN
+  const task = new tasks.EvaluateExpression(stack, 'Task', {
+    expression: '`${($).optional?.parameter ?? "Default"} ${($$).Task?.Token ?? "No token"}`',
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+    DefinitionString: {
+      'Fn::Join': [
+        '',
+        [
+          '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
+          {
+            'Fn::GetAtt': ['Evalda2d1181604e4a4586941a6abd7fe42dF371675D', 'Arn'],
+          },
+          '","Parameters":{"expression":"`${($).optional?.parameter ?? \\"Default\\"} ${($$).Task?.Token ?? \\"No token\\"}`","expressionAttributeValues":{"$.$":"$","$$.$":"$$"}}}}}',
+        ],
+      ],
+    },
+  });
+});
