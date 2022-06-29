@@ -723,19 +723,12 @@ export class RestApi extends RestApiBase {
    * Import an existing RestApi that can be configured with additional Methods and Resources.
    */
   public static fromRestApiAttributes(scope: Construct, id: string, attrs: RestApiAttributes): IRestApi {
-    const restApiName = attrs.restApiName ?? '';
-
     class Import extends RestApiBase {
       public readonly restApiId = attrs.restApiId;
+      public readonly restApiName = attrs.restApiName ?? id;
       public readonly restApiRootResourceId = attrs.rootResourceId;
       public readonly root: IResource = new RootResource(this, {}, this.restApiRootResourceId);
     }
-
-    class ImportWithApiName extends Import {
-      public readonly restApiName = restApiName;
-    }
-
-    if (attrs.restApiName !== undefined) return new ImportWithApiName(scope, id);
 
     return new Import(scope, id);
   }
