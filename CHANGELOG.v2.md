@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.29.1](https://github.com/aws/aws-cdk/compare/v2.29.0...v2.29.1) (2022-06-24)
+
+
+### Bug Fixes
+
+* **pipelines:** 'ConfirmPermissionsBroadening' uses wrong node version ([#20861](https://github.com/aws/aws-cdk/issues/20861)) ([47b5ca0](https://github.com/aws/aws-cdk/commit/47b5ca06c50a566af8d1fed4202164b85f793d18))
+
+## [2.29.0](https://github.com/aws/aws-cdk/compare/v2.28.1...v2.29.0) (2022-06-22)
+
+
+### Features
+
+* **apigateway:** Add LambdaIntegrationOptions to LambdaRestApi ([#17065](https://github.com/aws/aws-cdk/issues/17065)) ([b117469](https://github.com/aws/aws-cdk/commit/b1174699833cff61a839eab293521e14659b00c2)), closes [#3269](https://github.com/aws/aws-cdk/issues/3269)
+* **aws-eks:** allow the use of graviton3 processors ([#20543](https://github.com/aws/aws-cdk/issues/20543)) ([98b52de](https://github.com/aws/aws-cdk/commit/98b52def344881b3e119660f08260ef89409103b))
+* **cfnspec:** cloudformation spec v76.0.0 ([#20726](https://github.com/aws/aws-cdk/issues/20726)) ([4dbb246](https://github.com/aws/aws-cdk/commit/4dbb2460d658fc8f734773545be6b47ebebaea5c))
+* **events-targets:** Add DLQ support for SNS target ([#20062](https://github.com/aws/aws-cdk/issues/20062)) ([1148a47](https://github.com/aws/aws-cdk/commit/1148a47514450769e12a829188071592b2b3e3b6)), closes [#19741](https://github.com/aws/aws-cdk/issues/19741)
+* **lambda:** inline function code can exceed 4096 bytes ([#20624](https://github.com/aws/aws-cdk/issues/20624)) ([a014c30](https://github.com/aws/aws-cdk/commit/a014c30d5727afcc48706878dc4bf77a22bb122f))
+* **pipelines:** add support for caching to codebuild steps ([#20533](https://github.com/aws/aws-cdk/issues/20533)) ([81ef665](https://github.com/aws/aws-cdk/commit/81ef6650d123726ee01ec6cecba77d37244290e4)), closes [#16375](https://github.com/aws/aws-cdk/issues/16375) [#19084](https://github.com/aws/aws-cdk/issues/19084)
+* **route53:** replace existing record sets ([#20416](https://github.com/aws/aws-cdk/issues/20416)) ([2f92c35](https://github.com/aws/aws-cdk/commit/2f92c35b17034859c2ec1514f3b2601d188d31c9))
+* **secretsmanager:** exclude characters for hosted rotation ([#20768](https://github.com/aws/aws-cdk/issues/20768)) ([d66534a](https://github.com/aws/aws-cdk/commit/d66534a1a848083a39ffcc9161b050955f0fdc40))
+* **servicediscovery:** add hostedzoneid as attribute to namespace ([#20583](https://github.com/aws/aws-cdk/issues/20583)) ([454d60f](https://github.com/aws/aws-cdk/commit/454d60fdfcf348fbc114bfdfe5c6dc8429fb0afd)), closes [#20510](https://github.com/aws/aws-cdk/issues/20510)
+
+
+### Bug Fixes
+
+* **autoscaling:** osType is wrong when using CloudformationInit with launchTemplate ([#20759](https://github.com/aws/aws-cdk/issues/20759)) ([610b7b5](https://github.com/aws/aws-cdk/commit/610b7b56462f848e4b2659ed6e821852612ece67))
+* **codepipeline:** cannot deploy pipeline stack with crossAccountKeys twice (under feature flag) ([#20745](https://github.com/aws/aws-cdk/issues/20745)) ([c262034](https://github.com/aws/aws-cdk/commit/c262034afd2468c5bcf1cf47c45a70116c378d3e)), closes [#18828](https://github.com/aws/aws-cdk/issues/18828)
+* **core:** CfnMapping values cannot be used in other stacks ([#20616](https://github.com/aws/aws-cdk/issues/20616)) ([f5c2284](https://github.com/aws/aws-cdk/commit/f5c2284c70b66c5cdf246f68815543a9ea85c868)), closes [#18920](https://github.com/aws/aws-cdk/issues/18920)
+* **core:** Durations in the expected unit are not tested for integer-ness ([#20742](https://github.com/aws/aws-cdk/issues/20742)) ([ddb4766](https://github.com/aws/aws-cdk/commit/ddb4766785e27fbd4d672a5ff31fb07c3d3d389a))
+* **events-targets:** cloudwatch logs requires specific input template ([#20748](https://github.com/aws/aws-cdk/issues/20748)) ([26ff3c7](https://github.com/aws/aws-cdk/commit/26ff3c7748dbdb1faa5d7adf30242b307db2db47)), closes [#19451](https://github.com/aws/aws-cdk/issues/19451)
+* **iam:** add `defaultPolicyName` to prevent policies overwriting each other in multi-stack deployments ([#20705](https://github.com/aws/aws-cdk/issues/20705)) ([703e62e](https://github.com/aws/aws-cdk/commit/703e62e5542508f67ce9060e47b98621b3059115)), closes [#16074](https://github.com/aws/aws-cdk/issues/16074)
+* **iam:** duplicate PolicyStatements lead to too many overflow policies ([#20767](https://github.com/aws/aws-cdk/issues/20767)) ([e692ad2](https://github.com/aws/aws-cdk/commit/e692ad29afa9c489829b76acfe51a42ed8b7a5a4))
+* **init-templates:** unable to initialize typescript templates ([#20752](https://github.com/aws/aws-cdk/issues/20752)) ([665534d](https://github.com/aws/aws-cdk/commit/665534d63b7c3aea2fa84843dd06965c75b261e5)), closes [#20751](https://github.com/aws/aws-cdk/issues/20751)
+* **route53:** improve fromHostedZoneId error message ([#20755](https://github.com/aws/aws-cdk/issues/20755)) ([2cbbb79](https://github.com/aws/aws-cdk/commit/2cbbb7929727983aa4495cbf43e0f91509c2cfed)), closes [#8406](https://github.com/aws/aws-cdk/issues/8406)
+
 ## [2.28.1](https://github.com/aws/aws-cdk/compare/v2.28.0...v2.28.1) (2022-06-15)
 
 
