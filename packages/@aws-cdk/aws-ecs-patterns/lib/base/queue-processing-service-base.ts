@@ -5,13 +5,9 @@ import {
   ICluster, LogDriver, PropagatedTagSource, Secret,
 } from '@aws-cdk/aws-ecs';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
-import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import { CfnOutput, Duration, FeatureFlags, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The properties for the base QueueProcessingEc2Service or QueueProcessingFargateService service.
@@ -215,12 +211,19 @@ export interface QueueProcessingServiceBaseProps {
    *
    */
   readonly capacityProviderStrategies?: CapacityProviderStrategy[];
+
+  /**
+   * Whether ECS Exec should be enabled
+   *
+   * @default - false
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
  * The base class for QueueProcessingEc2Service and QueueProcessingFargateService services.
  */
-export abstract class QueueProcessingServiceBase extends CoreConstruct {
+export abstract class QueueProcessingServiceBase extends Construct {
   /**
    * The SQS queue that the service will process from
    */
@@ -319,7 +322,7 @@ export abstract class QueueProcessingServiceBase extends CoreConstruct {
     this.desiredCount = props.desiredTaskCount ?? 1;
 
     // Determine the desired task count (minimum) and maximum scaling capacity
-    if (!this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)) {
+    if (!FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)) {
       this.minCapacity = props.minScalingCapacity ?? this.desiredCount;
       this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
     } else {

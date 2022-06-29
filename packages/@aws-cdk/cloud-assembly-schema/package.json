@@ -17,14 +17,14 @@
       "dotnet": {
         "namespace": "Amazon.CDK.CloudAssembly.Schema",
         "packageId": "Amazon.CDK.CloudAssembly.Schema",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.cloud-assembly-schema",
         "module": "aws_cdk.cloud_assembly_schema",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -62,12 +62,12 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.5.0",
+    "@types/jest": "^27.5.2",
     "@types/mock-fs": "^4.13.1",
     "@types/semver": "^7.3.9",
     "jest": "^27.5.1",
     "mock-fs": "^4.14.0",
-    "typescript-json-schema": "^0.53.0"
+    "typescript-json-schema": "^0.53.1"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -84,14 +84,14 @@
     "semver"
   ],
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "stable",
   "awslint": {
     "exclude": []
   },
   "dependencies": {
-    "jsonschema": "^1.4.0",
+    "jsonschema": "^1.4.1",
     "semver": "^7.3.7"
   },
   "awscdkio": {
@@ -99,6 +99,6 @@
   },
   "maturity": "stable",
   "publishConfig": {
-    "tag": "latest-1"
+    "tag": "latest"
   }
 }

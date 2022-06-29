@@ -217,7 +217,10 @@
         "/aws-ecs-patterns-queue/QueueProcessingService/QueueProcessingTaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "QueueProcessingServiceQueueProcessingTaskDef4982F68B"
+            "data": "QueueProcessingServiceQueueProcessingTaskDef4982F68B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-patterns-queue/QueueProcessingService/QueueProcessingTaskDef/QueueProcessingContainer/LogGroup/Resource": [

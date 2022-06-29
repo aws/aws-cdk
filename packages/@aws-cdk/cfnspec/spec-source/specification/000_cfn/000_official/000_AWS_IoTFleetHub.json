@@ -1,5 +1,5 @@
 {
-  "$version": "72.0.0",
+  "$version": "76.0.0",
   "PropertyTypes": {},
   "ResourceTypes": {
     "AWS::IoTFleetHub::Application": {

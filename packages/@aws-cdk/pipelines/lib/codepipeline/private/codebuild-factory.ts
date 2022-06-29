@@ -5,8 +5,8 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { IDependable, Stack, Token } from '@aws-cdk/core';
-import { Construct, Node } from 'constructs';
+import { Stack, Token } from '@aws-cdk/core';
+import { Construct, IDependable, Node } from 'constructs';
 import { FileSetLocation, ShellStep, StackOutputReference } from '../../blueprint';
 import { PipelineQueries } from '../../helpers-internal/pipeline-queries';
 import { StepOutput } from '../../helpers-internal/step-output';
@@ -161,6 +161,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         partialBuildSpec: step.partialBuildSpec,
         vpc: step.vpc,
         subnetSelection: step.subnetSelection,
+        cache: step.cache,
         timeout: step.timeout,
       }),
     });
@@ -298,6 +299,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       vpc: projectOptions.vpc,
       subnetSelection: projectOptions.subnetSelection,
       securityGroups: projectOptions.securityGroups,
+      cache: projectOptions.cache,
       buildSpec: projectBuildSpec,
       role: this.props.role,
       timeout: projectOptions.timeout,
@@ -430,6 +432,7 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildOptions | undefine
       vpc: b.vpc ?? a.vpc,
       subnetSelection: b.subnetSelection ?? a.subnetSelection,
       timeout: b.timeout ?? a.timeout,
+      cache: b.cache ?? a.cache,
     };
   }
 }

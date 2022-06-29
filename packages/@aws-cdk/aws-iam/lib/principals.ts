@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { Default, FactName, RegionInfo } from '@aws-cdk/region-info';
+import { IDependable } from 'constructs';
 import { IOpenIdConnectProvider } from './oidc-provider';
 import { PolicyDocument } from './policy-document';
 import { Condition, Conditions, PolicyStatement } from './policy-statement';
@@ -137,7 +138,7 @@ export interface AddToPrincipalPolicyResult {
    *
    * @default - Required if `statementAdded` is true.
    */
-  readonly policyDependable?: cdk.IDependable;
+  readonly policyDependable?: IDependable;
 }
 
 /**
@@ -604,18 +605,23 @@ export class FederatedPrincipal extends PrincipalBase {
   public readonly assumeRoleAction: string;
 
   /**
+   * The conditions under which the policy is in effect.
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html
+   */
+  public readonly conditions: Conditions;
+
+  /**
    *
    * @param federated federated identity provider (i.e. 'cognito-identity.amazonaws.com' for users authenticated through Cognito)
-   * @param conditions The conditions under which the policy is in effect.
-   *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
    * @param sessionTags Whether to enable session tagging (see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html)
    */
   constructor(
     public readonly federated: string,
-    public readonly conditions: Conditions,
+    conditions: Conditions = {},
     assumeRoleAction: string = 'sts:AssumeRole') {
     super();
 
+    this.conditions = conditions;
     this.assumeRoleAction = assumeRoleAction;
   }
 

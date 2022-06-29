@@ -80,10 +80,10 @@
             "data": "AssetParameters8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34ArtifactHash70E274C4"
           }
         ],
-        "MyLambdaCurrentVersionE7A382CC132baf6493c3210af4c8c0e36b416660": [
+        "MyLambdaCurrentVersionE7A382CC721de083c6b4b6360a9c534b79eb610e": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CC132baf6493c3210af4c8c0e36b416660",
+            "data": "MyLambdaCurrentVersionE7A382CC721de083c6b4b6360a9c534b79eb610e",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

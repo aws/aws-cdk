@@ -1,5 +1,5 @@
-import { ArnFormat, IConstruct, Duration, Resource, Stack, Token, TokenComparison, Aspects, ConcreteDependable, Annotations } from '@aws-cdk/core';
-import { Construct, Node } from 'constructs';
+import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations } from '@aws-cdk/core';
+import { Construct, IConstruct, DependencyGroup, Node } from 'constructs';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -162,7 +162,24 @@ export interface FromRoleArnOptions {
    * @default false
    */
   readonly addGrantsToResources?: boolean;
+
+  /**
+   * Any policies created by this role will use this value as their ID, if specified.
+   * Specify this if importing the same role in multiple stacks, and granting it
+   * different permissions in at least two stacks. If this is not specified
+   * (or if the same name is specified in more than one stack),
+   * a CloudFormation issue will result in the policy created in whichever stack
+   * is deployed last overwriting the policies created by the others.
+   *
+   * @default 'Policy'
+   */
+  readonly defaultPolicyName?: string;
 }
+
+/**
+ * Options allowing customizing the behavior of {@link Role.fromRoleName}.
+ */
+export interface FromRoleNameOptions extends FromRoleArnOptions { }
 
 /**
  * IAM Role
@@ -206,12 +223,15 @@ export class Role extends Resource implements IRole {
       public readonly roleArn = roleArn;
       public readonly roleName = roleName;
       private readonly attachedPolicies = new AttachedPolicies();
+      private readonly defaultPolicyName?: string;
       private defaultPolicy?: Policy;
 
       constructor(_scope: Construct, _id: string) {
         super(_scope, _id, {
           account: roleAccount,
         });
+
+        this.defaultPolicyName = options.defaultPolicyName;
       }
 
       public addToPolicy(statement: PolicyStatement): boolean {
@@ -220,7 +240,7 @@ export class Role extends Resource implements IRole {
 
       public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
         if (!this.defaultPolicy) {
-          this.defaultPolicy = new Policy(this, 'Policy');
+          this.defaultPolicy = new Policy(this, this.defaultPolicyName ?? 'Policy');
           this.attachInlinePolicy(this.defaultPolicy);
         }
         this.defaultPolicy.addStatements(statement);
@@ -298,14 +318,19 @@ export class Role extends Resource implements IRole {
    *
    * The imported role is assumed to exist in the same account as the account
    * the scope's containing Stack is being deployed to.
+
+   * @param scope construct scope
+   * @param id construct id
+   * @param roleName the name of the role to import
+   * @param options allow customizing the behavior of the returned role
    */
-  public static fromRoleName(scope: Construct, id: string, roleName: string) {
+  public static fromRoleName(scope: Construct, id: string, roleName: string, options: FromRoleNameOptions = {}) {
     return Role.fromRoleArn(scope, id, Stack.of(scope).formatArn({
       region: '',
       service: 'iam',
       resource: 'role',
       resourceName: roleName,
-    }));
+    }), options);
   }
 
   public readonly grantPrincipal: IPrincipal = this;
@@ -350,7 +375,7 @@ export class Role extends Resource implements IRole {
   private readonly managedPolicies: IManagedPolicy[] = [];
   private readonly attachedPolicies = new AttachedPolicies();
   private readonly inlinePolicies: { [name: string]: PolicyDocument };
-  private readonly dependables = new Map<PolicyStatement, ConcreteDependable>();
+  private readonly dependables = new Map<PolicyStatement, DependencyGroup>();
   private immutableRole?: IRole;
   private _didSplit = false;
 
@@ -419,6 +444,8 @@ export class Role extends Resource implements IRole {
         }
       },
     });
+
+    this.node.addValidation({ validate: () => this.validateRole() });
   }
 
   /**
@@ -435,7 +462,7 @@ export class Role extends Resource implements IRole {
 
     // We might split this statement off into a different policy, so we'll need to
     // late-bind the dependable.
-    const policyDependable = new ConcreteDependable();
+    const policyDependable = new DependencyGroup();
     this.dependables.set(statement, policyDependable);
 
     return { statementAdded: true, policyDependable };
@@ -507,9 +534,9 @@ export class Role extends Resource implements IRole {
     return this.immutableRole;
   }
 
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.assumeRolePolicy?.validateForResourcePolicy() || []);
+  private validateRole(): string[] {
+    const errors = new Array<string>();
+    errors.push(...this.assumeRolePolicy?.validateForResourcePolicy() ?? []);
     for (const policy of Object.values(this.inlinePolicies)) {
       errors.push(...policy.validateForIdentityPolicy());
     }
