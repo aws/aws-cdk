@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-sagemaker",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "private": true,
   "description": "The CDK Construct Library for AWS::SageMaker",
   "main": "lib/index.js",
