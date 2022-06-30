@@ -1,9 +1,9 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.mesh": {
+    "integ.permissions": {
       "stacks": [
-        "mesh-stack"
+        "lambda-permissions"
       ],
       "diffAssets": false,
       "stackUpdateWorkflow": true
