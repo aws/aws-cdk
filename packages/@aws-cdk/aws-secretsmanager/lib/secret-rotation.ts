@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as serverless from '@aws-cdk/aws-sam';
-import { Duration, Names, Stack, Token, CfnMapping, Aws } from '@aws-cdk/core';
+import { Duration, Names, Stack, Token, CfnMapping, Aws, RemovalPolicy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ISecret } from './secret';
 
@@ -329,6 +329,7 @@ export class SecretRotation extends Construct {
       },
       parameters,
     });
+    application.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
     // This creates a CF a dependency between the rotation schedule and the
     // serverless application. This is needed because it's the application

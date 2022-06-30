@@ -72,54 +72,58 @@ test('secret rotation single user', () => {
     GroupDescription: 'Default/SecretRotation/SecurityGroup',
   });
 
-  Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
-    Location: {
-      ApplicationId: {
-        'Fn::FindInMap': ['SecretRotationSARMappingC10A2F5D', { Ref: 'AWS::Partition' }, 'applicationId'],
+  Template.fromStack(stack).hasResource('AWS::Serverless::Application', {
+    Properties: {
+      Location: {
+        ApplicationId: {
+          'Fn::FindInMap': ['SecretRotationSARMappingC10A2F5D', { Ref: 'AWS::Partition' }, 'applicationId'],
+        },
+        SemanticVersion: {
+          'Fn::FindInMap': ['SecretRotationSARMappingC10A2F5D', { Ref: 'AWS::Partition' }, 'semanticVersion'],
+        },
       },
-      SemanticVersion: {
-        'Fn::FindInMap': ['SecretRotationSARMappingC10A2F5D', { Ref: 'AWS::Partition' }, 'semanticVersion'],
+      Parameters: {
+        endpoint: {
+          'Fn::Join': [
+            '',
+            [
+              'https://secretsmanager.',
+              {
+                Ref: 'AWS::Region',
+              },
+              '.',
+              {
+                Ref: 'AWS::URLSuffix',
+              },
+            ],
+          ],
+        },
+        functionName: 'SecretRotation',
+        excludeCharacters: excludeCharacters,
+        vpcSecurityGroupIds: {
+          'Fn::GetAtt': [
+            'SecretRotationSecurityGroup9985012B',
+            'GroupId',
+          ],
+        },
+        vpcSubnetIds: {
+          'Fn::Join': [
+            '',
+            [
+              {
+                Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+              },
+              ',',
+              {
+                Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+              },
+            ],
+          ],
+        },
       },
     },
-    Parameters: {
-      endpoint: {
-        'Fn::Join': [
-          '',
-          [
-            'https://secretsmanager.',
-            {
-              Ref: 'AWS::Region',
-            },
-            '.',
-            {
-              Ref: 'AWS::URLSuffix',
-            },
-          ],
-        ],
-      },
-      functionName: 'SecretRotation',
-      excludeCharacters: excludeCharacters,
-      vpcSecurityGroupIds: {
-        'Fn::GetAtt': [
-          'SecretRotationSecurityGroup9985012B',
-          'GroupId',
-        ],
-      },
-      vpcSubnetIds: {
-        'Fn::Join': [
-          '',
-          [
-            {
-              Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
-            },
-            ',',
-            {
-              Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
-            },
-          ],
-        ],
-      },
-    },
+    DeletionPolicy: 'Delete',
+    UpdateReplacePolicy: 'Delete',
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::ResourcePolicy', {

@@ -694,7 +694,9 @@
      },
      "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Mappings": {
