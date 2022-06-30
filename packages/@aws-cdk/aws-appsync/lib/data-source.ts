@@ -219,7 +219,7 @@ export class DynamoDbDataSource extends BackedDataSource {
       type: 'AMAZON_DYNAMODB',
       dynamoDbConfig: {
         tableName: props.table.tableName,
-        awsRegion: props.table.stack.region,
+        awsRegion: props.table.env.region,
         useCallerCredentials: props.useCallerCredentials,
       },
     });
@@ -337,7 +337,7 @@ export class RdsDataSource extends BackedDataSource {
       type: 'RELATIONAL_DATABASE',
       relationalDatabaseConfig: {
         rdsHttpEndpointConfig: {
-          awsRegion: props.serverlessCluster.stack.region,
+          awsRegion: props.serverlessCluster.env.region,
           dbClusterIdentifier: Lazy.string({
             produce: () => {
               return Stack.of(this).formatArn({
@@ -399,7 +399,7 @@ export class ElasticsearchDataSource extends BackedDataSource {
     super(scope, id, props, {
       type: 'AMAZON_ELASTICSEARCH',
       elasticsearchConfig: {
-        awsRegion: props.domain.stack.region,
+        awsRegion: props.domain.env.region,
         endpoint: `https://${props.domain.domainEndpoint}`,
       },
     });
@@ -426,7 +426,7 @@ export class OpenSearchDataSource extends BackedDataSource {
     super(scope, id, props, {
       type: 'AMAZON_OPENSEARCH_SERVICE',
       openSearchServiceConfig: {
-        awsRegion: props.domain.stack.region,
+        awsRegion: props.domain.env.region,
         endpoint: `https://${props.domain.domainEndpoint}`,
       },
     });

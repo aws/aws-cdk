@@ -31,7 +31,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
     // optional , defaults to t3.medium
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
     vpcSubnets: {
-      subnetType: ec2.SubnetType.PRIVATE,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
     },
     vpc,
   },
@@ -78,7 +78,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   credentials: rds.Credentials.fromGeneratedSecret('syscdk'), // Optional - will default to 'admin' username and generated password
   vpc,
   vpcSubnets: {
-    subnetType: ec2.SubnetType.PRIVATE,
+    subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
   }
 });
 ```
@@ -154,7 +154,7 @@ new rds.DatabaseInstance(this, 'Instance', {
   }),
   vpc,
   vpcSubnets: {
-    subnetType: ec2.SubnetType.PRIVATE,
+    subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
   },
   publiclyAccessible: true,
 });
@@ -165,7 +165,7 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
   instanceProps: {
     vpc,
     vpcSubnets: {
-      subnetType: ec2.SubnetType.PRIVATE,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
     },
     publiclyAccessible: true,
   },
@@ -185,7 +185,7 @@ const rule = instance.onEvent('InstanceEvent', { target: new targets.LambdaFunct
 
 ## Login credentials
 
-By default, database instances and clusters will have `admin` user with an auto-generated password.
+By default, database instances and clusters (with the exception of `DatabaseInstanceFromSnapshot` and `ServerlessClusterFromSnapshot`) will have `admin` user with an auto-generated password.
 An alternative username (and password) may be specified for the admin user instead of the default.
 
 The following examples use a `DatabaseInstance`, but the same usage is applicable to `DatabaseCluster`.
@@ -225,6 +225,27 @@ new rds.DatabaseInstance(this, 'InstanceWithCustomizedSecret', {
   vpc,
   credentials: rds.Credentials.fromGeneratedSecret('postgres', {
     secretName: 'my-cool-name',
+    encryptionKey: myKey,
+    excludeCharacters: '!&*^#@()',
+    replicaRegions: [{ region: 'eu-west-1' }, { region: 'eu-west-2' }],
+  }),
+});
+```
+
+### Snapshot credentials
+
+As noted above, Databases created with `DatabaseInstanceFromSnapshot` or `ServerlessClusterFromSnapshot` will not create user and auto-generated password by default because it's not possible to change the master username for a snapshot. Instead, they will use the existing username and password from the snapshot. You can still generate a new password - to generate a secret similarly to the other constructs, pass in credentials with `fromGeneratedSecret()` or `fromGeneratedPassword()`.
+
+```ts
+declare const vpc: ec2.Vpc;
+const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 });
+const myKey = new kms.Key(this, 'MyKey');
+
+new rds.DatabaseInstanceFromSnapshot(this, 'InstanceFromSnapshotWithCustomizedSecret', {
+  engine,
+  vpc,
+  snapshotIdentifier: 'mySnapshot',
+  credentials: rds.SnapshotCredentials.fromGeneratedSecret('username', {
     encryptionKey: myKey,
     excludeCharacters: '!&*^#@()',
     replicaRegions: [{ region: 'eu-west-1' }, { region: 'eu-west-2' }],

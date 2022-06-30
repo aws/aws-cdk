@@ -71,6 +71,39 @@ export interface IPrincipal extends IGrantable {
 }
 
 /**
+ * Interface for principals that can be compared.
+ *
+ * This only needs to be implemented for principals that could potentially be value-equal.
+ * Identity-equal principals will be handled correctly by default.
+ */
+export interface IComparablePrincipal extends IPrincipal {
+  /**
+   * Return a string format of this principal which should be identical if the two
+   * principals are the same.
+   */
+  dedupeString(): string | undefined;
+}
+
+/**
+ * Helper class for working with `IComparablePrincipal`s
+ */
+export class ComparablePrincipal {
+  /**
+   * Whether or not the given principal is a comparable principal
+   */
+  public static isComparablePrincipal(x: IPrincipal): x is IComparablePrincipal {
+    return 'dedupeString' in x;
+  }
+
+  /**
+   * Return the dedupeString of the given principal, if available
+   */
+  public static dedupeStringFor(x: IPrincipal): string | undefined {
+    return ComparablePrincipal.isComparablePrincipal(x) ? x.dedupeString() : undefined;
+  }
+}
+
+/**
  * A type of principal that has more control over its own representation in AssumeRolePolicyDocuments
  *
  * More complex types of identity providers need more control over Role's policy documents
@@ -110,7 +143,7 @@ export interface AddToPrincipalPolicyResult {
 /**
  * Base class for policy principals
  */
-export abstract class PrincipalBase implements IAssumeRolePrincipal {
+export abstract class PrincipalBase implements IAssumeRolePrincipal, IComparablePrincipal {
   public readonly grantPrincipal: IPrincipal = this;
   public readonly principalAccount: string | undefined = undefined;
 
@@ -179,12 +212,17 @@ export abstract class PrincipalBase implements IAssumeRolePrincipal {
   public withSessionTags(): PrincipalBase {
     return new SessionTagsPrincipal(this);
   }
+
+  /**
+   * Return whether or not this principal is equal to the given principal
+   */
+  public abstract dedupeString(): string | undefined;
 }
 
 /**
  * Base class for Principals that wrap other principals
  */
-class PrincipalAdapter extends PrincipalBase {
+abstract class PrincipalAdapter extends PrincipalBase {
   public readonly assumeRoleAction = this.wrapped.assumeRoleAction;
   public readonly principalAccount = this.wrapped.principalAccount;
 
@@ -199,6 +237,14 @@ class PrincipalAdapter extends PrincipalBase {
   }
   addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     return this.wrapped.addToPrincipalPolicy(statement);
+  }
+
+  /**
+   * Append the given string to the wrapped principal's dedupe string (if available)
+   */
+  protected appendDedupe(append: string): string | undefined {
+    const inner = ComparablePrincipal.dedupeStringFor(this.wrapped);
+    return inner !== undefined ? `${this.constructor.name}:${inner}:${append}` : undefined;
   }
 }
 
@@ -262,6 +308,10 @@ export class PrincipalWithConditions extends PrincipalAdapter {
     return this.policyFragment.principalJson;
   }
 
+  public dedupeString(): string | undefined {
+    return this.appendDedupe(JSON.stringify(this.conditions));
+  }
+
   private mergeConditions(principalConditions: Conditions, additionalConditions: Conditions): Conditions {
     const mergedConditions: Conditions = {};
     Object.entries(principalConditions).forEach(([operator, condition]) => {
@@ -311,6 +361,10 @@ export class SessionTagsPrincipal extends PrincipalAdapter {
       statement.addActions('sts:TagSession');
       return statement;
     }));
+  }
+
+  public dedupeString(): string | undefined {
+    return this.appendDedupe('');
   }
 }
 
@@ -368,6 +422,22 @@ export class ArnPrincipal extends PrincipalBase {
   public toString() {
     return `ArnPrincipal(${this.arn})`;
   }
+
+  /**
+   * A convenience method for adding a condition that the principal is part of the specified
+   * AWS Organization.
+   */
+  public inOrganization(organizationId: string) {
+    return this.withConditions({
+      StringEquals: {
+        'aws:PrincipalOrgID': organizationId,
+      },
+    });
+  }
+
+  public dedupeString(): string | undefined {
+    return `ArnPrincipal:${this.arn}`;
+  }
 }
 
 /**
@@ -382,6 +452,9 @@ export class AccountPrincipal extends ArnPrincipal {
    */
   constructor(public readonly accountId: any) {
     super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
+    if (!cdk.Token.isUnresolved(accountId) && typeof accountId !== 'string') {
+      throw new Error('accountId should be of type string');
+    }
     this.principalAccount = accountId;
   }
 
@@ -397,7 +470,7 @@ export interface ServicePrincipalOpts {
   /**
    * The region in which the service is operating.
    *
-   * @default the current Stack's region.
+   * @default - the current Stack's region.
    * @deprecated You should not need to set this. The stack's region is always correct.
    */
   readonly region?: string;
@@ -414,6 +487,21 @@ export interface ServicePrincipalOpts {
  * An IAM principal that represents an AWS service (i.e. sqs.amazonaws.com).
  */
 export class ServicePrincipal extends PrincipalBase {
+  /**
+   * Translate the given service principal name based on the region it's used in.
+   *
+   * For example, for Chinese regions this may (depending on whether that's necessary
+   * for the given service principal) append `.cn` to the name.
+   *
+   * The `region-info` module is used to obtain this information.
+   *
+   * @example
+   * const principalName = iam.ServicePrincipal.servicePrincipalName('ec2.amazonaws.com');
+   */
+  public static servicePrincipalName(service: string): string {
+    return new ServicePrincipalToken(service, {}).toString();
+  }
+
   /**
    *
    * @param service AWS service (i.e. sqs.amazonaws.com)
@@ -432,6 +520,10 @@ export class ServicePrincipal extends PrincipalBase {
 
   public toString() {
     return `ServicePrincipal(${this.service})`;
+  }
+
+  public dedupeString(): string | undefined {
+    return `ServicePrincipal:${this.service}:${JSON.stringify(this.opts)}`;
   }
 }
 
@@ -456,6 +548,10 @@ export class OrganizationPrincipal extends PrincipalBase {
 
   public toString() {
     return `OrganizationPrincipal(${this.organizationId})`;
+  }
+
+  public dedupeString(): string | undefined {
+    return `OrganizationPrincipal:${this.organizationId}`;
   }
 }
 
@@ -489,6 +585,10 @@ export class CanonicalUserPrincipal extends PrincipalBase {
 
   public toString() {
     return `CanonicalUserPrincipal(${this.canonicalUserId})`;
+  }
+
+  public dedupeString(): string | undefined {
+    return `CanonicalUserPrincipal:${this.canonicalUserId}`;
   }
 }
 
@@ -525,6 +625,10 @@ export class FederatedPrincipal extends PrincipalBase {
 
   public toString() {
     return `FederatedPrincipal(${this.federated})`;
+  }
+
+  public dedupeString(): string | undefined {
+    return `FederatedPrincipal:${this.federated}:${this.assumeRoleAction}:${JSON.stringify(this.conditions)}`;
   }
 }
 
@@ -667,6 +771,10 @@ export class StarPrincipal extends PrincipalBase {
   public toString() {
     return 'StarPrincipal()';
   }
+
+  public dedupeString(): string | undefined {
+    return 'StarPrincipal';
+  }
 }
 
 /**
@@ -726,6 +834,12 @@ export class CompositePrincipal extends PrincipalBase {
 
   public toString() {
     return `CompositePrincipal(${this.principals})`;
+  }
+
+  public dedupeString(): string | undefined {
+    const inner = this.principals.map(ComparablePrincipal.dedupeStringFor);
+    if (inner.some(x => x === undefined)) { return undefined; }
+    return `CompositePrincipal[${inner.join(',')}]`;
   }
 }
 

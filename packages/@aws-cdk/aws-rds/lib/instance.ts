@@ -715,6 +715,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     }
 
     const maybeLowercasedInstanceId = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER)
+    && !Token.isUnresolved(props.instanceIdentifier)
       ? props.instanceIdentifier?.toLowerCase()
       : props.instanceIdentifier;
 

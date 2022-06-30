@@ -102,7 +102,7 @@ If `esbuild` is available it will be used to bundle your code in your environmen
 bundling will happen in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-nodejs12.x)
 with the Docker platform based on the target architecture of the Lambda function.
 
-For macOS the recommendend approach is to install `esbuild` as Docker volume performance is really poor.
+For macOS the recommended approach is to install `esbuild` as Docker volume performance is really poor.
 
 `esbuild` can be installed with:
 

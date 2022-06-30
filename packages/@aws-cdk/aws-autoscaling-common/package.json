@@ -74,8 +74,8 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
-    "fast-check": "^2.24.0",
+    "@types/jest": "^27.5.2",
+    "fast-check": "^2.25.0",
     "jest": "^27.5.1"
   },
   "dependencies": {
@@ -111,7 +111,7 @@
     ]
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "stable",
   "maturity": "stable",

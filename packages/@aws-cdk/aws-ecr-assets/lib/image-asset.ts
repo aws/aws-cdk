@@ -57,6 +57,36 @@ export class NetworkMode {
 }
 
 /**
+ * platform supported by docker
+ */
+export class Platform {
+  /**
+   * Build for linux/amd64
+   */
+  public static readonly LINUX_AMD64 = new Platform('linux/amd64');
+
+  /**
+   * Build for linux/arm64
+   */
+  public static readonly LINUX_ARM64 = new Platform('linux/arm64');
+
+  /**
+   * Used to specify a custom platform
+   * Use this if the platform name is not yet supported by the CDK.
+   *
+   * @param platform The platform to use for docker build
+   */
+  public static custom(platform: string) {
+    return new Platform(platform);
+  }
+
+  /**
+   * @param platform The platform to use for docker build
+   */
+  private constructor(public readonly platform: string) {}
+}
+
+/**
  * Options to control invalidation of `DockerImageAsset` asset hashes
  */
 export interface DockerImageAssetInvalidationOptions {
@@ -101,6 +131,13 @@ export interface DockerImageAssetInvalidationOptions {
    * @default true
    */
   readonly networkMode?: boolean;
+
+  /**
+   * Use `platform` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly platform?: boolean;
 }
 
 /**
@@ -152,6 +189,13 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @default - no networking mode specified (the default networking mode `NetworkMode.DEFAULT` will be used)
    */
   readonly networkMode?: NetworkMode;
+
+  /**
+   * Platform to build for. _Requires Docker Buildx_.
+   *
+   * @default - no platform specified (the current machine architecture will be used)
+   */
+  readonly platform?: Platform;
 
   /**
    * Options to control which parameters are used to invalidate the asset hash.
@@ -286,6 +330,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
     if (props.invalidation?.file !== false && props.file) { extraHash.file = props.file; }
     if (props.invalidation?.repositoryName !== false && props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
     if (props.invalidation?.networkMode !== false && props.networkMode) { extraHash.networkMode = props.networkMode; }
+    if (props.invalidation?.platform !== false && props.platform) { extraHash.platform = props.platform; }
 
     // add "salt" to the hash in order to invalidate the image in the upgrade to
     // 1.21.0 which removes the AdoptedRepository resource (and will cause the
@@ -318,6 +363,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
       dockerFile: props.file,
       sourceHash: staging.assetHash,
       networkMode: props.networkMode?.mode,
+      platform: props.platform?.platform,
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);

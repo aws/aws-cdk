@@ -1,4 +1,4 @@
-import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Grant, IGrantable, IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IKey } from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
@@ -733,6 +733,19 @@ abstract class UserPoolBase extends Resource implements IUserPool {
 
   public registerIdentityProvider(provider: IUserPoolIdentityProvider) {
     this.identityProviders.push(provider);
+  }
+
+  /**
+   * Adds an IAM policy statement associated with this user pool to an
+   * IAM principal's policy.
+   */
+  public grant(grantee: IGrantable, ...actions: string[]): Grant {
+    return Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.userPoolArn],
+      scope: this,
+    });
   }
 }
 

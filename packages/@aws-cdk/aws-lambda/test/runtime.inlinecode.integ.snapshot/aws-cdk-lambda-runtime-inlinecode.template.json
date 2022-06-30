@@ -50,56 +50,6 @@
     "NODEJS12XServiceRole59E71436"
    ]
   },
-  "PYTHON36ServiceRole814B3AD9": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "PYTHON364935EF15": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "ZipFile": "def handler(event, context):\n  return \"success\""
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "PYTHON36ServiceRole814B3AD9",
-      "Arn"
-     ]
-    },
-    "Handler": "index.handler",
-    "Runtime": "python3.6"
-   },
-   "DependsOn": [
-    "PYTHON36ServiceRole814B3AD9"
-   ]
-  },
   "PYTHON37ServiceRoleDE7E561E": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -299,17 +249,62 @@
    "DependsOn": [
     "NODEJS14XServiceRole4523ECDB"
    ]
+  },
+  "NODEJS16XServiceRoleB9DAFDFD": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "NODEJS16XDE5DD82D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = async function(event) { return \"success\" }"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "NODEJS16XServiceRoleB9DAFDFD",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "nodejs16.x"
+   },
+   "DependsOn": [
+    "NODEJS16XServiceRoleB9DAFDFD"
+   ]
   }
  },
  "Outputs": {
   "NODEJS12XfunctionName": {
    "Value": {
     "Ref": "NODEJS12X8B8075A4"
-   }
-  },
-  "PYTHON36functionName": {
-   "Value": {
-    "Ref": "PYTHON364935EF15"
    }
   },
   "PYTHON37functionName": {
@@ -330,6 +325,11 @@
   "NODEJS14XfunctionName": {
    "Value": {
     "Ref": "NODEJS14X930214A3"
+   }
+  },
+  "NODEJS16XfunctionName": {
+   "Value": {
+    "Ref": "NODEJS16XDE5DD82D"
    }
   }
  }

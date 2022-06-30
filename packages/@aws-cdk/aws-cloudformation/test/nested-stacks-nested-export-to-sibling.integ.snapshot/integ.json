@@ -1,0 +1,15 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-cloudformation/test/integ.nested-stacks-nested-export-to-sibling": {
+      "stacks": [
+        "Stack1",
+        "Stack2"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

@@ -38,7 +38,7 @@
     "build+extract": "npm run build"
   },
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 14.15.0"
   },
   "publishConfig": {
     "tag": "latest-1"

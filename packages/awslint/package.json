@@ -18,16 +18,16 @@
     "awslint": "bin/awslint"
   },
   "dependencies": {
-    "@jsii/spec": "^1.57.0",
+    "@jsii/spec": "^1.60.0",
     "camelcase": "^6.3.0",
     "chalk": "^4",
     "fs-extra": "^9.1.0",
-    "jsii-reflect": "^1.57.0",
+    "jsii-reflect": "^1.60.0",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "@types/yargs": "^15.0.14",
     "@aws-cdk/pkglint": "0.0.0",
     "typescript": "~3.9.10",
@@ -60,7 +60,7 @@
   "maturity": "developer-preview",
   "stability": "experimental",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "nozem": {
     "ostools": [

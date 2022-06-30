@@ -183,14 +183,14 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.93",
+    "@types/aws-lambda": "^8.10.99",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.4.1",
-    "@types/lodash": "^4.14.181",
+    "@types/jest": "^27.5.2",
+    "@types/lodash": "^4.14.182",
     "@types/minimatch": "^3.0.5",
     "@types/node": "^10.17.60",
     "@types/sinon": "^9.0.11",
-    "fast-check": "^2.24.0",
+    "fast-check": "^2.25.0",
     "jest": "^27.5.1",
     "lodash": "^4.17.21",
     "sinon": "^9.2.4",
@@ -220,7 +220,7 @@
     "constructs": "^3.3.69"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "stable",
   "awscdkio": {

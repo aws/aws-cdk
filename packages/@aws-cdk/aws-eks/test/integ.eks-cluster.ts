@@ -79,6 +79,8 @@ class EksClusterStack extends Stack {
 
     this.assertServiceAccount();
 
+    this.assertExtendedServiceAccount();
+
     new CfnOutput(this, 'ClusterEndpoint', { value: this.cluster.clusterEndpoint });
     new CfnOutput(this, 'ClusterArn', { value: this.cluster.clusterArn });
     new CfnOutput(this, 'ClusterCertificateAuthorityData', { value: this.cluster.clusterCertificateAuthorityData });
@@ -90,6 +92,18 @@ class EksClusterStack extends Stack {
   private assertServiceAccount() {
     // add a service account connected to a IAM role
     this.cluster.addServiceAccount('MyServiceAccount');
+  }
+
+  private assertExtendedServiceAccount() {
+    // add a service account connected to a IAM role
+    this.cluster.addServiceAccount('MyExtendedServiceAccount', {
+      annotations: {
+        'eks.amazonaws.com/sts-regional-endpoints': 'false',
+      },
+      labels: {
+        'some-label': 'with-some-value',
+      },
+    });
   }
 
   private assertCreateNamespace() {

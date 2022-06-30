@@ -148,13 +148,13 @@
                   "version": "0.0.0"
                 }
               },
-              "26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ce": {
-                "id": "26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ce",
-                "path": "cdk-amplify-app-asset-deployment/AssetParameters/26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ce",
+              "5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09b": {
+                "id": "5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09b",
+                "path": "cdk-amplify-app-asset-deployment/AssetParameters/5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09b",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "cdk-amplify-app-asset-deployment/AssetParameters/26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ce/S3Bucket",
+                    "path": "cdk-amplify-app-asset-deployment/AssetParameters/5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09b/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -162,7 +162,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "cdk-amplify-app-asset-deployment/AssetParameters/26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ce/S3VersionKey",
+                    "path": "cdk-amplify-app-asset-deployment/AssetParameters/5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09b/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -170,7 +170,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "cdk-amplify-app-asset-deployment/AssetParameters/26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ce/ArtifactHash",
+                    "path": "cdk-amplify-app-asset-deployment/AssetParameters/5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09b/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -499,7 +499,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda-nodejs.NodejsFunction",
+                  "fqn": "@aws-cdk/aws-lambda.Function",
                   "version": "0.0.0"
                 }
               },
@@ -687,7 +687,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda-nodejs.NodejsFunction",
+                  "fqn": "@aws-cdk/aws-lambda.Function",
                   "version": "0.0.0"
                 }
               },
@@ -932,7 +932,7 @@
                               }
                             },
                             "handler": "framework.onEvent",
-                            "runtime": "nodejs12.x",
+                            "runtime": "nodejs14.x",
                             "timeout": 900
                           }
                         },
@@ -1174,7 +1174,7 @@
                               }
                             },
                             "handler": "framework.isComplete",
-                            "runtime": "nodejs12.x",
+                            "runtime": "nodejs14.x",
                             "timeout": 900
                           }
                         },
@@ -1416,7 +1416,7 @@
                               }
                             },
                             "handler": "framework.onTimeout",
-                            "runtime": "nodejs12.x",
+                            "runtime": "nodejs14.x",
                             "timeout": 900
                           }
                         },
@@ -1656,7 +1656,7 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParameters26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ceS3Bucket12F7FACF"
+                            "Ref": "AssetParameters5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09bS3BucketCCFAAC39"
                           },
                           "/",
                           {
@@ -1666,7 +1666,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ceS3VersionKeyAF0C1844"
+                                    "Ref": "AssetParameters5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09bS3VersionKey510F0375"
                                   }
                                 ]
                               }
@@ -1679,7 +1679,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters26a6c1560f5817c601828b525d609224ab77b06bb0d4f6200a0a96f8845806ceS3VersionKeyAF0C1844"
+                                    "Ref": "AssetParameters5d0f41f378b2d554428777c8b0a6aa877877e4359951cf91519f97b9ece5f09bS3VersionKey510F0375"
                                   }
                                 ]
                               }

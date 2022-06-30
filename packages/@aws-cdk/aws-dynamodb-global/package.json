@@ -67,7 +67,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "jest": "^27.5.1"
   },
   "peerDependencies": {
@@ -94,7 +94,7 @@
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

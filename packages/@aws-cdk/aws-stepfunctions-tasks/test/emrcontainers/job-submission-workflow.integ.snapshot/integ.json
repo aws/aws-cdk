@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "emrcontainers/integ.job-submission-workflow": {
+      "stacks": [
+        "aws-stepfunctions-tasks-emr-containers-all-services-integ"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": false
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "18.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -57,10 +57,19 @@
             "data": "LambdaD247545B"
           }
         ],
-        "/cdk-integ-secret-lambda-rotation/Lambda/InvokeServicePrincipal(secretsmanager.amazonaws.com)": [
+        "/cdk-integ-secret-lambda-rotation/Lambda/InvokeN0--a2GKfZP0JmDqDE--Vhhu6+A0TUv3NyNbk4YM+FKNc=": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeServicePrincipalsecretsmanageramazonawscomB927629E"
+            "data": "LambdaInvokeN0a2GKfZP0JmDqDEVhhu6A0TUv3NyNbk4YMFKNc69846677"
+          }
+        ],
+        "LambdaInvokeServicePrincipalsecretsmanageramazonawscomB927629E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokeServicePrincipalsecretsmanageramazonawscomB927629E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

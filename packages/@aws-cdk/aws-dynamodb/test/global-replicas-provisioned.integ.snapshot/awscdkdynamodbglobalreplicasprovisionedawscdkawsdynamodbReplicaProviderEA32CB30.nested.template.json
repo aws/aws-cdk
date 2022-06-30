@@ -77,7 +77,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkdynamodbglobalreplicasprovisionedAssetParameters5d88959fad6bed204d22b24bf15826b8c7591c586a60a313e54f1948d9cdf80fS3Bucket5157987FRef"
+      "Ref": "referencetoawscdkdynamodbglobalreplicasprovisionedAssetParametersb4dca1e2eb56ca7a3cf054600c5c905bc19898ff1279ac6a72ec166cf8bbd209S3BucketEDAC9909Ref"
      },
      "S3Key": {
       "Fn::Join": [
@@ -90,7 +90,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkdynamodbglobalreplicasprovisionedAssetParameters5d88959fad6bed204d22b24bf15826b8c7591c586a60a313e54f1948d9cdf80fS3VersionKey001ABDFDRef"
+             "Ref": "referencetoawscdkdynamodbglobalreplicasprovisionedAssetParametersb4dca1e2eb56ca7a3cf054600c5c905bc19898ff1279ac6a72ec166cf8bbd209S3VersionKey1268D0E4Ref"
             }
            ]
           }
@@ -103,7 +103,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkdynamodbglobalreplicasprovisionedAssetParameters5d88959fad6bed204d22b24bf15826b8c7591c586a60a313e54f1948d9cdf80fS3VersionKey001ABDFDRef"
+             "Ref": "referencetoawscdkdynamodbglobalreplicasprovisionedAssetParametersb4dca1e2eb56ca7a3cf054600c5c905bc19898ff1279ac6a72ec166cf8bbd209S3VersionKey1268D0E4Ref"
             }
            ]
           }
@@ -120,7 +120,7 @@
      ]
     },
     "Handler": "index.onEventHandler",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 300
    },
    "DependsOn": [
@@ -164,7 +164,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkdynamodbglobalreplicasprovisionedAssetParameters5d88959fad6bed204d22b24bf15826b8c7591c586a60a313e54f1948d9cdf80fS3Bucket5157987FRef"
+      "Ref": "referencetoawscdkdynamodbglobalreplicasprovisionedAssetParametersb4dca1e2eb56ca7a3cf054600c5c905bc19898ff1279ac6a72ec166cf8bbd209S3BucketEDAC9909Ref"
      },
      "S3Key": {
       "Fn::Join": [
@@ -177,7 +177,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkdynamodbglobalreplicasprovisionedAssetParameters5d88959fad6bed204d22b24bf15826b8c7591c586a60a313e54f1948d9cdf80fS3VersionKey001ABDFDRef"
+             "Ref": "referencetoawscdkdynamodbglobalreplicasprovisionedAssetParametersb4dca1e2eb56ca7a3cf054600c5c905bc19898ff1279ac6a72ec166cf8bbd209S3VersionKey1268D0E4Ref"
             }
            ]
           }
@@ -190,7 +190,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkdynamodbglobalreplicasprovisionedAssetParameters5d88959fad6bed204d22b24bf15826b8c7591c586a60a313e54f1948d9cdf80fS3VersionKey001ABDFDRef"
+             "Ref": "referencetoawscdkdynamodbglobalreplicasprovisionedAssetParametersb4dca1e2eb56ca7a3cf054600c5c905bc19898ff1279ac6a72ec166cf8bbd209S3VersionKey1268D0E4Ref"
             }
            ]
           }
@@ -207,7 +207,7 @@
      ]
     },
     "Handler": "index.isCompleteHandler",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 30
    },
    "DependsOn": [
@@ -382,7 +382,7 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -548,7 +548,7 @@
      }
     },
     "Handler": "framework.isComplete",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -714,7 +714,7 @@
      }
     },
     "Handler": "framework.onTimeout",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -962,10 +962,10 @@
   }
  },
  "Parameters": {
-  "referencetoawscdkdynamodbglobalreplicasprovisionedAssetParameters5d88959fad6bed204d22b24bf15826b8c7591c586a60a313e54f1948d9cdf80fS3Bucket5157987FRef": {
+  "referencetoawscdkdynamodbglobalreplicasprovisionedAssetParametersb4dca1e2eb56ca7a3cf054600c5c905bc19898ff1279ac6a72ec166cf8bbd209S3BucketEDAC9909Ref": {
    "Type": "String"
   },
-  "referencetoawscdkdynamodbglobalreplicasprovisionedAssetParameters5d88959fad6bed204d22b24bf15826b8c7591c586a60a313e54f1948d9cdf80fS3VersionKey001ABDFDRef": {
+  "referencetoawscdkdynamodbglobalreplicasprovisionedAssetParametersb4dca1e2eb56ca7a3cf054600c5c905bc19898ff1279ac6a72ec166cf8bbd209S3VersionKey1268D0E4Ref": {
    "Type": "String"
   },
   "referencetoawscdkdynamodbglobalreplicasprovisionedAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3BucketD64AFF48Ref": {

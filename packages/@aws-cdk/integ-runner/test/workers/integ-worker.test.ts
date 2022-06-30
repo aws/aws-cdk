@@ -17,28 +17,37 @@ beforeEach(() => {
   jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'rmdirSync').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
-  spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValueOnce({
-    status: 0,
-    stderr: Buffer.from('HEAD branch: master\nother'),
-    stdout: Buffer.from('HEAD branch: master\nother'),
-    pid: 123,
-    output: ['stdout', 'stderr'],
-    signal: null,
-  }).mockReturnValueOnce({
-    status: 0,
-    stderr: Buffer.from('abc'),
-    stdout: Buffer.from('abc'),
-    pid: 123,
-    output: ['stdout', 'stderr'],
-    signal: null,
-  }).mockReturnValue({
-    status: 0,
-    stderr: Buffer.from('stack1'),
-    stdout: Buffer.from('stack1'),
-    pid: 123,
-    output: ['stdout', 'stderr'],
-    signal: null,
-  });
+  spawnSyncMock = jest.spyOn(child_process, 'spawnSync')
+    .mockReturnValueOnce({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('sdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    })
+    .mockReturnValueOnce({
+      status: 0,
+      stderr: Buffer.from('HEAD branch: master\nother'),
+      stdout: Buffer.from('HEAD branch: master\nother'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    }).mockReturnValueOnce({
+      status: 0,
+      stderr: Buffer.from('abc'),
+      stdout: Buffer.from('abc'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    }).mockReturnValue({
+      status: 0,
+      stderr: Buffer.from('stack1'),
+      stdout: Buffer.from('stack1'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
   stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
   jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
 });
@@ -56,7 +65,7 @@ describe('test runner', () => {
     // WHEN
     const test = {
       fileName: 'test/test-data/integ.integ-test1.js',
-      directory: 'test/test-data',
+      discoveryRoot: 'test/test-data',
     };
     integTestWorker({
       tests: [test],
@@ -76,20 +85,30 @@ describe('test runner', () => {
   });
 
   test('no tests', () => {
+
     // WHEN
     const test = {
       fileName: 'test/test-data/integ.integ-test2.js',
-      directory: 'test/test-data',
+      discoveryRoot: 'test/test-data',
     };
-    jest.spyOn(child_process, 'spawnSync').mockImplementation();
+    spawnSyncMock.mockReset();
+    jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+      status: 0,
+      stderr: Buffer.from('test-stack'),
+      stdout: Buffer.from('test-stack'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
     const results = integTestWorker({
       tests: [test],
       region: 'us-east-1',
     });
 
+    // THEN
     expect(results[0]).toEqual({
       fileName: expect.stringMatching(/integ.integ-test2.js$/),
-      directory: 'test/test-data',
+      discoveryRoot: 'test/test-data',
     });
   });
 
@@ -97,45 +116,45 @@ describe('test runner', () => {
     // WHEN
     const test = {
       fileName: 'test/test-data/integ.test-with-snapshot.js',
-      directory: 'test/test-data',
+      discoveryRoot: 'test/test-data',
     };
     const results = integTestWorker({
       tests: [test],
-      region: 'us-east-1',
+      region: 'us-east-3',
     });
 
-    expect(spawnSyncMock).toHaveBeenCalledWith(
-      expect.stringMatching(/git/),
-      ['remote', 'show', 'origin'],
-      expect.objectContaining({
-        cwd: 'test/test-data',
-      }),
-    );
+    expect(spawnSyncMock.mock.calls).toEqual(expect.arrayContaining([
+      expect.arrayContaining([
+        expect.stringMatching(/git/),
+        ['remote', 'show', 'origin'],
+        expect.objectContaining({
+          cwd: 'test/test-data',
+        }),
+      ]),
+      expect.arrayContaining([
+        expect.stringMatching(/git/),
+        ['merge-base', 'HEAD', 'master'],
+        expect.objectContaining({
+          cwd: 'test/test-data',
+        }),
+      ]),
+      expect.arrayContaining([
+        expect.stringMatching(/git/),
+        ['checkout', 'abc', '--', 'test-with-snapshot.integ.snapshot'],
+        expect.objectContaining({
+          cwd: 'test/test-data',
+        }),
+      ]),
+    ]));
 
-    expect(spawnSyncMock).toHaveBeenCalledWith(
-      expect.stringMatching(/git/),
-      ['merge-base', 'HEAD', 'master'],
-      expect.objectContaining({
-        cwd: 'test/test-data',
-      }),
-    );
-
-    expect(spawnSyncMock).toHaveBeenCalledWith(
-      expect.stringMatching(/git/),
-      ['checkout', 'abc', '--', 'test-with-snapshot.integ.snapshot'],
-      expect.objectContaining({
-        cwd: 'test/test-data',
-      }),
-    );
-
-    expect(results.length).toEqual(0);
+    expect(results).toEqual([]);
   });
 
   test('deploy failed', () => {
     // WHEN
     const test = {
       fileName: 'test/test-data/integ.test-with-snapshot.js',
-      directory: 'test/test-data',
+      discoveryRoot: 'test/test-data',
     };
     jest.spyOn(child_process, 'spawnSync').mockReturnValue({
       status: 1,
@@ -152,7 +171,7 @@ describe('test runner', () => {
 
     expect(results[0]).toEqual({
       fileName: 'test/test-data/integ.test-with-snapshot.js',
-      directory: 'test/test-data',
+      discoveryRoot: 'test/test-data',
     });
   });
 });
@@ -162,11 +181,11 @@ describe('parallel worker', () => {
     const tests = [
       {
         fileName: 'integ.test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
       {
         fileName: 'integ.another-test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
     ];
     await runIntegrationTests({
@@ -192,7 +211,7 @@ describe('parallel worker', () => {
   test('run tests', async () => {
     const tests = [{
       fileName: 'integ.test-with-snapshot.js',
-      directory: 'test/test-data',
+      discoveryRoot: 'test/test-data',
     }];
     const results = await runIntegrationTestsInParallel({
       pool,
@@ -207,7 +226,7 @@ describe('parallel worker', () => {
       failedTests: expect.arrayContaining([
         {
           fileName: 'integ.test-with-snapshot.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
       ]),
       metrics: expect.arrayContaining([
@@ -226,19 +245,19 @@ describe('parallel worker', () => {
     const tests = [
       {
         fileName: 'integ.test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
       {
         fileName: 'integ.another-test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
       {
         fileName: 'integ.another-test-with-snapshot2.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
       {
         fileName: 'integ.another-test-with-snapshot3.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
     ];
     const results = await runIntegrationTestsInParallel({
@@ -264,19 +283,19 @@ describe('parallel worker', () => {
       failedTests: expect.arrayContaining([
         {
           fileName: 'integ.test-with-snapshot.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
         {
           fileName: 'integ.another-test-with-snapshot.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
         {
           fileName: 'integ.another-test-with-snapshot2.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
         {
           fileName: 'integ.another-test-with-snapshot3.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
       ]),
       metrics: expect.arrayContaining([
@@ -320,11 +339,11 @@ describe('parallel worker', () => {
     const tests = [
       {
         fileName: 'integ.test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
       {
         fileName: 'integ.another-test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
     ];
     const results = await runIntegrationTestsInParallel({
@@ -343,11 +362,11 @@ describe('parallel worker', () => {
       failedTests: expect.arrayContaining([
         {
           fileName: 'integ.test-with-snapshot.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
         {
           fileName: 'integ.another-test-with-snapshot.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
       ]),
       metrics: expect.arrayContaining([
@@ -373,11 +392,11 @@ describe('parallel worker', () => {
     const tests = [
       {
         fileName: 'integ.test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
       {
         fileName: 'integ.another-test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
     ];
     const results = await runIntegrationTestsInParallel({
@@ -396,11 +415,11 @@ describe('parallel worker', () => {
       failedTests: expect.arrayContaining([
         {
           fileName: 'integ.another-test-with-snapshot.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
         {
           fileName: 'integ.test-with-snapshot.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
       ]),
       metrics: expect.arrayContaining([
@@ -420,11 +439,11 @@ describe('parallel worker', () => {
     const tests = [
       {
         fileName: 'integ.test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
       {
         fileName: 'integ.another-test-with-snapshot.js',
-        directory: 'test/test-data',
+        discoveryRoot: 'test/test-data',
       },
     ];
     const results = await runIntegrationTestsInParallel({
@@ -443,11 +462,11 @@ describe('parallel worker', () => {
       failedTests: expect.arrayContaining([
         {
           fileName: 'integ.test-with-snapshot.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
         {
           fileName: 'integ.another-test-with-snapshot.js',
-          directory: 'test/test-data',
+          discoveryRoot: 'test/test-data',
         },
       ]),
       metrics: expect.arrayContaining([

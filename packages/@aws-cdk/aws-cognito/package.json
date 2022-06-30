@@ -84,7 +84,7 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "@types/punycode": "^2.1.0",
     "jest": "^27.5.1"
   },
@@ -112,7 +112,7 @@
     "punycode"
   ],
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "awslint": {
     "exclude": [
@@ -122,7 +122,8 @@
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderFacebookProps",
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderAmazonProps",
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderGoogleProps",
-      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderAppleProps"
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderAppleProps",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderOidcProps"
     ]
   },
   "stability": "stable",

@@ -1854,4 +1854,8 @@ class SourceTableAttachedPrincipal extends iam.PrincipalBase {
       statementAdded: true,
     };
   }
+
+  public dedupeString(): string | undefined {
+    return undefined;
+  }
 }

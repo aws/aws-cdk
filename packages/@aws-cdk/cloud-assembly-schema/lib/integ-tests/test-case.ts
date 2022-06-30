@@ -73,6 +73,13 @@ export interface TestCase extends TestOptions {
    * `exclusively` is passed
    */
   readonly stacks: string[];
+
+  /**
+   * The name of the stack that contains assertions
+   *
+   * @default - no assertion stack
+   */
+  readonly assertionStack?: string;
 }
 
 /**

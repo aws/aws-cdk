@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import * as secretsmanager from '../lib';
 
 let stack: cdk.Stack;
@@ -512,5 +513,44 @@ describe('hosted rotation', () => {
     // THEN
     expect(() => hostedRotation.connections.allowToAnyIpv4(ec2.Port.allTraffic()))
       .toThrow(/Cannot use connections for a hosted rotation that is not deployed in a VPC/);
+  });
+});
+
+describe('manual rotations', () => {
+  test('automaticallyAfter with any duration of zero leaves RotationRules unset', () => {
+    const checkRotationNotSet = (automaticallyAfter: Duration) => {
+      // GIVEN
+      const localStack = new cdk.Stack();
+      const secret = new secretsmanager.Secret(localStack, 'Secret');
+      const rotationLambda = new lambda.Function(localStack, 'Lambda', {
+        runtime: lambda.Runtime.NODEJS_10_X,
+        code: lambda.Code.fromInline('export.handler = event => event;'),
+        handler: 'index.handler',
+      });
+
+      // WHEN
+      new secretsmanager.RotationSchedule(localStack, 'RotationSchedule', {
+        secret,
+        rotationLambda,
+        automaticallyAfter,
+      });
+
+      // THEN
+      Template.fromStack(localStack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', Match.objectEquals({
+        SecretId: { Ref: 'SecretA720EF05' },
+        RotationLambdaARN: {
+          'Fn::GetAtt': [
+            'LambdaD247545B',
+            'Arn',
+          ],
+        },
+      }));
+    };
+
+    checkRotationNotSet(Duration.days(0));
+    checkRotationNotSet(Duration.hours(0));
+    checkRotationNotSet(Duration.minutes(0));
+    checkRotationNotSet(Duration.seconds(0));
+    checkRotationNotSet(Duration.millis(0));
   });
 });

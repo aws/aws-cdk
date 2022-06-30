@@ -1,6 +1,8 @@
 import * as cdk from '@aws-cdk/core';
+import { IConstruct } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { PolicyStatement } from './policy-statement';
+import { PolicyStatement, deriveEstimateSizeOptions } from './policy-statement';
+import { mergeStatements } from './private/merge-statements';
 import { PostProcessPolicyDocument } from './private/postprocess-policy-document';
 
 /**
@@ -74,10 +76,19 @@ export class PolicyDocument implements cdk.IResolvable {
   }
 
   public resolve(context: cdk.IResolveContext): any {
-    context.registerPostProcessor(new PostProcessPolicyDocument(
-      this.autoAssignSids,
-      this.minimize ?? cdk.FeatureFlags.of(context.scope).isEnabled(cxapi.IAM_MINIMIZE_POLICIES) ?? false,
-    ));
+    this._maybeMergeStatements(context.scope);
+
+    // In the previous implementation of 'merge', sorting of actions/resources on
+    // a statement always happened, even  on singular statements. In the new
+    // implementation of 'merge', sorting only happens when actually combining 2
+    // statements. This affects all test snapshots, so we need to put in mechanisms
+    // to avoid having to update all snapshots.
+    //
+    // To do sorting in a way compatible with the previous implementation of merging,
+    // (so we don't have to update snapshots) do it after rendering, but only when
+    // merging is enabled.
+    const sort = this.shouldMerge(context.scope);
+    context.registerPostProcessor(new PostProcessPolicyDocument(this.autoAssignSids, sort));
     return this.render();
   }
 
@@ -128,6 +139,8 @@ export class PolicyDocument implements cdk.IResolvable {
    * requirements for any policy.
    *
    * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#access_policies-json
+   *
+   * @returns An array of validation error messages, or an empty array if the document is valid.
    */
   public validateForAnyPolicy(): string[] {
     const errors = new Array<string>();
@@ -142,6 +155,8 @@ export class PolicyDocument implements cdk.IResolvable {
    * requirements for a resource-based policy.
    *
    * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#access_policies-json
+   *
+   * @returns An array of validation error messages, or an empty array if the document is valid.
    */
   public validateForResourcePolicy(): string[] {
     const errors = new Array<string>();
@@ -156,6 +171,8 @@ export class PolicyDocument implements cdk.IResolvable {
    * requirements for an identity-based policy.
    *
    * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#access_policies-json
+   *
+   * @returns An array of validation error messages, or an empty array if the document is valid.
    */
   public validateForIdentityPolicy(): string[] {
     const errors = new Array<string>();
@@ -163,6 +180,100 @@ export class PolicyDocument implements cdk.IResolvable {
       errors.push(...statement.validateForIdentityPolicy());
     }
     return errors;
+  }
+
+  /**
+   * Perform statement merging (if enabled and not done yet)
+   *
+   * @internal
+   */
+  public _maybeMergeStatements(scope: cdk.IConstruct): void {
+    if (this.shouldMerge(scope)) {
+      const result = mergeStatements(scope, this.statements, false);
+      this.statements.splice(0, this.statements.length, ...result.mergedStatements);
+    }
+  }
+
+  /**
+   * Split the statements of the PolicyDocument into multiple groups, limited by their size
+   *
+   * We do a round of size-limited merging first (making sure to not produce statements too
+   * large to fit into standalone policies), so that we can most accurately estimate total
+   * policy size. Another final round of minimization will be done just before rendering to
+   * end up with minimal policies that look nice to humans.
+   *
+   * Return a map of the final set of policy documents, mapped to the ORIGINAL (pre-merge)
+   * PolicyStatements that ended up in the given PolicyDocument.
+   *
+   * @internal
+   */
+  public _splitDocument(scope: IConstruct, selfMaximumSize: number, splitMaximumSize: number): Map<PolicyDocument, PolicyStatement[]> {
+    const self = this;
+    const newDocs: PolicyDocument[] = [];
+
+    // Maps final statements to original statements
+    let statementsToOriginals = new Map(this.statements.map(s => [s, [s]]));
+    if (this.shouldMerge(scope)) {
+      const result = mergeStatements(scope, this.statements, true);
+      this.statements.splice(0, this.statements.length, ...result.mergedStatements);
+      statementsToOriginals = result.originsMap;
+    }
+
+    const sizeOptions = deriveEstimateSizeOptions(scope);
+
+    // Cache statement sizes to avoid recomputing them based on the fields
+    const statementSizes = new Map<PolicyStatement, number>(this.statements.map(s => [s, s._estimateSize(sizeOptions)]));
+
+    // Keep some size counters so we can avoid recomputing them based on the statements in each
+    let selfSize = 0;
+    const polSizes = new Map<PolicyDocument, number>();
+    // Getter with a default to save some syntactic noise
+    const polSize = (x: PolicyDocument) => polSizes.get(x) ?? 0;
+
+    let i = 0;
+    while (i < this.statements.length) {
+      const statement = this.statements[i];
+
+      const statementSize = statementSizes.get(statement) ?? 0;
+      if (selfSize + statementSize < selfMaximumSize) {
+        // Fits in self
+        selfSize += statementSize;
+        i++;
+        continue;
+      }
+
+      // Split off to new PolicyDocument. Find the PolicyDocument we can add this to,
+      // or add a fresh one.
+      const addToDoc = findDocWithSpace(statementSize);
+      addToDoc.addStatements(statement);
+      polSizes.set(addToDoc, polSize(addToDoc) + statementSize);
+      this.statements.splice(i, 1);
+    }
+
+    // Return the set of all policy document and original statements
+    const ret = new Map<PolicyDocument, PolicyStatement[]>();
+    ret.set(this, this.statements.flatMap(s => statementsToOriginals.get(s) ?? [s]));
+    for (const newDoc of newDocs) {
+      ret.set(newDoc, newDoc.statements.flatMap(s => statementsToOriginals.get(s) ?? [s]));
+    }
+    return ret;
+
+    function findDocWithSpace(size: number) {
+      let j = 0;
+      while (j < newDocs.length && polSize(newDocs[j]) + size > splitMaximumSize) {
+        j++;
+      }
+      if (j < newDocs.length) {
+        return newDocs[j];
+      }
+
+      const newDoc = new PolicyDocument({
+        assignSids: self.autoAssignSids,
+        minimize: self.minimize,
+      });
+      newDocs.push(newDoc);
+      return newDoc;
+    }
   }
 
   private render(): any {
@@ -176,5 +287,9 @@ export class PolicyDocument implements cdk.IResolvable {
     };
 
     return doc;
+  }
+
+  private shouldMerge(scope: IConstruct) {
+    return this.minimize ?? cdk.FeatureFlags.of(scope).isEnabled(cxapi.IAM_MINIMIZE_POLICIES) ?? false;
   }
 }

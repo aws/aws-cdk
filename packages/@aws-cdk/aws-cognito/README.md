@@ -73,6 +73,17 @@ The default set up for the user pool is configured such that only administrators
 to create users. Features such as Multi-factor authentication (MFAs) and Lambda Triggers are not
 configured by default.
 
+Use the `grant()` method to add an IAM policy statement associated with the user pool to an
+IAM principal's policy.
+
+```ts
+const userPool = new cognito.UserPool(this, 'myuserpool');
+const role = new iam.Role(this, 'role', {
+  assumedBy: new iam.ServicePrincipal('foo'),
+});
+userPool.grant(role, 'cognito-idp:AdminCreateUser');
+```
+
 ### Sign Up
 
 Users can either be signed up by the app's administrators or can sign themselves up. Once a user has signed up, their
@@ -492,6 +503,7 @@ The following third-party identity providers are currently supported in the CDK 
 - [Facebook Login](https://developers.facebook.com/docs/facebook-login/)
 - [Google Login](https://developers.google.com/identity/sign-in/web/sign-in)
 - [Sign In With Apple](https://developer.apple.com/sign-in-with-apple/get-started/)
+- [OpenID Connect](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-oidc-idp.html)
 
 The following code configures a user pool to federate with the third party provider, 'Login with Amazon'. The identity
 provider needs to be configured with a set of credentials that the Cognito backend can use to federate with the
@@ -632,8 +644,8 @@ pool.addClient('app-client', {
 });
 ```
 
-If the identity provider and the app client are created in the same stack, specify the dependency between both constructs to 
-make sure that the identity provider already exists when the app client will be created. The app client cannot handle the 
+If the identity provider and the app client are created in the same stack, specify the dependency between both constructs to
+make sure that the identity provider already exists when the app client will be created. The app client cannot handle the
 dependency to the identity provider automatically because the client does not have access to the provider's construct.
 
 ```ts
@@ -668,11 +680,11 @@ pool.addClient('app-client', {
 });
 ```
 
-Clients can (and should) be allowed to read and write relevant user attributes only. Usually every client can be allowed to 
+Clients can (and should) be allowed to read and write relevant user attributes only. Usually every client can be allowed to
 read the `given_name` attribute but not every client should be allowed to set the `email_verified` attribute.
 The same criteria applies for both standard and custom attributes, more info is available at
 [Attribute Permissions and Scopes](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes).
-The default behaviour is to allow read and write permissions on all attributes. The following code shows how this can be 
+The default behaviour is to allow read and write permissions on all attributes. The following code shows how this can be
 configured for a client.
 
 ```ts
@@ -703,7 +715,7 @@ pool.addClient('app-client', {
   // ...
   enableTokenRevocation: true,
 });
-``` 
+```
 
 ### Resource Servers
 

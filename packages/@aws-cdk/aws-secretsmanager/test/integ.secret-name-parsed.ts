@@ -23,7 +23,7 @@ class SecretsManagerStack extends cdk.Stack {
     const resourceType = 'Custom::IntegVerificationSecretNameMatches';
     const serviceToken = cdk.CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: path.join(__dirname, 'integ.secret-name-parsed.handler'),
-      runtime: cdk.CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: cdk.CustomResourceProviderRuntime.NODEJS_14_X,
       policyStatements: [{
         Effect: 'Allow',
         Resource: secrets.map(s => s.secretArn),

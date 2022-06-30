@@ -612,8 +612,8 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
   private validateCanLookupSupportedAzs(subnets: ISubnet[], serviceName: string) {
 
     // Having any of these be true will cause the AZ lookup to fail at synthesis time
-    const agnosticAcct = Token.isUnresolved(this.stack.account);
-    const agnosticRegion = Token.isUnresolved(this.stack.region);
+    const agnosticAcct = Token.isUnresolved(this.env.account);
+    const agnosticRegion = Token.isUnresolved(this.env.region);
     const agnosticService = Token.isUnresolved(serviceName);
 
     // Having subnets with Token AZs can cause the endpoint to be created with no subnets, failing at deployment time

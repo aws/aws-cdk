@@ -81,7 +81,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** archiver@5.3.0 - https://www.npmjs.com/package/archiver/v/5.3.0 | MIT
+** archiver@5.3.1 - https://www.npmjs.com/package/archiver/v/5.3.1 | MIT
 Copyright (c) 2012-2014 Chris Talkington, contributors.
 
 Permission is hereby granted, free of charge, to any person
@@ -121,7 +121,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ----------------
 
-** async@3.2.3 - https://www.npmjs.com/package/async/v/3.2.3 | MIT
+** async@3.2.4 - https://www.npmjs.com/package/async/v/3.2.4 | MIT
 Copyright (c) 2010-2018 Caolan McMahon
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -156,7 +156,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 ----------------
 
-** aws-sdk@2.1111.0 - https://www.npmjs.com/package/aws-sdk/v/2.1111.0 | Apache-2.0
+** aws-sdk@2.1151.0 - https://www.npmjs.com/package/aws-sdk/v/2.1151.0 | Apache-2.0
 AWS SDK for JavaScript
 Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -600,7 +600,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** diff@5.0.0 - https://www.npmjs.com/package/diff/v/5.0.0 | BSD-3-Clause
+** diff@5.1.0 - https://www.npmjs.com/package/diff/v/5.1.0 | BSD-3-Clause
 Software License Agreement (BSD License)
 
 Copyright (c) 2009-2015, Kevin Decker <kpdecker@gmail.com>
@@ -823,7 +823,7 @@ the licensed code:
 
 ----------------
 
-** glob@7.2.0 - https://www.npmjs.com/package/glob/v/7.2.0 | ISC
+** glob@7.2.3 - https://www.npmjs.com/package/glob/v/7.2.3 | ISC
 The ISC License
 
 Copyright (c) Isaac Z. Schlueter and Contributors
@@ -980,7 +980,7 @@ OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHE
 
 ----------------
 
-** jsonschema@1.4.0 - https://www.npmjs.com/package/jsonschema/v/1.4.0 | MIT
+** jsonschema@1.4.1 - https://www.npmjs.com/package/jsonschema/v/1.4.1 | MIT
 jsonschema is licensed under MIT license.
 
 Copyright (C) 2012-2015 Tom de Grunt <tom@degrunt.nl>
@@ -1346,10 +1346,10 @@ terms above.
 
 ----------------
 
-** lru-cache@7.8.0 - https://www.npmjs.com/package/lru-cache/v/7.8.0 | ISC
+** lru-cache@6.0.0 - https://www.npmjs.com/package/lru-cache/v/6.0.0 | ISC
 The ISC License
 
-Copyright (c) 2010-2022 Isaac Z. Schlueter and Contributors
+Copyright (c) Isaac Z. Schlueter and Contributors
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -1922,7 +1922,7 @@ License, as follows:
 
 ----------------
 
-** semver@7.3.6 - https://www.npmjs.com/package/semver/v/7.3.6 | ISC
+** semver@7.3.7 - https://www.npmjs.com/package/semver/v/7.3.7 | ISC
 The ISC License
 
 Copyright (c) Isaac Z. Schlueter and Contributors
@@ -2213,11 +2213,11 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** uuid@3.3.2 - https://www.npmjs.com/package/uuid/v/3.3.2 | MIT
+** uuid@8.0.0 - https://www.npmjs.com/package/uuid/v/8.0.0 | MIT
 
 ----------------
 
-** workerpool@6.2.0 - https://www.npmjs.com/package/workerpool/v/6.2.0 | Apache-2.0
+** workerpool@6.2.1 - https://www.npmjs.com/package/workerpool/v/6.2.1 | Apache-2.0
 Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -2520,6 +2520,26 @@ INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
 OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
+
+
+----------------
+
+** yallist@4.0.0 - https://www.npmjs.com/package/yallist/v/4.0.0 | ISC
+The ISC License
+
+Copyright (c) Isaac Z. Schlueter and Contributors
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
 ----------------

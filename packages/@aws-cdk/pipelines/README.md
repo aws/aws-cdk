@@ -725,7 +725,7 @@ new pipelines.CodeBuildStep('Synth', {
 
   // Control Elastic Network Interface creation
   vpc: vpc,
-  subnetSelection: { subnetType: ec2.SubnetType.PRIVATE },
+  subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
   securityGroups: [mySecurityGroup],
 
   // Additional policy statements for the execution role
@@ -770,7 +770,7 @@ new pipelines.CodePipeline(this, 'Pipeline', {
 
     // Control Elastic Network Interface creation
     vpc: vpc,
-    subnetSelection: { subnetType: ec2.SubnetType.PRIVATE },
+    subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
     securityGroups: [mySecurityGroup],
 
     // Additional policy statements for the execution role

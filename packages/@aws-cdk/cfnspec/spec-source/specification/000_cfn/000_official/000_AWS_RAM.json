@@ -1,5 +1,5 @@
 {
-  "$version": "66.1.0",
+  "$version": "76.0.0",
   "PropertyTypes": {},
   "ResourceTypes": {
     "AWS::RAM::ResourceShare": {

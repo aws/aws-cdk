@@ -1,12 +1,12 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import { describeDeprecated, testDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, DefaultStackSynthesizer, IgnoreMode, Lazy, LegacyStackSynthesizer, Stack, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { DockerImageAsset, NetworkMode } from '../lib';
+import * as fs from 'fs';
+import * as path from 'path';
+import { DockerImageAsset, NetworkMode, Platform } from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -154,6 +154,36 @@ describe('image asset', () => {
     // THEN
     const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
     expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).networkMode).toEqual('default');
+  });
+
+  testFutureBehavior('with platform', flags, App, (app) => {
+    // GIVEN
+    const stack = new Stack(app);
+    // WHEN
+    new DockerImageAsset(stack, 'Image', {
+      directory: path.join(__dirname, 'demo-image'),
+      platform: Platform.LINUX_ARM64,
+    });
+
+    // THEN
+    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).platform).toEqual('linux/arm64');
+  });
+
+  testFutureBehavior('with platform: default synth edition', flags, App, (app) => {
+    // GIVEN
+    const stack = new Stack(app, 'Stack', { synthesizer: new DefaultStackSynthesizer() });
+    // WHEN
+    const asset = new DockerImageAsset(stack, 'Image', {
+      directory: path.join(__dirname, 'demo-image'),
+      platform: Platform.LINUX_ARM64,
+    });
+
+    // THEN
+    const asm = app.synth();
+    const stackAssets = JSON.parse(fs.readFileSync(path.join(asm.directory, 'Stack.assets.json'), { encoding: 'utf-8' }));
+    const dockerImageAsset = stackAssets.dockerImages[asset.assetHash];
+    expect(dockerImageAsset.source.platform).toEqual('linux/arm64');
   });
 
   testFutureBehavior('asset.repository.grantPull can be used to grant a principal permissions to use the image', flags, App, (app) => {
