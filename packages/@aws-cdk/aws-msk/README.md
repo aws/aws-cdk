@@ -65,6 +65,7 @@ declare const cluster: msk.Cluster;
 new CfnOutput(this, 'BootstrapBrokers', { value: cluster.bootstrapBrokers });
 new CfnOutput(this, 'BootstrapBrokersTls', { value: cluster.bootstrapBrokersTls });
 new CfnOutput(this, 'BootstrapBrokersSaslScram', { value: cluster.bootstrapBrokersSaslScram });
+new CfnOutput(this, 'BootstrapBrokerStringSaslIam', { value: cluster.bootstrapBrokersSaslIam });
 new CfnOutput(this, 'ZookeeperConnection', { value: cluster.zookeeperConnectionString });
 new CfnOutput(this, 'ZookeeperConnectionTls', { value: cluster.zookeeperConnectionStringTls });
 ```
