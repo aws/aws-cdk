@@ -171,11 +171,7 @@ export enum SubnetType {
    * This can be good for subnets with RDS or Elasticache instances,
    * or which route Internet traffic through a peer VPC.
    */
-<<<<<<< HEAD
   PRIVATE_ISOLATED = 'Isolated',
-=======
-  ISOLATED = 'Deprecated_Isolated',
->>>>>>> b0346a4b7 (refactor: update enum types to remove duplicate member values (#19320))
 
   /**
    * Isolated Subnets do not route traffic to the Internet (in this VPC),
@@ -190,7 +186,7 @@ export enum SubnetType {
    *
    * @deprecated use `SubnetType.PRIVATE_ISOLATED`
    */
-  ISOLATED = 'Isolated',
+  ISOLATED = 'Deprecated_Isolated',
 
   /**
    * Subnet that routes to the internet (via a NAT gateway), but not vice versa.
@@ -207,11 +203,7 @@ export enum SubnetType {
    * if `natGateways` is used to reduce the number of NAT gateways, a NAT
    * gateway from another AZ will be used instead.
    */
-<<<<<<< HEAD
   PRIVATE_WITH_NAT = 'Private',
-=======
-  PRIVATE = 'Deprecated_Private',
->>>>>>> b0346a4b7 (refactor: update enum types to remove duplicate member values (#19320))
 
   /**
    * Subnet that routes to the internet, but not vice versa.
@@ -230,7 +222,7 @@ export enum SubnetType {
    *
    * @deprecated use `PRIVATE_WITH_NAT`
    */
-  PRIVATE = 'Private',
+  PRIVATE = 'Deprecated_Private',
 
   /**
    * Subnet connected to the Internet

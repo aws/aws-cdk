@@ -13,23 +13,13 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2016_ENGLISH_CORE_SQL_2016_SP1_WEB = 'Windows_Server-2016-English-Core-SQL_2016_SP1_Web',
   WINDOWS_SERVER_2016_GERMAN_FULL_BASE = 'Windows_Server-2016-German-Full-Base',
   /** @deprecated - use WINDOWS_SERVER_2016_GERMAN_FULL_BASE */
-<<<<<<< HEAD
-  WINDOWS_SERVER_2016_GERMAL_FULL_BASE = 'Windows_Server-2016-German-Full-Base',
-=======
   WINDOWS_SERVER_2016_GERMAL_FULL_BASE = 'Windows_Server-2016-Germal-Full-Base',
-  WINDOWS_SERVER_2016_GERMAN_FULL_BASE = 'Windows_Server-2016-German-Full-Base',
->>>>>>> b0346a4b7 (refactor: update enum types to remove duplicate member values (#19320))
   WINDOWS_SERVER_2003_R2_SP2_LANGUAGE_PACKS_32BIT_BASE = 'Windows_Server-2003-R2_SP2-Language_Packs-32Bit-Base',
   WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_SQL_2008_R2_SP3_WEB = 'Windows_Server-2008-R2_SP1-English-64Bit-SQL_2008_R2_SP3_Web',
   WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_SQL_2012_SP4_EXPRESS = 'Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_SP4_Express',
   WINDOWS_SERVER_2012_R2_SP1_PORTUGUESE_BRAZIL_64BIT_CORE = 'Windows_Server-2008-R2_SP1-Portuguese_Brazil-64Bit-Core',
   /** @deprecated - use WINDOWS_SERVER_2012_R2_SP1_PORTUGUESE_BRAZIL_64BIT_CORE*/
-<<<<<<< HEAD
-  WINDOWS_SERVER_2012_R2_SP1_PORTUGESE_BRAZIL_64BIT_CORE = 'Windows_Server-2008-R2_SP1-Portuguese_Brazil-64Bit-Core',
-=======
   WINDOWS_SERVER_2012_R2_SP1_PORTUGESE_BRAZIL_64BIT_CORE = 'Windows_Server-2008-R2_SP1-Portugese_Brazil-64Bit-Core',
-  WINDOWS_SERVER_2012_R2_SP1_PORTUGUESE_BRAZIL_64BIT_CORE = 'Windows_Server-2008-R2_SP1-Portuguese_Brazil-64Bit-Core',
->>>>>>> b0346a4b7 (refactor: update enum types to remove duplicate member values (#19320))
   WINDOWS_SERVER_2012_R2_RTM_ENGLISH_64BIT_SQL_2016_SP2_STANDARD = 'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP2_Standard',
   WINDOWS_SERVER_2012_RTM_ENGLISH_64BIT_SQL_2014_SP2_EXPRESS = 'Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP2_Express',
   WINDOWS_SERVER_2012_RTM_ITALIAN_64BIT_BASE = 'Windows_Server-2012-RTM-Italian-64Bit-Base',
@@ -44,12 +34,7 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2016_KOREAN_FULL_SQL_2016_SP2_STANDARD = 'Windows_Server-2016-Korean-Full-SQL_2016_SP2_Standard',
   WINDOWS_SERVER_2016_PORTUGUESE_PORTUGAL_FULL_BASE = 'Windows_Server-2016-Portuguese_Portugal-Full-Base',
   /** @deprecated - use WINDOWS_SERVER_2016_PORTUGUESE_PORTUGAL_FULL_BASE */
-<<<<<<< HEAD
-  WINDOWS_SERVER_2016_PORTUGESE_PORTUGAL_FULL_BASE = 'Windows_Server-2016-Portuguese_Portugal-Full-Base',
-=======
   WINDOWS_SERVER_2016_PORTUGESE_PORTUGAL_FULL_BASE = 'Windows_Server-2016-Portugese_Portugal-Full-Base',
-  WINDOWS_SERVER_2016_PORTUGUESE_PORTUGAL_FULL_BASE = 'Windows_Server-2016-Portuguese_Portugal-Full-Base',
->>>>>>> b0346a4b7 (refactor: update enum types to remove duplicate member values (#19320))
   WINDOWS_SERVER_2019_ENGLISH_FULL_SQL_2017_WEB = 'Windows_Server-2019-English-Full-SQL_2017_Web',
   WINDOWS_SERVER_2019_FRENCH_FULL_BASE = 'Windows_Server-2019-French-Full-Base',
   WINDOWS_SERVER_2019_KOREAN_FULL_BASE = 'Windows_Server-2019-Korean-Full-Base',
@@ -113,18 +98,10 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2012_R2_RTM_JAPANESE_64BIT_SQL_2016_SP1_WEB = 'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP1_Web',
   WINDOWS_SERVER_2012_R2_RTM_PORTUGUESE_BRAZIL_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Portuguese_Brazil-64Bit-Base',
   /** @deprecated - use WINDOWS_SERVER_2012_R2_RTM_PORTUGUESE_BRAZIL_64BIT_BASE */
-<<<<<<< HEAD
-  WINDOWS_SERVER_2012_R2_RTM_PORTUGESE_BRAZIL_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Portuguese_Brazil-64Bit-Base',
-  WINDOWS_SERVER_2012_R2_RTM_PORTUGUESE_PORTUGAL_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Portuguese_Portugal-64Bit-Base',
-  /** @deprecated - use WINDOWS_SERVER_2012_R2_RTM_PORTUGUESE_PORTUGAL_64BIT_BASE*/
-  WINDOWS_SERVER_2012_R2_RTM_PORTUGESE_PORTUGAL_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Portuguese_Portugal-64Bit-Base',
-=======
   WINDOWS_SERVER_2012_R2_RTM_PORTUGESE_BRAZIL_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Portugese_Brazil-64Bit-Base',
-  WINDOWS_SERVER_2012_R2_RTM_PORTUGUESE_BRAZIL_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Portuguese_Brazil-64Bit-Base',
+  WINDOWS_SERVER_2012_R2_RTM_PORTUGUESE_PORTUGAL_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Portuguese_Portugal-64Bit-Base',
   /** @deprecated - use WINDOWS_SERVER_2012_R2_RTM_PORTUGUESE_PORTUGAL_64BIT_BASE*/
   WINDOWS_SERVER_2012_R2_RTM_PORTUGESE_PORTUGAL_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Portugese_Portugal-64Bit-Base',
-  WINDOWS_SERVER_2012_R2_RTM_PORTUGUESE_PORTUGAL_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Portuguese_Portugal-64Bit-Base',
->>>>>>> b0346a4b7 (refactor: update enum types to remove duplicate member values (#19320))
   WINDOWS_SERVER_2012_R2_RTM_SWEDISH_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Swedish-64Bit-Base',
   WINDOWS_SERVER_2016_ENGLISH_FULL_SQL_2016_SP1_EXPRESS = 'Windows_Server-2016-English-Full-SQL_2016_SP1_Express',
   WINDOWS_SERVER_2016_ITALIAN_FULL_BASE = 'Windows_Server-2016-Italian-Full-Base',
@@ -138,12 +115,7 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2016_ENGLISH_CORE_SQL_2016_SP2_ENTERPRISE = 'Windows_Server-2016-English-Core-SQL_2016_SP2_Enterprise',
   WINDOWS_SERVER_2016_PORTUGUESE_BRAZIL_FULL_BASE = 'Windows_Server-2016-Portuguese_Brazil-Full-Base',
   /** @deprecated - use WINDOWS_SERVER_2016_PORTUGUESE_BRAZIL_FULL_BASE */
-<<<<<<< HEAD
-  WINDOWS_SERVER_2016_PORTUGESE_BRAZIL_FULL_BASE = 'Windows_Server-2016-Portuguese_Brazil-Full-Base',
-=======
   WINDOWS_SERVER_2016_PORTUGESE_BRAZIL_FULL_BASE = 'Windows_Server-2016-Portugese_Brazil-Full-Base',
-  WINDOWS_SERVER_2016_PORTUGUESE_BRAZIL_FULL_BASE = 'Windows_Server-2016-Portuguese_Brazil-Full-Base',
->>>>>>> b0346a4b7 (refactor: update enum types to remove duplicate member values (#19320))
   WINDOWS_SERVER_2019_ENGLISH_FULL_BASE = 'Windows_Server-2019-English-Full-Base',
   WINDOWS_SERVER_2003_R2_SP2_ENGLISH_32BIT_BASE = 'Windows_Server-2003-R2_SP2-English-32Bit-Base',
   WINDOWS_SERVER_2012_R2_RTM_CZECH_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Czech-64Bit-Base',
@@ -170,12 +142,7 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2008_R2_SP1_LANGUAGE_PACKS_64BIT_SQL_2008_R2_SP3_EXPRESS = 'Windows_Server-2008-R2_SP1-Language_Packs-64Bit-SQL_2008_R2_SP3_Express',
   WINDOWS_SERVER_2012_SP2_PORTUGUESE_BRAZIL_64BIT_BASE = 'Windows_Server-2008-SP2-Portuguese_Brazil-64Bit-Base',
   /** @deprecated - use WINDOWS_SERVER_2012_SP2_PORTUGUESE_BRAZIL_64BIT_BASE */
-<<<<<<< HEAD
-  WINDOWS_SERVER_2012_SP2_PORTUGESE_BRAZIL_64BIT_BASE = 'Windows_Server-2008-SP2-Portuguese_Brazil-64Bit-Base',
-=======
   WINDOWS_SERVER_2012_SP2_PORTUGESE_BRAZIL_64BIT_BASE = 'Windows_Server-2008-SP2-Portugese_Brazil-64Bit-Base',
-  WINDOWS_SERVER_2012_SP2_PORTUGUESE_BRAZIL_64BIT_BASE = 'Windows_Server-2008-SP2-Portuguese_Brazil-64Bit-Base',
->>>>>>> b0346a4b7 (refactor: update enum types to remove duplicate member values (#19320))
   WINDOWS_SERVER_2012_R2_RTM_ENGLISH_64BIT_SQL_2016_SP1_WEB = 'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP1_Web',
   WINDOWS_SERVER_2012_R2_RTM_JAPANESE_64BIT_SQL_2014_SP3_EXPRESS = 'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2014_SP3_Express',
   WINDOWS_SERVER_2012_R2_RTM_JAPANESE_64BIT_SQL_2016_SP2_ENTERPRISE = 'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP2_Enterprise',
@@ -190,12 +157,7 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2012_R2_RTM_ENGLISH_64BIT_BASE = 'Windows_Server-2012-R2_RTM-English-64Bit-Base',
   WINDOWS_SERVER_2012_RTM_PORTUGUESE_BRAZIL_64BIT_BASE = 'Windows_Server-2012-RTM-Portuguese_Brazil-64Bit-Base',
   /** @deprecated - use WINDOWS_SERVER_2012_RTM_PORTUGUESE_BRAZIL_64BIT_BASE */
-<<<<<<< HEAD
-  WINDOWS_SERVER_2012_RTM_PORTUGESE_BRAZIL_64BIT_BASE = 'Windows_Server-2012-RTM-Portuguese_Brazil-64Bit-Base',
-=======
   WINDOWS_SERVER_2012_RTM_PORTUGESE_BRAZIL_64BIT_BASE = 'Windows_Server-2012-RTM-Portugese_Brazil-64Bit-Base',
-  WINDOWS_SERVER_2012_RTM_PORTUGUESE_BRAZIL_64BIT_BASE = 'Windows_Server-2012-RTM-Portuguese_Brazil-64Bit-Base',
->>>>>>> b0346a4b7 (refactor: update enum types to remove duplicate member values (#19320))
   WINDOWS_SERVER_2016_ENGLISH_FULL_SQL_2016_SP1_WEB = 'Windows_Server-2016-English-Full-SQL_2016_SP1_Web',
   WINDOWS_SERVER_2016_ENGLISH_P3 = 'Windows_Server-2016-English-P3',
   WINDOWS_SERVER_2016_JAPANESE_FULL_SQL_2016_SP1_ENTERPRISE = 'Windows_Server-2016-Japanese-Full-SQL_2016_SP1_Enterprise',
@@ -221,12 +183,7 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2008_R2_SP1_JAPANESE_64BIT_SQL_2008_R2_SP3_WEB = 'Windows_Server-2008-R2_SP1-Japanese-64Bit-SQL_2008_R2_SP3_Web',
   WINDOWS_SERVER_2008_R2_SP1_PORTUGUESE_BRAZIL_64BIT_BASE = 'Windows_Server-2008-R2_SP1-Portuguese_Brazil-64Bit-Base',
   /** @deprecated - use WINDOWS_SERVER_2008_R2_SP1_PORTUGUESE_BRAZIL_64BIT_BASE */
-<<<<<<< HEAD
-  WINDOWS_SERVER_2008_R2_SP1_PORTUGESE_BRAZIL_64BIT_BASE = 'Windows_Server-2008-R2_SP1-Portuguese_Brazil-64Bit-Base',
-=======
   WINDOWS_SERVER_2008_R2_SP1_PORTUGESE_BRAZIL_64BIT_BASE = 'Windows_Server-2008-R2_SP1-Portugese_Brazil-64Bit-Base',
-  WINDOWS_SERVER_2008_R2_SP1_PORTUGUESE_BRAZIL_64BIT_BASE = 'Windows_Server-2008-R2_SP1-Portuguese_Brazil-64Bit-Base',
->>>>>>> b0346a4b7 (refactor: update enum types to remove duplicate member values (#19320))
   WINDOWS_SERVER_2012_R2_RTM_JAPANESE_64BIT_SQL_2016_SP1_ENTERPRISE = 'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP1_Enterprise',
   WINDOWS_SERVER_2012_RTM_JAPANESE_64BIT_SQL_2016_SP2_EXPRESS = 'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP2_Express',
   WINDOWS_SERVER_2012_RTM_ENGLISH_64BIT_SQL_2014_SP3_EXPRESS = 'Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP3_Express',
@@ -259,21 +216,13 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_SQL_2012_SP4_STANDARD = 'Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_SP4_Standard',
   WINDOWS_SERVER_2008_SP2_PORTUGUESE_BRAZIL_32BIT_BASE = 'Windows_Server-2008-SP2-Portuguese_Brazil-32Bit-Base',
   /** @deprecated - use WINDOWS_SERVER_2008_SP2_PORTUGUESE_BRAZIL_32BIT_BASE */
-  WINDOWS_SERVER_2008_SP2_PORTUGESE_BRAZIL_32BIT_BASE = 'Windows_Server-2008-SP2-Portuguese_Brazil-32Bit-Base',
-<<<<<<< HEAD
-=======
+  WINDOWS_SERVER_2008_SP2_PORTUGESE_BRAZIL_32BIT_BASE = 'Windows_Server-2008-SP2-Portugese_Brazil-32Bit-Base',
   WINDOWS_SERVER_2008_SP2_PORTUGUESE_BRAZIL_32BIT_BASE = 'Windows_Server-2008-SP2-Portugese_Brazil-32Bit-Base',
->>>>>>> b0346a4b7 (refactor: update enum types to remove duplicate member values (#19320))
   WINDOWS_SERVER_2012_R2_RTM_JAPANESE_64BIT_SQL_2014_SP2_STANDARD = 'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2014_SP2_Standard',
   WINDOWS_SERVER_2012_RTM_JAPANESE_64BIT_SQL_2012_SP4_EXPRESS = 'Windows_Server-2012-RTM-Japanese-64Bit-SQL_2012_SP4_Express',
   WINDOWS_SERVER_2012_RTM_PORTUGUESE_PORTUGAL_64BIT_BASE = 'Windows_Server-2012-RTM-Portuguese_Portugal-64Bit-Base',
   /** @deprecated - use WINDOWS_SERVER_2012_RTM_PORTUGUESE_PORTUGAL_64BIT_BASE */
-<<<<<<< HEAD
-  WINDOWS_SERVER_2012_RTM_PORTUGESE_PORTUGAL_64BIT_BASE = 'Windows_Server-2012-RTM-Portuguese_Portugal-64Bit-Base',
-=======
   WINDOWS_SERVER_2012_RTM_PORTUGESE_PORTUGAL_64BIT_BASE = 'Windows_Server-2012-RTM-Portugese_Portugal-64Bit-Base',
-  WINDOWS_SERVER_2012_RTM_PORTUGUESE_PORTUGAL_64BIT_BASE = 'Windows_Server-2012-RTM-Portuguese_Portugal-64Bit-Base',
->>>>>>> b0346a4b7 (refactor: update enum types to remove duplicate member values (#19320))
   WINDOWS_SERVER_2016_CZECH_FULL_BASE = 'Windows_Server-2016-Czech-Full-Base',
   WINDOWS_SERVER_2016_JAPANESE_FULL_SQL_2016_SP1_STANDARD = 'Windows_Server-2016-Japanese-Full-SQL_2016_SP1_Standard',
   WINDOWS_SERVER_2019_DUTCH_FULL_BASE = 'Windows_Server-2019-Dutch-Full-Base',
@@ -288,12 +237,7 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2016_ENGLISH_FULL_SQL_2017_STANDARD = 'Windows_Server-2016-English-Full-SQL_2017_Standard',
   WINDOWS_SERVER_2019_PORTUGUESE_BRAZIL_FULL_BASE = 'Windows_Server-2019-Portuguese_Brazil-Full-Base',
   /** @deprecated - use WINDOWS_SERVER_2019_PORTUGUESE_BRAZIL_FULL_BASE */
-<<<<<<< HEAD
-  WINDOWS_SERVER_2019_PORTUGESE_BRAZIL_FULL_BASE = 'Windows_Server-2019-Portuguese_Brazil-Full-Base',
-=======
   WINDOWS_SERVER_2019_PORTUGESE_BRAZIL_FULL_BASE = 'Windows_Server-2019-Portugese_Brazil-Full-Base',
-  WINDOWS_SERVER_2019_PORTUGUESE_BRAZIL_FULL_BASE = 'Windows_Server-2019-Portuguese_Brazil-Full-Base',
->>>>>>> b0346a4b7 (refactor: update enum types to remove duplicate member values (#19320))
   WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_SQL_2008_R2_SP3_STANDARD = 'Windows_Server-2008-R2_SP1-English-64Bit-SQL_2008_R2_SP3_Standard',
   WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_SHAREPOINT_2010_SP2_FOUNDATION = 'Windows_Server-2008-R2_SP1-English-64Bit-SharePoint_2010_SP2_Foundation',
   WINDOWS_SERVER_2012_R2_RTM_ENGLISH_P3 = 'Windows_Server-2012-R2_RTM-English-P3',
@@ -304,12 +248,7 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2016_JAPANESE_FULL_SQL_2016_SP2_STANDARD = 'Windows_Server-2016-Japanese-Full-SQL_2016_SP2_Standard',
   WINDOWS_SERVER_2019_PORTUGUESE_PORTUGAL_FULL_BASE = 'Windows_Server-2019-Portuguese_Portugal-Full-Base',
   /** @deprecated - use WINDOWS_SERVER_2019_PORTUGUESE_PORTUGAL_FULL_BASE */
-<<<<<<< HEAD
-  WINDOWS_SERVER_2019_PORTUGESE_PORTUGAL_FULL_BASE = 'Windows_Server-2019-Portuguese_Portugal-Full-Base',
-=======
   WINDOWS_SERVER_2019_PORTUGESE_PORTUGAL_FULL_BASE = 'Windows_Server-2019-Portugese_Portugal-Full-Base',
-  WINDOWS_SERVER_2019_PORTUGUESE_PORTUGAL_FULL_BASE = 'Windows_Server-2019-Portuguese_Portugal-Full-Base',
->>>>>>> b0346a4b7 (refactor: update enum types to remove duplicate member values (#19320))
   WINDOWS_SERVER_2019_SWEDISH_FULL_BASE = 'Windows_Server-2019-Swedish-Full-Base',
   WINDOWS_SERVER_2012_R2_RTM_ENGLISH_64BIT_HYPERV = 'Windows_Server-2012-R2_RTM-English-64Bit-HyperV',
   WINDOWS_SERVER_2012_RTM_KOREAN_64BIT_BASE = 'Windows_Server-2012-RTM-Korean-64Bit-Base',
