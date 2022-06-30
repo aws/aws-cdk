@@ -1379,6 +1379,22 @@ After turning on `privilegedMode: true`, you will need to do a one-time manual c
 pipeline to get it going again (as with a broken 'synth' the pipeline will not be able to self
 update to the right state).
 
+### IAM policies: Cannot exceed quota for PoliciesPerRole / Maximum policy size exceeded
+
+This happens as a result of having a lot of targets in the Pipeline: the IAM policies that
+get generated enumerate all required roles and grow too large.
+
+Make sure you are on version `2.26.0` or higher, and that your `cdk.json` contains the
+following:
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-iam:minimizePolicies": true
+  }
+}
+```
+
 ### S3 error: Access Denied
 
 An "S3 Access Denied" error can have two causes:
