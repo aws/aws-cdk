@@ -131,38 +131,35 @@ describe('instance', () => {
 
 
   });
+
   test('instances with local NVME drive are correctly named', () => {
     // GIVEN
     const sampleInstanceClassKeys = [{
-      key: 'R5D',
+      key: InstanceClass.R5D,
       value: 'r5d',
     }, {
-      key: 'MEMORY5_NVME_DRIVE',
+      key: InstanceClass.MEMORY5_NVME_DRIVE,
       value: 'r5d',
     }, {
-      key: 'R5AD',
+      key: InstanceClass.R5AD,
       value: 'r5ad',
     }, {
-      key: 'MEMORY5_AMD_NVME_DRIVE',
+      key: InstanceClass.MEMORY5_AMD_NVME_DRIVE,
       value: 'r5ad',
     }, {
-      key: 'M5AD',
+      key: InstanceClass.M5AD,
       value: 'm5ad',
     }, {
-      key: 'STANDARD5_AMD_NVME_DRIVE',
+      key: InstanceClass.STANDARD5_AMD_NVME_DRIVE,
       value: 'm5ad',
     }]; // A sample of instances with NVME drives
 
     for (const instanceClass of sampleInstanceClassKeys) {
       // WHEN
-      const key = instanceClass.key as keyof (typeof InstanceClass);
-      const instanceType = InstanceClass[key];
-
+      const instanceType = InstanceType.of(instanceClass.key, InstanceSize.LARGE);
       // THEN
-      expect(instanceType).toBe(instanceClass.value);
+      expect(instanceType.toString().split('.')[0]).toBe(instanceClass.value);
     }
-
-
   });
   test('instance architecture throws an error when instance type is invalid', () => {
     // GIVEN
