@@ -25,7 +25,7 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
     excludeCharacters: '\"@/:', // optional, defaults to the set "\"@/" and is also used for eventually created rotations
     secretName: '/myapp/mydocdb/masteruser', // optional, if you prefer to specify the secret name
   },
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE),
   vpcSubnets: {
     subnetType: ec2.SubnetType.PUBLIC,
   },
@@ -78,7 +78,7 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
   masterUser: {
     username: 'myuser',
   },
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE),
   vpcSubnets: {
     subnetType: ec2.SubnetType.PUBLIC,
   },
@@ -150,7 +150,7 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
   masterUser: {
     username: 'myuser',
   },
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE),
   vpcSubnets: {
     subnetType: ec2.SubnetType.PUBLIC,
   },
