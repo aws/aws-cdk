@@ -186,7 +186,7 @@ export enum SubnetType {
    *
    * @deprecated use `SubnetType.PRIVATE_ISOLATED`
    */
-  ISOLATED = 'Isolated',
+  ISOLATED = 'Deprecated_Isolated',
 
   /**
    * Subnet that routes to the internet (via a NAT gateway), but not vice versa.
@@ -222,7 +222,7 @@ export enum SubnetType {
    *
    * @deprecated use `PRIVATE_WITH_NAT`
    */
-  PRIVATE = 'Private',
+  PRIVATE = 'Deprecated_Private',
 
   /**
    * Subnet connected to the Internet
@@ -586,7 +586,9 @@ abstract class VpcBase extends Resource implements IVpc {
   private selectSubnetObjectsByType(subnetType: SubnetType) {
     const allSubnets = {
       [SubnetType.PRIVATE_ISOLATED]: this.isolatedSubnets,
+      [SubnetType.ISOLATED]: this.isolatedSubnets,
       [SubnetType.PRIVATE_WITH_NAT]: this.privateSubnets,
+      [SubnetType.PRIVATE]: this.privateSubnets,
       [SubnetType.PUBLIC]: this.publicSubnets,
     };
 
@@ -1530,11 +1532,13 @@ export class Vpc extends VpcBase {
           subnet = publicSubnet;
           break;
         case SubnetType.PRIVATE_WITH_NAT:
+        case SubnetType.PRIVATE:
           const privateSubnet = new PrivateSubnet(this, name, subnetProps);
           this.privateSubnets.push(privateSubnet);
           subnet = privateSubnet;
           break;
         case SubnetType.PRIVATE_ISOLATED:
+        case SubnetType.ISOLATED:
           const isolatedSubnet = new PrivateSubnet(this, name, subnetProps);
           this.isolatedSubnets.push(isolatedSubnet);
           subnet = isolatedSubnet;
@@ -1557,8 +1561,12 @@ const SUBNETNAME_TAG = 'aws-cdk:subnet-name';
 function subnetTypeTagValue(type: SubnetType) {
   switch (type) {
     case SubnetType.PUBLIC: return 'Public';
-    case SubnetType.PRIVATE_WITH_NAT: return 'Private';
-    case SubnetType.PRIVATE_ISOLATED: return 'Isolated';
+    case SubnetType.PRIVATE_WITH_NAT:
+    case SubnetType.PRIVATE:
+      return 'Private';
+    case SubnetType.PRIVATE_ISOLATED:
+    case SubnetType.ISOLATED:
+      return 'Isolated';
   }
 }
 
