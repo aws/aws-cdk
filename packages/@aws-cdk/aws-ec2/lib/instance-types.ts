@@ -462,7 +462,7 @@ export enum InstanceClass {
   /**
    * I/O-optimized instances with local NVME drive powered by Intel Xeon Scalable processors (code named Ice Lake), 4th generation
    */
-  IO4_INTEL = 'i4i',
+  IO4_INTEL = 'io4_intel',
 
   /**
    * I/O-optimized instances with local NVME drive powered by Intel Xeon Scalable processors (code named Ice Lake), 4th generation
@@ -576,7 +576,7 @@ export enum InstanceClass {
   /**
    * Memory-intensive instances with higher network bandwith, local NVME drive, and extended memory. Intel Xeon Scalable (Ice Lake) processors
    */
-  MEMORY_INTENSIVE_2_XT_INTEL = 'x2iedn',
+  MEMORY_INTENSIVE_2_XT_INTEL = 'memory_intensive_2_xt_intel',
 
   /**
    *  Memory-intensive instances with higher network bandwith, local NVME drive, and extended memory. Intel Xeon Scalable (Ice Lake) processors
@@ -586,7 +586,7 @@ export enum InstanceClass {
   /**
    * Memory-intensive instances with higher network bandwith and local NVME drive, Intel Xeon Scalable (Ice Lake) processors
    */
-  MEMORY_INTENSIVE_2_INTEL = 'x2idn',
+  MEMORY_INTENSIVE_2_INTEL = 'memory_intensive_2_intel',
 
   /**
    * Memory-intensive instances with higher network bandwith and local NVME drive, Intel Xeon Scalable (Ice Lake) processors
@@ -596,7 +596,7 @@ export enum InstanceClass {
   /**
    * Memory-intensive instances with higher network bandwith and single-threaded performance, Intel Xeon Scalable (Cascade Lake) processors
    */
-  MEMORY_INTENSIVE_2_XTZ_INTEL = 'x2iezn',
+  MEMORY_INTENSIVE_2_XTZ_INTEL = 'memory_intensive_2_xtz_intel',
 
   /**
    * Memory-intensive instances with higher network bandwith and single-threaded performance, Intel Xeon Scalable (Cascade Lake) processors
@@ -1089,6 +1089,14 @@ export class InstanceType {
       [InstanceClass.VT1]: 'vt1',
       [InstanceClass.HIGH_PERFORMANCE_COMPUTING6_AMD]: 'hpc6a',
       [InstanceClass.HPC6A]: 'hpc6a',
+      [InstanceClass.I4I]: 'i4i',
+      [InstanceClass.IO4_INTEL]: 'i4i',
+      [InstanceClass.X2IEDN]: 'x2iedn',
+      [InstanceClass.MEMORY_INTENSIVE_2_XT_INTEL]: 'x2iedn',
+      [InstanceClass.X2IDN]: 'x2idn',
+      [InstanceClass.MEMORY_INTENSIVE_2_INTEL]: 'x2idn',
+      [InstanceClass.X2IEZN]: 'x2iezn',
+      [InstanceClass.MEMORY_INTENSIVE_2_XTZ_INTEL]: 'x2iezn',
     };
     return new InstanceType(`${instanceClassMap[instanceClass] ?? instanceClass}.${instanceSize}`);
   }

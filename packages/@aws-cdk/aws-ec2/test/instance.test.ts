@@ -156,8 +156,7 @@ describe('instance', () => {
 
     for (const instanceClass of sampleInstanceClassKeys) {
       // WHEN
-      const key = instanceClass.key as keyof (typeof InstanceClass);
-      const instanceType = InstanceClass[key];
+      const instanceType = InstanceType.of(instanceClass.key, InstanceSize.LARGE);
       // THEN
       expect(instanceType.toString().split('.')[0]).toBe(instanceClass.value);
     }
