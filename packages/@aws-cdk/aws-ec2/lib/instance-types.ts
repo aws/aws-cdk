@@ -371,7 +371,7 @@ export enum InstanceClass {
   /**
    * Compute optimized instances for high performance computing, 7th generation with Graviton3 processors
    */
-  COMPUTE7_GRAVITON3 = 'c7g',
+  COMPUTE7_GRAVITON3 = 'compute7_graviton3',
 
   /**
    * Compute optimized instances for high performance computing, 7th generation with Graviton3 processors
@@ -1028,6 +1028,8 @@ export class InstanceType {
       [InstanceClass.C6GD]: 'c6gd',
       [InstanceClass.COMPUTE6_GRAVITON2_HIGH_NETWORK_BANDWIDTH]: 'c6gdb',
       [InstanceClass.COMPUTE6_GRAVITON2_HIGH_NETWORK_BANDWITH]: 'c6gdb',
+      [InstanceClass.COMPUTE7_GRAVITON3]: 'c7g',
+      [InstanceClass.C7G]: 'c7g',
       [InstanceClass.C6GN]: 'c6gn',
       [InstanceClass.STORAGE2]: 'd2',
       [InstanceClass.D2]: 'd2',
