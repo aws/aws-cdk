@@ -183,7 +183,7 @@ async function main() {
         '@aws-cdk/core': version,
       },
       engines: {
-        node: '>= 10.13.0 <13 || >=13.7.0',
+        node: '>= 14.15.0',
       },
       stability: 'experimental',
       maturity: 'cfn-only',
