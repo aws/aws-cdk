@@ -188,7 +188,7 @@ export interface TableOptions extends SchemaOptions {
    *
    * This property cannot be set if `encryption` and/or `encryptionKey` is set.
    *
-   * @default - server-side encryption is enabled with an AWS owned customer master key
+   * @default - server-side encryption is not enabled.
    *
    * @deprecated This property is deprecated. In order to obtain the same behavior as
    * enabling this, set the `encryption` property to `TableEncryption.AWS_MANAGED` instead.
@@ -213,7 +213,7 @@ export interface TableOptions extends SchemaOptions {
    * > using CDKv1, make sure the feature flag
    * > `@aws-cdk/aws-kms:defaultKeyPolicies` is set to `true` in your `cdk.json`.
    *
-   * @default - server-side encryption is enabled with an AWS owned customer master key
+   * @default - server-side encryption is not enabled.
    */
   readonly encryption?: TableEncryption;
 
@@ -223,7 +223,7 @@ export interface TableOptions extends SchemaOptions {
    * This property can only be set if `encryption` is set to `TableEncryption.CUSTOMER_MANAGED`.
    *
    * @default - If `encryption` is set to `TableEncryption.CUSTOMER_MANAGED` and this
-   * property is undefined, a new KMS key will be created and associated with this table.
+   * property is undefined, the table will not be encrypted.
    */
   readonly encryptionKey?: kms.IKey;
 
