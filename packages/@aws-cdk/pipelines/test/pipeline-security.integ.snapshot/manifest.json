@@ -1,5 +1,5 @@
 {
-  "version": "19.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "assembly-PipelineSecurityStack-SingleStage": {
       "type": "cdk:cloud-assembly",
@@ -65,7 +65,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b2f63a28c764e12d64edb71d5c1d3948896ebee7102ef091632e20276295da5c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7f17b1fbdb3783f2f992a94602a37c674f58741617a65f348b43ba1a7637a115.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -120,10 +120,7 @@
         "/PipelineSecurityStack/TestPipeline/Pipeline/ArtifactsBucketEncryptionKeyAlias/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestPipelineArtifactsBucketEncryptionKeyAliasE8D86DD3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "TestPipelineArtifactsBucketEncryptionKeyAliasE8D86DD3"
           }
         ],
         "/PipelineSecurityStack/TestPipeline/Pipeline/ArtifactsBucket/Resource": [

@@ -203,10 +203,10 @@
             "data": "ServiceprincipalMap"
           }
         ],
-        "HandlerCurrentVersion93FB80BFb2a9ce598bf2730613c07e406cddb6b6": [
+        "HandlerCurrentVersion93FB80BF9a6cf166b667631aba3958d26c7ca1bb": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HandlerCurrentVersion93FB80BFb2a9ce598bf2730613c07e406cddb6b6",
+            "data": "HandlerCurrentVersion93FB80BF9a6cf166b667631aba3958d26c7ca1bb",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

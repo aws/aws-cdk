@@ -7,10 +7,6 @@ import { DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY } from './common';
 import { CloudFormationProductVersion } from './product';
 import { ProductStack } from './product-stack';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Properties for a ProductStackHistory.
  */
@@ -53,7 +49,7 @@ export interface ProductStackHistoryProps {
 /**
  * A Construct that contains a Service Catalog product stack with its previous deployments maintained.
  */
-export class ProductStackHistory extends CoreConstruct {
+export class ProductStackHistory extends Construct {
   private readonly props: ProductStackHistoryProps
   constructor(scope: Construct, id: string, props: ProductStackHistoryProps) {
     super(scope, id);
@@ -98,7 +94,7 @@ export class ProductStackHistory extends CoreConstruct {
   public _writeTemplateToSnapshot(cfn: string) {
     const productStackSnapshotDirectory = this.props.directory || DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY;
     if (!fs.existsSync(productStackSnapshotDirectory)) {
-      fs.mkdirSync(productStackSnapshotDirectory);
+      fs.mkdirSync(productStackSnapshotDirectory, { recursive: true });
     }
     const templateFileKey = `${Names.uniqueId(this)}.${this.props.productStack.artifactId}.${this.props.currentVersionName}.product.template.json`;
     const templateFilePath = path.join(productStackSnapshotDirectory, templateFileKey);

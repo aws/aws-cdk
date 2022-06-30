@@ -7,10 +7,6 @@ import { DatabaseQuery } from './database-query';
 import { HandlerName } from './database-query-provider/handler-name';
 import { TablePrivilege as SerializedTablePrivilege, UserTablePrivilegesHandlerProps } from './handler-props';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * The Redshift table and action that make up a privilege that can be granted to a Redshift user.
  */
@@ -51,7 +47,7 @@ export interface UserTablePrivilegesProps extends DatabaseOptions {
  * method. Thus, each `User` will have at most one `UserTablePrivileges` construct to manage its privileges. For details
  * on why this is a Good Thing, see the README, under "Granting Privileges".
  */
-export class UserTablePrivileges extends CoreConstruct {
+export class UserTablePrivileges extends Construct {
   private privileges: TablePrivilege[];
 
   constructor(scope: Construct, id: string, props: UserTablePrivilegesProps) {

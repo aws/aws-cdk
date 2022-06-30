@@ -6,9 +6,9 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, IConstruct, Lazy, Names, Size, Stack, Token } from '@aws-cdk/core';
+import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '@aws-cdk/core';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { AliasOptions, Alias } from './alias';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
@@ -23,11 +23,8 @@ import { LambdaInsightsVersion } from './lambda-insights';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
-import { Runtime } from './runtime';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line
 import { LogRetentionRetryOptions } from './log-retention';
+import { Runtime } from './runtime';
 import { addAlias } from './util';
 
 /**
@@ -357,7 +354,7 @@ export interface FunctionProps extends FunctionOptions {
    * For valid values, see the Runtime property in the AWS Lambda Developer
    * Guide.
    *
-   * Use `Runtime.FROM_IMAGE` when when defining a function from a Docker image.
+   * Use `Runtime.FROM_IMAGE` when defining a function from a Docker image.
    */
   readonly runtime: Runtime;
 
@@ -984,6 +981,7 @@ export class Function extends FunctionBase {
    *   aliasName: 'Live',
    *   version: fn.currentVersion,
    * });
+   * ```
    *
    * @param aliasName The name of the alias
    * @param options Alias options

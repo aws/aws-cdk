@@ -87,19 +87,19 @@
             "data": "Alias2AliasPermission2448514B6"
           }
         ],
-        "MyLambdaAliasPCECurrentVersion072335D369bedb3f5cf56c66c63ccfdba59d5d84": [
+        "MyLambdaAliasPCECurrentVersion072335D3ecf1e1993812a43e1ad83ad23009e893": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaAliasPCECurrentVersion072335D369bedb3f5cf56c66c63ccfdba59d5d84",
+            "data": "MyLambdaAliasPCECurrentVersion072335D3ecf1e1993812a43e1ad83ad23009e893",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "MyLambdaVersionPCECurrentVersion27FC3932fc9df6df91e1aac821ec45a32cf17e32": [
+        "MyLambdaVersionPCECurrentVersion27FC3932176d028ba8f6b4c3340c828b8d6c8815": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaVersionPCECurrentVersion27FC3932fc9df6df91e1aac821ec45a32cf17e32",
+            "data": "MyLambdaVersionPCECurrentVersion27FC3932176d028ba8f6b4c3340c828b8d6c8815",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

@@ -3,8 +3,7 @@
 // See docs/policy-merging.als for a formal model of the logic
 // implemented here.
 
-
-import { IConstruct } from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 import { PolicyStatement, EstimateSizeOptions, deriveEstimateSizeOptions } from '../policy-statement';
 import { IPrincipal } from '../principals';
 import { LITERAL_STRING_KEY } from '../util';
@@ -20,6 +19,32 @@ import { partitionPrincipals } from './comparable-principal';
 const MAX_MERGE_SIZE = 2000;
 
 /**
+ * Options for the mergeStatement command
+ */
+export interface MergeStatementOptions {
+  /**
+   * Scope to derive configuration flags from
+   */
+  readonly scope: IConstruct;
+
+  /**
+   * Do not merge statements if the result would be bigger than MAX_MERGE_SIZE
+   *
+   * @default false
+   */
+  readonly limitSize?: boolean;
+
+  /**
+   * Merge statements if they can be combined to produce the same effects.
+   *
+   * If false, statements are only merged if they are exactly equal.
+   *
+   * @default true
+   */
+  readonly mergeIfCombinable?: boolean;
+}
+
+/**
  * Merge as many statements as possible to shrink the total policy doc, modifying the input array in place
  *
  * We compare and merge all pairs of statements (O(N^2) complexity), opportunistically
@@ -27,9 +52,10 @@ const MAX_MERGE_SIZE = 2000;
  * Good Enough(tm). If it merges anything, it's at least going to produce a smaller output
  * than the input.
  */
-export function mergeStatements(scope: IConstruct, statements: PolicyStatement[], limitSize: boolean): MergeStatementResult {
-  const sizeOptions = deriveEstimateSizeOptions(scope);
+export function mergeStatements(statements: PolicyStatement[], options: MergeStatementOptions): MergeStatementResult {
+  const sizeOptions = deriveEstimateSizeOptions(options.scope);
   const compStatements = statements.map(makeComparable);
+  const mergeFn = options?.mergeIfCombinable ?? true ? mergeIfCombinable : mergeIfEqual;
 
   // Keep trying until nothing changes anymore
   while (onePass()) { /* again */ }
@@ -51,7 +77,7 @@ export function mergeStatements(scope: IConstruct, statements: PolicyStatement[]
     for (let i = 0; i < compStatements.length; i++) {
       let j = i + 1;
       while (j < compStatements.length) {
-        const merged = tryMerge(compStatements[i], compStatements[j], limitSize, sizeOptions);
+        const merged = mergeFn(compStatements[i], compStatements[j], !!options.limitSize, sizeOptions);
 
         if (merged) {
           compStatements[i] = merged;
@@ -91,7 +117,12 @@ export interface MergeStatementResult {
  * - From their Action, Resource and Principal sets, 2 are subsets of each other
  *   (empty sets are fine).
  */
-function tryMerge(a: ComparableStatement, b: ComparableStatement, limitSize: boolean, options: EstimateSizeOptions): ComparableStatement | undefined {
+function mergeIfCombinable(
+  a: ComparableStatement,
+  b: ComparableStatement,
+  limitSize: boolean,
+  options: EstimateSizeOptions,
+): ComparableStatement | undefined {
   // Effects must be the same
   if (a.statement.effect !== b.statement.effect) { return; }
   // We don't merge Sids (for now)
@@ -125,6 +156,35 @@ function tryMerge(a: ComparableStatement, b: ComparableStatement, limitSize: boo
   return {
     originals: [...a.originals, ...b.originals],
     statement: combined,
+    conditionString: a.conditionString,
+  };
+}
+
+/**
+ * We merge two statements only if they are exactly the same
+ */
+function mergeIfEqual(a: ComparableStatement, b: ComparableStatement): ComparableStatement | undefined {
+  if (a.statement.effect !== b.statement.effect) { return; }
+  if (a.statement.sid !== b.statement.sid) { return; }
+  if (a.conditionString !== b.conditionString) { return; }
+  if (
+    !setEqual(a.statement.notActions, b.statement.notActions) ||
+    !setEqual(a.statement.notResources, b.statement.notResources) ||
+    !setEqualPrincipals(a.statement.notPrincipals, b.statement.notPrincipals)
+  ) {
+    return;
+  }
+  if (
+    !setEqual(a.statement.actions, b.statement.actions) ||
+    !setEqual(a.statement.resources, b.statement.resources) ||
+    !setEqualPrincipals(a.statement.principals, b.statement.principals)
+  ) {
+    return;
+  }
+
+  return {
+    originals: [...a.originals, ...b.originals],
+    statement: a.statement,
     conditionString: a.conditionString,
   };
 }

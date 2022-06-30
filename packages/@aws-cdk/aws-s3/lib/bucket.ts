@@ -497,6 +497,8 @@ export abstract class BucketBase extends Resource implements IBucket {
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
+
+    this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
   }
 
   /**
@@ -611,12 +613,6 @@ export abstract class BucketBase extends Resource implements IBucket {
     }
 
     return { statementAdded: false };
-  }
-
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
-    return errors;
   }
 
   /**
@@ -2129,7 +2125,7 @@ export class Bucket extends BucketBase {
   private enableAutoDeleteObjects() {
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
     });
 

@@ -492,7 +492,7 @@
      ]
     },
     "Handler": "index.handler",
-    "Runtime": "python3.6"
+    "Runtime": "python3.9"
    },
    "DependsOn": [
     "FunServiceRole3CC876D7"

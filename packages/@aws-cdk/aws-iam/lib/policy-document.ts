@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
-import { IConstruct } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { IConstruct } from 'constructs';
 import { PolicyStatement, deriveEstimateSizeOptions } from './policy-statement';
 import { mergeStatements } from './private/merge-statements';
 import { PostProcessPolicyDocument } from './private/postprocess-policy-document';
@@ -187,9 +187,9 @@ export class PolicyDocument implements cdk.IResolvable {
    *
    * @internal
    */
-  public _maybeMergeStatements(scope: cdk.IConstruct): void {
+  public _maybeMergeStatements(scope: IConstruct): void {
     if (this.shouldMerge(scope)) {
-      const result = mergeStatements(scope, this.statements, false);
+      const result = mergeStatements(this.statements, { scope });
       this.statements.splice(0, this.statements.length, ...result.mergedStatements);
     }
   }
@@ -213,11 +213,17 @@ export class PolicyDocument implements cdk.IResolvable {
 
     // Maps final statements to original statements
     let statementsToOriginals = new Map(this.statements.map(s => [s, [s]]));
-    if (this.shouldMerge(scope)) {
-      const result = mergeStatements(scope, this.statements, true);
-      this.statements.splice(0, this.statements.length, ...result.mergedStatements);
-      statementsToOriginals = result.originsMap;
-    }
+
+    // We always run 'mergeStatements' to minimize the policy before splitting.
+    // However, we only 'merge' when the feature flag is on. If the flag is not
+    // on, we only combine statements that are *exactly* the same. We must do
+    // this before splitting, otherwise we may end up with the statement set [X,
+    // X, X, X, X] being split off into [[X, X, X], [X, X]] before being reduced
+    // to [[X], [X]] (but should have been just [[X]]).
+    const doActualMerging = this.shouldMerge(scope);
+    const result = mergeStatements(this.statements, { scope, limitSize: true, mergeIfCombinable: doActualMerging });
+    this.statements.splice(0, this.statements.length, ...result.mergedStatements);
+    statementsToOriginals = result.originsMap;
 
     const sizeOptions = deriveEstimateSizeOptions(scope);
 

@@ -69,10 +69,10 @@
             "data": "Aliasinvokefunctionurl4CA9917B"
           }
         ],
-        "MyLambdaCurrentVersionE7A382CC7e2eef94b9010f0c2a5e7db748a3833a": [
+        "MyLambdaCurrentVersionE7A382CCf9fac83eca6426eeed700cdc0106fc3d": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CC7e2eef94b9010f0c2a5e7db748a3833a",
+            "data": "MyLambdaCurrentVersionE7A382CCf9fac83eca6426eeed700cdc0106fc3d",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
