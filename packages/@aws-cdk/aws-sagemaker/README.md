@@ -38,7 +38,6 @@ import * as sagemaker from '@aws-cdk/aws-sagemaker';
 In order to define a Endpoint, you must provide the name of an endpoint config. This following codes allow you to define a basic AWS Sagemaker Endpoints:
 
 ```ts
-import * as sagemaker from '@aws-cdk/aws-sagemaker';
 const endpoint = new sagemaker.Endpoint(this, 'MyEndpoint', {
   endpointName: 'MyEndpoint',
   endpointConfigName: 'MyEndpointConfig',
@@ -50,7 +49,6 @@ const endpoint = new sagemaker.Endpoint(this, 'MyEndpoint', {
 You can apply [tags](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) to endpoint resources, example codes:
 
 ```ts
-import * as sagemaker from '@aws-cdk/aws-sagemaker';
 new sagemaker.Endpoint(this, 'MyEndpoint', {
   endpointName: 'MyEndpoint',
   endpointConfigName: 'MyEndpointConfig',
