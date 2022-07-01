@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -289,6 +289,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "meshgateway1gateway1routegrpc2FAC1FF36"
+          }
+        ],
+        "/mesh-stack/mesh-with-preference/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "meshwithpreferenceCC9682C9"
           }
         ],
         "/mesh-stack/service/Resource": [

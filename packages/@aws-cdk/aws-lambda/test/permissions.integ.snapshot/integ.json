@@ -1,9 +1,9 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.cluster-rotation.lit": {
+    "integ.permissions": {
       "stacks": [
-        "aws-cdk-docdb-cluster-rotation"
+        "lambda-permissions"
       ],
       "diffAssets": false,
       "stackUpdateWorkflow": true

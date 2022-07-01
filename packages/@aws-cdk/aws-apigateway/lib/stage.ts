@@ -310,7 +310,7 @@ export class Stage extends Resource implements IStage {
     };
 
     // if any of them are defined, add an entry for '/*/*'.
-    const hasCommonOptions = Object.keys(commonMethodOptions).map(v => (commonMethodOptions as any)[v]).filter(x => x).length > 0;
+    const hasCommonOptions = Object.keys(commonMethodOptions).map(v => (commonMethodOptions as any)[v]).filter(x => x !== undefined).length > 0;
     if (hasCommonOptions) {
       settings.push(renderEntry('/*/*', commonMethodOptions));
     }

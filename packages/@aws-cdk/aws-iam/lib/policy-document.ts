@@ -76,6 +76,7 @@ export class PolicyDocument implements cdk.IResolvable {
   }
 
   public resolve(context: cdk.IResolveContext): any {
+    this.freezeStatements();
     this._maybeMergeStatements(context.scope);
 
     // In the previous implementation of 'merge', sorting of actions/resources on
@@ -212,6 +213,7 @@ export class PolicyDocument implements cdk.IResolvable {
     const newDocs: PolicyDocument[] = [];
 
     // Maps final statements to original statements
+    this.freezeStatements();
     let statementsToOriginals = new Map(this.statements.map(s => [s, [s]]));
 
     // We always run 'mergeStatements' to minimize the policy before splitting.
@@ -297,5 +299,14 @@ export class PolicyDocument implements cdk.IResolvable {
 
   private shouldMerge(scope: IConstruct) {
     return this.minimize ?? cdk.FeatureFlags.of(scope).isEnabled(cxapi.IAM_MINIMIZE_POLICIES) ?? false;
+  }
+
+  /**
+   * Freeze all statements
+   */
+  private freezeStatements() {
+    for (const statement of this.statements) {
+      statement.freeze();
+    }
   }
 }

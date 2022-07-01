@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "mesh-stack": {
@@ -1464,7 +1464,8 @@
                           ],
                           "serviceDiscovery": {
                             "dns": {
-                              "hostname": "node1.domain.local"
+                              "hostname": "node1.domain.local",
+                              "ipPreference": "IPv4_ONLY"
                             }
                           }
                         },
@@ -2373,6 +2374,35 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-appmesh.VirtualGateway",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appmesh.Mesh",
+              "version": "0.0.0"
+            }
+          },
+          "mesh-with-preference": {
+            "id": "mesh-with-preference",
+            "path": "mesh-stack/mesh-with-preference",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "mesh-stack/mesh-with-preference/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppMesh::Mesh",
+                  "aws:cdk:cloudformation:props": {
+                    "meshName": "meshstackmeshwithpreference13C624E1",
+                    "spec": {
+                      "serviceDiscovery": {
+                        "ipPreference": "IPv4_ONLY"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appmesh.CfnMesh",
                   "version": "0.0.0"
                 }
               }
