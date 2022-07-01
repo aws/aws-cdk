@@ -24,8 +24,11 @@ const attributeGroup = new appreg.AttributeGroup(stack, 'TestAttributeGroup', {
 const myRole = new iam.Role(stack, 'MyRole', {
   assumedBy: new iam.AccountPrincipal(stack.account),
 });
+const mySecondRole = new iam.Role(stack, 'MySecondRole', {
+  assumedBy: new iam.AccountPrincipal(stack.account),
+});
 attributeGroup.shareResource({
-  roles: [myRole],
+  roles: [myRole, mySecondRole],
 });
 
 app.synth();

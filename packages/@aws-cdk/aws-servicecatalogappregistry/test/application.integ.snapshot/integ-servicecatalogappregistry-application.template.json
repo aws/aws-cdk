@@ -39,10 +39,10 @@
     }
    }
   },
-  "TestApplicationRAMShareb83647b4f06a5A88B554": {
+  "TestApplicationRAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB233482C38": {
    "Type": "AWS::RAM::ResourceShare",
    "Properties": {
-    "Name": "RAMShareb83647b4f06a",
+    "Name": "RAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB2",
     "AllowExternalPrincipals": true,
     "Principals": [
      {

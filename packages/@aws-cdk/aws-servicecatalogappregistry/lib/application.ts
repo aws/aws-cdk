@@ -1,5 +1,6 @@
 import { CfnResourceShare } from '@aws-cdk/aws-ram';
 import * as cdk from '@aws-cdk/core';
+import { Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IAttributeGroup } from './attribute-group';
 import { getPrincipalsforSharing, hashValues, ShareOptions } from './common';
@@ -102,7 +103,7 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
    */
   public shareResource(shareOptions: ShareOptions): void {
     const principals = getPrincipalsforSharing(shareOptions);
-    const shareName = `RAMShare${this.generateUniqueHash(this.node.addr)}`;
+    const shareName = `RAMShare${Names.uniqueResourceName(this, {})}`;
     new CfnResourceShare(this, shareName, {
       name: shareName,
       allowExternalPrincipals: shareOptions.allowExternalPrincipals ?? true,

@@ -1,5 +1,5 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -33,10 +33,10 @@
             "data": "TestApplicationAttributeGroupAssociation4ba7f5842818B8EE1C6F"
           }
         ],
-        "/integ-servicecatalogappregistry-application/TestApplication/RAMShareb83647b4f06a": [
+        "/integ-servicecatalogappregistry-application/TestApplication/RAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestApplicationRAMShareb83647b4f06a5A88B554"
+            "data": "TestApplicationRAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB233482C38"
           }
         ],
         "/integ-servicecatalogappregistry-application/TestAttributeGroup/Resource": [
@@ -51,10 +51,10 @@
             "data": "MyRoleF48FFE04"
           }
         ],
-        "TestAttributeGroupRAMShare8ecfad67abc5A7122106": [
+        "TestApplicationRAMShareb83647b4f06a5A88B554": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestAttributeGroupRAMShare8ecfad67abc5A7122106",
+            "data": "TestApplicationRAMShareb83647b4f06a5A88B554",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

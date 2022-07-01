@@ -240,7 +240,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: true,
-        //Name: 'RAMShare2bc04f06e3de',
+        Name: 'RAMShareMyApplication',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
       });
@@ -253,7 +253,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: true,
-        Name: 'RAMSharedd13de208efe',
+        Name: 'RAMShareMyApplication',
         Principals: ['123456789012'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
       });
@@ -268,7 +268,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: true,
-        Name: 'RAMSharedd13de208efe',
+        Name: 'RAMShareMyApplication',
         Principals: ['arn:aws:iam::123456789012:role/myRole'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
       });
@@ -283,7 +283,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: true,
-        Name: 'RAMSharedd13de208efe',
+        Name: 'RAMShareMyApplication',
         Principals: ['arn:aws:iam::123456789012:user/myUser'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
       });
@@ -297,7 +297,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMSharedd13de208efe',
+        Name: 'RAMShareMyApplication',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
       });

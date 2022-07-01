@@ -1,9 +1,10 @@
 import { CfnResourceShare } from '@aws-cdk/aws-ram';
 import * as cdk from '@aws-cdk/core';
-import { getPrincipalsforSharing, hashValues, ShareOptions } from './common';
+import { getPrincipalsforSharing, ShareOptions } from './common';
 import { Construct } from 'constructs';
 import { InputValidator } from './private/validation';
 import { CfnAttributeGroup } from './servicecatalogappregistry.generated';
+import { Names } from '@aws-cdk/core';
 
 /**
  * A Service Catalog AppRegistry Attribute Group.
@@ -56,7 +57,7 @@ abstract class AttributeGroupBase extends cdk.Resource implements IAttributeGrou
 
   public shareResource(shareOptions: ShareOptions): void {
     const principals = getPrincipalsforSharing(shareOptions);
-    const shareName = `RAMShare${this.generateUniqueHash(this.node.addr)}`;
+    const shareName = `RAMShare${Names.uniqueResourceName(this, {})}`;
     new CfnResourceShare(this, shareName, {
       name: shareName,
       allowExternalPrincipals: shareOptions.allowExternalPrincipals ?? true,
@@ -64,11 +65,6 @@ abstract class AttributeGroupBase extends cdk.Resource implements IAttributeGrou
       resourceArns: [this.attributeGroupArn],
     });
   }
-
-  /**
-   * Create a unique id
-   */
-  protected abstract generateUniqueHash(resourceAddress: string): string;
 }
 
 /**
@@ -93,10 +89,6 @@ export class AttributeGroup extends AttributeGroupBase implements IAttributeGrou
     class Import extends AttributeGroupBase {
       public readonly attributeGroupArn = attributeGroupArn;
       public readonly attributeGroupId = attributeGroupId!;
-
-      protected generateUniqueHash(resourceAddress: string): string {
-        return hashValues(this.attributeGroupArn, resourceAddress);
-      }
     }
 
     return new Import(scope, id, {
@@ -106,7 +98,6 @@ export class AttributeGroup extends AttributeGroupBase implements IAttributeGrou
 
   public readonly attributeGroupArn: string;
   public readonly attributeGroupId: string;
-  private readonly nodeAddress: string;
 
   constructor(scope: Construct, id: string, props: AttributeGroupProps) {
     super(scope, id);
@@ -121,16 +112,11 @@ export class AttributeGroup extends AttributeGroupBase implements IAttributeGrou
 
     this.attributeGroupArn = attributeGroup.attrArn;
     this.attributeGroupId = attributeGroup.attrId;
-    this.nodeAddress = cdk.Names.nodeUniqueId(attributeGroup.node);
   }
 
   private validateAttributeGroupProps(props: AttributeGroupProps) {
     InputValidator.validateLength(this.node.path, 'attribute group name', 1, 256, props.attributeGroupName);
     InputValidator.validateRegex(this.node.path, 'attribute group name', /^[a-zA-Z0-9-_]+$/, props.attributeGroupName);
     InputValidator.validateLength(this.node.path, 'attribute group description', 0, 1024, props.description);
-  }
-
-  protected generateUniqueHash(resourceAddress: string): string {
-    return hashValues(this.nodeAddress, resourceAddress);
   }
 }

@@ -6,7 +6,9 @@ import * as iam from '@aws-cdk/aws-iam';
  */
 export interface ShareOptions {
   /**
-   * Explicitly allow share of application with principals outside of your AWS Organization.
+   * When set to true, this allows sharing of applications and attribute groups
+   * with accounts outside of your AWS Organization. When set to false, sharing
+   * is restricted to only accounts and principals which belong to the organization.
    *
    * @default true
    */
@@ -66,5 +68,6 @@ export function getPrincipalsforSharing(options: ShareOptions): string[] {
   if (principals.length == 0) {
     throw new Error('An entity must be provided for the share');
   }
+
   return principals;
 }

@@ -1,5 +1,5 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -21,10 +21,10 @@
             "data": "TestAttributeGroupB1CB284F"
           }
         ],
-        "/integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/RAMShareeb39874141ba": [
+        "/integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/RAMShareintegservicecatalogappregistryattributegroupTestAttributeGroup7BCD831A": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestAttributeGroupRAMShareeb39874141ba1F0BDF3D"
+            "data": "TestAttributeGroupRAMShareintegservicecatalogappregistryattributegroupTestAttributeGroup7BCD831AA2963D44"
           }
         ],
         "/integ-servicecatalogappregistry-attribute-group/MyRole/Resource": [
@@ -33,13 +33,10 @@
             "data": "MyRoleF48FFE04"
           }
         ],
-        "TestAttributeGroupRAMSharee756785b881833F2C73F": [
+        "/integ-servicecatalogappregistry-attribute-group/MySecondRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestAttributeGroupRAMSharee756785b881833F2C73F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "MySecondRoleB9F57405"
           }
         ]
       },

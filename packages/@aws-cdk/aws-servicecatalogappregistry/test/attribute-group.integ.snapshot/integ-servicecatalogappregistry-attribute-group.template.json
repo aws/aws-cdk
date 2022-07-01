@@ -19,15 +19,21 @@
     "Description": "my attribute group description"
    }
   },
-  "TestAttributeGroupRAMShareeb39874141ba1F0BDF3D": {
+  "TestAttributeGroupRAMShareintegservicecatalogappregistryattributegroupTestAttributeGroup7BCD831AA2963D44": {
    "Type": "AWS::RAM::ResourceShare",
    "Properties": {
-    "Name": "RAMShareeb39874141ba",
+    "Name": "RAMShareintegservicecatalogappregistryattributegroupTestAttributeGroup7BCD831A",
     "AllowExternalPrincipals": true,
     "Principals": [
      {
       "Fn::GetAtt": [
        "MyRoleF48FFE04",
+       "Arn"
+      ]
+     },
+     {
+      "Fn::GetAtt": [
+       "MySecondRoleB9F57405",
        "Arn"
       ]
      }
@@ -43,6 +49,38 @@
    }
   },
   "MyRoleF48FFE04": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MySecondRoleB9F57405": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
