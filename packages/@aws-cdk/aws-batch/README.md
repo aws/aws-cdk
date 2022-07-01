@@ -312,7 +312,7 @@ new batch.JobDefinition(this, 'batch-job-def-secrets', {
     image: ecs.EcrImage.fromRegistry('docker/whalesay'),
     secrets: {
       PASSWORD: ecs.Secret.fromSecretsManager(dbSecret, 'password'),
-    }
+    },
   },
 });
 ```
