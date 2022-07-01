@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.30.0](https://github.com/aws/aws-cdk/compare/v2.29.1...v2.30.0) (2022-07-01)
+
+### Features
+
+* **appmesh:** ipv6 support for app mesh ([#20766](https://github.com/aws/aws-cdk/issues/20766)) ([b1e6d62](https://github.com/aws/aws-cdk/commit/b1e6d62ed6b6ede0362d0a68d804660e84efe5cb)), closes [#20737](https://github.com/aws/aws-cdk/issues/20737)
+* **cognito:** make `grant()` available on `IUserPool` ([#20799](https://github.com/aws/aws-cdk/issues/20799)) ([a1df570](https://github.com/aws/aws-cdk/commit/a1df570b89c6d456077bb934e0bf08217677ef1f)), closes [#20285](https://github.com/aws/aws-cdk/issues/20285)
+* **iam:** PolicyStatements can be frozen ([#20911](https://github.com/aws/aws-cdk/issues/20911)) ([3bf737b](https://github.com/aws/aws-cdk/commit/3bf737bd172eda016d2e9bb7c5f40c001399fd23))
+* **lambda:** grant function permissions to an AWS organization ([#19975](https://github.com/aws/aws-cdk/issues/19975)) ([2566017](https://github.com/aws/aws-cdk/commit/2566017a83ec4f9c2c5cefda4585a3f71e3516e7)), closes [#19538](https://github.com/aws/aws-cdk/issues/19538) [#20146](https://github.com/aws/aws-cdk/issues/20146)
+* **rds:** add missing aurora postgres versions ([#20830](https://github.com/aws/aws-cdk/issues/20830)) ([2151a0e](https://github.com/aws/aws-cdk/commit/2151a0e9b988723e050e6f37ed1780cced16c519))
+
+
+### Bug Fixes
+
+* **apigateway:** Explicitly test for undefined instead of falsey for stage default options ([#20868](https://github.com/aws/aws-cdk/issues/20868)) ([b368a31](https://github.com/aws/aws-cdk/commit/b368a315cab0cedf03298083f5f1fb809bd1d1f2))
+* **eks:** revert shell=True and allow public ecr to work ([#20724](https://github.com/aws/aws-cdk/issues/20724)) ([de153fc](https://github.com/aws/aws-cdk/commit/de153fcdd47a4cdcd1d156d5e19684969d990c8e))
+* **pipelines:** 'ConfirmPermissionsBroadening' uses wrong node version ([#20861](https://github.com/aws/aws-cdk/issues/20861)) ([bac965e](https://github.com/aws/aws-cdk/commit/bac965e9c4d435ae45d5cf16aa809f33bbb05a0f))
+* **secretsmanager:** SecretRotation app does not set DeletionPolicy ([#20901](https://github.com/aws/aws-cdk/issues/20901)) ([f2b4eff](https://github.com/aws/aws-cdk/commit/f2b4effc903ab3a36dc925516f3329f236d03a70))
+
 ## [2.29.1](https://github.com/aws/aws-cdk/compare/v2.29.0...v2.29.1) (2022-06-24)
 
 
