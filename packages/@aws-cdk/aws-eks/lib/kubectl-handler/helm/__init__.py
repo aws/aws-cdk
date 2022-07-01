@@ -29,7 +29,7 @@ def get_chart_asset_from_url(chart_asset_url):
     return chart_dir
 
 def helm_handler(event, context):
-    logger.info(json.dumps(event))
+    logger.info(json.dumps(dict(event, ResponseURL='...')))
 
     request_type = event['RequestType']
     props = event['ResourceProperties']
