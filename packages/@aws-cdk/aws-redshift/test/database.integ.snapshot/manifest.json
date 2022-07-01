@@ -218,7 +218,10 @@
         "/aws-cdk-redshift-cluster-database/Cluster/ParameterGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterParameterGroup879806FD"
+            "data": "ClusterParameterGroup879806FD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-redshift-cluster-database/User/Secret/Resource": [
