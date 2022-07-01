@@ -77,6 +77,9 @@ const demoTable = new dynamodb.Table(this, 'DemoTable', {
 const demoDS = api.addDynamoDbDataSource('demoDataSource', demoTable);
 
 // Resolver for the Query "getDemos" that scans the DynamoDb table and returns the entire list.
+// Resolver Mapping Template Reference:
+// https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference-dynamodb.html
+//parameter for the dynamoDbScanTable: consistentRead, whether or not to perform a strongly consistent read with DynamoDB. This is optional, and defaults to false.
 demoDS.createResolver({
   typeName: 'Query',
   fieldName: 'getDemos',
