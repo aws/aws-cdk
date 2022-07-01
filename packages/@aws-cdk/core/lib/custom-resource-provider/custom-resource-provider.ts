@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
@@ -200,16 +201,17 @@ export class CustomResourceProvider extends Construct {
 
     const stack = Stack.of(scope);
 
-    // copy the entry point to the code directory
-    fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(props.codeDirectory, `${ENTRYPOINT_FILENAME}.js`));
-
     // verify we have an index file there
     if (!fs.existsSync(path.join(props.codeDirectory, 'index.js'))) {
       throw new Error(`cannot find ${props.codeDirectory}/index.js`);
     }
 
+    const stagingDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-custom-resource'));
+    fs.copyFileSync(path.join(props.codeDirectory, 'index.js'), path.join(stagingDirectory, 'index.js'));
+    fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(stagingDirectory, `${ENTRYPOINT_FILENAME}.js`));
+
     const staging = new AssetStaging(this, 'Staging', {
-      sourcePath: props.codeDirectory,
+      sourcePath: stagingDirectory,
     });
 
     const assetFileName = staging.relativeStagedPath(stack);
