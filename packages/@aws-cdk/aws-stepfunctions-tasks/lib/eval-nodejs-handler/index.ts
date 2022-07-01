@@ -6,7 +6,7 @@ function escapeRegex(x: string) {
 }
 
 export async function handler(event: Event): Promise<any> {
-  console.log('Event: %j', event);
+  console.log('Event: %j', { ...event, ResponseURL: '...' });
 
   const expression = Object.entries(event.expressionAttributeValues)
     .reduce(

@@ -24,7 +24,7 @@ export = {
  * @param cfnRequest The cloudformation custom resource event.
  */
 async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) {
-  log('onEventHandler', cfnRequest);
+  log('onEventHandler', { ...cfnRequest, ResponseURL: '...' });
 
   cfnRequest.ResourceProperties = cfnRequest.ResourceProperties || { };
 
@@ -102,7 +102,9 @@ async function invokeUserFunction(functionArnEnv: string, payload: any) {
   // automatically by the JavaScript SDK.
   const resp = await invokeFunction({
     FunctionName: functionArn,
-    Payload: JSON.stringify(payload),
+
+    // Strip 'ResponseURL' -- the downstream CR doesn't need it and can only log it by accident
+    Payload: JSON.stringify({ ...payload, ResponseURL: undefined }),
   });
 
   log('user function response:', resp, typeof(resp));

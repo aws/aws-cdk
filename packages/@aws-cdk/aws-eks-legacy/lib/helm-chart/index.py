@@ -25,7 +25,7 @@ def handler(event, context):
         cfn_send(event, context, CFN_FAILED, reason=message)
 
     try:
-        logger.info(json.dumps(event))
+        logger.info(json.dumps(dict(event, ResponseURL='...')))
 
         request_type = event['RequestType']
         props = event['ResourceProperties']
@@ -41,7 +41,7 @@ def handler(event, context):
         if cluster_name is None:
             cfn_error("CLUSTER_NAME is missing in environment")
             return
-        
+
         subprocess.check_call([ 'aws', 'eks', 'update-kubeconfig',
             '--name', cluster_name,
             '--kubeconfig', kubeconfig
