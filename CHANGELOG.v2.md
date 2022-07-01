@@ -4,7 +4,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [2.30.0](https://github.com/aws/aws-cdk/compare/v2.29.1...v2.30.0) (2022-07-01)
 
-
 ### Features
 
 * **appmesh:** ipv6 support for app mesh ([#20766](https://github.com/aws/aws-cdk/issues/20766)) ([b1e6d62](https://github.com/aws/aws-cdk/commit/b1e6d62ed6b6ede0362d0a68d804660e84efe5cb)), closes [#20737](https://github.com/aws/aws-cdk/issues/20737)
