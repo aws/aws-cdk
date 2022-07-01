@@ -273,7 +273,7 @@
                             "typeName": "Query",
                             "dataSourceName": "testDataSource",
                             "kind": "UNIT",
-                            "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": \"false\", \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+                            "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": false, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
                             "responseMappingTemplate": "$util.toJson($ctx.result)"
                           }
                         },
@@ -308,7 +308,7 @@
                             "typeName": "Query",
                             "dataSourceName": "testDataSource",
                             "kind": "UNIT",
-                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": \"false\"}",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
                             "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                           }
                         },

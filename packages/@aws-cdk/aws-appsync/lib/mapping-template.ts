@@ -37,7 +37,7 @@ export abstract class MappingTemplate {
    * Mapping template to scan a DynamoDB table to fetch all entries
    */
   public static dynamoDbScanTable(consistentRead: boolean = false): MappingTemplate {
-    return this.fromString(`{"version" : "2017-02-28", "operation" : "Scan", "consistentRead": "${consistentRead}"}`);
+    return this.fromString(`{"version" : "2017-02-28", "operation" : "Scan", "consistentRead": ${consistentRead}}`);
   }
 
   /**
@@ -46,7 +46,7 @@ export abstract class MappingTemplate {
    * @param cond the key condition for the query
    */
   public static dynamoDbQuery(cond: KeyCondition, indexName?: string, consistentRead: boolean = false): MappingTemplate {
-    return this.fromString(`{"version" : "2017-02-28", "operation" : "Query",  "consistentRead": "${consistentRead}", ${indexName ? `"index" : "${indexName}", ` : ''}${cond.renderTemplate()}}`);
+    return this.fromString(`{"version" : "2017-02-28", "operation" : "Query",  "consistentRead": ${consistentRead}, ${indexName ? `"index" : "${indexName}", ` : ''}${cond.renderTemplate()}}`);
   }
 
   /**
@@ -56,7 +56,7 @@ export abstract class MappingTemplate {
    * @param idArg the name of the Query argument
    */
   public static dynamoDbGetItem(keyName: string, idArg: string, consistentRead: boolean = false): MappingTemplate {
-    return this.fromString(`{"version": "2017-02-28", "operation": "GetItem", "consistentRead": "${consistentRead}", "key": {"${keyName}": $util.dynamodb.toDynamoDBJson($ctx.args.${idArg})}}`);
+    return this.fromString(`{"version": "2017-02-28", "operation": "GetItem", "consistentRead": ${consistentRead}, "key": {"${keyName}": $util.dynamodb.toDynamoDBJson($ctx.args.${idArg})}}`);
   }
 
   /**

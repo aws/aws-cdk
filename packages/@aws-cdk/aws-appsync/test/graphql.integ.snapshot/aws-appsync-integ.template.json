@@ -214,7 +214,7 @@
     "TypeName": "Query",
     "DataSourceName": "Customer",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": \"false\"}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -235,7 +235,7 @@
     "TypeName": "Query",
     "DataSourceName": "Customer",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": \"false\", \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+    "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": false, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result)"
    },
    "DependsOn": [
@@ -256,7 +256,7 @@
     "TypeName": "Query",
     "DataSourceName": "Customer",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": \"false\"}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -277,7 +277,7 @@
     "TypeName": "Query",
     "DataSourceName": "Customer",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": \"false\", \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+    "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": false, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result)"
    },
    "DependsOn": [
@@ -298,7 +298,7 @@
     "TypeName": "Query",
     "DataSourceName": "Customer",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": \"true\"}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": true}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -319,7 +319,7 @@
     "TypeName": "Query",
     "DataSourceName": "Customer",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": \"true\", \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+    "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": true, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result)"
    },
    "DependsOn": [
@@ -523,7 +523,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"query\" : {\n              \"expression\" : \"#customer = :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer = :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -544,7 +544,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -565,7 +565,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"query\" : {\n              \"expression\" : \"#customer < :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer < :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -586,7 +586,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order < :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order < :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -607,7 +607,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"query\" : {\n              \"expression\" : \"#customer <= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer <= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -628,7 +628,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order <= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order <= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -649,7 +649,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"query\" : {\n              \"expression\" : \"#customer > :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer > :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -670,7 +670,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order > :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order > :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -691,7 +691,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"query\" : {\n              \"expression\" : \"#customer >= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer >= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -712,7 +712,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order >= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order >= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -733,7 +733,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"query\" : {\n              \"expression\" : \"#customer = :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer = :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -754,7 +754,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -775,7 +775,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"query\" : {\n              \"expression\" : \"#customer < :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer < :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -796,7 +796,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order < :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order < :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -817,7 +817,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"query\" : {\n              \"expression\" : \"#customer <= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer <= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -838,7 +838,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order <= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order <= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -859,7 +859,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"query\" : {\n              \"expression\" : \"#customer > :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer > :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -880,7 +880,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order > :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order > :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -901,7 +901,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"query\" : {\n              \"expression\" : \"#customer >= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer >= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -922,7 +922,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order >= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order >= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -943,7 +943,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"true\", \"query\" : {\n              \"expression\" : \"#customer = :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer = :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -964,7 +964,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"true\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -985,7 +985,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"true\", \"query\" : {\n              \"expression\" : \"#customer < :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer < :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -1006,7 +1006,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"true\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order < :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order < :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -1027,7 +1027,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"true\", \"query\" : {\n              \"expression\" : \"#customer <= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer <= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -1048,7 +1048,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"true\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order <= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order <= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -1069,7 +1069,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"true\", \"query\" : {\n              \"expression\" : \"#customer > :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer > :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -1090,7 +1090,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"true\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order > :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order > :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -1111,7 +1111,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"true\", \"query\" : {\n              \"expression\" : \"#customer >= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer >= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -1132,7 +1132,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"true\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order >= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order >= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -1153,7 +1153,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"query\" : {\n              \"expression\" : \"#customer = :customer AND begins_with(#order, :order)\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\", \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer), \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer = :customer AND begins_with(#order, :order)\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\", \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer), \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -1174,7 +1174,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"query\" : {\n              \"expression\" : \"#customer = :customer AND #order BETWEEN :order1 AND :order2\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\", \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer), \":order1\" : $util.dynamodb.toDynamoDBJson($ctx.args.order1), \":order2\" : $util.dynamodb.toDynamoDBJson($ctx.args.order2)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer = :customer AND #order BETWEEN :order1 AND :order2\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\", \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer), \":order1\" : $util.dynamodb.toDynamoDBJson($ctx.args.order1), \":order2\" : $util.dynamodb.toDynamoDBJson($ctx.args.order2)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -1195,7 +1195,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"query\" : {\n              \"expression\" : \"#order = :order AND begins_with(#customer, :customer)\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\", \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order), \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#order = :order AND begins_with(#customer, :customer)\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\", \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order), \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -1216,7 +1216,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": \"false\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order AND #customer BETWEEN :customer1 AND :customer2\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\", \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order), \":customer1\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer1), \":customer2\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer2)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order AND #customer BETWEEN :customer1 AND :customer2\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\", \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order), \":customer1\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer1), \":customer2\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer2)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -1337,7 +1337,7 @@
     "TypeName": "Query",
     "DataSourceName": "Payment",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": \"false\", \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+    "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": false, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result)"
    },
    "DependsOn": [
@@ -1358,7 +1358,7 @@
     "TypeName": "Query",
     "DataSourceName": "Payment",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": \"true\", \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+    "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": true, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result)"
    },
    "DependsOn": [

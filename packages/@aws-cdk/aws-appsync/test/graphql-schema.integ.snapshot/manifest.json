@@ -68,15 +68,6 @@
             "type": "aws:cdk:logicalId",
             "data": "table8235A42E"
           }
-        ],
-        "codefirstapiQuerygetPlanetsConsistentResolver536F2BBE": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "codefirstapiQuerygetPlanetsConsistentResolver536F2BBE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "code-first-schema"
