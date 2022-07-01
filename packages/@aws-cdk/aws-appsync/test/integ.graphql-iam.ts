@@ -69,14 +69,14 @@ const testDS = api.addDynamoDbDataSource('ds', testTable, { name: 'testDataSourc
 testDS.createResolver({
   typeName: 'Query',
   fieldName: 'getTest',
-  requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id', true),
+  requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id'),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 
 testDS.createResolver({
   typeName: 'Query',
   fieldName: 'getTests',
-  requestMappingTemplate: MappingTemplate.dynamoDbScanTable(true),
+  requestMappingTemplate: MappingTemplate.dynamoDbScanTable(),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
 

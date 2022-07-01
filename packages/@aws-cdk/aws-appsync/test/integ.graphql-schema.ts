@@ -67,7 +67,7 @@ const species = api.addType(new appsync.ObjectType('Species', {
 api.addQuery('getPlanets', new appsync.ResolvableField({
   returnType: planet.attribute({ isList: true }),
   dataSource: tableDS,
-  requestMappingTemplate: appsync.MappingTemplate.dynamoDbScanTable(true),
+  requestMappingTemplate: appsync.MappingTemplate.dynamoDbScanTable(),
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultList(),
 }));
 

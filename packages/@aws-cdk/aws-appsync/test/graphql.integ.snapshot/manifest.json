@@ -81,6 +81,30 @@
             "data": "ApicustomerDsQuerygetCustomerResolver3649A130"
           }
         ],
+        "/aws-appsync-integ/Api/customerDs/QuerygetCustomersNotConsistentResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApicustomerDsQuerygetCustomersNotConsistentResolver66499326"
+          }
+        ],
+        "/aws-appsync-integ/Api/customerDs/QuerygetCustomerNotConsistentResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApicustomerDsQuerygetCustomerNotConsistentResolverE173BDA3"
+          }
+        ],
+        "/aws-appsync-integ/Api/customerDs/QuerygetCustomersConsistentResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApicustomerDsQuerygetCustomersConsistentResolver302CA74B"
+          }
+        ],
+        "/aws-appsync-integ/Api/customerDs/QuerygetCustomerConsistentResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApicustomerDsQuerygetCustomerConsistentResolver0A30CD6C"
+          }
+        ],
         "/aws-appsync-integ/Api/customerDs/MutationaddCustomerResolver/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -183,6 +207,126 @@
             "data": "ApiorderDsQuerygetOrderCustomersGeResolver0B78B0B4"
           }
         ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersNotConsistentEqResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetCustomerOrdersNotConsistentEqResolver242A8314"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersNotConsistentEqResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetOrderCustomersNotConsistentEqResolver53CBADD9"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersNotConsistentLtResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetCustomerOrdersNotConsistentLtResolver5259538F"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersNotConsistentLtResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetOrderCustomersNotConsistentLtResolver322C467A"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersNotConsistentLeResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetCustomerOrdersNotConsistentLeResolver2DB38FDE"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersNotConsistentLeResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetOrderCustomersNotConsistentLeResolver8A28C79C"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersNotConsistentGtResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetCustomerOrdersNotConsistentGtResolverD7C416AD"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersNotConsistentGtResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetOrderCustomersNotConsistentGtResolver91BD36C9"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersNotConsistentGeResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetCustomerOrdersNotConsistentGeResolver0E9FE662"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersNotConsistentGeResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetOrderCustomersNotConsistentGeResolver555023D7"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersConsistentEqResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetCustomerOrdersConsistentEqResolver0A400223"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersConsistentEqResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetOrderCustomersConsistentEqResolverF54BDAB4"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersConsistentLtResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetCustomerOrdersConsistentLtResolver73E118EE"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersConsistentLtResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetOrderCustomersConsistentLtResolver8B18EA77"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersConsistentLeResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetCustomerOrdersConsistentLeResolverEA8D11EE"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersConsistentLeResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetOrderCustomersConsistentLeResolverB027B939"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersConsistentGtResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetCustomerOrdersConsistentGtResolverD927E07A"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersConsistentGtResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetOrderCustomersConsistentGtResolver58B23E21"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersConsistentGeResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetCustomerOrdersConsistentGeResolverB8F83696"
+          }
+        ],
+        "/aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersConsistentGeResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiorderDsQuerygetOrderCustomersConsistentGeResolver674A5CD5"
+          }
+        ],
         "/aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersFilterResolver/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -229,6 +373,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ApipaymentDsQuerygetPaymentResolverD172BFC9"
+          }
+        ],
+        "/aws-appsync-integ/Api/paymentDs/QuerygetPaymentConsistentResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApipaymentDsQuerygetPaymentConsistentResolver05C2ACB8"
           }
         ],
         "/aws-appsync-integ/Api/paymentDs/MutationsavePaymentResolver/Resource": [
