@@ -109,12 +109,16 @@ const domain = opensearch.Domain.fromDomainEndpoint(this, 'ImportedDomain', doma
 
 ### Using the output of another CloudFormation stack
 
-To import an existing domain with help of an exported value from another CloudFormation stack, use the `Domain.fromDomainAttributes` factory method. This will accept tokens.
+To import an existing domain with the help of an exported value from another CloudFormation stack,
+use the `Domain.fromDomainAttributes` factory method. This will accept tokens.
 
 ```ts
-const domainArn = Fn.importValue(`another-cf-stack-export-domain-arn`)
-const domainEndpoint = Fn.importValue(`another-cf-stack-export-domain-endpoint`)
-const domain = Domain.fromDomainAttributes(this, 'ImportedDomain', { domainArn, domainEndpoint})
+const domainArn = Fn.importValue(`another-cf-stack-export-domain-arn`);
+const domainEndpoint = Fn.importValue(`another-cf-stack-export-domain-endpoint`);
+const domain = Domain.fromDomainAttributes(this, 'ImportedDomain', {
+  domainArn,
+  domainEndpoint,
+});
 ```
 
 ## Permissions
