@@ -456,7 +456,7 @@ A prop should be *required* only if there is no possible sensible default value
 that can be provided *or calculated*.
 
 Sensible defaults have a tremendous impact on the developer experience. They
-offer a quick way to get started with minimal cognitive, but do not limit users
+offer a quick way to get started with minimal cognitive load, but do not limit users
 from harnessing the full power of the resource, and customizing its behavior.
 
 > A good way to determine what's the right sensible default is to refer to the
