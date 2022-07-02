@@ -126,8 +126,8 @@ The AWS Construct Library, which is shipped as part of the AWS CDK constructs
 representing AWS resources.
 
 The AWS Construct Library has multiple layers of constructs, beginning
-with low-level constructs, which we call _CFN Resources_ (or L1, short for
-"level 1") or CFN Resources (short for CloudFormation). These constructs
+with low-level constructs, which we call _CFN Resources_ (short for
+CloudFormation resources), or L1 (short for "level 1"). These constructs
 directly represent all resources available in AWS CloudFormation. CFN Resources
 are periodically generated from the AWS CloudFormation Resource
 Specification. They are named **Cfn**_Xyz_, where _Xyz_ is name of the
