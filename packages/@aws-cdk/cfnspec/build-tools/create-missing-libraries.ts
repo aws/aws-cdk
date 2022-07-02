@@ -99,7 +99,7 @@ async function main() {
             packageId: module.dotnetPackage,
             signAssembly: true,
             assemblyOriginatorKeyFile: '../../key.snk',
-            iconUrl: 'https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png',
+            iconUrl: 'https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png',
           },
           java: {
             package: `${module.javaGroupId}.${module.javaPackage}`,
@@ -183,7 +183,7 @@ async function main() {
         '@aws-cdk/core': version,
       },
       engines: {
-        node: '>= 10.13.0 <13 || >=13.7.0',
+        node: '>= 14.15.0',
       },
       stability: 'experimental',
       maturity: 'cfn-only',

@@ -1,7 +1,7 @@
 {
   "version": "v1.0.0",
   "testCases": {
-    "test1": {
+    "xxxxx.test-with-snapshot-assets": {
       "stacks": ["test-stack"],
       "stackUpdateWorkflow": false,
       "diffAssets": true,

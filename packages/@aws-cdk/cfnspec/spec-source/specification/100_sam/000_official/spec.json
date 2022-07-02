@@ -60,6 +60,12 @@
         "AWS::Serverless::Api.Auth": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api-auth-object",
             "Properties": {
+                "AddDefaultAuthorizerToCorsPreflight": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api-auth-object",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
                 "Authorizers": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api-auth-object",
                     "PrimitiveType": "Json",
@@ -139,6 +145,60 @@
                 }
             }
         },
+        "AWS::Serverless::Api.DomainConfiguration": {
+            "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-domainconfiguration.html",
+            "Properties": {
+                "BasePath": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-domainconfiguration.html#sam-api-domainconfiguration-basepath",
+                    "PrimitiveItemType": "String",
+                    "Required": false,
+                    "Type": "List",
+                    "UpdateType": "Immutable"
+                },
+                "CertificateArn": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-domainconfiguration.html#sam-api-domainconfiguration-certificatearn",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "DomainName": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-domainconfiguration.html#sam-api-domainconfiguration-domainname",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "EndpointConfiguration": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-domainconfiguration.html#sam-api-domainconfiguration-endpointconfiguration",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "MutualTlsAuthentication": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-domainconfiguration.html#sam-api-domainconfiguration-mutualtlsauthentication",
+                    "Required": false,
+                    "Type": "MutualTlsAuthentication",
+                    "UpdateType": "Immutable"
+                },
+                "OwnershipVerificationCertificateArn": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-domainconfiguration.html#sam-api-domainconfiguration-ownershipverificationcertificatearn",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Route53": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-domainconfiguration.html#sam-api-domainconfiguration-route53",
+                    "Required": false,
+                    "Type": "Route53Configuration",
+                    "UpdateType": "Immutable"
+                },
+                "SecurityPolicy": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-domainconfiguration.html#sam-api-domainconfiguration-securitypolicy",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Api.EndpointConfiguration": {
             "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-endpointconfiguration.html",
             "Properties": {
@@ -153,6 +213,58 @@
                     "PrimitiveItemType": "String",
                     "Required": false,
                     "Type": "List",
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Api.MutualTlsAuthentication": {
+            "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-domainname-mutualtlsauthentication.html",
+            "Properties": {
+                "TruststoreUri": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-domainname-mutualtlsauthentication.html#cfn-apigateway-domainname-mutualtlsauthentication-truststoreuri",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "TruststoreVersion": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-domainname-mutualtlsauthentication.html#cfn-apigateway-domainname-mutualtlsauthentication-truststoreversion",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Api.Route53Configuration": {
+            "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-route53configuration.html",
+            "Properties": {
+                "DistributedDomainName": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-route53configuration.html#sam-api-route53configuration-distributiondomainname",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "EvaluateTargetHealth": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-route53configuration.html#sam-api-route53configuration-evaluatetargethealth",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "HostedZoneId": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-route53configuration.html#sam-api-route53configuration-hostedzoneid",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "HostedZoneName": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-route53configuration.html#sam-api-route53configuration-hostedzonename",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "IpV6": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-route53configuration.html#sam-api-route53configuration-ipv6",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
                     "UpdateType": "Immutable"
                 }
             }
@@ -228,6 +340,25 @@
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api",
                     "PrimitiveType": "String",
                     "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "RequestModel": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api",
+                    "Required": false,
+                    "Type": "RequestModel",
+                    "UpdateType": "Immutable"
+                },
+                "RequestParameters": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api",
+                    "InclusiveItemPattern": true,
+                    "InclusiveItemTypes": [
+                        "RequestParameter"
+                    ],
+                    "InclusivePrimitiveItemTypes": [
+                        "String"
+                    ],
+                    "Required": false,
+                    "Type": "List",
                     "UpdateType": "Immutable"
                 },
                 "RestApiId": {
@@ -718,7 +849,14 @@
             "Properties": {
                 "Statement": {
                     "Documentation": "http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html",
-                    "PrimitiveType": "Json",
+                    "ItemType": "Json",
+                    "Required": true,
+                    "Type": "List",
+                    "UpdateType": "Immutable"
+                },
+                "Version": {
+                    "Documentation": "http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html",
+                    "PrimitiveType": "String",
                     "Required": true,
                     "UpdateType": "Immutable"
                 }
@@ -828,6 +966,17 @@
                 }
             }
         },
+        "AWS::Serverless::Function.ParameterNameSAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "ParameterName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Function.ProvisionedConcurrencyConfig": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#provisioned-concurrency-config-object",
             "Properties": {
@@ -846,6 +995,52 @@
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
                     "PrimitiveType": "String",
                     "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.RequestModel": {
+            "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-requestmodel.html",
+            "Properties": {
+                "Model": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-requestmodel.html#sam-function-requestmodel-model",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "Required": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-requestmodel.html#sam-function-requestmodel-required",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "ValidateBody": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-requestmodel.html#sam-function-requestmodel-validatebody",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "ValidateParameters": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-requestmodel.html#sam-function-requestmodel-validateparameters",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.RequestParameter": {
+            "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-requestparameter.html",
+            "Properties": {
+                "Caching": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-requestparameter.html#sam-function-requestparameter-caching",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Required": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-requestparameter.html#sam-function-requestparameter-required",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
                     "UpdateType": "Immutable"
                 }
             }
@@ -948,6 +1143,11 @@
                     "Type": "EmptySAMPT",
                     "UpdateType": "Immutable"
                 },
+                "AWSSecretsManagerGetSecretValuePolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "SecretArnSAMPT",
+                    "UpdateType": "Immutable"
+                },
                 "CloudFormationDescribeStacksPolicy": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
                     "Type": "EmptySAMPT",
@@ -971,6 +1171,11 @@
                 "DynamoDBStreamReadPolicy": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
                     "Type": "TableStreamSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "DynamoDBWritePolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "TableSAMPT",
                     "UpdateType": "Immutable"
                 },
                 "EC2DescribePolicy": {
@@ -1043,6 +1248,11 @@
                     "Type": "BucketSAMPT",
                     "UpdateType": "Immutable"
                 },
+                "S3WritePolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "BucketSAMPT",
+                    "UpdateType": "Immutable"
+                },
                 "SESBulkTemplatedCrudPolicy": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
                     "Type": "IdentitySAMPT",
@@ -1081,6 +1291,11 @@
                 "SQSSendMessagePolicy": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
                     "Type": "QueueSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "SSMParameterReadPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "ParameterNameSAMPT",
                     "UpdateType": "Immutable"
                 },
                 "StepFunctionsExecutionPolicy": {
@@ -1140,6 +1355,17 @@
                 },
                 "Schedule": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.SecretArnSAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "SecretArn": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
                     "PrimitiveType": "String",
                     "Required": true,
                     "UpdateType": "Immutable"
@@ -1657,7 +1883,14 @@
             "Properties": {
                 "Statement": {
                     "Documentation": "http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html",
-                    "PrimitiveType": "Json",
+                    "ItemType": "Json",
+                    "Required": true,
+                    "Type": "List",
+                    "UpdateType": "Immutable"
+                },
+                "Version": {
+                    "Documentation": "http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html",
+                    "PrimitiveType": "String",
                     "Required": true,
                     "UpdateType": "Immutable"
                 }
@@ -1851,6 +2084,12 @@
                     "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-api.html#sam-api-description",
                     "PrimitiveType": "String",
                     "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Domain": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-api.html#sam-api-domain",
+                    "Required": false,
+                    "Type": "DomainConfiguration",
                     "UpdateType": "Immutable"
                 },
                 "EndpointConfiguration": {
@@ -2121,11 +2360,11 @@
                 },
                 "Policies": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
-                    "ItemTypes": [
+                    "InclusiveItemTypes": [
                         "IAMPolicyDocument",
                         "SAMPolicyTemplate"
                     ],
-                    "PrimitiveItemTypes": [
+                    "InclusivePrimitiveItemTypes": [
                         "String"
                     ],
                     "PrimitiveTypes": [
@@ -2432,11 +2671,11 @@
                 },
                 "Policies": {
                     "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html",
-                    "ItemTypes": [
+                    "InclusiveItemTypes": [
                         "IAMPolicyDocument",
                         "SAMPolicyTemplate"
                     ],
-                    "PrimitiveItemTypes": [
+                    "InclusivePrimitiveItemTypes": [
                         "String"
                     ],
                     "PrimitiveTypes": [

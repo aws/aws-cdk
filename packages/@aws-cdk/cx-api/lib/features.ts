@@ -174,6 +174,18 @@ export const EFS_DEFAULT_ENCRYPTION_AT_REST = '@aws-cdk/aws-efs:defaultEncryptio
 export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVersionProps';
 
 /**
+ * Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the
+ * `fn.currentVersion`.
+ *
+ * This flag correct incorporates Lambda Layer properties into the Lambda Function Version.
+ *
+ * See 'currentVersion' section in the aws-lambda module's README for more details.
+ *
+ * [PERMANENT]
+ */
+export const LAMBDA_RECOGNIZE_LAYER_VERSION = '@aws-cdk/aws-lambda:recognizeLayerVersion';
+
+/**
  * Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default.
  *
  * The security policy can also be configured explicitly using the `minimumProtocolVersion` property.
@@ -234,6 +246,26 @@ export const EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME = '@aws-cdk/aws-ec2:uniqueIm
 export const IAM_MINIMIZE_POLICIES = '@aws-cdk/aws-iam:minimizePolicies';
 
 /**
+ * Makes sure we do not allow snapshot removal policy on resources that do not support it.
+ * If supplied on an unsupported resource, CloudFormation ignores the policy altogether.
+ * This flag will reduce confusion and unexpected loss of data when erroneously supplying
+ * the snapshot removal policy.
+ *
+ * [PERMANENT]
+ */
+export const VALIDATE_SNAPSHOT_REMOVAL_POLICY = '@aws-cdk/core:validateSnapshotRemovalPolicy';
+
+/**
+ * Enable this feature flag to have CodePipeline generate a unique cross account key alias name using the stack name.
+ *
+ * Previously, when creating multiple pipelines with similar naming conventions and when crossAccountKeys is true,
+ * the KMS key alias name created for these pipelines may be the same due to how the uniqueId is generated.
+ *
+ * This new implementation creates a stack safe resource name for the alias using the stack name instead of the stack ID.
+ */
+export const CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME = '@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName';
+
+/**
  * Flag values that should apply for new projects
  *
  * Add a flag in here (typically with the value `true`), to enable
@@ -255,11 +287,14 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [RDS_LOWERCASE_DB_IDENTIFIER]: true,
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
   [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
+  [LAMBDA_RECOGNIZE_LAYER_VERSION]: true,
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
   [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: true,
   [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: true,
   [CHECK_SECRET_USAGE]: true,
   [IAM_MINIMIZE_POLICIES]: true,
+  [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true,
+  [CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME]: true,
 };
 
 /**
@@ -274,6 +309,14 @@ export const NEW_PROJECT_DEFAULT_CONTEXT: { [key: string]: any} = {
  * and block usages of old feature flags in the new major version of CDK.
  */
 export const FUTURE_FLAGS_EXPIRED: string[] = [
+  DOCKER_IGNORE_SUPPORT,
+  ECS_REMOVE_DEFAULT_DESIRED_COUNT,
+  EFS_DEFAULT_ENCRYPTION_AT_REST,
+  ENABLE_DIFF_NO_FAIL_CONTEXT,
+  ENABLE_STACK_NAME_DUPLICATES_CONTEXT,
+  KMS_DEFAULT_KEY_POLICIES,
+  S3_GRANT_WRITE_WITHOUT_ACL,
+  SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME,
 ];
 
 /**
@@ -286,6 +329,24 @@ export const FUTURE_FLAGS_EXPIRED: string[] = [
  * major version!
  */
 const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
+  [APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID]: true,
+  [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: true,
+  [ENABLE_DIFF_NO_FAIL_CONTEXT]: true,
+  [STACK_RELATIVE_EXPORTS_CONTEXT]: true,
+  [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: true,
+  [DOCKER_IGNORE_SUPPORT]: true,
+  [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: true,
+  [KMS_DEFAULT_KEY_POLICIES]: true,
+  [S3_GRANT_WRITE_WITHOUT_ACL]: true,
+  [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: true,
+  [RDS_LOWERCASE_DB_IDENTIFIER]: true,
+  [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
+  [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
+  [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
+  // Every feature flag below this should have its default behavior set to "not
+  // activated", as it was introduced AFTER v2 was released.
+  [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: false,
+  [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean {

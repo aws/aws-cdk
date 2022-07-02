@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-rds/test/integ.cluster-s3.mysql-8": {
+      "stacks": [
+        "aws-cdk-rds-s3-mysql-8-integ"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

@@ -2,6 +2,7 @@
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
 import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
 
@@ -655,7 +656,7 @@ describe('rule', () => {
 
       const targetAccount = '234567890123';
       const targetStack = new cdk.Stack(app, 'TargetStack', { env: { account: targetAccount } });
-      const resource = new cdk.Construct(targetStack, 'Resource');
+      const resource = new Construct(targetStack, 'Resource');
 
       expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
@@ -670,7 +671,7 @@ describe('rule', () => {
       const rule = new Rule(sourceStack, 'Rule');
 
       const targetStack = new cdk.Stack(app, 'TargetStack');
-      const resource = new cdk.Construct(targetStack, 'Resource');
+      const resource = new Construct(targetStack, 'Resource');
 
       expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
@@ -686,7 +687,7 @@ describe('rule', () => {
 
       const targetAccount = '234567890123';
       const targetStack = new cdk.Stack(app, 'TargetStack', { env: { account: targetAccount } });
-      const resource = new cdk.Construct(targetStack, 'Resource');
+      const resource = new Construct(targetStack, 'Resource');
 
       expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
@@ -708,7 +709,7 @@ describe('rule', () => {
       const targetAccount = '234567890123';
       const targetRegion = sourceRegion;
       const targetStack = new cdk.Stack(app, 'TargetStack', { env: { account: targetAccount, region: targetRegion } });
-      const resource = new cdk.Construct(targetStack, 'Resource');
+      const resource = new Construct(targetStack, 'Resource');
 
       rule.addTarget(new SomeTarget('T', resource));
 
@@ -759,7 +760,7 @@ describe('rule', () => {
       const targetAccount = '234567890123';
       const targetRegion = 'us-east-1';
       const targetStack = new cdk.Stack(app, 'TargetStack', { env: { account: targetAccount, region: targetRegion } });
-      const resource = new cdk.Construct(targetStack, 'Resource');
+      const resource = new Construct(targetStack, 'Resource');
 
       rule.addTarget(new SomeTarget('T', resource));
 
@@ -810,7 +811,7 @@ describe('rule', () => {
       const targetAccount = '234567890123';
       const targetRegion = 'us-east-1';
       const targetStack = new cdk.Stack(app, 'TargetStack', { env: { account: targetAccount, region: targetRegion } });
-      const resource = new cdk.Construct(targetStack, 'Resource');
+      const resource = new Construct(targetStack, 'Resource');
 
       rule.addTarget(new SomeTarget('T', resource));
       // same target should be skipped
@@ -884,7 +885,7 @@ describe('rule', () => {
       const targetApp = new cdk.App();
       const targetAccount = '234567890123';
       const targetStack = new cdk.Stack(targetApp, 'TargetStack', { env: { account: targetAccount, region: 'us-west-2' } });
-      const resource = new cdk.Construct(targetStack, 'Resource');
+      const resource = new Construct(targetStack, 'Resource');
 
       expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
@@ -915,8 +916,8 @@ describe('rule', () => {
           region: 'us-west-2',
         },
       });
-      const resource1 = new cdk.Construct(targetStack, 'Resource1');
-      const resource2 = new cdk.Construct(targetStack, 'Resource2');
+      const resource1 = new Construct(targetStack, 'Resource1');
+      const resource2 = new Construct(targetStack, 'Resource2');
 
       rule.addTarget(new SomeTarget('T1', resource1));
       rule.addTarget(new SomeTarget('T2', resource2));
@@ -1001,7 +1002,7 @@ describe('rule', () => {
           region: 'us-west-2',
         },
       });
-      const resource = new cdk.Construct(targetStack, 'Resource1');
+      const resource = new Construct(targetStack, 'Resource1');
 
       rule.addTarget(new SomeTarget('T', resource));
 
@@ -1029,7 +1030,7 @@ describe('rule', () => {
 
 class SomeTarget implements IRuleTarget {
   // eslint-disable-next-line @aws-cdk/no-core-construct
-  public constructor(private readonly id?: string, private readonly resource?: cdk.IConstruct) {
+  public constructor(private readonly id?: string, private readonly resource?: IConstruct) {
   }
 
   public bind(): RuleTargetConfig {

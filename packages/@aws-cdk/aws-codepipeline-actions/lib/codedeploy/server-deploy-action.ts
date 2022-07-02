@@ -1,13 +1,9 @@
 import * as codedeploy from '@aws-cdk/aws-codedeploy';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
-
+import { Construct } from 'constructs';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Construction properties of the {@link CodeDeployServerDeployAction CodeDeploy server deploy CodePipeline Action}.
