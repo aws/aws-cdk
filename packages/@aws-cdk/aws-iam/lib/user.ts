@@ -31,6 +31,11 @@ export interface IUser extends IIdentity {
    * Adds this user to a group.
    */
   addToGroup(group: IGroup): void;
+
+  /**
+   * Adds the statement to the policy of this user.
+   */
+  addToPolicy(statement: PolicyStatement): boolean;
 }
 
 /**
