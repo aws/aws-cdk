@@ -111,7 +111,7 @@ async function main() {
           python: {
             classifiers: [
               'Framework :: AWS CDK',
-              'Framework :: AWS CDK :: 1',
+              'Framework :: AWS CDK :: 2',
             ],
             distName: module.pythonDistName,
             module: module.pythonModuleName,
@@ -178,9 +178,11 @@ async function main() {
       },
       dependencies: {
         '@aws-cdk/core': version,
+        'constructs': '^3.3.69',
       },
       peerDependencies: {
         '@aws-cdk/core': version,
+        'constructs': '^3.3.69',
       },
       engines: {
         node: '>= 14.15.0',
