@@ -5,13 +5,13 @@ autoscaling = boto3.client('autoscaling')
 
 
 def lambda_handler(event, context):
-  print(json.dumps(event))
+  print(json.dumps(dict(event, ResponseURL='...')))
   cluster = os.environ['CLUSTER']
   snsTopicArn = event['Records'][0]['Sns']['TopicArn']
   lifecycle_event = json.loads(event['Records'][0]['Sns']['Message'])
   instance_id = lifecycle_event.get('EC2InstanceId')
   if not instance_id:
-    print('Got event without EC2InstanceId: %s', json.dumps(event))
+    print('Got event without EC2InstanceId: %s', json.dumps(dict(event, ResponseURL='...')))
     return
 
   instance_arn = container_instance_arn(cluster, instance_id)
@@ -21,7 +21,7 @@ def lambda_handler(event, context):
     return
 
   task_arns = container_instance_task_arns(cluster, instance_arn)
-  
+
   if task_arns:
     print('Instance ARN %s has task ARNs %s' % (instance_arn, ', '.join(task_arns)))
 
@@ -70,11 +70,11 @@ def has_tasks(cluster, instance_arn, task_arns):
     if tasks:
       # Consider any non-stopped tasks as running
       task_count = sum(task['lastStatus'] != 'STOPPED' for task in tasks) + instance['pendingTasksCount']
-  
+
   if not task_count:
     # Fallback to instance task counts if detailed task information is unavailable
     task_count = instance['runningTasksCount'] + instance['pendingTasksCount']
-    
+
   print('Instance %s has %s tasks' % (instance_arn, task_count))
 
   return task_count > 0
