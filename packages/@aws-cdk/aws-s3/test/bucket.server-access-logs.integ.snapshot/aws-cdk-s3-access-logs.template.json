@@ -2,15 +2,6 @@
  "Resources": {
   "MyAccessLogsBucketF7FE6635": {
    "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "OwnershipControls": {
-     "Rules": [
-      {
-       "ObjectOwnership": "BucketOwnerEnforced"
-      }
-     ]
-    }
-   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -53,7 +44,7 @@
             "Arn"
            ]
           },
-          "/example"
+          "/example*"
          ]
         ]
        }

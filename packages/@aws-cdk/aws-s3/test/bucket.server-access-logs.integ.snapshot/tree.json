@@ -25,15 +25,7 @@
                 "path": "aws-cdk-s3-access-logs/MyAccessLogsBucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
-                  "aws:cdk:cloudformation:props": {
-                    "ownershipControls": {
-                      "rules": [
-                        {
-                          "objectOwnership": "BucketOwnerEnforced"
-                        }
-                      ]
-                    }
-                  }
+                  "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-s3.CfnBucket",
@@ -86,7 +78,7 @@
                                         "Arn"
                                       ]
                                     },
-                                    "/example"
+                                    "/example*"
                                   ]
                                 ]
                               }

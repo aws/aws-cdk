@@ -2079,7 +2079,7 @@ export class Bucket extends BucketBase {
    * https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
    */
   private allowLogDelivery(sourceBucket: IBucket, accountId: string, logFilePrefix?: string) {
-    const prefix = logFilePrefix ?? '*';
+    const prefix = logFilePrefix ?? '';
 
     this.addToResourcePolicy(new PolicyStatement({
       principals: [new ServicePrincipal('logging.s3.amazonaws.com')],
@@ -2092,10 +2092,8 @@ export class Bucket extends BucketBase {
           'aws:SourceAccount': accountId,
         },
       },
-      resources: [`${this.bucketArn}/${prefix}`],
+      resources: [`${this.bucketArn}/${prefix}*`],
     }));
-
-    this.objectOwnership = ObjectOwnership.BUCKET_OWNER_ENFORCED;
   }
 
   private parseInventoryConfiguration(): CfnBucket.InventoryConfigurationProperty[] | undefined {
