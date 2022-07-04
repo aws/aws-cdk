@@ -309,23 +309,31 @@ export class CdkToolkit {
         .filter((id) => !id.endsWith('.assets'))
         .every((id) => !stacksAwaitingDeploy[id]);
 
+    const stackDeployPromises: Promise<void>[] = [];
+
     const enqueueStackDeploys = async () => {
-      await Promise.all(stacks.map(async (stack) => {
+      stacks.forEach(async (stack) => {
         if (isStackUnblocked(stack)) {
           // Find current index due to stacks list changing within loop
           const index = stacks.indexOf(stack);
           stacks.splice(index, 1);
 
-          return queue.add(async () => {
+          stackDeployPromises.push(queue.add(async () => {
             await deployStack(stack);
             await enqueueStackDeploys();
-          });
+          }));
         }
-      }));
+      });
     };
 
-    await enqueueStackDeploys();
-    await queue.onIdle();
+    try {
+      await enqueueStackDeploys();
+      await Promise.all(stackDeployPromises);
+      await queue.onIdle();
+    } catch (e) {
+      error('\n ❌ Deployment failed: %s', e);
+      throw e;
+    }
   }
 
   public async watch(options: WatchOptions) {
