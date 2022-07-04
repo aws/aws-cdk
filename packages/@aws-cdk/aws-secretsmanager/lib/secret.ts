@@ -926,17 +926,6 @@ function parseSecretNameForOwnedSecret(construct: Construct, secretArn: string, 
 function arnIsComplete(secretArn: string): boolean {
   return Token.isUnresolved(secretArn) || /-[a-z0-9]{6}$/i.test(secretArn);
 }
-<<<<<<< HEAD
-=======
-
-/**
- * Mark all instances of 'Secret'.
- */
-Object.defineProperty(Secret.prototype, SECRET_SYMBOL, {
-  value: true,
-  enumerable: false,
-  writable: false,
-});
 
 function attachmentTargetTypeToString(x: AttachmentTargetType): string {
   switch (x) {
@@ -956,4 +945,3 @@ function attachmentTargetTypeToString(x: AttachmentTargetType): string {
       return 'AWS::DocDB::DBCluster';
   }
 }
->>>>>>> 7f4f150b97 (refactor: remove more duplicate enum values (#20982))
