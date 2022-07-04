@@ -329,8 +329,8 @@ $ yarn watch & # runs in the background
   [conventionalcommits](https://www.conventionalcommits.org).
   * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
     `chore(module): title`.
-    * `feat`: indicates a feature added (requires tests and README updates)
-    * `fix`: indicates a bug fixes (requires tests)
+    * `feat`: indicates a feature added (requires tests and README updates in principle, but can be suppressed)
+    * `fix`: indicates a bug fixes (requires tests in principle, but can be suppressed)
     * `docs`: indicates updated documentation (docstrings or Markdown files)
     * `refactor`: indicates a feature-preserving refactoring
     * `chore`: something without directly visible user benefit (does not end up in the CHANGELOG). Typically used for build scripts, config, or changes so minor they don't warrant showing up the CHANGELOG.
