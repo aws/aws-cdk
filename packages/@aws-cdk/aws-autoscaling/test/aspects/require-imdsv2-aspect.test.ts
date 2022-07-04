@@ -26,7 +26,9 @@ describe('AutoScalingGroupRequireImdsv2Aspect', () => {
       machineImage: ec2.MachineImage.latestAmazonLinux(),
     });
     const launchConfig = asg.node.tryFindChild('LaunchConfig') as CfnLaunchConfiguration;
-    launchConfig.metadataOptions = fakeToken();
+    launchConfig.metadataOptions = cdk.Token.asAny({
+      httpEndpoint: 'https://bla.com',
+    } as CfnLaunchConfiguration.MetadataOptionsProperty);
     const aspect = new AutoScalingGroupRequireImdsv2Aspect();
 
     // WHEN
@@ -62,11 +64,3 @@ describe('AutoScalingGroupRequireImdsv2Aspect', () => {
     });
   });
 });
-
-function fakeToken(): cdk.IResolvable {
-  return {
-    creationStack: [],
-    resolve: (_c) => {},
-    toString: () => '',
-  };
-}
