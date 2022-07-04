@@ -27,6 +27,13 @@ Command                               | Description
 [`cdk acknowledge`](#cdk-acknowledge) | Acknowledge (and hide) a notice by issue number
 [`cdk notices`](#cdk-notices)         | List all relevant notices for the application
 
+- [Bundling](#bundling)
+- [MFA Support](#mfa-support)
+- [SSO Support](#sso-support)
+- [Configuration](#configuration)
+  - [Running in CI](#running-in-ci)
+
+
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ## Commands
@@ -714,3 +721,9 @@ The following environment variables affect aws-cdk:
 
 - `CDK_DISABLE_VERSION_CHECK`: If set, disable automatic check for newer versions.
 - `CDK_NEW_BOOTSTRAP`: use the modern bootstrapping stack.
+
+### Running in CI
+
+The CLI will attempt to detect whether it is being run in CI by looking for the presence of an
+environment variable `CI=true`. This can be forced by passing the `--ci` flag. By default the CLI
+sends most of its logs to `stderr`, but when `ci=true` it will send the logs to `stdout` instead.
