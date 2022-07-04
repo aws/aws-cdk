@@ -1,5 +1,5 @@
 {
-  "$version": "76.0.0",
+  "$version": "78.1.0",
   "PropertyTypes": {
     "AWS::RefactorSpaces::Application.ApiGatewayProxyInput": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-application-apigatewayproxyinput.html",
@@ -18,6 +18,17 @@
         }
       }
     },
+    "AWS::RefactorSpaces::Route.DefaultRouteInput": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-route-defaultrouteinput.html",
+      "Properties": {
+        "ActivationState": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-route-defaultrouteinput.html#cfn-refactorspaces-route-defaultrouteinput-activationstate",
+          "PrimitiveType": "String",
+          "Required": true,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::RefactorSpaces::Route.UriPathRouteInput": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-route-uripathrouteinput.html",
       "Properties": {
@@ -25,7 +36,7 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-route-uripathrouteinput.html#cfn-refactorspaces-route-uripathrouteinput-activationstate",
           "PrimitiveType": "String",
           "Required": true,
-          "UpdateType": "Immutable"
+          "UpdateType": "Mutable"
         },
         "IncludeChildPaths": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-route-uripathrouteinput.html#cfn-refactorspaces-route-uripathrouteinput-includechildpaths",
@@ -207,6 +218,12 @@
           "Required": true,
           "UpdateType": "Immutable"
         },
+        "DefaultRoute": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html#cfn-refactorspaces-route-defaultroute",
+          "Required": false,
+          "Type": "DefaultRouteInput",
+          "UpdateType": "Mutable"
+        },
         "EnvironmentIdentifier": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html#cfn-refactorspaces-route-environmentidentifier",
           "PrimitiveType": "String",
@@ -236,7 +253,7 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html#cfn-refactorspaces-route-uripathroute",
           "Required": false,
           "Type": "UriPathRouteInput",
-          "UpdateType": "Immutable"
+          "UpdateType": "Mutable"
         }
       }
     },
