@@ -316,7 +316,7 @@ export class CdkToolkit {
           const index = stacks.indexOf(stack);
           stacks.splice(index, 1);
 
-          void queue.add(async () => {
+          await queue.add(async () => {
             await deployStack(stack);
             await enqueueStackDeploys();
           });
