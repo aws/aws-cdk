@@ -310,7 +310,7 @@ export class CdkToolkit {
         .every((id) => !stacksAwaitingDeploy[id]);
 
     const enqueueStackDeploys = async () => {
-      stacks.forEach((stack) => {
+      await Promise.all(stacks.map(async (stack) => {
         if (isStackUnblocked(stack)) {
           // Find current index due to stacks list changing within loop
           const index = stacks.indexOf(stack);
@@ -321,7 +321,7 @@ export class CdkToolkit {
             await enqueueStackDeploys();
           });
         }
-      });
+      }));
     };
 
     await enqueueStackDeploys();
