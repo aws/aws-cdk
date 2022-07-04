@@ -8,13 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-<<<<<<< HEAD
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
-=======
           "fqn": "constructs.Construct",
           "version": "10.1.33"
->>>>>>> 6b4f92f243 (fix: custom resources log sensitive `ResponseURL` field (#20899))
         }
       },
       "aws-ecs-integ-ecs": {
@@ -1244,13 +1239,8 @@
                       }
                     },
                     "constructInfo": {
-<<<<<<< HEAD
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
-=======
                       "fqn": "constructs.Construct",
                       "version": "10.1.33"
->>>>>>> 6b4f92f243 (fix: custom resources log sensitive `ResponseURL` field (#20899))
                     }
                   },
                   "LifecycleHookDrainHook": {

@@ -8,13 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-<<<<<<< HEAD
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
-=======
           "fqn": "constructs.Construct",
           "version": "10.1.33"
->>>>>>> 6b4f92f243 (fix: custom resources log sensitive `ResponseURL` field (#20899))
         }
       },
       "aws-ecs-integ": {
@@ -1215,13 +1210,8 @@
                       }
                     },
                     "constructInfo": {
-<<<<<<< HEAD
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
-=======
                       "fqn": "constructs.Construct",
                       "version": "10.1.33"
->>>>>>> 6b4f92f243 (fix: custom resources log sensitive `ResponseURL` field (#20899))
                     }
                   },
                   "LifecycleHookDrainHook": {
@@ -1828,24 +1818,14 @@
                   }
                 },
                 "constructInfo": {
-<<<<<<< HEAD
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-=======
                   "fqn": "constructs.Construct",
                   "version": "10.1.33"
->>>>>>> 6b4f92f243 (fix: custom resources log sensitive `ResponseURL` field (#20899))
                 }
               }
             },
             "constructInfo": {
-<<<<<<< HEAD
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
-=======
               "fqn": "constructs.Construct",
               "version": "10.1.33"
->>>>>>> 6b4f92f243 (fix: custom resources log sensitive `ResponseURL` field (#20899))
             }
           },
           "SsmParameterValue:--aws--service--aws-for-fluent-bit--2.1.0:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {

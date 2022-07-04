@@ -8,13 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-<<<<<<< HEAD
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
-=======
           "fqn": "constructs.Construct",
           "version": "10.1.33"
->>>>>>> 6b4f92f243 (fix: custom resources log sensitive `ResponseURL` field (#20899))
         }
       },
       "aws-ecs-integ": {
@@ -215,13 +210,8 @@
                   }
                 },
                 "constructInfo": {
-<<<<<<< HEAD
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-=======
                   "fqn": "constructs.Construct",
                   "version": "10.1.33"
->>>>>>> 6b4f92f243 (fix: custom resources log sensitive `ResponseURL` field (#20899))
                 }
               },
               "9224197a0988613189788525036306b333034895bb69a8220b40e52dced6a8b7": {
@@ -254,13 +244,8 @@
                   }
                 },
                 "constructInfo": {
-<<<<<<< HEAD
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-=======
                   "fqn": "constructs.Construct",
                   "version": "10.1.33"
->>>>>>> 6b4f92f243 (fix: custom resources log sensitive `ResponseURL` field (#20899))
                 }
               },
               "f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da": {
@@ -293,13 +278,8 @@
                   }
                 },
                 "constructInfo": {
-<<<<<<< HEAD
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-=======
                   "fqn": "constructs.Construct",
                   "version": "10.1.33"
->>>>>>> 6b4f92f243 (fix: custom resources log sensitive `ResponseURL` field (#20899))
                 }
               },
               "972240f9dd6e036a93d5f081af9a24315b2053828ac049b3b19b2fa12d7ae64a": {
@@ -332,13 +312,8 @@
                   }
                 },
                 "constructInfo": {
-<<<<<<< HEAD
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-=======
                   "fqn": "constructs.Construct",
                   "version": "10.1.33"
->>>>>>> 6b4f92f243 (fix: custom resources log sensitive `ResponseURL` field (#20899))
                 }
               },
               "872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724d": {
@@ -371,24 +346,14 @@
                   }
                 },
                 "constructInfo": {
-<<<<<<< HEAD
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-=======
                   "fqn": "constructs.Construct",
                   "version": "10.1.33"
->>>>>>> 6b4f92f243 (fix: custom resources log sensitive `ResponseURL` field (#20899))
                 }
               }
             },
             "constructInfo": {
-<<<<<<< HEAD
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
-=======
               "fqn": "constructs.Construct",
               "version": "10.1.33"
->>>>>>> 6b4f92f243 (fix: custom resources log sensitive `ResponseURL` field (#20899))
             }
           },
           "Vpc": {
@@ -1585,13 +1550,8 @@
                       }
                     },
                     "constructInfo": {
-<<<<<<< HEAD
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
-=======
                       "fqn": "constructs.Construct",
                       "version": "10.1.33"
->>>>>>> 6b4f92f243 (fix: custom resources log sensitive `ResponseURL` field (#20899))
                     }
                   },
                   "LifecycleHookDrainHook": {
