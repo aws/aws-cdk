@@ -1,1 +1,0 @@
-{"expiration":1656407830087,"notices":[{"title":"Error when building EKS cluster with monocdk import","issueNumber":17061,"overview":"When using monocdk/aws-eks to build a stack containing an EKS cluster, error is thrown about missing lambda-layer-node-proxy-agent/layer/package.json.","components":[{"name":"cli","version":"<1.130.0 >=1.126.0"}],"schemaVersion":"1"}]}
