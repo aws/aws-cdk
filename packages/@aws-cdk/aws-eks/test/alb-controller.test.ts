@@ -61,26 +61,6 @@ test('can configure a custom repository', () => {
 
 });
 
-test('can configure a Helm Chart version', () => {
-
-  const { stack } = testFixture();
-
-  const cluster = new Cluster(stack, 'Cluster', {
-    version: KubernetesVersion.V1_21,
-  });
-
-  AlbController.create(stack, {
-    cluster,
-    version: AlbControllerVersion.V2_4_1,
-    chartVersion: '1.4.0',
-  });
-
-  Template.fromStack(stack).hasResourceProperties(HelmChart.RESOURCE_TYPE, {
-    Version: '1.4.0',
-  });
-
-});
-
 test('throws when a policy is not defined for a custom version', () => {
 
   const { stack } = testFixture();
