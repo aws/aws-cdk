@@ -111,7 +111,7 @@ async function main() {
           python: {
             classifiers: [
               'Framework :: AWS CDK',
-              'Framework :: AWS CDK :: 2',
+              'Framework :: AWS CDK :: 1',
             ],
             distName: module.pythonDistName,
             module: module.pythonModuleName,

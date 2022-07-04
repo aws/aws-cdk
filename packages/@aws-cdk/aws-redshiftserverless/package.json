@@ -25,7 +25,7 @@
       "python": {
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK :: 1"
         ],
         "distName": "aws-cdk.aws-redshiftserverless",
         "module": "aws_cdk.aws_redshiftserverless"
