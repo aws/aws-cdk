@@ -1170,7 +1170,7 @@ test('can attach a secret with attach()', () => {
   secret.attach({
     asSecretAttachmentTarget: () => ({
       targetId: 'target-id',
-      targetType: 'target-type' as secretsmanager.AttachmentTargetType,
+      targetType: secretsmanager.AttachmentTargetType.DOCDB_DB_INSTANCE,
     }),
   });
 
@@ -1180,7 +1180,7 @@ test('can attach a secret with attach()', () => {
       Ref: 'SecretA720EF05',
     },
     TargetId: 'target-id',
-    TargetType: 'target-type',
+    TargetType: 'AWS::DocDB::DBInstance',
   });
 });
 
@@ -1190,7 +1190,7 @@ test('throws when trying to attach a target multiple times to a secret', () => {
   const target = {
     asSecretAttachmentTarget: () => ({
       targetId: 'target-id',
-      targetType: 'target-type' as secretsmanager.AttachmentTargetType,
+      targetType: secretsmanager.AttachmentTargetType.DOCDB_DB_INSTANCE,
     }),
   };
   secret.attach(target);
@@ -1205,7 +1205,7 @@ test('add a rotation schedule to an attached secret', () => {
   const attachedSecret = secret.attach({
     asSecretAttachmentTarget: () => ({
       targetId: 'target-id',
-      targetType: 'target-type' as secretsmanager.AttachmentTargetType,
+      targetType: secretsmanager.AttachmentTargetType.DOCDB_DB_INSTANCE,
     }),
   });
   const rotationLambda = new lambda.Function(stack, 'Lambda', {
