@@ -2,6 +2,7 @@ import { deployStack, DeployStackOptions, ToolkitInfo } from '../../lib/api';
 import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
 import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
+import { setCI } from '../../lib/logging';
 
 jest.mock('../../lib/api/hotswap-deployments');
 
@@ -29,9 +30,13 @@ const FAKE_STACK_TERMINATION_PROTECTION = testStack({
 let sdk: MockSdk;
 let sdkProvider: MockSdkProvider;
 let cfnMocks: MockedObject<SyncHandlerSubsetOf<AWS.CloudFormation>>;
+let stderrMock: jest.SpyInstance;
+let stdoutMock: jest.SpyInstance;
 
 beforeEach(() => {
   jest.resetAllMocks();
+  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
+  stdoutMock = jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
 
   sdkProvider = new MockSdkProvider();
   sdk = new MockSdk();
@@ -191,6 +196,26 @@ test('reuse previous parameters if requested', async () => {
       { ParameterKey: 'OtherParameter', ParameterValue: 'SomeValue' },
     ],
   }));
+});
+
+describe('ci=true', () => {
+  beforeEach(() => {
+    setCI(true);
+  });
+  afterEach(() => {
+    setCI(false);
+  });
+  test('output written to stdout', async () => {
+    // GIVEN
+
+    await deployStack({
+      ...standardDeployStackArguments(),
+    });
+
+    // THEN
+    expect(stderrMock.mock.calls).toEqual([]);
+    expect(stdoutMock.mock.calls).not.toEqual([]);
+  });
 });
 
 test('do not reuse previous parameters if not requested', async () => {
