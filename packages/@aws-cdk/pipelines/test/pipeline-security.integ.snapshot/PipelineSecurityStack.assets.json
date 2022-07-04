@@ -27,11 +27,7 @@
         }
       }
     },
-<<<<<<< HEAD
-    "89f6e045568a0cd52d21d8215bb87ce0d05485ee8c757b0eb4ac080ddc9f1d6f": {
-=======
     "ff8909e2b3e01298b53c87d97e8e745b4f0b2e4b6d29d5680c44e5da87a207a4": {
->>>>>>> d55ad0e2f4 (chore: a couple more places where `ResponseURL` is logged (#20977))
       "source": {
         "path": "PipelineSecurityStack.template.json",
         "packaging": "file"
@@ -39,11 +35,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-<<<<<<< HEAD
-          "objectKey": "89f6e045568a0cd52d21d8215bb87ce0d05485ee8c757b0eb4ac080ddc9f1d6f.json",
-=======
           "objectKey": "ff8909e2b3e01298b53c87d97e8e745b4f0b2e4b6d29d5680c44e5da87a207a4.json",
->>>>>>> d55ad0e2f4 (chore: a couple more places where `ResponseURL` is logged (#20977))
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
