@@ -69,16 +69,6 @@ export class PolicyStatement {
     return ret;
   }
 
-  /**
-   * Statement ID for this statement
-   */
-  public sid?: string;
-
-  /**
-   * Whether to allow or deny the actions in this statement
-   */
-  public effect: Effect;
-
   private readonly _action = new Array<string>();
   private readonly _notAction = new Array<string>();
   private readonly _principal: { [key: string]: any[] } = {};
@@ -86,11 +76,14 @@ export class PolicyStatement {
   private readonly _resource = new Array<string>();
   private readonly _notResource = new Array<string>();
   private readonly _condition: { [key: string]: any } = { };
+  private _sid?: string;
+  private _effect: Effect;
   private principalConditionsJson?: string;
 
   // Hold on to those principals
   private readonly _principals = new Array<IPrincipal>();
   private readonly _notPrincipals = new Array<IPrincipal>();
+  private _frozen = false;
 
   constructor(props: PolicyStatementProps = {}) {
     // Validate actions
@@ -101,8 +94,8 @@ export class PolicyStatement {
       }
     }
 
-    this.sid = props.sid;
-    this.effect = props.effect || Effect.ALLOW;
+    this._sid = props.sid;
+    this._effect = props.effect || Effect.ALLOW;
 
     this.addActions(...props.actions || []);
     this.addNotActions(...props.notActions || []);
@@ -113,6 +106,36 @@ export class PolicyStatement {
     if (props.conditions !== undefined) {
       this.addConditions(props.conditions);
     }
+  }
+
+  /**
+   * Statement ID for this statement
+   */
+  public get sid(): string | undefined {
+    return this._sid;
+  }
+
+  /**
+   * Set Statement ID for this statement
+   */
+  public set sid(sid: string | undefined) {
+    this.assertNotFrozen('sid');
+    this._sid = sid;
+  }
+
+  /**
+   * Whether to allow or deny the actions in this statement
+   */
+  public get effect(): Effect {
+    return this._effect;
+  }
+
+  /**
+   * Set effect for this statement
+   */
+  public set effect(effect: Effect) {
+    this.assertNotFrozen('effect');
+    this._effect = effect;
   }
 
   //
@@ -127,6 +150,7 @@ export class PolicyStatement {
    * @param actions actions that will be allowed.
    */
   public addActions(...actions: string[]) {
+    this.assertNotFrozen('addActions');
     if (actions.length > 0 && this._notAction.length > 0) {
       throw new Error('Cannot add \'Actions\' to policy statement if \'NotActions\' have been added');
     }
@@ -142,6 +166,7 @@ export class PolicyStatement {
    * @param notActions actions that will be denied. All other actions will be permitted.
    */
   public addNotActions(...notActions: string[]) {
+    this.assertNotFrozen('addNotActions');
     if (notActions.length > 0 && this._action.length > 0) {
       throw new Error('Cannot add \'NotActions\' to policy statement if \'Actions\' have been added');
     }
@@ -167,6 +192,7 @@ export class PolicyStatement {
    * @param principals IAM principals that will be added
    */
   public addPrincipals(...principals: IPrincipal[]) {
+    this.assertNotFrozen('addPrincipals');
     this._principals.push(...principals);
     if (Object.keys(principals).length > 0 && Object.keys(this._notPrincipal).length > 0) {
       throw new Error('Cannot add \'Principals\' to policy statement if \'NotPrincipals\' have been added');
@@ -188,6 +214,7 @@ export class PolicyStatement {
    * @param notPrincipals IAM principals that will be denied access
    */
   public addNotPrincipals(...notPrincipals: IPrincipal[]) {
+    this.assertNotFrozen('addNotPrincipals');
     this._notPrincipals.push(...notPrincipals);
     if (Object.keys(notPrincipals).length > 0 && Object.keys(this._principal).length > 0) {
       throw new Error('Cannot add \'NotPrincipals\' to policy statement if \'Principals\' have been added');
@@ -280,6 +307,7 @@ export class PolicyStatement {
    * @param arns Amazon Resource Names (ARNs) of the resources that this policy statement applies to
    */
   public addResources(...arns: string[]) {
+    this.assertNotFrozen('addResources');
     if (arns.length > 0 && this._notResource.length > 0) {
       throw new Error('Cannot add \'Resources\' to policy statement if \'NotResources\' have been added');
     }
@@ -295,6 +323,7 @@ export class PolicyStatement {
    * @param arns Amazon Resource Names (ARNs) of the resources that this policy statement does not apply to
    */
   public addNotResources(...arns: string[]) {
+    this.assertNotFrozen('addNotResources');
     if (arns.length > 0 && this._resource.length > 0) {
       throw new Error('Cannot add \'NotResources\' to policy statement if \'Resources\' have been added');
     }
@@ -344,6 +373,7 @@ export class PolicyStatement {
    * ```
    */
   public addCondition(key: string, value: Condition) {
+    this.assertNotFrozen('addCondition');
     const existingValue = this._condition[key];
     this._condition[key] = existingValue ? { ...existingValue, ...value } : value;
   }
@@ -545,6 +575,29 @@ export class PolicyStatement {
   }
 
   /**
+   * Make the PolicyStatement immutable
+   *
+   * After calling this, any of the `addXxx()` methods will throw an exception.
+   *
+   * Libraries that lazily generate statement bodies can override this method to
+   * fill the actual PolicyStatement fields. Be aware that this method may be called
+   * multiple times.
+   */
+  public freeze(): PolicyStatement {
+    this._frozen = true;
+    return this;
+  }
+
+  /**
+   * Whether the PolicyStatement has been frozen
+   *
+   * The statement object is frozen when `freeze()` is called.
+   */
+  public get frozen(): boolean {
+    return this._frozen;
+  }
+
+  /**
    * Estimate the size of this policy statement
    *
    * By necessity, this will not be accurate. We'll do our best to overestimate
@@ -575,6 +628,15 @@ export class PolicyStatement {
         ret += key.length + 5 /* quotes, colon, brackets */ +
           sum(values.map(v => (cdk.Token.isUnresolved(v) ? tokenSize : v.length) + 3 /* quotes, separator */));
       }
+    }
+  }
+
+  /**
+   * Throw an exception when the object is frozen
+   */
+  private assertNotFrozen(method: string) {
+    if (this._frozen) {
+      throw new Error(`${method}: freeze() has been called on this PolicyStatement previously, so it can no longer be modified`);
     }
   }
 }

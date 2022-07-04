@@ -8,6 +8,33 @@ import { integTest } from '../helpers/test-helpers';
 
 jest.setTimeout(600_000);
 
+describe('ci', () => {
+  integTest('output to stderr', withDefaultFixture(async (fixture) => {
+    const deployOutput = await fixture.cdkDeploy('test-2', { captureStderr: true, onlyStderr: true });
+    const diffOutput = await fixture.cdk(['diff', fixture.fullStackName('test-2')], { captureStderr: true, onlyStderr: true });
+    const destroyOutput = await fixture.cdkDestroy('test-2', { captureStderr: true, onlyStderr: true });
+    expect(deployOutput).not.toEqual('');
+    expect(destroyOutput).not.toEqual('');
+    expect(diffOutput).not.toEqual('');
+  }));
+  describe('ci=true', () => {
+    beforeEach(() => {
+      process.env.CI = 'true';
+    });
+    afterEach(() => {
+      process.env.CI = undefined;
+    });
+    integTest('output to stdout', withDefaultFixture(async (fixture) => {
+      const deployOutput = await fixture.cdkDeploy('test-2', { captureStderr: true, onlyStderr: true });
+      const diffOutput = await fixture.cdk(['diff', fixture.fullStackName('test-2')], { captureStderr: true, onlyStderr: true });
+      const destroyOutput = await fixture.cdkDestroy('test-2', { captureStderr: true, onlyStderr: true });
+      expect(deployOutput).toEqual('');
+      expect(destroyOutput).toEqual('');
+      expect(diffOutput).toEqual('');
+    }));
+  });
+});
+
 integTest('VPC Lookup', withDefaultFixture(async (fixture) => {
   fixture.log('Making sure we are clean before starting.');
   await fixture.cdkDestroy('define-vpc', { modEnv: { ENABLE_VPC_TESTING: 'DEFINE' } });
