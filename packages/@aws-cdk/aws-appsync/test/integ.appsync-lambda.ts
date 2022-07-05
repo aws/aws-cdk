@@ -72,6 +72,7 @@ lambdaDS.createResolver({
   fieldName: 'relatedPosts',
   requestMappingTemplate: appsync.MappingTemplate.lambdaRequest(requestPayload('relatedPosts', { withSource: true }), 'BatchInvoke'),
   responseMappingTemplate,
+  maxBatchSize: 5,
 });
 
 
