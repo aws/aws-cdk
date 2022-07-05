@@ -18,18 +18,19 @@ describe('ci', () => {
     expect(diffOutput).not.toEqual('');
   }));
   describe('ci=true', () => {
-    beforeEach(() => {
-      process.env.CI = 'true';
-    });
-    afterEach(() => {
-      process.env.CI = undefined;
-    });
     integTest('output to stdout', withDefaultFixture(async (fixture) => {
       // eslint-disable-next-line no-console
       console.log('process.env', process.env);
-      const deployOutput = await fixture.cdkDeploy('test-2', { captureStderr: true, onlyStderr: true });
-      const diffOutput = await fixture.cdk(['diff', fixture.fullStackName('test-2')], { captureStderr: true, onlyStderr: true });
-      const destroyOutput = await fixture.cdkDestroy('test-2', { captureStderr: true, onlyStderr: true });
+
+      const execOptions = {
+        captureStderr: true,
+        onlyStderr: true,
+        modEnv: { CI: 'true' },
+      };
+
+      const deployOutput = await fixture.cdkDeploy('test-2', execOptions);
+      const diffOutput = await fixture.cdk(['diff', fixture.fullStackName('test-2')], execOptions);
+      const destroyOutput = await fixture.cdkDestroy('test-2', execOptions);
       expect(deployOutput).toEqual('');
       expect(destroyOutput).toEqual('');
       expect(diffOutput).toEqual('');
