@@ -1,5 +1,5 @@
 import { throws } from 'assert';
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -31,12 +31,22 @@ describe('Batch Job Definition', () => {
       options: { 'awslogs-region': 'us-east-1' },
     };
 
+    const secret = new secretsmanager.Secret(stack, 'test-secret');
+    const parameter = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'test-parameter', {
+      parameterName: '/name',
+      version: 1,
+    });
+
     jobDefProps = {
       jobDefinitionName: 'test-job',
       container: {
         command: ['echo "Hello World"'],
         environment: {
           foo: 'bar',
+        },
+        secrets: {
+          SECRET: ecs.Secret.fromSecretsManager(secret),
+          PARAMETER: ecs.Secret.fromSsmParameter(parameter),
         },
         jobRole: role,
         gpuCount: 1,
@@ -80,6 +90,37 @@ describe('Batch Job Definition', () => {
           {
             Name: 'foo',
             Value: 'bar',
+          },
+        ],
+        Secrets: [
+          {
+            Name: 'SECRET',
+            ValueFrom: {
+              Ref: Match.stringLikeRegexp('^testsecret[0-9A-Z]{8}$'),
+            },
+          },
+          {
+            Name: 'PARAMETER',
+            ValueFrom: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ssm:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':parameter/name',
+                ],
+              ],
+            },
           },
         ],
         InstanceType: jobDefProps.container.instanceType ? jobDefProps.container.instanceType.toString() : '',
@@ -142,6 +183,37 @@ describe('Batch Job Definition', () => {
           {
             Name: 'foo',
             Value: 'bar',
+          },
+        ],
+        Secrets: [
+          {
+            Name: 'SECRET',
+            ValueFrom: {
+              Ref: Match.stringLikeRegexp('^testsecret[0-9A-Z]{8}$'),
+            },
+          },
+          {
+            Name: 'PARAMETER',
+            ValueFrom: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ssm:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':parameter/name',
+                ],
+              ],
+            },
           },
         ],
         ExecutionRoleArn: {
