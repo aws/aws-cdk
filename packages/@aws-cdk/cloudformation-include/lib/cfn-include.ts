@@ -49,7 +49,7 @@ export interface CfnIncludeProps {
    * Any parameters in the template that aren't specified here will be left unmodified.
    * If you include a parameter here with an ID that isn't in the template,
    * template creation will fail and an error will be thrown.
-   * 
+   *
    * If you are importing a parameter from a live stack, we cannot know the value of that
    * parameter. You will need to supply a value for your parameters, else the default
    * value will be used.
