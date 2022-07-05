@@ -178,9 +178,11 @@ async function main() {
       },
       dependencies: {
         '@aws-cdk/core': version,
+        'constructs': '^3.3.69',
       },
       peerDependencies: {
         '@aws-cdk/core': version,
+        'constructs': '^3.3.69',
       },
       engines: {
         node: '>= 14.15.0',
