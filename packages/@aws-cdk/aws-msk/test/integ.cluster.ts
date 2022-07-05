@@ -19,4 +19,20 @@ const cluster = new msk.Cluster(stack, 'Cluster', {
 new cdk.CfnOutput(stack, 'BootstrapBrokers', { value: cluster.bootstrapBrokersTls });
 new cdk.CfnOutput(stack, 'BootstrapBrokers2', { value: cluster.bootstrapBrokersTls });
 
+// iam authenticated msk cluster integ test
+const cluster2 = new msk.Cluster(stack, 'Cluster', {
+  clusterName: 'iam-auth-integ-test',
+  kafkaVersion: msk.KafkaVersion.V2_6_1,
+  vpc,
+  encryptionInTransit: {
+    clientBroker: msk.ClientBrokerEncryption.TLS,
+  },
+  clientAuthentication: msk.ClientAuthentication.sasl({
+    iam: true,
+  }),
+});
+
+// Test lazy instance of the AwsCustomResource
+new cdk.CfnOutput(stack, 'BootstrapBrokers3', { value: cluster2.bootstrapBrokersSaslIam });
+
 app.synth();
