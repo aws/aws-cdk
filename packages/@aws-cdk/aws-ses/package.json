@@ -118,7 +118,8 @@
       "docs-public-apis:@aws-cdk/aws-ses.DropSpamReceiptRuleProps",
       "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.s3Action",
       "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.bounceAction",
-      "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.lambdaAction"
+      "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.lambdaAction",
+      "props-physical-name:@aws-cdk/aws-ses.EmailIdentityProps"
     ]
   },
   "awscdkio": {
