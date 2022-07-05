@@ -51,6 +51,7 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
    * @default - No targets.
    */
   readonly targets?: INetworkLoadBalancerTarget[];
+
   /**
    *
    * Indicates whether the load balancer terminates connections at
