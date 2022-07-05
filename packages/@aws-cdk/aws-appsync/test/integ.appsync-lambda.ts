@@ -67,13 +67,20 @@ lambdaDS.createResolver({
   requestMappingTemplate: appsync.MappingTemplate.lambdaRequest(requestPayload('addPost', { withArgs: true })),
   responseMappingTemplate,
 });
+
 lambdaDS.createResolver({
   typeName: 'Post',
   fieldName: 'relatedPosts',
   requestMappingTemplate: appsync.MappingTemplate.lambdaRequest(requestPayload('relatedPosts', { withSource: true }), 'BatchInvoke'),
   responseMappingTemplate,
-  maxBatchSize: 5,
 });
 
+lambdaDS.createResolver({
+  typeName: 'Comment',
+  fieldName: 'relatedComments',
+  requestMappingTemplate: appsync.MappingTemplate.lambdaRequest(requestPayload('relatedPosts', { withSource: true }), 'BatchInvoke'),
+  responseMappingTemplate,
+  maxBatchSize: 5,
+});
 
 app.synth();
