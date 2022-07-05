@@ -25,6 +25,8 @@ describe('ci', () => {
       process.env.CI = undefined;
     });
     integTest('output to stdout', withDefaultFixture(async (fixture) => {
+      // eslint-disable-next-line no-console
+      console.log('process.env', process.env);
       const deployOutput = await fixture.cdkDeploy('test-2', { captureStderr: true, onlyStderr: true });
       const diffOutput = await fixture.cdk(['diff', fixture.fullStackName('test-2')], { captureStderr: true, onlyStderr: true });
       const destroyOutput = await fixture.cdkDestroy('test-2', { captureStderr: true, onlyStderr: true });

@@ -609,6 +609,8 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
   options.output?.write(`💻 ${command.join(' ')}\n`);
 
   const env = options.env ?? (options.modEnv ? { ...process.env, ...options.modEnv } : undefined);
+  // eslint-disable-next-line no-console
+  console.log('executing with env', env);
 
   const child = child_process.spawn(command[0], command.slice(1), {
     ...options,

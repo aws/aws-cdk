@@ -44,7 +44,7 @@ const _debug = (fmt: string, ...args: any) => logger(stream(), [chalk.gray])(fmt
 export const trace = (fmt: string, ...args: any) => logLevel >= LogLevel.TRACE && _debug(fmt, ...args);
 export const debug = (fmt: string, ...args: any[]) => logLevel >= LogLevel.DEBUG && _debug(fmt, ...args);
 export const error = logger(stderr, [chalk.red]);
-export const warning = logger(stderr, [chalk.yellow]);
+export const warning = logger(stream(), [chalk.yellow]);
 export const success = (fmt: string, ...args: any) => logger(stream(), [chalk.green])(fmt, ...args);
 export const highlight = (fmt: string, ...args: any) => logger(stream(), [chalk.bold])(fmt, ...args);
 export const print = (fmt: string, ...args: any) => logger(stream())(fmt, ...args);
