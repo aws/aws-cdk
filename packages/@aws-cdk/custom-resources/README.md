@@ -103,6 +103,16 @@ def is_complete(event, context):
   return { 'IsComplete': is_ready }
 ```
 
+> **Security Note**: the Custom Resource Provider Framework will write the value of `ResponseURL`,
+> which is a pre-signed S3 URL used to report the success or failure of the Custom Resource execution
+> back to CloudFormation, in a readable form to the AWS Step Functions execution history.
+>
+> Anybody who can list and read AWS StepFunction executions in your account will be able to write
+> a fake response to this URL and make your CloudFormation deployments fail.
+>
+> Do not use this library if your threat model requires that you cannot trust actors who are able
+> to list StepFunction executions in your account.
+
 ### Handling Lifecycle Events: onEvent
 
 The user-defined `onEvent` AWS Lambda function is invoked whenever a resource

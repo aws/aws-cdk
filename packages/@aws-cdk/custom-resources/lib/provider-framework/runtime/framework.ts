@@ -24,11 +24,12 @@ export = {
  * @param cfnRequest The cloudformation custom resource event.
  */
 async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) {
-  log('onEventHandler', cfnRequest);
+  const sanitizedRequest = { ...cfnRequest, ResponseURL: '...' } as const;
+  log('onEventHandler', sanitizedRequest);
 
   cfnRequest.ResourceProperties = cfnRequest.ResourceProperties || { };
 
-  const onEventResult = await invokeUserFunction(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, cfnRequest) as OnEventResponse;
+  const onEventResult = await invokeUserFunction(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, sanitizedRequest) as OnEventResponse;
   log('onEvent returned:', onEventResult);
 
   // merge the request and the result from onEvent to form the complete resource event
@@ -57,9 +58,10 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
 
 // invoked a few times until `complete` is true or until it times out.
 async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
-  log('isComplete', event);
+  const sanitizedRequest = { ...event, ResponseURL: '...' } as const;
+  log('isComplete', sanitizedRequest);
 
-  const isCompleteResult = await invokeUserFunction(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, event) as IsCompleteResponse;
+  const isCompleteResult = await invokeUserFunction(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, sanitizedRequest) as IsCompleteResponse;
   log('user isComplete returned:', isCompleteResult);
 
   // if we are not complete, return false, and don't send a response back.
@@ -68,6 +70,7 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
       throw new Error('"Data" is not allowed if "IsComplete" is "False"');
     }
 
+    // This must be the full event, it will be deserialized in `onTimeout` to send the response to CloudFormation
     throw new cfnResponse.Retry(JSON.stringify(event));
   }
 
@@ -93,16 +96,18 @@ async function onTimeout(timeoutEvent: any) {
   });
 }
 
-async function invokeUserFunction(functionArnEnv: string, payload: any) {
+async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnEnv: string, sanitizedPayload: A) {
   const functionArn = getEnv(functionArnEnv);
-  log(`executing user function ${functionArn} with payload`, payload);
+  log(`executing user function ${functionArn} with payload`, sanitizedPayload);
 
   // transient errors such as timeouts, throttling errors (429), and other
   // errors that aren't caused by a bad request (500 series) are retried
   // automatically by the JavaScript SDK.
   const resp = await invokeFunction({
     FunctionName: functionArn,
-    Payload: JSON.stringify(payload),
+
+    // Strip 'ResponseURL' -- the downstream CR doesn't need it and can only log it by accident
+    Payload: JSON.stringify({ ...sanitizedPayload, ResponseURL: undefined }),
   });
 
   log('user function response:', resp, typeof(resp));
