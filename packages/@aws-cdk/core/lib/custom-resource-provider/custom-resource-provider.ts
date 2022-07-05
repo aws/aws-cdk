@@ -297,7 +297,5 @@ function customResourceProviderRuntimeToString(x: CustomResourceProviderRuntime)
       return 'nodejs12.x';
     case CustomResourceProviderRuntime.NODEJS_14_X:
       return 'nodejs14.x';
-    case CustomResourceProviderRuntime.NODEJS_16_X:
-      return 'nodejs16.x';
   }
 }
