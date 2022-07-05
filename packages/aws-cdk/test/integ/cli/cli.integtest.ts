@@ -19,8 +19,6 @@ describe('ci', () => {
   }));
   describe('ci=true', () => {
     integTest('output to stdout', withDefaultFixture(async (fixture) => {
-      // eslint-disable-next-line no-console
-      console.log('process.env', process.env);
 
       const execOptions = {
         captureStderr: true,
