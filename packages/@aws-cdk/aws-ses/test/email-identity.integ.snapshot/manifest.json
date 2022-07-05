@@ -1,0 +1,49 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-ses-email-identity-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-ses-email-identity-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-ses-email-identity-integ/EmailIdentity/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmailIdentity7187767D"
+          }
+        ],
+        "/cdk-ses-email-identity-integ/TokenName1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TokenName1"
+          }
+        ],
+        "/cdk-ses-email-identity-integ/TokenValue1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TokenValue1"
+          }
+        ]
+      },
+      "displayName": "cdk-ses-email-identity-integ"
+    },
+    "EmailIdentityIntegDefaultTestDeployAssert3F909307": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "EmailIdentityIntegDefaultTestDeployAssert3F909307.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "EmailIdentityInteg/DefaultTest/DeployAssert"
+    }
+  }
+}

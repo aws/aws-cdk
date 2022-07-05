@@ -1,6 +1,7 @@
 import { IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDedicatedIpPool } from './dedicated-ip-pool';
+import { undefinedIfNoKeys } from './private/utils';
 import { CfnConfigurationSet } from './ses.generated';
 
 /**
@@ -45,7 +46,7 @@ export interface ConfigurationSetProps {
    * Whether to publishe reputation metrics for the configuration set, such as
    * bounce and complaint rates, to Amazon CloudWatch
    *
-   * @default false
+   * @default true
    */
   readonly reputationMetrics?: boolean;
 
@@ -129,23 +130,23 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
     super(scope, id);
 
     const configurationSet = new CfnConfigurationSet(this, 'Resource', {
-      deliveryOptions: {
+      deliveryOptions: undefinedIfNoKeys({
         sendingPoolName: props.dedicatedIpPool?.dedicatedIpPoolName,
         tlsPolicy: props.tlsPolicy,
-      },
+      }),
       name: props.configurationSetName,
-      reputationOptions: {
+      reputationOptions: undefinedIfNoKeys({
         reputationMetricsEnabled: props.reputationMetrics,
-      },
-      sendingOptions: {
-        sendingEnabled: props.sendingEnabled ?? true,
-      },
-      suppressionOptions: {
+      }),
+      sendingOptions: undefinedIfNoKeys({
+        sendingEnabled: props.sendingEnabled,
+      }),
+      suppressionOptions: undefinedIfNoKeys({
         suppressedReasons: renderSuppressedReasons(props.suppressionReasons),
-      },
-      trackingOptions: {
+      }),
+      trackingOptions: undefinedIfNoKeys({
         customRedirectDomain: props.customTrackingRedirectDomain,
-      },
+      }),
     });
 
     this.configurationSetName = configurationSet.ref;

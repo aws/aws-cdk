@@ -1,0 +1,110 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.33"
+        }
+      },
+      "cdk-ses-email-identity-integ": {
+        "id": "cdk-ses-email-identity-integ",
+        "path": "cdk-ses-email-identity-integ",
+        "children": {
+          "EmailIdentity": {
+            "id": "EmailIdentity",
+            "path": "cdk-ses-email-identity-integ/EmailIdentity",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-ses-email-identity-integ/EmailIdentity/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SES::EmailIdentity",
+                  "aws:cdk:cloudformation:props": {
+                    "emailIdentity": "cdk.dev",
+                    "mailFromAttributes": {
+                      "mailFromDomain": "mail.cdk.dev"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ses.CfnEmailIdentity",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ses.EmailIdentity",
+              "version": "0.0.0"
+            }
+          },
+          "TokenName1": {
+            "id": "TokenName1",
+            "path": "cdk-ses-email-identity-integ/TokenName1",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "TokenValue1": {
+            "id": "TokenValue1",
+            "path": "cdk-ses-email-identity-integ/TokenValue1",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "EmailIdentityInteg": {
+        "id": "EmailIdentityInteg",
+        "path": "EmailIdentityInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "EmailIdentityInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "EmailIdentityInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.33"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "EmailIdentityInteg/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

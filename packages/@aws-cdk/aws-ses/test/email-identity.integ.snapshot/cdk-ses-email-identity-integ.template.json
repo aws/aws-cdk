@@ -1,0 +1,31 @@
+{
+ "Resources": {
+  "EmailIdentity7187767D": {
+   "Type": "AWS::SES::EmailIdentity",
+   "Properties": {
+    "EmailIdentity": "cdk.dev",
+    "MailFromAttributes": {
+     "MailFromDomain": "mail.cdk.dev"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "TokenName1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "EmailIdentity7187767D",
+     "DkimDNSTokenName1"
+    ]
+   }
+  },
+  "TokenValue1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "EmailIdentity7187767D",
+     "DkimDNSTokenValue1"
+    ]
+   }
+  }
+ }
+}

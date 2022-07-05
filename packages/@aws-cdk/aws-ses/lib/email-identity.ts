@@ -1,6 +1,7 @@
 import { IResource, Resource, SecretValue } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IConfigurationSet } from './configuration-set';
+import { undefinedIfNoKeys } from './private/utils';
 import { CfnEmailIdentity } from './ses.generated';
 
 /**
@@ -43,7 +44,7 @@ export interface EmailIdentityProps {
    *
    * @default - use Easy DKIM with a key length of 1024-bit
    */
-  readonly dkimIdentityType?: DkimIdentity;
+  readonly dkimIdentity?: DkimIdentity;
 
   /**
    * Whether to receive email notifications when bounce or complaint events occur.
@@ -231,24 +232,24 @@ export class EmailIdentity extends Resource implements IEmailIdentity {
 
     const identity = new CfnEmailIdentity(this, 'Resource', {
       emailIdentity: props.identity,
-      configurationSetAttributes: {
+      configurationSetAttributes: undefinedIfNoKeys({
         configurationSetName: props.configurationSet?.configurationSetName,
-      },
-      dkimAttributes: {
-        signingEnabled: props.dkimSigning ?? true,
-      },
-      dkimSigningAttributes: {
-        domainSigningPrivateKey: props.dkimIdentityType?.domainSigningPrivateKey,
-        domainSigningSelector: props.dkimIdentityType?.domainSigningSelector,
-        nextSigningKeyLength: props.dkimIdentityType?.nextSigningKeyLength,
-      },
-      feedbackAttributes: {
-        emailForwardingEnabled: props.feedbackForwarding ?? true,
-      },
-      mailFromAttributes: {
+      }),
+      dkimAttributes: undefinedIfNoKeys({
+        signingEnabled: props.dkimSigning,
+      }),
+      dkimSigningAttributes: undefinedIfNoKeys({
+        domainSigningPrivateKey: props.dkimIdentity?.domainSigningPrivateKey,
+        domainSigningSelector: props.dkimIdentity?.domainSigningSelector,
+        nextSigningKeyLength: props.dkimIdentity?.nextSigningKeyLength,
+      }),
+      feedbackAttributes: undefinedIfNoKeys({
+        emailForwardingEnabled: props.feedbackForwarding,
+      }),
+      mailFromAttributes: undefinedIfNoKeys({
         mailFromDomain: props.mailFromDomain,
         behaviorOnMxFailure: props.mailFromBehaviorOnMxFailure,
-      },
+      }),
     });
 
     this.emailIdentityName = identity.ref;
