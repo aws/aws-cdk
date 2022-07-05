@@ -560,6 +560,7 @@
     "./aws-ram": "./aws-ram/index.js",
     "./aws-rds": "./aws-rds/index.js",
     "./aws-redshift": "./aws-redshift/index.js",
+    "./aws-redshiftserverless": "./aws-redshiftserverless/index.js",
     "./aws-refactorspaces": "./aws-refactorspaces/index.js",
     "./aws-rekognition": "./aws-rekognition/index.js",
     "./aws-resiliencehub": "./aws-resiliencehub/index.js",
