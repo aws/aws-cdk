@@ -15,7 +15,7 @@ kubeconfig = os.path.join(outdir, 'kubeconfig')
 
 
 def get_handler(event, context):
-    logger.info(json.dumps(event))
+    logger.info(json.dumps(dict(event, ResponseURL='...')))
 
     request_type = event['RequestType']
     props = event['ResourceProperties']

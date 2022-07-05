@@ -277,10 +277,7 @@
         "/aws-ecs-integ2/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDef54694570",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "TaskDef54694570"
           }
         ],
         "/aws-ecs-integ2/TaskDef/TheContainer/LogGroup/Resource": [
