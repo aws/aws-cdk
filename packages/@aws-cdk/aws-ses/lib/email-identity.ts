@@ -42,7 +42,7 @@ export interface EmailIdentityProps {
   /**
    * The type of DKIM identity to use
    *
-   * @default - use Easy DKIM with a key length of 1024-bit
+   * @default - Easy DKIM with a key length of 2048-bit
    */
   readonly dkimIdentity?: DkimIdentity;
 
