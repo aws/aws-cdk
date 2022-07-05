@@ -5,12 +5,16 @@ import * as chalk from 'chalk';
 type StyleFn = (str: string) => string;
 const { stdout, stderr } = process;
 
-const logger = (stream: Writable, styles?: StyleFn[]) => (fmt: string, ...args: any[]) => {
+type WritableFactory = () => Writable;
+
+const logger = (stream: Writable | WritableFactory, styles?: StyleFn[]) => (fmt: string, ...args: any[]) => {
   let str = util.format(fmt, ...args);
   if (styles && styles.length) {
     str = styles.reduce((a, style) => style(a), str);
   }
-  stream.write(str + '\n');
+
+  const realStream = typeof stream === 'function' ? stream() : stream;
+  realStream.write(str + '\n');
 };
 
 export enum LogLevel {
@@ -39,15 +43,15 @@ export function increaseVerbosity() {
 }
 
 const stream = () => CI ? stdout : stderr;
-const _debug = (fmt: string, ...args: any) => logger(stream(), [chalk.gray])(fmt, ...args);
+const _debug = logger(stream, [chalk.gray]);
 
 export const trace = (fmt: string, ...args: any) => logLevel >= LogLevel.TRACE && _debug(fmt, ...args);
 export const debug = (fmt: string, ...args: any[]) => logLevel >= LogLevel.DEBUG && _debug(fmt, ...args);
 export const error = logger(stderr, [chalk.red]);
-export const warning = logger(stream(), [chalk.yellow]);
-export const success = (fmt: string, ...args: any) => logger(stream(), [chalk.green])(fmt, ...args);
-export const highlight = (fmt: string, ...args: any) => logger(stream(), [chalk.bold])(fmt, ...args);
-export const print = (fmt: string, ...args: any) => logger(stream())(fmt, ...args);
+export const warning = logger(stream, [chalk.yellow]);
+export const success = logger(stream, [chalk.green]);
+export const highlight = logger(stream, [chalk.bold]);
+export const print = logger(stream);
 export const data = logger(stdout);
 
 export type LoggerFunction = (fmt: string, ...args: any[]) => void;
