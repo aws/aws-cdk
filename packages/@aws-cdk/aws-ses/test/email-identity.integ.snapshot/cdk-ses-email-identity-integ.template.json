@@ -11,19 +11,69 @@
   }
  },
  "Outputs": {
-  "TokenName1": {
+  "Dkim0": {
    "Value": {
-    "Fn::GetAtt": [
-     "EmailIdentity7187767D",
-     "DkimDNSTokenName1"
+    "Fn::Join": [
+     "",
+     [
+      {
+       "Fn::GetAtt": [
+        "EmailIdentity7187767D",
+        "DkimDNSTokenName1"
+       ]
+      },
+      ":",
+      {
+       "Fn::GetAtt": [
+        "EmailIdentity7187767D",
+        "DkimDNSTokenValue1"
+       ]
+      }
+     ]
     ]
    }
   },
-  "TokenValue1": {
+  "Dkim1": {
    "Value": {
-    "Fn::GetAtt": [
-     "EmailIdentity7187767D",
-     "DkimDNSTokenValue1"
+    "Fn::Join": [
+     "",
+     [
+      {
+       "Fn::GetAtt": [
+        "EmailIdentity7187767D",
+        "DkimDNSTokenName2"
+       ]
+      },
+      ":",
+      {
+       "Fn::GetAtt": [
+        "EmailIdentity7187767D",
+        "DkimDNSTokenValue2"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "Dkim2": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      {
+       "Fn::GetAtt": [
+        "EmailIdentity7187767D",
+        "DkimDNSTokenName3"
+       ]
+      },
+      ":",
+      {
+       "Fn::GetAtt": [
+        "EmailIdentity7187767D",
+        "DkimDNSTokenValue3"
+       ]
+      }
+     ]
     ]
    }
   }

@@ -43,17 +43,25 @@
               "version": "0.0.0"
             }
           },
-          "TokenName1": {
-            "id": "TokenName1",
-            "path": "cdk-ses-email-identity-integ/TokenName1",
+          "Dkim0": {
+            "id": "Dkim0",
+            "path": "cdk-ses-email-identity-integ/Dkim0",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnOutput",
               "version": "0.0.0"
             }
           },
-          "TokenValue1": {
-            "id": "TokenValue1",
-            "path": "cdk-ses-email-identity-integ/TokenValue1",
+          "Dkim1": {
+            "id": "Dkim1",
+            "path": "cdk-ses-email-identity-integ/Dkim1",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "Dkim2": {
+            "id": "Dkim2",
+            "path": "cdk-ses-email-identity-integ/Dkim2",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnOutput",
               "version": "0.0.0"

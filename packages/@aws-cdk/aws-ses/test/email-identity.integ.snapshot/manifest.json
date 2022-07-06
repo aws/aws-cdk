@@ -21,16 +21,22 @@
             "data": "EmailIdentity7187767D"
           }
         ],
-        "/cdk-ses-email-identity-integ/TokenName1": [
+        "/cdk-ses-email-identity-integ/Dkim0": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TokenName1"
+            "data": "Dkim0"
           }
         ],
-        "/cdk-ses-email-identity-integ/TokenValue1": [
+        "/cdk-ses-email-identity-integ/Dkim1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TokenValue1"
+            "data": "Dkim1"
+          }
+        ],
+        "/cdk-ses-email-identity-integ/Dkim2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Dkim2"
           }
         ]
       },

@@ -125,7 +125,7 @@ export abstract class DkimIdentity {
    */
   public static byodDkim(privateKey: SecretValue, selector: string): DkimIdentity {
     return {
-      domainSigningPrivateKey: privateKey.unsafeUnwrap(),
+      domainSigningPrivateKey: privateKey.unsafeUnwrap(), // safe usage
       domainSigningSelector: selector,
     };
   }
@@ -227,6 +227,11 @@ export class EmailIdentity extends Resource implements IEmailIdentity {
    */
   public readonly dkimDnsTokenValue3: string;
 
+  /**
+   * DKIM records for this identity
+   */
+  public readonly dkimRecords: { [name: string]: string }[];
+
   constructor(scope: Construct, id: string, props: EmailIdentityProps) {
     super(scope, id);
 
@@ -253,11 +258,18 @@ export class EmailIdentity extends Resource implements IEmailIdentity {
     });
 
     this.emailIdentityName = identity.ref;
+
     this.dkimDnsTokenName1 = identity.attrDkimDnsTokenName1;
     this.dkimDnsTokenName2 = identity.attrDkimDnsTokenName2;
     this.dkimDnsTokenName3 = identity.attrDkimDnsTokenName3;
     this.dkimDnsTokenValue1 = identity.attrDkimDnsTokenValue1;
     this.dkimDnsTokenValue2 = identity.attrDkimDnsTokenValue2;
     this.dkimDnsTokenValue3 = identity.attrDkimDnsTokenValue3;
+
+    this.dkimRecords = [
+      { name: this.dkimDnsTokenName1, value: this.dkimDnsTokenValue1 },
+      { name: this.dkimDnsTokenName2, value: this.dkimDnsTokenValue2 },
+      { name: this.dkimDnsTokenName3, value: this.dkimDnsTokenValue3 },
+    ];
   }
 }

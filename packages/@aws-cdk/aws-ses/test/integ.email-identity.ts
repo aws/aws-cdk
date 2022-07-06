@@ -12,13 +12,11 @@ class TestStack extends Stack {
       mailFromDomain: 'mail.cdk.dev',
     });
 
-    new CfnOutput(this, 'TokenName1', {
-      value: identity.dkimDnsTokenName1,
-    });
-
-    new CfnOutput(this, 'TokenValue1', {
-      value: identity.dkimDnsTokenValue1,
-    });
+    for (const [index, record] of identity.dkimRecords.entries()) {
+      new CfnOutput(this, `Dkim${index}`, {
+        value: `${record.name}:${record.value}`,
+      });
+    }
   }
 }
 
