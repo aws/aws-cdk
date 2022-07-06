@@ -138,10 +138,10 @@ Use the `ConfigurationSet` construct to create a configuration set:
 ```ts
 declare const myPool: ses.IDedicatedIpPool;
 
-new ConfigurationSet(this, 'ConfigurationSet', {
+new ses.ConfigurationSet(this, 'ConfigurationSet', {
   customTrackingRedirectDomain: 'track.cdk.dev',
-  suppressionReasons: SuppressionReasons.COMPLAINTS_ONLY,
-  tlsPolicy: ConfigurationSetTlsPolicy.REQUIRE,
+  suppressionReasons: ses.SuppressionReasons.COMPLAINTS_ONLY,
+  tlsPolicy: ses.ConfigurationSetTlsPolicy.REQUIRE,
   dedicatedIpPool: myPool,
 });
 ```
@@ -158,7 +158,7 @@ To verify an identity, you create an `EmailIdentity` and then create the DKIM re
 ```ts
 declare const myConfigurationSet: ses.IConfigurationSet;
 
-const identity = new EmailIdentity(stack, 'Identity', {
+const identity = new ses.EmailIdentity(stack, 'Identity', {
   identity: 'cdk.dev',
   configurationSet: myConfigurationSet,
   mailFromDomain: 'mail.cdk.dev',
@@ -176,9 +176,9 @@ You can instead configure DKIM authentication by using your own public-private k
 as [Bring Your Own DKIM (BYODKIM)](https://docs.aws.amazon.com/ses/latest/dg/send-email-authentication-dkim-bring-your-own.html):
 
 ```ts
-new EmailIdentity(stack, 'Identity', {
+new ses.EmailIdentity(stack, 'Identity', {
   identity: 'cdk.dev',
-  dkimIdentity: DkimIdentity.byodDkim(SecretValue.secretsManager('my-private-key'), 'selector'),
+  dkimIdentity: ses.DkimIdentity.byodDkim(SecretValue.secretsManager('my-private-key'), 'selector'),
 });
 
 // create a TXT record for `selector._domainkey.cdk.dev` with `p=yourPublicKey` as value
