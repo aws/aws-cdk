@@ -4,7 +4,7 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, CfnCapabilities, Duration, Fn, Lazy, PhysicalName, Stack } from '@aws-cdk/core';
+import { Aws, CfnCapabilities, Duration, Fn, PhysicalName, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
@@ -297,12 +297,12 @@ export class CodePipeline extends PipelineBase {
   /**
    * Asset roles shared for publishing
    */
-  private readonly assetCodeBuildRoles: Record<string, iam.IRole> = {};
+  private readonly assetCodeBuildRoles: Map<AssetType, iam.IRole> = new Map();
 
   /**
-   * Per asset type, the target role ARNs that need to be assumed
+   * Per asset type, a statement that grants sts:AssumeRole for each target role ARNs that need to be assumed
    */
-  private readonly assetPublishingRoles: Record<string, Set<string>> = {};
+  private readonly assetPublishingStatement: Map<AssetType, iam.PolicyStatement> = new Map();
 
   /**
    * This is set to the very first artifact produced in the pipeline
@@ -678,14 +678,10 @@ export class CodePipeline extends PipelineBase {
       throw new Error('All assets in a single publishing step must be of the same type');
     }
 
-    const publishingRoles = this.assetPublishingRoles[assetType] = (this.assetPublishingRoles[assetType] ?? new Set());
-    for (const asset of assets) {
-      if (asset.assetPublishingRoleArn) {
-        publishingRoles.add(asset.assetPublishingRoleArn);
-      }
-    }
-
     const role = this.obtainAssetCodeBuildRole(assets[0].assetType);
+
+    // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
+    this.grantAssetAssumeRole(assets[0].assetType, assets.flatMap(a => a.assetPublishingRoleArn ? [Fn.sub(a.assetPublishingRoleArn)] : []));
 
     // The base commands that need to be run
     const script = new CodeBuildStep(node.id, {
@@ -825,8 +821,9 @@ export class CodePipeline extends PipelineBase {
    * Generates one role per asset type to separate file and Docker/image-based permissions.
    */
   private obtainAssetCodeBuildRole(assetType: AssetType): iam.IRole {
-    if (this.assetCodeBuildRoles[assetType]) {
-      return this.assetCodeBuildRoles[assetType];
+    const existing = this.assetCodeBuildRoles.get(assetType);
+    if (existing) {
+      return existing;
     }
 
     const stack = Stack.of(this);
@@ -840,21 +837,38 @@ export class CodePipeline extends PipelineBase {
       ),
     });
 
-    // Publishing role access
-    // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
-    // Lazy-evaluated so all asset publishing roles are included.
-    assetRole.addToPolicy(new iam.PolicyStatement({
-      actions: ['sts:AssumeRole'],
-      resources: Lazy.list({ produce: () => Array.from(this.assetPublishingRoles[assetType] ?? []).map(arn => Fn.sub(arn)) }),
-    }));
-
     // Grant pull access for any ECR registries and secrets that exist
     if (assetType === AssetType.DOCKER_IMAGE) {
       this.dockerCredentials.forEach(reg => reg.grantRead(assetRole, DockerCredentialUsage.ASSET_PUBLISHING));
     }
 
-    this.assetCodeBuildRoles[assetType] = assetRole;
+    this.assetCodeBuildRoles.set(assetType, assetRole);
     return assetRole;
+  }
+
+  /**
+   * Make sure the Asset Publishing Role has sts:AssumeRole permissions to all the given ARNs
+   *
+   * Will add a new PolicyStatement to the Role if necessary, otherwise add resources to the existing
+   * PolicyStatement
+   */
+  private grantAssetAssumeRole(assetType: AssetType, roleArns: string[]) {
+    let statement = this.assetPublishingStatement.get(assetType);
+    if (!statement) {
+      const role = this.assetCodeBuildRoles.get(assetType);
+      if (!role) {
+        throw new Error('Internal invariant violated: Asset Role should have been created before calling grantAssetAssumeRole');
+      }
+
+      statement = new iam.PolicyStatement({
+        actions: ['sts:AssumeRole'],
+      });
+
+      role.addToPrincipalPolicy(statement);
+      this.assetPublishingStatement.set(assetType, statement);
+    }
+
+    statement.addResources(...roleArns);
   }
 }
 
