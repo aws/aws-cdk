@@ -316,9 +316,14 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly XRAY = new InterfaceVpcEndpointAwsService('xray');
 
   /**
-   * The name of the service.
+   * The name of the service. e.g. com.amazonaws.us-east-1.ecs
    */
   public readonly name: string;
+
+  /**
+   * The short name of the service. e.g. ecs
+   */
+  public readonly shortName: string;
 
   /**
    * The port of the service.
@@ -348,6 +353,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
     });
 
     this.name = `${prefix || defaultEndpointPrefix}.${region}.${name}${defaultEndpointSuffix}`;
+    this.shortName = name;
     this.port = port || 443;
   }
 
