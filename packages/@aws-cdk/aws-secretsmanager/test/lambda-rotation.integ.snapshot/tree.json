@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "cdk-integ-secret-lambda-rotation": {
@@ -386,7 +386,7 @@
                       ]
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs12.x"
+                    "runtime": "nodejs14.x"
                   }
                 },
                 "constructInfo": {
@@ -394,9 +394,9 @@
                   "version": "0.0.0"
                 }
               },
-              "InvokeServicePrincipal(secretsmanager.amazonaws.com)": {
-                "id": "InvokeServicePrincipal(secretsmanager.amazonaws.com)",
-                "path": "cdk-integ-secret-lambda-rotation/Lambda/InvokeServicePrincipal(secretsmanager.amazonaws.com)",
+              "InvokeN0--a2GKfZP0JmDqDE--Vhhu6+A0TUv3NyNbk4YM+FKNc=": {
+                "id": "InvokeN0--a2GKfZP0JmDqDE--Vhhu6+A0TUv3NyNbk4YM+FKNc=",
+                "path": "cdk-integ-secret-lambda-rotation/Lambda/InvokeN0--a2GKfZP0JmDqDE--Vhhu6+A0TUv3NyNbk4YM+FKNc=",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {

@@ -1,4 +1,5 @@
-import { App, CfnOutput, CfnResource, Construct, PhysicalName, Resource, Stack } from '../lib';
+import { Construct } from 'constructs';
+import { App, CfnOutput, CfnResource, PhysicalName, Resource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 /* eslint-disable quote-props */
@@ -47,8 +48,6 @@ describe('cross environment', () => {
           },
         },
       });
-
-
     });
 
     test('can reference a fixed physical name directly in a different account', () => {
@@ -81,8 +80,6 @@ describe('cross environment', () => {
           },
         },
       });
-
-
     });
 
     test('can reference an ARN with an assigned physical name directly in a different account', () => {
@@ -127,8 +124,6 @@ describe('cross environment', () => {
           },
         },
       });
-
-
     });
 
     test('can reference an assigned physical name directly in a different account', () => {
@@ -161,8 +156,6 @@ describe('cross environment', () => {
           },
         },
       });
-
-
     });
   });
 
@@ -191,8 +184,6 @@ describe('cross environment', () => {
     // THEN
     expect(() => toCloudFormation(stack2)).toThrow(
       /Cannot use resource 'Stack1\/MyResource' in a cross-environment fashion/);
-
-
   });
 
   test('cross environment when stack is a substack', () => {
@@ -217,29 +208,23 @@ describe('cross environment', () => {
 
     const assembly = app.synth();
 
-    expect(assembly.getStackByName(parentStack.stackName).template).toEqual({
-      Resources: {
-        ParentResource: {
-          Type: 'Parent::Resource',
-          Properties: {
-            RefToChildResource: 'parentstackchildstack83c5ackchildresource852877eeb919bda2008e',
-          },
+    expect(assembly.getStackByName(parentStack.stackName).template?.Resources).toEqual({
+      ParentResource: {
+        Type: 'Parent::Resource',
+        Properties: {
+          RefToChildResource: 'parentstackchildstack83c5ackchildresource852877eeb919bda2008e',
         },
       },
     });
 
-    expect(assembly.getStackByName(childStack.stackName).template).toEqual({
-      Resources: {
-        ChildResource8C37244D: {
-          Type: 'My::Resource',
-          Properties: {
-            resourceName: 'parentstackchildstack83c5ackchildresource852877eeb919bda2008e',
-          },
+    expect(assembly.getStackByName(childStack.stackName).template?.Resources).toEqual({
+      ChildResource8C37244D: {
+        Type: 'My::Resource',
+        Properties: {
+          resourceName: 'parentstackchildstack83c5ackchildresource852877eeb919bda2008e',
         },
       },
     });
-
-
   });
 });
 

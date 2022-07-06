@@ -1,5 +1,5 @@
 {
-  "$version": "68.0.0",
+  "$version": "78.1.0",
   "PropertyTypes": {
     "AWS::CodeBuild::Project.Artifacts": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-artifacts.html",
