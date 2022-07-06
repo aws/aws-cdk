@@ -283,6 +283,15 @@ export const CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME = '@a
 export const S3_CREATE_DEFAULT_LOGGING_POLICY = '@aws-cdk/aws-s3:createDefaultLoggingPolicy';
 
 /**
+ * Enable this feature flag to pass through the `NetworkLoadBalanced<Ec2|Fargate>ServiceProps.taskImageOptions.containerPort`
+ * and the `NetworkMultipleTargetGroups<Ec2|Fargate>ServiceProps.targetGroups[X].containerPort` to the generated
+ * `ElasticLoadBalancingV2::TargetGroup`'s `Port` property.
+ *
+ * This is a feature flag because updating `Port` causes a replacement of the target groups, which is a breaking change.
+ */
+export const ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT = '@aws-cdk/aws-ecs-patterns:containerPortToTargetGroupPort';
+
+/**
  * Flag values that should apply for new projects
  *
  * Add a flag in here (typically with the value `true`), to enable
@@ -313,6 +322,7 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true,
   [CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME]: true,
   [S3_CREATE_DEFAULT_LOGGING_POLICY]: true,
+  [ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT]: true,
 };
 
 /**
