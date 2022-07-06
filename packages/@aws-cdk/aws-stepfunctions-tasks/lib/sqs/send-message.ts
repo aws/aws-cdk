@@ -84,6 +84,16 @@ export class SqsSendMessage extends sfn.TaskStateBase {
         resources: [this.props.queue.queueArn],
       }),
     ];
+
+    // sending to an encrypted queue requires
+    // permissions on the associated kms key
+    if (this.props.queue.encryptionMasterKey) {
+      this.taskPolicies.push(
+        new iam.PolicyStatement({
+          actions: ['kms:Decrypt', 'kms:GenerateDataKey*'],
+          resources: [this.props.queue.encryptionMasterKey.keyArn],
+        }));
+    }
   }
 
   /**
