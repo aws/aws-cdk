@@ -97,7 +97,7 @@ export enum CustomResourceProviderRuntime {
    *
    * @deprecated Use {@link NODEJS_14_X}
    */
-  NODEJS_12 = 'nodejs12.x',
+  NODEJS_12 = 'deprecated_nodejs12.x',
 
   /**
    * Node.js 12.x
@@ -255,7 +255,7 @@ export class CustomResourceProvider extends CoreConstruct {
         MemorySize: memory.toMebibytes(),
         Handler: `${ENTRYPOINT_FILENAME}.handler`,
         Role: role.getAtt('Arn'),
-        Runtime: props.runtime,
+        Runtime: customResourceProviderRuntimeToString(props.runtime),
         Environment: this.renderEnvironmentVariables(props.environment),
         Description: props.description ?? undefined,
       },
@@ -287,5 +287,15 @@ export class CustomResourceProvider extends CoreConstruct {
     }
 
     return { Variables: variables };
+  }
+}
+
+function customResourceProviderRuntimeToString(x: CustomResourceProviderRuntime): string {
+  switch (x) {
+    case CustomResourceProviderRuntime.NODEJS_12:
+    case CustomResourceProviderRuntime.NODEJS_12_X:
+      return 'nodejs12.x';
+    case CustomResourceProviderRuntime.NODEJS_14_X:
+      return 'nodejs14.x';
   }
 }

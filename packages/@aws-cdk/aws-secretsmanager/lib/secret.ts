@@ -664,14 +664,14 @@ export enum AttachmentTargetType {
    *
    * @deprecated use RDS_DB_INSTANCE instead
    */
-  INSTANCE = 'AWS::RDS::DBInstance',
+  INSTANCE = 'deprecated_AWS::RDS::DBInstance',
 
   /**
    * A database cluster
    *
    * @deprecated use RDS_DB_CLUSTER instead
    */
-  CLUSTER = 'AWS::RDS::DBCluster',
+  CLUSTER = 'deprecated_AWS::RDS::DBCluster',
 
   /**
    * AWS::RDS::DBInstance
@@ -782,7 +782,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
     const attachment = new secretsmanager.CfnSecretTargetAttachment(this, 'Resource', {
       secretId: props.secret.secretArn,
       targetId: props.target.asSecretAttachmentTarget().targetId,
-      targetType: props.target.asSecretAttachmentTarget().targetType,
+      targetType: attachmentTargetTypeToString(props.target.asSecretAttachmentTarget().targetType),
     });
 
     this.encryptionKey = props.secret.encryptionKey;
@@ -925,4 +925,23 @@ function parseSecretNameForOwnedSecret(construct: Construct, secretArn: string, 
 /** Performs a best guess if an ARN is complete, based on if it ends with a 6-character suffix. */
 function arnIsComplete(secretArn: string): boolean {
   return Token.isUnresolved(secretArn) || /-[a-z0-9]{6}$/i.test(secretArn);
+}
+
+function attachmentTargetTypeToString(x: AttachmentTargetType): string {
+  switch (x) {
+    case AttachmentTargetType.RDS_DB_INSTANCE:
+    case AttachmentTargetType.INSTANCE:
+      return 'AWS::RDS::DBInstance';
+    case AttachmentTargetType.RDS_DB_CLUSTER:
+    case AttachmentTargetType.CLUSTER:
+      return 'AWS::RDS::DBCluster';
+    case AttachmentTargetType.RDS_DB_PROXY:
+      return 'AWS::RDS::DBProxy';
+    case AttachmentTargetType.REDSHIFT_CLUSTER:
+      return 'AWS::Redshift::Cluster';
+    case AttachmentTargetType.DOCDB_DB_INSTANCE:
+      return 'AWS::DocDB::DBInstance';
+    case AttachmentTargetType.DOCDB_DB_CLUSTER:
+      return 'AWS::DocDB::DBCluster';
+  }
 }

@@ -178,7 +178,9 @@ describe('RequireImdsv2Aspect', () => {
       // GIVEN
       const launchTemplate = new LaunchTemplate(stack, 'LaunchTemplate');
       const cfnLaunchTemplate = launchTemplate.node.tryFindChild('Resource') as CfnLaunchTemplate;
-      cfnLaunchTemplate.launchTemplateData = fakeToken();
+      cfnLaunchTemplate.launchTemplateData = cdk.Token.asAny({
+        kernelId: 'asfd',
+      } as CfnLaunchTemplate.LaunchTemplateDataProperty);
       const aspect = new LaunchTemplateRequireImdsv2Aspect();
 
       // WHEN
@@ -193,7 +195,9 @@ describe('RequireImdsv2Aspect', () => {
       const launchTemplate = new LaunchTemplate(stack, 'LaunchTemplate');
       const cfnLaunchTemplate = launchTemplate.node.tryFindChild('Resource') as CfnLaunchTemplate;
       cfnLaunchTemplate.launchTemplateData = {
-        metadataOptions: fakeToken(),
+        metadataOptions: cdk.Token.asAny({
+          httpEndpoint: 'http://bla',
+        } as CfnLaunchTemplate.MetadataOptionsProperty),
       } as CfnLaunchTemplate.LaunchTemplateDataProperty;
       const aspect = new LaunchTemplateRequireImdsv2Aspect();
 
@@ -223,11 +227,3 @@ describe('RequireImdsv2Aspect', () => {
     });
   });
 });
-
-function fakeToken(): cdk.IResolvable {
-  return {
-    creationStack: [],
-    resolve: (_c) => {},
-    toString: () => '',
-  };
-}

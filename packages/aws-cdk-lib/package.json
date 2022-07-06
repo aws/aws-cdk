@@ -295,6 +295,7 @@
     "@aws-cdk/aws-ram": "0.0.0",
     "@aws-cdk/aws-rds": "0.0.0",
     "@aws-cdk/aws-redshift": "0.0.0",
+    "@aws-cdk/aws-redshiftserverless": "0.0.0",
     "@aws-cdk/aws-refactorspaces": "0.0.0",
     "@aws-cdk/aws-rekognition": "0.0.0",
     "@aws-cdk/aws-resiliencehub": "0.0.0",
