@@ -1,0 +1,66 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-asset-refs": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-asset-refs.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-asset-refs": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197.txt",
+              "id": "78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197",
+              "packaging": "file",
+              "sourceHash": "78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197",
+              "s3BucketParameter": "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A",
+              "s3KeyParameter": "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3VersionKey9482DC35",
+              "artifactHashParameter": "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197ArtifactHash22BFFA67"
+            }
+          }
+        ],
+        "/aws-cdk-asset-refs/AssetParameters/78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A"
+          }
+        ],
+        "/aws-cdk-asset-refs/AssetParameters/78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3VersionKey9482DC35"
+          }
+        ],
+        "/aws-cdk-asset-refs/AssetParameters/78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197ArtifactHash22BFFA67"
+          }
+        ],
+        "/aws-cdk-asset-refs/MyUserGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyUserGroupDA7A39B2"
+          }
+        ],
+        "/aws-cdk-asset-refs/MyUserGroup/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyUserGroupDefaultPolicy50C5D742"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-asset-refs"
+    }
+  }
+}

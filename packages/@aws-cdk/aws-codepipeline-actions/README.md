@@ -762,10 +762,10 @@ const lambdaCode = lambda.Code.fromCfnParameters();
 const func = new lambda.Function(this, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
 });
 // used to make sure each CDK synthesis produces a different Version
-const version = func.addVersion('NewVersion');
+const version = func.currentVersion;
 const alias = new lambda.Alias(this, 'LambdaAlias', {
   aliasName: 'Prod',
   version,
@@ -1125,7 +1125,7 @@ Example:
 const lambdaInvokeAction = new codepipeline_actions.LambdaInvokeAction({
   actionName: 'Lambda',
   lambda: new lambda.Function(this, 'Func', {
-    runtime: lambda.Runtime.NODEJS_12_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline(`
         const AWS = require('aws-sdk');

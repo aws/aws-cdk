@@ -1,0 +1,118 @@
+{
+ "Resources": {
+  "pool056F3F7E": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "poolclient2623294C": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "UserPoolId": {
+     "Ref": "pool056F3F7E"
+    },
+    "AllowedOAuthFlows": [
+     "implicit",
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "profile",
+     "phone",
+     "email",
+     "openid",
+     "aws.cognito.signin.user.admin"
+    ],
+    "CallbackURLs": [
+     "https://example.com"
+    ],
+    "SupportedIdentityProviders": [
+     {
+      "Ref": "apple9B5408AC"
+     },
+     "COGNITO"
+    ]
+   }
+  },
+  "pooldomain430FA744": {
+   "Type": "AWS::Cognito::UserPoolDomain",
+   "Properties": {
+    "Domain": "nija-test-pool",
+    "UserPoolId": {
+     "Ref": "pool056F3F7E"
+    }
+   }
+  },
+  "apple9B5408AC": {
+   "Type": "AWS::Cognito::UserPoolIdentityProvider",
+   "Properties": {
+    "ProviderName": "SignInWithApple",
+    "ProviderType": "SignInWithApple",
+    "UserPoolId": {
+     "Ref": "pool056F3F7E"
+    },
+    "AttributeMapping": {
+     "family_name": "lastName",
+     "given_name": "firstName"
+    },
+    "ProviderDetails": {
+     "client_id": "com.amzn.cdk",
+     "team_id": "CDKTEAMCDK",
+     "key_id": "CDKKEYCDK1",
+     "private_key": "PRIV_KEY_CDK",
+     "authorize_scopes": "email name"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "SignInLink": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "pooldomain430FA744"
+      },
+      ".auth.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazoncognito.com/login?client_id=",
+      {
+       "Ref": "poolclient2623294C"
+      },
+      "&response_type=code&redirect_uri=https://example.com"
+     ]
+    ]
+   }
+  }
+ }
+}

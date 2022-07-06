@@ -37,12 +37,14 @@ export interface RuleProps {
 
   /**
    * The schedule or rate (frequency) that determines when EventBridge
-   * runs the rule. For more information, see Schedule Expression Syntax for
+   * runs the rule.
+   *
+   * You must specify this property, the `eventPattern` property, or both.
+   *
+   * For more information, see Schedule Expression Syntax for
    * Rules in the Amazon EventBridge User Guide.
    *
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html
-   *
-   * You must specify this property, the `eventPattern` property, or both.
    *
    * @default - None.
    */
@@ -50,16 +52,16 @@ export interface RuleProps {
 
   /**
    * Describes which events EventBridge routes to the specified target.
-   * These routed events are matched events. For more information, see Events
-   * and Event Patterns in the Amazon EventBridge User Guide.
-   *
-   * @see
-   * https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-and-event-patterns.html
+   * These routed events are matched events.
    *
    * You must specify this property (either via props or via
    * `addEventPattern`), the `scheduleExpression` property, or both. The
    * method `addEventPattern` can be used to add filter values to the event
    * pattern.
+   *
+   * For more information, see Events and Event Patterns in the Amazon EventBridge User Guide.
+   *
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-and-event-patterns.html
    *
    * @default - None.
    */
@@ -155,6 +157,8 @@ export class Rule extends Resource implements IRule {
     for (const target of props.targets || []) {
       this.addTarget(target);
     }
+
+    this.node.addValidation({ validate: () => this.validateRule() });
   }
 
   /**
@@ -321,7 +325,7 @@ export class Rule extends Resource implements IRule {
     return renderEventPattern(this.eventPattern);
   }
 
-  protected validate() {
+  protected validateRule() {
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
       return ['Either \'eventPattern\' or \'schedule\' must be defined'];
     }
@@ -397,7 +401,7 @@ export class Rule extends Resource implements IRule {
         });
         new CfnEventBusPolicy(eventBusPolicyStack, 'GivePermToOtherAccount', {
           action: 'events:PutEvents',
-          statementId: `Allow-account-${sourceAccount}`,
+          statementId: `Allow-account-${sourceAccount}-${this.node.addr}`,
           principal: sourceAccount,
         });
       }
@@ -465,13 +469,13 @@ class MirrorRule extends Rule {
   }
 
   /**
-   * Override validate to be a no-op
+   * Override validateRule to be a no-op
    *
    * The rules are never stored on this object so there's nothing to validate.
    *
    * Instead, we mirror the other rule at render time.
    */
-  protected validate(): string[] {
+  protected validateRule(): string[] {
     return [];
   }
 }

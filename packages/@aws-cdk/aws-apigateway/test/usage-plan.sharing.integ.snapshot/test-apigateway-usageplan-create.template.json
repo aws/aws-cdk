@@ -1,0 +1,17 @@
+{
+ "Resources": {
+  "myusageplan4B391740": {
+   "Type": "AWS::ApiGateway::UsagePlan"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefmyusageplan4B391740F6B819BA": {
+   "Value": {
+    "Ref": "myusageplan4B391740"
+   },
+   "Export": {
+    "Name": "test-apigateway-usageplan-create:ExportsOutputRefmyusageplan4B391740F6B819BA"
+   }
+  }
+ }
+}

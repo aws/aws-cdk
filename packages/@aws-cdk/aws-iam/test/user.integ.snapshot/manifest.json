@@ -1,0 +1,70 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-iam-user": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-iam-user.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-iam-user/MyUser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyUserDC45028B"
+          }
+        ],
+        "/aws-cdk-iam-user/NameForUserImportedByArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NameForUserImportedByArn"
+          }
+        ],
+        "/aws-cdk-iam-user/NameForUserImportedByArnPath": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NameForUserImportedByArnPath"
+          }
+        ],
+        "/aws-cdk-iam-user/NameForUserImportedByArnPathMultiple": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NameForUserImportedByArnPathMultiple"
+          }
+        ],
+        "/aws-cdk-iam-user/NameForUserImportedByAttributes": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NameForUserImportedByAttributes"
+          }
+        ],
+        "/aws-cdk-iam-user/NameForUserImportedByAttributesPath": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NameForUserImportedByAttributesPath"
+          }
+        ],
+        "/aws-cdk-iam-user/NameForUserImportedByAttributesPathMultiple": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NameForUserImportedByAttributesPathMultiple"
+          }
+        ],
+        "/aws-cdk-iam-user/NameForUserImportedByName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NameForUserImportedByName"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-iam-user"
+    }
+  }
+}

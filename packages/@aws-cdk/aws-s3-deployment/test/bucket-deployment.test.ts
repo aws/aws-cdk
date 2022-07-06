@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { readdirSync, readFileSync, existsSync } from 'fs';
 import * as path from 'path';
 import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
@@ -17,7 +17,8 @@ const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 test('deploy from local directory asset', () => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+  const stack = new cdk.Stack(app);
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // WHEN
@@ -94,7 +95,8 @@ test('deploy with configured log retention', () => {
 
 test('deploy from local directory assets', () => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+  const stack = new cdk.Stack(app);
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // WHEN
@@ -303,7 +305,8 @@ testDeprecated('honors passed asset options', () => {
   // When the deprecated property is removed from source, this block can be dropped.
 
   // GIVEN
-  const stack = new cdk.Stack();
+  const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+  const stack = new cdk.Stack(app);
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // WHEN
@@ -708,15 +711,53 @@ testFutureBehavior('lambda execution role gets permissions to read from the sour
   });
 });
 
+testFutureBehavior('lambda execution role gets putObjectAcl permission when deploying with accessControl', s3GrantWriteCtx, cdk.App, (app) => {
+  // GIVEN
+  const stack = new cdk.Stack(app);
+  const source = new s3.Bucket(stack, 'Source');
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.bucket(source, 'file.zip')],
+    destinationBucket: bucket,
+    accessControl: s3.BucketAccessControl.PUBLIC_READ,
+  });
+
+  // THEN
+  const map = Template.fromStack(stack).findResources('AWS::IAM::Policy');
+  expect(map).toBeDefined();
+  const resource = map[Object.keys(map)[0]];
+  expect(resource.Properties.PolicyDocument.Statement).toContainEqual({
+    Action: [
+      's3:PutObjectAcl',
+      's3:PutObjectVersionAcl',
+    ],
+    Effect: 'Allow',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          {
+            'Fn::GetAtt': [
+              'DestC383B82A',
+              'Arn',
+            ],
+          },
+          '/*',
+        ],
+      ],
+    },
+  });
+});
+
 test('memoryLimit can be used to specify the memory limit for the deployment resource handler', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // WHEN
-
   // we define 3 deployments with 2 different memory configurations
-
   new s3deploy.BucketDeployment(stack, 'Deploy256-1', {
     sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
     destinationBucket: bucket,
@@ -736,12 +777,50 @@ test('memoryLimit can be used to specify the memory limit for the deployment res
   });
 
   // THEN
-
   // we expect to find only two handlers, one for each configuration
-
   Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 256 });
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 1024 });
+});
+
+test('ephemeralStorageSize can be used to specify the storage size for the deployment resource handler', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  // we define 3 deployments with 2 different memory configurations
+  new s3deploy.BucketDeployment(stack, 'Deploy256-1', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    ephemeralStorageSize: cdk.Size.mebibytes(512),
+  });
+
+  new s3deploy.BucketDeployment(stack, 'Deploy256-2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    ephemeralStorageSize: cdk.Size.mebibytes(512),
+  });
+
+  new s3deploy.BucketDeployment(stack, 'Deploy1024', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    ephemeralStorageSize: cdk.Size.mebibytes(1024),
+  });
+
+  // THEN
+  // we expect to find only two handlers, one for each configuration
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    EphemeralStorage: {
+      Size: 512,
+    },
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    EphemeralStorage: {
+      Size: 1024,
+    },
+  });
 });
 
 test('deployment allows custom role to be supplied', () => {
@@ -1158,7 +1237,7 @@ test('Source.data() can be used to create a file with string contents', () => {
   });
 
   const result = app.synth();
-  const content = readDataFile(result, 'c5b1c01fc092abf1da35f6772e7c507e566aaa69404025c080ba074c69741755', 'my/path.txt');
+  const content = readDataFile(result, 'my/path.txt');
   expect(content).toStrictEqual('hello, world');
 });
 
@@ -1180,7 +1259,7 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
   });
 
   const result = app.synth();
-  const obj = JSON.parse(readDataFile(result, '6a9e1763f42401799363d87d16b238c89bf75a56f2a3f67498a3224573062b0c', 'app-config.json'));
+  const obj = JSON.parse(readDataFile(result, 'app-config.json'));
   expect(obj).toStrictEqual({
     foo: 'bar',
     sub: {
@@ -1197,8 +1276,14 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
 });
 
 
-function readDataFile(casm: cxapi.CloudAssembly, assetId: string, filePath: string): string {
-  const asset = casm.stacks[0].assets.find(a => a.id === assetId);
-  if (!asset) { throw new Error('Asset not found'); }
-  return readFileSync(path.join(casm.directory, asset.path, filePath), 'utf-8');
+function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
+  const assetDirs = readdirSync(casm.directory).filter(f => f.startsWith('asset.'));
+  for (const dir of assetDirs) {
+    const candidate = path.join(casm.directory, dir, relativePath);
+    if (existsSync(candidate)) {
+      return readFileSync(candidate, 'utf8');
+    }
+  }
+
+  throw new Error(`File ${relativePath} not found in any of the assets of the assembly`);
 }

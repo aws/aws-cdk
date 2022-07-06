@@ -655,3 +655,37 @@ test('when a property with a number-like format doesn\'t change', () => {
   const difference = differences.resources.changes.BucketResource;
   expect(difference).toBeUndefined();
 });
+
+test('handles a resource changing its Type', () => {
+  const currentTemplate = {
+    Resources: {
+      FunctionApi: {
+        Type: 'AWS::Serverless::Api',
+        Properties: {
+          StageName: 'prod',
+        },
+      },
+    },
+  };
+  const newTemplate = {
+    Resources: {
+      FunctionApi: {
+        Type: 'AWS::ApiGateway::RestApi',
+      },
+    },
+  };
+
+  const differences = diffTemplate(currentTemplate, newTemplate);
+  expect(differences.differenceCount).toBe(1);
+  expect(differences.resources.differenceCount).toBe(1);
+  const difference = differences.resources.changes.FunctionApi;
+  expect(difference).toEqual({
+    isAddition: false,
+    isRemoval: false,
+    newValue: { Type: 'AWS::ApiGateway::RestApi' },
+    oldValue: { Properties: { StageName: 'prod' }, Type: 'AWS::Serverless::Api' },
+    otherDiffs: {},
+    propertyDiffs: {},
+    resourceTypes: { newType: 'AWS::ApiGateway::RestApi', oldType: 'AWS::Serverless::Api' },
+  });
+});

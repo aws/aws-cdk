@@ -1,3 +1,6 @@
+// disabling update workflow because we don't want to include the assets in the snapshot
+// python bundling changes the asset hash pretty frequently
+/// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { App, CfnOutput, Stack, StackProps } from '@aws-cdk/core';
@@ -15,7 +18,7 @@ class TestStack extends Stack {
 
     const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: path.join(__dirname, 'lambda-handler'),
-      runtime: Runtime.PYTHON_3_6,
+      runtime: Runtime.PYTHON_3_9,
     });
 
     new CfnOutput(this, 'FunctionArn', {

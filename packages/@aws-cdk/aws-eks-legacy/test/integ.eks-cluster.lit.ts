@@ -2,6 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as eks from '../lib';
 
+/// !cdk-integ pragma:enable-lookups
 const env = {
   region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
   account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,

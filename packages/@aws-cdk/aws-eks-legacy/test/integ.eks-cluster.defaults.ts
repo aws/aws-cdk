@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import * as eks from '../lib';
 import { TestStack } from './util';
+/// !cdk-integ pragma:enable-lookups
 
 class EksClusterStack extends TestStack {
   constructor(scope: cdk.App, id: string) {

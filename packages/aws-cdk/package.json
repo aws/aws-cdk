@@ -2,8 +2,6 @@
   "name": "aws-cdk",
   "description": "CDK Toolkit, the command line tool for CDK apps",
   "version": "0.0.0",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
   "bin": {
     "cdk": "bin/cdk"
   },
@@ -13,7 +11,7 @@
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
-    "integ": "jest --testMatch '**/?(*.)+(integ-test).js'",
+    "integ": "jest --testMatch '**/?(*.)+(integtest).js'",
     "package": "cdk-package",
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test",
@@ -46,8 +44,11 @@
         "BSD-2-Clause",
         "0BSD"
       ],
-      "dontAttribute": "^@aws-cdk/|^cdk-assets$",
-      "test": "bin/cdk --version"
+      "dontAttribute": "^@aws-cdk/|^cdk-assets$|^cdk-cli-wrapper$",
+      "test": "bin/cdk --version",
+      "entryPoints": [
+        "lib/index.js"
+      ]
     }
   },
   "author": {
@@ -62,7 +63,7 @@
     "@types/archiver": "^5.3.1",
     "@types/fs-extra": "^8.1.2",
     "@types/glob": "^7.2.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "@types/minimatch": "^3.0.5",
     "@types/mockery": "^1.4.30",
     "@types/node": "^10.17.60",
@@ -75,38 +76,39 @@
     "@types/yargs": "^15.0.14",
     "aws-sdk-mock": "5.6.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "constructs": "^3.3.69",
     "jest": "^27.5.1",
     "madge": "^5.0.1",
+    "constructs": "^10.0.0",
     "make-runnable": "^1.3.10",
     "mockery": "^2.1.0",
-    "nock": "^13.2.4",
+    "nock": "^13.2.6",
     "@aws-cdk/pkglint": "0.0.0",
     "sinon": "^9.2.4",
-    "ts-jest": "^27.1.3",
+    "ts-jest": "^27.1.5",
     "ts-mock-imports": "^1.3.8",
-    "xml-js": "^1.6.11"
+    "xml-js": "^1.6.11",
+    "axios": "^0.27.2"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@jsii/check-node": "1.54.0",
-    "archiver": "^5.3.0",
-    "aws-sdk": "^2.979.0",
+    "@jsii/check-node": "1.60.1",
+    "archiver": "^5.3.1",
+    "aws-sdk": "^2.1093.0",
     "camelcase": "^6.3.0",
     "cdk-assets": "0.0.0",
     "chokidar": "^3.5.3",
     "chalk": "^4",
     "decamelize": "^5.0.1",
     "fs-extra": "^9.1.0",
-    "glob": "^7.2.0",
-    "json-diff": "^0.7.3",
+    "glob": "^7.2.3",
+    "json-diff": "^0.9.0",
     "minimatch": ">=3.1",
     "promptly": "^3.2.0",
     "proxy-agent": "^5.0.0",
-    "semver": "^7.3.5",
+    "semver": "^7.3.7",
     "source-map-support": "^0.5.21",
     "strip-ansi": "^6.0.1",
     "table": "^6.8.0",
@@ -126,7 +128,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "nozem": {
     "ostools": [
@@ -144,6 +146,6 @@
   "stability": "stable",
   "maturity": "stable",
   "publishConfig": {
-    "tag": "latest-1"
+    "tag": "latest"
   }
 }

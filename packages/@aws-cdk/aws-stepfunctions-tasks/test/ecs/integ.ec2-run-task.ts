@@ -16,18 +16,9 @@ import * as tasks from '../../lib';
  * -- aws stepfunctions describe-execution --execution-arn <state-machine-arn-from-output> returns a status of `Succeeded`
  */
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-sfn-tasks-ecs-ec2-integ', {
-  env: {
-    account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
-  },
-});
+const stack = new cdk.Stack(app, 'aws-sfn-tasks-ecs-ec2-integ');
 
-const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
-  isDefault: true,
-});
-
-const cluster = new ecs.Cluster(stack, 'Ec2Cluster', { vpc });
+const cluster = new ecs.Cluster(stack, 'Ec2Cluster');
 cluster.addCapacity('DefaultAutoScalingGroup', {
   instanceType: new ec2.InstanceType('t2.micro'),
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },

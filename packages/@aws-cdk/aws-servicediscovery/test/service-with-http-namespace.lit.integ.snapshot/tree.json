@@ -1,0 +1,187 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "aws-servicediscovery-integ": {
+        "id": "aws-servicediscovery-integ",
+        "path": "aws-servicediscovery-integ",
+        "children": {
+          "MyNamespace": {
+            "id": "MyNamespace",
+            "path": "aws-servicediscovery-integ/MyNamespace",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-servicediscovery-integ/MyNamespace/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceDiscovery::HttpNamespace",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "MyHTTPNamespace"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicediscovery.CfnHttpNamespace",
+                  "version": "0.0.0"
+                }
+              },
+              "NonIpService": {
+                "id": "NonIpService",
+                "path": "aws-servicediscovery-integ/MyNamespace/NonIpService",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-servicediscovery-integ/MyNamespace/NonIpService/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ServiceDiscovery::Service",
+                      "aws:cdk:cloudformation:props": {
+                        "description": "service registering non-ip instances",
+                        "namespaceId": {
+                          "Fn::GetAtt": [
+                            "MyNamespaceD0BB8558",
+                            "Id"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-servicediscovery.CfnService",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "NonIpInstance": {
+                    "id": "NonIpInstance",
+                    "path": "aws-servicediscovery-integ/MyNamespace/NonIpService/NonIpInstance",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-servicediscovery-integ/MyNamespace/NonIpService/NonIpInstance/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ServiceDiscovery::Instance",
+                          "aws:cdk:cloudformation:props": {
+                            "instanceAttributes": {
+                              "arn": "arn:aws:s3:::mybucket"
+                            },
+                            "serviceId": {
+                              "Fn::GetAtt": [
+                                "MyNamespaceNonIpService3B425009",
+                                "Id"
+                              ]
+                            },
+                            "instanceId": "ervicediscoveryintegMyNamespaceNonIpServiceNonIpInstance45389A2A"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-servicediscovery.CfnInstance",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-servicediscovery.NonIpInstance",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicediscovery.Service",
+                  "version": "0.0.0"
+                }
+              },
+              "IpService": {
+                "id": "IpService",
+                "path": "aws-servicediscovery-integ/MyNamespace/IpService",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-servicediscovery-integ/MyNamespace/IpService/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ServiceDiscovery::Service",
+                      "aws:cdk:cloudformation:props": {
+                        "description": "service registering ip instances",
+                        "healthCheckConfig": {
+                          "type": "HTTP",
+                          "failureThreshold": 1,
+                          "resourcePath": "/check"
+                        },
+                        "namespaceId": {
+                          "Fn::GetAtt": [
+                            "MyNamespaceD0BB8558",
+                            "Id"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-servicediscovery.CfnService",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "IpInstance": {
+                    "id": "IpInstance",
+                    "path": "aws-servicediscovery-integ/MyNamespace/IpService/IpInstance",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-servicediscovery-integ/MyNamespace/IpService/IpInstance/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ServiceDiscovery::Instance",
+                          "aws:cdk:cloudformation:props": {
+                            "instanceAttributes": {
+                              "AWS_INSTANCE_IPV4": "54.239.25.192",
+                              "AWS_INSTANCE_PORT": "80"
+                            },
+                            "serviceId": {
+                              "Fn::GetAtt": [
+                                "MyNamespaceIpService220F547F",
+                                "Id"
+                              ]
+                            },
+                            "instanceId": "awsservicediscoveryintegMyNamespaceIpServiceIpInstance56070746"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-servicediscovery.CfnInstance",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-servicediscovery.IpInstance",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicediscovery.Service",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicediscovery.HttpNamespace",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-dynamodb": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-dynamodb.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-dynamodb/Table/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableKey25666F95"
+          }
+        ],
+        "/aws-cdk-dynamodb/Table/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableCD117FA1"
+          }
+        ],
+        "/aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableWithGlobalAndLocalSecondaryIndexBC540710"
+          }
+        ],
+        "/aws-cdk-dynamodb/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Key961B73FD"
+          }
+        ],
+        "/aws-cdk-dynamodb/TableWithGlobalSecondaryIndex/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableWithGlobalSecondaryIndexCC8E841E"
+          }
+        ],
+        "/aws-cdk-dynamodb/TableWithLocalSecondaryIndex/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableWithLocalSecondaryIndex4DA3D08F"
+          }
+        ],
+        "/aws-cdk-dynamodb/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Role1ABCC5F0"
+          }
+        ],
+        "/aws-cdk-dynamodb/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RoleDefaultPolicy5FFB7DAB"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-dynamodb"
+    }
+  }
+}

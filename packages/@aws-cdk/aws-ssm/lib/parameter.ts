@@ -3,7 +3,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
-  Construct as CompatConstruct, ContextProvider, Fn, IResource, Resource, Stack, Token,
+  ContextProvider, Fn, IResource, Resource, Stack, Token,
   Tokenization,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -141,7 +141,7 @@ export interface StringParameterProps extends ParameterOptions {
   /**
    * The data type of the parameter, such as `text` or `aws:ec2:image`.
    *
-   * @default - undefined
+   * @default ParameterDataType.TEXT
    */
   readonly dataType?: ParameterDataType;
 }
@@ -351,7 +351,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
 
     const stringValue = attrs.version
       ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toString()
-      : new CfnParameter(scope as CompatConstruct, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
+      : new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
@@ -388,7 +388,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * Requires that the stack this scope is defined in will have explicit
    * account/region information. Otherwise, it will fail during synthesis.
    */
-  public static valueFromLookup(scope: CompatConstruct, parameterName: string): string {
+  public static valueFromLookup(scope: Construct, parameterName: string): string {
     const value = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
       props: { parameterName },
@@ -430,6 +430,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * @param scope Some scope within a stack
    * @param parameterName The name of the SSM parameter
    * @param version The parameter version (required for secure strings)
+   * @deprecated Use `SecretValue.ssmSecure()` instead, it will correctly type the imported value as a `SecretValue` and allow importing without version.
    */
   public static valueForSecureStringParameter(scope: Construct, parameterName: string, version: number): string {
     const stack = Stack.of(scope);

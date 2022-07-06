@@ -1,0 +1,58 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-backup": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-backup.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-backup/Table/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableCD117FA1"
+          }
+        ],
+        "/cdk-backup/FileSystem": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystem"
+          }
+        ],
+        "/cdk-backup/Vault/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vault23237E5B"
+          }
+        ],
+        "/cdk-backup/Plan/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PlanDAF4E53A"
+          }
+        ],
+        "/cdk-backup/Plan/Selection/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PlanSelectionRole6D10F4B7"
+          }
+        ],
+        "/cdk-backup/Plan/Selection/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PlanSelectionF88CBC04"
+          }
+        ]
+      },
+      "displayName": "cdk-backup"
+    }
+  }
+}

@@ -5,17 +5,7 @@
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
-![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are in **developer preview** before they
-> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
-> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
-> will be announced in release notes. This means that while you may use them, you may need to
-> update your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -32,6 +22,7 @@ enables organizations to create and manage catalogs of products for their end us
 - [Product](#product)
   - [Creating a product from a local asset](#creating-a-product-from-local-asset)
   - [Creating a product from a stack](#creating-a-product-from-a-stack)
+  - [Creating a Product from a stack with a history of previous versions](#creating-a-product-from-a-stack-with-a-history-of-all-previous-versions)
   - [Adding a product to a portfolio](#adding-a-product-to-a-portfolio)
 - [TagOptions](#tag-options)
 - [Constraints](#constraints)
@@ -74,10 +65,10 @@ new servicecatalog.Portfolio(this, 'Portfolio', {
 
 Read more at [Creating and Managing Portfolios](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/catalogs_portfolios.html).
 
-To import an existing portfolio into your CDK application, use the `Portfolio.fromPortfolioArn()` factory method:
+To reference an existing portfolio into your CDK application, use the `Portfolio.fromPortfolioArn()` factory method:
 
 ```ts
-const portfolio = servicecatalog.Portfolio.fromPortfolioArn(this, 'ImportedPortfolio',
+const portfolio = servicecatalog.Portfolio.fromPortfolioArn(this, 'ReferencedPortfolio',
   'arn:aws:catalog:region:account-id:portfolio/port-abcdefghi');
 ```
 
@@ -87,8 +78,10 @@ You can grant access to and manage the `IAM` users, groups, or roles that have a
 Entities with granted access will be able to utilize the portfolios resources and products via the console or AWS CLI.
 Once resources are deployed end users will be able to access them via the console or service catalog CLI.
 
-```ts fixture=basic-portfolio
+```ts
 import * as iam from '@aws-cdk/aws-iam';
+
+declare const portfolio: servicecatalog.Portfolio;
 
 const user = new iam.User(this, 'User');
 portfolio.giveAccessToUser(user);
@@ -108,14 +101,16 @@ You can use account-to-account sharing to distribute a reference to your portfol
 After the share is initiated, the recipient account can accept the share via CLI or console by importing the portfolio ID.
 Changes made to the shared portfolio will automatically propagate to recipients.
 
-```ts fixture=basic-portfolio
+```ts
+declare const portfolio: servicecatalog.Portfolio;
 portfolio.shareWithAccount('012345678901');
 ```
 
 ## Product
 
 Products are version friendly infrastructure-as-code templates that admins create and add to portfolios for end users to provision and create AWS resources.
-The CDK currently only supports adding products of type Cloudformation product. 
+Service Catalog supports products from AWS Marketplace or ones defined by a CloudFormation template.
+The CDK currently only supports adding products of type CloudFormation. 
 Using the CDK, a new Product can be created with the `CloudFormationProduct` construct.
 You can use `CloudFormationTemplate.fromUrl` to create a Product from a CloudFormation template directly from a URL that points to the template in S3, GitHub, or CodeCommit:
 
@@ -171,7 +166,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 
 class S3BucketProduct extends servicecatalog.ProductStack {
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
 
     new s3.Bucket(this, 'BucketProduct');
@@ -190,13 +185,115 @@ const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
 });
 ```
 
+### Creating a Product from a stack with a history of previous versions
+
+The default behavior of Service Catalog is to overwrite each product version upon deployment.
+This applies to Product Stacks as well, where only the latest changes to your Product Stack will 
+be deployed.
+To keep a history of the revisions of a ProductStack available in Service Catalog,
+you would need to define a ProductStack for each historical copy.
+
+You can instead create a `ProductStackHistory` to maintain snapshots of all previous versions.
+The `ProductStackHistory` can be created by passing the base `productStack`,
+a `currentVersionName` for your current version and a `locked` boolean.
+The `locked` boolean which when set to true will prevent your `currentVersionName`
+from being overwritten when there is an existing snapshot for that version.
+
+```ts
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+
+class S3BucketProduct extends servicecatalog.ProductStack {
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
+
+    new s3.Bucket(this, 'BucketProduct');
+  }
+}
+
+const productStackHistory = new servicecatalog.ProductStackHistory(this, 'ProductStackHistory', {
+  productStack: new S3BucketProduct(this, 'S3BucketProduct'),
+  currentVersionName: 'v1',
+  currentVersionLocked: true
+});
+```
+
+We can deploy the current version `v1` by using `productStackHistory.currentVersion()`
+
+```ts
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+
+class S3BucketProduct extends servicecatalog.ProductStack {
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
+
+    new s3.Bucket(this, 'BucketProductV2');
+  }
+}
+
+const productStackHistory = new servicecatalog.ProductStackHistory(this, 'ProductStackHistory', {
+  productStack: new S3BucketProduct(this, 'S3BucketProduct'),
+  currentVersionName: 'v2',
+  currentVersionLocked: true
+});
+
+const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
+  productName: "My Product",
+  owner: "Product Owner",
+  productVersions: [
+    productStackHistory.currentVersion(),
+  ],
+});
+```
+
+Using `ProductStackHistory` all deployed templates for the ProductStack will be written to disk,
+so that they will still be available in the future as the definition of the `ProductStack` subclass changes over time.
+**It is very important** that you commit these old versions to source control as these versions 
+determine whether a version has already been deployed and can also be deployed themselves.
+
+After using `ProductStackHistory` to deploy version `v1` of your `ProductStack`, we 
+make changes to the `ProductStack` and update the `currentVersionName` to `v2`.
+We still want our `v1` version to still be deployed, so we reference it by calling `productStackHistory.versionFromSnapshot('v1')`.
+
+```ts
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+
+class S3BucketProduct extends servicecatalog.ProductStack {
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
+
+    new s3.Bucket(this, 'BucketProductV2');
+  }
+}
+
+const productStackHistory = new servicecatalog.ProductStackHistory(this, 'ProductStackHistory', {
+  productStack: new S3BucketProduct(this, 'S3BucketProduct'),
+  currentVersionName: 'v2',
+  currentVersionLocked: true
+});
+
+const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
+  productName: "My Product",
+  owner: "Product Owner",
+  productVersions: [
+    productStackHistory.currentVersion(),
+    productStackHistory.versionFromSnapshot('v1')
+  ],
+});
+```
+
 ### Adding a product to a portfolio
 
 You add products to a portfolio to organize and distribute your catalog at scale.  Adding a product to a portfolio creates an association,
 and the product will become visible within the portfolio side in both the Service Catalog console and AWS CLI.
 You can add a product to multiple portfolios depending on your organizational structure and how you would like to group access to products.
 
-```ts fixture=portfolio-product
+```ts
+declare const portfolio: servicecatalog.Portfolio;
+declare const product: servicecatalog.CloudFormationProduct;
+
 portfolio.addProduct(product);
 ```
 
@@ -208,7 +305,10 @@ When launching a product, both the TagOptions associated with the product and th
 
 At the moment, TagOptions can only be deactivated in the console.
 
-```ts fixture=portfolio-product
+```ts
+declare const portfolio: servicecatalog.Portfolio;
+declare const product: servicecatalog.CloudFormationProduct;
+
 const tagOptionsForPortfolio = new servicecatalog.TagOptions(this, 'OrgTagOptions', {
   allowedValuesForTags: {
     Group: ['finance', 'engineering', 'marketing', 'research'],
@@ -242,15 +342,20 @@ Tag update constraints allow or disallow end users to update tags on resources a
 By default, if a Tag Update constraint is not configured, tag updating is not permitted.
 If tag updating is allowed, then new tags associated with the product or portfolio will be applied to provisioned resources during a provisioned product update.
 
-```ts fixture=portfolio-product
-portfolio.addProduct(product);
+```ts
+declare const portfolio: servicecatalog.Portfolio;
+declare const product: servicecatalog.CloudFormationProduct;
 
+portfolio.addProduct(product);
 portfolio.constrainTagUpdates(product);
 ```
 
 If you want to disable this feature later on, you can update it by setting the "allow" parameter to `false`:
 
-```ts fixture=portfolio-product
+```ts
+declare const portfolio: servicecatalog.Portfolio;
+declare const product: servicecatalog.CloudFormationProduct;
+
 // to disable tag updates:
 portfolio.constrainTagUpdates(product, {
   allow: false,
@@ -263,8 +368,11 @@ Allows users to subscribe an AWS `SNS` topic to a provisioned product's CloudFor
 When an end user provisions a product it creates a CloudFormation stack that notifies the subscribed topic on creation, edit, and delete events.
 An individual `SNS` topic may only have a single subscription to any given portfolio-product association.
 
-```ts fixture=portfolio-product
+```ts
 import * as sns from '@aws-cdk/aws-sns';
+
+declare const portfolio: servicecatalog.Portfolio;
+declare const product: servicecatalog.CloudFormationProduct;
 
 const topic1 = new sns.Topic(this, 'Topic1');
 portfolio.notifyOnStackEvents(product, topic1);
@@ -286,8 +394,11 @@ If a `condition` is specified, all  assertions will be applied if the condition 
 For information on rule-specific intrinsic functions to define rule conditions and assertions,
 see [AWS Rule Functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-rules.html).
 
-```ts fixture=portfolio-product
+```ts
 import * as cdk from '@aws-cdk/core';
+
+declare const portfolio: servicecatalog.Portfolio;
+declare const product: servicecatalog.CloudFormationProduct;
 
 portfolio.constrainCloudFormationParameters(product, {
   rule: {
@@ -310,8 +421,11 @@ The launch role must be assumed by the Service Catalog principal.
 You can only have one launch role set for a portfolio-product association,
 and you cannot set a launch role on a product that already has a StackSets deployment configured.
 
-```ts fixture=portfolio-product
+```ts
 import * as iam from '@aws-cdk/aws-iam';
+
+declare const portfolio: servicecatalog.Portfolio;
+declare const product: servicecatalog.CloudFormationProduct;
 
 const launchRole = new iam.Role(this, 'LaunchRole', {
   assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
@@ -327,8 +441,11 @@ as well as in any end user accounts that wish to provision a product with the la
 
 You can do this by passing in the role with an explicitly set name:
 
-```ts fixture=portfolio-product
+```ts
 import * as iam from '@aws-cdk/aws-iam';
+
+declare const portfolio: servicecatalog.Portfolio;
+declare const product: servicecatalog.CloudFormationProduct;
 
 const launchRole = new iam.Role(this, 'LaunchRole', {
   roleName: 'MyRole',
@@ -340,11 +457,13 @@ portfolio.setLocalLaunchRole(product, launchRole);
 
 Or you can simply pass in a role name and CDK will create a role with that name that trusts service catalog in the account:
 
-```ts fixture=portfolio-product
+```ts
 import * as iam from '@aws-cdk/aws-iam';
 
-const roleName = 'MyRole';
+declare const portfolio: servicecatalog.Portfolio;
+declare const product: servicecatalog.CloudFormationProduct;
 
+const roleName = 'MyRole';
 const launchRole: iam.IRole = portfolio.setLocalLaunchRoleName(product, roleName);
 ```
 
@@ -362,8 +481,11 @@ When launching a StackSets product, end users can select from the list of accoun
 You can only define one StackSets deployment configuration per portfolio-product association,
 and you cannot both set a launch role and StackSets deployment configuration for an assocation.
 
-```ts fixture=portfolio-product
+```ts
 import * as iam from '@aws-cdk/aws-iam';
+
+declare const portfolio: servicecatalog.Portfolio;
+declare const product: servicecatalog.CloudFormationProduct;
 
 const adminRole = new iam.Role(this, 'AdminRole', {
   assumedBy: new iam.AccountRootPrincipal(),

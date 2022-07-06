@@ -1,25 +1,24 @@
-/// !cdk-integ pragma:ignore-assets
+/// !cdk-integ pragma:ignore-assets pragma:disable-update-workflow
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { App, CfnOutput, Duration } from '@aws-cdk/core';
+import { App, CfnOutput, Duration, Stack } from '@aws-cdk/core';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-21';
 import * as eks from '../lib';
 import { Pinger } from './pinger/pinger';
-import { TestStack } from './util';
 
-class EksClusterAlbControllerStack extends TestStack {
+class EksClusterAlbControllerStack extends Stack {
 
   constructor(scope: App, id: string) {
     super(scope, id);
 
     // just need one nat gateway to simplify the test
-    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1 });
+    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1 });
 
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
       version: eks.KubernetesVersion.V1_21,
       albController: {
-        version: eks.AlbControllerVersion.V2_3_1,
+        version: eks.AlbControllerVersion.V2_4_1,
       },
     });
 

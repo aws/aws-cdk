@@ -1,0 +1,64 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integtest-restapi-fromdefinition-inline": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtest-restapi-fromdefinition-inline.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integtest-restapi-fromdefinition-inline/my-api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapi4C7BF186"
+          }
+        ],
+        "/integtest-restapi-fromdefinition-inline/my-api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeployment92F2CB49a59bca458e4fac1fcd742212ded42a65"
+          }
+        ],
+        "/integtest-restapi-fromdefinition-inline/my-api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeploymentStageprod298F01AF"
+          }
+        ],
+        "/integtest-restapi-fromdefinition-inline/my-api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiEndpoint3628AFE3"
+          }
+        ],
+        "/integtest-restapi-fromdefinition-inline/my-api/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiCloudWatchRole095452E5"
+          }
+        ],
+        "/integtest-restapi-fromdefinition-inline/my-api/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiAccountEC421A0A"
+          }
+        ],
+        "/integtest-restapi-fromdefinition-inline/PetsURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PetsURL"
+          }
+        ]
+      },
+      "displayName": "integtest-restapi-fromdefinition-inline"
+    }
+  }
+}

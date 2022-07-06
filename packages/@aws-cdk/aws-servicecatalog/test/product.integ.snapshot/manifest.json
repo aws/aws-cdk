@@ -1,0 +1,156 @@
+{
+  "version": "18.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-servicecatalog-product": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-servicecatalog-product.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-servicecatalog-product": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.b59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09e.json",
+              "id": "b59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09e",
+              "packaging": "file",
+              "sourceHash": "b59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09e",
+              "s3BucketParameter": "AssetParametersb59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09eS3BucketCF629374",
+              "s3KeyParameter": "AssetParametersb59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09eS3VersionKeyC94BC7EE",
+              "artifactHashParameter": "AssetParametersb59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09eArtifactHashB9EF04B2"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5.json",
+              "id": "6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5",
+              "packaging": "file",
+              "sourceHash": "6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5",
+              "s3BucketParameter": "AssetParameters6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5S3Bucket85C3FF42",
+              "s3KeyParameter": "AssetParameters6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5S3VersionKey34A02667",
+              "artifactHashParameter": "AssetParameters6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5ArtifactHashDC26AFAC"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "integservicecatalogproductSNSTopicProduct3B51CF591.product.template.json",
+              "id": "dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f",
+              "packaging": "file",
+              "sourceHash": "dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f",
+              "s3BucketParameter": "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fS3BucketB4751C98",
+              "s3KeyParameter": "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fS3VersionKeyEB38C6F9",
+              "artifactHashParameter": "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fArtifactHash5C1F9228"
+            }
+          }
+        ],
+        "/integ-servicecatalog-product/TestProduct/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestProduct7606930B"
+          }
+        ],
+        "/integ-servicecatalog-product/TestProduct/TagOptionAssociation0d813eebb333": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestProductTagOptionAssociation0d813eebb333DA3E2F21"
+          }
+        ],
+        "/integ-servicecatalog-product/TestProduct/TagOptionAssociation5d93a5c977b4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestProductTagOptionAssociation5d93a5c977b4B664DD87"
+          }
+        ],
+        "/integ-servicecatalog-product/TestProduct/TagOptionAssociationcfaf40b186a3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestProductTagOptionAssociationcfaf40b186a3E5FDECDC"
+          }
+        ],
+        "/integ-servicecatalog-product/AssetParameters/b59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09e/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersb59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09eS3BucketCF629374"
+          }
+        ],
+        "/integ-servicecatalog-product/AssetParameters/b59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09e/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersb59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09eS3VersionKeyC94BC7EE"
+          }
+        ],
+        "/integ-servicecatalog-product/AssetParameters/b59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09e/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersb59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09eArtifactHashB9EF04B2"
+          }
+        ],
+        "/integ-servicecatalog-product/AssetParameters/6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5S3Bucket85C3FF42"
+          }
+        ],
+        "/integ-servicecatalog-product/AssetParameters/6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5S3VersionKey34A02667"
+          }
+        ],
+        "/integ-servicecatalog-product/AssetParameters/6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5ArtifactHashDC26AFAC"
+          }
+        ],
+        "/integ-servicecatalog-product/AssetParameters/dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fS3BucketB4751C98"
+          }
+        ],
+        "/integ-servicecatalog-product/AssetParameters/dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fS3VersionKeyEB38C6F9"
+          }
+        ],
+        "/integ-servicecatalog-product/AssetParameters/dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fArtifactHash5C1F9228"
+          }
+        ],
+        "/integ-servicecatalog-product/TagOptions/5f31c54ba705": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TagOptions5f31c54ba705F110F743"
+          }
+        ],
+        "/integ-servicecatalog-product/TagOptions/8d263919cebb": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TagOptions8d263919cebb6764AC10"
+          }
+        ],
+        "/integ-servicecatalog-product/TagOptions/a260cbbd99c4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TagOptionsa260cbbd99c416C40F73"
+          }
+        ]
+      },
+      "displayName": "integ-servicecatalog-product"
+    }
+  }
+}
