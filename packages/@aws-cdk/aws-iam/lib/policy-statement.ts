@@ -664,19 +664,7 @@ export enum Effect {
  * Condition for when an IAM policy is in effect. Maps from the keys in a request's context to
  * a string value or array of string values. See the Conditions interface for more details.
  */
-export type Condition = any;
-
-// NOTE! We'd ideally like to type this as `Record<string, any>`, because the
-// API expects a map which can take either strings or lists of strings.
-//
-// However, if we were to change this right now, the Java bindings for CDK would
-// emit a type of `Map<String, Object>`, but the most common types people would
-// instantiate would be an `ImmutableMap<String, String>` which would not be
-// assignable to `Map<String, Object>`. The types don't have a built-in notion
-// of co-contravariance, you have to indicate that on the type. So jsii would first
-// need to emit the type as `Map<String, ? extends Object>`.
-//
-// Feature request in https://github.com/aws/jsii/issues/1517
+export type Condition = Record<string, unknown>;
 
 /**
  * Conditions for when an IAM Policy is in effect, specified in the following structure:
