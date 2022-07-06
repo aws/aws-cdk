@@ -3,6 +3,7 @@ import { CfnOutput, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as msk from '@aws-cdk/aws-msk';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as s3 from '@aws-cdk/aws-s3';
 
 class Fixture extends Stack {
   constructor(scope: Construct, id: string) {

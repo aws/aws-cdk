@@ -1107,7 +1107,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         }));
 
         s3OriginConfig = {
-          originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentity.originAccessIdentityName}`,
+          originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentity.originAccessIdentityId}`,
         };
       } else {
         s3OriginConfig = {};

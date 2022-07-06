@@ -133,3 +133,49 @@ test('delete request', async () => {
 
   expect(mockRoute53.changeResourceRecordSets).not.toHaveBeenCalled();
 });
+
+test('with alias target', async () => {
+  mockListResourceRecordSetsResponse.mockResolvedValueOnce({
+    ResourceRecordSets: [
+      {
+        Name: 'dev.cdk.aws.',
+        Type: 'A',
+        TTL: undefined,
+        ResourceRecords: [],
+        AliasTarget: {
+          HostedZoneId: 'hosted-zone-id',
+          DNSName: 'dns-name',
+          EvaluateTargetHealth: false,
+        },
+      },
+    ],
+  });
+
+  mockChangeResourceRecordSetsResponse.mockResolvedValueOnce({
+    ChangeInfo: {
+      Id: 'change-id',
+    },
+  });
+
+  await handler(event);
+
+  expect(mockRoute53.changeResourceRecordSets).toHaveBeenCalledWith({
+    HostedZoneId: 'hosted-zone-id',
+    ChangeBatch: {
+      Changes: [
+        {
+          Action: 'DELETE',
+          ResourceRecordSet: {
+            Name: 'dev.cdk.aws.',
+            Type: 'A',
+            AliasTarget: {
+              HostedZoneId: 'hosted-zone-id',
+              DNSName: 'dns-name',
+              EvaluateTargetHealth: false,
+            },
+          },
+        },
+      ],
+    },
+  });
+});

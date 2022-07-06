@@ -364,6 +364,7 @@ describe('MSK Cluster', () => {
         },
       });
 
+      Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 0);
       Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
         LoggingInfo: {
           BrokerLogs: {
@@ -374,6 +375,126 @@ describe('MSK Cluster', () => {
               Enabled: true,
             },
           },
+        },
+      });
+    });
+
+    test('feature flag @aws-cdk/aws-s3:defaultBucketPolicy', () => {
+      const localStack = new core.Stack();
+      localStack.node.setContext('@aws-cdk/aws-s3:createDefaultLoggingPolicy', true);
+      new msk.Cluster(localStack, 'Cluster', {
+        clusterName: 'cluster',
+        kafkaVersion: msk.KafkaVersion.V2_6_1,
+        vpc: new ec2.Vpc(localStack, 'Vpc'),
+        logging: {
+          s3: { bucket: new s3.Bucket(localStack, 'Bucket') },
+        },
+      });
+
+      Template.fromStack(localStack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  's3:x-amz-acl': 'bucket-owner-full-control',
+                  'aws:SourceAccount': {
+                    Ref: 'AWS::AccountId',
+                  },
+                },
+                ArnLike: {
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':logs:',
+                        {
+                          Ref: 'AWS::Region',
+                        },
+                        ':',
+                        {
+                          Ref: 'AWS::AccountId',
+                        },
+                        ':*',
+                      ],
+                    ],
+                  },
+                },
+              },
+              Principal: {
+                Service: 'delivery.logs.amazonaws.com',
+              },
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'Bucket83908E77',
+                        'Arn',
+                      ],
+                    },
+                    '/AWSLogs/',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: [
+                's3:GetBucketAcl',
+                's3:ListBucket',
+              ],
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': {
+                    Ref: 'AWS::AccountId',
+                  },
+                },
+                ArnLike: {
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':logs:',
+                        {
+                          Ref: 'AWS::Region',
+                        },
+                        ':',
+                        {
+                          Ref: 'AWS::AccountId',
+                        },
+                        ':*',
+                      ],
+                    ],
+                  },
+                },
+              },
+              Effect: 'Allow',
+              Principal: {
+                Service: 'delivery.logs.amazonaws.com',
+              },
+              Resource: {
+                'Fn::GetAtt': [
+                  'Bucket83908E77',
+                  'Arn',
+                ],
+              },
+            },
+          ],
         },
       });
     });

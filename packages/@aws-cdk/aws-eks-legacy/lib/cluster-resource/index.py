@@ -27,7 +27,7 @@ def handler(event, context):
         cfn_send(event, context, CFN_FAILED, reason=message)
 
     try:
-        logger.info(json.dumps(event))
+        logger.info(json.dumps(dict(event, ResponseURL='...')))
 
         stack_id = event['StackId']
         request_id = event['RequestId'] # used to generate cluster name
@@ -75,12 +75,12 @@ def handler(event, context):
             if old_resourcesVpcConfig != resourcesVpcConfig:
                 logger.info("'resourcesVpcConfig' change requires replacement (old=%s, new=%s)" % (old_resourcesVpcConfig, resourcesVpcConfig))
                 return True
-            
+
             old_roleArn = old_config.get('roleArn', None)
             if old_roleArn != roleArn:
                 logger.info("'roleArn' change requires replacement (old=%s, new=%s)" % (old_roleArn, roleArn))
                 return True
-            
+
             return False
 
         # delete is a special case

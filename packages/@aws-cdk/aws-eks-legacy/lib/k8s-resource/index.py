@@ -25,7 +25,7 @@ def handler(event, context):
         cfn_send(event, context, CFN_FAILED, reason=message)
 
     try:
-        logger.info(json.dumps(event))
+        logger.info(json.dumps(dict(event, ResponseURL='...')))
 
         request_type = event['RequestType']
         props = event['ResourceProperties']

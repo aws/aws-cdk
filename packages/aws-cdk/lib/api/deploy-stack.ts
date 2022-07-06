@@ -373,6 +373,7 @@ async function prepareAndExecuteChangeSet(
       resourcesTotal: cloudFormationStack.exists ? changeSetLength + 1 : changeSetLength,
       progress: options.progress,
       changeSetCreationTime: changeSetDescription.CreationTime,
+      ci: options.ci,
     }).start();
     debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSet.Id, deployName);
     try {
@@ -497,6 +498,7 @@ export interface DestroyStackOptions {
   roleArn?: string;
   deployName?: string;
   quiet?: boolean;
+  ci?: boolean;
 }
 
 export async function destroyStack(options: DestroyStackOptions) {
@@ -507,7 +509,9 @@ export async function destroyStack(options: DestroyStackOptions) {
   if (!currentStack.exists) {
     return;
   }
-  const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, options.stack).start();
+  const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, options.stack, {
+    ci: options.ci,
+  }).start();
 
   try {
     await cfn.deleteStack({ StackName: deployName, RoleARN: options.roleArn }).promise();

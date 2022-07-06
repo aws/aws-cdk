@@ -139,6 +139,16 @@ export enum InstanceClass {
   R6I = 'r6i',
 
   /**
+   * Memory optimized instances with local NVME drive, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   */
+  MEMORY6_INTEL_NVME_DRIVE = 'memory6-intel-nvme-drive',
+
+  /**
+   * Memory optimized instances with local NVME drive, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   */
+  R6ID = 'r6id',
+
+  /**
    * Memory optimized instances for high performance computing, 5th generation
    */
   MEMORY5_HIGH_PERFORMANCE = 'memory5-high-performance',
@@ -182,6 +192,16 @@ export enum InstanceClass {
    * Memory optimized instances based on AMD EPYC with local NVME drive, 5th generation
    */
   MEMORY5_AMD_NVME_DRIVE = 'memory5-amd-nvme-drive',
+
+  /**
+   * High memory instances (3TB) based on Intel Xeon Platinum 8176M (Skylake) processors, 1st generation
+   */
+  HIGH_MEMORY_3TB_1 = 'high-memory-3tb-1',
+
+  /**
+   * High memory instances (3TB) based on Intel Xeon Platinum 8176M (Skylake) processors, 1st generation
+   */
+  U_3TB1 = 'u-3tb1',
 
   /**
    * High memory instances (6TB) based on Intel Xeon Platinum 8176M (Skylake) processors, 1st generation
@@ -347,6 +367,16 @@ export enum InstanceClass {
   * Compute optimized instances, 6th generation
   */
   C6I = 'c6i',
+
+  /**
+   * Compute optimized instances with local NVME drive, 6th generation
+   */
+  COMPUTE6_INTEL_NVME_DRIVE = 'compute6-intel-nvme-drive',
+
+  /**
+   * Compute optimized instances with local NVME drive, 6th generation
+   */
+  C6ID = 'c6id',
 
   /**
   * Compute optimized instances based on AMD EPYC (codename Milan), 6th generation
@@ -626,6 +656,16 @@ export enum InstanceClass {
   /**
    * Graphics-optimized instances, 3rd generation
    */
+  GRAPHICS3_SMALL = 'graphics3-small',
+
+  /**
+   * Graphics-optimized instances, 3rd generation
+   */
+  G3S = 'g3s',
+
+  /**
+   * Graphics-optimized instances, 3rd generation
+   */
   GRAPHICS3 = 'graphics3',
 
   /**
@@ -694,6 +734,16 @@ export enum InstanceClass {
   P3 = 'p3',
 
   /**
+   * Parallel-processing optimized instances with local NVME drive for high performance computing, 3nd generation
+   */
+  PARALLEL3_NVME_DRIVE_HIGH_PERFORMANCE = 'parallel3-nvme-drive-high-performance',
+
+  /**
+   * Parallel-processing optimized instances with local NVME drive for high performance computing, 3rd generation
+   */
+  P3DN = 'p3dn',
+
+  /**
    * Parallel-processing optimized instances, 4th generation
    */
   PARALLEL4 = 'parallel4',
@@ -732,6 +782,16 @@ export enum InstanceClass {
    * Standard instances based on Intel (Ice Lake), 6th generation.
    */
   M6I = 'm6i',
+
+  /**
+   * Standard instances based on Intel (Ice Lake) with local NVME drive, 6th generation.
+   */
+  STANDARD6_INTEL_NVME_DRIVE = 'standard6-intel-nvme-drive',
+
+  /**
+   * Standard instances based on Intel (Ice Lake) with local NVME drive, 6th generation.
+   */
+  M6ID = 'm6id',
 
   /**
    * Standard instances based on 3rd Gen AMD EPYC processors, 6th generation.
@@ -802,6 +862,16 @@ export enum InstanceClass {
    * High performance computing based on AMD EPYC, 6th generation
    */
   HPC6A = 'hpc6a',
+
+  /**
+   * Deep learning instances powered by Gaudi accelerators from Habana Labs (an Intel company), 1st generation
+   */
+  DEEP_LEARNING1 = 'deep-learning1',
+
+  /**
+   * Deep learning instances powered by Gaudi accelerators from Habana Labs (an Intel company), 1st generation
+   */
+  DL1 = 'dl1',
 }
 
 /**
@@ -978,6 +1048,8 @@ export class InstanceType {
       [InstanceClass.R5]: 'r5',
       [InstanceClass.MEMORY6_INTEL]: 'r6i',
       [InstanceClass.R6I]: 'r6i',
+      [InstanceClass.MEMORY6_INTEL_NVME_DRIVE]: 'r6id',
+      [InstanceClass.R6ID]: 'r6id',
       [InstanceClass.MEMORY5_HIGH_PERFORMANCE]: 'r5n',
       [InstanceClass.R5N]: 'r5n',
       [InstanceClass.MEMORY5_NVME_DRIVE]: 'r5d',
@@ -988,6 +1060,8 @@ export class InstanceType {
       [InstanceClass.R5A]: 'r5a',
       [InstanceClass.MEMORY5_AMD_NVME_DRIVE]: 'r5ad',
       [InstanceClass.R5AD]: 'r5ad',
+      [InstanceClass.HIGH_MEMORY_3TB_1]: 'u-3tb1',
+      [InstanceClass.U_3TB1]: 'u-3tb1',
       [InstanceClass.HIGH_MEMORY_6TB_1]: 'u-6tb1',
       [InstanceClass.U_6TB1]: 'u-6tb1',
       [InstanceClass.HIGH_MEMORY_9TB_1]: 'u-9tb1',
@@ -1020,6 +1094,8 @@ export class InstanceType {
       [InstanceClass.C5N]: 'c5n',
       [InstanceClass.COMPUTE6_INTEL]: 'c6i',
       [InstanceClass.C6I]: 'c6i',
+      [InstanceClass.COMPUTE6_INTEL_NVME_DRIVE]: 'c6id',
+      [InstanceClass.C6ID]: 'c6id',
       [InstanceClass.COMPUTE6_AMD]: 'c6a',
       [InstanceClass.C6A]: 'c6a',
       [InstanceClass.COMPUTE6_GRAVITON2]: 'c6g',
@@ -1065,6 +1141,8 @@ export class InstanceType {
       [InstanceClass.X2GD]: 'x2gd',
       [InstanceClass.FPGA1]: 'f1',
       [InstanceClass.F1]: 'f1',
+      [InstanceClass.GRAPHICS3_SMALL]: 'g3s',
+      [InstanceClass.G3S]: 'g3s',
       [InstanceClass.GRAPHICS3]: 'g3',
       [InstanceClass.G3]: 'g3',
       [InstanceClass.GRAPHICS4_NVME_DRIVE_HIGH_PERFORMANCE]: 'g4dn',
@@ -1079,6 +1157,8 @@ export class InstanceType {
       [InstanceClass.P2]: 'p2',
       [InstanceClass.PARALLEL3]: 'p3',
       [InstanceClass.P3]: 'p3',
+      [InstanceClass.PARALLEL3_NVME_DRIVE_HIGH_PERFORMANCE]: 'p3dn',
+      [InstanceClass.P3DN]: 'p3dn',
       [InstanceClass.PARALLEL4]: 'p4d',
       [InstanceClass.P4D]: 'p4d',
       [InstanceClass.ARM1]: 'a1',
@@ -1087,6 +1167,8 @@ export class InstanceType {
       [InstanceClass.M6G]: 'm6g',
       [InstanceClass.STANDARD6_INTEL]: 'm6i',
       [InstanceClass.M6I]: 'm6i',
+      [InstanceClass.STANDARD6_INTEL_NVME_DRIVE]: 'm6id',
+      [InstanceClass.M6ID]: 'm6id',
       [InstanceClass.STANDARD6_AMD]: 'm6a',
       [InstanceClass.M6A]: 'm6a',
       [InstanceClass.STANDARD6_GRAVITON2_NVME_DRIVE]: 'm6gd',
@@ -1109,6 +1191,8 @@ export class InstanceType {
       [InstanceClass.MEMORY_INTENSIVE_2_INTEL]: 'x2idn',
       [InstanceClass.X2IEZN]: 'x2iezn',
       [InstanceClass.MEMORY_INTENSIVE_2_XTZ_INTEL]: 'x2iezn',
+      [InstanceClass.DEEP_LEARNING1]: 'dl1',
+      [InstanceClass.DL1]: 'dl1',
     };
     return new InstanceType(`${instanceClassMap[instanceClass] ?? instanceClass}.${instanceSize}`);
   }

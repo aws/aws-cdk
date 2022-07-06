@@ -15,7 +15,7 @@ export const invoke: InvokeFunction = async functionName => {
 };
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
-  console.log({ event });
+  console.log({ ...event, ResponseURL: '...' });
 
   if (event.RequestType === 'Delete') {
     console.log('not calling trigger on DELETE');

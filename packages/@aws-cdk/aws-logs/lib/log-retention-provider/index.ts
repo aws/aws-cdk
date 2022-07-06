@@ -94,7 +94,7 @@ async function setRetentionPolicy(logGroupName: string, region?: string, options
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   try {
-    console.log(JSON.stringify(event));
+    console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
 
     // The target log group
     const logGroupName = event.ResourceProperties.LogGroupName;

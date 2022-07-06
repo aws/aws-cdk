@@ -329,6 +329,11 @@ $ yarn watch & # runs in the background
   [conventionalcommits](https://www.conventionalcommits.org).
   * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
     `chore(module): title`.
+    * `feat`: indicates a feature added (requires tests and README updates in principle, but can be suppressed)
+    * `fix`: indicates a bug fixes (requires tests in principle, but can be suppressed)
+    * `docs`: indicates updated documentation (docstrings or Markdown files)
+    * `refactor`: indicates a feature-preserving refactoring
+    * `chore`: something without directly visible user benefit (does not end up in the CHANGELOG). Typically used for build scripts, config, or changes so minor they don't warrant showing up the CHANGELOG.
   * Titles for `feat` and `fix` PRs end up in the change log. Think about what makes most sense for users reading the changelog while writing them.
     * `feat`: describe the feature (not the action of creating the commit or PR, for example, avoid words like "added" or "changed")
     * `fix`: describe the bug (not the solution)

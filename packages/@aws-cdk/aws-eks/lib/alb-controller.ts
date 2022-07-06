@@ -231,7 +231,7 @@ export class AlbController extends Construct {
       // want to expose this since helm here is just an implementation detail
       // for installing a specific version of the controller itself.
       // https://github.com/aws/eks-charts/blob/v0.0.65/stable/aws-load-balancer-controller/Chart.yaml
-      version: '1.2.7',
+      version: '1.4.1',
 
       wait: true,
       timeout: Duration.minutes(15),

@@ -92,7 +92,7 @@ export class StackActivityMonitor {
     cfn: aws.CloudFormation,
     stackName: string,
     stackArtifact: cxapi.CloudFormationStackArtifact, options: WithDefaultPrinterProps = {}) {
-    const stream = process.stderr;
+    const stream = options.ci ? process.stdout : process.stderr;
 
     const props: PrinterProps = {
       resourceTypeColumnWidth: calcMaxResourceTypeLength(stackArtifact.template),
