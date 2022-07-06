@@ -30,7 +30,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "codemaker": "^1.60.1",
+    "codemaker": "^1.61.0",
     "yaml": "1.10.2"
   },
   "devDependencies": {
