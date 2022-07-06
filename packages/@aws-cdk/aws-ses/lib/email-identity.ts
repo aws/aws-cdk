@@ -107,6 +107,8 @@ export abstract class DkimIdentity {
    *
    * @param signingKeyLength The length of the signing key. This can be changed at
    *   most once per day.
+   *
+   * @see https://docs.aws.amazon.com/ses/latest/dg/send-email-authentication-dkim-easy.html
    */
   public static easyDkim(signingKeyLength?: EasyDkimSigningKeyLength): DkimIdentity {
     return {
@@ -122,6 +124,8 @@ export abstract class DkimIdentity {
    *   base64 encoding
    * @param selector A string that's used to identify a public key in the DNS configuration
    *   for a domain
+   *
+   * @see https://docs.aws.amazon.com/ses/latest/dg/send-email-authentication-dkim-bring-your-own.html
    */
   public static byodDkim(privateKey: SecretValue, selector: string): DkimIdentity {
     return {
