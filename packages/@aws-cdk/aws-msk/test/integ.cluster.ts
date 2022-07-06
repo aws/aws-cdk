@@ -20,7 +20,7 @@ new cdk.CfnOutput(stack, 'BootstrapBrokers', { value: cluster.bootstrapBrokersTl
 new cdk.CfnOutput(stack, 'BootstrapBrokers2', { value: cluster.bootstrapBrokersTls });
 
 // iam authenticated msk cluster integ test
-const cluster2 = new msk.Cluster(stack, 'Cluster', {
+const cluster2 = new msk.Cluster(stack, 'Cluster2', {
   clusterName: 'iam-auth-integ-test',
   kafkaVersion: msk.KafkaVersion.V2_6_1,
   vpc,
