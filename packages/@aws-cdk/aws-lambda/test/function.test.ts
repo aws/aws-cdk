@@ -118,7 +118,7 @@ describe('function', () => {
     })).toThrow();
   });
 
-  describe('addToResourcePolicy', () => {
+  describe('addPermissions', () => {
     test('can be used to add permissions to the Lambda function', () => {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
@@ -183,16 +183,42 @@ describe('function', () => {
       });
     });
 
-    test('fails if the principal is not a service, account or arn principal', () => {
+    test('can supply principalOrgID via permission property', () => {
+      const stack = new cdk.Stack();
+      const fn = newTestLambda(stack);
+      const org = new iam.OrganizationPrincipal('o-xxxxxxxxxx');
+      const account = new iam.AccountPrincipal('123456789012');
+
+      fn.addPermission('S3Permission', {
+        action: 'lambda:*',
+        principal: account,
+        organizationId: org.organizationId,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:*',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'MyLambdaCCE802FB',
+            'Arn',
+          ],
+        },
+        Principal: account.accountId,
+        PrincipalOrgID: org.organizationId,
+      });
+    });
+
+    test('fails if the principal is not a service, account, arn, or organization principal', () => {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
 
-      expect(() => fn.addPermission('F1', { principal: new iam.OrganizationPrincipal('org') }))
+      expect(() => fn.addPermission('F1', { principal: new iam.CanonicalUserPrincipal('org') }))
         .toThrow(/Invalid principal type for Lambda permission statement/);
 
       fn.addPermission('S1', { principal: new iam.ServicePrincipal('my-service') });
       fn.addPermission('S2', { principal: new iam.AccountPrincipal('account') });
       fn.addPermission('S3', { principal: new iam.ArnPrincipal('my:arn') });
+      fn.addPermission('S4', { principal: new iam.OrganizationPrincipal('my:org') });
     });
 
     test('applies source account/ARN conditions if the principal has conditions', () => {
@@ -226,6 +252,58 @@ describe('function', () => {
       });
     });
 
+    test('applies source arn condition if principal has conditions', () => {
+      const stack = new cdk.Stack();
+      const fn = newTestLambda(stack);
+      const sourceArn = 'some-arn';
+      const service = 'my-service';
+      const principal = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
+        ArnLike: {
+          'aws:SourceArn': sourceArn,
+        },
+      });
+
+      fn.addPermission('S1', { principal: principal });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'MyLambdaCCE802FB',
+            'Arn',
+          ],
+        },
+        Principal: service,
+        SourceArn: sourceArn,
+      });
+    });
+
+    test('applies principal org id conditions if the principal has conditions', () => {
+      const stack = new cdk.Stack();
+      const fn = newTestLambda(stack);
+      const principalOrgId = 'org-xxxxxxxxxx';
+      const service = 'my-service';
+      const principal = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
+        StringEquals: {
+          'aws:PrincipalOrgID': principalOrgId,
+        },
+      });
+
+      fn.addPermission('S1', { principal: principal });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'MyLambdaCCE802FB',
+            'Arn',
+          ],
+        },
+        Principal: service,
+        PrincipalOrgID: principalOrgId,
+      });
+    });
+
     test('fails if the principal has conditions that are not supported', () => {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
@@ -251,6 +329,23 @@ describe('function', () => {
           },
         }),
       })).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
+    });
+
+    test('fails if the principal has condition combinations that are not supported', () => {
+      const stack = new cdk.Stack();
+      const fn = newTestLambda(stack);
+
+      expect(() => fn.addPermission('F2', {
+        principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
+          StringEquals: {
+            'aws:SourceAccount': 'source-account',
+            'aws:PrincipalOrgID': 'principal-org-id',
+          },
+          ArnLike: {
+            'aws:SourceArn': 'source-arn',
+          },
+        }),
+      })).toThrow(/PrincipalWithConditions had unsupported condition combinations for Lambda permission statement/);
     });
 
     test('BYORole', () => {
@@ -1236,6 +1331,33 @@ describe('function', () => {
           ],
         },
         Principal: 'arn:aws:iam::123456789012:role/someRole',
+      });
+    });
+
+    test('with an organization principal', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_14_X,
+      });
+      const org = new iam.OrganizationPrincipal('my-org-id');
+
+      // WHEN
+      fn.grantInvoke(org);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: '*',
+        PrincipalOrgID: 'my-org-id',
       });
     });
 

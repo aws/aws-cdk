@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 /// !cdk-integ VariablePipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
+import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Stack, StackProps, RemovalPolicy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -24,8 +25,11 @@ class PipelineStack extends Stack {
       selfMutation: false,
     });
 
+    const cacheBucket = new s3.Bucket(this, 'TestCacheBucket');
+
     const producer = new pipelines.CodeBuildStep('Produce', {
       commands: ['export MY_VAR=hello'],
+      cache: codebuild.Cache.bucket(cacheBucket),
     });
 
     const consumer = new pipelines.CodeBuildStep('Consume', {
@@ -35,6 +39,7 @@ class PipelineStack extends Stack {
       commands: [
         'echo "The variable was: $THE_VAR"',
       ],
+      cache: codebuild.Cache.bucket(cacheBucket),
     });
 
     // WHEN

@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.30.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.29.1-alpha.0...v2.30.0-alpha.0) (2022-07-01)
+
+## [2.29.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.29.0-alpha.0...v2.29.1-alpha.0) (2022-06-24)
+
+## [2.29.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.28.1-alpha.0...v2.29.0-alpha.0) (2022-06-22)
+
+## [2.28.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.28.0-alpha.0...v2.28.1-alpha.0) (2022-06-15)
+
 ## [2.28.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.27.0-alpha.0...v2.28.0-alpha.0) (2022-06-14)
 
 
@@ -279,7 +287,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **lambda-python:** `assetHashType` and `assetHash` properties moved to new `bundling` property.
 * **lambda-python:** Runtime is now required for `LambdaPython`
-* **appsync:** The `CachingConfig#ttl` property is now required. 
+* **appsync:** The `CachingConfig#ttl` property is now required.
 
 [1]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-resolver-cachingconfig.html#cfn-appsync-resolver-cachingconfig-ttl
 
@@ -311,7 +319,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **glue:** the grantRead API previously included 'glue:BatchDeletePartition', and now it does not.
 
 
- 
+
 
 ### Features
 
