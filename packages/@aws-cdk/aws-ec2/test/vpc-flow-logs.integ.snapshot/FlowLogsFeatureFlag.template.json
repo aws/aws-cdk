@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC"
+      "Value": "FlowLogsFeatureFlag/VPC"
      }
     ]
    }
@@ -42,7 +42,7 @@
      },
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PublicSubnet1"
+      "Value": "FlowLogsFeatureFlag/VPC/PublicSubnet1"
      }
     ]
    }
@@ -56,7 +56,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PublicSubnet1"
+      "Value": "FlowLogsFeatureFlag/VPC/PublicSubnet1"
      }
     ]
    }
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PublicSubnet1"
+      "Value": "FlowLogsFeatureFlag/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PublicSubnet1"
+      "Value": "FlowLogsFeatureFlag/VPC/PublicSubnet1"
      }
     ]
    }
@@ -146,7 +146,7 @@
      },
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PublicSubnet2"
+      "Value": "FlowLogsFeatureFlag/VPC/PublicSubnet2"
      }
     ]
    }
@@ -160,7 +160,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PublicSubnet2"
+      "Value": "FlowLogsFeatureFlag/VPC/PublicSubnet2"
      }
     ]
    }
@@ -198,7 +198,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PublicSubnet2"
+      "Value": "FlowLogsFeatureFlag/VPC/PublicSubnet2"
      }
     ]
    }
@@ -218,7 +218,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PublicSubnet2"
+      "Value": "FlowLogsFeatureFlag/VPC/PublicSubnet2"
      }
     ]
    }
@@ -250,7 +250,7 @@
      },
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PrivateSubnet1"
+      "Value": "FlowLogsFeatureFlag/VPC/PrivateSubnet1"
      }
     ]
    }
@@ -264,7 +264,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PrivateSubnet1"
+      "Value": "FlowLogsFeatureFlag/VPC/PrivateSubnet1"
      }
     ]
    }
@@ -319,7 +319,7 @@
      },
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PrivateSubnet2"
+      "Value": "FlowLogsFeatureFlag/VPC/PrivateSubnet2"
      }
     ]
    }
@@ -333,7 +333,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PrivateSubnet2"
+      "Value": "FlowLogsFeatureFlag/VPC/PrivateSubnet2"
      }
     ]
    }
@@ -367,7 +367,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC"
+      "Value": "FlowLogsFeatureFlag/VPC"
      }
     ]
    }
@@ -389,7 +389,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC"
+      "Value": "FlowLogsFeatureFlag/VPC"
      }
     ]
    },
@@ -527,43 +527,34 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC"
+      "Value": "FlowLogsFeatureFlag/VPC"
      }
     ]
    }
   },
-  "VPCFlowLogsS3KeyPrefixFlowLogB57F1746": {
-   "Type": "AWS::EC2::FlowLog",
+  "FlowLogsInstanceInstanceSecurityGroupF61782E0": {
+   "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "ResourceId": {
-     "Ref": "VPCB9E5F0B4"
-    },
-    "ResourceType": "VPC",
-    "TrafficType": "ALL",
-    "LogDestination": {
-     "Fn::Join": [
-      "",
-      [
-       {
-        "Fn::GetAtt": [
-         "Bucket83908E77",
-         "Arn"
-        ]
-       },
-       "/prefix/"
-      ]
-     ]
-    },
-    "LogDestinationType": "s3",
+    "GroupDescription": "FlowLogsFeatureFlag/FlowLogsInstance/InstanceSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC"
+      "Value": "FlowLogsFeatureFlag/FlowLogsInstance"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
-  "FlowLogsCWIAMRole017AD736": {
+  "FlowLogsInstanceInstanceRole1E8242D9": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -572,388 +563,109 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": "vpc-flow-logs.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "FlowLogsCWIAMRoleDefaultPolicy943C8A20": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "logs:CreateLogStream",
-        "logs:DescribeLogStreams",
-        "logs:PutLogEvents"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "FlowLogsCWLogGroup0398E8F8",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "FlowLogsCWIAMRole017AD736",
-         "Arn"
-        ]
+        "Service": {
+         "Fn::Join": [
+          "",
+          [
+           "ec2.",
+           {
+            "Ref": "AWS::URLSuffix"
+           }
+          ]
+         ]
+        }
        }
       }
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "FlowLogsCWIAMRoleDefaultPolicy943C8A20",
-    "Roles": [
-     {
-      "Ref": "FlowLogsCWIAMRole017AD736"
-     }
-    ]
-   }
-  },
-  "FlowLogsCWLogGroup0398E8F8": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
-  },
-  "FlowLogsCWFlowLog9CED86DA": {
-   "Type": "AWS::EC2::FlowLog",
-   "Properties": {
-    "ResourceId": {
-     "Ref": "VPCB9E5F0B4"
-    },
-    "ResourceType": "VPC",
-    "TrafficType": "ALL",
-    "DeliverLogsPermissionArn": {
-     "Fn::GetAtt": [
-      "FlowLogsCWIAMRole017AD736",
-      "Arn"
-     ]
-    },
-    "LogDestinationType": "cloud-watch-logs",
-    "LogGroupName": {
-     "Ref": "FlowLogsCWLogGroup0398E8F8"
-    }
-   }
-  },
-  "Bucket83908E77": {
-   "Type": "AWS::S3::Bucket",
-   "Properties": {
     "Tags": [
      {
-      "Key": "aws-cdk:auto-delete-objects",
-      "Value": "true"
+      "Key": "Name",
+      "Value": "FlowLogsFeatureFlag/FlowLogsInstance"
      }
     ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "BucketPolicyE9A3008A": {
-   "Type": "AWS::S3::BucketPolicy",
-   "Properties": {
-    "Bucket": {
-     "Ref": "Bucket83908E77"
-    },
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "s3:DeleteObject*",
-        "s3:GetBucket*",
-        "s3:List*"
-       ],
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-          "Arn"
-         ]
-        }
-       },
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "Bucket83908E77",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "Bucket83908E77",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "s3:PutObject",
-       "Condition": {
-        "StringEquals": {
-         "s3:x-amz-acl": "bucket-owner-full-control",
-         "aws:SourceAccount": {
-          "Ref": "AWS::AccountId"
-         }
-        },
-        "ArnLike": {
-         "aws:SourceArn": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":logs:",
-            {
-             "Ref": "AWS::Region"
-            },
-            ":",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":*"
-           ]
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "delivery.logs.amazonaws.com"
-       },
-       "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "Bucket83908E77",
-             "Arn"
-            ]
-           },
-           "/AWSLogs/",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           "/*"
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "Bucket83908E77",
-             "Arn"
-            ]
-           },
-           "/prefix/AWSLogs/",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": [
-        "s3:GetBucketAcl",
-        "s3:ListBucket"
-       ],
-       "Condition": {
-        "StringEquals": {
-         "aws:SourceAccount": {
-          "Ref": "AWS::AccountId"
-         }
-        },
-        "ArnLike": {
-         "aws:SourceArn": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":logs:",
-            {
-             "Ref": "AWS::Region"
-            },
-            ":",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":*"
-           ]
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "delivery.logs.amazonaws.com"
-       },
-       "Resource": {
-        "Fn::GetAtt": [
-         "Bucket83908E77",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
    }
   },
-  "BucketAutoDeleteObjectsCustomResourceBAFD23C2": {
-   "Type": "Custom::S3AutoDeleteObjects",
+  "FlowLogsInstanceInstanceProfile5CDC5493": {
+   "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-      "Arn"
-     ]
-    },
-    "BucketName": {
-     "Ref": "Bucket83908E77"
-    }
-   },
-   "DependsOn": [
-    "BucketPolicyE9A3008A"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "ManagedPolicyArns": [
+    "Roles": [
      {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+      "Ref": "FlowLogsInstanceInstanceRole1E8242D9"
      }
     ]
    }
   },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
-   "Type": "AWS::Lambda::Function",
+  "FlowLogsInstanceB14CA11F": {
+   "Type": "AWS::EC2::Instance",
    "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Ref": "AssetParameters17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccbS3Bucket196AD8D5"
-     },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccbS3VersionKey53E5B9FA"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccbS3VersionKey53E5B9FA"
-            }
-           ]
-          }
-         ]
-        }
-       ]
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "IamInstanceProfile": {
+     "Ref": "FlowLogsInstanceInstanceProfile5CDC5493"
+    },
+    "ImageId": {
+     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+    },
+    "InstanceType": "t3.small",
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "FlowLogsInstanceInstanceSecurityGroupF61782E0",
+       "GroupId"
       ]
      }
+    ],
+    "SubnetId": {
+     "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
     },
-    "Timeout": 900,
-    "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs14.x",
-    "Description": {
-     "Fn::Join": [
-      "",
-      [
-       "Lambda function for auto-deleting objects in ",
-       {
-        "Ref": "Bucket83908E77"
-       },
-       " S3 bucket."
-      ]
-     ]
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "FlowLogsFeatureFlag/FlowLogsInstance"
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": "#!/bin/bash"
     }
    },
    "DependsOn": [
-    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    "FlowLogsInstanceInstanceRole1E8242D9"
    ]
   }
  },
+ "Outputs": {
+  "ExportsOutputFnGetAttVPCFlowLogsS3BucketFB7DC2BEArn0818560B": {
+   "Value": {
+    "Fn::GetAtt": [
+     "VPCFlowLogsS3BucketFB7DC2BE",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "FlowLogsFeatureFlag:ExportsOutputFnGetAttVPCFlowLogsS3BucketFB7DC2BEArn0818560B"
+   }
+  },
+  "ExportsOutputRefVPCFlowLogsS3BucketFB7DC2BE6C269563": {
+   "Value": {
+    "Ref": "VPCFlowLogsS3BucketFB7DC2BE"
+   },
+   "Export": {
+    "Name": "FlowLogsFeatureFlag:ExportsOutputRefVPCFlowLogsS3BucketFB7DC2BE6C269563"
+   }
+  }
+ },
  "Parameters": {
-  "AssetParameters17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccbS3Bucket196AD8D5": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb\""
-  },
-  "AssetParameters17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccbS3VersionKey53E5B9FA": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb\""
-  },
-  "AssetParameters17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccbArtifactHash35F1B2CD": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb\""
+  "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
   }
  }
 }

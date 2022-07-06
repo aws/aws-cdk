@@ -11,6 +11,8 @@ import * as constructs from 'constructs';
 import { addressOf } from 'constructs/lib/private/uniqueid';
 import { KafkaVersion } from './';
 import { CfnCluster } from './msk.generated';
+import { FeatureFlags } from '@aws-cdk/core';
+import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '@aws-cdk/cx-api';
 
 /**
  * Represents a MSK Cluster
@@ -502,6 +504,55 @@ export class Cluster extends ClusterBase {
         }
         : undefined;
 
+    const loggingBucket = props.logging?.s3?.bucket;
+    if (loggingBucket && FeatureFlags.of(this).isEnabled(S3_CREATE_DEFAULT_LOGGING_POLICY)) {
+      const stack = core.Stack.of(this);
+      loggingBucket.addToResourcePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [
+          new iam.ServicePrincipal('delivery.logs.amazonaws.com'),
+        ],
+        resources: [
+          loggingBucket.arnForObjects(`AWSLogs/${stack.account}/*`),
+        ],
+        actions: ['s3:PutObject'],
+        conditions: {
+          StringEquals: {
+            's3:x-amz-acl': 'bucket-owner-full-control',
+            'aws:SourceAccount': stack.account,
+          },
+          ArnLike: {
+            'aws:SourceArn': stack.formatArn({
+              service: 'logs',
+              resource: '*',
+            }),
+          },
+        },
+      }));
+
+      loggingBucket.addToResourcePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [
+          new iam.ServicePrincipal('delivery.logs.amazonaws.com'),
+        ],
+        resources: [loggingBucket.bucketArn],
+        actions: [
+          's3:GetBucketAcl',
+          's3:ListBucket',
+        ],
+        conditions: {
+          StringEquals: {
+            'aws:SourceAccount': stack.account,
+          },
+          ArnLike: {
+            'aws:SourceArn': stack.formatArn({
+              service: 'logs',
+              resource: '*',
+            }),
+          },
+        },
+      }));
+    }
     const loggingInfo = {
       brokerLogs: {
         cloudWatchLogs: {
@@ -518,8 +569,8 @@ export class Cluster extends ClusterBase {
             props.logging?.firehoseDeliveryStreamName,
         },
         s3: {
-          enabled: props.logging?.s3?.bucket !== undefined,
-          bucket: props.logging?.s3?.bucket.bucketName,
+          enabled: loggingBucket !== undefined,
+          bucket: loggingBucket?.bucketName,
           prefix: props.logging?.s3?.prefix,
         },
       },
