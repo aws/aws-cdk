@@ -267,8 +267,21 @@ export class PrincipalWithConditions extends PrincipalAdapter {
    * Add a condition to the principal
    */
   public addCondition(key: string, value: Condition) {
+    if (!value || typeof value !== 'object') {
+      // Should have been in the type, but it's too late for that
+      throw new Error('A Condition should be represented as a map of operator to value');
+    }
+
     const existingValue = this.additionalConditions[key];
-    this.additionalConditions[key] = existingValue ? { ...existingValue, ...value } : value;
+    if (!existingValue) {
+      this.additionalConditions[key] = value;
+    }
+    if (typeof existingValue !== 'object') {
+      // Should have been in the type, but it's too late for that
+      throw new Error('A Condition should be represented as a map of operator to value');
+    }
+
+    this.additionalConditions[key] = { ...existingValue, ...value };
   }
 
   /**
@@ -333,6 +346,11 @@ export class PrincipalWithConditions extends PrincipalAdapter {
       // tokens, fail the merge. this is as far as we go at this point.
       if (cdk.Token.isUnresolved(condition) || cdk.Token.isUnresolved(existing)) {
         throw new Error(`multiple "${operator}" conditions cannot be merged if one of them contains an unresolved token`);
+      }
+
+      if (typeof existing !== 'object' || !condition || typeof condition !== 'object') {
+        // Should have been in the type, but it's too late for that
+        throw new Error('A Condition should be represented as a map of operator to value');
       }
 
       mergedConditions[operator] = { ...existing, ...condition };

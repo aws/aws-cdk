@@ -374,6 +374,11 @@ export class PolicyStatement {
    */
   public addCondition(key: string, value: Condition) {
     this.assertNotFrozen('addCondition');
+    if (!value || typeof value !== 'object') {
+      // Should have been in the type, but it's too late for that
+      throw new Error('A Condition should be represented as a map of operator to value');
+    }
+
     const existingValue = this._condition[key];
     this._condition[key] = existingValue ? { ...existingValue, ...value } : value;
   }
@@ -664,7 +669,15 @@ export enum Effect {
  * Condition for when an IAM policy is in effect. Maps from the keys in a request's context to
  * a string value or array of string values. See the Conditions interface for more details.
  */
-export type Condition = Record<string, unknown>;
+export type Condition = unknown;
+
+// NOTE! We would have liked to have typed this as `Record<string, unknown>`, but in some places
+// of the code we are assuming we can pass a `CfnJson` object into where a `Condition` is expected,
+// and that wouldn't typecheck anymore.
+//
+// Needs to be `unknown` instead of `any` so that the type of `Conditions` is
+// `Record<string, unknown>`; if it had been `Record<string, any>`, TypeScript would have allowed
+// passing an array into `conditions` arguments (where it needs to be a map).
 
 /**
  * Conditions for when an IAM Policy is in effect, specified in the following structure:
