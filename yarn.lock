@@ -3044,17 +3044,18 @@ cdk-generate-synthetic-examples@^0.1.12:
     jsii-rosetta "^1.59.0"
     yargs "^17.5.1"
 
-cdk8s-plus-21@^1.0.0-beta.186:
-  version "1.0.0-beta.186"
-  resolved "https://registry.npmjs.org/cdk8s-plus-21/-/cdk8s-plus-21-1.0.0-beta.186.tgz#c97555ea5cf8abd4d15b2c6459bc1fc2dce110d5"
-  integrity sha512-aSzl3YPcgyxHOwXTGUHcErm5Y585UVdxl91VoTGuGDmMq/PaS5DCRlQz7DHxA9PZKMtUEVHTXDkWyJHlQikPag==
+cdk8s-plus-21@^2.0.0-beta.12:
+  version "2.0.0-beta.12"
+  resolved "https://registry.npmjs.org/cdk8s-plus-21/-/cdk8s-plus-21-2.0.0-beta.12.tgz#b209c2536e7907d37695498c644d862fa3f45ebf"
+  integrity sha512-PozWnkrD1A7p52XdpM3IOGHC9QqfHZVJ/jYtvek4Ffmx9evDe3F+BEwRppRE9CVy4K3EUrCB5C6dkdEl5h1E4Q==
   dependencies:
     minimatch "^3.1.2"
+    safe-stable-stringify "*"
 
-cdk8s@^1.6.21:
-  version "1.6.21"
-  resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-1.6.21.tgz#8d6d3c8f5d5bc68f37aacf66afa4a4a2e6c4174e"
-  integrity sha512-VCXrTJaj7kd0c8TnEZf3MLcVMPyScCZDZvJKBR+evY8T3reCixxoBhsMMMkXE4Br7ByV2INkR04lMNiL+MbqGg==
+cdk8s@^2.3.37:
+  version "2.3.37"
+  resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-2.3.37.tgz#ff93d1c7a8c18ff2c3347454a58ea02ecb862122"
+  integrity sha512-JDX8yGCuu7GxKYDN84dkz1rgaEf0BcKPgJLbS2B7xYuLQThx4POUDxQdIh15CUqnunYnTa31V6avNj1q6juZvA==
   dependencies:
     fast-json-patch "^3.1.1"
     follow-redirects "^1.15.1"
@@ -9691,7 +9692,7 @@ safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   resolved "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
   integrity sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==
 
-safe-stable-stringify@^2.2.0:
+safe-stable-stringify@*, safe-stable-stringify@^2.2.0:
   version "2.3.1"
   resolved "https://registry.npmjs.org/safe-stable-stringify/-/safe-stable-stringify-2.3.1.tgz#ab67cbe1fe7d40603ca641c5e765cb942d04fc73"
   integrity sha512-kYBSfT+troD9cDA85VDnHZ1rpHC50O0g1e6WlGHVCz/g+JS+9WKLj+XwFYyR8UbrZN8ll9HUpDAAddY58MGisg==
