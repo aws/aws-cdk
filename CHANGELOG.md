@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.163.0](https://github.com/aws/aws-cdk/compare/v1.162.0...v1.163.0) (2022-07-06)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v78.1.0 ([#20951](https://github.com/aws/aws-cdk/issues/20951)) ([20f5fa4](https://github.com/aws/aws-cdk/commit/20f5fa46d8ef262b84cddbd3c26c43199aa08a17))
+
+
+### Bug Fixes
+
+* custom resources log sensitive `ResponseURL` field ([#20976](https://github.com/aws/aws-cdk/issues/20976)) ([8ac9540](https://github.com/aws/aws-cdk/commit/8ac9540487788bcb09cb0663b4b28dc9294a3656)), closes [#20899](https://github.com/aws/aws-cdk/issues/20899)
+
 ## [1.162.0](https://github.com/aws/aws-cdk/compare/v1.161.0...v1.162.0) (2022-07-01)
 
 ## [1.161.0](https://github.com/aws/aws-cdk/compare/v1.160.0...v1.161.0) (2022-06-22)
