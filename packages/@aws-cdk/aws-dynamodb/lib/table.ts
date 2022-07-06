@@ -223,7 +223,9 @@ export interface TableOptions extends SchemaOptions {
    * This property can only be set if `encryption` is set to `TableEncryption.CUSTOMER_MANAGED`.
    *
    * @default - If `encryption` is set to `TableEncryption.CUSTOMER_MANAGED` and this
-   * property is undefined, a new KMS key will be created and associated with this table.
+   * property is undefined, a new encryption key will be created and associated with this table.
+   * If encryption and this property are both undefined, then the table is encrypted with 
+   * an encryption key managed by DynamoDB, and you are not charged any fee for using it.
    */
   readonly encryptionKey?: kms.IKey;
 
