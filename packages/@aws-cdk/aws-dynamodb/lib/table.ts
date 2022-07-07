@@ -599,6 +599,15 @@ export interface TableAttributes {
    * @default - no local indexes
    */
   readonly localIndexes?: string[];
+
+  /**
+   * If set to true, grant methods always grant permissions for all indexes.
+   * If false is provided, grant methods grant the permissions
+   * only when {@link globalIndexes} or {@link localIndexes} is specified.
+   *
+   * @default - false
+   */
+  readonly grantIndexPermissions?: boolean;
 }
 
 abstract class TableBase extends Resource implements ITable {
@@ -1078,7 +1087,8 @@ export class Table extends TableBase {
       public readonly tableArn: string;
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: kms.IKey;
-      protected readonly hasIndex = (attrs.globalIndexes ?? []).length > 0 ||
+      protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
+        (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
 
       constructor(_tableArn: string, tableName: string, tableStreamArn?: string) {
@@ -1179,7 +1189,7 @@ export class Table extends TableBase {
       attributeDefinitions: this.attributeDefinitions,
       globalSecondaryIndexes: Lazy.any({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
       localSecondaryIndexes: Lazy.any({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
-      pointInTimeRecoverySpecification: props.pointInTimeRecovery ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery } : undefined,
+      pointInTimeRecoverySpecification: props.pointInTimeRecovery != null ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery } : undefined,
       billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
       provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
         readCapacityUnits: props.readCapacity || 5,
@@ -1851,5 +1861,9 @@ class SourceTableAttachedPrincipal extends iam.PrincipalBase {
       policyDependable: this.policy,
       statementAdded: true,
     };
+  }
+
+  public dedupeString(): string | undefined {
+    return undefined;
   }
 }

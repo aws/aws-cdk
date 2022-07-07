@@ -3,53 +3,54 @@
 > **NOTE:** This tool should only be used on packages in this repository,
 > and is not intended for external usage.
 
-Create bundled packages with minimal dependencies and appropriate license attributions.
+You can use this tool to help create bundled packages with minimal dependencies and appropriate license attributions.
 
 ## Why
 
 When shipping nodejs applications, there is currently no easy way to ensure your users are
-consuming the exact dependency clojure your package was tested against.
+consuming the exact dependency closure your package was tested against.
 
-This is because many libraries define their dependencies with a range, rather then a fixed version.
+This is because many libraries define their dependencies with a range, rather than a fixed version.
 NPM has provided an install time lock file called [shrinkwrap](https://docs.npmjs.com/cli/v8/commands/npm-shrinkwrap)
-to mitigate this, however, this file is only respected by NPM itself, and not by other package managers such as Yarn.
+to help mitigate this, however, this file is only respected by NPM itself, and not by other package managers such as Yarn.
 
 ## What
 
-This package wires up several popular tools to offer a simple entrypoint for
+This package wires up several popular tools to offer a simpler entrypoint for
 creating self-contained nodejs packages.
 
-The resulting packages are still npm installable packages, but the entrypoints you specify are
-replaced with a bundled version of them, embedding all their dependencies inline.
+The resulting packages are still npm installable packages, but you can use this tool to
+replace the entrypoints you specify with a bundled version of them, embedding their dependencies inline.
 Note that embedding dependencies means you are effectively redistributing third-party software.
-This could have legal/licensing implications, and typically requires proper
-attribution of the bundled dependencies, while validating their licenses allow
-such redistribution.
+This could have licensing implications, and it is your responsibility to provide proper
+and typically requires proper attribution of the bundled dependencies,
+while validating their licenses allow such redistribution.
 
-This tool does the following:
+You can use this tool to help achieve the following tasks:
 
-- Bundle dependencies inside the package.
+- Bundle the entrypoints inside the package.
 
   > Currently done with [esbuild](https://esbuild.github.io), but is subject to change.
 
-- Validate and create THIRD_PARTY_LICENCES files with complete third-party attributions.
+- Validate and create THIRD_PARTY_LICENCES file with third-party attributions for packages with declared licensing information.
 
   > Currently done with [license-checker](https://www.npmjs.com/package/license-checker), but is subject to change.
 
-- Enforce no circular imports are exhibited in your package, nor in your dependency closure.
+- Detect circular imports that are exhibited in your package, or in your dependency closure.
 
   > Currently done with [madge](https://www.npmjs.com/package/madge), but is subject to change.
   > This is necessary because circular imports mess up the declaration order of types in the bundled file.
 
 ### Disclaimer
 
-- Features of this package rely on the dependencies' declared licensing information, etc... and if that is incorrect, the tool may not notice/warn about that.
+Features of this package rely on the dependencies' declared licensing information, and the fulsomeness of
+the generated attribution is dependent on the dependencies’ declarations.
+This tool is not a substitute for your code attribution processes, but you can use it to help
+streamline attribution items for dependencies that have license declarations.
+The user of this package remains responsible for complying to their dependencies' licensing requirements,
+including any attribution obligations.
 
-- The user of this package remains responsible for complying to their dependencies' licensing requirements.
-
-- While this package makes reasonable efforts to ensure the produced THIRD_PARTY_LICENSES file is correct,
-the user is responsible for ensuring the output is correct (this is why it is recommended to check it into source control)
-If unsure, users should seek legal counsel before releasing bundled artifacts.
+We strongly recommend that you check all of your code into source control, and follow your ordinary code attribution processes.
 
 ## Alternative Approaches
 
@@ -129,17 +130,17 @@ We recommend to integrate this tool in the following way:
 1. Add a `node-bundle validate` command as a post compile step.
 2. Set your packaging command to `node-bundle pack`.
 
-This way, local dev builds will be validated not to break any functionality needed for bundling.
+This way, you can validate local dev builds not to break any functionality needed for bundling.
 In addition, developers can run `node-bundle validate --fix` to automatically fix any (fixable) violations
-and commit that to source code.
+and commit that to source control.
 
 For example, if a dependency is added but the attribution file has not been re-generated,
-`validate` will catch this, and `validate --fix` will regenerate it.
+you can use `node-bundle validate` to catch this, and regenerate it with `node-bundle validate --fix`.
 
 ## Take into account
 
 By default, the tool will use the `main` directive of the `package.json` as
-the entrypoint. This will ensure that all top level exports of the
+the entrypoint. This will help you ensure that all top level exports of the
 package are preserved.
 
 Deep imports such as `const plugins = require('your-package/lib/plugins')` are considered
@@ -150,4 +151,4 @@ Note that this will balloon up the package size significantly.
 If you are bundling a CLI application that also has top level exports, we suggest to extract
 the CLI functionality into a function, and add this function as an export to `index.js`.
 
-> See [aws-cdk](https://github.com/aws/aws-cdk/blob/master/packages/aws-cdk/bin/cdk.ts) as an example.
+> See [aws-cdk](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk/bin/cdk.ts) as an example.

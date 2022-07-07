@@ -16,8 +16,8 @@ new QueueProcessingFargateService(stack, 'PublicQueueService', {
   assignPublicIp: true,
   healthCheck: {
     command: ['CMD-SHELL', 'curl -f http://localhost/ || exit 1'],
-    interval: Duration.minutes(12),
-    retries: 34,
+    interval: Duration.seconds(6),
+    retries: 10,
   },
 });
 

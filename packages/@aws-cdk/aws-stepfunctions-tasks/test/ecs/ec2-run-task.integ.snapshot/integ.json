@@ -1,0 +1,14 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "@aws-cdk/aws-stepfunctions-tasks/test/ecs/integ.ec2-run-task": {
+      "stacks": [
+        "aws-sfn-tasks-ecs-ec2-integ"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

@@ -22,11 +22,7 @@ export class EcrImage extends ContainerImage {
   constructor(private readonly repository: ecr.IRepository, private readonly tagOrDigest: string) {
     super();
 
-    if (tagOrDigest?.startsWith('sha256:')) {
-      this.imageName = this.repository.repositoryUriForDigest(this.tagOrDigest);
-    } else {
-      this.imageName = this.repository.repositoryUriForTag(this.tagOrDigest);
-    }
+    this.imageName = this.repository.repositoryUriForTagOrDigest(this.tagOrDigest);
   }
 
   public bind(_scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {

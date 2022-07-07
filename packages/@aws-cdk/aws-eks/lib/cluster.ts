@@ -401,7 +401,7 @@ export interface CommonClusterOptions {
    *
    * For example, to only select private subnets, supply the following:
    *
-   * `vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }]`
+   * `vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }]`
    *
    * @default - All public and private subnets
    */
@@ -560,7 +560,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    * ```ts
    * const layer = new lambda.LayerVersion(this, 'proxy-agent-layer', {
    *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`),
-   *   compatibleRuntimes: [lambda.Runtime.NODEJS_12_X],
+   *   compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
    * });
    * ```
    *
@@ -612,6 +612,12 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - The controller is not installed.
    */
   readonly albController?: AlbControllerOptions;
+  /**
+   * The cluster log types which you want to enable.
+   *
+   * @default - none
+   */
+  readonly clusterLogging?: ClusterLoggingTypes[];
 }
 
 /**
@@ -753,13 +759,6 @@ export interface ClusterProps extends ClusterOptions {
    * @default - none
    */
   readonly tags?: { [key: string]: string };
-
-  /**
-   * The cluster log types which you want to enable.
-   *
-   * @default - none
-   */
-  readonly clusterLogging?: ClusterLoggingTypes[];
 }
 
 /**
@@ -942,7 +941,7 @@ abstract class ClusterBase extends Resource implements ICluster {
     if (!this._spotInterruptHandler) {
       this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
         chart: 'aws-node-termination-handler',
-        version: '1.14.1',
+        version: '0.18.0',
         repository: 'https://aws.github.io/eks-charts',
         namespace: 'kube-system',
         values: {
@@ -1338,7 +1337,7 @@ export class Cluster extends ClusterBase {
       description: 'EKS Control Plane Security Group',
     });
 
-    this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
+    this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }];
 
     const selectedSubnetIdsPerGroup = this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds);
     if (selectedSubnetIdsPerGroup.some(Token.isUnresolved) && selectedSubnetIdsPerGroup.length > 1) {
@@ -2050,6 +2049,7 @@ class ImportedCluster extends ClusterBase {
     this.clusterName = props.clusterName;
     this.clusterArn = this.stack.formatArn(clusterArnComponents(props.clusterName));
     this.kubectlRole = props.kubectlRoleArn ? iam.Role.fromRoleArn(this, 'KubectlRole', props.kubectlRoleArn) : undefined;
+    this.kubectlLambdaRole = props.kubectlLambdaRole;
     this.kubectlSecurityGroup = props.kubectlSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', props.kubectlSecurityGroupId) : undefined;
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
@@ -2280,8 +2280,9 @@ function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
 
 function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
   return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
-    INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
-      CpuArch.X86_64;
+    INSTANCE_TYPES.graviton3.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
+      INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
+        CpuArch.X86_64;
 }
 
 function flatten<A>(xss: A[][]): A[] {

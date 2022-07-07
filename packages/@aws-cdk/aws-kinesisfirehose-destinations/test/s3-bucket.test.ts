@@ -240,7 +240,7 @@ describe('S3 destination', () => {
 
     beforeEach(() => {
       lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromInline('foo'),
         handler: 'bar',
       });
@@ -341,7 +341,10 @@ describe('S3 destination', () => {
             {
               Action: 'lambda:InvokeFunction',
               Effect: 'Allow',
-              Resource: stack.resolve(lambdaFunction.functionArn),
+              Resource: [
+                stack.resolve(lambdaFunction.functionArn),
+                { 'Fn::Join': ['', [stack.resolve(lambdaFunction.functionArn), ':*']] },
+              ],
             },
           ]),
         },

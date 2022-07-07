@@ -13,7 +13,7 @@
         "packageId": "Amazon.CDK.AWS.Lex",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
         "package": "software.amazon.awscdk.services.lex",
@@ -25,7 +25,7 @@
       "python": {
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ],
         "distName": "aws-cdk.aws-lex",
         "module": "aws_cdk.aws_lex"
@@ -50,7 +50,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",

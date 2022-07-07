@@ -1,0 +1,465 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
+        }
+      },
+      "aws-cdk-aws-api-target-integ": {
+        "id": "aws-cdk-aws-api-target-integ",
+        "path": "aws-cdk-aws-api-target-integ",
+        "children": {
+          "ScheduleRule": {
+            "id": "ScheduleRule",
+            "path": "aws-cdk-aws-api-target-integ/ScheduleRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-api-target-integ/ScheduleRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "scheduleExpression": "cron(0 0 * * ? *)",
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+                            "Arn"
+                          ]
+                        },
+                        "input": "{\"service\":\"ECS\",\"action\":\"updateService\",\"parameters\":{\"service\":\"cool-service\",\"forceNewDeployment\":true}}"
+                      },
+                      {
+                        "id": "Target1",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+                            "Arn"
+                          ]
+                        },
+                        "input": "{\"service\":\"RDS\",\"action\":\"stopDBInstance\",\"parameters\":{\"DBInstanceIdentifier\":\"dev-instance\"}}"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-events.CfnRule",
+                  "version": "0.0.0"
+                }
+              },
+              "ScheduleRuleTarget0Handler": {
+                "id": "ScheduleRuleTarget0Handler",
+                "path": "aws-cdk-aws-api-target-integ/ScheduleRule/ScheduleRuleTarget0Handler",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "AllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget0HandlerF2C0C898": {
+                "id": "AllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget0HandlerF2C0C898",
+                "path": "aws-cdk-aws-api-target-integ/ScheduleRule/AllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget0HandlerF2C0C898",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "events.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "ScheduleRuleDA5BD877",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "ScheduleRuleTarget1Handler": {
+                "id": "ScheduleRuleTarget1Handler",
+                "path": "aws-cdk-aws-api-target-integ/ScheduleRule/ScheduleRuleTarget1Handler",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "AllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget1Handler4688817C": {
+                "id": "AllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget1Handler4688817C",
+                "path": "aws-cdk-aws-api-target-integ/ScheduleRule/AllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget1Handler4688817C",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "events.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "ScheduleRuleDA5BD877",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-events.Rule",
+              "version": "0.0.0"
+            }
+          },
+          "AWSb4cf1abd4e4f4bc699441af7ccd9ec37": {
+            "id": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37",
+            "path": "aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "ecs:UpdateService",
+                                    "rds:CreateDBSnapshot",
+                                    "rds:StopDBInstance"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRoleDefaultPolicy4D43A7C1",
+                            "roles": [
+                              {
+                                "Ref": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Ref": "AssetParameters542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742S3Bucket45BA9D5A"
+                      },
+                      "s3Key": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            {
+                              "Fn::Select": [
+                                0,
+                                {
+                                  "Fn::Split": [
+                                    "||",
+                                    {
+                                      "Ref": "AssetParameters542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742S3VersionKey7B97424D"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "Fn::Select": [
+                                1,
+                                {
+                                  "Fn::Split": [
+                                    "||",
+                                    {
+                                      "Ref": "AssetParameters542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742S3VersionKey7B97424D"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs14.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "AssetParameters": {
+            "id": "AssetParameters",
+            "path": "aws-cdk-aws-api-target-integ/AssetParameters",
+            "children": {
+              "542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742": {
+                "id": "542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742",
+                "path": "aws-cdk-aws-api-target-integ/AssetParameters/542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742",
+                "children": {
+                  "S3Bucket": {
+                    "id": "S3Bucket",
+                    "path": "aws-cdk-aws-api-target-integ/AssetParameters/542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742/S3Bucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "S3VersionKey": {
+                    "id": "S3VersionKey",
+                    "path": "aws-cdk-aws-api-target-integ/AssetParameters/542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742/S3VersionKey",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ArtifactHash": {
+                    "id": "ArtifactHash",
+                    "path": "aws-cdk-aws-api-target-integ/AssetParameters/542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742/ArtifactHash",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
+            }
+          },
+          "PatternRule": {
+            "id": "PatternRule",
+            "path": "aws-cdk-aws-api-target-integ/PatternRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-api-target-integ/PatternRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "eventPattern": {
+                      "detail-type": [
+                        "RDS DB Instance Event"
+                      ],
+                      "detail": {
+                        "Message": [
+                          "DB instance restarted"
+                        ]
+                      }
+                    },
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+                            "Arn"
+                          ]
+                        },
+                        "inputTransformer": {
+                          "inputTemplate": "{\"service\":\"RDS\",\"action\":\"createDBSnapshot\",\"parameters\":{\"DBInstanceIdentifier\":<detail-SourceArn>}}",
+                          "inputPathsMap": {
+                            "detail-SourceArn": "$.detail.SourceArn"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-events.CfnRule",
+                  "version": "0.0.0"
+                }
+              },
+              "PatternRuleTarget0Handler": {
+                "id": "PatternRuleTarget0Handler",
+                "path": "aws-cdk-aws-api-target-integ/PatternRule/PatternRuleTarget0Handler",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "AllowEventRuleawscdkawsapitargetintegPatternRulePatternRuleTarget0HandlerA0821464": {
+                "id": "AllowEventRuleawscdkawsapitargetintegPatternRulePatternRuleTarget0HandlerA0821464",
+                "path": "aws-cdk-aws-api-target-integ/PatternRule/AllowEventRuleawscdkawsapitargetintegPatternRulePatternRuleTarget0HandlerA0821464",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "events.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "PatternRule4AF6D328",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-events.Rule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -91,7 +91,7 @@ itself to 2 Availability Zones.
 Therefore, to get the VPC to spread over 3 or more availability zones, you
 must specify the environment where the stack will be deployed.
 
-You can gain full control over the availability zones selection strategy by overriding the Stack's [`get availabilityZones()`](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/core/lib/stack.ts) method:
+You can gain full control over the availability zones selection strategy by overriding the Stack's [`get availabilityZones()`](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/core/lib/stack.ts) method:
 
 ```text
 // This example is only available in TypeScript
@@ -131,7 +131,7 @@ new ec2.InterfaceVpcEndpoint(this, 'VPC Endpoint', {
   vpc,
   service: new ec2.InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
   subnets: {
-    subnetType: ec2.SubnetType.ISOLATED,
+    subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
     availabilityZones: ['us-east-1a', 'us-east-1c']
   }
 });
@@ -199,15 +199,16 @@ MachineImage.genericLinux({ ... })` and configure the right AMI ID for the
 regions you want to deploy to.
 
 By default, the NAT instances will route all traffic. To control what traffic
-gets routed, pass `allowAllTraffic: false` and access the
-`NatInstanceProvider.connections` member after having passed it to the VPC:
+gets routed, pass a custom value for `defaultAllowedTraffic` and access the
+`NatInstanceProvider.connections` member after having passed the NAT provider to
+the VPC:
 
 ```ts
 declare const instanceType: ec2.InstanceType;
 
 const provider = ec2.NatProvider.instance({
   instanceType,
-  allowAllTraffic: false,
+  defaultAllowedTraffic: ec2.NatTrafficDirection.OUTBOUND_ONLY,
 });
 new ec2.Vpc(this, 'TheVPC', {
   natGatewayProvider: provider,
@@ -229,7 +230,9 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
   // The IP space will be divided over the configured subnets.
   cidr: '10.0.0.0/21',
 
-  // 'maxAzs' configures the maximum number of availability zones to use
+  // 'maxAzs' configures the maximum number of availability zones to use.
+  // If you want to specify the exact availability zones you want the VPC
+  // to use, use `availabilityZones` instead.
   maxAzs: 3,
 
   // 'subnetConfiguration' specifies the "subnet groups" to create.
@@ -324,7 +327,7 @@ const vpc = new ec2.Vpc(this, "VPC", {
       subnetType: ec2.SubnetType.PUBLIC,
       name: 'Public',
     },{
-      subnetType: ec2.SubnetType.ISOLATED,
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       name: 'Isolated',
     }]
 });
@@ -371,7 +374,7 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
     {
       cidrMask: 27,
       name: 'Database',
-      subnetType: ec2.SubnetType.ISOLATED,
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
     }
   ],
 });
@@ -733,7 +736,7 @@ By default, routes will be propagated on the route tables associated with the pr
 private subnets exist, isolated subnets are used. If no isolated subnets exist, public subnets are
 used. Use the `Vpc` property `vpnRoutePropagation` to customize this behavior.
 
-VPN connections expose [metrics (cloudwatch.Metric)](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-cloudwatch/README.md) across all tunnels in the account/region and per connection:
+VPN connections expose [metrics (cloudwatch.Metric)](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-cloudwatch/README.md) across all tunnels in the account/region and per connection:
 
 ```ts fixture=with-vpc
 // Across all tunnels in the account/region
@@ -957,6 +960,16 @@ new ec2.Instance(this, 'Instance4', {
   instanceType,
   machineImage: new ec2.AmazonLinuxImage({ 
     generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
+  }),
+});
+
+// Graviton 3 Processor
+new ec2.Instance(this, 'Instance5', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  machineImage: new ec2.AmazonLinuxImage({
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+    cpuType: ec2.AmazonLinuxCpuType.ARM_64,
   }),
 });
 ```
@@ -1343,6 +1356,20 @@ new ec2.FlowLog(this, 'FlowLogWithKeyPrefix', {
 });
 ```
 
+When the S3 destination is configured, AWS will automatically create an S3 bucket policy
+that allows the service to write logs to the bucket. This makes it impossible to later update
+that bucket policy. To have CDK create the bucket policy so that future updates can be made,
+the `@aws-cdk/aws-s3:createDefaultLoggingPolicy` [feature flag](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html) can be used. This can be set
+in the `cdk.json` file.
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-s3:createDefaultLoggingPolicy": true
+  }
+}
+```
+
 ## User Data
 
 User data enables you to run a script when your instances start up.  In order to configure these scripts you can add commands directly to the script
@@ -1473,5 +1500,21 @@ const template = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
   securityGroup: new ec2.SecurityGroup(this, 'LaunchTemplateSG', {
     vpc: vpc,
   }),
+});
+```
+
+## Detailed Monitoring
+
+The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](http://aws.amazon.com/cloudwatch/pricing/).
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+
+new ec2.Instance(this, 'Instance1', {
+  vpc,
+  instanceType,
+  machineImage: new ec2.AmazonLinuxImage(),
+  detailedMonitoring: true,
 });
 ```

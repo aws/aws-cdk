@@ -1,0 +1,259 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "event-source-stack": {
+        "id": "event-source-stack",
+        "path": "event-source-stack",
+        "children": {
+          "Rule": {
+            "id": "Rule",
+            "path": "event-source-stack/Rule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "event-source-stack/Rule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "scheduleExpression": "rate(1 minute)",
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:aws:events:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":999999999999:event-bus/test-bus"
+                            ]
+                          ]
+                        },
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "RuleEventsRoleC51A4248",
+                            "Arn"
+                          ]
+                        },
+                        "deadLetterConfig": {
+                          "arn": {
+                            "Fn::GetAtt": [
+                              "Queue4A7E3555",
+                              "Arn"
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-events.CfnRule",
+                  "version": "0.0.0"
+                }
+              },
+              "EventsRole": {
+                "id": "EventsRole",
+                "path": "event-source-stack/Rule/EventsRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "event-source-stack/Rule/EventsRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "events.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "event-source-stack/Rule/EventsRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "event-source-stack/Rule/EventsRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "events:PutEvents",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:aws:events:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":999999999999:event-bus/test-bus"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "RuleEventsRoleDefaultPolicy0510525D",
+                            "roles": [
+                              {
+                                "Ref": "RuleEventsRoleC51A4248"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-events.Rule",
+              "version": "0.0.0"
+            }
+          },
+          "Queue": {
+            "id": "Queue",
+            "path": "event-source-stack/Queue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "event-source-stack/Queue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sqs.CfnQueue",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "event-source-stack/Queue/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "event-source-stack/Queue/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Condition": {
+                                "ArnEquals": {
+                                  "aws:SourceArn": {
+                                    "Fn::GetAtt": [
+                                      "Rule4C995B7F",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "events.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "Queue4A7E3555",
+                                  "Arn"
+                                ]
+                              },
+                              "Sid": "AllowEventRuleeventsourcestackRuleFCA41174"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "queues": [
+                          {
+                            "Ref": "Queue4A7E3555"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sqs.CfnQueuePolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sqs.QueuePolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sqs.Queue",
+              "version": "0.0.0"
+            }
+          },
+          "External": {
+            "id": "External",
+            "path": "event-source-stack/External",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

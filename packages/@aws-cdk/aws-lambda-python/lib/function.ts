@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Construct } from 'constructs';
 import { Function, FunctionOptions, Runtime, RuntimeFamily } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
 
@@ -64,7 +64,7 @@ export class PythonFunction extends Function {
       throw new Error(`Cannot find index file at ${resolvedIndex}`);
     }
 
-    const resolvedHandler =`${index.slice(0, -3)}.${handler}`.replace('/', '.');
+    const resolvedHandler =`${index.slice(0, -3)}.${handler}`.replace(/\//g, '.');
 
     if (props.runtime && props.runtime.family !== RuntimeFamily.PYTHON) {
       throw new Error('Only `PYTHON` runtimes are supported.');

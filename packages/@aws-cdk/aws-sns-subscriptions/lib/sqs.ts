@@ -2,11 +2,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { ArnFormat, Names, Stack, Token } from '@aws-cdk/core';
-import { SubscriptionProps } from './subscription';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from 'constructs';
+import { SubscriptionProps } from './subscription';
 
 /**
  * Properties for an SQS subscription
@@ -85,9 +82,9 @@ export class SqsSubscription implements sns.ITopicSubscription {
       if (topic.stack !== this.queue.stack) {
         // only if we know the region, will not work for
         // env agnostic stacks
-        if (!Token.isUnresolved(topic.stack.region) &&
-          (topic.stack.region !== this.queue.stack.region)) {
-          return topic.stack.region;
+        if (!Token.isUnresolved(topic.env.region) &&
+          (topic.env.region !== this.queue.env.region)) {
+          return topic.env.region;
         }
       }
       return undefined;

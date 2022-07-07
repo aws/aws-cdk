@@ -1,0 +1,114 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-route53-cross-account-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-route53-cross-account-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-route53-cross-account-integ": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a",
+              "id": "7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a",
+              "packaging": "zip",
+              "sourceHash": "7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a",
+              "s3BucketParameter": "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aS3BucketC1366C27",
+              "s3KeyParameter": "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aS3VersionKeyEE72CEF8",
+              "artifactHashParameter": "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aArtifactHashAADF3168"
+            }
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/ParentHostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParentHostedZoneC2BD86E1"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/ParentHostedZone/CrossAccountZoneDelegationRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/ChildHostedZoneWithZoneId/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChildHostedZoneWithZoneId729259E6"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/DelegationWithZoneId/cross-account-zone-delegation-handler-role/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicy5170A69B"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/DelegationWithZoneId/CrossAccountZoneDelegationCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DelegationWithZoneIdCrossAccountZoneDelegationCustomResourceFFD766E7"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/Custom::CrossAccountZoneDelegationCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/Custom::CrossAccountZoneDelegationCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/AssetParameters/7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aS3BucketC1366C27"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/AssetParameters/7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aS3VersionKeyEE72CEF8"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/AssetParameters/7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aArtifactHashAADF3168"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/ChildHostedZoneWithZoneName/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChildHostedZoneWithZoneNameBC2C15F6"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/DelegationWithZoneName/cross-account-zone-delegation-handler-role/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicy86996882"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/DelegationWithZoneName/CrossAccountZoneDelegationCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DelegationWithZoneNameCrossAccountZoneDelegationCustomResourceA1A1C94A"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-route53-cross-account-integ"
+    }
+  }
+}

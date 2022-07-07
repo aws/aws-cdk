@@ -18,14 +18,14 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CloudTrail",
         "packageId": "Amazon.CDK.AWS.CloudTrail",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-cloudtrail",
         "module": "aws_cdk.aws_cloudtrail",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -52,7 +52,7 @@
     "package": "cdk-package",
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
@@ -82,10 +82,10 @@
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "aws-sdk": "^2.848.0",
     "jest": "^27.5.1"
   },

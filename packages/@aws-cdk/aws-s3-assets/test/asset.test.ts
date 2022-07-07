@@ -290,7 +290,7 @@ test('nested assemblies share assets: default synth edition', () => {
 
   // Read the asset manifests to verify the file paths
   for (const stageName of ['Stage1', 'Stage2']) {
-    const manifestArtifact = assembly.getNestedAssembly(`assembly-${stageName}`).artifacts.filter(isAssetManifestArtifact)[0];
+    const manifestArtifact = assembly.getNestedAssembly(`assembly-${stageName}`).artifacts.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact)[0];
     const manifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
 
     expect(manifest.files[SAMPLE_ASSET_HASH].source).toEqual({
@@ -428,8 +428,4 @@ function mkdtempSync() {
 
 function isStackArtifact(x: any): x is cxapi.CloudFormationStackArtifact {
   return x instanceof cxapi.CloudFormationStackArtifact;
-}
-
-function isAssetManifestArtifact(x: any): x is cxapi.AssetManifestArtifact {
-  return x instanceof cxapi.AssetManifestArtifact;
 }

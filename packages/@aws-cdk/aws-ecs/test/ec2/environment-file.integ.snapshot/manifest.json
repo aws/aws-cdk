@@ -1,0 +1,504 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-ecs-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-ecs-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-ecs-integ": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb",
+              "id": "17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb",
+              "packaging": "zip",
+              "sourceHash": "17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb",
+              "s3BucketParameter": "AssetParameters17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccbS3Bucket196AD8D5",
+              "s3KeyParameter": "AssetParameters17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccbS3VersionKey53E5B9FA",
+              "artifactHashParameter": "AssetParameters17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccbArtifactHash35F1B2CD"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.9224197a0988613189788525036306b333034895bb69a8220b40e52dced6a8b7.zip",
+              "id": "9224197a0988613189788525036306b333034895bb69a8220b40e52dced6a8b7",
+              "packaging": "file",
+              "sourceHash": "9224197a0988613189788525036306b333034895bb69a8220b40e52dced6a8b7",
+              "s3BucketParameter": "AssetParameters9224197a0988613189788525036306b333034895bb69a8220b40e52dced6a8b7S3Bucket9BBA77AD",
+              "s3KeyParameter": "AssetParameters9224197a0988613189788525036306b333034895bb69a8220b40e52dced6a8b7S3VersionKeyCDBA2F4B",
+              "artifactHashParameter": "AssetParameters9224197a0988613189788525036306b333034895bb69a8220b40e52dced6a8b7ArtifactHash38855E14"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da",
+              "id": "f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da",
+              "packaging": "zip",
+              "sourceHash": "f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da",
+              "s3BucketParameter": "AssetParametersf98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711daS3BucketF23C0DE7",
+              "s3KeyParameter": "AssetParametersf98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711daS3VersionKey5E97B17D",
+              "artifactHashParameter": "AssetParametersf98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711daArtifactHashD85D28D8"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.972240f9dd6e036a93d5f081af9a24315b2053828ac049b3b19b2fa12d7ae64a",
+              "id": "972240f9dd6e036a93d5f081af9a24315b2053828ac049b3b19b2fa12d7ae64a",
+              "packaging": "zip",
+              "sourceHash": "972240f9dd6e036a93d5f081af9a24315b2053828ac049b3b19b2fa12d7ae64a",
+              "s3BucketParameter": "AssetParameters972240f9dd6e036a93d5f081af9a24315b2053828ac049b3b19b2fa12d7ae64aS3Bucket1F1A8472",
+              "s3KeyParameter": "AssetParameters972240f9dd6e036a93d5f081af9a24315b2053828ac049b3b19b2fa12d7ae64aS3VersionKeyBC7CFB0C",
+              "artifactHashParameter": "AssetParameters972240f9dd6e036a93d5f081af9a24315b2053828ac049b3b19b2fa12d7ae64aArtifactHash4253F7E5"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724d.env",
+              "id": "872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724d",
+              "packaging": "file",
+              "sourceHash": "872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724d",
+              "s3BucketParameter": "AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7",
+              "s3KeyParameter": "AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15",
+              "artifactHashParameter": "AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dArtifactHashC2522C05"
+            }
+          }
+        ],
+        "/aws-ecs-integ/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77"
+          }
+        ],
+        "/aws-ecs-integ/Bucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketPolicyE9A3008A"
+          }
+        ],
+        "/aws-ecs-integ/Bucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
+          }
+        ],
+        "/aws-ecs-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/aws-ecs-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/aws-ecs-integ/AssetParameters/17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccbS3Bucket196AD8D5"
+          }
+        ],
+        "/aws-ecs-integ/AssetParameters/17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccbS3VersionKey53E5B9FA"
+          }
+        ],
+        "/aws-ecs-integ/AssetParameters/17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccbArtifactHash35F1B2CD"
+          }
+        ],
+        "/aws-ecs-integ/AssetParameters/9224197a0988613189788525036306b333034895bb69a8220b40e52dced6a8b7/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters9224197a0988613189788525036306b333034895bb69a8220b40e52dced6a8b7S3Bucket9BBA77AD"
+          }
+        ],
+        "/aws-ecs-integ/AssetParameters/9224197a0988613189788525036306b333034895bb69a8220b40e52dced6a8b7/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters9224197a0988613189788525036306b333034895bb69a8220b40e52dced6a8b7S3VersionKeyCDBA2F4B"
+          }
+        ],
+        "/aws-ecs-integ/AssetParameters/9224197a0988613189788525036306b333034895bb69a8220b40e52dced6a8b7/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters9224197a0988613189788525036306b333034895bb69a8220b40e52dced6a8b7ArtifactHash38855E14"
+          }
+        ],
+        "/aws-ecs-integ/AssetParameters/f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersf98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711daS3BucketF23C0DE7"
+          }
+        ],
+        "/aws-ecs-integ/AssetParameters/f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersf98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711daS3VersionKey5E97B17D"
+          }
+        ],
+        "/aws-ecs-integ/AssetParameters/f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersf98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711daArtifactHashD85D28D8"
+          }
+        ],
+        "/aws-ecs-integ/AssetParameters/972240f9dd6e036a93d5f081af9a24315b2053828ac049b3b19b2fa12d7ae64a/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters972240f9dd6e036a93d5f081af9a24315b2053828ac049b3b19b2fa12d7ae64aS3Bucket1F1A8472"
+          }
+        ],
+        "/aws-ecs-integ/AssetParameters/972240f9dd6e036a93d5f081af9a24315b2053828ac049b3b19b2fa12d7ae64a/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters972240f9dd6e036a93d5f081af9a24315b2053828ac049b3b19b2fa12d7ae64aS3VersionKeyBC7CFB0C"
+          }
+        ],
+        "/aws-ecs-integ/AssetParameters/972240f9dd6e036a93d5f081af9a24315b2053828ac049b3b19b2fa12d7ae64a/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters972240f9dd6e036a93d5f081af9a24315b2053828ac049b3b19b2fa12d7ae64aArtifactHash4253F7E5"
+          }
+        ],
+        "/aws-ecs-integ/AssetParameters/872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724d/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7"
+          }
+        ],
+        "/aws-ecs-integ/AssetParameters/872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724d/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15"
+          }
+        ],
+        "/aws-ecs-integ/AssetParameters/872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724d/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dArtifactHashC2522C05"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2EIP3C605A87"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2NATGateway9182C01D"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsCluster97242B84"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LaunchConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupASGC1A785DB"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyA45BF396"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/AllowInvoke:awsecsintegEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic7A89925A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic7A89925AFDCBEE50"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic8F34E394"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy75002F88"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookFFA63029"
+          }
+        ],
+        "/aws-ecs-integ/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/aws-ecs-integ/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExecutionRole605A040B"
+          }
+        ],
+        "/aws-ecs-integ/TaskDefinition/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefinitionTaskRoleFD40A61D"
+          }
+        ],
+        "/aws-ecs-integ/TaskDefinition/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefinitionB36D86D9"
+          }
+        ],
+        "/aws-ecs-integ/EnvFileDeployment/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvFileDeploymentAwsCliLayerA8FC897D"
+          }
+        ],
+        "/aws-ecs-integ/EnvFileDeployment/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvFileDeploymentCustomResourceDBE78DE4"
+          }
+        ],
+        "/aws-ecs-integ/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+          }
+        ],
+        "/aws-ecs-integ/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+          }
+        ],
+        "/aws-ecs-integ/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+          }
+        ],
+        "/aws-ecs-integ/Service/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceD69D759B"
+          }
+        ],
+        "/aws-ecs-integ/Service/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceSecurityGroupC96ED6A7"
+          }
+        ]
+      },
+      "displayName": "aws-ecs-integ"
+    }
+  }
+}

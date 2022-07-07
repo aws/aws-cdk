@@ -1,14 +1,11 @@
 import * as crypto from 'crypto';
 import * as iam from '@aws-cdk/aws-iam';
 import { Aws, CfnResource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { InitElement } from './cfn-init-elements';
 import { OperatingSystemType } from './machine-image';
 import { InitBindOptions, InitElementConfig, InitElementType, InitPlatform } from './private/cfn-init-internal';
 import { UserData } from './user-data';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
 
 /**
  * A CloudFormation-init configuration
@@ -111,7 +108,7 @@ export class CloudFormationInit {
     // as well as include any asset hashes provided so the fingerprint is accurate.
     const resolvedConfig = attachedResource.stack.resolve(bindResult.configData);
     const fingerprintInput = { config: resolvedConfig, assetHash: bindResult.assetHash };
-    const fingerprint = contentHash(JSON.stringify(fingerprintInput)).substr(0, 16);
+    const fingerprint = contentHash(JSON.stringify(fingerprintInput)).slice(0, 16);
 
     attachOptions.instanceRole.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],

@@ -10,10 +10,10 @@ test('create a domain', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
-  const prodBranch = app.addBranch('master');
+  const prodBranch = app.addBranch('main');
   const devBranch = app.addBranch('dev');
 
   // WHEN
@@ -40,7 +40,7 @@ test('create a domain', () => {
       {
         BranchName: {
           'Fn::GetAtt': [
-            'Appmaster71597E87',
+            'AppmainF505BAED',
             'BranchName',
           ],
         },
@@ -71,10 +71,10 @@ test('map a branch to the domain root', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
-  const prodBranch = app.addBranch('master');
+  const prodBranch = app.addBranch('main');
 
   // WHEN
   const domain = app.addDomain('amazon.com');
@@ -93,7 +93,7 @@ test('map a branch to the domain root', () => {
       {
         BranchName: {
           'Fn::GetAtt': [
-            'Appmaster71597E87',
+            'AppmainF505BAED',
             'BranchName',
           ],
         },
@@ -111,7 +111,7 @@ test('throws at synthesis without subdomains', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
 
@@ -129,10 +129,10 @@ test('auto subdomain all branches', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
-  const prodBranch = app.addBranch('master');
+  const prodBranch = app.addBranch('main');
 
   // WHEN
   const domain = app.addDomain('amazon.com', {
@@ -163,10 +163,10 @@ test('auto subdomain some branches', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
-  const prodBranch = app.addBranch('master');
+  const prodBranch = app.addBranch('main');
 
   // WHEN
   const domain = app.addDomain('amazon.com', {
@@ -195,7 +195,7 @@ test('auto subdomain with IAM role', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     role: iam.Role.fromRoleArn(
       stack,
@@ -204,7 +204,7 @@ test('auto subdomain with IAM role', () => {
       { mutable: false },
     ),
   });
-  const prodBranch = app.addBranch('master');
+  const prodBranch = app.addBranch('main');
 
   // WHEN
   const domain = app.addDomain('amazon.com', {

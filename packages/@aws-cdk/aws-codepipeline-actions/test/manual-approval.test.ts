@@ -34,7 +34,7 @@ describe('manual approval', () => {
         actions: [new cpactions.GitHubSourceAction({
           actionName: 'Source',
           output: new codepipeline.Artifact(),
-          oauthToken: SecretValue.plainText('secret'),
+          oauthToken: SecretValue.unsafePlainText('secret'),
           owner: 'aws',
           repo: 'aws-cdk',
         })],
@@ -136,7 +136,7 @@ describe('manual approval', () => {
             actions: [new cpactions.GitHubSourceAction({
               actionName: 'Source',
               output: new codepipeline.Artifact(),
-              oauthToken: SecretValue.plainText('secret'),
+              oauthToken: SecretValue.unsafePlainText('secret'),
               owner: 'aws',
               repo: 'aws-cdk',
             })],

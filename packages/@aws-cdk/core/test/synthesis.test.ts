@@ -3,9 +3,10 @@ import * as os from 'os';
 import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import * as cdk from '../lib';
 import { synthesize } from '../lib/private/synthesis';
-import { Construct } from 'constructs';
 
 function createModernApp() {
   return new cdk.App();
@@ -38,7 +39,6 @@ describe('synthesis', () => {
         },
       }),
     });
-
   });
 
   test('synthesis respects disabling tree metadata', () => {
@@ -47,7 +47,52 @@ describe('synthesis', () => {
     });
     const assembly = app.synth();
     expect(list(assembly.directory)).toEqual(['cdk.out', 'manifest.json']);
+  });
 
+  test('synthesis respects disabling logicalId metadata', () => {
+    const app = new cdk.App({
+      context: {
+        [cxapi.DISABLE_LOGICAL_ID_METADATA]: true,
+      },
+    });
+    const stack = new cdk.Stack(app, 'one-stack');
+    new cdk.CfnResource(stack, 'MagicResource', { type: 'Resource::Type' });
+
+    // WHEN
+    const session = app.synth();
+
+    // THEN
+    expect(Object.keys((session.manifest.artifacts ?? {})['one-stack'])).not.toContain('metadata');
+  });
+
+  test('synthesis respects disabling logicalId metadata, and does not disable other metadata', () => {
+    const app = new cdk.App({
+      context: {
+        [cxapi.DISABLE_LOGICAL_ID_METADATA]: true,
+      },
+      stackTraces: false,
+    });
+    const stack = new cdk.Stack(app, 'one-stack', { tags: { boomTag: 'BOOM' } });
+    new cdk.CfnResource(stack, 'MagicResource', { type: 'Resource::Type' });
+
+    // WHEN
+    const session = app.synth();
+
+    // THEN
+    expect(session.manifest.artifacts?.['one-stack'].metadata).toEqual({
+      '/one-stack': [
+        {
+          type: 'aws:cdk:stack-tags',
+          data: [
+            {
+              key: 'boomTag',
+              value: 'BOOM',
+            },
+          ],
+        },
+      ],
+      // no logicalId entry
+    });
   });
 
   test('single empty stack', () => {
@@ -60,6 +105,65 @@ describe('synthesis', () => {
 
     // THEN
     expect(list(session.directory).includes('one-stack.template.json')).toEqual(true);
+  });
+
+  test('some random construct implements "synthesize"', () => {
+    // GIVEN
+    const app = createModernApp();
+    const stack = new cdk.Stack(app, 'one-stack');
+
+    class MyConstruct extends Construct {
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+
+        cdk.attachCustomSynthesis(this, {
+          onSynthesize(s: cdk.ISynthesisSession) {
+            writeJson(s.assembly.outdir, 'foo.json', { bar: 123 });
+            s.assembly.addArtifact('my-random-construct', {
+              type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
+              environment: 'aws://12345/bar',
+              properties: {
+                templateFile: 'foo.json',
+              },
+            });
+          },
+        });
+      }
+    }
+
+    new MyConstruct(stack, 'MyConstruct');
+
+    // WHEN
+    const session = app.synth();
+
+    // THEN
+    expect(list(session.directory).includes('one-stack.template.json')).toEqual(true);
+    expect(list(session.directory).includes('foo.json')).toEqual(true);
+
+    expect(readJson(session.directory, 'foo.json')).toEqual({ bar: 123 });
+    expect(session.manifest).toEqual({
+      version: cxschema.Manifest.version(),
+      artifacts: expect.objectContaining({
+        'Tree': {
+          type: 'cdk:tree',
+          properties: { file: 'tree.json' },
+        },
+        'my-random-construct': {
+          type: 'aws:cloudformation:stack',
+          environment: 'aws://12345/bar',
+          properties: { templateFile: 'foo.json' },
+        },
+        'one-stack': expect.objectContaining({
+          type: 'aws:cloudformation:stack',
+          environment: 'aws://unknown-account/unknown-region',
+          properties: expect.objectContaining({
+            templateFile: 'one-stack.template.json',
+            validateOnSynth: false,
+          }),
+          displayName: 'one-stack',
+        }),
+      }),
+    });
   });
 
   test('random construct uses addCustomSynthesis', () => {
@@ -119,7 +223,6 @@ describe('synthesis', () => {
         }),
       }),
     });
-
   });
 
   testDeprecated('it should be possible to synthesize without an app', () => {
@@ -166,7 +269,6 @@ describe('synthesis', () => {
     expect(stack.templateFile).toEqual('hey.json');
     expect(stack.parameters).toEqual({ paramId: 'paramValue', paramId2: 'paramValue2' });
     expect(stack.environment).toEqual({ region: 'us-east-1', account: 'unknown-account', name: 'aws://unknown-account/us-east-1' });
-
   });
 });
 

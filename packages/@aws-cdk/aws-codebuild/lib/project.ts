@@ -10,6 +10,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
+import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
 import { CodeBuildMetrics } from './codebuild-canned-metrics.generated';
@@ -23,7 +24,6 @@ import { LoggingOptions } from './project-logs';
 import { renderReportGroupArn } from './report-group-utils';
 import { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
-import { IArtifacts } from './artifacts';
 
 const VPC_POLICY_SYM = Symbol.for('@aws-cdk/aws-codebuild.roleVpcPolicy');
 
@@ -858,7 +858,7 @@ export class Project extends ProjectBase {
             // If the parameter name starts with / the resource name is not separated with a double '/'
             // arn:aws:ssm:region:1111111111:parameter/PARAM_NAME
             resourceName: envVariableValue.startsWith('/')
-              ? envVariableValue.substr(1)
+              ? envVariableValue.slice(1)
               : envVariableValue,
           }));
         }
@@ -1690,11 +1690,15 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly STANDARD_4_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:4.0');
   /** The `aws/codebuild/standard:5.0` build image. */
   public static readonly STANDARD_5_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:5.0');
+  /** The `aws/codebuild/standard:6.0` build image. */
+  public static readonly STANDARD_6_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:6.0');
 
   public static readonly AMAZON_LINUX_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:1.0');
   public static readonly AMAZON_LINUX_2_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:2.0');
   /** The Amazon Linux 2 x86_64 standard image, version `3.0`. */
   public static readonly AMAZON_LINUX_2_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:3.0');
+  /** The Amazon Linux 2 x86_64 standard image, version `4.0`. */
+  public static readonly AMAZON_LINUX_2_4 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:4.0');
 
   /** @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0 instead. */
   public static readonly AMAZON_LINUX_2_ARM = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0;
@@ -1785,11 +1789,11 @@ export class LinuxBuildImage implements IBuildImage {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-ecr.html
    *
    * @param repository The ECR repository
-   * @param tag Image tag (default "latest")
+   * @param tagOrDigest Image tag or digest (default "latest", digests must start with `sha256:`)
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): IBuildImage {
+  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): IBuildImage {
     return new LinuxBuildImage({
-      imageId: repository.repositoryUriForTag(tag),
+      imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
       repository,
     });
@@ -1946,15 +1950,15 @@ export class WindowsBuildImage implements IBuildImage {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-ecr.html
    *
    * @param repository The ECR repository
-   * @param tag Image tag (default "latest")
+   * @param tagOrDigest Image tag or digest (default "latest", digests must start with `sha256:`)
    */
   public static fromEcrRepository(
     repository: ecr.IRepository,
-    tag: string = 'latest',
+    tagOrDigest: string = 'latest',
     imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
 
     return new WindowsBuildImage({
-      imageId: repository.repositoryUriForTag(tag),
+      imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
       imageType,
       repository,

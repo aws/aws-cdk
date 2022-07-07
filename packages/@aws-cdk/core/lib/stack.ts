@@ -366,6 +366,9 @@ export class Stack extends Construct implements ITaggable {
     }
 
     this._stackName = props.stackName ?? this.generateStackName();
+    if (this._stackName.length > 128) {
+      throw new Error(`Stack name must be <= 128 characters. Stack name: '${this._stackName}'`);
+    }
     this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
@@ -783,12 +786,13 @@ export class Stack extends Construct implements ITaggable {
       const numberOfResources = Object.keys(resources).length;
 
       if (numberOfResources > this.maxResources) {
-        throw new Error(`Number of resources in stack '${this.node.path}': ${numberOfResources} is greater than allowed maximum of ${this.maxResources}`);
+        const counts = Object.entries(count(Object.values(resources).map((r: any) => `${r?.Type}`))).map(([type, c]) => `${type} (${c})`).join(', ');
+        throw new Error(`Number of resources in stack '${this.node.path}': ${numberOfResources} is greater than allowed maximum of ${this.maxResources}: ${counts}`);
       } else if (numberOfResources >= (this.maxResources * 0.8)) {
         Annotations.of(this).addInfo(`Number of resources: ${numberOfResources} is approaching allowed maximum of ${this.maxResources}`);
       }
     }
-    fs.writeFileSync(outPath, JSON.stringify(template, undefined, 2));
+    fs.writeFileSync(outPath, JSON.stringify(template, undefined, 1));
 
     for (const ctx of this._missingContext) {
       if (lookupRoleArn != null) {
@@ -896,6 +900,14 @@ export class Stack extends Construct implements ITaggable {
     const resolvable = Tokenization.reverse(exportedValue);
     if (!resolvable || !Reference.isReference(resolvable)) {
       throw new Error('exportValue: either supply \'name\' or make sure to export a resource attribute (like \'bucket.bucketName\')');
+    }
+
+    // if exportValue is being called manually (which is pre onPrepare) then the logicalId
+    // could potentially be changed by a call to overrideLogicalId. This would cause our Export/Import
+    // to have an incorrect id. For a better user experience, lock the logicalId and throw an error
+    // if the user tries to override the id _after_ calling exportValue
+    if (CfnElement.isCfnElement(resolvable.target)) {
+      resolvable.target._lockLogicalId();
     }
 
     // "teleport" the value here, in case it comes from a nested stack. This will also
@@ -1348,6 +1360,18 @@ export interface ExportValueOptions {
    * @default - A name is automatically chosen
    */
   readonly name?: string;
+}
+
+function count(xs: string[]): Record<string, number> {
+  const ret: Record<string, number> = {};
+  for (const x of xs) {
+    if (x in ret) {
+      ret[x] += 1;
+    } else {
+      ret[x] = 1;
+    }
+  }
+  return ret;
 }
 
 // These imports have to be at the end to prevent circular imports

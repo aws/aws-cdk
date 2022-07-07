@@ -11,7 +11,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.FMS",
         "packageId": "Amazon.CDK.AWS.FMS",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
         "package": "software.amazon.awscdk.services.fms",
@@ -25,7 +25,7 @@
         "module": "aws_cdk.aws_fms",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -49,7 +49,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -86,7 +86,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1"
+    "@types/jest": "^27.5.2"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",

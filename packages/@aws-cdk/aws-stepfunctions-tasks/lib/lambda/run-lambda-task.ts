@@ -48,6 +48,7 @@ export interface RunLambdaTaskProps {
    * Version or alias of the function to be invoked
    *
    * @default - No qualifier
+   * @deprecated pass a Version or Alias object as lambdaFunction instead
    */
   readonly qualifier?: string;
 }
@@ -87,7 +88,7 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
     return {
       resourceArn: getResourceArn('lambda', 'invoke', this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
-        resources: [this.lambdaFunction.functionArn],
+        resources: this.lambdaFunction.resourceArnsForGrantInvoke,
         actions: ['lambda:InvokeFunction'],
       })],
       metricPrefixSingular: 'LambdaFunction',

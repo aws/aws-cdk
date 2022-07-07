@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "cdk-build",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -32,23 +32,23 @@
   "devDependencies": {
     "@types/archiver": "^5.3.1",
     "@types/glob": "^7.2.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "@types/mime": "^2.0.3",
     "@types/mock-fs": "^4.13.1",
     "@types/node": "^10.17.60",
     "@types/yargs": "^15.0.14",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "jest": "^27.5.1",
-    "jszip": "^3.7.1",
+    "jszip": "^3.10.0",
     "mock-fs": "^4.14.0",
     "@aws-cdk/pkglint": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "archiver": "^5.3.0",
-    "aws-sdk": "^2.848.0",
-    "glob": "^7.2.0",
+    "archiver": "^5.3.1",
+    "aws-sdk": "^2.1093.0",
+    "glob": "^7.2.3",
     "mime": "^2.6.0",
     "yargs": "^16.2.0"
   },

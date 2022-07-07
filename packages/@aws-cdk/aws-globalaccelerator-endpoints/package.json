@@ -10,7 +10,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.GlobalAccelerator.Endpoints",
         "packageId": "Amazon.CDK.AWS.GlobalAccelerator.Endpoints",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
         "package": "software.amazon.awscdk.services.globalaccelerator.endpoints",
@@ -24,7 +24,7 @@
         "module": "aws_cdk.aws_globalaccelerator_endpoints",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -47,7 +47,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -78,9 +78,9 @@
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "aws-sdk": "^2.848.0",
     "aws-sdk-mock": "5.6.0",
     "jest": "^27.5.1"

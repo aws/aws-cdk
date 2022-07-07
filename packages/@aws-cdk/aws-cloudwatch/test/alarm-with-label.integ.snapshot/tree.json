@@ -1,0 +1,113 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "AlarmWithLabelIntegrationTest": {
+        "id": "AlarmWithLabelIntegrationTest",
+        "path": "AlarmWithLabelIntegrationTest",
+        "children": {
+          "Alarm1": {
+            "id": "Alarm1",
+            "path": "AlarmWithLabelIntegrationTest/Alarm1",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AlarmWithLabelIntegrationTest/Alarm1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 3,
+                    "metrics": [
+                      {
+                        "metricStat": {
+                          "metric": {
+                            "metricName": "Metric",
+                            "namespace": "CDK/Test"
+                          },
+                          "period": 300,
+                          "stat": "Average"
+                        },
+                        "id": "m1",
+                        "label": "Metric [AVG: ${AVG}]",
+                        "returnData": true
+                      }
+                    ],
+                    "threshold": 100
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "Alarm2": {
+            "id": "Alarm2",
+            "path": "AlarmWithLabelIntegrationTest/Alarm2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AlarmWithLabelIntegrationTest/Alarm2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 3,
+                    "metrics": [
+                      {
+                        "metricStat": {
+                          "metric": {
+                            "metricName": "Metric",
+                            "namespace": "CDK/Test"
+                          },
+                          "period": 300,
+                          "stat": "Average"
+                        },
+                        "id": "m1",
+                        "label": "Metric [AVG: ${AVG}]",
+                        "returnData": true
+                      }
+                    ],
+                    "threshold": 100
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

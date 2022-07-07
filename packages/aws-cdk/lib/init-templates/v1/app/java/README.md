@@ -1,6 +1,6 @@
 # Welcome to your CDK Java project!
 
-This is a blank project for Java development with CDK.
+This is a blank project for CDK development with Java.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 

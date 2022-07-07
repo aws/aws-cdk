@@ -10,7 +10,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.GreengrassV2",
         "packageId": "Amazon.CDK.AWS.GreengrassV2",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
         "package": "software.amazon.awscdk.services.greengrassv2",
@@ -24,7 +24,7 @@
         "module": "aws_cdk.aws_greengrassv2",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -45,7 +45,7 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
     "build": "cdk-build",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -85,7 +85,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1"
+    "@types/jest": "^27.5.2"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",

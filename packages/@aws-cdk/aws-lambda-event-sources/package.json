@@ -18,14 +18,14 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Lambda.EventSources",
         "packageId": "Amazon.CDK.AWS.Lambda.EventSources",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-lambda-event-sources",
         "module": "aws_cdk.aws_lambda_event_sources",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -48,7 +48,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -74,9 +74,9 @@
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "jest": "^27.5.1"
   },
   "dependencies": {

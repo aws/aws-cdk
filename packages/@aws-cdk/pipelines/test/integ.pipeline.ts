@@ -1,7 +1,8 @@
-/// !cdk-integ PipelineStack
+/// !cdk-integ PipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
-import { App, CfnResource, DefaultStackSynthesizer, SecretValue, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
+import * as s3 from '@aws-cdk/aws-s3';
+import { App, CfnResource, DefaultStackSynthesizer, RemovalPolicy, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 
@@ -30,17 +31,19 @@ class CdkpipelinesDemoPipelineStack extends Stack {
     const cloudAssemblyArtifact = new codepipeline.Artifact('CloudAsm');
     const integTestArtifact = new codepipeline.Artifact('IntegTests');
 
+    const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
     const pipeline = new cdkp.CdkPipeline(this, 'Pipeline', {
       cloudAssemblyArtifact,
 
       // Where the source can be found
-      sourceAction: new codepipeline_actions.GitHubSourceAction({
-        actionName: 'GitHub',
+      sourceAction: new codepipeline_actions.S3SourceAction({
+        bucket: sourceBucket,
         output: sourceArtifact,
-        oauthToken: SecretValue.plainText('not-a-secret'),
-        owner: 'OWNER',
-        repo: 'REPO',
-        trigger: codepipeline_actions.GitHubTrigger.POLL,
+        bucketKey: 'key',
+        actionName: 'S3',
       }),
 
       // How it will be built
@@ -59,9 +62,7 @@ class CdkpipelinesDemoPipelineStack extends Stack {
 
     // This is where we add the application stages
     // ...
-    const stage = pipeline.addApplicationStage(new MyStage(this, 'PreProd', {
-      env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
-    }));
+    const stage = pipeline.addApplicationStage(new MyStage(this, 'PreProd'));
     stage.addActions(
       new cdkp.ShellScriptAction({
         actionName: 'UseSource',
@@ -81,7 +82,6 @@ const app = new App({
   },
 });
 new CdkpipelinesDemoPipelineStack(app, 'PipelineStack', {
-  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
   synthesizer: new DefaultStackSynthesizer(),
 });
 app.synth();

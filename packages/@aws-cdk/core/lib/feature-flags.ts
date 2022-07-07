@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
+import { IConstruct, Node } from 'constructs';
 
 /**
  * Features that are implemented behind a flag in order to preserve backwards
@@ -12,11 +12,11 @@ export class FeatureFlags {
   /**
    * Inspect feature flags on the construct node's context.
    */
-  public static of(scope: Construct) {
+  public static of(scope: IConstruct) {
     return new FeatureFlags(scope);
   }
 
-  private constructor(private readonly construct: Construct) {}
+  private constructor(private readonly construct: IConstruct) {}
 
   /**
    * Check whether a feature flag is enabled. If configured, the flag is present in
@@ -24,7 +24,7 @@ export class FeatureFlags {
    * module.
    */
   public isEnabled(featureFlag: string): boolean | undefined {
-    const context = this.construct.node.tryGetContext(featureFlag);
+    const context = Node.of(this.construct).tryGetContext(featureFlag);
     if (cxapi.FUTURE_FLAGS_EXPIRED.includes(featureFlag)) {
       if (context !== undefined) {
         throw new Error(`Unsupported feature flag '${featureFlag}'. This flag existed on CDKv1 but has been removed in CDKv2.`

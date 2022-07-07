@@ -48,6 +48,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public readonly role?: iam.IRole;
   public readonly version: string;
   public readonly architecture: lambda.Architecture;
+  public readonly resourceArnsForGrantInvoke: string[];
 
   private readonly _edgeFunction: lambda.Function;
 
@@ -55,7 +56,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     super(scope, id);
 
     // Create a simple Function if we're already in us-east-1; otherwise create a cross-region stack.
-    const regionIsUsEast1 = !Token.isUnresolved(this.stack.region) && this.stack.region === 'us-east-1';
+    const regionIsUsEast1 = !Token.isUnresolved(this.env.region) && this.env.region === 'us-east-1';
     const { edgeFunction, edgeArn } = regionIsUsEast1
       ? this.createInRegionFunction(props)
       : this.createCrossRegionFunction(id, props);
@@ -69,6 +70,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     this.permissionsNode = this._edgeFunction.permissionsNode;
     this.version = lambda.extractQualifierFromArn(this.functionArn);
     this.architecture = this._edgeFunction.architecture;
+    this.resourceArnsForGrantInvoke = this._edgeFunction.resourceArnsForGrantInvoke;
 
     this.node.defaultChild = this._edgeFunction;
   }
@@ -114,6 +116,9 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public grantInvoke(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvoke(identity);
   }
+  public grantInvokeUrl(identity: iam.IGrantable): iam.Grant {
+    return this.lambda.grantInvokeUrl(identity);
+  }
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.lambda.metric(metricName, { ...props, region: EdgeFunction.EDGE_REGION });
   }
@@ -135,6 +140,9 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   }
   public configureAsyncInvoke(options: lambda.EventInvokeConfigOptions): void {
     return this.lambda.configureAsyncInvoke(options);
+  }
+  public addFunctionUrl(options?: lambda.FunctionUrlOptions): lambda.FunctionUrl {
+    return this.lambda.addFunctionUrl(options);
   }
 
   /** Create a function in-region */
@@ -185,7 +193,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     const resourceType = 'Custom::CrossRegionStringParameterReader';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: path.join(__dirname, 'edge-function'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       policyStatements: [{
         Effect: 'Allow',
         Resource: parameterArnPrefix,

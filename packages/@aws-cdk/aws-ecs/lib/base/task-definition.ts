@@ -413,8 +413,8 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
     }
 
-    if (this.isExternalCompatible && this.networkMode !== NetworkMode.BRIDGE) {
-      throw new Error(`External tasks can only have Bridge network mode, got: ${this.networkMode}`);
+    if (this.isExternalCompatible && ![NetworkMode.BRIDGE, NetworkMode.HOST, NetworkMode.NONE].includes(this.networkMode)) {
+      throw new Error(`External tasks can only have Bridge, Host or None network mode, got: ${this.networkMode}`);
     }
 
     if (!this.isFargateCompatible && props.runtimePlatform) {
@@ -510,7 +510,7 @@ export class TaskDefinition extends TaskDefinitionBase {
           scope: spec.dockerVolumeConfiguration.scope,
         },
         efsVolumeConfiguration: spec.efsVolumeConfiguration && {
-          fileSystemId: spec.efsVolumeConfiguration.fileSystemId,
+          filesystemId: spec.efsVolumeConfiguration.fileSystemId,
           authorizationConfig: spec.efsVolumeConfiguration.authorizationConfig,
           rootDirectory: spec.efsVolumeConfiguration.rootDirectory,
           transitEncryption: spec.efsVolumeConfiguration.transitEncryption,

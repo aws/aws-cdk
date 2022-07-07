@@ -292,12 +292,27 @@ const secret = SecretValue.secretsManager('secretId', {
 Using AWS Secrets Manager is the recommended way to reference secrets in a CDK app.
 `SecretValue` also supports the following secret sources:
 
- - `SecretValue.plainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
- - `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM
+- `SecretValue.unsafePlainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
+- `SecretValue.secretsManager(secret)`: refers to a secret stored in Secrets Manager
+- `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM
  Parameter Store. If you don't specify the exact version, AWS CloudFormation uses the latest
  version of the parameter.
- - `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
- - `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
+- `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
+- `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
+- `SecretValue.resourceAttribute(attr)`: refers to a secret returned from a CloudFormation resource creation.
+
+`SecretValue`s should only be passed to constructs that accept properties of type
+`SecretValue`. These constructs are written to ensure your secrets will not be
+exposed where they shouldn't be. If you try to use a `SecretValue` in a
+different location, an error about unsafe secret usage will be thrown at
+synthesis time.
+
+If you rotate the secret's value in Secrets Manager, you must also change at
+least one property on the resource where you are using the secret, to force
+CloudFormation to re-read the secret.
+
+`SecretValue.ssmSecure()` is only supported for a limited set of resources.
+[Click here for a list of supported resources and properties](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#template-parameters-dynamic-patterns-resources).
 
 ## ARN manipulation
 
@@ -516,7 +531,7 @@ stack-unique identifier and returns the service token:
 ```ts
 const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
   description: "Lambda function created by the custom resource provider",
 });
 
@@ -611,7 +626,7 @@ export class Sum extends Construct {
     const resourceType = 'Custom::Sum';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/sum-handler`,
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
     });
 
     const resource = new CustomResource(this, 'Resource', {
@@ -641,13 +656,30 @@ built-in singleton method:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
 });
 
 const roleArn = provider.roleArn;
 ```
 
 This role ARN can then be used in resource-based IAM policies.
+
+To add IAM policy statements to this role, use `addToRolePolicy()`:
+
+```ts
+const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
+  codeDirectory: `${__dirname}/my-handler`,
+  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+});
+provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: 's3:GetObject',
+  Resource: '*',
+})
+```
+
+Note that `addToRolePolicy()` uses direct IAM JSON policy blobs, *not* a
+`iam.PolicyStatement` object like you will see in the rest of the CDK.
 
 #### The Custom Resource Provider Framework
 

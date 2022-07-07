@@ -1,0 +1,28 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-integ-secrets-replica": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-secrets-replica.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-integ-secrets-replica/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretA720EF05"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-secrets-replica"
+    }
+  }
+}

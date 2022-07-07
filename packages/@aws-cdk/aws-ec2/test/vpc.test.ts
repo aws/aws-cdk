@@ -1,4 +1,4 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '@aws-cdk/core';
 import {
@@ -588,6 +588,38 @@ describe('vpc', () => {
       });
 
     });
+
+    test('throws error when both availabilityZones and maxAzs are set', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          availabilityZones: stack.availabilityZones,
+          maxAzs: 1,
+        });
+      }).toThrow(/Vpc supports 'availabilityZones' or 'maxAzs', but not both./);
+    });
+
+    test('with availabilityZones set correctly', () => {
+      const stack = getTestStack();
+      const specificAz = stack.availabilityZones[1]; // not the first item
+      new Vpc(stack, 'VPC', {
+        availabilityZones: [specificAz],
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Subnet', 2);
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+        AvailabilityZone: specificAz,
+      });
+    });
+
+    test('with availabilityZones set to zones different from stack', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          availabilityZones: [stack.availabilityZones[0] + 'invalid'],
+        });
+      }).toThrow(/must be a subset of the stack/);
+    });
+
     test('with natGateway set to 1', () => {
       const stack = getTestStack();
       new Vpc(stack, 'VPC', {
@@ -1557,11 +1589,7 @@ describe('vpc', () => {
         subnetIds: { 'Fn::Split': [',', { 'Fn::ImportValue': 'myPublicSubnetIds' }] },
       });
 
-      expect(vpc.node.metadata).toContainEqual({
-        data: expect.stringContaining("fromVpcAttributes: 'availabilityZones' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead."),
-        type: 'aws:cdk:warning',
-        trace: undefined,
-      });
+      Annotations.fromStack(stack).hasWarning('/TestStack/VPC', "fromVpcAttributes: 'availabilityZones' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead.");
     });
 
     test('fromVpcAttributes using fixed-length list tokens', () => {
@@ -1872,6 +1900,44 @@ describe('vpc', () => {
       const expected = vpc.publicSubnets.filter(s => s.ipv4CidrBlock.endsWith('/20'));
       expect(subnetIds).toEqual(expected.map(s => s.subnetId));
 
+    });
+
+    test('tests router types', () => {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'Vpc');
+
+      // WHEN
+      (vpc.publicSubnets[0] as Subnet).addRoute('TransitRoute', {
+        routerType: RouterType.TRANSIT_GATEWAY,
+        routerId: 'transit-id',
+      });
+      (vpc.publicSubnets[0] as Subnet).addRoute('CarrierRoute', {
+        routerType: RouterType.CARRIER_GATEWAY,
+        routerId: 'carrier-gateway-id',
+      });
+      (vpc.publicSubnets[0] as Subnet).addRoute('LocalGatewayRoute', {
+        routerType: RouterType.LOCAL_GATEWAY,
+        routerId: 'local-gateway-id',
+      });
+      (vpc.publicSubnets[0] as Subnet).addRoute('VpcEndpointRoute', {
+        routerType: RouterType.VPC_ENDPOINT,
+        routerId: 'vpc-endpoint-id',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        TransitGatewayId: 'transit-id',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        LocalGatewayId: 'local-gateway-id',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        CarrierGatewayId: 'carrier-gateway-id',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        VpcEndpointId: 'vpc-endpoint-id',
+      });
     });
   });
 });

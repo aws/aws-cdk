@@ -62,7 +62,7 @@ describe('pipeline', () => {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText('secret'),
+          oauthToken: SecretValue.unsafePlainText('secret'),
           owner: 'foo',
           repo: 'bar',
           trigger: cpactions.GitHubTrigger.POLL,
@@ -101,7 +101,7 @@ describe('pipeline', () => {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.valueAsString),
+          oauthToken: SecretValue.unsafePlainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
           trigger: cpactions.GitHubTrigger.POLL,
@@ -160,7 +160,7 @@ describe('pipeline', () => {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.valueAsString),
+          oauthToken: SecretValue.unsafePlainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
           trigger: cpactions.GitHubTrigger.NONE,
@@ -219,7 +219,7 @@ describe('pipeline', () => {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.valueAsString),
+          oauthToken: SecretValue.unsafePlainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
         }),
@@ -431,7 +431,7 @@ describe('pipeline', () => {
     const lambdaFun = new lambda.Function(stack, 'Function', {
       code: new lambda.InlineCode('bla'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');

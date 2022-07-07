@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "LogGroup/DefaultTest": {
+      "stacks": [
+        "log-group-events"
+      ],
+      "assertionStack": "LogGroupDefaultTestDeployAssert353EE07A"
+    }
+  }
+}

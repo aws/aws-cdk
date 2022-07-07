@@ -18,6 +18,11 @@
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
+  "ubergen": {
+    "exports": {
+      "./lib/helpers-internal": "./lib/helpers-internal/index.js"
+    }
+  },
   "jsii": {
     "outdir": "dist",
     "diagnostics": {
@@ -35,14 +40,14 @@
       "dotnet": {
         "namespace": "Amazon.CDK.Assertions",
         "packageId": "Amazon.CDK.Assertions",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.assertions",
         "module": "aws_cdk.assertions",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -65,10 +70,10 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "jest": "^27.5.1",
     "constructs": "^10.0.0",
-    "ts-jest": "^27.1.3"
+    "ts-jest": "^27.1.5"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",

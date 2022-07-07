@@ -18,14 +18,14 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.AutoScaling",
         "packageId": "Amazon.CDK.AWS.AutoScaling",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-autoscaling",
         "module": "aws_cdk.aws_autoscaling",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -48,7 +48,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -82,12 +82,12 @@
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "jest": "^27.5.1"
   },
   "dependencies": {
@@ -123,6 +123,7 @@
       "export:@aws-cdk/aws-autoscaling.IAutoScalingGroup",
       "props-physical-name:@aws-cdk/aws-autoscaling.AutoScalingGroupProps",
       "props-physical-name:@aws-cdk/aws-autoscaling.ScheduledActionProps",
+      "props-physical-name:@aws-cdk/aws-autoscaling.WarmPoolProps",
       "props-default-doc:@aws-cdk/aws-autoscaling.EbsDeviceOptionsBase.iops",
       "docs-public-apis:@aws-cdk/aws-autoscaling.ScalingProcess.ADD_TO_LOAD_BALANCER",
       "docs-public-apis:@aws-cdk/aws-autoscaling.ScalingProcess.SCHEDULED_ACTIONS",

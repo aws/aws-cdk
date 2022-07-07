@@ -1,0 +1,330 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
+        }
+      },
+      "aws-stepfunctions-tasks-sns-publish-integ": {
+        "id": "aws-stepfunctions-tasks-sns-publish-integ",
+        "path": "aws-stepfunctions-tasks-sns-publish-integ",
+        "children": {
+          "cool-topic": {
+            "id": "cool-topic",
+            "path": "aws-stepfunctions-tasks-sns-publish-integ/cool-topic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-tasks-sns-publish-integ/cool-topic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sns.Topic",
+              "version": "0.0.0"
+            }
+          },
+          "show-me-the-messages": {
+            "id": "show-me-the-messages",
+            "path": "aws-stepfunctions-tasks-sns-publish-integ/show-me-the-messages",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-tasks-sns-publish-integ/show-me-the-messages/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sqs.CfnQueue",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "aws-stepfunctions-tasks-sns-publish-integ/show-me-the-messages/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-tasks-sns-publish-integ/show-me-the-messages/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Condition": {
+                                "ArnEquals": {
+                                  "aws:SourceArn": {
+                                    "Ref": "cooltopic4736778A"
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "sns.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "showmethemessages8D16BBDB",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "queues": [
+                          {
+                            "Ref": "showmethemessages8D16BBDB"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sqs.CfnQueuePolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sqs.QueuePolicy",
+                  "version": "0.0.0"
+                }
+              },
+              "awsstepfunctionstaskssnspublishintegcooltopic8388C976": {
+                "id": "awsstepfunctionstaskssnspublishintegcooltopic8388C976",
+                "path": "aws-stepfunctions-tasks-sns-publish-integ/show-me-the-messages/awsstepfunctionstaskssnspublishintegcooltopic8388C976",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-tasks-sns-publish-integ/show-me-the-messages/awsstepfunctionstaskssnspublishintegcooltopic8388C976/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
+                      "aws:cdk:cloudformation:props": {
+                        "protocol": "sqs",
+                        "topicArn": {
+                          "Ref": "cooltopic4736778A"
+                        },
+                        "endpoint": {
+                          "Fn::GetAtt": [
+                            "showmethemessages8D16BBDB",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sns.CfnSubscription",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.Subscription",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sqs.Queue",
+              "version": "0.0.0"
+            }
+          },
+          "publish to SNS": {
+            "id": "publish to SNS",
+            "path": "aws-stepfunctions-tasks-sns-publish-integ/publish to SNS",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions-tasks.SnsPublish",
+              "version": "0.0.0"
+            }
+          },
+          "Final step": {
+            "id": "Final step",
+            "path": "aws-stepfunctions-tasks-sns-publish-integ/Final step",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.Pass",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachine": {
+            "id": "StateMachine",
+            "path": "aws-stepfunctions-tasks-sns-publish-integ/StateMachine",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "aws-stepfunctions-tasks-sns-publish-integ/StateMachine/Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-tasks-sns-publish-integ/StateMachine/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": {
+                                  "Fn::FindInMap": [
+                                    "ServiceprincipalMap",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    "states"
+                                  ]
+                                }
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-stepfunctions-tasks-sns-publish-integ/StateMachine/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-stepfunctions-tasks-sns-publish-integ/StateMachine/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sns:Publish",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "cooltopic4736778A"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "StateMachineRoleDefaultPolicyDF1E6607",
+                            "roles": [
+                              {
+                                "Ref": "StateMachineRoleB840431D"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-tasks-sns-publish-integ/StateMachine/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineRoleB840431D",
+                        "Arn"
+                      ]
+                    },
+                    "definitionString": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{\"StartAt\":\"publish to SNS\",\"States\":{\"publish to SNS\":{\"Next\":\"Final step\",\"Type\":\"Task\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::sns:publish\",\"Parameters\":{\"TopicArn\":\"",
+                          {
+                            "Ref": "cooltopic4736778A"
+                          },
+                          "\",\"Message\":\"sending message over\"}},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+              "version": "0.0.0"
+            }
+          },
+          "stateMachineArn": {
+            "id": "stateMachineArn",
+            "path": "aws-stepfunctions-tasks-sns-publish-integ/stateMachineArn",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "queueUrl": {
+            "id": "queueUrl",
+            "path": "aws-stepfunctions-tasks-sns-publish-integ/queueUrl",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "Service-principalMap": {
+            "id": "Service-principalMap",
+            "path": "aws-stepfunctions-tasks-sns-publish-integ/Service-principalMap",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnMapping",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

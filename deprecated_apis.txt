@@ -19,7 +19,6 @@ aws-cdk-lib.CustomResourceProviderRuntime#NODEJS_12
 aws-cdk-lib.DefaultStackSynthesizerProps#fileAssetKeyArnExportName
 aws-cdk-lib.DockerImageAssetSource#repositoryName
 aws-cdk-lib.Duration#toISOString
-aws-cdk-lib.FileAssetLocation#kmsKeyArn
 aws-cdk-lib.FileAssetLocation#s3Url
 aws-cdk-lib.ITemplateOptions#transform
 aws-cdk-lib.Lazy#anyValue
@@ -403,7 +402,6 @@ aws-cdk-lib.aws_cloudfront.AliasConfiguration#acmCertRef
 aws-cdk-lib.aws_cloudfront.AliasConfiguration#names
 aws-cdk-lib.aws_cloudfront.AliasConfiguration#securityPolicy
 aws-cdk-lib.aws_cloudfront.AliasConfiguration#sslMethod
-aws-cdk-lib.aws_cloudfront.Behavior#trustedSigners
 aws-cdk-lib.aws_cloudfront.CloudFrontWebDistribution#domainName
 aws-cdk-lib.aws_cloudfront.CloudFrontWebDistributionProps#aliasConfiguration
 aws-cdk-lib.aws_cloudfront.GeoRestriction#blacklist

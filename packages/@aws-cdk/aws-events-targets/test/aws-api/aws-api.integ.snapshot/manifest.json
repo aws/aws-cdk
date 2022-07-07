@@ -1,0 +1,102 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-aws-api-target-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-aws-api-target-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-aws-api-target-integ": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742",
+              "id": "542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742",
+              "packaging": "zip",
+              "sourceHash": "542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742",
+              "s3BucketParameter": "AssetParameters542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742S3Bucket45BA9D5A",
+              "s3KeyParameter": "AssetParameters542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742S3VersionKey7B97424D",
+              "artifactHashParameter": "AssetParameters542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742ArtifactHashE8F9EA66"
+            }
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/ScheduleRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduleRuleDA5BD877"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/ScheduleRule/AllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget0HandlerF2C0C898": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduleRuleAllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget0HandlerF2C0C898874A4805"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/ScheduleRule/AllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget1Handler4688817C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduleRuleAllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget1Handler4688817C0179F894"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRoleDefaultPolicy4D43A7C1"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/AssetParameters/542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742S3Bucket45BA9D5A"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/AssetParameters/542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742S3VersionKey7B97424D"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/AssetParameters/542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742ArtifactHashE8F9EA66"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/PatternRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatternRule4AF6D328"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/PatternRule/AllowEventRuleawscdkawsapitargetintegPatternRulePatternRuleTarget0HandlerA0821464": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatternRuleAllowEventRuleawscdkawsapitargetintegPatternRulePatternRuleTarget0HandlerA0821464BB49C5D3"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-aws-api-target-integ"
+    }
+  }
+}

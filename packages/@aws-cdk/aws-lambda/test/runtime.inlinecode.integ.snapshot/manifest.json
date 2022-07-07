@@ -1,0 +1,148 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-lambda-runtime-inlinecode": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-lambda-runtime-inlinecode.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_12_X/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS12XServiceRole59E71436"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_12_X/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS12X8B8075A4"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_12_X-functionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS12XfunctionName"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_7/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PYTHON37ServiceRoleDE7E561E"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_7/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PYTHON37D3A10E04"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_7-functionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PYTHON37functionName"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_8/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PYTHON38ServiceRole3EA86BBE"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_8/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PYTHON38A180AE47"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_8-functionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PYTHON38functionName"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_9/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PYTHON39ServiceRole53E964DF"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_9/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PYTHON39143BF976"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_9-functionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PYTHON39functionName"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_14_X/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS14XServiceRole4523ECDB"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_14_X/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS14X930214A3"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_14_X-functionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS14XfunctionName"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_16_X/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS16XServiceRoleB9DAFDFD"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_16_X/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS16XDE5DD82D"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_16_X-functionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS16XfunctionName"
+          }
+        ],
+        "PYTHON36ServiceRole814B3AD9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PYTHON36ServiceRole814B3AD9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "PYTHON364935EF15": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PYTHON364935EF15",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-lambda-runtime-inlinecode"
+    }
+  }
+}

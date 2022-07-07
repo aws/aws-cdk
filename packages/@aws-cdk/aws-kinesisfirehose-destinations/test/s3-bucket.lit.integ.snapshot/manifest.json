@@ -1,0 +1,210 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-firehose-delivery-stream-s3-all-properties": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-firehose-delivery-stream-s3-all-properties.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824",
+              "id": "be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824",
+              "packaging": "zip",
+              "sourceHash": "be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824",
+              "s3BucketParameter": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232",
+              "s3KeyParameter": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE",
+              "artifactHashParameter": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824ArtifactHash76F8FCF2"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7d",
+              "id": "9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7d",
+              "packaging": "zip",
+              "sourceHash": "9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7d",
+              "s3BucketParameter": "AssetParameters9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7dS3BucketA7AEF7D7",
+              "s3KeyParameter": "AssetParameters9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7dS3VersionKeyA7FD6E61",
+              "artifactHashParameter": "AssetParameters9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7dArtifactHashE49F8A6B"
+            }
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Bucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketPolicyE9A3008A"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Bucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/AssetParameters/be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/AssetParameters/be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/AssetParameters/be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824ArtifactHash76F8FCF2"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/AssetParameters/9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7d/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7dS3BucketA7AEF7D7"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/AssetParameters/9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7d/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7dS3VersionKeyA7FD6E61"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/AssetParameters/9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7d/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7dArtifactHashE49F8A6B"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/BackupBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackupBucket26B8E51C"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/BackupBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackupBucketPolicy8C403F71"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/BackupBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackupBucketAutoDeleteObjectsCustomResourceD2F511C5"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogGroupF5B46931"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/LogGroup/S3Destination/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogGroupS3Destination70CE1003"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/DataProcessorFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataProcessorFunctionServiceRole12E05500"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/DataProcessorFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataProcessorFunctionAD472B9A"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Key961B73FD"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/BackupKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackupKey60B97760"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/Service Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamServiceRole964EEBCC"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/S3 Destination Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamS3DestinationRole500FC089"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/S3 Destination Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamS3DestinationRoleDefaultPolicy3015D8C7"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamLogGroup9D8FA3BB"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/LogGroup/S3Backup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamLogGroupS3BackupD5DF41B2"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamF6D5572D"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdkawskinesisfirehoseCidrBlocks"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-firehose-delivery-stream-s3-all-properties"
+    }
+  }
+}

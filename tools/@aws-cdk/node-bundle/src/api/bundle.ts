@@ -224,19 +224,22 @@ export class Bundle {
 
     const target = fs.mkdtempSync(path.join(os.tmpdir(), 'bundle-write-'));
 
+    // we definitely don't need these directories in the package
+    // so no need to copy them over.
+    const ignoreDirectories = ['node_modules', '.git'];
+
     // copy the entire project since we are retaining the original files.
-    // except for `node_modules` and `.git` which definitely don't belong in the package.
-    fs.copySync(this.packageDir, target, { filter: n => !n.includes('node_modules') && !n.includes('.git') });
+    fs.copySync(this.packageDir, target, { filter: n => !n.split(path.sep).some((p => ignoreDirectories.includes(p))) });
 
     // clone the original manifest since we are going to
     // to mutate it.
     const manifest = { ...this.manifest };
 
-      // manifest mutations
+    // manifest mutations
     this.removeDependencies(manifest);
     this.addExternals(manifest);
 
-      // write artifacts
+    // write artifacts
     this.writeOutputs(target);
     this.writeResources(target);
     this.writeManifest(target, manifest);
@@ -389,7 +392,7 @@ export class Bundle {
     const bundle = esbuild.buildSync({
       entryPoints: this.entryPoints,
       bundle: true,
-      target: 'node12',
+      target: 'node14',
       platform: 'node',
       sourcemap: 'inline',
       metafile: true,

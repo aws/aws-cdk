@@ -1,13 +1,9 @@
 import { Duration, SecretValue, Tokenization } from '@aws-cdk/core';
-import { IConstruct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { CfnListener } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from '../shared/listener-action';
 import { IApplicationListener } from './application-listener';
 import { IApplicationTargetGroup } from './application-target-group';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
 
 /**
  * What to do when a client makes a request to a listener
@@ -37,7 +33,7 @@ export class ListenerAction implements IListenerAction {
       authenticateOidcConfig: {
         authorizationEndpoint: options.authorizationEndpoint,
         clientId: options.clientId,
-        clientSecret: options.clientSecret.toString(),
+        clientSecret: options.clientSecret.unsafeUnwrap(), // Safe usage
         issuer: options.issuer,
         tokenEndpoint: options.tokenEndpoint,
         userInfoEndpoint: options.userInfoEndpoint,

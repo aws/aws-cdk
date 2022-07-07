@@ -313,10 +313,14 @@ class TimeUnit {
 }
 
 function convert(amount: number, fromUnit: TimeUnit, toUnit: TimeUnit, { integral = true }: TimeConversionOptions) {
-  if (fromUnit.inMillis === toUnit.inMillis) { return amount; }
-
+  if (fromUnit.inMillis === toUnit.inMillis) {
+    if (integral && !Token.isUnresolved(amount) && !Number.isInteger(amount)) {
+      throw new Error(`${amount} must be a whole number of ${toUnit}.`);
+    }
+    return amount;
+  }
   if (Token.isUnresolved(amount)) {
-    throw new Error(`Unable to perform time unit conversion on un-resolved token ${amount}.`);
+    throw new Error(`Duration must be specified as 'Duration.${toUnit}()' here since its value comes from a token and cannot be converted (got Duration.${fromUnit})`);
   }
   const value = (amount * fromUnit.inMillis) / toUnit.inMillis;
   if (!Number.isInteger(value) && integral) {

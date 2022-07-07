@@ -2,7 +2,7 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Metric, Statistic } from '@aws-cdk/aws-cloudwatch';
-import { Vpc, EbsDeviceVolumeType, SecurityGroup } from '@aws-cdk/aws-ec2';
+import { Vpc, EbsDeviceVolumeType, Port, SecurityGroup } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
@@ -31,7 +31,7 @@ const readWriteActions = [
 
 const defaultVersion = EngineVersion.OPENSEARCH_1_0;
 
-test('connections throws if domain is placed inside a vpc', () => {
+test('connections throws if domain is not placed inside a vpc', () => {
 
   expect(() => {
     new Domain(stack, 'Domain', {
@@ -106,6 +106,32 @@ test('default subnets and security group when vpc is used', () => {
       ],
     },
   });
+
+});
+
+test('connections has no default port if enforceHttps is false', () => {
+
+  const vpc = new Vpc(stack, 'Vpc');
+  const domain = new Domain(stack, 'Domain', {
+    version: defaultVersion,
+    vpc,
+    enforceHttps: false,
+  });
+
+  expect(domain.connections.defaultPort).toBeUndefined();
+
+});
+
+test('connections has default port 443 if enforceHttps is true', () => {
+
+  const vpc = new Vpc(stack, 'Vpc');
+  const domain = new Domain(stack, 'Domain', {
+    version: defaultVersion,
+    vpc,
+    enforceHttps: true,
+  });
+
+  expect(domain.connections.defaultPort).toEqual(Port.tcp(443));
 
 });
 
@@ -1060,7 +1086,7 @@ describe('advanced security options', () => {
   const masterUserArn = 'arn:aws:iam::123456789012:user/JohnDoe';
   const masterUserName = 'JohnDoe';
   const password = 'password';
-  const masterUserPassword = SecretValue.plainText(password);
+  const masterUserPassword = SecretValue.unsafePlainText(password);
 
   test('enable fine-grained access control with a master user ARN', () => {
     new Domain(stack, 'Domain', {
@@ -1733,7 +1759,7 @@ describe('unsigned basic auth', () => {
   test('does not overwrite master user name and password', () => {
     const masterUserName = 'JohnDoe';
     const password = 'password';
-    const masterUserPassword = SecretValue.plainText(password);
+    const masterUserPassword = SecretValue.unsafePlainText(password);
 
     new Domain(stack, 'Domain', {
       version: defaultVersion,

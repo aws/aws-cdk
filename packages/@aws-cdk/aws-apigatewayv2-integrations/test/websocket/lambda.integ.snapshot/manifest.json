@@ -1,0 +1,160 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "WebSocketApiInteg": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "WebSocketApiInteg.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/WebSocketApiInteg/ConnectHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConnectHandlerServiceRole7E4A9B1F"
+          }
+        ],
+        "/WebSocketApiInteg/ConnectHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConnectHandler2FFD52D8"
+          }
+        ],
+        "/WebSocketApiInteg/DisconnectHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DisconnectHandlerServiceRoleE54F14F9"
+          }
+        ],
+        "/WebSocketApiInteg/DisconnectHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DisconnectHandlerCB7ED6F7"
+          }
+        ],
+        "/WebSocketApiInteg/DefaultHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultHandlerServiceRoleDF00569C"
+          }
+        ],
+        "/WebSocketApiInteg/DefaultHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultHandler604DF7AC"
+          }
+        ],
+        "/WebSocketApiInteg/MessageHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MessageHandlerServiceRoleDF05266A"
+          }
+        ],
+        "/WebSocketApiInteg/MessageHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MessageHandlerDFBBCD6B"
+          }
+        ],
+        "/WebSocketApiInteg/mywsapi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapi32E6CE11"
+          }
+        ],
+        "/WebSocketApiInteg/mywsapi/$connect-Route/ConnectIntegration-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapiconnectRouteConnectIntegrationPermission719B6E63"
+          }
+        ],
+        "/WebSocketApiInteg/mywsapi/$connect-Route/ConnectIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapiconnectRouteConnectIntegrationE101DB9B"
+          }
+        ],
+        "/WebSocketApiInteg/mywsapi/$connect-Route/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapiconnectRoute45A0ED6A"
+          }
+        ],
+        "/WebSocketApiInteg/mywsapi/$disconnect-Route/DisconnectIntegration-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapidisconnectRouteDisconnectIntegrationPermissionA8197C41"
+          }
+        ],
+        "/WebSocketApiInteg/mywsapi/$disconnect-Route/DisconnectIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapidisconnectRouteDisconnectIntegrationF927D904"
+          }
+        ],
+        "/WebSocketApiInteg/mywsapi/$disconnect-Route/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapidisconnectRoute421A8CB9"
+          }
+        ],
+        "/WebSocketApiInteg/mywsapi/$default-Route/DefaultIntegration-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapidefaultRouteDefaultIntegrationPermission3B7F9CA1"
+          }
+        ],
+        "/WebSocketApiInteg/mywsapi/$default-Route/DefaultIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapidefaultRouteDefaultIntegrationFFCB3BA9"
+          }
+        ],
+        "/WebSocketApiInteg/mywsapi/$default-Route/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapidefaultRouteE9382DF8"
+          }
+        ],
+        "/WebSocketApiInteg/mywsapi/sendmessage-Route/SendMessageIntegration-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapisendmessageRouteSendMessageIntegrationPermission92C9841E"
+          }
+        ],
+        "/WebSocketApiInteg/mywsapi/sendmessage-Route/SendMessageIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapisendmessageRouteSendMessageIntegrationD29E12F9"
+          }
+        ],
+        "/WebSocketApiInteg/mywsapi/sendmessage-Route/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapisendmessageRouteAE873328"
+          }
+        ],
+        "/WebSocketApiInteg/mystage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mystage114C35EC"
+          }
+        ],
+        "/WebSocketApiInteg/ApiEndpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiEndpoint"
+          }
+        ]
+      },
+      "displayName": "WebSocketApiInteg"
+    }
+  }
+}

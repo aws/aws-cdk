@@ -254,6 +254,12 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    */
   readonly loadBalancerName?: string;
 
+  /**
+   * Whether ECS Exec should be enabled
+   *
+   * @default - false
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -410,7 +416,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    if (props.desiredCount !== undefined && props.desiredCount < 1) {
+    if (props.desiredCount !== undefined && !cdk.Token.isUnresolved(props.desiredCount) && props.desiredCount < 1) {
       throw new Error('You must specify a desiredCount greater than 0');
     }
 

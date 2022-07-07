@@ -37,14 +37,14 @@
       "dotnet": {
         "namespace": "Amazon.CDK.Yaml.Cfn",
         "packageId": "Amazon.CDK.Yaml.Cfn",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.yaml-cfn",
         "module": "aws_cdk.yaml_cfn",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -79,7 +79,7 @@
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "@types/yaml": "^1.9.7",
     "jest": "^27.5.1"
   },

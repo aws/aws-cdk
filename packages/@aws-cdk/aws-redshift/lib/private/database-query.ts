@@ -4,13 +4,10 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import * as customresources from '@aws-cdk/custom-resources';
+import { Construct } from 'constructs';
 import { Cluster } from '../cluster';
 import { DatabaseOptions } from '../database-options';
 import { DatabaseQueryHandlerProps } from './handler-props';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
 
 export interface DatabaseQueryProps<HandlerProps> extends DatabaseOptions {
   readonly handler: string;
@@ -34,8 +31,10 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
 
     const adminUser = this.getAdminUser(props);
     const handler = new lambda.SingletonFunction(this, 'Handler', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'database-query-provider')),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'database-query-provider'), {
+        exclude: ['*.ts'],
+      }),
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       timeout: cdk.Duration.minutes(1),
       uuid: '3de5bea7-27da-4796-8662-5efb56431b5f',

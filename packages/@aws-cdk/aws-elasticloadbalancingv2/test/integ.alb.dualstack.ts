@@ -43,6 +43,29 @@ const internetGateway = valueOrDie<IConstruct, ec2.CfnInternetGateway>(
   new Error('Couldnt find an internet gateway'),
 );
 
+
+const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+  internetFacing: true,
+});
+
+const listener = lb.addListener('Listener', {
+  port: 80,
+});
+
+const group1 = listener.addTargets('Target', {
+  port: 80,
+  targets: [new elbv2.IpTarget('10.0.128.6')],
+});
+
+const group2 = listener.addTargets('ConditionalTarget', {
+  priority: 10,
+  hostHeader: 'example.com',
+  port: 80,
+  targets: [new elbv2.IpTarget('10.0.128.5')],
+});
+
 vpc.publicSubnets.forEach((subnet, idx) => {
   // Add a default ipv6 route to the subnet's route table.
   const unboxedSubnet = subnet as ec2.Subnet;
@@ -72,28 +95,9 @@ vpc.publicSubnets.forEach((subnet, idx) => {
 
   // The subnet depends on the ipv6 cidr being allocated.
   cfnSubnet.addDependsOn(ipv6Block);
-});
 
-const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
-  vpc,
-  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
-  internetFacing: true,
-});
-
-const listener = lb.addListener('Listener', {
-  port: 80,
-});
-
-const group1 = listener.addTargets('Target', {
-  port: 80,
-  targets: [new elbv2.IpTarget('10.0.128.4')],
-});
-
-const group2 = listener.addTargets('ConditionalTarget', {
-  priority: 10,
-  hostHeader: 'example.com',
-  port: 80,
-  targets: [new elbv2.IpTarget('10.0.128.5')],
+  group1.node.addDependency(subnet);
+  group2.node.addDependency(subnet);
 });
 
 listener.addAction('action1', {

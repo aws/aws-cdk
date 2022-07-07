@@ -99,6 +99,10 @@ export class Token {
    * Return a resolvable representation of the given value
    */
   public static asAny(value: any): IResolvable {
+    // First, reverse any encoding that was already done (so we end up with an IResolvable
+    // if it was a token).
+    value = Tokenization.reverse(value) ?? value;
+    // Then,  either return the IResolvable we resolved to, or wrap in an Intrinsic
     return isResolvableObject(value) ? value : new Intrinsic(value);
   }
 

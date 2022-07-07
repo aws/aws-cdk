@@ -79,9 +79,8 @@ function installLatestSdk(): void {
   latestSdkInstalled = true;
 }
 
-const patchedServices: { serviceName: string; apiVersions: string[] }[] = [
-  { serviceName: 'OpenSearch', apiVersions: ['2021-01-01'] },
-];
+// no currently patched services
+const patchedServices: { serviceName: string; apiVersions: string[] }[] = [];
 /**
  * Patches the AWS SDK by loading service models in the same manner as the actual SDK
  */
@@ -134,7 +133,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       console.log(`Failed to patch AWS SDK: ${e}. Proceeding with the installed copy.`);
     }
 
-    console.log(JSON.stringify(event));
+    console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
     console.log('AWS SDK VERSION: ' + AWS.VERSION);
 
     event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
