@@ -12,7 +12,7 @@ import { Cache } from './private/cache';
 import { Stack } from './stack';
 import { Stage } from './stage';
 
-const ARCHIVE_EXTENSIONS = ['.zip', '.jar', '.tar'];
+const ARCHIVE_EXTENSIONS = ['.tar.zip', '.zip', '.jar'];
 
 /**
  * A previously staged asset
@@ -270,7 +270,7 @@ export class AssetStaging extends Construct {
     const assetHash = this.calculateHash(this.hashType);
     const stagedPath = this.stagingDisabled
       ? this.sourcePath
-      : path.resolve(this.assetOutdir, renderAssetFilename(assetHash, extNameWithDoubleExtCheck(this.sourcePath)));
+      : path.resolve(this.assetOutdir, renderAssetFilename(assetHash, getExtension(this.sourcePath)));
 
     if (!this.sourceStats.isDirectory() && !this.sourceStats.isFile()) {
       throw new Error(`Asset ${this.sourcePath} is expected to be either a directory or a regular file`);
@@ -618,14 +618,12 @@ function determineBundledAsset(bundleDir: string, outputType: BundlingOutput): B
 /**
 * Return the extension name of a source path
 *
-* Checks if source is a double extension archive, in which case we check if first extension is present in ARCHIVE_EXTENSIONS.
+* Loop through ARCHIVE_EXTENSIONS for valid archive extensions.
 */
-function extNameWithDoubleExtCheck(source: string): string {
-  const ext = path.basename(source).split('.');
-  if (ext.length > 2) {
-    const [, firstExt, lastExt] = ext;
-    if (ARCHIVE_EXTENSIONS.includes(`.${firstExt}`.toLowerCase())) {
-      return `.${firstExt}.${lastExt}`;
+function getExtension(source: string): string {
+  for ( const ext in ARCHIVE_EXTENSIONS ) {
+    if (source.toLowerCase().endsWith(ext)) {
+      return ext;
     };
   };
 
