@@ -395,5 +395,6 @@ export class FlowLog extends FlowLogBase {
     });
 
     this.flowLogId = flowLog.ref;
+    this.node.defaultChild = flowLog;
   }
 }
