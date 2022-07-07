@@ -27,6 +27,13 @@ Command                               | Description
 [`cdk acknowledge`](#cdk-acknowledge) | Acknowledge (and hide) a notice by issue number
 [`cdk notices`](#cdk-notices)         | List all relevant notices for the application
 
+- [Bundling](#bundling)
+- [MFA Support](#mfa-support)
+- [SSO Support](#sso-support)
+- [Configuration](#configuration)
+  - [Running in CI](#running-in-ci)
+
+
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ## Commands
@@ -448,8 +455,9 @@ locally to your terminal. To disable this feature you can pass the `--no-logs` o
 $ cdk watch --no-logs
 ```
 
-**Note**: This command is considered experimental,
-and might have breaking changes in the future.
+**Note**: This command is considered experimental, and might have breaking changes in the future.
+The same limitations apply to to `watch` deployments as do to `--hotswap` deployments. See the
+*Hotswap deployments for faster development* section for more information.
 
 ### `cdk import`
 
@@ -510,10 +518,10 @@ $ cdk destroy --app='node bin/main.js' MyStackName
 
 ### `cdk bootstrap`
 
-Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket 
-and ECR reposity that `cdk deploy` will use to store synthesized templates and the related assets, before 
-triggering a CloudFormation stack update. The name of the deployed stack can be configured using the 
-`--toolkit-stack-name` argument. The S3 Bucket Public Access Block Configuration can be configured using 
+Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket
+and ECR reposity that `cdk deploy` will use to store synthesized templates and the related assets, before
+triggering a CloudFormation stack update. The name of the deployed stack can be configured using the
+`--toolkit-stack-name` argument. The S3 Bucket Public Access Block Configuration can be configured using
 the `--public-access-block-configuration` argument. ECR uses immutable tags for images.
 
 ```console
@@ -714,3 +722,9 @@ The following environment variables affect aws-cdk:
 
 - `CDK_DISABLE_VERSION_CHECK`: If set, disable automatic check for newer versions.
 - `CDK_NEW_BOOTSTRAP`: use the modern bootstrapping stack.
+
+### Running in CI
+
+The CLI will attempt to detect whether it is being run in CI by looking for the presence of an
+environment variable `CI=true`. This can be forced by passing the `--ci` flag. By default the CLI
+sends most of its logs to `stderr`, but when `ci=true` it will send the logs to `stdout` instead.

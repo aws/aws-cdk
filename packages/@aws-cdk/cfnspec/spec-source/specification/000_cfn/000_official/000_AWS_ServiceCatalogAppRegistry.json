@@ -1,5 +1,5 @@
 {
-  "$version": "75.0.0",
+  "$version": "78.1.0",
   "PropertyTypes": {},
   "ResourceTypes": {
     "AWS::ServiceCatalogAppRegistry::Application": {
