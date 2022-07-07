@@ -874,7 +874,7 @@ class OrderedSet<A> {
    *
    * (Saves a copy)
    */
-  public direct(): ReadonlyArray<A> {
+  public direct(): readonly A[] {
     return this.array;
   }
 }
