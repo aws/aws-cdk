@@ -442,6 +442,16 @@ describe('vpc flow logs', () => {
       },
     });
   });
+  test('flowlog has defaultchild', () => {
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+
+    const flowlog = new FlowLog(stack, 'FlowLog', {
+      resourceType: FlowLogResourceType.fromVpc(vpc),
+    });
+
+    expect(flowlog.node.defaultChild).toBeDefined();
+  });
 });
 
 function getTestStack(): Stack {
