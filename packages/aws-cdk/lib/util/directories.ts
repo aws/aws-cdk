@@ -18,12 +18,10 @@ export function cdkHomeDir() {
   let home;
   try {
     home = path.join((os.userInfo().homedir ?? os.homedir()).trim(), '.cdk');
-  } catch {
-    home = fs.mkdtempSync(path.join(tmpDir, '.cdk')).trim();
-  }
+  } catch {}
   return process.env.CDK_HOME
     ? path.resolve(process.env.CDK_HOME)
-    : home;
+    : home || fs.mkdtempSync(path.join(tmpDir, '.cdk')).trim();
 }
 
 export function cdkCacheDir() {
