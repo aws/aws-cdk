@@ -1,6 +1,8 @@
 var __create = Object.create;
 var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __getProtoOf = Object.getPrototypeOf;
@@ -18,6 +20,7 @@ var __spreadValues = (a, b) => {
     }
   return a;
 };
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
@@ -414,7 +417,7 @@ var CustomResourceHandler = class {
   }
   async handle() {
     try {
-      console.log(`Event: ${JSON.stringify(this.event)}`);
+      console.log(`Event: ${JSON.stringify(__spreadProps(__spreadValues({}, this.event), { ResponseURL: "..." }))}`);
       const response = await this.processEvent(this.event.ResourceProperties);
       console.log(`Event output : ${JSON.stringify(response)}`);
       await this.respond({
