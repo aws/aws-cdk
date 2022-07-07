@@ -1,5 +1,4 @@
 import { Match, Matcher, MatchResult } from '@aws-cdk/assertions';
-import { enumerate } from '../../lib/private/javascript';
 
 export function stringLike(pattern: string) {
   return new StringLike(pattern);

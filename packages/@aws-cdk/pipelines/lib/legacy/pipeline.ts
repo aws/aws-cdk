@@ -489,7 +489,7 @@ class AssetPublishing extends Construct {
   private readonly MAX_PUBLISHERS_PER_STAGE = 50;
 
   private readonly publishers: Record<string, PublishAssetsAction> = {};
-  private readonly assetRoles: Record<string, AssetSingletonRole> = {};
+  private readonly assetRoles: Map<AssetType, AssetSingletonRole> = new Map();
   private readonly assetAttachedPolicies: Record<string, iam.Policy> = {};
   private readonly myCxAsmRoot: string;
   private readonly cachedFnSub = new CachedFnSub();
@@ -578,7 +578,7 @@ class AssetPublishing extends Construct {
         cloudAssemblyInput: this.props.cloudAssemblyInput,
         cdkCliVersion: this.props.cdkCliVersion,
         assetType: command.assetType,
-        role: this.assetRoles[command.assetType],
+        role: this.assetRoles.get(command.assetType),
         dependable: this.assetAttachedPolicies[command.assetType],
         vpc: this.props.vpc,
         subnetSelection: this.props.subnetSelection,
@@ -599,7 +599,10 @@ class AssetPublishing extends Construct {
    * Generates one role per asset type to separate file and Docker/image-based permissions.
    */
   private generateAssetRole(assetType: AssetType) {
-    if (this.assetRoles[assetType]) { return this.assetRoles[assetType]; }
+    const existing = this.assetRoles.get(assetType);
+    if (existing) {
+      return existing;
+    }
 
     const rolePrefix = assetType === AssetType.DOCKER_IMAGE ? 'Docker' : 'File';
     const assetRole = new AssetSingletonRole(this, `${rolePrefix}Role`, {
@@ -612,8 +615,8 @@ class AssetPublishing extends Construct {
       this.dockerCredentials.forEach(reg => reg.grantRead(assetRole, DockerCredentialUsage.ASSET_PUBLISHING));
     }
 
-    this.assetRoles[assetType] = assetRole;
-    return this.assetRoles[assetType];
+    this.assetRoles.set(assetType, assetRole);
+    return assetRole;
   }
 }
 
