@@ -278,8 +278,8 @@ declare const app: App;
 declare const stack: Stack;
 declare const integ: IntegTest;
 
-const apiCall = integ.assertions.awsApiCall('SQS', 'receiveMessage', {
-  QueueUrl: 'url',
+const apiCall = integ.assertions.awsApiCall('S3', 'listObjectsV2', {
+  Bucket: 'mybucket',
 });
 
 apiCall.provider.addToRolePolicy({
