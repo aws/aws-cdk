@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.31.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.30.0-alpha.0...v2.31.0-alpha.0) (2022-07-06)
+
+
+### Features
+
+* **batch:** add secrets props to job definition ([#20871](https://github.com/aws/aws-cdk/issues/20871)) ([9b1051f](https://github.com/aws/aws-cdk/commit/9b1051f86abdfa6448b14cdae8e1ef9acb1e6688)), closes [#19506](https://github.com/aws/aws-cdk/issues/19506) [#10976](https://github.com/aws/aws-cdk/issues/10976)
+
+## [2.30.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.29.1-alpha.0...v2.30.0-alpha.0) (2022-07-01)
+
 ## [2.29.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.29.0-alpha.0...v2.29.1-alpha.0) (2022-06-24)
 
 ## [2.29.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.28.1-alpha.0...v2.29.0-alpha.0) (2022-06-22)
