@@ -41,7 +41,6 @@ module.exports = {
   },
   ignorePatterns: ['*.js', '*.d.ts', 'node_modules/', '*.generated.ts'],
   rules: {
-    '@aws-cdk/construct-import-order': [ 'error' ],
     '@aws-cdk/no-core-construct': [ 'error' ],
     '@aws-cdk/no-qualified-construct': [ 'error' ],
     '@aws-cdk/invalid-cfn-imports': [ 'error' ],

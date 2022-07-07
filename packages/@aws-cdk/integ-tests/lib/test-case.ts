@@ -1,14 +1,11 @@
 import { IntegManifest, Manifest, TestCase, TestOptions } from '@aws-cdk/cloud-assembly-schema';
 import { attachCustomSynthesis, Stack, ISynthesisSession, StackProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IDeployAssert } from './assertions';
 import { DeployAssert } from './assertions/private/deploy-assert';
 import { IntegManifestSynthesizer } from './manifest-synthesizer';
 
 const TEST_CASE_STACK_SYMBOL = Symbol.for('@aws-cdk/integ-tests.IntegTestCaseStack');
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
 
 /**
  * Properties of an integration test case

@@ -107,6 +107,13 @@ export interface ApplicationMultipleTargetGroupsServiceBaseProps {
    * @default - default portMapping registered as target group and attached to the first defined listener
    */
   readonly targetGroups?: ApplicationTargetProps[];
+
+  /**
+   * Whether ECS Exec should be enabled
+   *
+   * @default - false
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**

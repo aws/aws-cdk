@@ -3,7 +3,7 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Annotations, ArnFormat, IResource, Resource, Token } from '@aws-cdk/core';
-import { Node } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { AliasOptions } from './alias';
 import { Architecture } from './architecture';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
@@ -14,10 +14,6 @@ import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 import { addAlias, flatMap } from './util';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
@@ -347,8 +343,10 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       return;
     }
 
-    const principal = this.parsePermissionPrincipal(permission.principal);
-    const { sourceAccount, sourceArn } = this.parseConditions(permission.principal) ?? {};
+    let principal = this.parsePermissionPrincipal(permission.principal);
+
+    let { sourceArn, sourceAccount, principalOrgID } = this.validateConditionCombinations(permission.principal) ?? {};
+
     const action = permission.action ?? 'lambda:InvokeFunction';
     const scope = permission.scope ?? this;
 
@@ -361,6 +359,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       eventSourceToken: permission.eventSourceToken,
       sourceAccount: permission.sourceAccount ?? sourceAccount,
       sourceArn: permission.sourceArn ?? sourceArn,
+      principalOrgId: permission.organizationId ?? principalOrgID,
       functionUrlAuthType: permission.functionUrlAuthType,
     });
   }
@@ -556,7 +555,6 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   private parsePermissionPrincipal(principal: iam.IPrincipal) {
     // Try some specific common classes first.
     // use duck-typing, not instance of
-    // @deprecated: after v2, we can change these to 'instanceof'
     if ('wrapped' in principal) {
       // eslint-disable-next-line dot-notation
       principal = principal['wrapped'];
@@ -574,6 +572,15 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       return (principal as iam.ArnPrincipal).arn;
     }
 
+    const stringEquals = matchSingleKey('StringEquals', principal.policyFragment.conditions);
+    if (stringEquals) {
+      const orgId = matchSingleKey('aws:PrincipalOrgID', stringEquals);
+      if (orgId) {
+        // we will move the organization id to the `principalOrgId` property of `Permissions`.
+        return '*';
+      }
+    }
+
     // Try a best-effort approach to support simple principals that are not any of the predefined
     // classes, but are simple enough that they will fit into the Permission model. Main target
     // here: imported Roles, Users, Groups.
@@ -588,17 +595,67 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     }
 
     throw new Error(`Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
-      'Supported: AccountPrincipal, ArnPrincipal, ServicePrincipal');
+      'Supported: AccountPrincipal, ArnPrincipal, ServicePrincipal, OrganizationPrincipal');
+
+    /**
+     * Returns the value at the key if the object contains the key and nothing else. Otherwise,
+     * returns undefined.
+     */
+    function matchSingleKey(key: string, obj: Record<string, any>): any | undefined {
+      if (Object.keys(obj).length !== 1) { return undefined; }
+
+      return obj[key];
+    }
+
   }
 
-  private parseConditions(principal: iam.IPrincipal): { sourceAccount: string, sourceArn: string } | null {
+  private validateConditionCombinations(principal: iam.IPrincipal): {
+    sourceArn: string | undefined,
+    sourceAccount: string | undefined,
+    principalOrgID: string | undefined,
+  } | undefined {
+    const conditions = this.validateConditions(principal);
+
+    if (!conditions) { return undefined; }
+
+    const sourceArn = conditions.ArnLike ? conditions.ArnLike['aws:SourceArn'] : undefined;
+    const sourceAccount = conditions.StringEquals ? conditions.StringEquals['aws:SourceAccount'] : undefined;
+    const principalOrgID = conditions.StringEquals ? conditions.StringEquals['aws:PrincipalOrgID'] : undefined;
+
+    // PrincipalOrgID cannot be combined with any other conditions
+    if (principalOrgID && (sourceArn || sourceAccount)) {
+      throw new Error('PrincipalWithConditions had unsupported condition combinations for Lambda permission statement: principalOrgID cannot be set with other conditions.');
+    }
+
+    return {
+      sourceArn,
+      sourceAccount,
+      principalOrgID,
+    };
+  }
+
+  private validateConditions(principal: iam.IPrincipal): iam.Conditions | undefined {
     if (this.isPrincipalWithConditions(principal)) {
       const conditions: iam.Conditions = principal.policyFragment.conditions;
       const conditionPairs = flatMap(
         Object.entries(conditions),
         ([operator, conditionObjs]) => Object.keys(conditionObjs as object).map(key => { return { operator, key }; }),
       );
-      const supportedPrincipalConditions = [{ operator: 'ArnLike', key: 'aws:SourceArn' }, { operator: 'StringEquals', key: 'aws:SourceAccount' }];
+
+      // These are all the supported conditions. Some combinations are not supported,
+      // like only 'aws:SourceArn' or 'aws:PrincipalOrgID' and 'aws:SourceAccount'.
+      // These will be validated through `this.validateConditionCombinations`.
+      const supportedPrincipalConditions = [{
+        operator: 'ArnLike',
+        key: 'aws:SourceArn',
+      },
+      {
+        operator: 'StringEquals',
+        key: 'aws:SourceAccount',
+      }, {
+        operator: 'StringEquals',
+        key: 'aws:PrincipalOrgID',
+      }];
 
       const unsupportedConditions = conditionPairs.filter(
         (condition) => !supportedPrincipalConditions.some(
@@ -607,21 +664,18 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       );
 
       if (unsupportedConditions.length == 0) {
-        return {
-          sourceAccount: conditions.StringEquals['aws:SourceAccount'],
-          sourceArn: conditions.ArnLike['aws:SourceArn'],
-        };
+        return conditions;
       } else {
         throw new Error(`PrincipalWithConditions had unsupported conditions for Lambda permission statement: ${JSON.stringify(unsupportedConditions)}. ` +
           `Supported operator/condition pairs: ${JSON.stringify(supportedPrincipalConditions)}`);
       }
-    } else {
-      return null;
     }
+
+    return undefined;
   }
 
-  private isPrincipalWithConditions(principal: iam.IPrincipal): principal is iam.PrincipalWithConditions {
-    return 'conditions' in principal;
+  private isPrincipalWithConditions(principal: iam.IPrincipal): boolean {
+    return Object.keys(principal.policyFragment.conditions).length > 0;
   }
 }
 
