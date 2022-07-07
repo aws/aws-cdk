@@ -10,6 +10,20 @@ import { AssertionsProvider, SDK_RESOURCE_TYPE_PREFIX } from './providers';
  */
 export interface IAwsApiCall extends IConstruct {
   /**
+   * access the AssertionsProvider. This can be used to add additional IAM policies
+   * the the provider role policy
+   *
+   * @example
+   * declare const apiCall: AwsApiCall;
+   * apiCall.provider.addToRolePolicy({
+   *   Effect: 'Allow',
+   *   Action: ['s3:GetObject'],
+   *   Resource: ['*'],
+   * });
+   */
+  readonly provider: AssertionsProvider;
+
+  /**
    * Returns the value of an attribute of the custom resource of an arbitrary
    * type. Attributes are returned from the custom resource provider through the
    * `Data` map where the key is the attribute name.
@@ -110,7 +124,7 @@ export class AwsApiCall extends Construct implements IAwsApiCall {
   private flattenResponse: string = 'false';
   private readonly name: string;
 
-  protected provider: AssertionsProvider;
+  public readonly provider: AssertionsProvider;
 
   constructor(scope: Construct, id: string, props: AwsApiCallProps) {
     super(scope, id);
