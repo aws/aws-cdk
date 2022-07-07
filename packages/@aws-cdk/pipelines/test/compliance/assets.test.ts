@@ -4,7 +4,7 @@ import { Capture, Match, Template } from '@aws-cdk/assertions';
 import * as cb from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Stack, Stage } from '@aws-cdk/core';
-import { behavior, PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, FileAssetApp, MegaAssetsApp, TwoFileAssetsApp, DockerAssetApp, PlainStackApp, stringLike, setContainsAll } from '../testhelpers';
+import { behavior, PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, FileAssetApp, MegaAssetsApp, TwoFileAssetsApp, DockerAssetApp, PlainStackApp, stringLike } from '../testhelpers';
 
 const FILE_ASSET_SOURCE_HASH = '8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5';
 const FILE_ASSET_SOURCE_HASH2 = 'ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e';
@@ -919,7 +919,7 @@ function expectedAssetRolePolicy(assumeRolePattern: string | string[], attachedR
 
   return {
     PolicyDocument: {
-      Statement: setContainsAll([{
+      Statement: [{
         Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
         Effect: 'Allow',
         Resource: {
@@ -963,7 +963,7 @@ function expectedAssetRolePolicy(assumeRolePattern: string | string[], attachedR
         Action: ['kms:Decrypt', 'kms:DescribeKey'],
         Effect: 'Allow',
         Resource: { 'Fn::GetAtt': ['CdkPipelineArtifactsBucketEncryptionKeyDDD3258C', 'Arn'] },
-      }]),
+      }],
     },
     Roles: [{ Ref: attachedRole }],
   };

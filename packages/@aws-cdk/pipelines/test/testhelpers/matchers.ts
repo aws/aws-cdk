@@ -16,10 +16,6 @@ export function stringNoLongerThan(max: number): Matcher {
   return new StringLengthMatcher(max);
 }
 
-export function setContainsAll<A>(elements: A[]): Matcher {
-  return new SetContainsAllMatcher(elements);
-}
-
 // Reimplementation of
 // https://github.com/aws/aws-cdk/blob/430f50a546e9c575f8cdbd259367e440d985e68f/packages/%40aws-cdk/assert-internal/lib/assertions/have-resource-matchers.ts#L244
 class StringLike extends Matcher {
@@ -87,44 +83,6 @@ class StringLengthMatcher extends Matcher {
 
     if (actual.length > this.length) {
       result.push(this, [], `String is ${actual.length} characters long. Expected at most ${this.length} characters`);
-    }
-
-    return result;
-  }
-}
-
-class SetContainsAllMatcher<A> extends Matcher {
-  public name: string = 'SetContainsAll'
-
-  constructor(private readonly elements: A[]) {
-    super();
-  }
-
-  public test(actual: any): MatchResult {
-    let result = new MatchResult(actual);
-
-    if (!Array.isArray(actual)) {
-      result.push(this, [], `Expected an array, but got '${typeof actual}'`);
-      return result;
-    }
-
-    for (const [i, el] of enumerate(this.elements)) {
-      const matcher = Matcher.isMatcher(el) ? el : Match.exact(el);
-
-      const actualResults = actual.map(value => matcher.test(value));
-
-      if (actualResults.every(r => r.hasFailed())) {
-        // Couldn't find it
-        result.recordFailure({
-          path: [`/${i}`],
-          message: `Could not find expected element ${i} in the array`,
-          matcher,
-        });
-
-        for (const [j, r] of enumerate(actualResults)) {
-          result = result.compose(`/${i} <=> ${j}`, r);
-        }
-      }
     }
 
     return result;
