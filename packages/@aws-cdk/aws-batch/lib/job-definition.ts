@@ -519,9 +519,17 @@ export class JobDefinition extends Resource implements IJobDefinition {
       return undefined;
     }
 
+    // If the AWS_*** environment variables are not explicitly set to the container, infer them from the current environment.
+    // This makes the usage of tools like AWS SDK inside the container frictionless
+    const environment = {
+      AWS_REGION: Stack.of(this).region,
+      AWS_ACCOUNT: Stack.of(this).account,
+      ...this.deserializeEnvVariables(container.environment),
+    };
+
     return {
       command: container.command,
-      environment: this.deserializeEnvVariables(container.environment),
+      environment,
       secrets: container.secrets
         ? Object.entries(container.secrets).map(([key, value]) => {
           return {
