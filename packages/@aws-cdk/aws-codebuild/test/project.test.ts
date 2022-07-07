@@ -791,6 +791,33 @@ describe('Environment', () => {
       }),
     });
   });
+
+  test.each([
+    ['Standard 6.0', codebuild.LinuxBuildImage.STANDARD_6_0, 'aws/codebuild/standard:6.0'],
+    ['Amazon Linux 4.0', codebuild.LinuxBuildImage.AMAZON_LINUX_2_4, 'aws/codebuild/amazonlinux2-x86_64-standard:4.0'],
+  ])('has build image for %s', (_, buildImage, expected) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket,
+        path: 'path',
+      }),
+      environment: {
+        buildImage: buildImage,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
+        Image: expected,
+      }),
+    });
+  });
 });
 
 describe('EnvironmentVariables', () => {
