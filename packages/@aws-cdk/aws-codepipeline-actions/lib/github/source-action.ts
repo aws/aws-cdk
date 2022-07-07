@@ -67,6 +67,9 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
    *   const oauth = cdk.SecretValue.secretsManager('my-github-token');
    *   new GitHubSource(this, 'GitHubAction', { oauthToken: oauth, ... });
    *
+   * If you rotate the value in the Secret, you must also change at least one property
+   * of the CodePipeline to force CloudFormation to re-read the secret.
+   *
    * The GitHub Personal Access Token should have these scopes:
    *
    * * **repo** - to read the repository
