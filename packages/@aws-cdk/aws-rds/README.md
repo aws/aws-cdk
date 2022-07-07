@@ -246,6 +246,7 @@ new rds.DatabaseInstanceFromSnapshot(this, 'InstanceFromSnapshotWithCustomizedSe
   vpc,
   snapshotIdentifier: 'mySnapshot',
   credentials: rds.SnapshotCredentials.fromGeneratedSecret('username', {
+    secretName: mySecretName,
     encryptionKey: myKey,
     excludeCharacters: '!&*^#@()',
     replicaRegions: [{ region: 'eu-west-1' }, { region: 'eu-west-2' }],
