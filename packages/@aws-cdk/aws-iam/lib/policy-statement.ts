@@ -849,11 +849,12 @@ class OrderedSet<A> {
   public push(...xs: A[]) {
     const ret = new Array<A>();
     for (const x of xs) {
-      if (!this.set.has(x)) {
-        this.set.add(x);
-        this.array.push(x);
-        ret.push(x);
+      if (this.set.has(x)) {
+        continue;
       }
+      this.set.add(x);
+      this.array.push(x);
+      ret.push(x);
     }
     return ret;
   }
