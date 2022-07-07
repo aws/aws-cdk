@@ -43,7 +43,7 @@ export interface ConfigurationSetProps {
   readonly tlsPolicy?: ConfigurationSetTlsPolicy;
 
   /**
-   * Whether to publishe reputation metrics for the configuration set, such as
+   * Whether to publish reputation metrics for the configuration set, such as
    * bounce and complaint rates, to Amazon CloudWatch
    *
    * @default true
