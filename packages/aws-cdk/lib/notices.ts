@@ -145,12 +145,11 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
           req.destroy(new Error('Request timed out'));
         });
 
-        // It's not like I don't *trust* the 'timeout' event... but I don't trust it.
-        // Add a backup timer that will destroy the request after all.
-        // (This is at least necessary to make the tests pass, but that's probably because of 'nock'.
-        // It's not clear whether users will hit this).
+        // This timer is necessary to make the test pass (looks like 'nock' doesn't support the
+        // timeout event), but we're also seeing users hit this in practice. Not exactly sure
+        // what's causing this to fire before the on('timeout') event, but let's have both in place.
         setTimeout(() => {
-          req.destroy(new Error('Request timed out. You should never see this message; if you do, please let us know at https://github.com/aws/aws-cdk/issues'));
+          req.destroy(new Error('Request timed out.'));
         }, timeout + 200);
       } catch (e) {
         reject(new Error(`HTTPS 'get' call threw an error: ${e.message}`));
