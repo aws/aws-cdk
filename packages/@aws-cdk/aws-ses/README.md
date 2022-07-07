@@ -153,33 +153,50 @@ can send an email using Amazon SES, you must create and verify each identity tha
 `Source`, `Sender`, or `Return-Path` address. Verifying an identity with Amazon SES confirms that you own it and
 helps prevent unauthorized use.
 
-To verify an identity, you create an `EmailIdentity` and then create the DKIM records to prove ownership:
+To verify an identity for a hosted zone, you create an `EmailIdentity`:
 
 ```ts
-declare const myConfigurationSet: ses.IConfigurationSet;
+declare const myHostedZone: route53.IHostedZone;
 
 const identity = new ses.EmailIdentity(stack, 'Identity', {
-  identity: 'cdk.dev',
-  configurationSet: myConfigurationSet,
+  identity: ses.Identity.fromHostedZone(myHostedZone),
   mailFromDomain: 'mail.cdk.dev',
 });
-
-for (const record of identity.dkimRecords) {
-  // create CNAME records using `record.name` and `record.value`
-}
 ```
 
 By default, [Easy DKIM](https://docs.aws.amazon.com/ses/latest/dg/send-email-authentication-dkim-easy.html) with
-2048-bit DKIM key is used.
+a 2048-bit DKIM key is used.
 
 You can instead configure DKIM authentication by using your own public-private key pair. This process is known
 as [Bring Your Own DKIM (BYODKIM)](https://docs.aws.amazon.com/ses/latest/dg/send-email-authentication-dkim-bring-your-own.html):
 
 ```ts
+declare const myHostedZone: route53.IHostedZone;
+
 new ses.EmailIdentity(stack, 'Identity', {
-  identity: 'cdk.dev',
-  dkimIdentity: ses.DkimIdentity.byodDkim(SecretValue.secretsManager('my-private-key'), 'selector'),
+  identity: ses.Identity.fromHostedZone(myHostedZone),
+  dkimIdentity: DkimIdentity.byodDkim({
+    privateKey: SecretValue.secretsManager('dkim-private-key'),
+    publicKey: '...base64-encoded-public-key...',
+    selector: 'selector',
+  }),
+});
+```
+
+When using `fromHostedZone()` for the identity, all necessary Amazon Route 53 records are created automatically:
+
+* CNAME records for Easy DKIM
+* TXT record for BYOD DKIM
+* MX and TXT records for the custom MAIL FROM
+
+When working with `fromDomain()`, records must be created manually:
+
+```ts
+const identity = new ses.EmailIdentity(stack, 'Identity', {
+  identity: ses.Identity.fromDomain('cdk.dev'),
 });
 
-// create a TXT record for `selector._domainkey.cdk.dev` with `p=yourPublicKey` as value
+for (const record of identity.dkimRecords) {
+  // create CNAME records using `record.name` and `record.value`
+}
 ```

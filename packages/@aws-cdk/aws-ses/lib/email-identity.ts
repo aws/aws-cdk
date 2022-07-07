@@ -1,4 +1,6 @@
-import { IResource, Resource, SecretValue } from '@aws-cdk/core';
+import * as route53 from '@aws-cdk/aws-route53';
+import { IHostedZone } from '@aws-cdk/aws-route53';
+import { IResource, Lazy, Resource, SecretValue, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IConfigurationSet } from './configuration-set';
 import { undefinedIfNoKeys } from './private/utils';
@@ -23,10 +25,10 @@ export interface EmailIdentityProps {
   /**
    * The email address or domain to verify.
    */
-  readonly identity: string;
+  readonly identity: Identity;
 
   /**
-   * The configuration set to associate with an email identity
+   * The configuration set to associate with the email identity
    *
    * @default - do not use a specific configuration set
    */
@@ -82,6 +84,47 @@ export interface EmailIdentityProps {
 }
 
 /**
+ * Identity
+ */
+export abstract class Identity {
+  /**
+   * An email address
+   */
+  public static fromEmail(email: string): Identity {
+    return { value: email };
+  }
+
+  /**
+   * A domain name
+   */
+  public static fromDomain(domain: string): Identity {
+    return { value: domain };
+  }
+
+  /**
+   * A hosted zone
+   */
+  public static fromHostedZone(hostedZone: IHostedZone): Identity {
+    return {
+      value: hostedZone.zoneName,
+      hostedZone: hostedZone,
+    };
+  }
+
+  /**
+   * The value of the identity
+   */
+  public abstract readonly value: string;
+
+  /**
+   * The hosted zone associated with this identity
+   *
+   * @default - no hosted zone is associated and no records are created
+   */
+  public abstract readonly hostedZone?: IHostedZone;
+}
+
+/**
  * The action to take if the required MX record for the MAIL FROM domain isn't
  * found
  */
@@ -99,6 +142,34 @@ export enum MailFromBehaviorOnMxFailure {
 }
 
 /**
+ * Configuration for DKIM identity
+ */
+export interface DkimIdentityConfig {
+  /**
+   * A private key that's used to generate a DKIM signature
+   *
+   * @default - use Easy DKIM
+   */
+  readonly domainSigningPrivateKey?: string;
+
+  /**
+    * A string that's used to identify a public key in the DNS configuration for
+    * a domain
+    *
+    * @default - use Easy DKIM
+    */
+  readonly domainSigningSelector?: string;
+
+  /**
+    * The key length of the future DKIM key pair to be generated. This can be changed
+    * at most once per day.
+    *
+    * @default EasyDkimSigningKeyLength.RSA_2048_BIT
+    */
+  readonly nextSigningKeyLength?: EasyDkimSigningKeyLength
+}
+
+/**
  * The identity to use for DKIM
  */
 export abstract class DkimIdentity {
@@ -111,45 +182,102 @@ export abstract class DkimIdentity {
    * @see https://docs.aws.amazon.com/ses/latest/dg/send-email-authentication-dkim-easy.html
    */
   public static easyDkim(signingKeyLength?: EasyDkimSigningKeyLength): DkimIdentity {
-    return {
-      nextSigningKeyLength: signingKeyLength,
-    };
+    return new EasyDkim(signingKeyLength);
   }
 
   /**
    * Bring Your Own DKIM
    *
-   * @param privateKey A private key that's used to generate a DKIM signature. The
-   *   private key must use 1024 or 2048-bit RSA encryption, and must be encoded using
-   *   base64 encoding
-   * @param selector A string that's used to identify a public key in the DNS configuration
-   *   for a domain
+   * @param options Options for BYOD DKIM
    *
    * @see https://docs.aws.amazon.com/ses/latest/dg/send-email-authentication-dkim-bring-your-own.html
    */
-  public static byodDkim(privateKey: SecretValue, selector: string): DkimIdentity {
-    return {
-      domainSigningPrivateKey: privateKey.unsafeUnwrap(), // safe usage
-      domainSigningSelector: selector,
-    };
+  public static byodDkim(options: ByodDkimOptions): DkimIdentity {
+    return new ByodDkim(options);
   }
 
   /**
-   * A private key that's used to generate a DKIM signature
+   * Binds this DKIM identity to the email identity
    */
-  public abstract readonly domainSigningPrivateKey?: string;
+  public abstract bind(emailIdentity: EmailIdentity, hostedZone?: route53.IHostedZone): DkimIdentityConfig | undefined;
+}
+
+class EasyDkim extends DkimIdentity {
+  constructor(private readonly signingKeyLength?: EasyDkimSigningKeyLength) {
+    super();
+  }
+
+  public bind(emailIdentity: EmailIdentity, hostedZone?: route53.IHostedZone): DkimIdentityConfig | undefined {
+    if (hostedZone) {
+      new route53.CnameRecord(emailIdentity, 'DkimDnsToken1', {
+        zone: hostedZone,
+        recordName: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenName1 }),
+        domainName: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenValue1 }),
+      });
+
+      new route53.CnameRecord(hostedZone, 'DkimDnsToken2', {
+        zone: hostedZone,
+        recordName: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenName2 }),
+        domainName: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenValue2 }),
+      });
+
+      new route53.CnameRecord(hostedZone, 'DkimDnsToken3', {
+        zone: hostedZone,
+        recordName: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenName3 }),
+        domainName: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenValue3 }),
+      });
+    }
+
+    return this.signingKeyLength
+      ? {
+        nextSigningKeyLength: this.signingKeyLength,
+      }
+      : undefined;
+  }
+}
+
+/**
+ * Options for BYOD DKIM
+ */
+export interface ByodDkimOptions {
+  /**
+   * The private key that's used to generate a DKIM signature
+   */
+  readonly privateKey: SecretValue;
 
   /**
    * A string that's used to identify a public key in the DNS configuration for
    * a domain
    */
-  public abstract readonly domainSigningSelector?: string;
+  readonly selector: string;
 
   /**
-   * The key length of the future DKIM key pair to be generated. This can be changed
-   * at most once per day.
+   * The public key. If specified, a TXT record with the public key is created.
+   *
+   * @default - the validation TXT record with the public key is not created
    */
-  public abstract readonly nextSigningKeyLength?: EasyDkimSigningKeyLength
+  readonly publicKey?: string;
+}
+
+class ByodDkim extends DkimIdentity {
+  constructor(private readonly options: ByodDkimOptions) {
+    super();
+  }
+
+  public bind(emailIdentity: EmailIdentity, hostedZone?: route53.IHostedZone): DkimIdentityConfig | undefined {
+    if (hostedZone && this.options.publicKey) {
+      new route53.TxtRecord(emailIdentity, 'DkimTxt', {
+        zone: hostedZone,
+        recordName: `${this.options.selector}._domainkey`,
+        values: [`p=${this.options.publicKey}`],
+      });
+    }
+
+    return {
+      domainSigningPrivateKey: this.options.privateKey.unsafeUnwrap(), // safe usage
+      domainSigningSelector: this.options.selector,
+    };
+  }
 }
 
 /**
@@ -239,19 +367,17 @@ export class EmailIdentity extends Resource implements IEmailIdentity {
   constructor(scope: Construct, id: string, props: EmailIdentityProps) {
     super(scope, id);
 
+    const dkimIdentity = props.dkimIdentity ?? DkimIdentity.easyDkim();
+
     const identity = new CfnEmailIdentity(this, 'Resource', {
-      emailIdentity: props.identity,
+      emailIdentity: props.identity.value,
       configurationSetAttributes: undefinedIfNoKeys({
         configurationSetName: props.configurationSet?.configurationSetName,
       }),
       dkimAttributes: undefinedIfNoKeys({
         signingEnabled: props.dkimSigning,
       }),
-      dkimSigningAttributes: undefinedIfNoKeys({
-        domainSigningPrivateKey: props.dkimIdentity?.domainSigningPrivateKey,
-        domainSigningSelector: props.dkimIdentity?.domainSigningSelector,
-        nextSigningKeyLength: props.dkimIdentity?.nextSigningKeyLength,
-      }),
+      dkimSigningAttributes: dkimIdentity.bind(this, props.identity.hostedZone),
       feedbackAttributes: undefinedIfNoKeys({
         emailForwardingEnabled: props.feedbackForwarding,
       }),
@@ -260,6 +386,23 @@ export class EmailIdentity extends Resource implements IEmailIdentity {
         behaviorOnMxFailure: props.mailFromBehaviorOnMxFailure,
       }),
     });
+
+    if (props.mailFromDomain && props.identity.hostedZone) {
+      new route53.MxRecord(this, 'MailFromMxRecord', {
+        zone: props.identity.hostedZone,
+        recordName: props.mailFromDomain,
+        values: [{
+          priority: 10,
+          hostName: `feedback-smtp.${Stack.of(this).region}.amazonses.com`,
+        }],
+      });
+
+      new route53.TxtRecord(this, 'MailFromTxtRecord', {
+        zone: props.identity.hostedZone,
+        recordName: props.mailFromDomain,
+        values: ['v=spf1 include:amazonses.com ~all'],
+      });
+    }
 
     this.emailIdentityName = identity.ref;
 

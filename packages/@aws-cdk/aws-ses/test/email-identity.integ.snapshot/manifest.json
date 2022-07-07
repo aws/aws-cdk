@@ -15,28 +15,46 @@
         "validateOnSynth": false
       },
       "metadata": {
+        "/cdk-ses-email-identity-integ/HostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneDB99F866"
+          }
+        ],
+        "/cdk-ses-email-identity-integ/HostedZone/DkimDnsToken2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneDkimDnsToken2A07BC1AD"
+          }
+        ],
+        "/cdk-ses-email-identity-integ/HostedZone/DkimDnsToken3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneDkimDnsToken34DA6A373"
+          }
+        ],
+        "/cdk-ses-email-identity-integ/EmailIdentity/DkimDnsToken1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmailIdentityDkimDnsToken15F8EC787"
+          }
+        ],
         "/cdk-ses-email-identity-integ/EmailIdentity/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EmailIdentity7187767D"
           }
         ],
-        "/cdk-ses-email-identity-integ/Dkim0": [
+        "/cdk-ses-email-identity-integ/EmailIdentity/MailFromMxRecord/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Dkim0"
+            "data": "EmailIdentityMailFromMxRecordCEAAECD0"
           }
         ],
-        "/cdk-ses-email-identity-integ/Dkim1": [
+        "/cdk-ses-email-identity-integ/EmailIdentity/MailFromTxtRecord/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Dkim1"
-          }
-        ],
-        "/cdk-ses-email-identity-integ/Dkim2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Dkim2"
+            "data": "EmailIdentityMailFromTxtRecordE6B5E5D0"
           }
         ]
       },
