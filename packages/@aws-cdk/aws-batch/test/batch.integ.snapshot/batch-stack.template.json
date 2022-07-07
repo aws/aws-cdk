@@ -1646,6 +1646,14 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
+  "batchsecret7CD5E4C6": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "GenerateSecretString": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "batchjobdeffromecrE0E30DAD": {
    "Type": "AWS::Batch::JobDefinition",
    "Properties": {
@@ -1767,6 +1775,32 @@
     }
    }
   },
+  "executionroleDefaultPolicy497F11A3": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "batchsecret7CD5E4C6"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "executionroleDefaultPolicy497F11A3",
+    "Roles": [
+     {
+      "Ref": "executionroleD9A39BE6"
+     }
+    ]
+   }
+  },
   "batchjobdeffargate7FE30059": {
    "Type": "AWS::Batch::JobDefinition",
    "Properties": {
@@ -1789,6 +1823,14 @@
       {
        "Type": "MEMORY",
        "Value": "512"
+      }
+     ],
+     "Secrets": [
+      {
+       "Name": "SECRET",
+       "ValueFrom": {
+        "Ref": "batchsecret7CD5E4C6"
+       }
       }
      ]
     },

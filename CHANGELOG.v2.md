@@ -2,6 +2,46 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.31.0](https://github.com/aws/aws-cdk/compare/v2.30.0...v2.31.0) (2022-07-06)
+
+
+### Features
+
+* **autoscaling:** step scaling policy supports estimatedInstanceWarmup property ([#20936](https://github.com/aws/aws-cdk/issues/20936)) ([e4c7b97](https://github.com/aws/aws-cdk/commit/e4c7b9770573e3c102e4be0c2ba0378a0b2b8767))
+* **aws-s3:** create default bucket policy when required (under feature flag) ([#20765](https://github.com/aws/aws-cdk/issues/20765)) ([cefa453](https://github.com/aws/aws-cdk/commit/cefa453bb3f98eb9c3f894c308ae703522de8f22)), closes [/docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html#AWS-logs-infrastructure-S3](https://github.com/aws//docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html/issues/AWS-logs-infrastructure-S3) [#18816](https://github.com/aws/aws-cdk/issues/18816)
+* **cfnspec:** cloudformation spec v78.1.0 ([#20952](https://github.com/aws/aws-cdk/issues/20952)) ([20d6e09](https://github.com/aws/aws-cdk/commit/20d6e0980ba9483fb0187a8cf5a256f5b59a7ba8))
+* **dynamodb:** imported tables always grant permissions for indexes ([#20682](https://github.com/aws/aws-cdk/issues/20682)) ([4d003a5](https://github.com/aws/aws-cdk/commit/4d003a50ae96a6c2be915edc2f6ca09eeb747fd5)), closes [#13703](https://github.com/aws/aws-cdk/issues/13703)
+* **ec2:** add additional instance type classes ([#20972](https://github.com/aws/aws-cdk/issues/20972)) ([400ad91](https://github.com/aws/aws-cdk/commit/400ad91cb926fb0a6d71039f8eba3bb63e7c8ca8)), closes [#20924](https://github.com/aws/aws-cdk/issues/20924)
+* **s3:** Event Bridge notification can be enabled after the bucket is created ([#20913](https://github.com/aws/aws-cdk/issues/20913)) ([b0b7a32](https://github.com/aws/aws-cdk/commit/b0b7a3217b1c110bcbe4580addf1ae2865ebfdf5))
+
+
+### Bug Fixes
+
+* **cli:** standard log messages are sent to stderr when CI=true ([#20957](https://github.com/aws/aws-cdk/issues/20957)) ([277340d](https://github.com/aws/aws-cdk/commit/277340d4a67f81d3b80907e1899001d091780698)), closes [#7717](https://github.com/aws/aws-cdk/issues/7717)
+* **cloudfront:** fromOriginAccessIdentityName is a misnomer ([#20772](https://github.com/aws/aws-cdk/issues/20772)) ([3e58e5a](https://github.com/aws/aws-cdk/commit/3e58e5a3c5e12a859e4076b867444980d4b1e8e9)), closes [#20141](https://github.com/aws/aws-cdk/issues/20141)
+* **eks:** latest `AlbController` version isn't compatible with the chart version  ([#20826](https://github.com/aws/aws-cdk/issues/20826)) ([43a0cec](https://github.com/aws/aws-cdk/commit/43a0cec380f39618f18f15da8c60cb0a4a769d37))
+* **route53:** cannot delete existing alias record ([#20858](https://github.com/aws/aws-cdk/issues/20858)) ([22681b1](https://github.com/aws/aws-cdk/commit/22681b1bc29ee48b3092d60cfc22726912ae607a)), closes [#20847](https://github.com/aws/aws-cdk/issues/20847)
+* **stepfunctions-tasks:** SqsSendMessage is missing KMS permissions ([#20990](https://github.com/aws/aws-cdk/issues/20990)) ([52b7019](https://github.com/aws/aws-cdk/commit/52b70194c946c3074b0205318564775be10f29a8))
+* custom resources log sensitive `ResponseURL` field ([#20899](https://github.com/aws/aws-cdk/issues/20899)) ([6b4f92f](https://github.com/aws/aws-cdk/commit/6b4f92f2437c7ff782c88ce23925a04168728d7c))
+
+## [2.30.0](https://github.com/aws/aws-cdk/compare/v2.29.1...v2.30.0) (2022-07-01)
+
+### Features
+
+* **appmesh:** ipv6 support for app mesh ([#20766](https://github.com/aws/aws-cdk/issues/20766)) ([b1e6d62](https://github.com/aws/aws-cdk/commit/b1e6d62ed6b6ede0362d0a68d804660e84efe5cb)), closes [#20737](https://github.com/aws/aws-cdk/issues/20737)
+* **cognito:** make `grant()` available on `IUserPool` ([#20799](https://github.com/aws/aws-cdk/issues/20799)) ([a1df570](https://github.com/aws/aws-cdk/commit/a1df570b89c6d456077bb934e0bf08217677ef1f)), closes [#20285](https://github.com/aws/aws-cdk/issues/20285)
+* **iam:** PolicyStatements can be frozen ([#20911](https://github.com/aws/aws-cdk/issues/20911)) ([3bf737b](https://github.com/aws/aws-cdk/commit/3bf737bd172eda016d2e9bb7c5f40c001399fd23))
+* **lambda:** grant function permissions to an AWS organization ([#19975](https://github.com/aws/aws-cdk/issues/19975)) ([2566017](https://github.com/aws/aws-cdk/commit/2566017a83ec4f9c2c5cefda4585a3f71e3516e7)), closes [#19538](https://github.com/aws/aws-cdk/issues/19538) [#20146](https://github.com/aws/aws-cdk/issues/20146)
+* **rds:** add missing aurora postgres versions ([#20830](https://github.com/aws/aws-cdk/issues/20830)) ([2151a0e](https://github.com/aws/aws-cdk/commit/2151a0e9b988723e050e6f37ed1780cced16c519))
+
+
+### Bug Fixes
+
+* **apigateway:** Explicitly test for undefined instead of falsey for stage default options ([#20868](https://github.com/aws/aws-cdk/issues/20868)) ([b368a31](https://github.com/aws/aws-cdk/commit/b368a315cab0cedf03298083f5f1fb809bd1d1f2))
+* **eks:** revert shell=True and allow public ecr to work ([#20724](https://github.com/aws/aws-cdk/issues/20724)) ([de153fc](https://github.com/aws/aws-cdk/commit/de153fcdd47a4cdcd1d156d5e19684969d990c8e))
+* **pipelines:** 'ConfirmPermissionsBroadening' uses wrong node version ([#20861](https://github.com/aws/aws-cdk/issues/20861)) ([bac965e](https://github.com/aws/aws-cdk/commit/bac965e9c4d435ae45d5cf16aa809f33bbb05a0f))
+* **secretsmanager:** SecretRotation app does not set DeletionPolicy ([#20901](https://github.com/aws/aws-cdk/issues/20901)) ([f2b4eff](https://github.com/aws/aws-cdk/commit/f2b4effc903ab3a36dc925516f3329f236d03a70))
+
 ## [2.29.1](https://github.com/aws/aws-cdk/compare/v2.29.0...v2.29.1) (2022-06-24)
 
 

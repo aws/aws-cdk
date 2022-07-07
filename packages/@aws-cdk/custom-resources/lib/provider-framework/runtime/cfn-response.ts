@@ -84,7 +84,7 @@ export function safeHandler(block: (event: any) => Promise<void>) {
         } else {
           // otherwise, if PhysicalResourceId is not specified, something is
           // terribly wrong because all other events should have an ID.
-          log(`ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify(event)}`);
+          log(`ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify({ ...event, ResponseURL: '...' })}`);
         }
       }
 
