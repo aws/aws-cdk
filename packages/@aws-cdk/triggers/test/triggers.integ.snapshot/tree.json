@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.33"
         }
       },
       "MyStack": {
@@ -235,13 +235,13 @@
             "id": "AssetParameters",
             "path": "MyStack/AssetParameters",
             "children": {
-              "6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2": {
-                "id": "6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2",
-                "path": "MyStack/AssetParameters/6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2",
+              "7ce9e6dcd0cc6bb07bc789eaca973526f4e5503b898b4f7fd4ea4715a07222da": {
+                "id": "7ce9e6dcd0cc6bb07bc789eaca973526f4e5503b898b4f7fd4ea4715a07222da",
+                "path": "MyStack/AssetParameters/7ce9e6dcd0cc6bb07bc789eaca973526f4e5503b898b4f7fd4ea4715a07222da",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "MyStack/AssetParameters/6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2/S3Bucket",
+                    "path": "MyStack/AssetParameters/7ce9e6dcd0cc6bb07bc789eaca973526f4e5503b898b4f7fd4ea4715a07222da/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -249,7 +249,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "MyStack/AssetParameters/6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2/S3VersionKey",
+                    "path": "MyStack/AssetParameters/7ce9e6dcd0cc6bb07bc789eaca973526f4e5503b898b4f7fd4ea4715a07222da/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -257,7 +257,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "MyStack/AssetParameters/6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2/ArtifactHash",
+                    "path": "MyStack/AssetParameters/7ce9e6dcd0cc6bb07bc789eaca973526f4e5503b898b4f7fd4ea4715a07222da/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -266,13 +266,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "version": "10.1.33"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.0.9"
+              "version": "10.1.33"
             }
           }
         },

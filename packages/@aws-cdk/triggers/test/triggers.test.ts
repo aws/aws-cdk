@@ -21,6 +21,35 @@ test('minimal', () => {
   template.hasResourceProperties('Custom::Trigger', {
     HandlerArn: { Ref: 'MyTriggerCurrentVersion8802742B555ea1a8a066d494bd9b85921db605fb' },
   });
+  template.hasResourceProperties('AWS::IAM::Role', {
+    Policies: [
+      {
+        PolicyName: 'Inline',
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: ['lambda:InvokeFunction'],
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      {
+                        'Fn::GetAtt': ['MyTriggerB6CCCACE', 'Arn'],
+                      },
+                      ':*',
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      },
+    ],
+  });
 });
 
 test('before/after', () => {
