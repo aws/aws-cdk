@@ -4,7 +4,7 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, CfnCapabilities, Duration, Fn, PhysicalName, Stack } from '@aws-cdk/core';
+import { Aws, CfnCapabilities, Duration, PhysicalName, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
@@ -12,6 +12,7 @@ import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsa
 import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
 import { PipelineBase } from '../main';
 import { AssetSingletonRole } from '../private/asset-singleton-role';
+import { CachedFnSub } from '../private/cached-fnsub';
 import { preferredCliVersion } from '../private/cli-version';
 import { appOf, assemblyBuilderOf, embeddedAsmPath, obtainScope } from '../private/construct-internals';
 import { toPosixPath } from '../private/fs';
@@ -293,16 +294,12 @@ export class CodePipeline extends PipelineBase {
   private readonly selfMutation: boolean;
   private _myCxAsmRoot?: string;
   private readonly dockerCredentials: DockerCredential[];
+  private readonly cachedFnSub = new CachedFnSub();
 
   /**
    * Asset roles shared for publishing
    */
-  private readonly assetCodeBuildRoles: Map<AssetType, iam.IRole> = new Map();
-
-  /**
-   * Per asset type, a statement that grants sts:AssumeRole for each target role ARNs that need to be assumed
-   */
-  private readonly assetPublishingStatement: Map<AssetType, iam.PolicyStatement> = new Map();
+  private readonly assetCodeBuildRoles: Map<AssetType, AssetSingletonRole> = new Map();
 
   /**
    * This is set to the very first artifact produced in the pipeline
@@ -680,8 +677,10 @@ export class CodePipeline extends PipelineBase {
 
     const role = this.obtainAssetCodeBuildRole(assets[0].assetType);
 
-    // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
-    this.grantAssetAssumeRole(assets[0].assetType, assets.flatMap(a => a.assetPublishingRoleArn ? [Fn.sub(a.assetPublishingRoleArn)] : []));
+    for (const roleArn of assets.flatMap(a => a.assetPublishingRoleArn ? [a.assetPublishingRoleArn] : [])) {
+      // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
+      role.addAssumeRole(this.cachedFnSub.fnSub(roleArn));
+    };
 
     // The base commands that need to be run
     const script = new CodeBuildStep(node.id, {
@@ -820,7 +819,7 @@ export class CodePipeline extends PipelineBase {
    * Modeled after the CodePipeline role and 'CodePipelineActionRole' roles.
    * Generates one role per asset type to separate file and Docker/image-based permissions.
    */
-  private obtainAssetCodeBuildRole(assetType: AssetType): iam.IRole {
+  private obtainAssetCodeBuildRole(assetType: AssetType): AssetSingletonRole {
     const existing = this.assetCodeBuildRoles.get(assetType);
     if (existing) {
       return existing;
@@ -846,30 +845,6 @@ export class CodePipeline extends PipelineBase {
     return assetRole;
   }
 
-  /**
-   * Make sure the Asset Publishing Role has sts:AssumeRole permissions to all the given ARNs
-   *
-   * Will add a new PolicyStatement to the Role if necessary, otherwise add resources to the existing
-   * PolicyStatement
-   */
-  private grantAssetAssumeRole(assetType: AssetType, roleArns: string[]) {
-    let statement = this.assetPublishingStatement.get(assetType);
-    if (!statement) {
-      const role = this.assetCodeBuildRoles.get(assetType);
-      if (!role) {
-        throw new Error('Internal invariant violated: Asset Role should have been created before calling grantAssetAssumeRole');
-      }
-
-      statement = new iam.PolicyStatement({
-        actions: ['sts:AssumeRole'],
-      });
-
-      role.addToPrincipalPolicy(statement);
-      this.assetPublishingStatement.set(assetType, statement);
-    }
-
-    statement.addResources(...roleArns);
-  }
 }
 
 function dockerUsageFromCodeBuild(cbt: CodeBuildProjectType): DockerCredentialUsage | undefined {
