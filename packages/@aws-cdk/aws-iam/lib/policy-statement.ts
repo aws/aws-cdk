@@ -844,9 +844,11 @@ class OrderedSet<A> {
   /**
    * Add new elements to the set
    *
-   * Returns the elements actually added
+   * @param xs the elements to be added
+   *
+   * @returns the elements actually added
    */
-  public push(...xs: A[]) {
+  public push(...xs: readonly A[]): A[] {
     const ret = new Array<A>();
     for (const x of xs) {
       if (this.set.has(x)) {
