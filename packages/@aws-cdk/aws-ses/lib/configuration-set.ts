@@ -127,14 +127,16 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
   public readonly configurationSetName: string;
 
   constructor(scope: Construct, id: string, props: ConfigurationSetProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.configurationSetName,
+    });
 
     const configurationSet = new CfnConfigurationSet(this, 'Resource', {
       deliveryOptions: undefinedIfNoKeys({
         sendingPoolName: props.dedicatedIpPool?.dedicatedIpPoolName,
         tlsPolicy: props.tlsPolicy,
       }),
-      name: props.configurationSetName,
+      name: this.physicalName,
       reputationOptions: undefinedIfNoKeys({
         reputationMetricsEnabled: props.reputationMetrics,
       }),

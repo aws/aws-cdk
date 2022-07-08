@@ -43,10 +43,12 @@ export class DedicatedIpPool extends Resource implements IDedicatedIpPool {
   public readonly dedicatedIpPoolName: string;
 
   constructor(scope: Construct, id: string, props: DedicatedIpPoolProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.dedicatedIpPoolName,
+    });
 
     const pool = new CfnDedicatedIpPool(this, 'Resource', {
-      poolName: props.dedicatedIpPoolName,
+      poolName: this.physicalName,
     });
 
     this.dedicatedIpPoolName = pool.ref;
