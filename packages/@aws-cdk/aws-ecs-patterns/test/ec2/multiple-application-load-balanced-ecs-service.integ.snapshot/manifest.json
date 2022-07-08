@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -319,6 +319,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceTaskDefTaskRole1C1DE6CC"
+          }
+        ],
+        "/aws-ecs-integ/myService/TaskDef/TaskRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceTaskDefTaskRoleDefaultPolicyD48473C0"
           }
         ],
         "/aws-ecs-integ/myService/TaskDef/Resource": [

@@ -1,12 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { ArnFormat, Names, Stack, Token } from '@aws-cdk/core';
-import { SubscriptionProps } from './subscription';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
+import { ArnFormat, FeatureFlags, Names, Stack, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { SubscriptionProps } from './subscription';
 
 /**
  * Properties for an SQS subscription
@@ -58,6 +56,9 @@ export class SqsSubscription implements sns.ITopicSubscription {
         resources: ['*'],
         actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
         principals: [snsServicePrincipal],
+        conditions: FeatureFlags.of(topic).isEnabled(cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY)
+          ? { ArnEquals: { 'aws:SourceArn': topic.topicArn } }
+          : undefined,
       }));
     }
 

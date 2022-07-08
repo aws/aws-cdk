@@ -19,10 +19,11 @@ import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, print, setLogLevel } from '../lib/logging';
+import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
 import { displayNotices, refreshNotices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
+import { validateTags } from './util/tags';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492
@@ -79,6 +80,7 @@ async function parseCommandLineArguments() {
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
     .option('notices', { type: 'boolean', desc: 'Show relevant notices' })
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
+    .option('ci', { type: 'boolean', desc: 'Force CI detection. If CI=true then logs will be sent to stdout instead of stderr', default: process.env.CI !== undefined })
     .command(['list [STACKS..]', 'ls [STACKS..]'], 'Lists all stacks in the app', (yargs: Argv) => yargs
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' }),
     )
@@ -108,7 +110,6 @@ async function parseCommandLineArguments() {
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times', default: [] })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' })
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'What security-sensitive changes need manual approval' })
-      .option('ci', { type: 'boolean', desc: 'Force CI detection', default: process.env.CI !== undefined })
       .option('notification-arns', { type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true })
       // @deprecated(v2) -- tags are part of the Cloud Assembly and tags specified here will be overwritten on the next deployment
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly (deprecated)', nargs: 1, requiresArg: true })
@@ -269,6 +270,10 @@ async function initCommandLine() {
   if (argv.verbose) {
     setLogLevel(argv.verbose);
   }
+
+  if (argv.ci) {
+    setCI(true);
+  }
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
@@ -413,6 +418,7 @@ async function initCommandLine() {
           contextLines: args.contextLines,
           securityOnly: args.securityOnly,
           fail: args.fail || !enableDiffNoFail,
+          stream: args.ci ? process.stdout : undefined,
         });
 
       case 'bootstrap':
@@ -429,7 +435,7 @@ async function initCommandLine() {
           force: argv.force,
           toolkitStackName: toolkitStackName,
           execute: args.execute,
-          tags: configuration.settings.get(['tags']),
+          tags: validateTags(configuration.settings.get(['tags'])),
           terminationProtection: args.terminationProtection,
           parameters: {
             bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
@@ -459,7 +465,7 @@ async function initCommandLine() {
           notificationArns: args.notificationArns,
           requireApproval: configuration.settings.get(['requireApproval']),
           reuseAssets: args['build-exclude'],
-          tags: configuration.settings.get(['tags']),
+          tags: validateTags(configuration.settings.get(['tags'])),
           execute: args.execute,
           changeSetName: args.changeSetName,
           force: args.force,
@@ -514,6 +520,7 @@ async function initCommandLine() {
           exclusively: args.exclusively,
           force: args.force,
           roleArn: args.roleArn,
+          ci: args.ci,
         });
 
       case 'synthesize':

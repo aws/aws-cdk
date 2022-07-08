@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -277,10 +277,7 @@
         "/aws-sfn-tasks-ecs-ec2-integ/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDef54694570",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "TaskDef54694570"
           }
         ],
         "/aws-sfn-tasks-ecs-ec2-integ/TaskDef/TheContainer/LogGroup/Resource": [

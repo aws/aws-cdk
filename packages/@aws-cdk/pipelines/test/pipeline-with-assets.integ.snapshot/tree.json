@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.33"
         }
       },
       "PipelineStack": {
@@ -268,7 +268,7 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::KMS::Alias",
                           "aws:cdk:cloudformation:props": {
-                            "aliasName": "alias/codepipeline-pipelinestackpipelinee95eedaa",
+                            "aliasName": "alias/codepipeline-pipelinestack-pipeline-e95eedaa",
                             "targetKeyId": {
                               "Fn::GetAtt": [
                                 "PipelineArtifactsBucketEncryptionKeyF5BF0670",
@@ -1144,13 +1144,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.33"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.33"
                     }
                   },
                   "Build": {
@@ -1535,13 +1535,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.33"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.33"
                     }
                   },
                   "UpdatePipeline": {
@@ -1653,13 +1653,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.33"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.33"
                     }
                   },
                   "PreProd": {
@@ -2029,7 +2029,7 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.33"
                         }
                       },
                       "Stack.Deploy": {
@@ -2037,7 +2037,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/PreProd/Stack.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.33"
                         }
                       },
                       "Stack.Prepare": {
@@ -2045,13 +2045,13 @@
                         "path": "PipelineStack/Pipeline/Pipeline/PreProd/Stack.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.33"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.33"
                     }
                   },
                   "Assets": {
@@ -2063,7 +2063,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Assets/FileAsset1",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.33"
                         }
                       },
                       "FileAsset2": {
@@ -2071,13 +2071,13 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Assets/FileAsset2",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.33"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.33"
                     }
                   }
                 },
@@ -2720,7 +2720,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "version": "10.1.33"
                 }
               },
               "PreProd": {
@@ -2744,7 +2744,7 @@
                         "path": "PipelineStack/Pipeline/PreProd/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}/8389e75f-0810-4838-bf64-d6f85a95cf83",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.33"
                         }
                       }
                     },

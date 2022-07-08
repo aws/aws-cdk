@@ -622,6 +622,12 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - The controller is not installed.
    */
   readonly albController?: AlbControllerOptions;
+  /**
+   * The cluster log types which you want to enable.
+   *
+   * @default - none
+   */
+  readonly clusterLogging?: ClusterLoggingTypes[];
 }
 
 /**
@@ -763,13 +769,6 @@ export interface ClusterProps extends ClusterOptions {
    * @default - none
    */
   readonly tags?: { [key: string]: string };
-
-  /**
-   * The cluster log types which you want to enable.
-   *
-   * @default - none
-   */
-  readonly clusterLogging?: ClusterLoggingTypes[];
 }
 
 /**
@@ -2304,8 +2303,9 @@ function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
 
 function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
   return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
-    INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
-      CpuArch.X86_64;
+    INSTANCE_TYPES.graviton3.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
+      INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
+        CpuArch.X86_64;
 }
 
 function flatten<A>(xss: A[][]): A[] {

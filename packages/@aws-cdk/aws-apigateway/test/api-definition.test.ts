@@ -1,5 +1,5 @@
-import { Template } from '@aws-cdk/assertions';
 import * as path from 'path';
+import { Template } from '@aws-cdk/assertions';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';

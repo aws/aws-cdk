@@ -33,7 +33,6 @@ describe('aspect', () => {
     expect(root.visitCounter).toEqual(1);
     app.synth();
     expect(root.visitCounter).toEqual(1);
-
   });
 
   test('Warn if an Aspect is added via another Aspect', () => {
@@ -54,7 +53,6 @@ describe('aspect', () => {
     expect(root.node.metadata[0].data).toEqual('We detected an Aspect was added via another Aspect, and will not be applied');
     // warning is not added to child construct
     expect(child.node.metadata.length).toEqual(0);
-
   });
 
   test('Do not warn if an Aspect is added directly (not by another aspect)', () => {
@@ -70,7 +68,5 @@ describe('aspect', () => {
     // no warning is added
     expect(root.node.metadata.length).toEqual(1);
     expect(child.node.metadata.length).toEqual(1);
-
   });
-
 });

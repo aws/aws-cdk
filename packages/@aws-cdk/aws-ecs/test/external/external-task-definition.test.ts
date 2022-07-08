@@ -35,6 +35,7 @@ describe('external task definition', () => {
           ),
         }),
         family: 'ecs-tasks',
+        networkMode: ecs.NetworkMode.HOST,
         taskRole: new iam.Role(stack, 'TaskRole', {
           assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
         }),
@@ -49,7 +50,7 @@ describe('external task definition', () => {
           ],
         },
         Family: 'ecs-tasks',
-        NetworkMode: ecs.NetworkMode.BRIDGE,
+        NetworkMode: 'host',
         RequiresCompatibilities: [
           'EXTERNAL',
         ],
@@ -60,6 +61,18 @@ describe('external task definition', () => {
           ],
         },
       });
+    });
+
+    test('error when an invalid networkmode is set', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // THEN
+      expect(() => {
+        new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef', {
+          networkMode: ecs.NetworkMode.AWS_VPC,
+        });
+      }).toThrow('External tasks can only have Bridge, Host or None network mode, got: awsvpc');
     });
 
     test('correctly sets containers', () => {

@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -49,6 +49,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyQueueawscdksnseventtargetMyTopicB7575CD87304D383"
+          }
+        ],
+        "/aws-cdk-sns-event-target/MyDeadLetterQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeadLetterQueueD997968A"
+          }
+        ],
+        "/aws-cdk-sns-event-target/MyDeadLetterQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeadLetterQueuePolicyCC35D52C"
           }
         ]
       },
