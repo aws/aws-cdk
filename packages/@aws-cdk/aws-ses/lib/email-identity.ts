@@ -362,7 +362,7 @@ export class EmailIdentity extends Resource implements IEmailIdentity {
   /**
    * DKIM records for this identity
    */
-  public readonly dkimRecords: { [name: string]: string }[];
+  public readonly dkimRecords: { name: string, value: string }[];
 
   constructor(scope: Construct, id: string, props: EmailIdentityProps) {
     super(scope, id);
