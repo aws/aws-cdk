@@ -167,6 +167,36 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+If AutoScalingGroup uses EC2 LaunchTemplate within cluster, follow the example as below:
+
+```ts
+const launchTemplate = new ec2.LaunchTemplate(this, 'ASG-LaunchTemplate', {
+  instanceType: new ec2.InstanceType('t3.medium'),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  userData: ec2.UserData.forLinux(),
+});
+
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  mixedInstancesPolicy: {
+    instancesDistribution: {
+      onDemandPercentageAboveBaseCapacity: 50,
+    },
+    launchTemplate: launchTemplate,
+  },
+});
+
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+
+const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
+  autoScalingGroup,
+  machineImageType: ecs.MachineImageType.AMAZON_LINUX_2,
+});
+
+cluster.addAsgCapacityProvider(capacityProvider);
+```
+
+
 ### Bottlerocket
 
 [Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open source operating system that is
