@@ -11,14 +11,14 @@ import * as cdk8s from 'cdk8s';
 import { Construct } from 'constructs';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
-import { HelmChart } from '../lib';
+import { HelmChart, KubernetesVersion } from '../lib';
 import { KubectlProvider } from '../lib/kubectl-provider';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
 import { testFixture, testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_22;
 
 describe('cluster', () => {
 
@@ -138,7 +138,7 @@ describe('cluster', () => {
         vpc: vpc,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }],
         defaultCapacity: 0,
-        version: eks.KubernetesVersion.V1_21,
+        version: eks.KubernetesVersion.V1_22,
       })).toThrow(/cannot select multiple subnet groups/);
 
 
@@ -150,7 +150,7 @@ describe('cluster', () => {
         vpc: vpc,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         defaultCapacity: 0,
-        version: eks.KubernetesVersion.V1_21,
+        version: eks.KubernetesVersion.V1_22,
       });
 
       // THEN
@@ -175,6 +175,7 @@ describe('cluster', () => {
 
     const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
       clusterName: 'cluster',
+      clusterVersion: KubernetesVersion.V1_22,
     });
 
     expect(() => cluster.clusterSecurityGroup).toThrow(/"clusterSecurityGroup" is not defined for this imported cluster/);
@@ -216,6 +217,7 @@ describe('cluster', () => {
     const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
       clusterName: 'cluster',
       clusterSecurityGroupId: clusterSgId,
+      clusterVersion: KubernetesVersion.V1_22,
     });
 
     const clusterSg = cluster.clusterSecurityGroup;
@@ -282,6 +284,7 @@ describe('cluster', () => {
     const importedCluster = eks.Cluster.fromClusterAttributes(stack, 'ImportedCluster', {
       clusterName: cluster.clusterName,
       clusterSecurityGroupId: cluster.clusterSecurityGroupId,
+      clusterVersion: KubernetesVersion.V1_22,
     });
 
     const selfManaged = new asg.AutoScalingGroup(stack, 'self-managed', {
@@ -1002,6 +1005,7 @@ describe('cluster', () => {
     const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
       clusterName: 'cluster',
       kubectlProvider: kubectlProvider,
+      clusterVersion: KubernetesVersion.V1_22,
     });
 
     expect(cluster.kubectlProvider).toEqual(kubectlProvider);
@@ -1021,6 +1025,7 @@ describe('cluster', () => {
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
         clusterName: 'cluster',
         kubectlProvider: kubectlProvider,
+        clusterVersion: KubernetesVersion.V1_22,
       });
 
       new eks.HelmChart(stack, 'Chart', {
@@ -1047,6 +1052,7 @@ describe('cluster', () => {
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
         clusterName: 'cluster',
         kubectlProvider: kubectlProvider,
+        clusterVersion: KubernetesVersion.V1_22,
       });
 
       new eks.HelmChart(stack, 'Chart', {
@@ -1080,6 +1086,7 @@ describe('cluster', () => {
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
         clusterName: 'cluster',
         kubectlProvider: kubectlProvider,
+        clusterVersion: KubernetesVersion.V1_22,
       });
 
       new eks.HelmChart(stack, 'Chart', {
@@ -1122,6 +1129,7 @@ describe('cluster', () => {
     const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
       clusterName: 'cluster',
       kubectlPrivateSubnetIds: vpc.privateSubnets.map(s => s.subnetId),
+      clusterVersion: KubernetesVersion.V1_22,
     });
 
     expect(cluster.kubectlPrivateSubnets?.map(s => stack.resolve(s.subnetId))).toEqual([
@@ -1157,6 +1165,7 @@ describe('cluster', () => {
       clusterCertificateAuthorityData: cluster.clusterCertificateAuthorityData,
       clusterSecurityGroupId: cluster.clusterSecurityGroupId,
       clusterEncryptionConfigKeyArn: cluster.clusterEncryptionConfigKeyArn,
+      clusterVersion: KubernetesVersion.V1_22,
     });
 
     // this should cause an export/import
@@ -2471,6 +2480,7 @@ describe('cluster', () => {
         clusterName,
         kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
         kubectlLambdaRole: kubectlLambdaRole,
+        clusterVersion: KubernetesVersion.V1_22,
       });
 
       const chart = 'hello-world';
@@ -3182,6 +3192,7 @@ describe('cluster', () => {
       clusterName: 'my-cluster',
       kubectlRoleArn: 'arn:aws:iam::123456789012:role/MyRole',
       kubectlMemory: cdk.Size.gibibytes(4),
+      clusterVersion: KubernetesVersion.V1_22,
     });
 
     cluster.addManifest('foo', { bar: 123 });

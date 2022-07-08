@@ -152,7 +152,9 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     // allow user to customize the layer
     if (!props.cluster.kubectlLayer) {
       handler.addLayers(new AwsCliLayer(this, 'AwsCliLayer'));
-      handler.addLayers(new KubectlLayer(this, 'KubectlLayer', { kubectlVersion: '1.22.9' })); // placeholder for cluster.version
+      handler.addLayers(new KubectlLayer(this, 'KubectlLayer', { 
+        kubectlVersion: kubectlVersionLookup(cluster.version.version), 
+      }));
     } else {
       handler.addLayers(props.cluster.kubectlLayer);
     }
@@ -209,4 +211,15 @@ class ImportedKubectlProvider extends Construct implements IKubectlProvider {
     this.roleArn = props.kubectlRoleArn;
     this.handlerRole = props.handlerRole;
   }
+}
+
+
+
+function kubectlVersionLookup(clusterVersion: string): string {
+  const kubectlVersionMapping: {[key: string]: string} = {
+    '1.20': '1.20.4',
+    '1.21': '1.21.2',
+    '1.22': '1.22.6',
+  }
+  return kubectlVersionMapping[clusterVersion] ?? undefined
 }

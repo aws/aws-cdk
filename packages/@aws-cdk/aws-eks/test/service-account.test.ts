@@ -183,6 +183,7 @@ describe('service account', () => {
         clusterName: 'Cluster',
         openIdConnectProvider: oidcProvider,
         kubectlRoleArn: 'arn:aws:iam::123456:role/service-role/k8sservicerole',
+        clusterVersion: eks.KubernetesVersion.V1_22,
       });
 
       cluster.addServiceAccount('MyServiceAccount');
