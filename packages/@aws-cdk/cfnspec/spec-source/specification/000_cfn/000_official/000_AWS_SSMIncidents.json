@@ -1,5 +1,5 @@
 {
-  "$version": "75.0.0",
+  "$version": "79.0.0",
   "PropertyTypes": {
     "AWS::SSMIncidents::ReplicationSet.RegionConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-replicationset-regionconfiguration.html",
@@ -93,6 +93,14 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-incidenttemplate.html#cfn-ssmincidents-responseplan-incidenttemplate-impact",
           "PrimitiveType": "Integer",
           "Required": true,
+          "UpdateType": "Mutable"
+        },
+        "IncidentTags": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-incidenttemplate.html#cfn-ssmincidents-responseplan-incidenttemplate-incidenttags",
+          "DuplicatesAllowed": false,
+          "ItemType": "Tag",
+          "Required": false,
+          "Type": "List",
           "UpdateType": "Mutable"
         },
         "NotificationTargets": {
