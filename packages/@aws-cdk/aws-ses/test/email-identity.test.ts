@@ -10,7 +10,7 @@ beforeEach(() => {
 
 test('default email identity for a domain', () => {
   new EmailIdentity(stack, 'Identity', {
-    identity: Identity.fromDomain('cdk.dev'),
+    identity: Identity.domain('cdk.dev'),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::SES::EmailIdentity', {
@@ -24,7 +24,7 @@ test('email identity from a hosted zone with easy dkim', () => {
   });
 
   new EmailIdentity(stack, 'Identity', {
-    identity: Identity.fromHostedZone(hostedZone),
+    identity: Identity.hostedZone(hostedZone),
     configurationSet: new ConfigurationSet(stack, 'ConfigurationSet'),
   });
 
@@ -133,7 +133,7 @@ test('email identity from a hosted zone with BYO dkim', () => {
   });
 
   new EmailIdentity(stack, 'Identity', {
-    identity: Identity.fromHostedZone(hostedZone),
+    identity: Identity.hostedZone(hostedZone),
     dkimIdentity: DkimIdentity.byoDkim({
       privateKey: SecretValue.secretsManager('my-secret'),
       selector: 'selector',
@@ -169,7 +169,7 @@ test('with mail from and hosted zone', () => {
   });
 
   new EmailIdentity(stack, 'Identity', {
-    identity: Identity.fromHostedZone(hostedZone),
+    identity: Identity.hostedZone(hostedZone),
     mailFromDomain: 'mail.cdk.dev',
     mailFromBehaviorOnMxFailure: MailFromBehaviorOnMxFailure.REJECT_MESSAGE,
   });

@@ -88,23 +88,32 @@ export interface EmailIdentityProps {
  */
 export abstract class Identity {
   /**
-   * An email address
+   * Verify an email address
+   *
+   * To complete the verification process look for an email from
+   * no-reply-aws@amazon.com, open it and click the link.
    */
-  public static fromEmail(email: string): Identity {
+  public static email(email: string): Identity {
     return { value: email };
   }
 
   /**
-   * A domain name
+   * Verify a domain name
+   *
+   * DKIM records will have to be added manually to complete the verification
+   * process
    */
-  public static fromDomain(domain: string): Identity {
+  public static domain(domain: string): Identity {
     return { value: domain };
   }
 
   /**
-   * A hosted zone
+   * Verify a hosted zone
+   *
+   * DKIM and MAIL FROM records will be added automatically to the hosted
+   * zone
    */
-  public static fromHostedZone(hostedZone: IHostedZone): Identity {
+  public static hostedZone(hostedZone: IHostedZone): Identity {
     return {
       value: hostedZone.zoneName,
       hostedZone: hostedZone,

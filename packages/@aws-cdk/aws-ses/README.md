@@ -159,7 +159,7 @@ To verify an identity for a hosted zone, you create an `EmailIdentity`:
 declare const myHostedZone: route53.IHostedZone;
 
 const identity = new ses.EmailIdentity(stack, 'Identity', {
-  identity: ses.Identity.fromHostedZone(myHostedZone),
+  identity: ses.Identity.hostedZone(myHostedZone),
   mailFromDomain: 'mail.cdk.dev',
 });
 ```
@@ -174,7 +174,7 @@ as [Bring Your Own DKIM (BYODKIM)](https://docs.aws.amazon.com/ses/latest/dg/sen
 declare const myHostedZone: route53.IHostedZone;
 
 new ses.EmailIdentity(stack, 'Identity', {
-  identity: ses.Identity.fromHostedZone(myHostedZone),
+  identity: ses.Identity.hostedZone(myHostedZone),
   dkimIdentity: DkimIdentity.byoDkim({
     privateKey: SecretValue.secretsManager('dkim-private-key'),
     publicKey: '...base64-encoded-public-key...',
@@ -183,17 +183,17 @@ new ses.EmailIdentity(stack, 'Identity', {
 });
 ```
 
-When using `fromHostedZone()` for the identity, all necessary Amazon Route 53 records are created automatically:
+When using `hostedZone()` for the identity, all necessary Amazon Route 53 records are created automatically:
 
 * CNAME records for Easy DKIM
 * TXT record for BYOD DKIM
 * MX and TXT records for the custom MAIL FROM
 
-When working with `fromDomain()`, records must be created manually:
+When working with `domain()`, records must be created manually:
 
 ```ts
 const identity = new ses.EmailIdentity(stack, 'Identity', {
-  identity: ses.Identity.fromDomain('cdk.dev'),
+  identity: ses.Identity.domain('cdk.dev'),
 });
 
 for (const record of identity.dkimRecords) {
