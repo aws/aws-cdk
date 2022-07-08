@@ -3,11 +3,9 @@ import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
-import * as semver from 'semver';
 import { error, print, warning } from './logging';
 import { cdkHomeDir, rootDir } from './util/directories';
 import { rangeFromSemver } from './util/version-range';
-import { versionNumber } from './version';
 
 
 export type SubstitutePlaceholders = (...fileNames: string[]) => Promise<void>;
@@ -242,22 +240,9 @@ interface ProjectInfo {
   readonly name: string;
 }
 
-function versionedTemplatesDir(): Promise<string> {
-  return new Promise(async resolve => {
-    let currentVersion = versionNumber();
-    // If the CLI is invoked from source (i.e., developement), rather than from a packaged distribution,
-    // the version number will be '0.0.0'. We will (currently) default to the v1 templates in this case.
-    if (currentVersion === '0.0.0') {
-      currentVersion = '1.0.0';
-    }
-    const majorVersion = semver.major(currentVersion);
-    resolve(path.join(rootDir(), 'lib', 'init-templates', `v${majorVersion}`));
-  });
-}
-
 export async function availableInitTemplates(): Promise<InitTemplate[]> {
   return new Promise(async resolve => {
-    const templatesDir = await versionedTemplatesDir();
+    const templatesDir = path.join(rootDir(), 'lib', 'init-templates');
     const templateNames = await listDirectory(templatesDir);
     const templates = new Array<InitTemplate>();
     for (const templateName of templateNames) {
@@ -286,6 +271,7 @@ export async function availableInitLanguages(): Promise<string[]> {
 async function listDirectory(dirPath: string) {
   return (await fs.readdir(dirPath))
     .filter(p => !p.startsWith('.'))
+    .filter(p => !(p === 'LICENSE'))
     .sort();
 }
 
