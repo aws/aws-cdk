@@ -1,9 +1,7 @@
 import * as child_process from 'child_process';
-import * as chalk from 'chalk';
-import { debug } from './logging';
 
 export interface ShellOptions extends child_process.SpawnOptions {
-  quiet?: boolean;
+  errorMessage: string;
 }
 
 /**
@@ -12,9 +10,9 @@ export interface ShellOptions extends child_process.SpawnOptions {
  * Shell function which both prints to stdout and collects the output into a
  * string.
  */
-export async function shell(command: string[], options: ShellOptions = {}): Promise<string> {
-  debug(`Executing ${chalk.blue(renderCommandLine(command))}`);
-  const child = child_process.spawn(command[0], command.slice(1), {
+export async function shell(command: string[], options: ShellOptions): Promise<string> {
+  const child = child_process.spawn(command[0], renderArguments(command.slice(1)), {
+    shell: true,
     ...options,
     stdio: ['ignore', 'pipe', 'inherit'],
   });
@@ -24,9 +22,7 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
 
     // Both write to stdout and collect
     child.stdout.on('data', chunk => {
-      if (!options.quiet) {
-        process.stdout.write(chunk);
-      }
+      process.stdout.write(chunk);
       stdout.push(chunk);
     });
 
@@ -34,20 +30,18 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
 
     child.once('exit', code => {
       if (code === 0) {
-        resolve(Buffer.concat(stdout).toString('utf-8'));
+        resolve(Buffer.from(stdout).toString('utf-8'));
       } else {
-        reject(new Error(`${renderCommandLine(command)} exited with error code ${code}`));
+        reject(new Error(`${options.errorMessage} exited with error code ${code}`));
       }
     });
   });
 }
 
 /**
- * Render the given command line as a string
- *
- * Probably missing some cases but giving it a good effort.
+ * Render the arguments to include escape characters for each platform.
  */
-function renderCommandLine(cmd: string[]) {
+function renderArguments(cmd: string[]) {
   if (process.platform !== 'win32') {
     return doRender(cmd, hasAnyChars(' ', '\\', '!', '"', "'", '&', '$'), posixEscape);
   } else {
@@ -58,8 +52,8 @@ function renderCommandLine(cmd: string[]) {
 /**
  * Render a UNIX command line
  */
-function doRender(cmd: string[], needsEscaping: (x: string) => boolean, doEscape: (x: string) => string): string {
-  return cmd.map(x => needsEscaping(x) ? doEscape(x) : x).join(' ');
+function doRender(cmd: string[], needsEscaping: (x: string) => boolean, doEscape: (x: string) => string): string[] {
+  return cmd.map(x => needsEscaping(x) ? doEscape(x) : x);
 }
 
 /**
@@ -78,7 +72,7 @@ function hasAnyChars(...chars: string[]): (x: string) => boolean {
  */
 function posixEscape(x: string) {
   // Turn ' -> '"'"'
-  x = x.replace("'", "'\"'\"'");
+  x = x.replace(/'/g, "'\"'\"'");
   return `'${x}'`;
 }
 

@@ -24,7 +24,7 @@ export const invoke: InvokeHook = async (targetDirectory: string) => {
 
     child.once('exit', code => {
       if (code === 0) {
-        resolve(Buffer.concat(stdout).toString('utf-8'));
+        resolve(Buffer.from(stdout).toString('utf-8'));
       } else {
         reject(new Error(`Could not add project %name.PascalCased%.csproj to solution %name.PascalCased%.sln. Error code: ${code}`));
       }
