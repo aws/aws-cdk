@@ -39,3 +39,22 @@ _cdk.json_
 }
 ```
 
+* `@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption`
+
+Enable this feature flag to restrict the decryption of a SQS queue, which is subscribed to a SNS topic, to
+only the topic which it is subscribed to and not the whole SNS service of an account.
+
+Previously the decryption was only restricted to the SNS service principal. To make the SQS subscription more
+secure, it is a good practice to restrict the decryption further and only allow the connected SNS topic to decryption
+the subscribed queue.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption": true
+  }
+}
+```
+

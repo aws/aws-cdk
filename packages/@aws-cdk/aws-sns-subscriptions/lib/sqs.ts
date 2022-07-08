@@ -52,20 +52,14 @@ export class SqsSubscription implements sns.ITopicSubscription {
     // if the queue is encrypted, add a statement to the key resource policy
     // which allows this topic to decrypt KMS keys
     if (this.queue.encryptionMasterKey) {
-      let policy: iam.PolicyStatementProps = {
+      this.queue.encryptionMasterKey.addToResourcePolicy(new iam.PolicyStatement({
         resources: ['*'],
         actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
         principals: [snsServicePrincipal],
-      };
-      if (FeatureFlags.of(topic).isEnabled(cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY)) {
-        policy = {
-          ...policy,
-          conditions: {
-            ArnEquals: { 'aws:SourceArn': topic.topicArn },
-          },
-        };
-      }
-      this.queue.encryptionMasterKey.addToResourcePolicy(new iam.PolicyStatement(policy));
+        conditions: FeatureFlags.of(topic).isEnabled(cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY)
+          ? { ArnEquals: { 'aws:SourceArn': topic.topicArn } }
+          : undefined,
+      }));
     }
 
     // if the topic and queue are created in different stacks
