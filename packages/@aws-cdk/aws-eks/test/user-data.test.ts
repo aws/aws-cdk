@@ -45,6 +45,7 @@ describe('user data', () => {
       clusterName: cluster.clusterName,
       openIdConnectProvider: cluster.openIdConnectProvider,
       clusterCertificateAuthorityData: cluster.clusterCertificateAuthorityData,
+      clusterVersion: KubernetesVersion.V1_22,
     });
 
     // WHEN
@@ -75,6 +76,7 @@ describe('user data', () => {
       clusterName: cluster.clusterName,
       openIdConnectProvider: cluster.openIdConnectProvider,
       clusterEndpoint: cluster.clusterEndpoint,
+      clusterVersion: KubernetesVersion.V1_22,
     });
 
     // WHEN

@@ -169,6 +169,11 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly prune: boolean;
 
   /**
+   * Kubernetes cluster version.
+   */
+  readonly version: KubernetesVersion;
+
+  /**
    * Creates a new service account with corresponding IAM Role (IRSA).
    *
    * @param id logical id of service account
@@ -269,6 +274,11 @@ export interface ClusterAttributes {
    * throw an error
    */
   readonly clusterEncryptionConfigKeyArn?: string;
+
+  /**
+   * The Kubernetes cluster version;
+   */
+  readonly clusterVersion: KubernetesVersion;
 
   /**
    * Additional security groups associated with this cluster.
@@ -812,6 +822,11 @@ export class KubernetesVersion {
   public static readonly V1_21 = KubernetesVersion.of('1.21');
 
   /**
+   * Kubernetes version 1.22
+   */
+   public static readonly V1_22 = KubernetesVersion.of('1.22');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -869,6 +884,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly prune: boolean;
   public abstract readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
   public abstract readonly awsAuth: AwsAuth;
+  public abstract readonly version: KubernetesVersion;
 
   private _spotInterruptHandler?: HelmChart;
 
@@ -1273,6 +1289,11 @@ export class Cluster extends ClusterBase {
   public readonly albController?: AlbController;
 
   /**
+   * Kubernetes cluster version.
+   */
+  public readonly version: KubernetesVersion;
+
+  /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
    * that manages it. If this cluster is not kubectl-enabled (i.e. uses the
    * stock `CfnCluster`), this is `undefined`.
@@ -1284,8 +1305,6 @@ export class Cluster extends ClusterBase {
   private readonly endpointAccess: EndpointAccess;
 
   private readonly vpcSubnets: ec2.SubnetSelection[];
-
-  private readonly version: KubernetesVersion;
 
   private readonly logging?: { [key: string]: [ { [key: string]: any } ] };
 
@@ -2040,6 +2059,8 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlMemory?: Size;
   public readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly prune: boolean;
+  public readonly version: KubernetesVersion;
+  
 
   // so that `clusterSecurityGroup` on `ICluster` can be configured without optionality, avoiding users from having
   // to null check on an instance of `Cluster`, which will always have this configured.
@@ -2061,6 +2082,7 @@ class ImportedCluster extends ClusterBase {
     this.kubectlProvider = props.kubectlProvider;
     this.onEventLayer = props.onEventLayer;
     this.prune = props.prune ?? true;
+    this.version = props.clusterVersion;
 
     let i = 1;
     for (const sgid of props.securityGroupIds ?? []) {
