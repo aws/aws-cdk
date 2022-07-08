@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.163.1](https://github.com/aws/aws-cdk/compare/v1.163.0...v1.163.1) (2022-07-08)
+
+
+### Bug Fixes
+
+* **custom-resources:** Custom resource provider framework not passing `ResponseURL` to user function ([#21065](https://github.com/aws/aws-cdk/issues/21065)) ([fca40af](https://github.com/aws/aws-cdk/commit/fca40afcc920fd81bddbfcc8f28282a66d783ac0)), closes [#21058](https://github.com/aws/aws-cdk/issues/21058)
+
 ## [1.163.0](https://github.com/aws/aws-cdk/compare/v1.162.0...v1.163.0) (2022-07-06)
 
 
