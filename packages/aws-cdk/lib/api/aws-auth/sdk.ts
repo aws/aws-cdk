@@ -3,7 +3,7 @@ import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import { debug, trace } from './_env';
 import { AccountAccessKeyCache } from './account-cache';
 import { cached } from './cached';
-import { Account } from './sdk-provider';
+import { Account, isUnrecoverableAwsError } from './sdk-provider';
 
 // We need to map regions to domain suffixes, and the SDK already has a function to do this.
 // It's not part of the public API, but it's also unlikely to go away.
@@ -234,6 +234,9 @@ export class SDK implements ISDK {
     try {
       await this._credentials.getPromise();
     } catch (e) {
+      if (isUnrecoverableAwsError(e)) {
+        throw e;
+      }
       debug(`Assuming role failed: ${e.message}`);
       throw new Error([
         'Could not assume role in target account',

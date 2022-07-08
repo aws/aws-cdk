@@ -194,6 +194,10 @@ export class SdkProvider {
       await sdk.forceCredentialRetrieval();
       return { sdk, didAssumeRole: true };
     } catch (e) {
+      if (isUnrecoverableAwsError(e)) {
+        throw e;
+      }
+
       // AssumeRole failed. Proceed and warn *if and only if* the baseCredentials were already for the right account
       // or returned from a plugin. This is to cover some current setups for people using plugins or preferring to
       // feed the CLI credentials which are sufficient by themselves. Prefer to assume the correct role if we can,
@@ -270,6 +274,10 @@ export class SdkProvider {
 
         return await new SDK(creds, this.defaultRegion, this.sdkOptions).currentAccount();
       } catch (e) {
+        if (isUnrecoverableAwsError(e)) {
+          throw e;
+        }
+
         debug('Unable to determine the default AWS account:', e);
         return undefined;
       }
@@ -540,4 +548,11 @@ function fmtObtainedCredentials(
 
       return msg.join('');
   }
+}
+
+/**
+ * Return whether an error should not be recovered from
+ */
+export function isUnrecoverableAwsError(e: Error) {
+  return (e as any).code === 'ExpiredToken';
 }
