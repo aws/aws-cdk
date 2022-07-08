@@ -276,6 +276,13 @@ exposed where they shouldn't be. If you try to use a `SecretValue` in a
 different location, an error about unsafe secret usage will be thrown at
 synthesis time.
 
+If you rotate the secret's value in Secrets Manager, you must also change at
+least one property on the resource where you are using the secret, to force
+CloudFormation to re-read the secret.
+
+`SecretValue.ssmSecure()` is only supported for a limited set of resources.
+[Click here for a list of supported resources and properties](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#template-parameters-dynamic-patterns-resources).
+
 ## ARN manipulation
 
 Sometimes you will need to put together or pick apart Amazon Resource Names
