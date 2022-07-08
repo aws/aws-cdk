@@ -175,7 +175,7 @@ declare const myHostedZone: route53.IHostedZone;
 
 new ses.EmailIdentity(stack, 'Identity', {
   identity: ses.Identity.fromHostedZone(myHostedZone),
-  dkimIdentity: DkimIdentity.byodDkim({
+  dkimIdentity: DkimIdentity.byoDkim({
     privateKey: SecretValue.secretsManager('dkim-private-key'),
     publicKey: '...base64-encoded-public-key...',
     selector: 'selector',

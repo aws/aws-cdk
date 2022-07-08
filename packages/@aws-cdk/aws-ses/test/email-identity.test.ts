@@ -127,14 +127,14 @@ test('email identity from a hosted zone with easy dkim', () => {
   });
 });
 
-test('email identity from a hosted zone with BYOD dkim', () => {
+test('email identity from a hosted zone with BYO dkim', () => {
   const hostedZone = new route53.PublicHostedZone(stack, 'HostedZone', {
     zoneName: 'cdk.dev',
   });
 
   new EmailIdentity(stack, 'Identity', {
     identity: Identity.fromHostedZone(hostedZone),
-    dkimIdentity: DkimIdentity.byodDkim({
+    dkimIdentity: DkimIdentity.byoDkim({
       privateKey: SecretValue.secretsManager('my-secret'),
       selector: 'selector',
       publicKey: 'public-key',

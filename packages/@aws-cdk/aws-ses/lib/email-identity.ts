@@ -188,12 +188,12 @@ export abstract class DkimIdentity {
   /**
    * Bring Your Own DKIM
    *
-   * @param options Options for BYOD DKIM
+   * @param options Options for BYO DKIM
    *
    * @see https://docs.aws.amazon.com/ses/latest/dg/send-email-authentication-dkim-bring-your-own.html
    */
-  public static byodDkim(options: ByodDkimOptions): DkimIdentity {
-    return new ByodDkim(options);
+  public static byoDkim(options: ByoDkimOptions): DkimIdentity {
+    return new ByoDkim(options);
   }
 
   /**
@@ -237,9 +237,9 @@ class EasyDkim extends DkimIdentity {
 }
 
 /**
- * Options for BYOD DKIM
+ * Options for BYO DKIM
  */
-export interface ByodDkimOptions {
+export interface ByoDkimOptions {
   /**
    * The private key that's used to generate a DKIM signature
    */
@@ -259,8 +259,8 @@ export interface ByodDkimOptions {
   readonly publicKey?: string;
 }
 
-class ByodDkim extends DkimIdentity {
-  constructor(private readonly options: ByodDkimOptions) {
+class ByoDkim extends DkimIdentity {
+  constructor(private readonly options: ByoDkimOptions) {
     super();
   }
 
