@@ -3,7 +3,7 @@ import { IConstruct } from 'constructs';
 import { Group } from './group';
 import {
   AccountPrincipal, AccountRootPrincipal, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal,
-  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts,
+  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts, validateConditionObject,
 } from './principals';
 import { normalizeStatement } from './private/postprocess-policy-document';
 import { LITERAL_STRING_KEY, mergePrincipal, sum } from './util';
@@ -374,10 +374,7 @@ export class PolicyStatement {
    */
   public addCondition(key: string, value: Condition) {
     this.assertNotFrozen('addCondition');
-    if (!value || typeof value !== 'object') {
-      // Should have been in the type, but it's too late for that
-      throw new Error('A Condition should be represented as a map of operator to value');
-    }
+    validateConditionObject(value);
 
     const existingValue = this._condition[key];
     this._condition[key] = existingValue ? { ...existingValue, ...value } : value;

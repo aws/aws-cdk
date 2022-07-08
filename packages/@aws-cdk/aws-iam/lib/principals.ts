@@ -267,19 +267,13 @@ export class PrincipalWithConditions extends PrincipalAdapter {
    * Add a condition to the principal
    */
   public addCondition(key: string, value: Condition) {
-    if (!value || typeof value !== 'object') {
-      // Should have been in the type, but it's too late for that
-      throw new Error('A Condition should be represented as a map of operator to value');
-    }
+    validateConditionObject(value);
 
     const existingValue = this.additionalConditions[key];
     if (!existingValue) {
       this.additionalConditions[key] = value;
     }
-    if (typeof existingValue !== 'object') {
-      // Should have been in the type, but it's too late for that
-      throw new Error('A Condition should be represented as a map of operator to value');
-    }
+    validateConditionObject(existingValue);
 
     this.additionalConditions[key] = { ...existingValue, ...value };
   }
@@ -348,10 +342,8 @@ export class PrincipalWithConditions extends PrincipalAdapter {
         throw new Error(`multiple "${operator}" conditions cannot be merged if one of them contains an unresolved token`);
       }
 
-      if (typeof existing !== 'object' || !condition || typeof condition !== 'object') {
-        // Should have been in the type, but it's too late for that
-        throw new Error('A Condition should be represented as a map of operator to value');
-      }
+      validateConditionObject(existing);
+      validateConditionObject(condition);
 
       mergedConditions[operator] = { ...existing, ...condition };
     });
@@ -929,5 +921,19 @@ class ServicePrincipalToken implements cdk.IResolvable {
    */
   public toJSON() {
     return `<${this.service}>`;
+  }
+}
+
+/**
+ * Validate that the given value is a valid Condition object
+ *
+ * The type of `Condition` should have been different, but it's too late for that.
+ *
+ * Also, the IAM library relies on being able to pass in a `CfnJson` instance for
+ * a `Condition`.
+ */
+export function validateConditionObject(x: unknown): asserts x is Record<string, unknown> {
+  if (!x || typeof x !== 'object' || Array.isArray(x)) {
+    throw new Error('A Condition should be represented as a map of operator to value');
   }
 }
