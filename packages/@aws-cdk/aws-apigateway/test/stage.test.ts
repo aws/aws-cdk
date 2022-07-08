@@ -2,6 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import * as apigateway from '../lib';
+import { ApiDefinition } from '../lib';
 
 describe('stage', () => {
   test('minimal setup', () => {
@@ -395,5 +396,31 @@ describe('stage', () => {
       deployment,
       accessLogFormat: testFormat,
     })).toThrow(/Access log format is specified without a destination/);
+  });
+
+  test('default throttling settings', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    new apigateway.SpecRestApi(stack, 'testapi', {
+      apiDefinition: ApiDefinition.fromInline({
+        openapi: '3.0.2',
+      }),
+      deployOptions: {
+        throttlingBurstLimit: 0,
+        throttlingRateLimit: 0,
+        metricsEnabled: false,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
+      MethodSettings: [{
+        DataTraceEnabled: false,
+        HttpMethod: '*',
+        ResourcePath: '/*',
+        ThrottlingBurstLimit: 0,
+        ThrottlingRateLimit: 0,
+      }],
+    });
   });
 });

@@ -49,4 +49,15 @@ describe('resource policy', () => {
       PolicyName: 'ResourcePolicy',
     });
   });
+
+  test('ResourcePolicy has a defaultChild', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const resourcePolicy = new ResourcePolicy(stack, 'ResourcePolicy');
+
+    // THEN
+    expect(resourcePolicy.node.defaultChild).toBeDefined();
+  });
 });

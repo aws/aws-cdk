@@ -1356,6 +1356,20 @@ new ec2.FlowLog(this, 'FlowLogWithKeyPrefix', {
 });
 ```
 
+When the S3 destination is configured, AWS will automatically create an S3 bucket policy
+that allows the service to write logs to the bucket. This makes it impossible to later update
+that bucket policy. To have CDK create the bucket policy so that future updates can be made,
+the `@aws-cdk/aws-s3:createDefaultLoggingPolicy` [feature flag](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html) can be used. This can be set
+in the `cdk.json` file.
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-s3:createDefaultLoggingPolicy": true
+  }
+}
+```
+
 ## User Data
 
 User data enables you to run a script when your instances start up.  In order to configure these scripts you can add commands directly to the script
