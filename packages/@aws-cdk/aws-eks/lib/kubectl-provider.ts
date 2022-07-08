@@ -184,7 +184,6 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     this.serviceToken = provider.serviceToken;
     this.roleArn = cluster.kubectlRole.roleArn;
   }
-
 }
 
 class ImportedKubectlProvider extends Construct implements IKubectlProvider {
@@ -213,13 +212,16 @@ class ImportedKubectlProvider extends Construct implements IKubectlProvider {
   }
 }
 
-
-
+/**
+ * Available Amazon EKS Kubernetes versions
+ * @see https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html
+ */
 function kubectlVersionLookup(clusterVersion: string): string {
   const kubectlVersionMapping: {[key: string]: string} = {
-    '1.20': '1.20.4',
-    '1.21': '1.21.2',
-    '1.22': '1.22.6',
-  }
-  return kubectlVersionMapping[clusterVersion] ?? undefined
+    '1.20': '1.20.15',
+    '1.21': '1.21.12',
+    '1.22': '1.22.9',
+  };
+
+  return kubectlVersionMapping[clusterVersion] ?? undefined;
 }
