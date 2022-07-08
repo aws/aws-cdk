@@ -80,6 +80,12 @@ describe('DynamoDb Data Source configuration', () => {
 });
 
 describe('DynamoDB Mapping Templates', () => {
+  test('read consistency option should render correctly', () => {
+    const template = appsync.MappingTemplate.dynamoDbScanTable(true);
+    const rendered = joined(template.renderTemplate());
+    expect(rendered).toStrictEqual(`{\"version\":\"2017-02-28\",\"operation\":\"Scan\",\"consistentRead\":true}`);
+  });
+
   test('PutItem projecting all', () => {
     const template = appsync.MappingTemplate.dynamoDbPutItem(
       appsync.PrimaryKey.partition('id').is('id'),
