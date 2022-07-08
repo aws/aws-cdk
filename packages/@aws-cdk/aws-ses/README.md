@@ -156,10 +156,10 @@ helps prevent unauthorized use.
 To verify an identity for a hosted zone, you create an `EmailIdentity`:
 
 ```ts
-declare const myHostedZone: route53.IHostedZone;
+declare const myHostedZone: route53.IPublicHostedZone;
 
 const identity = new ses.EmailIdentity(stack, 'Identity', {
-  identity: ses.Identity.hostedZone(myHostedZone),
+  identity: ses.Identity.publicHostedZone(myHostedZone),
   mailFromDomain: 'mail.cdk.dev',
 });
 ```
@@ -171,10 +171,10 @@ You can instead configure DKIM authentication by using your own public-private k
 as [Bring Your Own DKIM (BYODKIM)](https://docs.aws.amazon.com/ses/latest/dg/send-email-authentication-dkim-bring-your-own.html):
 
 ```ts
-declare const myHostedZone: route53.IHostedZone;
+declare const myHostedZone: route53.IPublicHostedZone;
 
 new ses.EmailIdentity(stack, 'Identity', {
-  identity: ses.Identity.hostedZone(myHostedZone),
+  identity: ses.Identity.publicHostedZone(myHostedZone),
   dkimIdentity: DkimIdentity.byoDkim({
     privateKey: SecretValue.secretsManager('dkim-private-key'),
     publicKey: '...base64-encoded-public-key...',
@@ -183,7 +183,7 @@ new ses.EmailIdentity(stack, 'Identity', {
 });
 ```
 
-When using `hostedZone()` for the identity, all necessary Amazon Route 53 records are created automatically:
+When using `publicHostedZone()` for the identity, all necessary Amazon Route 53 records are created automatically:
 
 * CNAME records for Easy DKIM
 * TXT record for BYOD DKIM

@@ -1,5 +1,5 @@
 import * as route53 from '@aws-cdk/aws-route53';
-import { IHostedZone } from '@aws-cdk/aws-route53';
+import { IPublicHostedZone } from '@aws-cdk/aws-route53';
 import { IResource, Lazy, Resource, SecretValue, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IConfigurationSet } from './configuration-set';
@@ -108,12 +108,12 @@ export abstract class Identity {
   }
 
   /**
-   * Verify a hosted zone
+   * Verify a public hosted zone
    *
    * DKIM and MAIL FROM records will be added automatically to the hosted
    * zone
    */
-  public static hostedZone(hostedZone: IHostedZone): Identity {
+  public static publicHostedZone(hostedZone: IPublicHostedZone): Identity {
     return {
       value: hostedZone.zoneName,
       hostedZone: hostedZone,
@@ -130,7 +130,7 @@ export abstract class Identity {
    *
    * @default - no hosted zone is associated and no records are created
    */
-  public abstract readonly hostedZone?: IHostedZone;
+  public abstract readonly hostedZone?: IPublicHostedZone;
 }
 
 /**
@@ -208,7 +208,7 @@ export abstract class DkimIdentity {
   /**
    * Binds this DKIM identity to the email identity
    */
-  public abstract bind(emailIdentity: EmailIdentity, hostedZone?: route53.IHostedZone): DkimIdentityConfig | undefined;
+  public abstract bind(emailIdentity: EmailIdentity, hostedZone?: route53.IPublicHostedZone): DkimIdentityConfig | undefined;
 }
 
 class EasyDkim extends DkimIdentity {
@@ -216,7 +216,7 @@ class EasyDkim extends DkimIdentity {
     super();
   }
 
-  public bind(emailIdentity: EmailIdentity, hostedZone?: route53.IHostedZone): DkimIdentityConfig | undefined {
+  public bind(emailIdentity: EmailIdentity, hostedZone?: route53.IPublicHostedZone): DkimIdentityConfig | undefined {
     if (hostedZone) {
       new route53.CnameRecord(emailIdentity, 'DkimDnsToken1', {
         zone: hostedZone,
@@ -273,7 +273,7 @@ class ByoDkim extends DkimIdentity {
     super();
   }
 
-  public bind(emailIdentity: EmailIdentity, hostedZone?: route53.IHostedZone): DkimIdentityConfig | undefined {
+  public bind(emailIdentity: EmailIdentity, hostedZone?: route53.IPublicHostedZone): DkimIdentityConfig | undefined {
     if (hostedZone && this.options.publicKey) {
       new route53.TxtRecord(emailIdentity, 'DkimTxt', {
         zone: hostedZone,
@@ -371,7 +371,7 @@ export class EmailIdentity extends Resource implements IEmailIdentity {
   /**
    * DKIM records for this identity
    */
-  public readonly dkimRecords: { name: string, value: string }[];
+  public readonly dkimRecords: DkimRecord[];
 
   constructor(scope: Construct, id: string, props: EmailIdentityProps) {
     super(scope, id);
@@ -428,4 +428,19 @@ export class EmailIdentity extends Resource implements IEmailIdentity {
       { name: this.dkimDnsTokenName3, value: this.dkimDnsTokenValue3 },
     ];
   }
+}
+
+/**
+ * A DKIM record
+ */
+export interface DkimRecord {
+  /**
+   * The name of the record
+   */
+  readonly name: string;
+
+  /**
+   * The value of the record
+   */
+  readonly value: string;
 }

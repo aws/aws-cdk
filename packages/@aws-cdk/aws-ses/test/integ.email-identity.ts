@@ -13,7 +13,7 @@ class TestStack extends Stack {
     });
 
     new ses.EmailIdentity(this, 'EmailIdentity', {
-      identity: ses.Identity.fromHostedZone(hostedZone),
+      identity: ses.Identity.publicHostedZone(hostedZone),
       mailFromDomain: 'mail.cdk.dev',
     });
   }

@@ -24,7 +24,7 @@ test('email identity from a hosted zone with easy dkim', () => {
   });
 
   new EmailIdentity(stack, 'Identity', {
-    identity: Identity.hostedZone(hostedZone),
+    identity: Identity.publicHostedZone(hostedZone),
     configurationSet: new ConfigurationSet(stack, 'ConfigurationSet'),
   });
 
@@ -133,7 +133,7 @@ test('email identity from a hosted zone with BYO dkim', () => {
   });
 
   new EmailIdentity(stack, 'Identity', {
-    identity: Identity.hostedZone(hostedZone),
+    identity: Identity.publicHostedZone(hostedZone),
     dkimIdentity: DkimIdentity.byoDkim({
       privateKey: SecretValue.secretsManager('my-secret'),
       selector: 'selector',
@@ -169,7 +169,7 @@ test('with mail from and hosted zone', () => {
   });
 
   new EmailIdentity(stack, 'Identity', {
-    identity: Identity.hostedZone(hostedZone),
+    identity: Identity.publicHostedZone(hostedZone),
     mailFromDomain: 'mail.cdk.dev',
     mailFromBehaviorOnMxFailure: MailFromBehaviorOnMxFailure.REJECT_MESSAGE,
   });
