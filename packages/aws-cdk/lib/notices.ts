@@ -109,9 +109,9 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
   fetch(): Promise<Notice[]> {
     const timeout = 3000;
     return new Promise((resolve, reject) => {
-      var req: ClientRequest;
+      let req: ClientRequest | undefined;
 
-      var timer = setTimeout(() => {
+      let timer = setTimeout(() => {
         if (req) {
           req.destroy(new Error('Request timed out'));
         }
@@ -121,7 +121,6 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
 
       try {
         req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json',
-          { timeout },
           res => {
             if (res.statusCode === 200) {
               res.setEncoding('utf8');
