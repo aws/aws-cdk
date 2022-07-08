@@ -55,7 +55,7 @@ export async function cliInit(type?: string, language?: string, canUseNetwork = 
     throw new Error('No language was selected');
   }
 
-  await initializeProject(template, language, canUseNetwork, generateOnly, workDir);
+  await initializeProject(template, language, type, canUseNetwork, generateOnly, workDir);
 }
 
 /**
@@ -106,7 +106,7 @@ export class InitTemplate {
    * @param language    the language to instantiate this template with
    * @param targetDirectory the directory where the template is to be instantiated into
    */
-  public async install(language: string, targetDirectory: string) {
+  public async install(language: string, type: string, targetDirectory: string) {
     if (this.languages.indexOf(language) === -1) {
       error(`The ${chalk.blue(language)} language is not supported for ${chalk.green(this.name)} `
           + `(it supports: ${this.languages.map(l => chalk.blue(l)).join(', ')})`);
@@ -129,11 +129,17 @@ export class InitTemplate {
 
     const sourceDirectory = path.join(this.basePath, language);
     const hookTempDirectory = path.join(targetDirectory, 'tmp');
+    const tempShellDirectory = this.needsShell(language, type) ? await this.copyShellTo(targetDirectory) : undefined;
+
     await fs.mkdir(hookTempDirectory);
     await this.installFiles(sourceDirectory, targetDirectory, language, projectInfo);
     await this.applyFutureFlags(targetDirectory);
     await this.invokeHooks(hookTempDirectory, targetDirectory, hookContext);
     await fs.remove(hookTempDirectory);
+
+    if (tempShellDirectory) {
+      await fs.remove(tempShellDirectory);
+    }
   }
 
   private async installFiles(sourceDirectory: string, targetDirectory: string, language:string, project: ProjectInfo) {
@@ -154,6 +160,22 @@ export class InitTemplate {
         await fs.copy(fromFile, toFile);
       }
     }
+  }
+
+  private needsShell(language: string, type: string): boolean {
+    return (language === 'csharp' || language === 'fsharp') && (type === 'app' || type === 'default');
+  }
+
+  private async copyShellTo(targetDirectory: string): Promise<string> {
+    const osFile = 'os.js';
+    const osDirectory = 'util';
+    const utilSourceDirectory = path.join(this.basePath, osDirectory);
+    const utilTempDirectory = path.join(targetDirectory, osDirectory);
+    const fromFile = path.join(utilSourceDirectory, osFile);
+    const toFile = path.join(utilTempDirectory, osFile);
+    await fs.mkdir(utilTempDirectory);
+    await fs.copy(fromFile, toFile);
+    return utilTempDirectory;
   }
 
   /**
@@ -287,10 +309,17 @@ export async function printAvailableTemplates(language?: string) {
   }
 }
 
-async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean, generateOnly: boolean, workDir: string) {
+async function initializeProject(
+  template: InitTemplate,
+  language: string,
+  type: string,
+  canUseNetwork: boolean,
+  generateOnly: boolean,
+  workDir: string,
+) {
   await assertIsEmptyDirectory(workDir);
   print(`Applying project template ${chalk.green(template.name)} for ${chalk.blue(language)}`);
-  await template.install(language, workDir);
+  await template.install(language, type, workDir);
   if (await fs.pathExists('README.md')) {
     print(chalk.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
   }
