@@ -12,7 +12,7 @@ import { Cache } from './private/cache';
 import { Stack } from './stack';
 import { Stage } from './stage';
 
-const ARCHIVE_EXTENSIONS = ['.tar.zip', '.zip', '.jar'];
+const ARCHIVE_EXTENSIONS = ['.tar.gz', '.zip', '.jar'];
 
 /**
  * A previously staged asset
