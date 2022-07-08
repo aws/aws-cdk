@@ -1,7 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { ArnFormat, Names, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, FeatureFlags, Names, Stack, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { SubscriptionProps } from './subscription';
 
@@ -51,14 +52,20 @@ export class SqsSubscription implements sns.ITopicSubscription {
     // if the queue is encrypted, add a statement to the key resource policy
     // which allows this topic to decrypt KMS keys
     if (this.queue.encryptionMasterKey) {
-      this.queue.encryptionMasterKey.addToResourcePolicy(new iam.PolicyStatement({
+      let policy: iam.PolicyStatementProps = {
         resources: ['*'],
         actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
         principals: [snsServicePrincipal],
-        conditions: {
-          ArnEquals: { 'aws:SourceArn': topic.topicArn },
-        },
-      }));
+      };
+      if (FeatureFlags.of(topic).isEnabled(cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY)) {
+        policy = {
+          ...policy,
+          conditions: {
+            ArnEquals: { 'aws:SourceArn': topic.topicArn },
+          },
+        };
+      }
+      this.queue.encryptionMasterKey.addToResourcePolicy(new iam.PolicyStatement(policy));
     }
 
     // if the topic and queue are created in different stacks
