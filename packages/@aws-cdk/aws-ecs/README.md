@@ -167,7 +167,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-If AutoScalingGroup uses EC2 LaunchTemplate within cluster, follow the example as below:
+To use `LaunchTemplate` with `AsgCapacityProvider`, make sure to specify the `userData` in the `LaunchTemplate`:
 
 ```ts
 const launchTemplate = new ec2.LaunchTemplate(this, 'ASG-LaunchTemplate', {
