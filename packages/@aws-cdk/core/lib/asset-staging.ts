@@ -622,8 +622,8 @@ function determineBundledAsset(bundleDir: string, outputType: BundlingOutput): B
 */
 function getExtension(source: string): string {
   for ( const ext in ARCHIVE_EXTENSIONS ) {
-    if (source.toLowerCase().endsWith(ext)) {
-      return ext;
+    if (source.toLowerCase().endsWith(ARCHIVE_EXTENSIONS[ext])) {
+      return ARCHIVE_EXTENSIONS[ext];
     };
   };
 
