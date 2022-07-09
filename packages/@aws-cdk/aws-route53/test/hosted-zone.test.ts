@@ -188,7 +188,11 @@ describe('Vpc', () => {
 
     // WHEN
     new PrivateHostedZone(stack, 'HostedZone', {
-      vpc: new VpcMock(stack, 'VpcMock'),
+      vpc: ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
+        vpcId: '1234',
+        availabilityZones: ['region-12345a', 'region-12345b', 'region-12345c'],
+        region: 'region-12345',
+      }),
       zoneName: 'SomeZone',
     });
 
@@ -196,20 +200,11 @@ describe('Vpc', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Route53::HostedZone', {
       VPCs: [
         {
-          VPCId: {
-            Ref: Match.anyValue(),
-          },
-          VPCRegion: 'eu-west-1',
+          VPCId: '1234',
+          VPCRegion: 'region-12345',
         },
       ],
       Name: Match.anyValue(),
     });
   });
 });
-
-class VpcMock extends ec2.Vpc {
-  public readonly env = {
-    region: 'eu-west-1',
-    account: 'SOME_ACCOUNT',
-  }
-}

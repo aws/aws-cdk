@@ -268,6 +268,24 @@ describe('vpc from lookup', () => {
 
       restoreContextProvider(previous);
     });
+
+    test('passes region to LookedUpVpc correctly', () => {
+      const previous = mockVpcContextProviderWith({
+        vpcId: 'vpc-1234',
+        subnetGroups: [],
+      }, options => {
+        expect(options.region).toEqual('region-1234');
+      });
+
+      const stack = new Stack();
+      const vpc = Vpc.fromLookup(stack, 'Vpc', {
+        vpcId: 'vpc-1234',
+        region: 'region-1234',
+      });
+
+      expect(vpc.env.region).toEqual('region-1234');
+      restoreContextProvider(previous);
+    });
   });
 });
 
