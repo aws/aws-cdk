@@ -105,9 +105,7 @@ async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnE
   // automatically by the JavaScript SDK.
   const resp = await invokeFunction({
     FunctionName: functionArn,
-
-    // Strip 'ResponseURL' -- the downstream CR doesn't need it and can only log it by accident
-    Payload: JSON.stringify({ ...sanitizedPayload, ResponseURL: undefined }),
+    Payload: JSON.stringify(sanitizedPayload),
   });
 
   log('user function response:', resp, typeof(resp));
