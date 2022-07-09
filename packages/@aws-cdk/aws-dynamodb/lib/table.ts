@@ -612,6 +612,15 @@ export interface TableAttributes {
    * @default - no local indexes
    */
   readonly localIndexes?: string[];
+
+  /**
+   * If set to true, grant methods always grant permissions for all indexes.
+   * If false is provided, grant methods grant the permissions
+   * only when {@link globalIndexes} or {@link localIndexes} is specified.
+   *
+   * @default - false
+   */
+  readonly grantIndexPermissions?: boolean;
 }
 
 abstract class TableBase extends Resource implements ITable {
@@ -1091,7 +1100,8 @@ export class Table extends TableBase {
       public readonly tableArn: string;
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: kms.IKey;
-      protected readonly hasIndex = (attrs.globalIndexes ?? []).length > 0 ||
+      protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
+        (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
 
       constructor(_tableArn: string, tableName: string, tableStreamArn?: string) {
