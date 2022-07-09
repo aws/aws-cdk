@@ -7,21 +7,21 @@ export interface KinesisEventSourceProps extends StreamEventSourceProps {
   /**
    * The time from which to start reading, in Unix time seconds.
    *
-   * @default Required when startingPosition is AT_TIMESTAMP.
+   * @default - no timestamp
    */
-  readonly startingPositionTimestamp?: number
+  readonly startingPositionTimestamp?: number;
 }
 
 /**
  * Use an Amazon Kinesis stream as an event source for AWS Lambda.
  */
 export class KinesisEventSource extends StreamEventSource {
-  private innerProps: KinesisEventSourceProps;
   private _eventSourceMappingId?: string = undefined;
+  private startingPositionTimestamp?: number;
 
   constructor(readonly stream: kinesis.IStream, props: KinesisEventSourceProps) {
     super(props);
-    this.innerProps = props;
+    this.startingPositionTimestamp = props.startingPositionTimestamp;
 
     this.props.batchSize !== undefined && cdk.withResolved(this.props.batchSize, batchSize => {
       if (batchSize < 1 || batchSize > 10000) {
@@ -34,7 +34,7 @@ export class KinesisEventSource extends StreamEventSource {
     const eventSourceMapping = target.addEventSourceMapping(`KinesisEventSource:${cdk.Names.nodeUniqueId(this.stream.node)}`,
       this.enrichMappingOptions({
         eventSourceArn: this.stream.streamArn,
-        startingPositionTimestamp: this.innerProps.startingPositionTimestamp,
+        startingPositionTimestamp: this.startingPositionTimestamp,
       }),
     );
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;

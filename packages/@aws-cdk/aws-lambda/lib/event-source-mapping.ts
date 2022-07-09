@@ -122,14 +122,14 @@ export interface EventSourceMappingOptions {
    *
    * @see https://docs.aws.amazon.com/kinesis/latest/APIReference/API_GetShardIterator.html#Kinesis-GetShardIterator-request-ShardIteratorType
    *
-   * @default - Required for Amazon Kinesis, Amazon DynamoDB, and Amazon MSK Streams sources.
+   * @default - no starting position
    */
   readonly startingPosition?: StartingPosition;
 
   /**
    * The time from which to start reading, in Unix time seconds.
    *
-   * @default Required when startingPosition is AT_TIMESTAMP.
+   * @default - no timestamp
    */
   readonly startingPositionTimestamp?: number;
 
@@ -310,6 +310,10 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       throw new Error('startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
     }
 
+    if (props.startingPosition !== StartingPosition.AT_TIMESTAMP && props.startingPositionTimestamp) {
+      throw new Error('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
+    }
+
     let destinationConfig;
 
     if (props.onFailure) {
@@ -365,7 +369,8 @@ export enum StartingPosition {
 
   /**
    * Start reading from a position defined by a time stamp.
-   * Only supported for Amazon Kinesis streams.
+   * Only supported for Amazon Kinesis streams, otherwise an error will occur.
+   * If supplied, `startingPositionTimestamp` must also be set.
    */
   AT_TIMESTAMP = 'AT_TIMESTAMP',
 }
