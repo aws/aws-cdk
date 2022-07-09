@@ -86,13 +86,13 @@ describe('DynamoDB Mapping Templates', () => {
     const rendered = joined(template.renderTemplate());
     expect(rendered).toStrictEqual('{\"version\":\"2017-02-28\",\"operation\":\"Scan\",\"consistentRead\":true}');
   });
-  //`{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\":true, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}`
+
   test('read consistency option for dynamoDbGetItem should render correctly', () => {
     const template = appsync.MappingTemplate.dynamoDbGetItem('id', 'id', true);
     const rendered = joined(template.renderTemplate());
     expect(rendered).toStrictEqual('{\"version\":\"2017-02-28\",\"operation\":\"GetItem\",\"consistentRead\":true,\"key\":{\"id\":$util.dynamodb.toDynamoDBJson($ctx.args.id)}}');
   });
-  //`{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\":true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}`
+
   test('read consistency option for dynamoDbQuery should render correctly', () => {
     const template = appsync.MappingTemplate.dynamoDbQuery(KeyCondition.eq('order', 'order'), 'orderIndex', true);
     const rendered = joined(template.renderTemplate());
