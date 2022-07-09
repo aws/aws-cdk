@@ -22,4 +22,13 @@ describe('nested-stack', () => {
       },
     });
   });
+  test('a nested-stack has a description in templateOptions.', () => {
+    const description = 'This is a description.';
+    const stack = new Stack();
+    var nestedStack = new NestedStack(stack, 'MyNestedStack', {
+      description,
+    });
+
+    expect(nestedStack.templateOptions.description).toEqual(description);
+  });
 });
