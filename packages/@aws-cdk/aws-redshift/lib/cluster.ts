@@ -322,6 +322,14 @@ export interface ClusterProps {
    * @default false
    */
   readonly publiclyAccessible?: boolean
+
+  /**
+   * A boolean value indicating whether the resize operation is using the classic resize process.
+   * If you don't provide this parameter or set the value to false, the resize type is elastic.
+   *
+   * @default - Elastic resize type
+   */
+  readonly classicResizing?: boolean
 }
 
 /**
@@ -485,6 +493,7 @@ export class Cluster extends ClusterBase {
       // Encryption
       kmsKeyId: props.encryptionKey?.keyId,
       encrypted: props.encrypted ?? true,
+      classic: props.classicResizing,
     });
 
     cluster.applyRemovalPolicy(removalPolicy, {
