@@ -1,5 +1,5 @@
 import { SubnetSelection } from '@aws-cdk/aws-ec2';
-import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { FargatePlatformVersion, FargateService, FargateTaskDefinition, HealthCheck } from '@aws-cdk/aws-ecs';
 import { FeatureFlags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
@@ -85,6 +85,13 @@ export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalan
    * @default Latest
    */
   readonly platformVersion?: FargatePlatformVersion;
+
+  /**
+   * The health check command and associated configuration parameters for the container.
+   *
+   * @default - Health check configuration from container.
+   */
+  readonly healthCheck?: HealthCheck;
 }
 
 /**
@@ -135,6 +142,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
         dockerLabels: taskImageOptions.dockerLabels,
+        healthCheck: props.healthCheck,
       });
       container.addPortMappings({
         containerPort: taskImageOptions.containerPort || 80,

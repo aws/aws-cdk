@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -282,7 +282,10 @@
         "/aws-ecs-integ-lb-fargate/NLBFargateService/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "NLBFargateServiceTaskDefB836FA89"
+            "data": "NLBFargateServiceTaskDefB836FA89",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ-lb-fargate/NLBFargateService/TaskDef/web/LogGroup/Resource": [

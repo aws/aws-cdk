@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-ecs-patterns/test/fargate/integ.l3": {
+    "fargate/integ.l3": {
       "stacks": [
         "aws-ecs-integ-lb-fargate"
       ],

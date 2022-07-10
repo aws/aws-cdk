@@ -28,6 +28,9 @@ new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'NLBFargateService', {
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
+  healthCheck: {
+    command: ['some command'],
+  },
 });
 
 app.synth();

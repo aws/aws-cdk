@@ -776,6 +776,15 @@
     "ContainerDefinitions": [
      {
       "Essential": true,
+      "HealthCheck": {
+       "Command": [
+        "CMD-SHELL",
+        "some command"
+       ],
+       "Interval": 30,
+       "Retries": 3,
+       "Timeout": 5
+      },
       "Image": "amazon/amazon-ecs-sample",
       "LogConfiguration": {
        "LogDriver": "awslogs",
