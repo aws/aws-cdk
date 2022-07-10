@@ -158,6 +158,9 @@ const loadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateSer
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
+  healthCheck: {
+    command: ['CMD-SHELL', 'wget localhost:5000'],
+  },
 });
 ```
 
