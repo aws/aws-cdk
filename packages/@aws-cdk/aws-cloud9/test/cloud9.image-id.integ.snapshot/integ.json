@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "C9ImageIdTest/DefaultTest": {
+      "stacks": [
+        "C9Stack"
+      ],
+      "assertionStack": "C9ImageIdTestDefaultTestDeployAssertDAD28647"
+    }
+  }
+}

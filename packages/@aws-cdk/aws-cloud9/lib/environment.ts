@@ -93,6 +93,13 @@ export interface Ec2EnvironmentProps {
    * @default - CONNECT_SSH
    */
   readonly connectionType?: ConnectionType
+
+  /**
+   * The AMI alias or SSM paths of the image to use
+   *
+   * @default - Cloud9 default AMI (currently amazonlinux-1-x86_64)
+   */
+  readonly imageId?: string;
 }
 
 /**
@@ -163,6 +170,7 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
         pathComponent: r.pathComponent,
       })) : undefined,
       connectionType: props.connectionType ?? ConnectionType.CONNECT_SSH,
+      imageId: props.imageId,
     });
     this.environmentId = c9env.ref;
     this.ec2EnvironmentArn = c9env.getAtt('Arn').toString();

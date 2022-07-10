@@ -49,6 +49,19 @@ test('create correctly with instanceType specified', () => {
   Template.fromStack(stack).resourceCountIs('AWS::Cloud9::EnvironmentEC2', 1);
 });
 
+
+test('create correctly with imageId specified', () => {
+  // WHEN
+  new cloud9.Ec2Environment(stack, 'C9Env', {
+    vpc,
+    imageId: 'ubuntu-18.04-x86_64',
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
+    ImageId: 'ubuntu-18.04-x86_64',
+  });
+});
+
 test('throw error when subnetSelection not specified and the provided VPC has no public subnets', () => {
   // WHEN
   const privateOnlyVpc = new ec2.Vpc(stack, 'PrivateOnlyVpc', {

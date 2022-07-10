@@ -63,6 +63,18 @@ const c9env = new cloud9.Ec2Environment(this, 'Cloud9Env3', {
 new CfnOutput(this, 'URL', { value: c9env.ideUrl });
 ```
 
+## Specify AMI
+
+You can specify property `imageId` if you want to launch a cloud9 environment from a specific AMI.
+
+```ts
+const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 3});
+new cloud9.Ec2Environment(this, 'Cloud9Env', { 
+  vpc,
+  imageId: 'amazonlinux-2-x86_64',
+});
+```
+
 ## Cloning Repositories
 
 Use `clonedRepositories` to clone one or multiple AWS Codecommit repositories into the environment:
