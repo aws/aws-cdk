@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.33"
         }
       },
       "aws-stepfunctions-integ": {
@@ -187,7 +187,7 @@
                           {
                             "Ref": "CheckJob5FFC1D6F"
                           },
-                          "\"}},\"TimeoutSeconds\":300}"
+                          "\",\"Parameters\":{\"input.$\":\"$\",\"stringArgument\":\"inital-task\",\"numberArgument\":123,\"booleanArgument\":true,\"arrayArgument\":[\"a\",\"b\",\"c\"]}}},\"TimeoutSeconds\":300}"
                         ]
                       ]
                     }
