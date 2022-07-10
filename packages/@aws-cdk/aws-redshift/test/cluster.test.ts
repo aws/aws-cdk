@@ -422,6 +422,39 @@ test('default child returns a CfnCluster', () => {
   expect(cluster.node.defaultChild).toBeInstanceOf(CfnCluster);
 });
 
+test('elastic ip address', () => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+    },
+    vpc,
+    elasticIp: '1.3.3.7',
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+    Properties: {
+      AllowVersionUpgrade: true,
+      MasterUsername: 'admin',
+      MasterUserPassword: 'tooshort',
+      ClusterType: 'multi-node',
+      AutomatedSnapshotRetentionPeriod: 1,
+      Encrypted: true,
+      NumberOfNodes: 2,
+      NodeType: 'dc2.large',
+      DBName: 'default_db',
+      PubliclyAccessible: false,
+      ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['RedshiftSecurityGroup796D74A7', 'GroupId'] }],
+      ElasticIp: '1.3.3.7',
+    },
+    DeletionPolicy: 'Retain',
+    UpdateReplacePolicy: 'Retain',
+  });
+});
+
 function testStack() {
   const newTestStack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
   newTestStack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);

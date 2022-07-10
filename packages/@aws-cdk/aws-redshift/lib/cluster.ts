@@ -322,6 +322,13 @@ export interface ClusterProps {
    * @default false
    */
   readonly publiclyAccessible?: boolean
+
+  /**
+   * The Elastic IP (EIP) address for the cluster.
+   *
+   * @default - No Elastic IP
+   */
+  readonly elasticIp?: string
 }
 
 /**
@@ -485,6 +492,7 @@ export class Cluster extends ClusterBase {
       // Encryption
       kmsKeyId: props.encryptionKey?.keyId,
       encrypted: props.encrypted ?? true,
+      elasticIp: props.elasticIp,
     });
 
     cluster.applyRemovalPolicy(removalPolicy, {
