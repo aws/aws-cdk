@@ -95,7 +95,7 @@ export interface Ec2EnvironmentProps {
   readonly connectionType?: ConnectionType
 
   /**
-   * The AMI alias or SSM paths of the image to use
+   * The AMI alias or SSM path of the image to use
    *
    * @default - Cloud9 default AMI (currently amazonlinux-1-x86_64)
    */
