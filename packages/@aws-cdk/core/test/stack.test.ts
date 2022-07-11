@@ -919,17 +919,6 @@ describe('stack', () => {
     expect(stack.stackName).toEqual('ProdStackD5279B22');
   });
 
-  test('generated stack names exceeding 128 characters will have the longest duplicated substring removed', () => {
-    // WHEN
-    const root = new App();
-    const app = new Construct(root, 'ProdAppThisNameButItWillOnlyBeTooLongWhenCombinedWithTheStackName');
-    const stack = new Stack(app, 'ThisNameIsVeryLongButItWillOnlyBeTooLongWhenCombinedWithTheAppNameStack');
-
-    // THEN
-    expect(stack.stackName.length).toEqual(103);
-    expect(stack.stackName).toEqual('ProdAppThisNameStackNameThisNameIsVeryLongButItWillOnlyBeTooLongWhenCombinedWithTheAppNameStack845473AA');
-  });
-
   test('generated stack names will not exceed 128 characters, even after the longest duplicated substring has been removed', () => {
     // WHEN
     const root = new App();
@@ -938,7 +927,7 @@ describe('stack', () => {
 
     // THEN
     expect(stack.stackName.length).toEqual(128);
-    expect(stack.stackName).toEqual('ProdAppThisNameButItWillOnlyBeTooLongWhenCombinedWithTheStackNamezThisNameIsVeryLongButItWillOnlyBeTooLongWhenCombinedWi864CC1D3');
+    expect(stack.stackName).toEqual('ProdAppThisNameButItWillOnlyBeTooLongWhenCombinedWithTheStaceryLongButItWillOnlyBeTooLongWhenCombinedWithTheAppNameStack864CC1D3');
   });
 
   test('stack construct id does not go through stack name validation if there is an explicit stack name', () => {
