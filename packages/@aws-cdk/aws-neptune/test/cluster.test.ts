@@ -118,6 +118,29 @@ describe('DatabaseCluster', () => {
     });
   });
 
+  test.each([
+    ['1.1.1.0', EngineVersion.V1_1_1_0],
+  ])('can create a cluster for engine version %s', (expected, version) => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      engineVersion: version,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
+      EngineVersion: expected,
+      DBSubnetGroupName: { Ref: 'DatabaseSubnets3C9252C9' },
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+    });
+  });
+
+
   test('can create a cluster with imported vpc and security group', () => {
     // GIVEN
     const stack = testStack();
