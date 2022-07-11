@@ -8,13 +8,13 @@ import { Construct } from 'constructs';
 export interface KubectlLayerProps {
   /**
    * Kubectl Version which is actually a version of k8s the EKS cluster is running.
-   * @default 1.20.0
+   * @default 1.20.15
    */
   readonly kubectlVersion?: string;
 
   /**
    * Helm Charts version
-   * @default 3.8.2
+   * @default 3.9.0
    */
   readonly helmVersion?: string;
 }
@@ -27,8 +27,8 @@ export class KubectlLayer extends lambda.LayerVersion {
     super(scope, id, {
       code: lambda.Code.fromDockerBuild(path.join(__dirname, '..', 'layer'), {
         buildArgs: {
-          KUBECTL_VERSION: props?.kubectlVersion ?? '1.20.0',
-          HELM_VERSION: props?.helmVersion ?? '3.8.2',
+          KUBECTL_VERSION: props?.kubectlVersion ?? '1.20.15',
+          HELM_VERSION: props?.helmVersion ?? '3.9.0',
         },
       }),
       description: '/opt/kubectl/kubectl and /opt/helm/helm',

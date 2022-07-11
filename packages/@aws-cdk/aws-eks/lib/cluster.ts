@@ -823,7 +823,7 @@ export class KubernetesVersion {
   /**
    * Kubernetes version 1.22
    */
-   public static readonly V1_22 = KubernetesVersion.of('1.22');
+  public static readonly V1_22 = KubernetesVersion.of('1.22');
 
   /**
    * Custom cluster version
@@ -2059,7 +2059,6 @@ class ImportedCluster extends ClusterBase {
   public readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly prune: boolean;
   public readonly version: KubernetesVersion;
-  
 
   // so that `clusterSecurityGroup` on `ICluster` can be configured without optionality, avoiding users from having
   // to null check on an instance of `Cluster`, which will always have this configured.

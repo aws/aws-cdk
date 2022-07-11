@@ -701,7 +701,7 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
       Config: {
         roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
-        version: '1.21',
+        version: '1.22',
         resourcesVpcConfig: {
           securityGroupIds: [{ 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] }],
           subnetIds: [
@@ -1910,7 +1910,7 @@ describe('cluster', () => {
         Config: {
           name: 'my-cluster-name',
           roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
-          version: '1.21',
+          version: '1.22',
           resourcesVpcConfig: {
             securityGroupIds: [
               { 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] },
