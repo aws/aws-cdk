@@ -1315,7 +1315,7 @@ export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConst
  */
 function makeStackName(components: string[], maxLength?: number) {
   if (components.length === 1) { return components[0]; }
-  return makeUniqueId(components, maxLength);
+  return makeUniqueResourceName(components, { maxLength: maxLength });
 }
 
 function getCreateExportsScope(stack: Stack) {
@@ -1388,4 +1388,5 @@ import { Token, Tokenization } from './token';
 import { referenceNestedStackValueInParent } from './private/refs';
 import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { deployTimeLookup } from './private/region-lookup';
+import { makeUniqueResourceName } from './private/unique-resource-name';
 
