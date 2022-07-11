@@ -1,7 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { ArnFormat, Names, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, FeatureFlags, Names, Stack, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { SubscriptionProps } from './subscription';
 
@@ -55,6 +56,9 @@ export class SqsSubscription implements sns.ITopicSubscription {
         resources: ['*'],
         actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
         principals: [snsServicePrincipal],
+        conditions: FeatureFlags.of(topic).isEnabled(cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY)
+          ? { ArnEquals: { 'aws:SourceArn': topic.topicArn } }
+          : undefined,
       }));
     }
 
