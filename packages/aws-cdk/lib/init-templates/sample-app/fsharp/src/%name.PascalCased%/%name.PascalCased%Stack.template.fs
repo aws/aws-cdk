@@ -11,4 +11,4 @@ type %name.PascalCased%Stack(scope, id, props) as this =
     let queue = Queue(this, "%name.PascalCased%Queue", QueueProps(VisibilityTimeout = Duration.Seconds(300.)))
 
     let topic = Topic(this, "%name.PascalCased%Topic")
-    topic.AddSubscription(SqsSubscription(queue)) |> ignore
+    ignore topic.AddSubscription(SqsSubscription(queue))
