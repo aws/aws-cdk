@@ -324,8 +324,13 @@ export interface ClusterProps {
   readonly publiclyAccessible?: boolean
 
   /**
-   * A boolean value indicating whether the resize operation is using the classic resize process.
-   * If you don't provide this parameter or set the value to false, the resize type is elastic.
+   * If this flag is set, the cluster resizing type will be set to classic.
+   * When resizing a cluster, classic resizing will always provision a new cluster and transfer the data there.
+   *
+   * Classic resize takes more time to complete, but it can be useful in cases where the change in node count or
+   * the node type to migrate to doesn't fall within the bounds for elastic resize.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-operations.html#elastic-resize
    *
    * @default - Elastic resize type
    */
