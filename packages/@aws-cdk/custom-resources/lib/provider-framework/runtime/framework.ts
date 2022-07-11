@@ -13,6 +13,14 @@ export = {
   [consts.FRAMEWORK_ON_TIMEOUT_HANDLER_NAME]: onTimeout,
 };
 
+const DEFAULT_DELAY = 10_000;
+const MAX_TOTAL_DELAY = 620_000;
+
+interface RetryOptions {
+  delay: number,
+  totalDelay: number,
+}
+
 /**
  * The main runtime entrypoint of the async custom resource lambda function.
  *
@@ -96,7 +104,7 @@ async function onTimeout(timeoutEvent: any) {
   });
 }
 
-async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnEnv: string, sanitizedPayload: A) {
+async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnEnv: string, sanitizedPayload: A, retryOptions?: RetryOptions): Promise<any> {
   const functionArn = getEnv(functionArnEnv);
   log(`executing user function ${functionArn} with payload`, sanitizedPayload);
 
@@ -112,6 +120,23 @@ async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnE
 
   const jsonPayload = parseJsonPayload(resp.Payload);
   if (resp.FunctionError) {
+    if (resp.FunctionError.includes('Lambda is initializing your function')) {
+      const newDelay = retryOptions ? retryOptions.delay * 2 : DEFAULT_DELAY;
+      const newTotalDelay = (retryOptions ? retryOptions.totalDelay : 0) + newDelay;
+
+      // don't spend more than 10 minutes and some change waiting
+      if (newTotalDelay <= MAX_TOTAL_DELAY) {
+        const newRetryOptions = {
+          delay: newDelay,
+          totalDelay: newTotalDelay,
+        };
+
+        log('user function is still being initialized by Lambda, retrying with delay of: ', newDelay);
+
+        return setTimeout(invokeUserFunction, newDelay, functionArnEnv, sanitizedPayload, newRetryOptions);
+      }
+    }
+
     log('user function threw an error:', resp.FunctionError);
 
     const errorMessage = jsonPayload.errorMessage || 'error';
