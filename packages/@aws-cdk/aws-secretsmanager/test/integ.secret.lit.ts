@@ -1,7 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { SecretValue } from '@aws-cdk/core';
-import { IntegTest } from '@aws-cdk/integ-tests';
 import * as secretsmanager from '../lib';
 
 class SecretsManagerStack extends cdk.Stack {
@@ -53,9 +52,6 @@ class SecretsManagerStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-const stack = new SecretsManagerStack(app, 'Integ-SecretsManager-Secret');
+new SecretsManagerStack(app, 'Integ-SecretsManager-Secret');
 
-new IntegTest(app, 'SecretTest', {
-  testCases: [stack],
-});
 app.synth();
