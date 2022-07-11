@@ -75,10 +75,10 @@ export class SecretValue extends Intrinsic {
    * secret values.
    *
    * @example
-   * declare const ref: CustomResource;
+   * declare const secret: SecretValue;
    * const jsonSecret = {
    *   username: SecretValue.unsafePlainText('myUsername'),
-   *   password: ref.getAtt('password'),
+   *   password: secret,
    * };
    */
   public static unsafePlainText(secret: string): SecretValue {
