@@ -119,7 +119,7 @@ async function invokeUserFunction(functionArnEnv: string, payload: any, retryOpt
   if (resp.FunctionError) {
     if (resp.FunctionError.includes('Lambda is initializing your function')) {
       const newDelay = retryOptions ? retryOptions.delay * 2 : DEFAULT_DELAY;
-      const newTotalDelay = retryOptions ? retryOptions.totalDelay : 0 + newDelay;
+      const newTotalDelay = (retryOptions ? retryOptions.totalDelay : 0) + newDelay;
 
       // don't spend more than 10 minutes and some change waiting
       if (newTotalDelay <= MAX_TOTAL_DELAY) {
