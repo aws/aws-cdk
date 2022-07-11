@@ -1134,7 +1134,7 @@ export class Stack extends Construct implements ITaggable {
   private generateStackName() {
     const assembly = Stage.of(this);
     const prefix = (assembly && assembly.stageName) ? `${assembly.stageName}-` : '';
-    return `${prefix}${this.generateStackId(assembly, 128 - prefix.length)}`;
+    return `${prefix}${this.generateStackId(assembly)}`;
   }
 
   /**
@@ -1149,7 +1149,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Generate an ID with respect to the given container construct.
    */
-  private generateStackId(container: IConstruct | undefined, maxLength?: number) {
+  private generateStackId(container: IConstruct | undefined) {
     const rootPath = rootPathTo(this, container);
     const ids = rootPath.map(c => Node.of(c).id);
 
@@ -1159,7 +1159,7 @@ export class Stack extends Construct implements ITaggable {
       throw new Error('unexpected: stack id must always be defined');
     }
 
-    return makeStackName(ids, maxLength);
+    return makeStackName(ids);
   }
 
   /**
@@ -1313,9 +1313,9 @@ export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConst
  * has only one component. Otherwise we fall back to the regular "makeUniqueId"
  * behavior.
  */
-function makeStackName(components: string[], maxLength?: number) {
+function makeStackName(components: string[]) {
   if (components.length === 1) { return components[0]; }
-  return makeUniqueResourceName(components, { maxLength: maxLength });
+  return makeUniqueResourceName(components, { maxLength: 128 });
 }
 
 function getCreateExportsScope(stack: Stack) {
