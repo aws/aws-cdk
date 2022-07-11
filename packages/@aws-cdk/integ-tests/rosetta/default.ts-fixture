@@ -11,6 +11,7 @@ import {
   AssertionType,
   LambdaInvokeFunction,
   Match,
+  AssertionsProvider,
 } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import {

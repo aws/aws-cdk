@@ -76,6 +76,7 @@ export class PolicyDocument implements cdk.IResolvable {
   }
 
   public resolve(context: cdk.IResolveContext): any {
+    this.freezeStatements();
     this._maybeMergeStatements(context.scope);
 
     // In the previous implementation of 'merge', sorting of actions/resources on
@@ -189,7 +190,7 @@ export class PolicyDocument implements cdk.IResolvable {
    */
   public _maybeMergeStatements(scope: IConstruct): void {
     if (this.shouldMerge(scope)) {
-      const result = mergeStatements(scope, this.statements, false);
+      const result = mergeStatements(this.statements, { scope });
       this.statements.splice(0, this.statements.length, ...result.mergedStatements);
     }
   }
@@ -212,12 +213,19 @@ export class PolicyDocument implements cdk.IResolvable {
     const newDocs: PolicyDocument[] = [];
 
     // Maps final statements to original statements
+    this.freezeStatements();
     let statementsToOriginals = new Map(this.statements.map(s => [s, [s]]));
-    if (this.shouldMerge(scope)) {
-      const result = mergeStatements(scope, this.statements, true);
-      this.statements.splice(0, this.statements.length, ...result.mergedStatements);
-      statementsToOriginals = result.originsMap;
-    }
+
+    // We always run 'mergeStatements' to minimize the policy before splitting.
+    // However, we only 'merge' when the feature flag is on. If the flag is not
+    // on, we only combine statements that are *exactly* the same. We must do
+    // this before splitting, otherwise we may end up with the statement set [X,
+    // X, X, X, X] being split off into [[X, X, X], [X, X]] before being reduced
+    // to [[X], [X]] (but should have been just [[X]]).
+    const doActualMerging = this.shouldMerge(scope);
+    const result = mergeStatements(this.statements, { scope, limitSize: true, mergeIfCombinable: doActualMerging });
+    this.statements.splice(0, this.statements.length, ...result.mergedStatements);
+    statementsToOriginals = result.originsMap;
 
     const sizeOptions = deriveEstimateSizeOptions(scope);
 
@@ -291,5 +299,14 @@ export class PolicyDocument implements cdk.IResolvable {
 
   private shouldMerge(scope: IConstruct) {
     return this.minimize ?? cdk.FeatureFlags.of(scope).isEnabled(cxapi.IAM_MINIMIZE_POLICIES) ?? false;
+  }
+
+  /**
+   * Freeze all statements
+   */
+  private freezeStatements() {
+    for (const statement of this.statements) {
+      statement.freeze();
+    }
   }
 }
