@@ -88,6 +88,27 @@ describe('staging', () => {
     expect(staging.isArchive).toEqual(true);
   });
 
+  test('staging of an archive with multiple extension name correctly sets packaging and isArchive', () => {
+    // GIVEN
+    const stack = new Stack();
+    const sourcePathTarGz = path.join(__dirname, 'archive', 'artifact.da.vinci.monalisa.tar.gz');
+    const sourcePathTgz = path.join(__dirname, 'archive', 'artifact.tgz');
+    const sourcePathTar = path.join(__dirname, 'archive', 'artifact.tar');
+
+    // WHEN
+    const stagingTarGz = new AssetStaging(stack, 's1', { sourcePath: sourcePathTarGz });
+    const stagingTgz = new AssetStaging(stack, 's2', { sourcePath: sourcePathTgz });
+    const stagingTar = new AssetStaging(stack, 's3', { sourcePath: sourcePathTar });
+
+    expect(stagingTarGz.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(stagingTarGz.isArchive).toEqual(true);
+    expect(stagingTgz.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(stagingTgz.isArchive).toEqual(true);
+    expect(stagingTar.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(stagingTar.isArchive).toEqual(true);
+
+  });
+
   test('asset packaging type is correct when staging is skipped because of memory cache', () => {
     // GIVEN
     const stack = new Stack();
@@ -1017,7 +1038,7 @@ describe('staging', () => {
         command: [DockerStubCommand.MULTIPLE_FILES],
         outputType: BundlingOutput.ARCHIVED,
       },
-    })).toThrow(/Bundling output directory is expected to include only a single .zip or .jar file when `output` is set to `ARCHIVED`/);
+    })).toThrow(/Bundling output directory is expected to include only a single archive file when `output` is set to `ARCHIVED`/);
   });
 });
 

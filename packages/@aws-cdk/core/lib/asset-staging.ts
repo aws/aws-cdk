@@ -12,7 +12,7 @@ import { Cache } from './private/cache';
 import { Stack } from './stack';
 import { Stage } from './stage';
 
-const ARCHIVE_EXTENSIONS = ['.tar.gz', '.zip', '.jar'];
+const ARCHIVE_EXTENSIONS = ['.tar.gz', '.zip', '.jar', '.tar', '.tgz'];
 
 /**
  * A previously staged asset
@@ -282,7 +282,7 @@ export class AssetStaging extends Construct {
       assetHash,
       stagedPath,
       packaging: this.sourceStats.isDirectory() ? FileAssetPackaging.ZIP_DIRECTORY : FileAssetPackaging.FILE,
-      isArchive: this.sourceStats.isDirectory() || ARCHIVE_EXTENSIONS.includes(path.extname(this.sourcePath).toLowerCase()),
+      isArchive: this.sourceStats.isDirectory() || ARCHIVE_EXTENSIONS.includes(getExtension(this.sourcePath).toLowerCase()),
     };
   }
 
@@ -576,7 +576,7 @@ function singleArchiveFile(directory: string): string | undefined {
   const content = fs.readdirSync(directory);
   if (content.length === 1) {
     const file = path.join(directory, content[0]);
-    const extension = path.extname(content[0]).toLowerCase();
+    const extension = getExtension(content[0]).toLowerCase();
     if (fs.statSync(file).isFile() && ARCHIVE_EXTENSIONS.includes(extension)) {
       return file;
     }
@@ -609,9 +609,9 @@ function determineBundledAsset(bundleDir: string, outputType: BundlingOutput): B
       return { path: bundleDir, packaging: FileAssetPackaging.ZIP_DIRECTORY };
     case BundlingOutput.ARCHIVED:
       if (!archiveFile) {
-        throw new Error('Bundling output directory is expected to include only a single .zip or .jar file when `output` is set to `ARCHIVED`');
+        throw new Error('Bundling output directory is expected to include only a single archive file when `output` is set to `ARCHIVED`');
       }
-      return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: path.extname(archiveFile) };
+      return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: getExtension(archiveFile) };
   }
 }
 
