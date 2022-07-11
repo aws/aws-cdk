@@ -87,7 +87,9 @@ export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalan
   readonly platformVersion?: FargatePlatformVersion;
 
   /**
-   * The health check command and associated configuration parameters for the container.
+   * The health check settings to use when evaluating the health of your EC2 instances.
+   * It is used for determining if a service is healthy and consists at least of an array of commands
+   * which are run when a health check is triggered.
    *
    * @default - Health check configuration from container.
    */
