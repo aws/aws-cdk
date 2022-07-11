@@ -919,7 +919,7 @@ describe('stack', () => {
     expect(stack.stackName).toEqual('ProdStackD5279B22');
   });
 
-  test('generated stack names will not exceed 128 characters, even after the longest duplicated substring has been removed', () => {
+  test('generated stack names will not exceed 128 characters', () => {
     // WHEN
     const root = new App();
     const app = new Construct(root, 'ProdAppThisNameButItWillOnlyBeTooLongWhenCombinedWithTheStackName' + 'z'.repeat(60));
