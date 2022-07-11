@@ -68,7 +68,18 @@ export class SecretValue extends Intrinsic {
    * will be visible to anyone who has access to the CloudFormation template
    * (via the AWS Console, SDKs, or CLI).
    *
-   * The only reasonable use case for using this method is when you are testing.
+   * The primary use case for using this method is when you are testing.
+   *
+   * The other use case where this is appropriate is when constructing a JSON secret.
+   * For example, a JSON secret might have multiple fields where only some are actual
+   * secret values.
+   *
+   * @example
+   * declare const ref: CustomResource;
+   * const jsonSecret = {
+   *   username: SecretValue.unsafePlainText('myUsername'),
+   *   password: ref.getAtt('password'),
+   * };
    */
   public static unsafePlainText(secret: string): SecretValue {
     return new SecretValue(secret);

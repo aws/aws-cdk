@@ -1,5 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { SecretValue } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as secretsmanager from '../lib';
 
 class SecretsManagerStack extends cdk.Stack {
@@ -37,10 +39,23 @@ class SecretsManagerStack extends cdk.Stack {
     new secretsmanager.Secret(this, 'PredefinedSecret', {
       secretStringValue: accessKey.secretAccessKey,
     });
+
+    // JSON secret
+    new secretsmanager.Secret(this, 'JSONSecret', {
+      secretObjectValue: {
+        username: SecretValue.unsafePlainText(user.userName),
+        database: SecretValue.unsafePlainText('foo'),
+        password: accessKey.secretAccessKey,
+      },
+    });
     /// !hide
   }
 }
 
 const app = new cdk.App();
-new SecretsManagerStack(app, 'Integ-SecretsManager-Secret');
+const stack = new SecretsManagerStack(app, 'Integ-SecretsManager-Secret');
+
+new IntegTest(app, 'SecretTest', {
+  testCases: [stack],
+});
 app.synth();
