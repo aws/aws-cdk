@@ -119,8 +119,7 @@ The alternative would be to use the `BEST_FIT_PROGRESSIVE` strategy in order for
 
 Simply define your Launch Template:
 
-```text
-// This example is only available in TypeScript
+```ts
 const myLaunchTemplate = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
   launchTemplateName: 'extra-storage-template',
   launchTemplateData: {
@@ -138,7 +137,7 @@ const myLaunchTemplate = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
 });
 ```
 
-and use it:
+And provide `launchTemplateName`:
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -148,6 +147,23 @@ const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
   computeResources: {
     launchTemplate: {
       launchTemplateName: myLaunchTemplate.launchTemplateName as string, //or simply use an existing template name
+    },
+    vpc,
+  },
+  computeEnvironmentName: 'MyStorageCapableComputeEnvironment',
+});
+```
+
+Or provide `launchTemplateId` instead:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const myLaunchTemplate: ec2.CfnLaunchTemplate;
+
+const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
+  computeResources: {
+    launchTemplate: {
+      launchTemplateId: myLaunchTemplate.ref as string,
     },
     vpc,
   },
