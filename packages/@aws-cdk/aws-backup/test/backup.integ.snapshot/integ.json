@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-backup/test/integ.backup": {
+    "integ.backup": {
       "stacks": [
         "cdk-backup"
       ],
