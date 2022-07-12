@@ -180,7 +180,7 @@ export interface TableProps {
    *
    * @default - The parameter is not defined
    */
-  readonly enablePartitionFiltering?: boolean
+  readonly enablePartitionFiltering?: boolean;
 }
 
 /**
