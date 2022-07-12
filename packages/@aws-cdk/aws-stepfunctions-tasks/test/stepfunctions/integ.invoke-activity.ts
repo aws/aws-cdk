@@ -48,6 +48,7 @@ class InvokeActivityStack extends cdk.Stack {
         'numberArgument': 123,
         'booleanArgument': true,
         'arrayArgument': ['a', 'b', 'c'],
+        'jsonPath': sfn.JsonPath.stringAt('$.status'),
       },
     });
 
