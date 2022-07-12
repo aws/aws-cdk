@@ -5,7 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import { ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { RetentionDays } from './log-group';
-import { LogDeletionPolicy } from './log-deletion-policy';
+//import { LogDeletionPolicy } from './log-deletion-policy';
 
 /**
  * Construction properties for a LogRetention.
@@ -41,11 +41,26 @@ export interface LogRetentionProps {
    */
   readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
 
-    /**
+  /**
    * The deletionPolicy the LogRetention uses on log
    * @default LogDeletionPolicy.RETAINLOG
    */
-     readonly logDeletionPolicy?: LogDeletionPolicy;
+  readonly logDeletionPolicy?: LogDeletionPolicy;
+}
+
+/**
+ * LogDeletionPolicy for the log group when the stack is deleted
+ */
+export enum LogDeletionPolicy {
+  /**
+   * This is the default log deletion policy. It means that when the resource is
+   * removed from the app, the log will retain.
+   */
+  RETAINLOG = 'retainLog',
+  /**
+   * This uses the 'destroyLog' DeletionPolicy, which will destroy the log when the stack is deleted.
+   */
+  DESTROYLOG = 'destroyLog',
 }
 
 /**

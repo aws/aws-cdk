@@ -157,12 +157,12 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     }
 
     //if the requestType is delete, then delete the log group created by the logRetention
-    if (event.RequestType == 'Delete'){
+    if (event.RequestType == 'Delete') {
       //if the removal policy is delete, then delete the log group
-      if(logDeletionPolicy=='destroyLog'){
+      if (logDeletionPolicy=='destroyLog') {
         await deleteLogGroup(logGroupName, logGroupRegion, retryOptions);
       }
-      //else retain the log group      
+      //else retain the log group
     }
 
     await respond('SUCCESS', 'OK', logGroupName);
