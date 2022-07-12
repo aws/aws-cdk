@@ -42,6 +42,14 @@ class InvokeActivityStack extends cdk.Stack {
     const finalStatus = new tasks.StepFunctionsInvokeActivity(this, 'Get Final Job Status', {
       activity: checkJobActivity,
       inputPath: '$.guid',
+      parameters: {
+        'input.$': '$',
+        'stringArgument': 'inital-task',
+        'numberArgument': 123,
+        'booleanArgument': true,
+        'arrayArgument': ['a', 'b', 'c'],
+        'jsonPath': sfn.JsonPath.stringAt('$.status'),
+      },
     });
 
     const chain = sfn.Chain
