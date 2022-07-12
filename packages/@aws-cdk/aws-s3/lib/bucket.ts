@@ -1550,6 +1550,14 @@ export interface Tag {
  *
  * This bucket does not yet have all features that exposed by the underlying
  * BucketResource.
+ *
+ * @example
+ *
+ *    new s3.Bucket(this, 'Bucket', {
+ *      bucketName: 'my-bucket-name',
+ *      // ...
+ *    })
+ *
  */
 export class Bucket extends BucketBase {
 
