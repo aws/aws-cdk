@@ -187,7 +187,7 @@
                           {
                             "Ref": "CheckJob5FFC1D6F"
                           },
-                          "\",\"Parameters\":{\"input.$\":\"$\",\"stringArgument\":\"inital-task\",\"numberArgument\":123,\"booleanArgument\":true,\"arrayArgument\":[\"a\",\"b\",\"c\"]}}},\"TimeoutSeconds\":300}"
+                          "\",\"Parameters\":{\"input.$\":\"$\",\"stringArgument\":\"inital-task\",\"numberArgument\":123,\"booleanArgument\":true,\"arrayArgument\":[\"a\",\"b\",\"c\"],\"jsonPath.$\":\"$.status\"}}},\"TimeoutSeconds\":300}"
                         ]
                       ]
                     }
