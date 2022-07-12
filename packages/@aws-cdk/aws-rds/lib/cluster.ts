@@ -289,7 +289,7 @@ export enum InstanceUpdateBehaviour {
   /**
    * In a bulk update, all instances of the cluster are updated at the same time.
    * This results in a faster update procedure.
-   * During the update, however , all instances might be unavailable at the same time and thus a downtime might occur.
+   * During the update, however, all instances might be unavailable at the same time and thus a downtime might occur.
    */
   BULK = 'BULK',
 
