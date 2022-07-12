@@ -23,7 +23,6 @@ import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
 import { displayNotices, refreshNotices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
-import { validateTags } from './util/tags';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492
@@ -435,7 +434,7 @@ async function initCommandLine() {
           force: argv.force,
           toolkitStackName: toolkitStackName,
           execute: args.execute,
-          tags: validateTags(configuration.settings.get(['tags'])),
+          tags: configuration.settings.get(['tags']),
           terminationProtection: args.terminationProtection,
           parameters: {
             bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
@@ -465,7 +464,7 @@ async function initCommandLine() {
           notificationArns: args.notificationArns,
           requireApproval: configuration.settings.get(['requireApproval']),
           reuseAssets: args['build-exclude'],
-          tags: validateTags(configuration.settings.get(['tags'])),
+          tags: configuration.settings.get(['tags']),
           execute: args.execute,
           changeSetName: args.changeSetName,
           force: args.force,
