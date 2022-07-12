@@ -333,6 +333,8 @@ new batch.JobDefinition(this, 'batch-job-def-secrets', {
 });
 ```
 
+Note that the AWS_ACCOUNT and AWS_REGION environment variables are always available to JobDefiniton constructs, unless you device to overwrite them.
+
 ### Importing an existing Job Definition
 
 #### From ARN
