@@ -42,6 +42,13 @@ interface DatabaseClusterBaseProps {
   readonly instanceProps: InstanceProps;
 
   /**
+   * The ordering of updates for instances
+   *
+   * @default InstanceUpdateBehaviour.BULK
+   */
+  readonly instanceUpdateBehaviour?: InstanceUpdateBehaviour;
+
+  /**
    * The number of seconds to set a cluster's target backtrack window to.
    * This feature is only supported by the Aurora MySQL database engine and
    * cannot be enabled on existing clusters.
@@ -273,6 +280,25 @@ interface DatabaseClusterBaseProps {
    * @default - true
    */
   readonly copyTagsToSnapshot?: boolean;
+}
+
+/**
+ * The orchestration of updates of multiple instances
+ */
+export enum InstanceUpdateBehaviour {
+  /**
+   * In a bulk update, all instances of the cluster are updated at the same time.
+   * This results in a faster update procedure.
+   * During the update, however, all instances might be unavailable at the same time and thus a downtime might occur.
+   */
+  BULK = 'BULK',
+
+  /**
+   * In a rolling update, one instance after another is updated.
+   * This results in at most one instance being unavailable during the update.
+   * If your cluster consists of more than 1 instance, the downtime periods are limited to the time a primary switch needs.
+   */
+  ROLLING = 'ROLLING'
 }
 
 /**
@@ -805,6 +831,7 @@ interface InstanceConfig {
  */
 function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBaseProps, subnetGroup: ISubnetGroup): InstanceConfig {
   const instanceCount = props.instances != null ? props.instances : 2;
+  const instanceUpdateBehaviour = props.instanceUpdateBehaviour ?? InstanceUpdateBehaviour.BULK;
   if (Token.isUnresolved(instanceCount)) {
     throw new Error('The number of instances an RDS Cluster consists of cannot be provided as a deploy-time only value!');
   }
@@ -852,6 +879,8 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
   );
   const instanceParameterGroupConfig = instanceParameterGroup?.bindToInstance({});
 
+  const instances: CfnDBInstance[] = [];
+
   for (let i = 0; i < instanceCount; i++) {
     const instanceIndex = i + 1;
     const instanceIdentifier = props.instanceIdentifierBase != null ? `${props.instanceIdentifierBase}${instanceIndex}` :
@@ -895,6 +924,14 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
 
     instanceIdentifiers.push(instance.ref);
     instanceEndpoints.push(new Endpoint(instance.attrEndpointAddress, portAttribute));
+    instances.push(instance);
+  }
+
+  // Adding dependencies here to ensure that the instances are updated one after the other.
+  if (instanceUpdateBehaviour === InstanceUpdateBehaviour.ROLLING) {
+    for (let i = 1; i < instanceCount; i++) {
+      instances[i].node.addDependency(instances[i-1]);
+    }
   }
 
   return { instanceEndpoints, instanceIdentifiers };
