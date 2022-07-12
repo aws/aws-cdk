@@ -5,6 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import { ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { RetentionDays } from './log-group';
+import { LogDeletionPolicy } from './log-deletion-policy';
 
 /**
  * Construction properties for a LogRetention.
@@ -39,6 +40,12 @@ export interface LogRetentionProps {
    * @default - AWS SDK default retry options
    */
   readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
+
+    /**
+   * The deletionPolicy the LogRetention uses on log
+   * @default LogDeletionPolicy.RETAINLOG
+   */
+     readonly logDeletionPolicy?: LogDeletionPolicy;
 }
 
 /**
@@ -93,6 +100,7 @@ export class LogRetention extends Construct {
           base: retryOptions.base?.toMilliseconds(),
         } : undefined,
         RetentionInDays: props.retention === RetentionDays.INFINITE ? undefined : props.retention,
+        LogDeletionPolicy: props.logDeletionPolicy ? props.logDeletionPolicy : LogDeletionPolicy.RETAINLOG,
       },
     });
 

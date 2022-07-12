@@ -51,6 +51,35 @@ async function createLogGroupSafe(logGroupName: string, region?: string, options
   } while (true); // exit happens on retry count check
 }
 
+//delete a log group
+async function deleteLogGroup(logGroupName: string, region?: string, options?: SdkRetryOptions) {
+  let retryCount = options?.maxRetries == undefined ? 10 : options.maxRetries;
+  const delay = options?.retryOptions?.base == undefined ? 10 : options.retryOptions.base;
+  do {
+    try {
+      const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
+      await cloudwatchlogs.deleteLogGroup({ logGroupName }).promise();
+      return;
+    } catch (error) {
+      if (error.code === 'ResourceNotFoundException') {
+        // The log group doesn't exist
+        return;
+      }
+      if (error.code === 'OperationAbortedException') {
+        if (retryCount > 0) {
+          retryCount--;
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        } else {
+          // The log group is still being deleted by another execution but we are out of retries
+          throw new Error('Out of attempts to delete a logGroup');
+        }
+      }
+      throw error;
+    }
+  } while (true); // exit happens on retry count check
+}
+
 /**
  * Puts or deletes a retention policy on a log group.
  *
@@ -105,6 +134,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     // Parse to AWS SDK retry options
     const retryOptions = parseRetryOptions(event.ResourceProperties.SdkRetry);
 
+    //The deletion policy of log after the stack is deleted
+    const logDeletionPolicy = event.ResourceProperties.LogDeletionPolicy;
+
     if (event.RequestType === 'Create' || event.RequestType === 'Update') {
       // Act on the target log group
       await createLogGroupSafe(logGroupName, logGroupRegion, retryOptions);
@@ -122,6 +154,15 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         // the next line.
         await setRetentionPolicy(`/aws/lambda/${context.functionName}`, region, retryOptions, 1);
       }
+    }
+
+    //if the requestType is delete, then delete the log group created by the logRetention
+    if (event.RequestType == 'Delete'){
+      //if the removal policy is delete, then delete the log group
+      if(logDeletionPolicy=='destroyLog'){
+        await deleteLogGroup(logGroupName, logGroupRegion, retryOptions);
+      }
+      //else retain the log group      
     }
 
     await respond('SUCCESS', 'OK', logGroupName);
