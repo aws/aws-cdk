@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -67,6 +67,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyEncryptedTable981A88C6"
+          }
+        ],
+        "/aws-cdk-glue/MyPartitionFilteredTable/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPartitionFilteredTableBucket6ACAA137"
+          }
+        ],
+        "/aws-cdk-glue/MyPartitionFilteredTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPartitionFilteredTable324BA27A"
           }
         ],
         "/aws-cdk-glue/MyUser/Resource": [

@@ -87,6 +87,14 @@ const encryptedTable = new glue.Table(stack, 'MyEncryptedTable', {
   encryptionKey: new kms.Key(stack, 'MyKey'),
 });
 
+new glue.Table(stack, 'MyPartitionFilteredTable', {
+  database,
+  tableName: 'partition_filtered_table',
+  columns,
+  dataFormat: glue.DataFormat.JSON,
+  enablePartitionFiltering: true,
+});
+
 const user = new iam.User(stack, 'MyUser');
 csvTable.grantReadWrite(user);
 encryptedTable.grantReadWrite(user);
