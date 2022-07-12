@@ -31,9 +31,16 @@
 export const ENABLE_STACK_NAME_DUPLICATES_CONTEXT = '@aws-cdk/core:enableStackNameDuplicates';
 
 /**
- * IF this is set, `cdk diff` will always exit with 0.
+ * Determines what status code `cdk diff` should return when the specified stack
+ * differs from the deployed stack or the local CloudFormation template:
  *
- * Use `cdk diff --fail` to exit with 1 if there's a diff.
+ *  * aws-cdk:enableDiffNoFail=true => status code == 0
+ *  * aws-cdk:enableDiffNoFail=false => status code == 1
+ *
+ * You can override this behavior with the --fail flag:
+ *
+ *  * --fail => status code == 1
+ *  * --no-fail => status code == 0
  */
 export const ENABLE_DIFF_NO_FAIL_CONTEXT = 'aws-cdk:enableDiffNoFail';
 /** @deprecated use `ENABLE_DIFF_NO_FAIL_CONTEXT` */

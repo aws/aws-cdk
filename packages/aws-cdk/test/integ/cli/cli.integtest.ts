@@ -518,6 +518,43 @@ integTest('cdk diff', withDefaultFixture(async (fixture) => {
     .rejects.toThrow('exited with error');
 }));
 
+integTest('enableDiffNoFail', withDefaultFixture(async (fixture) => {
+  await diffShouldSucceedWith({ fail: false, enableDiffNoFail: false });
+  await diffShouldSucceedWith({ fail: false, enableDiffNoFail: true });
+  await diffShouldFailWith({ fail: true, enableDiffNoFail: false });
+  await diffShouldFailWith({ fail: true, enableDiffNoFail: true });
+  await diffShouldFailWith({ fail: undefined, enableDiffNoFail: false });
+  await diffShouldSucceedWith({ fail: undefined, enableDiffNoFail: true });
+
+  async function diffShouldSucceedWith(props: DiffParameters) {
+    await expect(diff(props)).resolves.not.toThrowError();
+  }
+
+  async function diffShouldFailWith(props: DiffParameters) {
+    await expect(diff(props)).rejects.toThrow('exited with error');
+  }
+
+  async function diff(props: DiffParameters): Promise<string> {
+    await updateContext(props.enableDiffNoFail);
+    const flag = props.fail != null
+      ? (props.fail ? '--fail' : '--no-fail')
+      : '';
+
+    return fixture.cdk(['diff', flag, fixture.fullStackName('test-1')]);
+  }
+
+  async function updateContext(enableDiffNoFail: boolean) {
+    const cdkJson = JSON.parse(await fs.readFile(path.join(fixture.integTestDir, 'cdk.json'), 'utf8'));
+    cdkJson.context = {
+      ...cdkJson.context,
+      'aws-cdk:enableDiffNoFail': enableDiffNoFail,
+    };
+    await fs.writeFile(path.join(fixture.integTestDir, 'cdk.json'), JSON.stringify(cdkJson));
+  }
+
+  type DiffParameters = { fail?: boolean, enableDiffNoFail: boolean };
+}));
+
 integTest('cdk diff --fail on multiple stacks exits with error if any of the stacks contains a diff', withDefaultFixture(async (fixture) => {
   // GIVEN
   const diff1 = await fixture.cdk(['diff', fixture.fullStackName('test-1')]);
