@@ -566,7 +566,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
     }
     if (!environment.find((x) => x.name === 'AWS_ACCOUNT')) {
       environment.push({
-        name: 'AWS_REGION',
+        name: 'AWS_ACCOUNT',
         value: Stack.of(this).account,
       });
     }
