@@ -283,6 +283,17 @@ export const CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME = '@a
 export const S3_CREATE_DEFAULT_LOGGING_POLICY = '@aws-cdk/aws-s3:createDefaultLoggingPolicy';
 
 /**
+* Enable this feature flag to restrict the decryption of a SQS queue, which is subscribed to a SNS topic, to
+* only the topic which it is subscribed to and not the whole SNS service of an account.
+*
+* Previously the decryption was only restricted to the SNS service principal. To make the SQS subscription more
+* secure, it is a good practice to restrict the decryption further and only allow the connected SNS topic to decryption
+* the subscribed queue.
+*
+*/
+export const SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY = '@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption';
+
+/**
  * Flag values that should apply for new projects
  *
  * Add a flag in here (typically with the value `true`), to enable
@@ -313,6 +324,7 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true,
   [CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME]: true,
   [S3_CREATE_DEFAULT_LOGGING_POLICY]: true,
+  [SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true,
 };
 
 /**
