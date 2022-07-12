@@ -65,16 +65,11 @@ new rds.DatabaseClusterFromSnapshot(this, 'Database', {
 
 ### Updating the database instances in a cluster
 
-An update of the instances in a database cluster sometimes implies some interruptions.
-E.g., if you change the instance class, the corresponding instance must be restarted and is not available during that time.
-If you change all instances in a cluster, all instances might get restarted at the same time and basically making your database unavailable for some time.
-You can adapt that update behaviour with the `instanceUpdateBehaviour` property.
+Database cluster instances may be updated in bulk or on a rolling basis. 
 
-The default option, `rds.InstanceUpdateBehaviour.BULK`, does not impose any restrictions on the instance update behaviour.
-Thus, a change of instances can lead to downtime of your database cluster.
-Alternatively, you can set `instanceUpdateBehaviour` to `rds.InstanceUpdateBehaviour.ROLLING`.
-Then CDK makes sure that at most one instance at a time is being updated.
-This increases the overall update time but allows to change, e.g., the instance type of the database instances without a downtime caused by restarts of all database instances at the same time.
+An update to all instances in a cluster may cause significant downtime. To reduce the downtime, set the `instanceUpdateBehavior` property in `DatabaseClusterBaseProps` to `InstanceUpdateBehavior.ROLLING`. This adds a dependency between each instance so the update is performed on only one instance at a time.
+
+Use `InstanceUpdateBehavior.BULK` to update all instances at once.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -85,8 +80,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
     vpc,
   },
-  // optional, defaults to rds.InstanceUpdateBehaviour.BULK
-  instanceUpdateBehaviour: rds.InstanceUpdateBehaviour.ROLLING,
+  instanceUpdateBehaviour: rds.InstanceUpdateBehaviour.ROLLING, // Optional - defaults to rds.InstanceUpdateBehaviour.BULK
 });
 ```
 
