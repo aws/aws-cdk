@@ -264,7 +264,7 @@ myTable.addPartitionIndex({
 });
 ```
 
-### Partition filtering
+### Partition Filtering
 
 If you have a table with a large number of partitions that grows over time, consider using AWS Glue partition indexing and filtering.
 
