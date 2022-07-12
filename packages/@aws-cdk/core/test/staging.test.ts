@@ -22,6 +22,7 @@ const FIXTURE_TEST1_DIR = path.join(__dirname, 'fs', 'fixtures', 'test1');
 const FIXTURE_TEST1_HASH = '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00';
 const FIXTURE_TARBALL = path.join(__dirname, 'fs', 'fixtures.tar.gz');
 const NOT_ARCHIVED_ZIP_TXT_HASH = '95c924c84f5d023be4edee540cb2cb401a49f115d01ed403b288f6cb412771df';
+const ARCHIVE_TARBALL_TEST_HASH = '3e948ff54a277d6001e2452fdbc4a9ef61f916ff662ba5e05ece1e2ec6dec9f5';
 
 const userInfo = os.userInfo();
 const USER_ARG = `-u ${userInfo.uid}:${userInfo.gid}`;
@@ -92,21 +93,27 @@ describe('staging', () => {
   test('staging of an archive with multiple extension name correctly sets packaging and isArchive', () => {
     // GIVEN
     const stack = new Stack();
-    const sourcePathTarGz = path.join(__dirname, 'archive', 'artifact.da.vinci.monalisa.tar.gz');
+    const sourcePathTarGz1 = path.join(__dirname, 'archive', 'artifact.tar.gz');
+    const sourcePathTarGz2 = path.join(__dirname, 'archive', 'artifact.da.vinci.monalisa.tar.gz');
     const sourcePathTgz = path.join(__dirname, 'archive', 'artifact.tgz');
     const sourcePathTar = path.join(__dirname, 'archive', 'artifact.tar');
     const sourcePathNotArchive = path.join(__dirname, 'archive', 'artifact.zip.txt');
     const sourcePathDockerFile = path.join(__dirname, 'archive', 'DockerFile');
 
     // WHEN
-    const stagingTarGz = new AssetStaging(stack, 's1', { sourcePath: sourcePathTarGz });
-    const stagingTgz = new AssetStaging(stack, 's2', { sourcePath: sourcePathTgz });
-    const stagingTar = new AssetStaging(stack, 's3', { sourcePath: sourcePathTar });
-    const stagingNotArchive = new AssetStaging(stack, 's4', { sourcePath: sourcePathNotArchive });
-    const stagingDockerFile = new AssetStaging(stack, 's5', { sourcePath: sourcePathDockerFile });
+    const stagingTarGz1 = new AssetStaging(stack, 's1', { sourcePath: sourcePathTarGz1 });
+    const stagingTarGz2 = new AssetStaging(stack, 's2', { sourcePath: sourcePathTarGz2 });
+    const stagingTgz = new AssetStaging(stack, 's3', { sourcePath: sourcePathTgz });
+    const stagingTar = new AssetStaging(stack, 's4', { sourcePath: sourcePathTar });
+    const stagingNotArchive = new AssetStaging(stack, 's5', { sourcePath: sourcePathNotArchive });
+    const stagingDockerFile = new AssetStaging(stack, 's6', { sourcePath: sourcePathDockerFile });
 
-    expect(stagingTarGz.packaging).toEqual(FileAssetPackaging.FILE);
-    expect(stagingTarGz.isArchive).toEqual(true);
+    expect(stagingTarGz1.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(stagingTarGz1.isArchive).toEqual(true);
+    expect(stagingTarGz2.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(path.basename(stagingTarGz2.absoluteStagedPath)).toEqual(`asset.${ARCHIVE_TARBALL_TEST_HASH}.tar.gz`);
+    expect(path.basename(stagingTarGz2.relativeStagedPath(stack))).toEqual(`asset.${ARCHIVE_TARBALL_TEST_HASH}.tar.gz`);
+    expect(stagingTarGz2.isArchive).toEqual(true);
     expect(stagingTgz.packaging).toEqual(FileAssetPackaging.FILE);
     expect(stagingTgz.isArchive).toEqual(true);
     expect(stagingTar.packaging).toEqual(FileAssetPackaging.FILE);
