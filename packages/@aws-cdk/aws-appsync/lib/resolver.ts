@@ -118,7 +118,7 @@ export class Resolver extends Construct {
       requestMappingTemplate: props.requestMappingTemplate ? props.requestMappingTemplate.renderTemplate() : undefined,
       responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
       cachingConfig: this.createCachingConfig(props.cachingConfig),
-      maxBatchSize: props.maxBatchSize ? props.maxBatchSize : undefined,
+      maxBatchSize: props.maxBatchSize,
     });
     props.api.addSchemaDependency(this.resolver);
     if (props.dataSource) {
