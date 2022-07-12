@@ -1,15 +1,16 @@
 import * as path from 'path';
-import { SynthUtils } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
 import * as core from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import * as inc from '../lib';
 
 describe('CDK Include', () => {
+  let app: core.App;
   let stack: core.Stack;
 
   beforeEach(() => {
-    stack = new core.Stack();
+    app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    stack = new core.Stack(app);
   });
 
   test('throws a validation exception for a template with a missing required top-level resource property', () => {
@@ -22,7 +23,7 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'bucket-with-cors-rules-not-an-array.json');
 
     expect(() => {
-      SynthUtils.synthesize(stack);
+      app.synth();
     }).toThrow(/corsRules: "CorsRules!" should be a list/);
   });
 
@@ -30,7 +31,7 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'bucket-with-cors-rules-null-element.json');
 
     expect(() => {
-      SynthUtils.synthesize(stack);
+      app.synth();
     }).toThrow(/allowedMethods: required but missing/);
   });
 
@@ -38,7 +39,7 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'bucket-with-invalid-cors-rule.json');
 
     expect(() => {
-      SynthUtils.synthesize(stack);
+      app.synth();
     }).toThrow(/allowedOrigins: required but missing/);
   });
 
@@ -130,7 +131,7 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'alphabetical-string-passed-to-number.json');
 
     expect(() => {
-      SynthUtils.synthesize(stack);
+      app.synth();
     }).toThrow(/"abc" should be a number/);
   });
 
@@ -138,6 +139,12 @@ describe('CDK Include', () => {
     expect(() => {
       includeTestTemplate(stack, 'short-form-get-att-no-dot.yaml');
     }).toThrow(/Short-form Fn::GetAtt must contain a '.' in its string argument, got: 'Bucket1Arn'/);
+  });
+
+  test('detects a cycle between resources in the template', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'cycle-in-resources.json');
+    }).toThrow(/Found a cycle between resources in the template: Bucket1 depends on Bucket2 depends on Bucket1/);
   });
 });
 

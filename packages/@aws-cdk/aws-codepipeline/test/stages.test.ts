@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as codepipeline from '../lib';
 import { Stage } from '../lib/private/stage';
@@ -33,14 +33,12 @@ describe('stages', () => {
       }));
       // --
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           { 'Name': 'FirstStage' },
           { 'Name': 'SecondStage' },
         ],
       });
-
-
     });
 
     test('can be inserted after another Stage', () => {
@@ -72,15 +70,13 @@ describe('stages', () => {
       }));
       // --
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           { 'Name': 'FirstStage' },
           { 'Name': 'SecondStage' },
           { 'Name': 'ThirdStage' },
         ],
       });
-
-
     });
 
     test("attempting to insert a Stage before a Stage that doesn't exist results in an error", () => {
@@ -97,8 +93,6 @@ describe('stages', () => {
           },
         });
       }).toThrow(/before/i);
-
-
     });
 
     test("attempting to insert a Stage after a Stage that doesn't exist results in an error", () => {
@@ -115,8 +109,6 @@ describe('stages', () => {
           },
         });
       }).toThrow(/after/i);
-
-
     });
 
     test('providing more than one placement value results in an error', () => {
@@ -135,8 +127,6 @@ describe('stages', () => {
       // incredibly, an arrow function below causes nodeunit to crap out with:
       // "TypeError: Function has non-object prototype 'undefined' in instanceof check"
       }).toThrow(/(rightBefore.*justAfter)|(justAfter.*rightBefore)/);
-
-
     });
 
     test('can be retrieved from a pipeline after it has been created', () => {
@@ -160,8 +150,39 @@ describe('stages', () => {
         stageName: 'ThirdStage',
       }, pipeline));
       expect(pipeline.stageCount).toEqual(2);
+    });
 
+    test('can disable transitions to a stage', () => {
+      const stack = new cdk.Stack();
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
+      const firstStage = pipeline.addStage({ stageName: 'FirstStage' });
+      const secondStage = pipeline.addStage({ stageName: 'SecondStage', transitionToEnabled: false });
+
+      // -- dummy actions here are needed to satisfy validation rules
+      const sourceArtifact = new codepipeline.Artifact();
+      firstStage.addAction(new FakeSourceAction({
+        actionName: 'dummyAction',
+        output: sourceArtifact,
+      }));
+      secondStage.addAction(new FakeBuildAction({
+        actionName: 'dummyAction',
+        input: sourceArtifact,
+      }));
+      // --
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        Stages: [
+          { Name: 'FirstStage' },
+          { Name: 'SecondStage' },
+        ],
+        DisableInboundStageTransitions: [
+          {
+            Reason: 'Transition disabled',
+            StageName: 'SecondStage',
+          },
+        ],
+      });
     });
   });
 });

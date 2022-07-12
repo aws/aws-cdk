@@ -1,15 +1,16 @@
-import { ABSENT } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
-import { MachineImage } from '@aws-cdk/aws-ec2';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { AsgCapacityProvider } from '@aws-cdk/aws-ecs';
+import { MachineImage } from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
+import { AsgCapacityProvider } from '@aws-cdk/aws-ecs';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { testDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecsPatterns from '../../lib';
+
+const flags = { [cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT]: true };
 
 test('test fargate queue worker service construct - with only required props', () => {
   // GIVEN
@@ -32,12 +33,11 @@ test('test fargate queue worker service construct - with only required props', (
   });
 
   // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all default properties are set.
-  expect(stack).toHaveResource('AWS::ECS::Service', {
-    DesiredCount: 1,
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     LaunchType: 'FARGATE',
   });
 
-  expect(stack).toHaveResource('AWS::SQS::Queue', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
     RedrivePolicy: {
       deadLetterTargetArn: {
         'Fn::GetAtt': [
@@ -49,11 +49,11 @@ test('test fargate queue worker service construct - with only required props', (
     },
   });
 
-  expect(stack).toHaveResource('AWS::SQS::Queue', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
     MessageRetentionPeriod: 1209600,
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -77,9 +77,9 @@ test('test fargate queue worker service construct - with only required props', (
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         Environment: [
           {
             Name: 'QUEUE_NAME',
@@ -104,17 +104,15 @@ test('test fargate queue worker service construct - with only required props', (
           },
         },
         Image: 'test',
-      },
+      }),
     ],
     Family: 'ServiceQueueProcessingTaskDef83DB34F1',
   });
 });
 
-test('test fargate queue worker service construct - with remove default desiredCount feature flag', () => {
+testFutureBehavior('test fargate queue worker service construct - with remove default desiredCount feature flag', flags, cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
-  stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
-
+  const stack = new cdk.Stack(app);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -126,8 +124,8 @@ test('test fargate queue worker service construct - with remove default desiredC
   });
 
   // THEN - QueueWorker is of FARGATE launch type, and desiredCount is not defined on the FargateService.
-  expect(stack).toHaveResource('AWS::ECS::Service', {
-    DesiredCount: ABSENT,
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    DesiredCount: Match.absent(),
     LaunchType: 'FARGATE',
   });
 });
@@ -156,12 +154,11 @@ test('test fargate queue worker service construct - with optional props for queu
   });
 
   // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all default properties are set.
-  expect(stack).toHaveResource('AWS::ECS::Service', {
-    DesiredCount: 1,
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     LaunchType: 'FARGATE',
   });
 
-  expect(stack).toHaveResource('AWS::SQS::Queue', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
     RedrivePolicy: {
       deadLetterTargetArn: {
         'Fn::GetAtt': [
@@ -174,11 +171,11 @@ test('test fargate queue worker service construct - with optional props for queu
     VisibilityTimeout: 300,
   });
 
-  expect(stack).toHaveResource('AWS::SQS::Queue', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
     MessageRetentionPeriod: 604800,
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -202,9 +199,9 @@ test('test fargate queue worker service construct - with optional props for queu
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         Environment: [
           {
             Name: 'QUEUE_NAME',
@@ -229,9 +226,80 @@ test('test fargate queue worker service construct - with optional props for queu
           },
         },
         Image: 'test',
-      },
+      }),
     ],
     Family: 'ServiceQueueProcessingTaskDef83DB34F1',
+  });
+});
+
+test('test Fargate queue worker service construct - with ECS Exec', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    memoryLimitMiB: 512,
+    image: ecs.ContainerImage.fromRegistry('test'),
+    enableExecuteCommand: true,
+  });
+
+  // THEN
+  // ECS Exec
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'ssmmessages:CreateControlChannel',
+            'ssmmessages:CreateDataChannel',
+            'ssmmessages:OpenControlChannel',
+            'ssmmessages:OpenDataChannel',
+          ],
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: 'logs:DescribeLogGroups',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: [
+            'logs:CreateLogStream',
+            'logs:DescribeLogStreams',
+            'logs:PutLogEvents',
+          ],
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: [
+            'sqs:ReceiveMessage',
+            'sqs:ChangeMessageVisibility',
+            'sqs:GetQueueUrl',
+            'sqs:DeleteMessage',
+            'sqs:GetQueueAttributes',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': [
+              'ServiceEcsProcessingQueueC266885C',
+              'Arn',
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    PolicyName: 'ServiceQueueProcessingTaskDefTaskRoleDefaultPolicy11D50174',
+    Roles: [
+      {
+        Ref: 'ServiceQueueProcessingTaskDefTaskRoleBDE5D3C6',
+      },
+    ],
   });
 });
 
@@ -276,7 +344,7 @@ test('test Fargate queue worker service construct - without desiredCount specifi
   });
 
   // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.
-  expect(stack).toHaveResource('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DeploymentConfiguration: {
       MinimumHealthyPercent: 60,
       MaximumPercent: 150,
@@ -289,16 +357,16 @@ test('test Fargate queue worker service construct - without desiredCount specifi
     },
   });
 
-  expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
     MaxCapacity: 5,
     MinCapacity: 2,
   });
 
-  expect(stack).toHaveResource('AWS::SQS::Queue', { QueueName: 'fargate-test-sqs-queue' });
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', { QueueName: 'fargate-test-sqs-queue' });
 
-  expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         Command: [
           '-c',
           '4',
@@ -324,7 +392,7 @@ test('test Fargate queue worker service construct - without desiredCount specifi
           },
         ],
         Image: 'test',
-      },
+      }),
     ],
     Family: 'fargate-task-family',
   });
@@ -353,7 +421,6 @@ testDeprecated('test Fargate queue worker service construct - with optional prop
     image: ecs.ContainerImage.fromRegistry('test'),
     command: ['-c', '4', 'amazon.com'],
     enableLogging: false,
-    desiredTaskCount: 2,
     environment: {
       TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
       TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
@@ -369,8 +436,7 @@ testDeprecated('test Fargate queue worker service construct - with optional prop
   });
 
   // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.
-  expect(stack).toHaveResource('AWS::ECS::Service', {
-    DesiredCount: 2,
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DeploymentConfiguration: {
       MinimumHealthyPercent: 60,
       MaximumPercent: 150,
@@ -387,11 +453,11 @@ testDeprecated('test Fargate queue worker service construct - with optional prop
     },
   });
 
-  expect(stack).toHaveResource('AWS::SQS::Queue', { QueueName: 'fargate-test-sqs-queue' });
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', { QueueName: 'fargate-test-sqs-queue' });
 
-  expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         Command: [
           '-c',
           '4',
@@ -417,7 +483,7 @@ testDeprecated('test Fargate queue worker service construct - with optional prop
           },
         ],
         Image: 'test',
-      },
+      }),
     ],
     Family: 'fargate-task-family',
   });
@@ -443,11 +509,11 @@ test('can set custom containerName', () => {
     image: ecs.ContainerImage.fromRegistry('test'),
   });
 
-  expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         Name: 'my-container',
-      },
+      }),
     ],
   });
 });
@@ -464,7 +530,7 @@ test('can set custom networking options', () => {
       {
         cidrMask: 24,
         name: 'Isolated',
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       },
     ],
   });
@@ -478,11 +544,11 @@ test('can set custom networking options', () => {
     memoryLimitMiB: 512,
     image: ecs.ContainerImage.fromRegistry('test'),
     securityGroups: [securityGroup],
-    taskSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+    taskSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
   });
 
   // THEN - NetworkConfiguration is created with the specific security groups and selected subnets
-  expect(stack).toHaveResource('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     LaunchType: 'FARGATE',
     NetworkConfiguration: {
       AwsvpcConfiguration: {
@@ -521,7 +587,7 @@ test('can set use public IP', () => {
   });
 
   // THEN - The Subnets defaults to Public and AssignPublicIp settings change to ENABLED
-  expect(stack).toHaveResource('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     LaunchType: 'FARGATE',
     NetworkConfiguration: {
       AwsvpcConfiguration: {
@@ -573,8 +639,8 @@ test('can set capacity provider strategies', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::ECS::Service', {
-    LaunchType: ABSENT,
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    LaunchType: Match.absent(),
     CapacityProviderStrategy: [
       {
         CapacityProvider: 'FARGATE_SPOT',

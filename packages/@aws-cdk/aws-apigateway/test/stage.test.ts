@@ -1,8 +1,8 @@
-import '@aws-cdk/assert-internal/jest';
-import { ResourcePart } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import * as apigateway from '../lib';
+import { ApiDefinition } from '../lib';
 
 describe('stage', () => {
   test('minimal setup', () => {
@@ -16,7 +16,7 @@ describe('stage', () => {
     new apigateway.Stage(stack, 'my-stage', { deployment });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         testapiD6451F70: {
           Type: 'AWS::ApiGateway::RestApi',
@@ -80,9 +80,9 @@ describe('stage', () => {
     // WHEN
     new apigateway.Stage(stack, 'my-stage', { deployment });
 
-    expect(stack).toHaveResourceLike('AWS::ApiGateway::Stage', {
+    Template.fromStack(stack).hasResource('AWS::ApiGateway::Stage', {
       DependsOn: ['testapiAccount9B907665'],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('common method settings can be set at the stage level', () => {
@@ -100,7 +100,7 @@ describe('stage', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Stage', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
       MethodSettings: [
         {
           DataTraceEnabled: false,
@@ -165,7 +165,7 @@ describe('stage', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Stage', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
       MethodSettings: [
         {
           DataTraceEnabled: false,
@@ -198,7 +198,7 @@ describe('stage', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Stage', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
       CacheClusterEnabled: true,
       CacheClusterSize: '0.5',
     });
@@ -218,7 +218,7 @@ describe('stage', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Stage', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
       CacheClusterEnabled: true,
       CacheClusterSize: '0.5',
     });
@@ -253,7 +253,7 @@ describe('stage', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Stage', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
       CacheClusterEnabled: true,
       CacheClusterSize: '0.5',
       MethodSettings: [
@@ -298,7 +298,7 @@ describe('stage', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Stage', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
       AccessLogSetting: {
         DestinationArn: {
           'Fn::GetAtt': [
@@ -329,7 +329,7 @@ describe('stage', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Stage', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
       AccessLogSetting: {
         DestinationArn: {
           'Fn::GetAtt': [
@@ -396,5 +396,31 @@ describe('stage', () => {
       deployment,
       accessLogFormat: testFormat,
     })).toThrow(/Access log format is specified without a destination/);
+  });
+
+  test('default throttling settings', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    new apigateway.SpecRestApi(stack, 'testapi', {
+      apiDefinition: ApiDefinition.fromInline({
+        openapi: '3.0.2',
+      }),
+      deployOptions: {
+        throttlingBurstLimit: 0,
+        throttlingRateLimit: 0,
+        metricsEnabled: false,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
+      MethodSettings: [{
+        DataTraceEnabled: false,
+        HttpMethod: '*',
+        ResourcePath: '/*',
+        ThrottlingBurstLimit: 0,
+        ThrottlingRateLimit: 0,
+      }],
+    });
   });
 });

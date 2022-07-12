@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as secretsmanager from '../lib';
@@ -34,7 +34,7 @@ test('secret rotation single user', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
     IpProtocol: 'tcp',
     Description: 'from SecretRotationSecurityGroupAEC520AB:3306',
     FromPort: 3306,
@@ -53,7 +53,7 @@ test('secret rotation single user', () => {
     ToPort: 3306,
   });
 
-  expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
     SecretId: {
       Ref: 'SecretA720EF05',
     },
@@ -68,61 +68,65 @@ test('secret rotation single user', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
     GroupDescription: 'Default/SecretRotation/SecurityGroup',
   });
 
-  expect(stack).toHaveResource('AWS::Serverless::Application', {
-    Location: {
-      ApplicationId: {
-        'Fn::FindInMap': ['SecretRotationSARMappingC10A2F5D', { Ref: 'AWS::Partition' }, 'applicationId'],
+  Template.fromStack(stack).hasResource('AWS::Serverless::Application', {
+    Properties: {
+      Location: {
+        ApplicationId: {
+          'Fn::FindInMap': ['SecretRotationSARMappingC10A2F5D', { Ref: 'AWS::Partition' }, 'applicationId'],
+        },
+        SemanticVersion: {
+          'Fn::FindInMap': ['SecretRotationSARMappingC10A2F5D', { Ref: 'AWS::Partition' }, 'semanticVersion'],
+        },
       },
-      SemanticVersion: {
-        'Fn::FindInMap': ['SecretRotationSARMappingC10A2F5D', { Ref: 'AWS::Partition' }, 'semanticVersion'],
+      Parameters: {
+        endpoint: {
+          'Fn::Join': [
+            '',
+            [
+              'https://secretsmanager.',
+              {
+                Ref: 'AWS::Region',
+              },
+              '.',
+              {
+                Ref: 'AWS::URLSuffix',
+              },
+            ],
+          ],
+        },
+        functionName: 'SecretRotation',
+        excludeCharacters: excludeCharacters,
+        vpcSecurityGroupIds: {
+          'Fn::GetAtt': [
+            'SecretRotationSecurityGroup9985012B',
+            'GroupId',
+          ],
+        },
+        vpcSubnetIds: {
+          'Fn::Join': [
+            '',
+            [
+              {
+                Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+              },
+              ',',
+              {
+                Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+              },
+            ],
+          ],
+        },
       },
     },
-    Parameters: {
-      endpoint: {
-        'Fn::Join': [
-          '',
-          [
-            'https://secretsmanager.',
-            {
-              Ref: 'AWS::Region',
-            },
-            '.',
-            {
-              Ref: 'AWS::URLSuffix',
-            },
-          ],
-        ],
-      },
-      functionName: 'SecretRotation',
-      excludeCharacters: excludeCharacters,
-      vpcSecurityGroupIds: {
-        'Fn::GetAtt': [
-          'SecretRotationSecurityGroup9985012B',
-          'GroupId',
-        ],
-      },
-      vpcSubnetIds: {
-        'Fn::Join': [
-          '',
-          [
-            {
-              Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
-            },
-            ',',
-            {
-              Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
-            },
-          ],
-        ],
-      },
-    },
+    DeletionPolicy: 'Delete',
+    UpdateReplacePolicy: 'Delete',
   });
 
-  expect(stack).toHaveResource('AWS::SecretsManager::ResourcePolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::ResourcePolicy', {
     ResourcePolicy: {
       Statement: [
         {
@@ -171,7 +175,7 @@ test('secret rotation multi user', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Serverless::Application', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
     Parameters: {
       endpoint: {
         'Fn::Join': [
@@ -215,7 +219,7 @@ test('secret rotation multi user', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::SecretsManager::ResourcePolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::ResourcePolicy', {
     ResourcePolicy: {
       Statement: [
         {
@@ -261,7 +265,7 @@ test('secret rotation allows passing an empty string for excludeCharacters', () 
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Serverless::Application', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
     Parameters: {
       excludeCharacters: '',
     },
@@ -304,7 +308,7 @@ test('rotation function name does not exceed 64 chars', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Serverless::Application', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
     Parameters: {
       endpoint: {
         'Fn::Join': [
@@ -364,7 +368,7 @@ test('with interface vpc endpoint', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Serverless::Application', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
     Parameters: {
       endpoint: {
         'Fn::Join': ['', [

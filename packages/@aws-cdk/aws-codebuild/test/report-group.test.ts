@@ -1,10 +1,10 @@
-import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as codebuild from '../lib';
+import { ReportGroupType } from '../lib';
 
 /* eslint-disable quote-props */
 /* eslint-disable quotes */
@@ -15,11 +15,11 @@ describe('Test Reports Groups', () => {
 
     new codebuild.ReportGroup(stack, 'ReportGroup');
 
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::ReportGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
       "Type": "TEST",
       "ExportConfig": {
         "ExportConfigType": "NO_EXPORT",
-        "S3Destination": ABSENT,
+        "S3Destination": Match.absent(),
       },
     });
   });
@@ -31,7 +31,7 @@ describe('Test Reports Groups', () => {
       reportGroupName: 'my-report-group',
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::ReportGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
       "Name": 'my-report-group',
     });
   });
@@ -51,7 +51,7 @@ describe('Test Reports Groups', () => {
     }));
 
     expect(reportGroup.reportGroupName).toEqual('my-report-group');
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       "PolicyDocument": {
         "Statement": [
           {
@@ -80,15 +80,15 @@ describe('Test Reports Groups', () => {
       exportBucket: s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'),
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::ReportGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
       "Type": "TEST",
       "ExportConfig": {
         "ExportConfigType": "S3",
         "S3Destination": {
           "Bucket": "my-bucket",
-          "EncryptionKey": ABSENT,
-          "EncryptionDisabled": ABSENT,
-          "Packaging": ABSENT,
+          "EncryptionKey": Match.absent(),
+          "EncryptionDisabled": Match.absent(),
+          "Packaging": Match.absent(),
         },
       },
     });
@@ -106,7 +106,7 @@ describe('Test Reports Groups', () => {
       zipExport: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::ReportGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
       "Type": "TEST",
       "ExportConfig": {
         "ExportConfigType": "S3",
@@ -125,10 +125,10 @@ describe('Test Reports Groups', () => {
 
     new codebuild.ReportGroup(stack, 'ReportGroup');
 
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::ReportGroup', {
+    Template.fromStack(stack).hasResource('AWS::CodeBuild::ReportGroup', {
       "DeletionPolicy": "Retain",
       "UpdateReplacePolicy": "Retain",
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('can be created with RemovalPolicy.DESTROY', () => {
@@ -138,9 +138,31 @@ describe('Test Reports Groups', () => {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::ReportGroup', {
+    Template.fromStack(stack).hasResource('AWS::CodeBuild::ReportGroup', {
       "DeletionPolicy": "Delete",
       "UpdateReplacePolicy": "Delete",
-    }, ResourcePart.CompleteDefinition);
+    });
+  });
+
+  test('can be created with type=CODE_COVERAGE', () => {
+    const stack = new cdk.Stack();
+
+    new codebuild.ReportGroup(stack, 'ReportGroup', {
+      type: ReportGroupType.CODE_COVERAGE,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
+      "Type": "CODE_COVERAGE",
+    });
+  });
+
+  test('defaults to report group type=TEST when not specified explicitly', () => {
+    const stack = new cdk.Stack();
+
+    new codebuild.ReportGroup(stack, 'ReportGroup', {});
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
+      "Type": "TEST",
+    });
   });
 });

@@ -1,0 +1,947 @@
+{
+ "Resources": {
+  "createAuthChallengeServiceRole611710B5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "createAuthChallengeB185B225": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "foo"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "createAuthChallengeServiceRole611710B5",
+      "Arn"
+     ]
+    },
+    "FunctionName": "createAuthChallenge",
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "createAuthChallengeServiceRole611710B5"
+   ]
+  },
+  "createAuthChallengeCreateAuthChallengeCognito57E2297E": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "createAuthChallengeB185B225",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "customMessageServiceRoleB4AE7F17": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "customMessage52BA91E2": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "foo"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "customMessageServiceRoleB4AE7F17",
+      "Arn"
+     ]
+    },
+    "FunctionName": "customMessage",
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "customMessageServiceRoleB4AE7F17"
+   ]
+  },
+  "customMessageCustomMessageCognitoB4F894A6": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "customMessage52BA91E2",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "defineAuthChallengeServiceRole9E2D15DF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "defineAuthChallengeAE7BCDA1": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "foo"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "defineAuthChallengeServiceRole9E2D15DF",
+      "Arn"
+     ]
+    },
+    "FunctionName": "defineAuthChallenge",
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "defineAuthChallengeServiceRole9E2D15DF"
+   ]
+  },
+  "defineAuthChallengeDefineAuthChallengeCognito4DBD8021": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "defineAuthChallengeAE7BCDA1",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "postAuthenticationServiceRole5B3B242A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "postAuthentication741BD8E3": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "foo"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "postAuthenticationServiceRole5B3B242A",
+      "Arn"
+     ]
+    },
+    "FunctionName": "postAuthentication",
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "postAuthenticationServiceRole5B3B242A"
+   ]
+  },
+  "postAuthenticationPostAuthenticationCognito8B923BC3": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "postAuthentication741BD8E3",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "postConfirmationServiceRole864BE5F9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "postConfirmationD5E3F1DD": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "foo"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "postConfirmationServiceRole864BE5F9",
+      "Arn"
+     ]
+    },
+    "FunctionName": "postConfirmation",
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "postConfirmationServiceRole864BE5F9"
+   ]
+  },
+  "postConfirmationPostConfirmationCognito9D010393": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "postConfirmationD5E3F1DD",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "preAuthenticationServiceRole9712F4D8": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "preAuthentication56F78C81": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "foo"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "preAuthenticationServiceRole9712F4D8",
+      "Arn"
+     ]
+    },
+    "FunctionName": "preAuthentication",
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "preAuthenticationServiceRole9712F4D8"
+   ]
+  },
+  "preAuthenticationPreAuthenticationCognito67FACB54": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "preAuthentication56F78C81",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "preSignUpServiceRole0A7E91EB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "preSignUp1934B27C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "foo"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "preSignUpServiceRole0A7E91EB",
+      "Arn"
+     ]
+    },
+    "FunctionName": "preSignUp",
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "preSignUpServiceRole0A7E91EB"
+   ]
+  },
+  "preSignUpPreSignUpCognitoE986CC53": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "preSignUp1934B27C",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "preTokenGenerationServiceRole430C3D14": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "preTokenGeneration1E968302": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "foo"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "preTokenGenerationServiceRole430C3D14",
+      "Arn"
+     ]
+    },
+    "FunctionName": "preTokenGeneration",
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "preTokenGenerationServiceRole430C3D14"
+   ]
+  },
+  "preTokenGenerationPreTokenGenerationCognitoC1959918": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "preTokenGeneration1E968302",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "userMigrationServiceRole091766B0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "userMigrationAAA960EC": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "foo"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "userMigrationServiceRole091766B0",
+      "Arn"
+     ]
+    },
+    "FunctionName": "userMigration",
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "userMigrationServiceRole091766B0"
+   ]
+  },
+  "userMigrationUserMigrationCognito29EEC4AD": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "userMigrationAAA960EC",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "verifyAuthChallengeResponseServiceRole7077884C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "verifyAuthChallengeResponse211FE4A6": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "foo"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "verifyAuthChallengeResponseServiceRole7077884C",
+      "Arn"
+     ]
+    },
+    "FunctionName": "verifyAuthChallengeResponse",
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "verifyAuthChallengeResponseServiceRole7077884C"
+   ]
+  },
+  "verifyAuthChallengeResponseVerifyAuthChallengeResponseCognito9DC48AFC": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "verifyAuthChallengeResponse211FE4A6",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "myuserpoolsmsRole0E16FDD9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "sts:ExternalId": "integuserpoolmyuserpoolDA38443C"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cognito-idp.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "sns:Publish",
+         "Effect": "Allow",
+         "Resource": "*"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "sns-publish"
+     }
+    ]
+   }
+  },
+  "myuserpool01998219": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": false,
+     "InviteMessageTemplate": {
+      "EmailMessage": "invitation email body from the integ test for {username}. Temp password is {####}.",
+      "EmailSubject": "invitation email subject from the integ test",
+      "SMSMessage": "invitation sms message from the integ test for {username}. Temp password is {####}."
+     }
+    },
+    "AliasAttributes": [
+     "email"
+    ],
+    "AutoVerifiedAttributes": [
+     "email",
+     "phone_number"
+    ],
+    "EmailVerificationMessage": "verification email body from the integ test. Code is {####}.",
+    "EmailVerificationSubject": "verification email subject from the integ test",
+    "LambdaConfig": {
+     "CreateAuthChallenge": {
+      "Fn::GetAtt": [
+       "createAuthChallengeB185B225",
+       "Arn"
+      ]
+     },
+     "CustomMessage": {
+      "Fn::GetAtt": [
+       "customMessage52BA91E2",
+       "Arn"
+      ]
+     },
+     "DefineAuthChallenge": {
+      "Fn::GetAtt": [
+       "defineAuthChallengeAE7BCDA1",
+       "Arn"
+      ]
+     },
+     "PostAuthentication": {
+      "Fn::GetAtt": [
+       "postAuthentication741BD8E3",
+       "Arn"
+      ]
+     },
+     "PostConfirmation": {
+      "Fn::GetAtt": [
+       "postConfirmationD5E3F1DD",
+       "Arn"
+      ]
+     },
+     "PreAuthentication": {
+      "Fn::GetAtt": [
+       "preAuthentication56F78C81",
+       "Arn"
+      ]
+     },
+     "PreSignUp": {
+      "Fn::GetAtt": [
+       "preSignUp1934B27C",
+       "Arn"
+      ]
+     },
+     "PreTokenGeneration": {
+      "Fn::GetAtt": [
+       "preTokenGeneration1E968302",
+       "Arn"
+      ]
+     },
+     "UserMigration": {
+      "Fn::GetAtt": [
+       "userMigrationAAA960EC",
+       "Arn"
+      ]
+     },
+     "VerifyAuthChallengeResponse": {
+      "Fn::GetAtt": [
+       "verifyAuthChallengeResponse211FE4A6",
+       "Arn"
+      ]
+     }
+    },
+    "MfaConfiguration": "OFF",
+    "Policies": {
+     "PasswordPolicy": {
+      "MinimumLength": 12,
+      "RequireLowercase": true,
+      "RequireNumbers": true,
+      "RequireSymbols": true,
+      "RequireUppercase": true,
+      "TemporaryPasswordValidityDays": 10
+     }
+    },
+    "Schema": [
+     {
+      "Mutable": true,
+      "Name": "name",
+      "Required": true
+     },
+     {
+      "Mutable": true,
+      "Name": "email",
+      "Required": true
+     },
+     {
+      "AttributeDataType": "String",
+      "Name": "some-string-attr"
+     },
+     {
+      "AttributeDataType": "String",
+      "Name": "another-string-attr",
+      "StringAttributeConstraints": {
+       "MaxLength": "100",
+       "MinLength": "4"
+      }
+     },
+     {
+      "AttributeDataType": "Number",
+      "Name": "some-number-attr"
+     },
+     {
+      "AttributeDataType": "Number",
+      "Name": "another-number-attr",
+      "NumberAttributeConstraints": {
+       "MaxValue": "50",
+       "MinValue": "10"
+      }
+     },
+     {
+      "AttributeDataType": "Boolean",
+      "Name": "some-boolean-attr"
+     },
+     {
+      "AttributeDataType": "DateTime",
+      "Name": "some-datetime-attr"
+     }
+    ],
+    "SmsConfiguration": {
+     "ExternalId": "integuserpoolmyuserpoolDA38443C",
+     "SnsCallerArn": {
+      "Fn::GetAtt": [
+       "myuserpoolsmsRole0E16FDD9",
+       "Arn"
+      ]
+     },
+     "SnsRegion": {
+      "Ref": "AWS::Region"
+     }
+    },
+    "SmsVerificationMessage": "verification sms message from the integ test. Code is {####}.",
+    "UserPoolName": "MyUserPool",
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "verification email body from the integ test. Code is {####}.",
+     "EmailSubject": "verification email subject from the integ test",
+     "SmsMessage": "verification sms message from the integ test. Code is {####}."
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "myuserpoolmyuserpooldomainEE1E11AF": {
+   "Type": "AWS::Cognito::UserPoolDomain",
+   "Properties": {
+    "Domain": "cdkintegrationtestuserpoolexplicitprops",
+    "UserPoolId": {
+     "Ref": "myuserpool01998219"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "userpoolId": {
+   "Value": {
+    "Ref": "myuserpool01998219"
+   }
+  },
+  "cognitoDomainName": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      {
+       "Ref": "myuserpoolmyuserpooldomainEE1E11AF"
+      },
+      ".auth.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazoncognito.com"
+     ]
+    ]
+   }
+  }
+ }
+}

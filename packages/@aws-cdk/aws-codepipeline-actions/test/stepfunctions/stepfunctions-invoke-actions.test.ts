@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as stepfunction from '@aws-cdk/aws-stepfunctions';
@@ -14,7 +14,7 @@ describe('StepFunctions Invoke Action', () => {
       minimalPipeline(stack);
 
       // then
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
         Stages: [
           //  Must have a source stage
           {
@@ -57,7 +57,7 @@ describe('StepFunctions Invoke Action', () => {
             ],
           },
         ],
-      });
+      }));
 
 
     });
@@ -67,9 +67,10 @@ describe('StepFunctions Invoke Action', () => {
 
       minimalPipeline(stack);
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyName: 'MyPipelineInvokeCodePipelineActionRoleDefaultPolicy07A602B1',
         PolicyDocument: {
-          Statement: [
+          Statement: Match.arrayWith([
             {
               Action: ['states:StartExecution', 'states:DescribeStateMachine'],
               Resource: {
@@ -77,11 +78,11 @@ describe('StepFunctions Invoke Action', () => {
               },
               Effect: 'Allow',
             },
-          ],
+          ]),
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Role');
+      Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 4);
 
 
     });
@@ -91,7 +92,7 @@ describe('StepFunctions Invoke Action', () => {
 
       minimalPipeline(stack);
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {},
@@ -137,7 +138,7 @@ describe('StepFunctions Invoke Action', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Role');
+      Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 4);
 
 
     });

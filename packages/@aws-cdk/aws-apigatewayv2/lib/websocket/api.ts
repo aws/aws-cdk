@@ -86,10 +86,46 @@ export interface WebSocketApiProps {
 }
 
 /**
+ * Attributes for importing a WebSocketApi into the CDK
+ */
+export interface WebSocketApiAttributes {
+  /**
+   * The identifier of the WebSocketApi
+   */
+  readonly webSocketId: string;
+
+  /**
+   * The endpoint URL of the WebSocketApi
+   * @default - throw san error if apiEndpoint is accessed.
+   */
+  readonly apiEndpoint?: string;
+}
+
+
+/**
  * Create a new API Gateway WebSocket API endpoint.
  * @resource AWS::ApiGatewayV2::Api
  */
 export class WebSocketApi extends ApiBase implements IWebSocketApi {
+  /**
+   * Import an existing WebSocket API into this CDK app.
+   */
+  public static fromWebSocketApiAttributes(scope: Construct, id: string, attrs: WebSocketApiAttributes): IWebSocketApi {
+    class Import extends ApiBase {
+      public readonly apiId = attrs.webSocketId;
+      public readonly websocketApiId = attrs.webSocketId;
+      private readonly _apiEndpoint = attrs.apiEndpoint;
+
+      public get apiEndpoint(): string {
+        if (!this._apiEndpoint) {
+          throw new Error('apiEndpoint is not configured on the imported WebSocketApi.');
+        }
+        return this._apiEndpoint;
+      }
+    }
+    return new Import(scope, id);
+  }
+
   public readonly apiId: string;
   public readonly apiEndpoint: string;
 
@@ -150,7 +186,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
     return Grant.addToPrincipal({
       grantee: identity,
       actions: ['execute-api:ManageConnections'],
-      resourceArns: [`${arn}/*/POST/@connections/*`],
+      resourceArns: [`${arn}/*/*/@connections/*`],
     });
   }
 }

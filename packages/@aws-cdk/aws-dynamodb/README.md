@@ -36,6 +36,8 @@ If you intend to use the `tableStreamArn` (including indirectly, for example by 
 `@aws-cdk/aws-lambda-event-source.DynamoEventSource` on the imported table), you *must* use the
 `Table.fromTableAttributes` method and the `tableStreamArn` property *must* be populated.
 
+In order to grant permissions to indexes on imported tables you can either set `grantIndexPermissions` to `true`, or you can provide the indexes via the `globalIndexes` or `localIndexes` properties. This will enable `grant*` methods to also grant permissions to *all* table indexes.
+
 ## Keys
 
 When a table is defined, you must define it's schema using the `partitionKey`
@@ -57,6 +59,23 @@ const table = new dynamodb.Table(this, 'Table', {
 
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.
+
+## Table Class
+
+DynamoDB supports two table classes:
+
+* STANDARD - the default mode, and is recommended for the vast majority of workloads.
+* STANDARD_INFREQUENT_ACCESS - optimized for tables where storage is the dominant cost.
+
+```ts
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  tableClass: dynamodb.TableClass.STANDARD_INFREQUENT_ACCESS,
+});
+```
+
+Further reading:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html
 
 ## Configure AutoScaling for your table
 

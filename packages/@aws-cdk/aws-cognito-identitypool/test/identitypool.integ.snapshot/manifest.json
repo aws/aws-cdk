@@ -1,0 +1,94 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-identitypool": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-identitypool.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-identitypool/Pool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PoolD3F588B8"
+          }
+        ],
+        "/integ-identitypool/Pool/UserPoolAuthenticationProviderClient/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PoolUserPoolAuthenticationProviderClient20F2FFC4"
+          }
+        ],
+        "/integ-identitypool/PoolProviderGoogle/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PoolProviderGoogle76A1E8D0"
+          }
+        ],
+        "/integ-identitypool/OtherPool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OtherPool7DA7F2F7"
+          }
+        ],
+        "/integ-identitypool/OtherPool/UserPoolAuthenticationProviderClient/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OtherPoolUserPoolAuthenticationProviderClient08F670F8"
+          }
+        ],
+        "/integ-identitypool/OtherPoolProviderAmazon/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OtherPoolProviderAmazon4EB0592F"
+          }
+        ],
+        "/integ-identitypool/identitypool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "identitypoolE2A6D099"
+          }
+        ],
+        "/integ-identitypool/identitypool/AuthenticatedRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "identitypoolAuthenticatedRoleB074B49D"
+          }
+        ],
+        "/integ-identitypool/identitypool/AuthenticatedRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "identitypoolAuthenticatedRoleDefaultPolicyCB4D2992"
+          }
+        ],
+        "/integ-identitypool/identitypool/UnauthenticatedRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "identitypoolUnauthenticatedRoleE61CAC70"
+          }
+        ],
+        "/integ-identitypool/identitypool/UnauthenticatedRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "identitypoolUnauthenticatedRoleDefaultPolicyBFACCE98"
+          }
+        ],
+        "/integ-identitypool/identitypool/DefaultRoleAttachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "identitypoolDefaultRoleAttachment6BCAB114"
+          }
+        ]
+      },
+      "displayName": "integ-identitypool"
+    }
+  }
+}

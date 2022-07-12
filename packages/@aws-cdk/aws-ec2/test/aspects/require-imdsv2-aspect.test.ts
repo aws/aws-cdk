@@ -1,10 +1,8 @@
-import {
-  countResources,
-  expect as expectCDK,
-  haveResourceLike,
-} from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Annotations, Template, Match } from '@aws-cdk/assertions';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import {
   CfnLaunchTemplate,
   Instance,
@@ -37,18 +35,14 @@ describe('RequireImdsv2Aspect', () => {
       // @ts-ignore
       aspect.warn(node, errmsg);
     });
-    const construct = new cdk.Construct(stack, 'Construct');
+    const construct = new Construct(stack, 'Construct');
 
     // WHEN
     aspect.visit(construct);
 
     // THEN
     expect(visitMock).toHaveBeenCalled();
-    expect(construct.node.metadataEntry).not.toContainEqual({
-      data: expect.stringContaining(errmsg),
-      type: 'aws:cdk:warning',
-      trace: undefined,
-    });
+    Annotations.fromStack(stack).hasNoWarning('/Stack/Construct', errmsg);
   });
 
   describe('InstanceRequireImdsv2Aspect', () => {
@@ -68,19 +62,19 @@ describe('RequireImdsv2Aspect', () => {
       // THEN
       const launchTemplate = instance.node.tryFindChild('LaunchTemplate') as LaunchTemplate;
       expect(launchTemplate).toBeDefined();
-      expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
         LaunchTemplateName: stack.resolve(launchTemplate.launchTemplateName),
         LaunchTemplateData: {
           MetadataOptions: {
             HttpTokens: 'required',
           },
         },
-      }));
-      expectCDK(stack).to(haveResourceLike('AWS::EC2::Instance', {
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
         LaunchTemplate: {
           LaunchTemplateName: stack.resolve(launchTemplate.launchTemplateName),
         },
-      }));
+      });
     });
 
     test('does not toggle when Instance has a LaunchTemplate', () => {
@@ -102,12 +96,8 @@ describe('RequireImdsv2Aspect', () => {
       // THEN
       // Aspect normally creates a LaunchTemplate for the Instance to toggle IMDSv1,
       // so we can assert that one was not created
-      expectCDK(stack).to(countResources('AWS::EC2::LaunchTemplate', 0));
-      expect(instance.node.metadataEntry).toContainEqual({
-        data: expect.stringContaining('Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.'),
-        type: 'aws:cdk:warning',
-        trace: undefined,
-      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::LaunchTemplate', 0);
+      Annotations.fromStack(stack).hasWarning('/Stack/Instance', Match.stringLikeRegexp('.*Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.'));
     });
 
     test('suppresses Launch Template warnings', () => {
@@ -129,11 +119,58 @@ describe('RequireImdsv2Aspect', () => {
       aspect.visit(instance);
 
       // THEN
-      expect(instance.node.metadataEntry).not.toContainEqual({
-        data: expect.stringContaining('Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.'),
-        type: 'aws:cdk:warning',
-        trace: undefined,
+      Annotations.fromStack(stack).hasNoWarning('/Stack/Instance', 'Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.');
+    });
+
+    testFutureBehavior('launch template name is unique with feature flag', { [cxapi.EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: true }, cdk.App, (app2) => {
+      // GIVEN
+      const otherStack = new cdk.Stack(app2, 'OtherStack');
+      const otherVpc = new Vpc(otherStack, 'OtherVpc');
+      const otherInstance = new Instance(otherStack, 'OtherInstance', {
+        vpc: otherVpc,
+        instanceType: new InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
       });
+      const imdsv2Stack = new cdk.Stack(app2, 'RequireImdsv2Stack');
+      const imdsv2Vpc = new Vpc(imdsv2Stack, 'Vpc');
+      const instance = new Instance(imdsv2Stack, 'Instance', {
+        vpc: imdsv2Vpc,
+        instanceType: new InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      });
+      const aspect = new InstanceRequireImdsv2Aspect();
+
+      // WHEN
+      cdk.Aspects.of(imdsv2Stack).add(aspect);
+      cdk.Aspects.of(otherStack).add(aspect);
+      app2.synth();
+
+      // THEN
+      const launchTemplate = instance.node.tryFindChild('LaunchTemplate') as LaunchTemplate;
+      const otherLaunchTemplate = otherInstance.node.tryFindChild('LaunchTemplate') as LaunchTemplate;
+      expect(launchTemplate).toBeDefined();
+      expect(otherLaunchTemplate).toBeDefined();
+      expect(launchTemplate.launchTemplateName !== otherLaunchTemplate.launchTemplateName);
+    });
+
+    testLegacyBehavior('launch template name uses legacy id without feature flag', cdk.App, (app2) => {
+      // GIVEN
+      const imdsv2Stack = new cdk.Stack(app2, 'RequireImdsv2Stack');
+      const imdsv2Vpc = new Vpc(imdsv2Stack, 'Vpc');
+      const instance = new Instance(imdsv2Stack, 'Instance', {
+        vpc: imdsv2Vpc,
+        instanceType: new InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      });
+      const aspect = new InstanceRequireImdsv2Aspect();
+
+      // WHEN
+      cdk.Aspects.of(imdsv2Stack).add(aspect);
+      app2.synth();
+
+      // THEN
+      const launchTemplate = instance.node.tryFindChild('LaunchTemplate') as LaunchTemplate;
+      expect(launchTemplate.launchTemplateName).toEqual(`${instance.node.id}LaunchTemplate`);
     });
   });
 
@@ -142,18 +179,16 @@ describe('RequireImdsv2Aspect', () => {
       // GIVEN
       const launchTemplate = new LaunchTemplate(stack, 'LaunchTemplate');
       const cfnLaunchTemplate = launchTemplate.node.tryFindChild('Resource') as CfnLaunchTemplate;
-      cfnLaunchTemplate.launchTemplateData = fakeToken();
+      cfnLaunchTemplate.launchTemplateData = cdk.Token.asAny({
+        kernelId: 'asfd',
+      } as CfnLaunchTemplate.LaunchTemplateDataProperty);
       const aspect = new LaunchTemplateRequireImdsv2Aspect();
 
       // WHEN
       aspect.visit(launchTemplate);
 
       // THEN
-      expect(launchTemplate.node.metadataEntry).toContainEqual({
-        data: expect.stringContaining('LaunchTemplateData is a CDK token.'),
-        type: 'aws:cdk:warning',
-        trace: undefined,
-      });
+      Annotations.fromStack(stack).hasWarning('/Stack/LaunchTemplate', Match.stringLikeRegexp('.*LaunchTemplateData is a CDK token.'));
     });
 
     test('warns when MetadataOptions is a CDK token', () => {
@@ -161,7 +196,9 @@ describe('RequireImdsv2Aspect', () => {
       const launchTemplate = new LaunchTemplate(stack, 'LaunchTemplate');
       const cfnLaunchTemplate = launchTemplate.node.tryFindChild('Resource') as CfnLaunchTemplate;
       cfnLaunchTemplate.launchTemplateData = {
-        metadataOptions: fakeToken(),
+        metadataOptions: cdk.Token.asAny({
+          httpEndpoint: 'http://bla',
+        } as CfnLaunchTemplate.MetadataOptionsProperty),
       } as CfnLaunchTemplate.LaunchTemplateDataProperty;
       const aspect = new LaunchTemplateRequireImdsv2Aspect();
 
@@ -169,11 +206,7 @@ describe('RequireImdsv2Aspect', () => {
       aspect.visit(launchTemplate);
 
       // THEN
-      expect(launchTemplate.node.metadataEntry).toContainEqual({
-        data: expect.stringContaining('LaunchTemplateData.MetadataOptions is a CDK token.'),
-        type: 'aws:cdk:warning',
-        trace: undefined,
-      });
+      Annotations.fromStack(stack).hasWarning('/Stack/LaunchTemplate', Match.stringLikeRegexp('.*LaunchTemplateData.MetadataOptions is a CDK token.'));
     });
 
     test('requires IMDSv2', () => {
@@ -185,21 +218,13 @@ describe('RequireImdsv2Aspect', () => {
       cdk.Aspects.of(stack).add(aspect);
 
       // THEN
-      expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
         LaunchTemplateData: {
           MetadataOptions: {
             HttpTokens: 'required',
           },
         },
-      }));
+      });
     });
   });
 });
-
-function fakeToken(): cdk.IResolvable {
-  return {
-    creationStack: [],
-    resolve: (_c) => {},
-    toString: () => '',
-  };
-}

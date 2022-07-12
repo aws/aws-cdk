@@ -599,7 +599,7 @@ behavior('can supply pre-install scripts to asset upload', (suite) => {
         BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             install: {
-              commands: ['npm config set registry https://registry.com', 'npm install -g cdk-assets'],
+              commands: ['npm config set registry https://registry.com', 'npm install -g cdk-assets@1'],
             },
           },
         })),
@@ -949,7 +949,7 @@ function expectedAssetRolePolicy(assumeRolePattern: string | string[], attachedR
       {
         Action: 'sts:AssumeRole',
         Effect: 'Allow',
-        Resource: assumeRolePattern.map(arn => { return { 'Fn::Sub': arn }; }),
+        Resource: unsingleton(assumeRolePattern.map(arn => { return { 'Fn::Sub': arn }; })),
       },
       {
         Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
@@ -1063,4 +1063,11 @@ function synthesize(stack: Stack) {
   }
 
   return root.synth({ skipValidation: true });
+}
+
+function unsingleton<A>(xs: A[]): A | A[] {
+  if (xs.length === 1) {
+    return xs[0];
+  }
+  return xs;
 }

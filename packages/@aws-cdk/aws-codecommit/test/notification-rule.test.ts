@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as codecommit from '../lib';
@@ -16,7 +16,7 @@ describe('notification rule', () => {
 
     repository.notifyOnPullRequestMerged('NotifyOnPullRequestMerged', target);
 
-    expect(stack).toHaveResource('AWS::CodeStarNotifications::NotificationRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyCodecommitRepositoryNotifyOnPullRequestCreatedBB14EA32',
       DetailType: 'FULL',
       EventTypeIds: [
@@ -38,7 +38,7 @@ describe('notification rule', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::CodeStarNotifications::NotificationRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyCodecommitRepositoryNotifyOnPullRequestMerged34A7EDF1',
       DetailType: 'FULL',
       EventTypeIds: [

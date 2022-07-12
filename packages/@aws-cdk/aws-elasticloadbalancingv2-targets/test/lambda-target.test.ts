@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -17,7 +17,7 @@ beforeEach(() => {
 
   fn = new lambda.Function(stack, 'Fun', {
     code: lambda.Code.fromInline('foo'),
-    runtime: lambda.Runtime.PYTHON_3_6,
+    runtime: lambda.Runtime.PYTHON_3_9,
     handler: 'index.handler',
   });
 });
@@ -29,12 +29,12 @@ test('Can create target groups with lambda targets', () => {
   });
 
   // THEN
-  expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
     TargetType: 'lambda',
     Targets: [
       { Id: { 'Fn::GetAtt': ['FunA2CCED21', 'Arn'] } },
     ],
-  }));
+  });
 });
 
 test('Lambda targets create dependency on Invoke permission', () => {
@@ -44,7 +44,7 @@ test('Lambda targets create dependency on Invoke permission', () => {
   });
 
   // THEN
-  expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', (def: any) => {
+  Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::TargetGroup', (def: any) => {
     return (def.DependsOn ?? []).includes('FunInvokeServicePrincipalelasticloadbalancingamazonawscomD2CAC0C4');
-  }, ResourcePart.CompleteDefinition));
+  });
 });

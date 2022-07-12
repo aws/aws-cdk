@@ -1,6 +1,7 @@
 import { EOL } from 'os';
-import { expect as expectCDK, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import * as ecr from '../lib';
 
@@ -15,7 +16,7 @@ describe('repository', () => {
     new ecr.Repository(stack, 'Repo');
 
     // THEN
-    expectCDK(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         Repo02AC86CF: {
           Type: 'AWS::ECR::Repository',
@@ -28,17 +29,24 @@ describe('repository', () => {
 
   test('repository creation with imageScanOnPush', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const noScanStack = new cdk.Stack();
+    const scanStack = new cdk.Stack();
 
     // WHEN
-    new ecr.Repository(stack, 'Repo', { imageScanOnPush: true });
+    new ecr.Repository(noScanStack, 'NoScanRepo', { imageScanOnPush: false });
+    new ecr.Repository(scanStack, 'ScanRepo', { imageScanOnPush: true });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+    Template.fromStack(noScanStack).hasResourceProperties('AWS::ECR::Repository', {
+      ImageScanningConfiguration: {
+        ScanOnPush: false,
+      },
+    });
+    Template.fromStack(scanStack).hasResourceProperties('AWS::ECR::Repository', {
       ImageScanningConfiguration: {
         ScanOnPush: true,
       },
-    }));
+    });
   });
 
   test('tag-based lifecycle policy', () => {
@@ -50,12 +58,12 @@ describe('repository', () => {
     repo.addLifecycleRule({ tagPrefixList: ['abc'], maxImageCount: 1 });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
       },
-    }));
+    });
   });
 
   test('image tag mutability can be set', () => {
@@ -64,9 +72,9 @@ describe('repository', () => {
     new ecr.Repository(stack, 'Repo', { imageTagMutability: ecr.TagMutability.IMMUTABLE });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
       ImageTagMutability: 'IMMUTABLE',
-    }));
+    });
   });
 
   test('add day-based lifecycle policy', () => {
@@ -80,12 +88,12 @@ describe('repository', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"sinceImagePushed","countNumber":5,"countUnit":"days"},"action":{"type":"expire"}}]}',
       },
-    }));
+    });
   });
 
   test('add count-based lifecycle policy', () => {
@@ -99,12 +107,12 @@ describe('repository', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       },
-    }));
+    });
   });
 
   test('mixing numbered and unnumbered rules', () => {
@@ -117,12 +125,12 @@ describe('repository', () => {
     repo.addLifecycleRule({ rulePriority: 10, tagStatus: ecr.TagStatus.TAGGED, tagPrefixList: ['b'], maxImageCount: 5 });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["b"],"countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}},{"rulePriority":11,"selection":{"tagStatus":"tagged","tagPrefixList":["a"],"countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       },
-    }));
+    });
   });
 
   test('tagstatus Any is automatically sorted to the back', () => {
@@ -135,12 +143,12 @@ describe('repository', () => {
     repo.addLifecycleRule({ tagStatus: ecr.TagStatus.TAGGED, tagPrefixList: ['important'], maxImageCount: 999 });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["important"],"countType":"imageCountMoreThan","countNumber":999},"action":{"type":"expire"}},{"rulePriority":2,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       },
-    }));
+    });
   });
 
   test('lifecycle rules can be added upon initialization', () => {
@@ -155,12 +163,12 @@ describe('repository', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
       'LifecyclePolicy': {
         // eslint-disable-next-line max-len
         'LifecyclePolicyText': '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":3},"action":{"type":"expire"}}]}',
       },
-    }));
+    });
   });
 
   test('calculate repository URI', () => {
@@ -168,21 +176,24 @@ describe('repository', () => {
     const stack = new cdk.Stack();
     const repo = new ecr.Repository(stack, 'Repo');
 
-    // WHEN
-    const uri = repo.repositoryUri;
+    new cdk.CfnOutput(stack, 'RepoUri', {
+      value: repo.repositoryUri,
+    });
 
     // THEN
     const arnSplit = { 'Fn::Split': [':', { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] }] };
-    expectCDK(stack.resolve(uri)).toMatch({
-      'Fn::Join': ['', [
-        { 'Fn::Select': [4, arnSplit] },
-        '.dkr.ecr.',
-        { 'Fn::Select': [3, arnSplit] },
-        '.',
-        { Ref: 'AWS::URLSuffix' },
-        '/',
-        { Ref: 'Repo02AC86CF' },
-      ]],
+    Template.fromStack(stack).hasOutput('*', {
+      'Value': {
+        'Fn::Join': ['', [
+          { 'Fn::Select': [4, arnSplit] },
+          '.dkr.ecr.',
+          { 'Fn::Select': [3, arnSplit] },
+          '.',
+          { Ref: 'AWS::URLSuffix' },
+          '/',
+          { Ref: 'Repo02AC86CF' },
+        ]],
+      },
     });
   });
 
@@ -217,10 +228,20 @@ describe('repository', () => {
       repositoryArn: cdk.Fn.getAtt('Boom', 'Arn').toString(),
       repositoryName: cdk.Fn.getAtt('Boom', 'Name').toString(),
     });
+    new cdk.CfnOutput(stack, 'RepoArn', {
+      value: repo.repositoryArn,
+    });
+    new cdk.CfnOutput(stack, 'RepoName', {
+      value: repo.repositoryName,
+    });
 
     // THEN
-    expectCDK(stack.resolve(repo.repositoryArn)).toMatch({ 'Fn::GetAtt': ['Boom', 'Arn'] });
-    expectCDK(stack.resolve(repo.repositoryName)).toMatch({ 'Fn::GetAtt': ['Boom', 'Name'] });
+    Template.fromStack(stack).hasOutput('*', {
+      Value: { 'Fn::GetAtt': ['Boom', 'Arn'] },
+    });
+    Template.fromStack(stack).hasOutput('*', {
+      Value: { 'Fn::GetAtt': ['Boom', 'Name'] },
+    });
   });
 
   test('import only with a repository name (arn is deduced)', () => {
@@ -229,20 +250,30 @@ describe('repository', () => {
 
     // WHEN
     const repo = ecr.Repository.fromRepositoryName(stack, 'just-name', 'my-repo');
+    new cdk.CfnOutput(stack, 'RepoArn', {
+      value: repo.repositoryArn,
+    });
+    new cdk.CfnOutput(stack, 'RepoName', {
+      value: repo.repositoryName,
+    });
 
     // THEN
-    expectCDK(stack.resolve(repo.repositoryArn)).toMatch({
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':ecr:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':repository/my-repo',
-      ]],
+    Template.fromStack(stack).hasOutput('*', {
+      Value: {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':ecr:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':repository/my-repo',
+        ]],
+      },
     });
-    expect(stack.resolve(repo.repositoryName)).toBe('my-repo');
+    Template.fromStack(stack).hasOutput('*', {
+      Value: 'my-repo',
+    });
   });
 
   test('arnForLocalRepository can be used to render an ARN for a local repository', () => {
@@ -255,20 +286,30 @@ describe('repository', () => {
       repositoryArn: ecr.Repository.arnForLocalRepository(repoName, stack),
       repositoryName: repoName,
     });
+    new cdk.CfnOutput(stack, 'RepoArn', {
+      value: repo.repositoryArn,
+    });
+    new cdk.CfnOutput(stack, 'RepoName', {
+      value: repo.repositoryName,
+    });
 
     // THEN
-    expectCDK(stack.resolve(repo.repositoryName)).toMatch({ 'Fn::GetAtt': ['Boom', 'Name'] });
-    expectCDK(stack.resolve(repo.repositoryArn)).toMatch({
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':ecr:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':repository/',
-        { 'Fn::GetAtt': ['Boom', 'Name'] },
-      ]],
+    Template.fromStack(stack).hasOutput('*', {
+      Value: { 'Fn::GetAtt': ['Boom', 'Name'] },
+    });
+    Template.fromStack(stack).hasOutput('*', {
+      Value: {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':ecr:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':repository/',
+          { 'Fn::GetAtt': ['Boom', 'Name'] },
+        ]],
+      },
     });
   });
 
@@ -284,7 +325,7 @@ describe('repository', () => {
     }));
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
       RepositoryPolicyText: {
         Statement: [
           {
@@ -295,7 +336,7 @@ describe('repository', () => {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
   });
 
   test('fails if repository policy has no actions', () => {
@@ -330,6 +371,79 @@ describe('repository', () => {
     expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
   });
 
+  test('default encryption configuration', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+
+    // WHEN
+    new ecr.Repository(stack, 'Repo', { encryption: ecr.RepositoryEncryption.AES_256 });
+
+    // THEN
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        Repo02AC86CF: {
+          Type: 'AWS::ECR::Repository',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+        },
+      },
+    });
+  });
+
+  test('kms encryption configuration', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+
+    // WHEN
+    new ecr.Repository(stack, 'Repo', { encryption: ecr.RepositoryEncryption.KMS });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository',
+      {
+        EncryptionConfiguration: {
+          EncryptionType: 'KMS',
+        },
+      });
+  });
+
+  test('kms encryption with custom kms configuration', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+
+    // WHEN
+    const custom_key = new kms.Key(stack, 'Key');
+    new ecr.Repository(stack, 'Repo', { encryptionKey: custom_key });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository',
+      {
+        EncryptionConfiguration: {
+          EncryptionType: 'KMS',
+          KmsKey: {
+            'Fn::GetAtt': [
+              'Key961B73FD',
+              'Arn',
+            ],
+          },
+        },
+      });
+  });
+
+  test('fails if with custom kms key and AES256 as encryption', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const custom_key = new kms.Key(stack, 'Key');
+
+    // THEN
+    expect(() => {
+      new ecr.Repository(stack, 'Repo', { encryption: ecr.RepositoryEncryption.AES_256, encryptionKey: custom_key });
+    }).toThrow('encryptionKey is specified, so \'encryption\' must be set to KMS (value: AES256)');
+  });
+
   describe('events', () => {
     test('onImagePushed without imageTag creates the correct event', () => {
       const stack = new cdk.Stack();
@@ -341,7 +455,7 @@ describe('repository', () => {
         },
       });
 
-      expectCDK(stack).to(haveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'aws.ecr',
@@ -360,7 +474,7 @@ describe('repository', () => {
           },
         },
         'State': 'ENABLED',
-      }));
+      });
     });
 
     test('onImageScanCompleted without imageTags creates the correct event', () => {
@@ -373,7 +487,7 @@ describe('repository', () => {
         },
       });
 
-      expectCDK(stack).to(haveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'aws.ecr',
@@ -390,7 +504,7 @@ describe('repository', () => {
           },
         },
         'State': 'ENABLED',
-      }));
+      });
     });
 
     test('onImageScanCompleted with one imageTag creates the correct event', () => {
@@ -404,7 +518,7 @@ describe('repository', () => {
         },
       });
 
-      expectCDK(stack).to(haveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'aws.ecr',
@@ -424,7 +538,7 @@ describe('repository', () => {
           },
         },
         'State': 'ENABLED',
-      }));
+      });
     });
 
     test('onImageScanCompleted with multiple imageTags creates the correct event', () => {
@@ -438,7 +552,7 @@ describe('repository', () => {
         },
       });
 
-      expectCDK(stack).to(haveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'aws.ecr',
@@ -460,7 +574,7 @@ describe('repository', () => {
           },
         },
         'State': 'ENABLED',
-      }));
+      });
     });
 
     test('removal policy is "Retain" by default', () => {
@@ -471,10 +585,10 @@ describe('repository', () => {
       new ecr.Repository(stack, 'Repo');
 
       // THEN
-      expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+      Template.fromStack(stack).hasResource('AWS::ECR::Repository', {
         'Type': 'AWS::ECR::Repository',
         'DeletionPolicy': 'Retain',
-      }, ResourcePart.CompleteDefinition));
+      });
     });
 
     test('"Delete" removal policy can be set explicitly', () => {
@@ -487,10 +601,10 @@ describe('repository', () => {
       });
 
       // THEN
-      expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+      Template.fromStack(stack).hasResource('AWS::ECR::Repository', {
         'Type': 'AWS::ECR::Repository',
         'DeletionPolicy': 'Delete',
-      }, ResourcePart.CompleteDefinition));
+      });
     });
 
     test('grant adds appropriate resource-*', () => {
@@ -502,7 +616,7 @@ describe('repository', () => {
       repo.grantPull(new iam.AnyPrincipal());
 
       // THEN
-      expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
         'RepositoryPolicyText': {
           'Statement': [
             {
@@ -512,12 +626,12 @@ describe('repository', () => {
                 'ecr:BatchGetImage',
               ],
               'Effect': 'Allow',
-              'Principal': { AWS: '*' },
+              'Principal': { 'AWS': '*' },
             },
           ],
           'Version': '2012-10-17',
         },
-      }));
+      });
     });
   });
 

@@ -1,4 +1,4 @@
-import { expect as expectStack, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as apigwv2 from '@aws-cdk/aws-apigatewayv2';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as route53 from '@aws-cdk/aws-route53';
@@ -25,7 +25,7 @@ test('targets.ApiGatewayv2Domain can be used to directly reference a domain', ()
   });
 
   // THEN
-  expectStack(stack).to(haveResource('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     Name: 'example.com.',
     Type: 'A',
     AliasTarget: {
@@ -45,5 +45,5 @@ test('targets.ApiGatewayv2Domain can be used to directly reference a domain', ()
     HostedZoneId: {
       Ref: 'zoneEB40FF1E',
     },
-  }));
+  });
 });

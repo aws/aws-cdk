@@ -1,0 +1,317 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
+        }
+      },
+      "Integ-SecretsManager-Secret": {
+        "id": "Integ-SecretsManager-Secret",
+        "path": "Integ-SecretsManager-Secret",
+        "children": {
+          "TestRole": {
+            "id": "TestRole",
+            "path": "Integ-SecretsManager-Secret/TestRole",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "Integ-SecretsManager-Secret/TestRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "Integ-SecretsManager-Secret/TestRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "Integ-SecretsManager-Secret/TestRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "secretsmanager:DescribeSecret",
+                                "secretsmanager:GetSecretValue"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Ref": "SecretA720EF05"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "TestRoleDefaultPolicyD1C92014",
+                        "roles": [
+                          {
+                            "Ref": "TestRole6C9272DF"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "Secret": {
+            "id": "Secret",
+            "path": "Integ-SecretsManager-Secret/Secret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "Integ-SecretsManager-Secret/Secret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          },
+          "User": {
+            "id": "User",
+            "path": "Integ-SecretsManager-Secret/User",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "Integ-SecretsManager-Secret/User/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {
+                    "loginProfile": {
+                      "password": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "{{resolve:secretsmanager:",
+                            {
+                              "Ref": "SecretA720EF05"
+                            },
+                            ":SecretString:::}}"
+                          ]
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "TemplatedSecret": {
+            "id": "TemplatedSecret",
+            "path": "Integ-SecretsManager-Secret/TemplatedSecret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "Integ-SecretsManager-Secret/TemplatedSecret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {
+                      "secretStringTemplate": "{\"username\":\"user\"}",
+                      "generateStringKey": "password"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          },
+          "OtherUser": {
+            "id": "OtherUser",
+            "path": "Integ-SecretsManager-Secret/OtherUser",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "Integ-SecretsManager-Secret/OtherUser/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {
+                    "loginProfile": {
+                      "password": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "{{resolve:secretsmanager:",
+                            {
+                              "Ref": "TemplatedSecret3D98B577"
+                            },
+                            ":SecretString:password::}}"
+                          ]
+                        ]
+                      }
+                    },
+                    "userName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{{resolve:secretsmanager:",
+                          {
+                            "Ref": "TemplatedSecret3D98B577"
+                          },
+                          ":SecretString:username::}}"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "AccessKey": {
+            "id": "AccessKey",
+            "path": "Integ-SecretsManager-Secret/AccessKey",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "Integ-SecretsManager-Secret/AccessKey/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::AccessKey",
+                  "aws:cdk:cloudformation:props": {
+                    "userName": {
+                      "Ref": "User00B015A1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnAccessKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.AccessKey",
+              "version": "0.0.0"
+            }
+          },
+          "PredefinedSecret": {
+            "id": "PredefinedSecret",
+            "path": "Integ-SecretsManager-Secret/PredefinedSecret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "Integ-SecretsManager-Secret/PredefinedSecret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "secretString": {
+                      "Fn::GetAtt": [
+                        "AccessKeyE6B25659",
+                        "SecretAccessKey"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

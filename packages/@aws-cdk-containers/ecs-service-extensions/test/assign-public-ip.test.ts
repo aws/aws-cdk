@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -29,15 +29,13 @@ describe('assign public ip', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       NetworkConfiguration: {
         AwsvpcConfiguration: {
           AssignPublicIp: 'ENABLED',
         },
       },
     });
-
-
   });
 
   test('errors when adding a public ip to ec2-backed service', () => {
@@ -76,8 +74,6 @@ describe('assign public ip', () => {
         serviceDescription,
       });
     }).toThrow(/Fargate/i);
-
-
   });
 
   test('should not add a task record manager by default', () => {
@@ -103,8 +99,6 @@ describe('assign public ip', () => {
 
     // THEN
     expect(service.ecsService.node.tryFindChild('TaskRecordManager')).toBeUndefined();
-
-
   });
 
   test('should add a task record manager when dns is requested', () => {
@@ -138,8 +132,6 @@ describe('assign public ip', () => {
 
     // THEN
     expect(service.ecsService.node.tryFindChild('TaskRecordManager')).toBeDefined();
-
-
   });
 
   test('task record manager listens for ecs events', () => {
@@ -172,7 +164,7 @@ describe('assign public ip', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       EventPattern: {
         'source': ['aws.ecs'],
         'detail-type': [
@@ -185,7 +177,7 @@ describe('assign public ip', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       EventPattern: {
         'source': ['aws.ecs'],
         'detail-type': [
@@ -197,7 +189,5 @@ describe('assign public ip', () => {
         },
       },
     });
-
-
   });
 });

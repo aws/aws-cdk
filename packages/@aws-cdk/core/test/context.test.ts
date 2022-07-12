@@ -1,4 +1,6 @@
-import { Construct, Stack } from '../lib';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
+import { App, Stack } from '../lib';
 import { ContextProvider } from '../lib/context-provider';
 import { synthesize } from '../lib/private/synthesis';
 
@@ -12,7 +14,8 @@ describe('context', () => {
   });
 
   test('AvailabilityZoneProvider will return context list if available', () => {
-    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new Stack(app, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     const before = stack.availabilityZones;
     expect(before).toEqual(['dummy1a', 'dummy1b', 'dummy1c']);
     const key = expectedContextKey(stack);
@@ -21,12 +24,11 @@ describe('context', () => {
 
     const azs = stack.availabilityZones;
     expect(azs).toEqual(['us-east-1a', 'us-east-1b']);
-
-
   });
 
   test('AvailabilityZoneProvider will complain if not given a list', () => {
-    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new Stack(app, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     const before = stack.availabilityZones;
     expect(before).toEqual(['dummy1a', 'dummy1b', 'dummy1c']);
     const key = expectedContextKey(stack);
@@ -36,8 +38,6 @@ describe('context', () => {
     expect(
       () => stack.availabilityZones,
     ).toThrow();
-
-
   });
 
   test('ContextProvider consistently generates a key', () => {
@@ -78,7 +78,6 @@ describe('context', () => {
         igw: false,
       },
     });
-
   });
 
   test('Key generation can contain arbitrarily deep structures', () => {
@@ -108,8 +107,6 @@ describe('context', () => {
         ],
       },
     });
-
-
   });
 
   test('Keys with undefined values are not serialized', () => {
@@ -135,8 +132,6 @@ describe('context', () => {
         p2: undefined,
       },
     });
-
-
   });
 
   test('context provider errors are attached to tree', () => {
@@ -161,10 +156,13 @@ describe('context', () => {
     });
 
     // THEN
-    const error = construct.node.metadataEntry.find(m => m.type === 'aws:cdk:error');
+    const error = construct.node.metadata.find(m => m.type === 'aws:cdk:error');
     expect(error && error.data).toEqual('I had a boo-boo');
+  });
 
-
+  test('can skip account/region from attach to context', () => {
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    expect(ContextProvider.getKey(stack, { provider: 'asdf', includeEnvironment: false }).key).toEqual('asdf:');
   });
 });
 

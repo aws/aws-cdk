@@ -77,6 +77,23 @@ test('PythonFunction with index in a subdirectory', () => {
   });
 });
 
+test('PythonFunction with index in a nested subdirectory', () => {
+  new PythonFunction(stack, 'handler', {
+    entry: 'test/lambda-handler-sub-nested',
+    index: 'inner/inner2/custom_index.py',
+    handler: 'custom_handler',
+    runtime: Runtime.PYTHON_3_8,
+  });
+
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    entry: expect.stringMatching(/aws-lambda-python\/test\/lambda-handler-sub-nested$/),
+  }));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Handler: 'inner.inner2.custom_index.custom_handler',
+  });
+});
+
 test('throws when index is not py', () => {
   expect(() => new PythonFunction(stack, 'Fn', {
     entry: 'test/lambda-handler',
@@ -95,7 +112,7 @@ test('throws when entry does not exist', () => {
 test('throws with the wrong runtime family', () => {
   expect(() => new PythonFunction(stack, 'handler1', {
     entry: 'test/lambda-handler',
-    runtime: Runtime.NODEJS_12_X,
+    runtime: Runtime.NODEJS_14_X,
   })).toThrow(/Only `PYTHON` runtimes are supported/);
 });
 
@@ -166,4 +183,36 @@ test('Allows use of custom bundling image', () => {
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     image,
   }));
+});
+
+test('Skip bundling when stack does not require it', () => {
+  const spy = jest.spyOn(stack, 'bundlingRequired', 'get').mockReturnValue(false);
+  const entry = path.join(__dirname, 'lambda-handler');
+
+  new PythonFunction(stack, 'function', {
+    entry,
+    runtime: Runtime.PYTHON_3_8,
+  });
+
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    skip: true,
+  }));
+
+  spy.mockRestore();
+});
+
+test('Do not skip bundling when stack requires it', () => {
+  const spy = jest.spyOn(stack, 'bundlingRequired', 'get').mockReturnValue(true);
+  const entry = path.join(__dirname, 'lambda-handler');
+
+  new PythonFunction(stack, 'function', {
+    entry,
+    runtime: Runtime.PYTHON_3_8,
+  });
+
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    skip: false,
+  }));
+
+  spy.mockRestore();
 });

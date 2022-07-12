@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { expect as expectStack } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
 import { PublicKey } from '../lib';
 
@@ -35,7 +34,7 @@ describe('PublicKey', () => {
       encodedKey: publicKey,
     });
 
-    expectStack(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyPublicKey78071F3D: {
           Type: 'AWS::CloudFront::PublicKey',
@@ -58,7 +57,7 @@ describe('PublicKey', () => {
       comment: 'Key expiring on 1/1/1984',
     });
 
-    expectStack(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyPublicKey78071F3D: {
           Type: 'AWS::CloudFront::PublicKey',

@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ResourcePart } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
@@ -12,7 +11,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const auth = new TokenAuthorizer(stack, 'myauthorizer', {
@@ -25,7 +24,7 @@ describe('lambda authorizer', () => {
       authorizationType: AuthorizationType.CUSTOM,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Authorizer', {
       Type: 'TOKEN',
       RestApiId: stack.resolve(restApi.restApiId),
       IdentitySource: 'method.request.header.Authorization',
@@ -35,11 +34,31 @@ describe('lambda authorizer', () => {
           [
             'arn:',
             {
-              Ref: 'AWS::Partition',
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':apigateway:',
             {
-              Ref: 'AWS::Region',
+              'Fn::Select': [
+                3,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':lambda:path/2015-03-31/functions/',
             {
@@ -51,7 +70,7 @@ describe('lambda authorizer', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Permission', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       Principal: 'apigateway.amazonaws.com',
     });
@@ -65,7 +84,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const auth = new RequestAuthorizer(stack, 'myauthorizer', {
@@ -80,7 +99,7 @@ describe('lambda authorizer', () => {
       authorizationType: AuthorizationType.CUSTOM,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Authorizer', {
       Type: 'REQUEST',
       RestApiId: stack.resolve(restApi.restApiId),
       AuthorizerUri: {
@@ -89,11 +108,31 @@ describe('lambda authorizer', () => {
           [
             'arn:',
             {
-              Ref: 'AWS::Partition',
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':apigateway:',
             {
-              Ref: 'AWS::Region',
+              'Fn::Select': [
+                3,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':lambda:path/2015-03-31/functions/',
             {
@@ -105,7 +144,7 @@ describe('lambda authorizer', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Permission', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       Principal: 'apigateway.amazonaws.com',
     });
@@ -121,7 +160,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     expect(() => new RequestAuthorizer(stack, 'myauthorizer', {
@@ -137,7 +176,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const auth = new TokenAuthorizer(stack, 'myauthorizer', {
@@ -154,7 +193,7 @@ describe('lambda authorizer', () => {
       authorizationType: AuthorizationType.CUSTOM,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Authorizer', {
       Type: 'TOKEN',
       RestApiId: stack.resolve(restApi.restApiId),
       IdentitySource: 'method.request.header.whoami',
@@ -167,11 +206,31 @@ describe('lambda authorizer', () => {
           [
             'arn:',
             {
-              Ref: 'AWS::Partition',
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':apigateway:',
             {
-              Ref: 'AWS::Region',
+              'Fn::Select': [
+                3,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':lambda:path/2015-03-31/functions/',
             {
@@ -190,7 +249,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const auth = new RequestAuthorizer(stack, 'myauthorizer', {
@@ -206,7 +265,7 @@ describe('lambda authorizer', () => {
       authorizationType: AuthorizationType.CUSTOM,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Authorizer', {
       Type: 'REQUEST',
       RestApiId: stack.resolve(restApi.restApiId),
       IdentitySource: 'method.request.header.whoami',
@@ -218,11 +277,31 @@ describe('lambda authorizer', () => {
           [
             'arn:',
             {
-              Ref: 'AWS::Partition',
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':apigateway:',
             {
-              Ref: 'AWS::Region',
+              'Fn::Select': [
+                3,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':lambda:path/2015-03-31/functions/',
             {
@@ -241,7 +320,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const role = new iam.Role(stack, 'authorizerassumerole', {
@@ -260,7 +339,7 @@ describe('lambda authorizer', () => {
       authorizationType: AuthorizationType.CUSTOM,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Authorizer', {
       Type: 'TOKEN',
       RestApiId: stack.resolve(restApi.restApiId),
       AuthorizerUri: {
@@ -269,11 +348,31 @@ describe('lambda authorizer', () => {
           [
             'arn:',
             {
-              Ref: 'AWS::Partition',
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':apigateway:',
             {
-              Ref: 'AWS::Region',
+              'Fn::Select': [
+                3,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':lambda:path/2015-03-31/functions/',
             {
@@ -285,24 +384,24 @@ describe('lambda authorizer', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Role');
+    Template.fromStack(stack).hasResource('AWS::IAM::Role', Match.anyValue());
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       Roles: [
         stack.resolve(role.roleName),
       ],
       PolicyDocument: {
         Statement: [
           {
-            Resource: stack.resolve(func.functionArn),
+            Resource: stack.resolve(func.resourceArnsForGrantInvoke),
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
           },
         ],
       },
-    }, ResourcePart.Properties);
+    });
 
-    expect(stack).not.toHaveResource('AWS::Lambda::Permission');
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
   });
 
   test('request authorizer with assume role', () => {
@@ -311,7 +410,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const role = new iam.Role(stack, 'authorizerassumerole', {
@@ -332,7 +431,7 @@ describe('lambda authorizer', () => {
       authorizationType: AuthorizationType.CUSTOM,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Authorizer', {
       Type: 'REQUEST',
       RestApiId: stack.resolve(restApi.restApiId),
       AuthorizerUri: {
@@ -341,11 +440,31 @@ describe('lambda authorizer', () => {
           [
             'arn:',
             {
-              Ref: 'AWS::Partition',
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':apigateway:',
             {
-              Ref: 'AWS::Region',
+              'Fn::Select': [
+                3,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':lambda:path/2015-03-31/functions/',
             {
@@ -357,24 +476,24 @@ describe('lambda authorizer', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Role');
+    Template.fromStack(stack).hasResource('AWS::IAM::Role', Match.anyValue());
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       Roles: [
         stack.resolve(role.roleName),
       ],
       PolicyDocument: {
         Statement: [
           {
-            Resource: stack.resolve(func.functionArn),
+            Resource: stack.resolve(func.resourceArnsForGrantInvoke),
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
           },
         ],
       },
-    }, ResourcePart.Properties);
+    });
 
-    expect(stack).not.toHaveResource('AWS::Lambda::Permission');
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
   });
 
   test('token authorizer throws when not attached to a rest api', () => {
@@ -382,7 +501,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
     const auth = new TokenAuthorizer(stack, 'myauthorizer', {
       handler: func,
@@ -396,7 +515,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
     const auth = new RequestAuthorizer(stack, 'myauthorizer', {
       handler: func,

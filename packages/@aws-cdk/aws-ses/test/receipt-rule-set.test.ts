@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { ReceiptRuleSet } from '../lib';
 
@@ -15,7 +15,7 @@ describe('receipt rule set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SES::ReceiptRuleSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRuleSet', {
       RuleSetName: 'MyRuleSet',
     });
 
@@ -32,7 +32,7 @@ describe('receipt rule set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
       Rule: {
         Actions: [
           {
@@ -52,7 +52,7 @@ describe('receipt rule set', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Function');
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
 
 
   });
@@ -73,7 +73,7 @@ describe('receipt rule set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
       Rule: {
         Enabled: true,
         Recipients: [
@@ -87,7 +87,7 @@ describe('receipt rule set', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Function');
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
 
 
   });
@@ -102,7 +102,7 @@ describe('receipt rule set', () => {
     receiptRuleSet.addRule('MyRule');
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'ImportedRuleSetMyRule53EE2F7F': {
           'Type': 'AWS::SES::ReceiptRule',

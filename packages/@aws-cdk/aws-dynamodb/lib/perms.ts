@@ -29,3 +29,5 @@ export const READ_STREAM_DATA_ACTIONS = [
   'dynamodb:GetRecords',
   'dynamodb:GetShardIterator',
 ];
+
+export const DESCRIBE_TABLE = 'dynamodb:DescribeTable';

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Stack } from '@aws-cdk/core';
 import { LogGroupResourcePolicy } from '../lib/log-group-resource-policy';
@@ -24,7 +24,7 @@ test('minimal example renders correctly', () => {
     })],
   });
 
-  expect(stack).toHaveResource('Custom::CloudwatchLogResourcePolicy', {
+  Template.fromStack(stack).hasResourceProperties('Custom::CloudwatchLogResourcePolicy', {
     ServiceToken: {
       'Fn::GetAtt': [
         'AWS679f53fac002430cb0da5b7982bd22872D164C4C',

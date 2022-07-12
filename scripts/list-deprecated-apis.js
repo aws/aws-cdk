@@ -48,23 +48,24 @@ class StripDeprecatedPrinter {
 
 async function main(printer) {
   const typesystem = new jsiiReflect.TypeSystem();
-  // Decdk depends on everything, so that's a perfect directory to load as closure
-  await typesystem.loadNpmDependencies(path.resolve(__dirname, '..', 'packages', 'decdk'), { validate: false });
+  // aws-cdk-lib depends on everything, so that's a perfect directory to load as closure
+  await typesystem.loadNpmDependencies(path.resolve(__dirname, '..', 'packages', 'aws-cdk-lib'), { validate: false });
 
   printer.printHeader();
 
   for (const assembly of typesystem.assemblies) {
-    for (const type of assembly.types) {
-      printer.printIfDeprecated(assembly.fqn, type.name, type);
+    for (const type of [assembly, ...assembly.allSubmodules].flatMap(x => x.types)) {
+      const typeName = type.namespace ? `${type.namespace}.${type.name}` : type.name;
+      printer.printIfDeprecated(assembly.fqn, typeName, type);
 
       if (type.isEnumType()) {
-        type.members.forEach(e => printer.printIfDeprecated(assembly.fqn, `${type.name}#${e.name}`, e));
+        type.members.forEach(e => printer.printIfDeprecated(assembly.fqn, `${typeName}#${e.name}`, e));
       }
       if (type.isInterfaceType() || type.isClassType() || type.isDataType()) {
-        type.ownProperties.forEach(p => printer.printIfDeprecated(assembly.fqn, `${type.name}#${p.name}`, p));
+        type.ownProperties.forEach(p => printer.printIfDeprecated(assembly.fqn, `${typeName}#${p.name}`, p));
         type.ownMethods.forEach(method => {
-          printer.printIfDeprecated(assembly.fqn, `${type.name}#${method.name}()`, method);
-          method.parameters.forEach(p => printer.printIfDeprecated(assembly.fqn, `${type.name}#${method.name}(): ${p.name}`, p));
+          printer.printIfDeprecated(assembly.fqn, `${typeName}#${method.name}()`, method);
+          method.parameters.forEach(p => printer.printIfDeprecated(assembly.fqn, `${typeName}#${method.name}(): ${p.name}`, p));
         });
       }
     }

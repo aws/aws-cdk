@@ -1,16 +1,84 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { FingerprintOptions, FollowMode, IAsset } from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, CfnResource } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line
-import { FingerprintOptions, FollowMode, IAsset } from '@aws-cdk/assets';
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+/**
+ * networking mode on build time supported by docker
+ */
+export class NetworkMode {
+  /**
+   * The default networking mode if omitted, create a network stack on the default Docker bridge
+   */
+  public static readonly DEFAULT = new NetworkMode('default');
+
+  /**
+   * Use the Docker host network stack
+   */
+  public static readonly HOST = new NetworkMode('host');
+
+  /**
+   * Disable the network stack, only the loopback device will be created
+   */
+  public static readonly NONE = new NetworkMode('none');
+
+  /**
+   * Reuse another container's network stack
+   *
+   * @param containerId The target container's id or name
+   */
+  public static fromContainer(containerId: string) {
+    return new NetworkMode(`container:${containerId}`);
+  }
+
+  /**
+   * Used to specify a custom networking mode
+   * Use this if the networking mode name is not yet supported by the CDK.
+   *
+   * @param mode The networking mode to use for docker build
+   */
+  public static custom(mode: string) {
+    return new NetworkMode(mode);
+  }
+
+  /**
+   * @param mode The networking mode to use for docker build
+   */
+  private constructor(public readonly mode: string) {}
+}
+
+/**
+ * platform supported by docker
+ */
+export class Platform {
+  /**
+   * Build for linux/amd64
+   */
+  public static readonly LINUX_AMD64 = new Platform('linux/amd64');
+
+  /**
+   * Build for linux/arm64
+   */
+  public static readonly LINUX_ARM64 = new Platform('linux/arm64');
+
+  /**
+   * Used to specify a custom platform
+   * Use this if the platform name is not yet supported by the CDK.
+   *
+   * @param platform The platform to use for docker build
+   */
+  public static custom(platform: string) {
+    return new Platform(platform);
+  }
+
+  /**
+   * @param platform The platform to use for docker build
+   */
+  private constructor(public readonly platform: string) {}
+}
 
 /**
  * Options to control invalidation of `DockerImageAsset` asset hashes
@@ -50,6 +118,20 @@ export interface DockerImageAssetInvalidationOptions {
    * @default true
    */
   readonly repositoryName?: boolean;
+
+  /**
+   * Use `networkMode` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly networkMode?: boolean;
+
+  /**
+   * Use `platform` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly platform?: boolean;
 }
 
 /**
@@ -96,6 +178,20 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
   readonly file?: string;
 
   /**
+   * Networking mode for the RUN commands during build. Support docker API 1.25+.
+   *
+   * @default - no networking mode specified (the default networking mode `NetworkMode.DEFAULT` will be used)
+   */
+  readonly networkMode?: NetworkMode;
+
+  /**
+   * Platform to build for. _Requires Docker Buildx_.
+   *
+   * @default - no platform specified (the current machine architecture will be used)
+   */
+  readonly platform?: Platform;
+
+  /**
    * Options to control which parameters are used to invalidate the asset hash.
    *
    * @default - hash all parameters
@@ -120,7 +216,7 @@ export interface DockerImageAssetProps extends DockerImageAssetOptions {
  *
  * The image will be created in build time and uploaded to an ECR repository.
  */
-export class DockerImageAsset extends CoreConstruct implements IAsset {
+export class DockerImageAsset extends Construct implements IAsset {
   /**
    * The full URI of the image (including a tag). Use this reference to pull
    * the asset.
@@ -227,6 +323,8 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
     if (props.invalidation?.target !== false && props.target) { extraHash.target = props.target; }
     if (props.invalidation?.file !== false && props.file) { extraHash.file = props.file; }
     if (props.invalidation?.repositoryName !== false && props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
+    if (props.invalidation?.networkMode !== false && props.networkMode) { extraHash.networkMode = props.networkMode; }
+    if (props.invalidation?.platform !== false && props.platform) { extraHash.platform = props.platform; }
 
     // add "salt" to the hash in order to invalidate the image in the upgrade to
     // 1.21.0 which removes the AdoptedRepository resource (and will cause the
@@ -258,6 +356,8 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
       dockerBuildTarget: this.dockerBuildTarget,
       dockerFile: props.file,
       sourceHash: staging.assetHash,
+      networkMode: props.networkMode?.mode,
+      platform: props.platform?.platform,
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);

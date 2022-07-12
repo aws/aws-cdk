@@ -1,0 +1,14 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "@aws-cdk/aws-elasticloadbalancingv2-targets/test/integ.lambda-target": {
+      "stacks": [
+        "TestStack"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

@@ -19,3 +19,8 @@ nyc.config.js
 !test/canaries/nodejs/*
 
 junit.xml
+
+!**/*.integ.snapshot/**/asset.*/*.js
+!**/*.integ.snapshot/**/asset.*/*.d.ts
+
+!**/*.integ.snapshot/**/asset.*/**

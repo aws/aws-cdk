@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { AccountRootPrincipal, Role } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { ProfilingGroup, ComputePlatform } from '../lib';
@@ -6,7 +6,6 @@ import { ProfilingGroup, ComputePlatform } from '../lib';
 /* eslint-disable quote-props */
 
 describe('profiling group', () => {
-
   test('attach read permission to Profiling group via fromProfilingGroupArn', () => {
     const stack = new Stack();
     // dummy role to test out read permissions on ProfilingGroup
@@ -17,7 +16,7 @@ describe('profiling group', () => {
     const profilingGroup = ProfilingGroup.fromProfilingGroupArn(stack, 'MyProfilingGroup', 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup');
     profilingGroup.grantRead(readAppRole);
 
-    expect(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'ReadAppRole52FE6317': {
           'Type': 'AWS::IAM::Role',
@@ -89,7 +88,7 @@ describe('profiling group', () => {
     const profilingGroup = ProfilingGroup.fromProfilingGroupName(stack, 'MyProfilingGroup', 'MyAwesomeProfilingGroup');
     profilingGroup.grantPublish(publishAppRole);
 
-    expect(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'PublishAppRole9FEBD682': {
           'Type': 'AWS::IAM::Role',
@@ -176,7 +175,7 @@ describe('profiling group', () => {
       profilingGroupName: 'MyAwesomeProfilingGroup',
     });
 
-    expect(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyProfilingGroup829F0507': {
           'Type': 'AWS::CodeGuruProfiler::ProfilingGroup',
@@ -195,9 +194,9 @@ describe('profiling group', () => {
       computePlatform: ComputePlatform.AWS_LAMBDA,
     });
 
-    expect(stack).to(haveResourceLike('AWS::CodeGuruProfiler::ProfilingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeGuruProfiler::ProfilingGroup', {
       'ComputePlatform': 'AWSLambda',
-    }));
+    });
   });
 
   test('default profiling group without name', () => {
@@ -205,7 +204,7 @@ describe('profiling group', () => {
     new ProfilingGroup(stack, 'MyProfilingGroup', {
     });
 
-    expect(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyProfilingGroup829F0507': {
           'Type': 'AWS::CodeGuruProfiler::ProfilingGroup',
@@ -222,7 +221,7 @@ describe('profiling group', () => {
     new ProfilingGroup(stack, 'MyProfilingGroupWithAReallyLongProfilingGroupNameThatExceedsTheLimitOfProfilingGroupNameSize_InOrderToDoSoTheNameMustBeGreaterThanTwoHundredAndFiftyFiveCharacters_InSuchCasesWePickUpTheFirstOneTwentyCharactersFromTheBeginningAndTheEndAndConcatenateThemToGetTheIdentifier', {
     });
 
-    expect(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyProfilingGroupWithAReallyLongProfilingGroupNameThatExceedsTheLimitOfProfilingGroupNameSizeInOrderToDoSoTheNameMustBeGreaterThanTwoHundredAndFiftyFiveCharactersInSuchCasesWePickUpTheFirstOneTwentyCharactersFromTheBeginningAndTheEndAndConca4B39908C': {
           'Type': 'AWS::CodeGuruProfiler::ProfilingGroup',
@@ -245,7 +244,7 @@ describe('profiling group', () => {
 
     profilingGroup.grantPublish(publishAppRole);
 
-    expect(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyProfilingGroup829F0507': {
           'Type': 'AWS::CodeGuruProfiler::ProfilingGroup',
@@ -329,7 +328,7 @@ describe('profiling group', () => {
 
     profilingGroup.grantRead(readAppRole);
 
-    expect(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyProfilingGroup829F0507': {
           'Type': 'AWS::CodeGuruProfiler::ProfilingGroup',
@@ -401,5 +400,4 @@ describe('profiling group', () => {
       },
     });
   });
-
 });

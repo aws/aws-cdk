@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Cluster, KubernetesManifest, KubernetesVersion } from '../lib';
@@ -58,7 +58,7 @@ describe('aws auth', () => {
     new AwsAuth(stack, 'AwsAuth', { cluster });
 
     // THEN
-    expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
+    Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: JSON.stringify([{
         apiVersion: 'v1',
         kind: 'ConfigMap',
@@ -85,8 +85,8 @@ describe('aws auth', () => {
     cluster.awsAuth.addAccount('5566776655');
 
     // THEN
-    expect(stack).toCountResources(KubernetesManifest.RESOURCE_TYPE, 1);
-    expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
+    Template.fromStack(stack).resourceCountIs(KubernetesManifest.RESOURCE_TYPE, 1);
+    Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -175,7 +175,7 @@ describe('aws auth', () => {
     cluster.awsAuth.addUserMapping(user, { groups: ['group2'] });
 
     // THEN
-    expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
+    Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -236,7 +236,7 @@ describe('aws auth', () => {
     cluster.awsAuth.addMastersRole(role);
 
     // THEN
-    expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
+    Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',

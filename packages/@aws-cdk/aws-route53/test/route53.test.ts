@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { MatchStyle } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { HostedZone, PrivateHostedZone, PublicHostedZone, TxtRecord } from '../lib';
@@ -9,15 +8,8 @@ describe('route53', () => {
     test('public hosted zone', () => {
       const app = new TestApp();
       new PublicHostedZone(app.stack, 'HostedZone', { zoneName: 'test.public' });
-      expect(app.stack).toMatchTemplate({
-        Resources: {
-          HostedZoneDB99F866: {
-            Type: 'AWS::Route53::HostedZone',
-            Properties: {
-              Name: 'test.public.',
-            },
-          },
-        },
+      Template.fromStack(app.stack).hasResourceProperties('AWS::Route53::HostedZone', {
+        Name: 'test.public.',
       });
 
     });
@@ -25,47 +17,32 @@ describe('route53', () => {
       const app = new TestApp();
       const vpcNetwork = new ec2.Vpc(app.stack, 'VPC');
       new PrivateHostedZone(app.stack, 'HostedZone', { zoneName: 'test.private', vpc: vpcNetwork });
-      expect(app.stack).toMatchTemplate({
-        Resources: {
-          HostedZoneDB99F866: {
-            Type: 'AWS::Route53::HostedZone',
-            Properties: {
-              Name: 'test.private.',
-              VPCs: [{
-                VPCId: { Ref: 'VPCB9E5F0B4' },
-                VPCRegion: 'bermuda-triangle',
-              }],
-            },
-          },
-        },
-      }, MatchStyle.SUPERSET);
-
+      Template.fromStack(app.stack).hasResourceProperties('AWS::Route53::HostedZone', {
+        Name: 'test.private.',
+        VPCs: [{
+          VPCId: { Ref: 'VPCB9E5F0B4' },
+          VPCRegion: 'bermuda-triangle',
+        }],
+      });
     });
+
     test('when specifying multiple VPCs', () => {
       const app = new TestApp();
       const vpcNetworkA = new ec2.Vpc(app.stack, 'VPC1');
       const vpcNetworkB = new ec2.Vpc(app.stack, 'VPC2');
       new PrivateHostedZone(app.stack, 'HostedZone', { zoneName: 'test.private', vpc: vpcNetworkA })
         .addVpc(vpcNetworkB);
-      expect(app.stack).toMatchTemplate({
-        Resources: {
-          HostedZoneDB99F866: {
-            Type: 'AWS::Route53::HostedZone',
-            Properties: {
-              Name: 'test.private.',
-              VPCs: [{
-                VPCId: { Ref: 'VPC17DE2CF87' },
-                VPCRegion: 'bermuda-triangle',
-              },
-              {
-                VPCId: { Ref: 'VPC2C1F0E711' },
-                VPCRegion: 'bermuda-triangle',
-              }],
-            },
-          },
+      Template.fromStack(app.stack).hasResourceProperties('AWS::Route53::HostedZone', {
+        Name: 'test.private.',
+        VPCs: [{
+          VPCId: { Ref: 'VPC17DE2CF87' },
+          VPCRegion: 'bermuda-triangle',
         },
-      }, MatchStyle.SUPERSET);
-
+        {
+          VPCId: { Ref: 'VPC2C1F0E711' },
+          VPCRegion: 'bermuda-triangle',
+        }],
+      });
     });
   });
 
@@ -83,14 +60,12 @@ describe('route53', () => {
       values: ['SeeThere'],
     });
 
-    expect(stack2).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack2).hasResourceProperties('AWS::Route53::RecordSet', {
       HostedZoneId: 'hosted-zone-id',
       Name: 'lookHere.cdk.local.',
       ResourceRecords: ['"SeeThere"'],
       Type: 'TXT',
     });
-
-
   });
 
   test('adds period to name if not provided', () => {
@@ -103,10 +78,9 @@ describe('route53', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::HostedZone', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::HostedZone', {
       Name: 'zonename.',
     });
-
   });
 
   test('fails if zone name ends with a trailing dot', () => {
@@ -115,7 +89,6 @@ describe('route53', () => {
 
     // THEN
     expect(() => new HostedZone(stack, 'MyHostedZone', { zoneName: 'zonename.' })).toThrow(/zone name must not end with a trailing dot/);
-
   });
 
   test('a hosted zone can be assiciated with a VPC either upon creation or using "addVpc"', () => {
@@ -133,7 +106,7 @@ describe('route53', () => {
     zone.addVpc(vpc3);
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::HostedZone', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::HostedZone', {
       VPCs: [
         {
           VPCId: {
@@ -161,7 +134,6 @@ describe('route53', () => {
         },
       ],
     });
-
   });
 
   test('public zone cannot be associated with a vpc (runtime error)', () => {
@@ -172,7 +144,6 @@ describe('route53', () => {
 
     // THEN
     expect(() => zone.addVpc(vpc)).toThrow(/Cannot associate public hosted zones with a VPC/);
-
   });
 
   test('setting up zone delegation', () => {
@@ -185,14 +156,13 @@ describe('route53', () => {
     zone.addDelegation(delegate, { ttl: cdk.Duration.seconds(1337) });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Type: 'NS',
       Name: 'sub.top.test.',
       HostedZoneId: stack.resolve(zone.hostedZoneId),
       ResourceRecords: stack.resolve(delegate.hostedZoneNameServers),
       TTL: '1337',
     });
-
   });
 
   test('public hosted zone wiht caaAmazon set to true', () => {
@@ -206,14 +176,13 @@ describe('route53', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Type: 'CAA',
       Name: 'protected.com.',
       ResourceRecords: [
         '0 issue "amazon.com"',
       ],
     });
-
   });
 });
 

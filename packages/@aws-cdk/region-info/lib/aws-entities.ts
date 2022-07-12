@@ -1,17 +1,14 @@
-// Rule prefix
-const RULE_ = 'RULE_';
-
 /**
  * After this point, SSM only creates regional principals
  */
-export const RULE_SSM_PRINCIPALS_ARE_REGIONAL = `${RULE_}SSM_PRINCIPALS_ARE_REGIONAL`;
+export const RULE_SSM_PRINCIPALS_ARE_REGIONAL = Symbol('SSM_PRINCIPALS_ARE_REGIONAL');
 
 /**
  * After this point, S3 website domains look like `s3-website.REGION.s3.amazonaws.com`
  *
  * Before this point, S3 website domains look like `s3-website-REGION.s3.amazonaws.com`.
  */
-export const RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN = `${RULE_}S3_WEBSITE_REGIONAL_SUBDOMAIN`;
+export const RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN = Symbol('S3_WEBSITE_REGIONAL_SUBDOMAIN');
 
 /**
  * List of AWS region, ordered by launch date (oldest to newest)
@@ -21,13 +18,13 @@ export const RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN = `${RULE_}S3_WEBSITE_REGIONAL_S
  * regions are left as-is.
  *
  * We mix the list of regions with a list of rules that were introduced over
- * time (rules are strings starting with `RULE_`).
+ * time (rules are symbols).
  *
  * Therefore, if we want to know if a rule applies to a certain region, we
  * only need to check its position in the list and compare it to when a
  * rule was introduced.
  */
-export const AWS_REGIONS_AND_RULES = [
+export const AWS_REGIONS_AND_RULES: readonly (string | symbol)[] = [
   'us-east-1', // US East (N. Virginia)
   'eu-west-1', // Europe (Ireland)
   'us-west-1', // US West (N. California)
@@ -68,15 +65,15 @@ export const AWS_REGIONS_AND_RULES = [
  * Not in the list ==> no built-in data for that region.
  */
 export const AWS_REGIONS = AWS_REGIONS_AND_RULES
-  .filter((x) => !x.startsWith(RULE_))
-  .sort();
+  .filter((x) => typeof x === 'string')
+  .sort() as readonly string[];
 
 /**
  * Possibly non-exaustive list of all service names, used to locate service principals.
  *
  * Not in the list ==> default service principal mappings.
  */
-export const AWS_SERVICES = [
+export const AWS_SERVICES: readonly string[] = [
   'application-autoscaling',
   'autoscaling',
   'codedeploy',
@@ -96,10 +93,10 @@ export const AWS_SERVICES = [
  *
  * Unknown region => we have to assume no.
  */
-export function before(region: string, ruleOrRegion: string) {
+export function before(region: string, ruleOrRegion: string | symbol) {
   const ruleIx = AWS_REGIONS_AND_RULES.indexOf(ruleOrRegion);
   if (ruleIx === -1) {
-    throw new Error(`Unknown rule: ${ruleOrRegion}`);
+    throw new Error(`Unknown rule: ${String(ruleOrRegion)}`);
   }
   const regionIx = AWS_REGIONS_AND_RULES.indexOf(region);
   return regionIx === -1 ? false : regionIx < ruleIx;
@@ -108,17 +105,19 @@ export function before(region: string, ruleOrRegion: string) {
 /**
  * Return all regions before a given rule was introduced (or region)
  */
-export function regionsBefore(ruleOrRegion: string): string[] {
+export function regionsBefore(ruleOrRegion: string | symbol): string[] {
   const ruleIx = AWS_REGIONS_AND_RULES.indexOf(ruleOrRegion);
   if (ruleIx === -1) {
-    throw new Error(`Unknown rule: ${ruleOrRegion}`);
+    throw new Error(`Unknown rule: ${String(ruleOrRegion)}`);
   }
-  return AWS_REGIONS_AND_RULES.filter((_, i) => i < ruleIx).sort();
+  return AWS_REGIONS_AND_RULES.slice(0, ruleIx)
+    .filter((entry) => typeof entry === 'string')
+    .sort() as string[];
 }
 
-export interface Region { partition: string, domainSuffix: string }
+export interface Region { readonly partition: string, readonly domainSuffix: string }
 
-const PARTITION_MAP: { [region: string]: Region } = {
+const PARTITION_MAP: {readonly [region: string]: Region } = {
   'default': { partition: 'aws', domainSuffix: 'amazonaws.com' },
   'cn-': { partition: 'aws-cn', domainSuffix: 'amazonaws.com.cn' },
   'us-gov-': { partition: 'aws-us-gov', domainSuffix: 'amazonaws.com' },
@@ -133,15 +132,4 @@ export function partitionInformation(region: string): Region {
     }
   }
   return PARTITION_MAP.default;
-}
-
-/**
- * Build a lookup map for all regions
- */
-export function generateRegionMap(cb: (region: string) => string): Record<string, string> {
-  const ret: Record<string, string> = {};
-  for (const region of AWS_REGIONS) {
-    ret[region] = cb(region);
-  }
-  return ret;
 }

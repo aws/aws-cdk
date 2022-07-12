@@ -63,7 +63,7 @@ A secret can set `RemovalPolicy`. If it set to `RETAIN`, that removing a secret 
 ## Grant permission to use the secret to a role
 
 You must grant permission to a resource for that resource to be allowed to
-use a secret. This can be achieved with the `Secret.grantRead` and/or `Secret.grantUpdate`
+use a secret. This can be achieved with the `Secret.grantRead` and/or `Secret.grantWrite`
  method, depending on your need:
 
 ```ts
@@ -145,6 +145,12 @@ secret.addRotationSchedule('RotationSchedule', { hostedRotation: myHostedRotatio
 dbConnections.allowDefaultPortFrom(myHostedRotation);
 ```
 
+Use the `excludeCharacters` option to customize the characters excluded from
+the generated password when it is rotated. By default, the rotation excludes
+the same characters as the ones excluded for the secret. If none are defined
+then the following set is used: ``% +~`#$&*()|[]{}:;<>?!'/@"\``.
+
+
 See also [Automating secret creation in AWS CloudFormation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/integrating_cloudformation.html).
 
 ## Rotating database credentials
@@ -198,7 +204,7 @@ new secretsmanager.SecretRotation(this, 'SecretRotation', {
 });
 ```
 
-See also [aws-rds](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-rds/README.md) where
+See also [aws-rds](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-rds/README.md) where
 credentials generation and rotation is integrated.
 
 ## Importing Secrets

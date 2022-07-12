@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { ArnPrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 
@@ -33,18 +33,18 @@ describe('vpc endpoint service', () => {
         allowedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')],
       });
       // THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpointService', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
         NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
         AcceptanceRequired: false,
       });
 
-      expect(stack).not.toHaveResource('AWS::EC2::VPCEndpointServicePermissions', {
+      const servicePermissions = Template.fromStack(stack).findResources('AWS::EC2::VPCEndpointServicePermissions', {
         ServiceId: {
           Ref: 'EndpointServiceED36BE1F',
         },
         AllowedPrincipals: [],
       });
-
+      expect(Object.keys(servicePermissions).length).toBe(0);
 
     });
     test('create endpoint service with a principal', () => {
@@ -60,12 +60,12 @@ describe('vpc endpoint service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpointService', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
         NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
         AcceptanceRequired: false,
       });
 
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpointServicePermissions', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointServicePermissions', {
         ServiceId: {
           Ref: 'EndpointServiceED36BE1F',
         },
@@ -88,12 +88,12 @@ describe('vpc endpoint service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpointService', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
         NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
         AcceptanceRequired: true,
       });
 
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpointServicePermissions', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointServicePermissions', {
         ServiceId: {
           Ref: 'EndpointServiceED36BE1F',
         },

@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
+import type { BundleProps } from '@aws-cdk/node-bundle';
 
 const readdir = util.promisify(fs.readdir);
 const stat = util.promisify(fs.stat);
@@ -82,6 +83,7 @@ export async function unitTestFiles(): Promise<File[]> {
 }
 
 export async function hasIntegTests(): Promise<boolean> {
+  if (currentPackageJson().name === '@aws-cdk/integ-runner') return false;
   const files = await listFiles('test', f => f.filename.startsWith('integ.') && f.filename.endsWith('.js'));
   return files.length > 0;
 }
@@ -184,6 +186,11 @@ export interface CDKPackageOptions {
    * An optional command (formatted as a list of strings) to run after packaging
   */
   post?: string[];
+
+  /**
+   * Should this package be bundled. (and if so, how)
+   */
+  bundle?: Omit<BundleProps, 'packageDir'>;
 }
 
 /**

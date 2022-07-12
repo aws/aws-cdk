@@ -1,8 +1,8 @@
-import '@aws-cdk/assert-internal/jest';
-import { ResourcePart } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
 
@@ -23,7 +23,7 @@ describe('singleton lambda', () => {
     }
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         SingletonLambda84c0de93353f42179b0b45b6c993251aServiceRole26D59235: {
           Type: 'AWS::IAM::Role',
@@ -78,12 +78,12 @@ describe('singleton lambda', () => {
     singleton.addDependency(dependency);
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       DependsOn: [
         'dependencyUser1B9CB07E',
         'SingletonLambda84c0de93353f42179b0b45b6c993251aServiceRole26D59235',
       ],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('dependsOn are correctly added', () => {
@@ -102,12 +102,12 @@ describe('singleton lambda', () => {
     singleton.dependOn(user);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::User', {
+    Template.fromStack(stack).hasResource('AWS::IAM::User', {
       DependsOn: [
         'SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38',
         'SingletonLambda84c0de93353f42179b0b45b6c993251aServiceRole26D59235',
       ],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('Environment is added to Lambda, when .addEnvironment() is provided one key pair', () => {
@@ -125,7 +125,7 @@ describe('singleton lambda', () => {
     singleton.addEnvironment('KEY', 'value');
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Environment: {
         Variables: {
           KEY: 'value',
@@ -154,7 +154,7 @@ describe('singleton lambda', () => {
     singleton.addLayers(layer);
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Layers: [{
         Ref: 'myLayerBA1B098A',
       }],
@@ -173,19 +173,20 @@ describe('singleton lambda', () => {
 
     // WHEN
     const invokeResult = singleton.grantInvoke(new iam.ServicePrincipal('events.amazonaws.com'));
-    const statement = stack.resolve(invokeResult.resourceStatement);
+    const statement = stack.resolve(invokeResult.resourceStatement?.toJSON());
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::Permission', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       Principal: 'events.amazonaws.com',
     });
-    expect(statement.action).toEqual(['lambda:InvokeFunction']);
-    expect(statement.principal).toEqual({ Service: ['events.amazonaws.com'] });
-    expect(statement.effect).toEqual('Allow');
-    expect(statement.resource).toEqual([{
-      'Fn::GetAtt': ['SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38', 'Arn'],
-    }]);
+    expect(statement.Action).toEqual('lambda:InvokeFunction');
+    expect(statement.Principal).toEqual({ Service: 'events.amazonaws.com' });
+    expect(statement.Effect).toEqual('Allow');
+    expect(statement.Resource).toEqual([
+      { 'Fn::GetAtt': ['SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38', 'Arn'] },
+      { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38', 'Arn'] }, ':*']] },
+    ]);
   });
 
   test('check edge compatibility', () => {
@@ -241,13 +242,13 @@ describe('singleton lambda', () => {
     expect(singleton.runtime).toStrictEqual(lambda.Runtime.PYTHON_3_9);
   });
 
-  test('current version of a singleton function', () => {
+  testDeprecated('current version of a singleton function', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
     });
 
@@ -256,7 +257,7 @@ describe('singleton lambda', () => {
     version.addAlias('foo');
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::Version', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
       FunctionName: {
         Ref: 'SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38',
       },
@@ -275,7 +276,7 @@ describe('singleton lambda', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       securityGroups: [securityGroup],
       vpc: vpc,

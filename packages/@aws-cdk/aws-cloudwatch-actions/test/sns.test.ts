@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as sns from '@aws-cdk/aws-sns';
 import { Stack } from '@aws-cdk/core';
@@ -18,7 +18,7 @@ test('can use topic as alarm action', () => {
   alarm.addAlarmAction(new actions.SnsAction(topic));
 
   // THEN
-  expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
     AlarmActions: [
       { Ref: 'TopicBFC7AF6E' },
     ],

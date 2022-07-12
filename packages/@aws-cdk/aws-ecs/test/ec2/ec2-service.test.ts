@@ -1,5 +1,4 @@
-import { SynthUtils } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elb from '@aws-cdk/aws-elasticloadbalancing';
@@ -36,7 +35,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'Ec2TaskDef0226F28C',
         },
@@ -98,7 +97,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'Ec2TaskDef0226F28C',
         },
@@ -115,7 +114,7 @@ describe('ec2 service', () => {
         EnableExecuteCommand: true,
       });
 
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -189,7 +188,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -252,7 +251,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -281,7 +280,11 @@ describe('ec2 service', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:logs:',
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':logs:',
                     {
                       Ref: 'AWS::Region',
                     },
@@ -310,7 +313,11 @@ describe('ec2 service', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:s3:::',
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':s3:::',
                     {
                       Ref: 'ExecBucket29559356',
                     },
@@ -372,7 +379,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -414,7 +421,11 @@ describe('ec2 service', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:logs:',
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':logs:',
                     {
                       Ref: 'AWS::Region',
                     },
@@ -443,7 +454,11 @@ describe('ec2 service', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:s3:::',
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':s3:::',
                     {
                       Ref: 'EcsExecBucket4F468651',
                     },
@@ -463,27 +478,11 @@ describe('ec2 service', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::KMS::Key', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
         KeyPolicy: {
           Statement: [
             {
-              Action: [
-                'kms:Create*',
-                'kms:Describe*',
-                'kms:Enable*',
-                'kms:List*',
-                'kms:Put*',
-                'kms:Update*',
-                'kms:Revoke*',
-                'kms:Disable*',
-                'kms:Get*',
-                'kms:Delete*',
-                'kms:ScheduleKeyDeletion',
-                'kms:CancelKeyDeletion',
-                'kms:GenerateDataKey',
-                'kms:TagResource',
-                'kms:UntagResource',
-              ],
+              Action: 'kms:*',
               Effect: 'Allow',
               Principal: {
                 AWS: {
@@ -495,25 +494,6 @@ describe('ec2 service', () => {
                         Ref: 'AWS::Partition',
                       },
                       ':iam::',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':root',
-                    ],
-                  ],
-                },
-              },
-              Resource: '*',
-            },
-            {
-              Action: 'kms:*',
-              Effect: 'Allow',
-              Principal: {
-                AWS: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:aws:iam::',
                       {
                         Ref: 'AWS::AccountId',
                       },
@@ -578,7 +558,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -620,7 +600,11 @@ describe('ec2 service', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:logs:',
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':logs:',
                     {
                       Ref: 'AWS::Region',
                     },
@@ -649,7 +633,11 @@ describe('ec2 service', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:s3:::',
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':s3:::',
                     {
                       Ref: 'EcsExecBucket4F468651',
                     },
@@ -665,7 +653,11 @@ describe('ec2 service', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:s3:::',
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':s3:::',
                     {
                       Ref: 'EcsExecBucket4F468651',
                     },
@@ -684,27 +676,11 @@ describe('ec2 service', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::KMS::Key', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
         KeyPolicy: {
           Statement: [
             {
-              Action: [
-                'kms:Create*',
-                'kms:Describe*',
-                'kms:Enable*',
-                'kms:List*',
-                'kms:Put*',
-                'kms:Update*',
-                'kms:Revoke*',
-                'kms:Disable*',
-                'kms:Get*',
-                'kms:Delete*',
-                'kms:ScheduleKeyDeletion',
-                'kms:CancelKeyDeletion',
-                'kms:GenerateDataKey',
-                'kms:TagResource',
-                'kms:UntagResource',
-              ],
+              Action: 'kms:*',
               Effect: 'Allow',
               Principal: {
                 AWS: {
@@ -716,25 +692,6 @@ describe('ec2 service', () => {
                         Ref: 'AWS::Partition',
                       },
                       ':iam::',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':root',
-                    ],
-                  ],
-                },
-              },
-              Resource: '*',
-            },
-            {
-              Action: 'kms:*',
-              Effect: 'Allow',
-              Principal: {
-                AWS: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:aws:iam::',
                       {
                         Ref: 'AWS::AccountId',
                       },
@@ -759,7 +716,11 @@ describe('ec2 service', () => {
                     'Fn::Join': [
                       '',
                       [
-                        'arn:aws:logs:',
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':logs:',
                         {
                           Ref: 'AWS::Region',
                         },
@@ -828,7 +789,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -856,7 +817,7 @@ describe('ec2 service', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::PrivateDnsNamespace', {
         Name: 'scorekeep.com',
         Vpc: {
           Ref: 'MyVpcF9F0CA6F',
@@ -919,7 +880,7 @@ describe('ec2 service', () => {
       service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'Ec2TaskDef0226F28C',
         },
@@ -1025,7 +986,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         CapacityProviderStrategy: [
           {
             CapacityProvider: {
@@ -1076,7 +1037,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'Ec2TaskDef0226F28C',
         },
@@ -1116,7 +1077,7 @@ describe('ec2 service', () => {
         ServiceName: 'bonjour',
       });
 
-      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Example',
         GroupName: 'Bingo',
         SecurityGroupEgress: [
@@ -1131,7 +1092,7 @@ describe('ec2 service', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Example',
         GroupName: 'Rolly',
         SecurityGroupEgress: [
@@ -1234,7 +1195,7 @@ describe('ec2 service', () => {
         memoryLimitMiB: 512,
       });
 
-      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+      new ecs.Ec2Service(stack, 'Ec2Service', {
         cluster,
         taskDefinition,
         deploymentController: {
@@ -1243,8 +1204,8 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(service.node.metadataEntry[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Annotations.fromStack(stack).hasWarning('/Default/Ec2Service', 'taskDefinition and launchType are blanked out when using external deployment controller.');
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         Cluster: {
           Ref: 'EcsCluster97242B84',
         },
@@ -1350,7 +1311,7 @@ describe('ec2 service', () => {
 
       // THEN
       expect(() => {
-        SynthUtils.synthesize(stack);
+        Template.fromStack(stack);
       }).toThrow(/one essential container/);
 
 
@@ -1376,15 +1337,13 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
-          {
+          Match.objectLike({
             Name: 'main',
-          },
+          }),
         ],
       });
-
-
     });
 
     test('sets daemon scheduling strategy', () => {
@@ -1407,7 +1366,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         SchedulingStrategy: 'DAEMON',
         DeploymentConfiguration: {
           MaximumPercent: 100,
@@ -1593,7 +1552,7 @@ describe('ec2 service', () => {
         });
 
         // THEN
-        expect(stack).toHaveResource('AWS::ECS::Service', {
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
           NetworkConfiguration: {
             AwsvpcConfiguration: {
               AssignPublicIp: 'DISABLED',
@@ -1668,7 +1627,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementConstraints: [{
           Type: 'distinctInstance',
         }],
@@ -1698,7 +1657,7 @@ describe('ec2 service', () => {
       service.addPlacementConstraints(PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'));
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementConstraints: [{
           Expression: 'attribute:ecs.instance-type =~ t2.*',
           Type: 'memberOf',
@@ -1730,7 +1689,7 @@ describe('ec2 service', () => {
       service.addPlacementStrategies(PlacementStrategy.spreadAcrossInstances());
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementStrategies: [{
           Field: 'instanceId',
           Type: 'spread',
@@ -1761,7 +1720,7 @@ describe('ec2 service', () => {
       service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementStrategies: [{
           Field: 'attribute:ecs.availability-zone',
           Type: 'spread',
@@ -1862,11 +1821,9 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).not.toHaveResource('AWS::ECS::Service', {
-        PlacementConstraints: undefined,
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        PlacementConstraints: Match.absent(),
       });
-
-
     });
 
     testDeprecated('with both propagateTags and propagateTaskTagsFrom defined', () => {
@@ -1913,11 +1870,9 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).not.toHaveResource('AWS::ECS::Service', {
-        PlacementStrategies: undefined,
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        PlacementStrategies: Match.absent(),
       });
-
-
     });
 
     test('with random placement strategy', () => {
@@ -1941,7 +1896,7 @@ describe('ec2 service', () => {
       service.addPlacementStrategies(PlacementStrategy.randomly());
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementStrategies: [{
           Type: 'random',
         }],
@@ -1998,7 +1953,7 @@ describe('ec2 service', () => {
       service.addPlacementStrategies(PlacementStrategy.packedByCpu());
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementStrategies: [{
           Field: 'cpu',
           Type: 'binpack',
@@ -2029,7 +1984,7 @@ describe('ec2 service', () => {
       service.addPlacementStrategies(PlacementStrategy.packedByMemory());
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementStrategies: [{
           Field: 'memory',
           Type: 'binpack',
@@ -2060,7 +2015,7 @@ describe('ec2 service', () => {
       service.addPlacementStrategies(PlacementStrategy.packedBy(ecs.BinPackResource.MEMORY));
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementStrategies: [{
           Field: 'memory',
           Type: 'binpack',
@@ -2293,13 +2248,13 @@ describe('ec2 service', () => {
           });
 
           // THEN
-          expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+          Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
             Description: 'Load balancer to target',
             FromPort: 32768,
             ToPort: 65535,
           });
 
-          expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+          Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
             Description: 'Load balancer to target',
             FromPort: 32768,
             ToPort: 65535,
@@ -2341,13 +2296,13 @@ describe('ec2 service', () => {
           });
 
           // THEN
-          expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+          Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
             Description: 'Load balancer to target',
             FromPort: 80,
             ToPort: 80,
           });
 
-          expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+          Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
             Description: 'Load balancer to target',
             FromPort: 80,
             ToPort: 80,
@@ -2388,13 +2343,13 @@ describe('ec2 service', () => {
         });
 
         // THEN
-        expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
           Description: 'Load balancer to target',
           FromPort: 8001,
           ToPort: 8001,
         });
 
-        expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
           Description: 'Load balancer to target',
           FromPort: 8001,
           ToPort: 8001,
@@ -2434,13 +2389,13 @@ describe('ec2 service', () => {
         });
 
         // THEN
-        expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
           Description: 'Load balancer to target',
           FromPort: 8001,
           ToPort: 8001,
         });
 
-        expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
           Description: 'Load balancer to target',
           FromPort: 8001,
           ToPort: 8001,
@@ -2534,7 +2489,7 @@ describe('ec2 service', () => {
       lb.addTarget(service);
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         LoadBalancers: [
           {
             ContainerName: 'web',
@@ -2544,7 +2499,7 @@ describe('ec2 service', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         // if any load balancer is configured and healthCheckGracePeriodSeconds is not
         // set, then it should default to 60 seconds.
         HealthCheckGracePeriodSeconds: 60,
@@ -2579,7 +2534,7 @@ describe('ec2 service', () => {
       }));
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         LoadBalancers: [
           {
             ContainerName: 'web',
@@ -2684,7 +2639,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             ContainerName: 'MainContainer',
@@ -2699,7 +2654,7 @@ describe('ec2 service', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -2761,7 +2716,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             ContainerName: 'MainContainer',
@@ -2776,7 +2731,7 @@ describe('ec2 service', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -2872,7 +2827,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             RegistryArn: {
@@ -2885,7 +2840,7 @@ describe('ec2 service', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -2948,7 +2903,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             ContainerName: 'MainContainer',
@@ -2963,7 +2918,7 @@ describe('ec2 service', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -3032,7 +2987,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             RegistryArn: { 'Fn::GetAtt': ['ServiceCloudmapService046058A4', 'Arn'] },
@@ -3041,8 +2996,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
-
     });
 
     test('By default, the container name is the default', () => {
@@ -3077,14 +3030,12 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
-        ServiceRegistries: [{
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        ServiceRegistries: [Match.objectLike({
           ContainerName: 'main',
-          ContainerPort: undefined,
-        }],
+          ContainerPort: Match.anyValue(),
+        })],
       });
-
-
     });
 
     test('For SRV, by default, container name is default container and port is the default container port', () => {
@@ -3121,14 +3072,12 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
-        ServiceRegistries: [{
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        ServiceRegistries: [Match.objectLike({
           ContainerName: 'main',
           ContainerPort: 1234,
-        }],
+        })],
       });
-
-
     });
 
     test('allows SRV service discovery to select the container and port', () => {
@@ -3168,14 +3117,12 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
-        ServiceRegistries: [{
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        ServiceRegistries: [Match.objectLike({
           ContainerName: 'second',
           ContainerPort: 4321,
-        }],
+        })],
       });
-
-
     });
 
     test('throws if SRV and container is not part of task definition', () => {

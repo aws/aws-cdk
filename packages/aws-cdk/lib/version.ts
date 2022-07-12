@@ -4,7 +4,7 @@ import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { debug, print } from '../lib/logging';
 import { formatAsBanner } from '../lib/util/console-formatters';
-import { cdkCacheDir } from './util/directories';
+import { cdkCacheDir, rootDir } from './util/directories';
 import { getLatestVersionFromNpm } from './util/npm';
 
 const ONE_DAY_IN_SECONDS = 1 * 24 * 60 * 60;
@@ -17,12 +17,12 @@ export const DISPLAY_VERSION = `${versionNumber()} (build ${commit()})`;
 
 export function versionNumber(): string {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  return require('../package.json').version.replace(/\+[0-9a-f]+$/, '');
+  return require(path.join(rootDir(), 'package.json')).version.replace(/\+[0-9a-f]+$/, '');
 }
 
 function commit(): string {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  return require('../build-info.json').commit;
+  return require(path.join(rootDir(), 'build-info.json')).commit;
 }
 
 export class VersionCheckTTL {

@@ -40,17 +40,17 @@
     "@aws-cdk/eslint-plugin": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/glob": "^7.2.0",
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^27.5.2",
     "@types/semver": "^7.3.9",
     "@types/yargs": "^15.0.14",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "eslint": "^7.32.0",
     "eslint-import-resolver-node": "^0.3.6",
-    "eslint-import-resolver-typescript": "^2.5.0",
-    "eslint-plugin-import": "^2.25.4",
+    "eslint-import-resolver-typescript": "^2.7.1",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jest": "^24.7.0",
-    "jest": "^27.4.7",
+    "jest": "^27.5.1",
     "typescript": "~3.9.10"
   },
   "nozem": {
@@ -60,12 +60,13 @@
     ]
   },
   "dependencies": {
+    "@aws-cdk/node-bundle": "0.0.0",
     "case": "^1.6.3",
     "chalk": "^4",
     "fs-extra": "^9.1.0",
-    "glob": "^7.2.0",
+    "glob": "^7.2.3",
     "npm-bundled": "^1.1.2",
-    "semver": "^7.3.5",
+    "semver": "^7.3.7",
     "yargs": "^16.2.0"
   }
 }

@@ -1,6 +1,6 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as ecs from '../lib';
 
 /* eslint-disable dot-notation */
@@ -19,7 +19,7 @@ describe('environment file', () => {
 
     test('only one environment file asset object is created even if multiple container definitions use the same file', () => {
       // GIVEN
-      const app = new cdk.App();
+      const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
       const stack = new cdk.Stack(app);
       const fileAsset = ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles/test-envfile.env'));
 

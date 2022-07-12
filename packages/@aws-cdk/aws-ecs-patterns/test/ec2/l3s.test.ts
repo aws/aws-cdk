@@ -1,5 +1,4 @@
-import { ABSENT, arrayWith, objectLike, SynthUtils } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -9,6 +8,7 @@ import { AsgCapacityProvider } from '@aws-cdk/aws-ecs';
 import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, NetworkLoadBalancer, SslPolicy } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecsPatterns from '../../lib';
@@ -42,16 +42,16 @@ test('test ECS loadbalanced construct', () => {
   });
 
   // THEN - stack contains a load balancer and a service
-  expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer');
+  Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
 
-  expect(stack).toHaveResource('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DesiredCount: 2,
     LaunchType: 'EC2',
   });
 
-  expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         Environment: [
           {
             Name: 'TEST_ENVIRONMENT_VARIABLE1',
@@ -67,14 +67,14 @@ test('test ECS loadbalanced construct', () => {
           label1: 'labelValue1',
           label2: 'labelValue2',
         },
-      },
+      }),
     ],
   });
 });
 
-test('ApplicationLoadBalancedEc2Service desiredCount can be undefined when feature flag is set', () => {
+testLegacyBehavior('ApplicationLoadBalancedEc2Service desiredCount can be undefined when feature flag is set', cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(app);
   stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
 
   const vpc = new ec2.Vpc(stack, 'VPC');
@@ -96,14 +96,14 @@ test('ApplicationLoadBalancedEc2Service desiredCount can be undefined when featu
     },
   });
 
-  expect(stack).toHaveResource('AWS::ECS::Service', {
-    DesiredCount: ABSENT,
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    DesiredCount: Match.absent(),
   });
 });
 
-test('ApplicationLoadBalancedFargateService desiredCount can be undefined when feature flag is set', () => {
+testLegacyBehavior('ApplicationLoadBalancedFargateService desiredCount can be undefined when feature flag is set', cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(app);
   stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
 
   const vpc = new ec2.Vpc(stack, 'VPC');
@@ -117,14 +117,14 @@ test('ApplicationLoadBalancedFargateService desiredCount can be undefined when f
     },
   });
 
-  expect(stack).toHaveResource('AWS::ECS::Service', {
-    DesiredCount: ABSENT,
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    DesiredCount: Match.absent(),
   });
 });
 
-test('NetworkLoadBalancedEc2Service desiredCount can be undefined when feature flag is set', () => {
+testLegacyBehavior('NetworkLoadBalancedEc2Service desiredCount can be undefined when feature flag is set', cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(app);
   stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
 
   const vpc = new ec2.Vpc(stack, 'VPC');
@@ -146,14 +146,14 @@ test('NetworkLoadBalancedEc2Service desiredCount can be undefined when feature f
     },
   });
 
-  expect(stack).toHaveResource('AWS::ECS::Service', {
-    DesiredCount: ABSENT,
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    DesiredCount: Match.absent(),
   });
 });
 
-test('NetworkLoadBalancedFargateService desiredCount can be undefined when feature flag is set', () => {
+testLegacyBehavior('NetworkLoadBalancedFargateService desiredCount can be undefined when feature flag is set', cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(app);
   stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
 
   const vpc = new ec2.Vpc(stack, 'VPC');
@@ -167,34 +167,9 @@ test('NetworkLoadBalancedFargateService desiredCount can be undefined when featu
     },
   });
 
-  expect(stack).toHaveResource('AWS::ECS::Service', {
-    DesiredCount: ABSENT,
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    DesiredCount: Match.absent(),
   });
-});
-
-test('set vpc instead of cluster', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'VPC');
-
-  // WHEN
-  new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
-    vpc,
-    memoryLimitMiB: 1024,
-    taskImageOptions: {
-      image: ecs.ContainerImage.fromRegistry('test'),
-      environment: {
-        TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
-        TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
-      },
-    },
-    desiredCount: 2,
-  });
-
-  // THEN - stack does not contain a LaunchConfiguration\
-  const template = SynthUtils.synthesize(stack, { skipValidation: true });
-  expect(template).not.toHaveResource('AWS::AutoScaling::LaunchConfiguration');
-  expect(() => SynthUtils.synthesize(stack)).toThrow();
 });
 
 test('setting vpc and cluster throws error', () => {
@@ -236,13 +211,13 @@ test('test ECS loadbalanced construct with memoryReservationMiB', () => {
   });
 
   // THEN - stack contains a load balancer and a service
-  expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer');
+  Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
 
-  expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         MemoryReservation: 1024,
-      },
+      }),
     ],
   });
 });
@@ -279,7 +254,7 @@ test('creates AWS Cloud Map service for Private DNS namespace with application l
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     ServiceRegistries: [
       {
         ContainerName: 'web',
@@ -294,7 +269,7 @@ test('creates AWS Cloud Map service for Private DNS namespace with application l
     ],
   });
 
-  expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
     DnsConfig: {
       DnsRecords: [
         {
@@ -355,7 +330,7 @@ test('creates AWS Cloud Map service for Private DNS namespace with network load 
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     ServiceRegistries: [
       {
         RegistryArn: {
@@ -368,7 +343,7 @@ test('creates AWS Cloud Map service for Private DNS namespace with network load 
     ],
   });
 
-  expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
     DnsConfig: {
       DnsRecords: [
         {
@@ -418,10 +393,10 @@ test('test Fargate loadbalanced construct', () => {
   });
 
   // THEN - stack contains a load balancer and a service
-  expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer');
-  expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         Environment: [
           {
             Name: 'TEST_ENVIRONMENT_VARIABLE1',
@@ -444,16 +419,16 @@ test('test Fargate loadbalanced construct', () => {
           label1: 'labelValue1',
           label2: 'labelValue2',
         },
-      },
+      }),
     ],
   });
 
-  expect(stack).toHaveResource('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DesiredCount: 2,
     LaunchType: 'FARGATE',
   });
 
-  expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
     Port: 80,
     Protocol: 'HTTP',
   });
@@ -480,9 +455,9 @@ test('test Fargate loadbalanced construct opting out of log driver creation', ()
   });
 
   // THEN - stack contains a load balancer and a service
-  expect(stack).not.toHaveResource('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         Environment: [
           {
             Name: 'TEST_ENVIRONMENT_VARIABLE1',
@@ -493,15 +468,8 @@ test('test Fargate loadbalanced construct opting out of log driver creation', ()
             Value: 'test environment variable 2 value',
           },
         ],
-        LogConfiguration: {
-          LogDriver: 'awslogs',
-          Options: {
-            'awslogs-group': { Ref: 'ServiceTaskDefwebLogGroup2A898F61' },
-            'awslogs-stream-prefix': 'Service',
-            'awslogs-region': { Ref: 'AWS::Region' },
-          },
-        },
-      },
+        LogConfiguration: Match.absent(),
+      }),
     ],
   });
 });
@@ -526,9 +494,9 @@ test('test Fargate loadbalanced construct with TLS', () => {
   });
 
   // THEN - stack contains a load balancer and a service
-  expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer');
+  Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
 
-  expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
     Port: 443,
     Protocol: 'HTTPS',
     Certificates: [{
@@ -537,7 +505,7 @@ test('test Fargate loadbalanced construct with TLS', () => {
     SslPolicy: SslPolicy.TLS12_EXT,
   });
 
-  expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
     Port: 80,
     Protocol: 'HTTP',
     TargetType: 'ip',
@@ -546,12 +514,11 @@ test('test Fargate loadbalanced construct with TLS', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::ECS::Service', {
-    DesiredCount: 1,
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     LaunchType: 'FARGATE',
   });
 
-  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     Name: 'api.example.com.',
     HostedZoneId: {
       Ref: 'HostedZoneDB99F866',
@@ -583,7 +550,7 @@ test('test Fargateloadbalanced construct with TLS and default certificate', () =
   });
 
   // THEN - stack contains a load balancer, a service, and a certificate
-  expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
     DomainName: 'api.example.com',
     DomainValidationOptions: [
       {
@@ -596,9 +563,9 @@ test('test Fargateloadbalanced construct with TLS and default certificate', () =
     ValidationMethod: 'DNS',
   });
 
-  expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer');
+  Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
 
-  expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
     Port: 443,
     Protocol: 'HTTPS',
     Certificates: [{
@@ -608,12 +575,11 @@ test('test Fargateloadbalanced construct with TLS and default certificate', () =
     }],
   });
 
-  expect(stack).toHaveResource('AWS::ECS::Service', {
-    DesiredCount: 1,
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     LaunchType: 'FARGATE',
   });
 
-  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     Name: 'api.example.com.',
     HostedZoneId: {
       Ref: 'HostedZoneDB99F866',
@@ -744,9 +710,9 @@ test('test Fargate loadbalanced construct with optional log driver input', () =>
   });
 
   // THEN - stack contains a load balancer and a service
-  expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         Environment: [
           {
             Name: 'TEST_ENVIRONMENT_VARIABLE1',
@@ -765,7 +731,7 @@ test('test Fargate loadbalanced construct with optional log driver input', () =>
             'awslogs-region': { Ref: 'AWS::Region' },
           },
         },
-      },
+      }),
     ],
   });
 });
@@ -791,9 +757,9 @@ test('test Fargate loadbalanced construct with logging enabled', () => {
   });
 
   // THEN - stack contains a load balancer and a service
-  expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         Environment: [
           {
             Name: 'TEST_ENVIRONMENT_VARIABLE1',
@@ -812,7 +778,7 @@ test('test Fargate loadbalanced construct with logging enabled', () => {
             'awslogs-region': { Ref: 'AWS::Region' },
           },
         },
-      },
+      }),
     ],
   });
 });
@@ -868,9 +834,9 @@ test('test Fargate application loadbalanced construct with taskDefinition provid
     memoryLimitMiB: 1024,
   });
 
-  expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         Image: 'amazon/amazon-ecs-sample',
         Memory: 512,
         Name: 'passedTaskDef',
@@ -880,7 +846,7 @@ test('test Fargate application loadbalanced construct with taskDefinition provid
             Protocol: 'tcp',
           },
         ],
-      },
+      }),
     ],
   });
 });
@@ -954,7 +920,7 @@ test('ALBFargate - having *HealthyPercent properties', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DeploymentConfiguration: {
       MinimumHealthyPercent: 100,
       MaximumPercent: 200,
@@ -981,7 +947,7 @@ test('NLBFargate - having *HealthyPercent properties', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DeploymentConfiguration: {
       MinimumHealthyPercent: 100,
       MaximumPercent: 200,
@@ -1015,7 +981,7 @@ test('ALB - having *HealthyPercent properties', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DeploymentConfiguration: {
       MinimumHealthyPercent: 100,
       MaximumPercent: 200,
@@ -1052,7 +1018,7 @@ test('ALB - includes provided protocol version properties', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
     ProtocolVersion: 'GRPC',
   });
 });
@@ -1083,7 +1049,7 @@ test('NLB - having *HealthyPercent properties', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DeploymentConfiguration: {
       MinimumHealthyPercent: 100,
       MaximumPercent: 200,
@@ -1117,7 +1083,7 @@ test('ALB - having deployment controller', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DeploymentController: {
       Type: 'CODE_DEPLOY',
     },
@@ -1150,7 +1116,7 @@ test('NLB - having  deployment controller', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DeploymentController: {
       Type: 'CODE_DEPLOY',
     },
@@ -1181,7 +1147,7 @@ test('ALB with circuit breaker', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DeploymentConfiguration: {
       DeploymentCircuitBreaker: {
         Enable: true,
@@ -1218,7 +1184,7 @@ test('NLB with circuit breaker', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DeploymentConfiguration: {
       DeploymentCircuitBreaker: {
         Enable: true,
@@ -1259,10 +1225,10 @@ test('NetworkLoadbalancedEC2Service accepts previously created load balancer', (
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     LaunchType: 'EC2',
   });
-  expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
     Type: 'network',
   });
 });
@@ -1302,12 +1268,12 @@ test('NetworkLoadBalancedEC2Service accepts imported load balancer', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     LaunchType: 'EC2',
-    LoadBalancers: [{ ContainerName: 'Container', ContainerPort: 80 }],
+    LoadBalancers: [Match.objectLike({ ContainerName: 'Container', ContainerPort: 80 })],
   });
-  expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup');
-  expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+  Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::TargetGroup', 1);
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
     LoadBalancerArn: nlb.loadBalancerArn,
     Port: 80,
   });
@@ -1345,10 +1311,10 @@ test('ApplicationLoadBalancedEC2Service accepts previously created load balancer
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     LaunchType: 'EC2',
   });
-  expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
     Type: 'application',
   });
 });
@@ -1388,12 +1354,12 @@ test('ApplicationLoadBalancedEC2Service accepts imported load balancer', () => {
     taskDefinition: taskDef,
   });
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     LaunchType: 'EC2',
-    LoadBalancers: [{ ContainerName: 'Container', ContainerPort: 80 }],
+    LoadBalancers: [Match.objectLike({ ContainerName: 'Container', ContainerPort: 80 })],
   });
-  expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup');
-  expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+  Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::TargetGroup', 1);
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
     LoadBalancerArn: alb.loadBalancerArn,
     Port: 80,
   });
@@ -1422,13 +1388,13 @@ test('test ECS loadbalanced construct default/open security group', () => {
   });
 
   // THEN - Stack contains no ingress security group rules
-  expect(stack).toHaveResourceLike('AWS::EC2::SecurityGroup', {
-    SecurityGroupIngress: [{
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+    SecurityGroupIngress: [Match.objectLike({
       CidrIp: '0.0.0.0/0',
       FromPort: 80,
       IpProtocol: 'tcp',
       ToPort: 80,
-    }],
+    })],
   });
 });
 
@@ -1461,7 +1427,7 @@ test('test ECS loadbalanced construct closed security group', () => {
   });
 
   // THEN - Stack contains no ingress security group rules
-  expect(stack).not.toHaveResourceLike('AWS::EC2::SecurityGroup', {
-    SecurityGroupIngress: arrayWith(objectLike({})),
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+    SecurityGroupIngress: Match.absent(),
   });
 });

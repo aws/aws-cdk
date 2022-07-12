@@ -27,7 +27,7 @@ to sign a zip file. For more information go to [Signing Platforms in AWS Signer]
 
 AWS Signer provides a pre-defined set of signing platforms. They are available in the CDK as -
 
-```ts
+```text
 Platform.AWS_IOT_DEVICE_MANAGEMENT_SHA256_ECDSA
 Platform.AWS_LAMBDA_SHA384_ECDSA
 Platform.AMAZON_FREE_RTOS_TI_CC3220SF
@@ -43,11 +43,9 @@ For more information, visit [Signing Profiles in AWS Signer](https://docs.aws.am
 The following code sets up a signing profile for signing lambda code bundles -
 
 ```ts
-import * as signer from '@aws-cdk/aws-signer';
-
 const signingProfile = new signer.SigningProfile(this, 'SigningProfile', { 
   platform: signer.Platform.AWS_LAMBDA_SHA384_ECDSA,
-} );
+});
 ```
 
 A signing profile is valid by default for 135 months. This can be modified by specifying the `signatureValidityPeriod` property.

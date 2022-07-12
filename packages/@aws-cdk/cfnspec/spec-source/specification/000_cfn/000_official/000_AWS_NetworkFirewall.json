@@ -1,5 +1,5 @@
 {
-  "$version": "51.0.0",
+  "$version": "79.0.0",
   "PropertyTypes": {
     "AWS::NetworkFirewall::Firewall.SubnetMapping": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-firewall-subnetmapping.html",
@@ -56,7 +56,7 @@
       "Properties": {
         "StatefulDefaultActions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-firewallpolicy-firewallpolicy.html#cfn-networkfirewall-firewallpolicy-firewallpolicy-statefuldefaultactions",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",
@@ -70,7 +70,7 @@
         },
         "StatefulRuleGroupReferences": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-firewallpolicy-firewallpolicy.html#cfn-networkfirewall-firewallpolicy-firewallpolicy-statefulrulegroupreferences",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "ItemType": "StatefulRuleGroupReference",
           "Required": false,
           "Type": "List",
@@ -78,7 +78,7 @@
         },
         "StatelessCustomActions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-firewallpolicy-firewallpolicy.html#cfn-networkfirewall-firewallpolicy-firewallpolicy-statelesscustomactions",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "ItemType": "CustomAction",
           "Required": false,
           "Type": "List",
@@ -86,7 +86,7 @@
         },
         "StatelessDefaultActions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-firewallpolicy-firewallpolicy.html#cfn-networkfirewall-firewallpolicy-firewallpolicy-statelessdefaultactions",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": true,
           "Type": "List",
@@ -94,7 +94,7 @@
         },
         "StatelessFragmentDefaultActions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-firewallpolicy-firewallpolicy.html#cfn-networkfirewall-firewallpolicy-firewallpolicy-statelessfragmentdefaultactions",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": true,
           "Type": "List",
@@ -102,7 +102,7 @@
         },
         "StatelessRuleGroupReferences": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-firewallpolicy-firewallpolicy.html#cfn-networkfirewall-firewallpolicy-firewallpolicy-statelessrulegroupreferences",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "ItemType": "StatelessRuleGroupReference",
           "Required": false,
           "Type": "List",
@@ -115,7 +115,7 @@
       "Properties": {
         "Dimensions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-firewallpolicy-publishmetricaction.html#cfn-networkfirewall-firewallpolicy-publishmetricaction-dimensions",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "ItemType": "Dimension",
           "Required": true,
           "Type": "List",
@@ -300,7 +300,7 @@
       "Properties": {
         "Definition": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-ipset.html#cfn-networkfirewall-rulegroup-ipset-definition",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",
@@ -313,7 +313,7 @@
       "Properties": {
         "DestinationPorts": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-matchattributes.html#cfn-networkfirewall-rulegroup-matchattributes-destinationports",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "ItemType": "PortRange",
           "Required": false,
           "Type": "List",
@@ -321,7 +321,7 @@
         },
         "Destinations": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-matchattributes.html#cfn-networkfirewall-rulegroup-matchattributes-destinations",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "ItemType": "Address",
           "Required": false,
           "Type": "List",
@@ -329,7 +329,7 @@
         },
         "Protocols": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-matchattributes.html#cfn-networkfirewall-rulegroup-matchattributes-protocols",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "Integer",
           "Required": false,
           "Type": "List",
@@ -337,7 +337,7 @@
         },
         "SourcePorts": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-matchattributes.html#cfn-networkfirewall-rulegroup-matchattributes-sourceports",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "ItemType": "PortRange",
           "Required": false,
           "Type": "List",
@@ -345,7 +345,7 @@
         },
         "Sources": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-matchattributes.html#cfn-networkfirewall-rulegroup-matchattributes-sources",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "ItemType": "Address",
           "Required": false,
           "Type": "List",
@@ -353,7 +353,7 @@
         },
         "TCPFlags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-matchattributes.html#cfn-networkfirewall-rulegroup-matchattributes-tcpflags",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "ItemType": "TCPFlagField",
           "Required": false,
           "Type": "List",
@@ -383,7 +383,7 @@
       "Properties": {
         "Definition": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-portset.html#cfn-networkfirewall-rulegroup-portset-definition",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",
@@ -396,7 +396,7 @@
       "Properties": {
         "Dimensions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-publishmetricaction.html#cfn-networkfirewall-rulegroup-publishmetricaction-dimensions",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "ItemType": "Dimension",
           "Required": true,
           "Type": "List",
@@ -409,7 +409,7 @@
       "Properties": {
         "Actions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-ruledefinition.html#cfn-networkfirewall-rulegroup-ruledefinition-actions",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": true,
           "Type": "List",
@@ -457,7 +457,7 @@
         },
         "Settings": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-ruleoption.html#cfn-networkfirewall-rulegroup-ruleoption-settings",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",
@@ -501,7 +501,7 @@
         },
         "StatefulRules": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-rulessource.html#cfn-networkfirewall-rulegroup-rulessource-statefulrules",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "ItemType": "StatefulRule",
           "Required": false,
           "Type": "List",
@@ -526,7 +526,7 @@
         },
         "TargetTypes": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-rulessourcelist.html#cfn-networkfirewall-rulegroup-rulessourcelist-targettypes",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": true,
           "Type": "List",
@@ -534,7 +534,7 @@
         },
         "Targets": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-rulessourcelist.html#cfn-networkfirewall-rulegroup-rulessourcelist-targets",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": true,
           "Type": "List",
@@ -559,7 +559,7 @@
         },
         "RuleOptions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-statefulrule.html#cfn-networkfirewall-rulegroup-statefulrule-ruleoptions",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "ItemType": "RuleOption",
           "Required": true,
           "Type": "List",
@@ -600,7 +600,7 @@
       "Properties": {
         "CustomActions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-statelessrulesandcustomactions.html#cfn-networkfirewall-rulegroup-statelessrulesandcustomactions-customactions",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "ItemType": "CustomAction",
           "Required": false,
           "Type": "List",
@@ -608,7 +608,7 @@
         },
         "StatelessRules": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-statelessrulesandcustomactions.html#cfn-networkfirewall-rulegroup-statelessrulesandcustomactions-statelessrules",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "ItemType": "StatelessRule",
           "Required": true,
           "Type": "List",
@@ -621,7 +621,7 @@
       "Properties": {
         "Flags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-tcpflagfield.html#cfn-networkfirewall-rulegroup-tcpflagfield-flags",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": true,
           "Type": "List",
@@ -629,7 +629,7 @@
         },
         "Masks": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-rulegroup-tcpflagfield.html#cfn-networkfirewall-rulegroup-tcpflagfield-masks",
-          "DuplicatesAllowed": false,
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",

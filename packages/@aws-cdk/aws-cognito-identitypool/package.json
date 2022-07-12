@@ -1,0 +1,118 @@
+{
+  "name": "@aws-cdk/aws-cognito-identitypool",
+  "version": "0.0.0",
+  "description": "The CDK Construct Library for AWS::Cognito Identity Pools",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.cognito.identitypool",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cognito-identitypool"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Cognito.IdentityPool",
+        "packageId": "Amazon.CDK.AWS.Cognito.IdentityPool",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-cognito-identitypool",
+        "module": "aws_cdk.aws_cognito_identitypool",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
+        ]
+      }
+    },
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-cognito-identitypool"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "integ-runner",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+  },
+  "cdk-build": {
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "cognito",
+    "identitypool"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.5.2",
+    "jest": "^27.5.1"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-cognito": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-cognito": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "awslint": {
+    "exclude": [
+      "no-unused-type:@aws-cdk/aws-cognito.IdentityPoolProviderType",
+      "props-physical-name:@aws-cdk/aws-cognito-identitypool.IdentityPoolRoleAttachmentProps"
+    ]
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "awscdkio": {
+    "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "private": true
+}

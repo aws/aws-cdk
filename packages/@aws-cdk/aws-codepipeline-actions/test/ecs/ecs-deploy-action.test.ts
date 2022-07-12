@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -172,7 +172,7 @@ describe('ecs deploy action', () => {
         ],
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: [
           {},
           {
@@ -195,6 +195,84 @@ describe('ecs deploy action', () => {
       });
 
 
+    });
+
+    test('can be created by existing service with cluster ARN format', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'PipelineStack', {
+        env: {
+          region: 'pipeline-region', account: 'pipeline-account',
+        },
+      });
+      const clusterName = 'cluster-name';
+      const serviceName = 'service-name';
+      const region = 'service-region';
+      const account = 'service-account';
+      const serviceArn = `arn:aws:ecs:${region}:${account}:service/${clusterName}/${serviceName}`;
+      const service = ecs.BaseService.fromServiceArnWithCluster(stack, 'FargateService', serviceArn);
+
+      const artifact = new codepipeline.Artifact('Artifact');
+      const bucket = new s3.Bucket(stack, 'PipelineBucket', {
+        versioned: true,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      const source = new cpactions.S3SourceAction({
+        actionName: 'Source',
+        output: artifact,
+        bucket,
+        bucketKey: 'key',
+      });
+      const action = new cpactions.EcsDeployAction({
+        actionName: 'ECS',
+        service: service,
+        input: artifact,
+      });
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [source],
+          },
+          {
+            stageName: 'Deploy',
+            actions: [action],
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        Stages: [
+          {},
+          {
+            Actions: [
+              {
+                Name: 'ECS',
+                ActionTypeId: {
+                  Category: 'Deploy',
+                  Provider: 'ECS',
+                },
+                Configuration: {
+                  ClusterName: clusterName,
+                  ServiceName: serviceName,
+                },
+                Region: region,
+                RoleArn: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      `:iam::${account}:role/pipelinestack-support-serloyecsactionrole49867f847238c85af7c0`,
+                    ],
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      });
     });
   });
 });

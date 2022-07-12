@@ -1,0 +1,50 @@
+{
+ "Resources": {
+  "baseApiCDA4D43A": {
+   "Type": "AWS::AppSync::GraphQLApi",
+   "Properties": {
+    "AuthenticationType": "API_KEY",
+    "Name": "baseApi"
+   }
+  },
+  "baseApiSchemaB12C7BB0": {
+   "Type": "AWS::AppSync::GraphQLSchema",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "baseApiCDA4D43A",
+      "ApiId"
+     ]
+    },
+    "Definition": "type test {\n  version: String!\n}\ntype Query {\n  getTests: [test]!\n}\ntype Mutation {\n  addTest(version: String!): test\n}\n"
+   }
+  },
+  "baseApiDefaultApiKeyA3A0A16A": {
+   "Type": "AWS::AppSync::ApiKey",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "baseApiCDA4D43A",
+      "ApiId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "baseApiSchemaB12C7BB0"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttbaseApiCDA4D43AApiId50287E68": {
+   "Value": {
+    "Fn::GetAtt": [
+     "baseApiCDA4D43A",
+     "ApiId"
+    ]
+   },
+   "Export": {
+    "Name": "baseStack:ExportsOutputFnGetAttbaseApiCDA4D43AApiId50287E68"
+   }
+  }
+ }
+}

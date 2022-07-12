@@ -1,6 +1,7 @@
 import { Capture, Match, Template } from '@aws-cdk/assertions';
 import * as ccommit from '@aws-cdk/aws-codecommit';
 import { CodeCommitTrigger, GitHubTrigger } from '@aws-cdk/aws-codepipeline-actions';
+import * as ecr from '@aws-cdk/aws-ecr';
 import { AnyPrincipal, Role } from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { SecretValue, Stack, Token } from '@aws-cdk/core';
@@ -75,9 +76,9 @@ test('CodeCommit source honors all valid properties', () => {
 });
 
 test('S3 source handles tokenized names correctly', () => {
-  const buckit = new s3.Bucket(pipelineStack, 'Buckit');
+  const bucket = new s3.Bucket(pipelineStack, 'Bucket');
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
-    input: cdkp.CodePipelineSource.s3(buckit, 'thefile.zip'),
+    input: cdkp.CodePipelineSource.s3(bucket, 'thefile.zip'),
   });
 
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
@@ -96,11 +97,45 @@ test('S3 source handles tokenized names correctly', () => {
   });
 });
 
+test('ECR source handles tokenized and namespaced names correctly', () => {
+  const repository = new ecr.Repository(pipelineStack, 'Repository', { repositoryName: 'namespace/repo' });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
+    input: cdkp.CodePipelineSource.ecr(repository),
+  });
+
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'Source',
+      Actions: [
+        Match.objectLike({
+          Configuration: Match.objectLike({
+            RepositoryName: { Ref: Match.anyValue() },
+          }),
+          Name: Match.objectLike({
+            'Fn::Join': [
+              '_',
+              {
+                'Fn::Split': [
+                  '/',
+                  {
+                    Ref: Match.anyValue(),
+                  },
+                ],
+              },
+            ],
+          }),
+        }),
+      ],
+    }]),
+  });
+});
+
 test('GitHub source honors all valid properties', () => {
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
     input: cdkp.CodePipelineSource.gitHub('owner/repo', 'main', {
       trigger: GitHubTrigger.POLL,
-      authentication: SecretValue.plainText('super-secret'),
+      authentication: SecretValue.unsafePlainText('super-secret'),
     }),
   });
 
@@ -178,4 +213,78 @@ test('artifact names are never longer than 128 characters', () => {
   });
 
   expect(artifactId.asString().length).toBeLessThanOrEqual(128);
+});
+
+test('can use source attributes in pipeline', () => {
+  const gitHub = cdkp.CodePipelineSource.gitHub('owner/my-repo', 'main');
+
+  // WHEN
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
+    input: gitHub,
+    synth: new cdkp.ShellStep('Synth', {
+      env: {
+        GITHUB_URL: gitHub.sourceAttribute('CommitUrl'),
+      },
+      commands: [
+        'echo "Click here: $GITHUB_URL"',
+      ],
+    }),
+    selfMutation: false,
+  });
+
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: [
+      { Name: 'Source' },
+      {
+        Name: 'Build',
+        Actions: [
+          {
+            Name: 'Synth',
+            Configuration: Match.objectLike({
+              EnvironmentVariables: Match.serializedJson([
+                {
+                  name: 'GITHUB_URL',
+                  type: 'PLAINTEXT',
+                  value: '#{Source@owner_my-repo.CommitUrl}',
+                },
+              ]),
+            }),
+          },
+        ],
+      },
+    ],
+  });
+});
+
+test('pass role to s3 codepipeline source', () => {
+  const bucket = new s3.Bucket(pipelineStack, 'Bucket');
+  const role = new Role(pipelineStack, 'TestRole', {
+    assumedBy: new AnyPrincipal(),
+  });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
+    input: cdkp.CodePipelineSource.s3(bucket, 'thefile.zip', {
+      role,
+    }),
+  });
+
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'Source',
+      Actions: [
+        Match.objectLike({
+          Configuration: Match.objectLike({
+            S3Bucket: { Ref: Match.anyValue() },
+            S3ObjectKey: 'thefile.zip',
+          }),
+          Name: { Ref: Match.anyValue() },
+          RoleArn: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('TestRole.*'),
+              'Arn',
+            ],
+          },
+        }),
+      ],
+    }]),
+  });
 });

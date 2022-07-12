@@ -1,4 +1,4 @@
-import { expect as cdkExpect, matchTemplate, MatchStyle } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
 import * as ec2 from '../lib';
 
@@ -44,7 +44,7 @@ test('can make and use a Linux image in agnostic stack', () => {
     },
   };
 
-  cdkExpect(stack).to(matchTemplate(expected, MatchStyle.EXACT));
+  Template.fromStack(stack).templateMatches(expected);
   expect(stack.resolve(details.imageId)).toEqual({ 'Fn::FindInMap': ['AmiMap', { Ref: 'AWS::Region' }, 'ami'] });
   expect(details.osType).toEqual(ec2.OperatingSystemType.LINUX);
 });
@@ -81,7 +81,7 @@ test('can make and use a Windows image in agnostic stack', () => {
     },
   };
 
-  cdkExpect(stack).to(matchTemplate(expected, MatchStyle.EXACT));
+  Template.fromStack(stack).templateMatches(expected);
   expect(stack.resolve(details.imageId)).toEqual({ 'Fn::FindInMap': ['AmiMap', { Ref: 'AWS::Region' }, 'ami'] });
   expect(details.osType).toEqual(ec2.OperatingSystemType.WINDOWS);
 });
@@ -136,6 +136,7 @@ test('LookupMachineImage default search', () => {
       props: {
         account: '1234',
         region: 'testregion',
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
         owners: ['amazon'],
         filters: {
           'name': ['bla*'],
@@ -169,8 +170,99 @@ test('cached lookups of Amazon Linux', () => {
       key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=testregion',
       props: {
         account: '1234',
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
         region: 'testregion',
         parameterName: '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2',
+      },
+      provider: 'ssm',
+    },
+  ]);
+});
+
+test('cached lookups of Amazon Linux 2', () => {
+  // WHEN
+  const ami = ec2.MachineImage.latestAmazonLinux({
+    cachedInContext: true,
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+  }).getImage(stack).imageId;
+
+  // THEN
+  expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2');
+  expect(app.synth().manifest.missing).toEqual([
+    {
+      key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=testregion',
+      props: {
+        account: '1234',
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
+        region: 'testregion',
+        parameterName: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2',
+      },
+      provider: 'ssm',
+    },
+  ]);
+});
+
+test('cached lookups of Amazon Linux 2 with kernel 5.x', () => {
+  // WHEN
+  const ami = ec2.MachineImage.latestAmazonLinux({
+    cachedInContext: true,
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+    kernel: ec2.AmazonLinuxKernel.KERNEL5_X,
+  }).getImage(stack).imageId;
+
+  // THEN
+  expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-gp2');
+  expect(app.synth().manifest.missing).toEqual([
+    {
+      key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-gp2:region=testregion',
+      props: {
+        account: '1234',
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
+        region: 'testregion',
+        parameterName: '/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-gp2',
+      },
+      provider: 'ssm',
+    },
+  ]);
+});
+
+test('throw error if storage param is set for Amazon Linux 2022', () => {
+  expect(() => {
+    ec2.MachineImage.latestAmazonLinux({
+      cachedInContext: true,
+      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
+      storage: ec2.AmazonLinuxStorage.GENERAL_PURPOSE,
+    }).getImage(stack).imageId;
+  }).toThrow(/Storage parameter does not exist in smm parameter name for Amazon Linux 2022./);
+});
+
+test('throw error if virtualization param is set for Amazon Linux 2022', () => {
+  expect(() => {
+    ec2.MachineImage.latestAmazonLinux({
+      cachedInContext: true,
+      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
+      virtualization: ec2.AmazonLinuxVirt.HVM,
+    }).getImage(stack).imageId;
+  }).toThrow(/Virtualization parameter does not exist in smm parameter name for Amazon Linux 2022./);
+});
+
+test('cached lookups of Amazon Linux 2022 with kernel 5.x', () => {
+  // WHEN
+  const ami = ec2.MachineImage.latestAmazonLinux({
+    cachedInContext: true,
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
+  }).getImage(stack).imageId;
+
+  // THEN
+  expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.10-x86_64');
+  expect(app.synth().manifest.missing).toEqual([
+    {
+      key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.10-x86_64:region=testregion',
+      props: {
+        account: '1234',
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
+        region: 'testregion',
+        parameterName: '/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.10-x86_64',
       },
       provider: 'ssm',
     },

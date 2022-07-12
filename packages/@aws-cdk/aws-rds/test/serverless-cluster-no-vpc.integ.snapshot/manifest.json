@@ -1,0 +1,28 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-sls-cluster-no-vpc-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-sls-cluster-no-vpc-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-sls-cluster-no-vpc-integ/Serverless Database Without VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServerlessDatabaseWithoutVPC93F9A752"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-sls-cluster-no-vpc-integ"
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
 import * as apigw from '../lib';
@@ -16,7 +16,7 @@ describe('cors', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
       Integration: {
@@ -63,7 +63,7 @@ describe('cors', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
       Integration: {
@@ -112,7 +112,7 @@ describe('cors', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
       Integration: {
@@ -159,7 +159,7 @@ describe('cors', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
       Integration: {
@@ -219,7 +219,7 @@ describe('cors', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
       Integration: {
@@ -277,7 +277,7 @@ describe('cors', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
       Integration: {
@@ -290,7 +290,7 @@ describe('cors', () => {
               'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
             },
             ResponseTemplates: {
-              'application/json': '#set($origin = $input.params("Origin"))\n#if($origin == "") #set($origin = $input.params("origin")) #end\n#if($origin.matches("https://amazon.com") || $origin.matches("https://aws.amazon.com"))\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end',
+              'application/json': '#set($origin = $input.params().header.get("Origin"))\n#if($origin == "") #set($origin = $input.params().header.get("origin")) #end\n#if($origin.matches("https://amazon.com") || $origin.matches("https://aws.amazon.com"))\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end',
             },
             StatusCode: '204',
           },
@@ -327,7 +327,7 @@ describe('cors', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
       Integration: {
@@ -376,7 +376,7 @@ describe('cors', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
       Integration: {
@@ -439,7 +439,7 @@ describe('cors', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
       Integration: {
@@ -489,12 +489,12 @@ describe('cors', () => {
     resource.addResource('MyChildResource');
 
     // THEN
-    expect(stack).toCountResources('AWS::ApiGateway::Method', 2); // on both resources
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Method', 2); // on both resources
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
     });
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceMyChildResource2DC010C5' },
     });
@@ -515,15 +515,15 @@ describe('cors', () => {
     child1.addResource('child2');
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { 'Fn::GetAtt': ['apiC8550315', 'RootResourceId'] },
     });
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apichild1841A5840' },
     });
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apichild1child26A9A7C47' },
     });
@@ -548,7 +548,7 @@ describe('cors', () => {
     });
 
     // THENB
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       ResourceId: {
         Ref: 'apiAllowAll2F5BC564',
       },
@@ -579,7 +579,7 @@ describe('cors', () => {
         },
       ],
     });
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       ResourceId: {
         Ref: 'apiAllowSpecific77DD8AF1',
       },
@@ -634,7 +634,7 @@ describe('cors', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN
@@ -646,8 +646,8 @@ describe('cors', () => {
     });
 
     // THEN
-    expect(stack).toCountResources('AWS::ApiGateway::Method', 4); // two ANY and two OPTIONS resources
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Method', 4); // two ANY and two OPTIONS resources
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: {
         'Fn::GetAtt': [
@@ -656,7 +656,7 @@ describe('cors', () => {
         ],
       },
     });
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: {
         Ref: 'lambdarestapiproxyE3AE07E3',
@@ -676,7 +676,7 @@ describe('cors', () => {
     api.root.addProxy();
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
     });
   });

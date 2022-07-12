@@ -30,7 +30,7 @@ import * as ssm from '@aws-cdk/aws-ssm';
 ## Using existing SSM Parameters in your CDK app
 
 You can reference existing SSM Parameter Store values that you want to use in
-your CDK app by using `ssm.ParameterStoreString`:
+your CDK app by using `ssm.StringParameter.fromStringParameterAttributes`:
 
 [using SSM parameter](test/integ.parameter-store-string.lit.ts)
 

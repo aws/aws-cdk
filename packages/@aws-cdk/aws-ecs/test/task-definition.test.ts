@@ -1,11 +1,11 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../lib';
 
 describe('task definition', () => {
   describe('When creating a new TaskDefinition', () => {
-    test('A task definition with both compatibilities defaults to networkmode AwsVpc', () => {
+    test('A task definition with EC2 and Fargate compatibilities defaults to networkmode AwsVpc', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -17,11 +17,28 @@ describe('task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         NetworkMode: 'awsvpc',
       });
 
 
+    });
+
+    test('A task definition with External compatibility defaults to networkmode Bridge', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new ecs.TaskDefinition(stack, 'TD', {
+        cpu: '512',
+        memoryMiB: '512',
+        compatibility: ecs.Compatibility.EXTERNAL,
+      });
+
+      //THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        NetworkMode: 'bridge',
+      });
     });
   });
 

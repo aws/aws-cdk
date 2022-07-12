@@ -31,6 +31,7 @@ export interface MockSdkProviderOptions {
  */
 export class MockSdkProvider extends SdkProvider {
   public readonly sdk: ISDK;
+  private readonly _mockSdk?: MockSdk;
 
   constructor(options: MockSdkProviderOptions = {}) {
     super(FAKE_CREDENTIAL_CHAIN, 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
@@ -40,8 +41,15 @@ export class MockSdkProvider extends SdkProvider {
     if (options.realSdk ?? true) {
       this.sdk = new SDK(FAKE_CREDENTIALS, this.defaultRegion, { customUserAgent: 'aws-cdk/jest' });
     } else {
-      this.sdk = new MockSdk();
+      this.sdk = this._mockSdk = new MockSdk();
     }
+  }
+
+  public get mockSdk(): MockSdk {
+    if (!this._mockSdk) {
+      throw new Error('MockSdkProvider was not created with \'realSdk: false\'');
+    }
+    return this._mockSdk;
   }
 
   async baseCredentialsPartition(_environment: cxapi.Environment, _mode: Mode): Promise<string | undefined> {
@@ -102,8 +110,8 @@ export class MockSdkProvider extends SdkProvider {
     (this.sdk as any).ssm = jest.fn().mockReturnValue(partialAwsService<AWS.SSM>(stubs));
   }
 
-  public stubLambda(stubs: SyncHandlerSubsetOf<AWS.Lambda>) {
-    (this.sdk as any).lambda = jest.fn().mockReturnValue(partialAwsService<AWS.Lambda>(stubs));
+  public stubLambda(stubs: SyncHandlerSubsetOf<AWS.Lambda>, additionalProperties: { [key: string]: any } = {}) {
+    (this.sdk as any).lambda = jest.fn().mockReturnValue(partialAwsService<AWS.Lambda>(stubs, additionalProperties));
   }
 
   public stubStepFunctions(stubs: SyncHandlerSubsetOf<AWS.StepFunctions>) {
@@ -112,6 +120,14 @@ export class MockSdkProvider extends SdkProvider {
 
   public stubCodeBuild(stubs: SyncHandlerSubsetOf<AWS.CodeBuild>) {
     (this.sdk as any).codeBuild = jest.fn().mockReturnValue(partialAwsService<AWS.CodeBuild>(stubs));
+  }
+
+  public stubCloudWatchLogs(stubs: SyncHandlerSubsetOf<AWS.CloudWatchLogs>) {
+    (this.sdk as any).cloudWatchLogs = jest.fn().mockReturnValue(partialAwsService<AWS.CloudWatchLogs>(stubs));
+  }
+
+  public stubAppSync(stubs: SyncHandlerSubsetOf<AWS.AppSync>) {
+    (this.sdk as any).appsync = jest.fn().mockReturnValue(partialAwsService<AWS.AppSync>(stubs));
   }
 
   public stubGetEndpointSuffix(stub: () => string) {
@@ -134,6 +150,8 @@ export class MockSdk implements ISDK {
   public readonly kms = jest.fn();
   public readonly stepFunctions = jest.fn();
   public readonly codeBuild = jest.fn();
+  public readonly cloudWatchLogs = jest.fn();
+  public readonly appsync = jest.fn();
   public readonly getEndpointSuffix = jest.fn();
   public readonly appendCustomUserAgent = jest.fn();
   public readonly removeCustomUserAgent = jest.fn();
@@ -147,6 +165,20 @@ export class MockSdk implements ISDK {
    */
   public stubCloudFormation(stubs: SyncHandlerSubsetOf<AWS.CloudFormation>) {
     this.cloudFormation.mockReturnValue(partialAwsService<AWS.CloudFormation>(stubs));
+  }
+
+  /**
+   * Replace the CloudWatch client with the given object
+   */
+  public stubCloudWatchLogs(stubs: SyncHandlerSubsetOf<AWS.CloudWatchLogs>) {
+    this.cloudWatchLogs.mockReturnValue(partialAwsService<AWS.CloudWatchLogs>(stubs));
+  }
+
+  /**
+   * Replace the AppSync client with the given object
+   */
+  public stubAppSync(stubs: SyncHandlerSubsetOf<AWS.AppSync>) {
+    this.appsync.mockReturnValue(partialAwsService<AWS.AppSync>(stubs));
   }
 
   /**

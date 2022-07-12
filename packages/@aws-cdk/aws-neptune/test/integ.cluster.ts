@@ -30,11 +30,12 @@ class TestStack extends cdk.Stack {
 
     const cluster = new DatabaseCluster(this, 'Database', {
       vpc,
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
       instanceType: InstanceType.R5_LARGE,
       clusterParameterGroup: params,
       kmsKey,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoMinorVersionUpgrade: true,
     });
 
     cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');

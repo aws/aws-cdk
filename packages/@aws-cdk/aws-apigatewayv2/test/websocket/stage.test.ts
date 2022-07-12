@@ -99,12 +99,38 @@ describe('WebSocketStage', () => {
                 {
                   Ref: 'ApiF70053CD',
                 },
-                `/${defaultStage.stageName}/POST/@connections/*`,
+                `/${defaultStage.stageName}/*/@connections/*`,
               ]],
             },
           }]),
         },
       });
+    });
+  });
+
+  test('correctly sets throttle settings', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new WebSocketApi(stack, 'Api');
+
+    // WHEN
+    new WebSocketStage(stack, 'DefaultStage', {
+      webSocketApi: api,
+      stageName: 'dev',
+      throttle: {
+        burstLimit: 1000,
+        rateLimit: 1000,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.apiId),
+      StageName: 'dev',
+      DefaultRouteSettings: {
+        ThrottlingBurstLimit: 1000,
+        ThrottlingRateLimit: 1000,
+      },
     });
   });
 });

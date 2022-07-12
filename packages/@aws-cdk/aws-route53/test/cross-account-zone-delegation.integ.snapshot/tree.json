@@ -1,0 +1,475 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
+        }
+      },
+      "aws-cdk-route53-cross-account-integ": {
+        "id": "aws-cdk-route53-cross-account-integ",
+        "path": "aws-cdk-route53-cross-account-integ",
+        "children": {
+          "ParentHostedZone": {
+            "id": "ParentHostedZone",
+            "path": "aws-cdk-route53-cross-account-integ/ParentHostedZone",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-cross-account-integ/ParentHostedZone/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HostedZone",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "myzone.com."
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-route53.CfnHostedZone",
+                  "version": "0.0.0"
+                }
+              },
+              "CrossAccountZoneDelegationRole": {
+                "id": "CrossAccountZoneDelegationRole",
+                "path": "aws-cdk-route53-cross-account-integ/ParentHostedZone/CrossAccountZoneDelegationRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-route53-cross-account-integ/ParentHostedZone/CrossAccountZoneDelegationRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":iam::",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":root"
+                                    ]
+                                  ]
+                                }
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policies": [
+                          {
+                            "policyName": "delegation",
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "route53:ChangeResourceRecordSets",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":route53:::hostedzone/",
+                                        {
+                                          "Ref": "ParentHostedZoneC2BD86E1"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "route53:ListHostedZonesByName",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-route53.PublicHostedZone",
+              "version": "0.0.0"
+            }
+          },
+          "ChildHostedZoneWithZoneId": {
+            "id": "ChildHostedZoneWithZoneId",
+            "path": "aws-cdk-route53-cross-account-integ/ChildHostedZoneWithZoneId",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-cross-account-integ/ChildHostedZoneWithZoneId/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HostedZone",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "sub.myzone.com."
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-route53.CfnHostedZone",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-route53.PublicHostedZone",
+              "version": "0.0.0"
+            }
+          },
+          "DelegationWithZoneId": {
+            "id": "DelegationWithZoneId",
+            "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneId",
+            "children": {
+              "cross-account-zone-delegation-handler-role": {
+                "id": "cross-account-zone-delegation-handler-role",
+                "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneId/cross-account-zone-delegation-handler-role",
+                "children": {
+                  "Policy": {
+                    "id": "Policy",
+                    "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneId/cross-account-zone-delegation-handler-role/Policy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneId/cross-account-zone-delegation-handler-role/Policy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicy5170A69B",
+                            "roles": [
+                              {
+                                "Fn::Select": [
+                                  1,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Fn::Select": [
+                                          5,
+                                          {
+                                            "Fn::Split": [
+                                              ":",
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B",
+                                                  "Arn"
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "CrossAccountZoneDelegationCustomResource": {
+                "id": "CrossAccountZoneDelegationCustomResource",
+                "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneId/CrossAccountZoneDelegationCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneId/CrossAccountZoneDelegationCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-route53.CrossAccountZoneDelegationRecord",
+              "version": "0.0.0"
+            }
+          },
+          "Custom::CrossAccountZoneDelegationCustomResourceProvider": {
+            "id": "Custom::CrossAccountZoneDelegationCustomResourceProvider",
+            "path": "aws-cdk-route53-cross-account-integ/Custom::CrossAccountZoneDelegationCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "aws-cdk-route53-cross-account-integ/Custom::CrossAccountZoneDelegationCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "aws-cdk-route53-cross-account-integ/Custom::CrossAccountZoneDelegationCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "aws-cdk-route53-cross-account-integ/Custom::CrossAccountZoneDelegationCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CustomResourceProvider",
+              "version": "0.0.0"
+            }
+          },
+          "AssetParameters": {
+            "id": "AssetParameters",
+            "path": "aws-cdk-route53-cross-account-integ/AssetParameters",
+            "children": {
+              "7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a": {
+                "id": "7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a",
+                "path": "aws-cdk-route53-cross-account-integ/AssetParameters/7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a",
+                "children": {
+                  "S3Bucket": {
+                    "id": "S3Bucket",
+                    "path": "aws-cdk-route53-cross-account-integ/AssetParameters/7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a/S3Bucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "S3VersionKey": {
+                    "id": "S3VersionKey",
+                    "path": "aws-cdk-route53-cross-account-integ/AssetParameters/7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a/S3VersionKey",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ArtifactHash": {
+                    "id": "ArtifactHash",
+                    "path": "aws-cdk-route53-cross-account-integ/AssetParameters/7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a/ArtifactHash",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
+            }
+          },
+          "ChildHostedZoneWithZoneName": {
+            "id": "ChildHostedZoneWithZoneName",
+            "path": "aws-cdk-route53-cross-account-integ/ChildHostedZoneWithZoneName",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-cross-account-integ/ChildHostedZoneWithZoneName/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HostedZone",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "anothersub.myzone.com."
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-route53.CfnHostedZone",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-route53.PublicHostedZone",
+              "version": "0.0.0"
+            }
+          },
+          "DelegationWithZoneName": {
+            "id": "DelegationWithZoneName",
+            "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneName",
+            "children": {
+              "cross-account-zone-delegation-handler-role": {
+                "id": "cross-account-zone-delegation-handler-role",
+                "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneName/cross-account-zone-delegation-handler-role",
+                "children": {
+                  "Policy": {
+                    "id": "Policy",
+                    "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneName/cross-account-zone-delegation-handler-role/Policy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneName/cross-account-zone-delegation-handler-role/Policy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicy86996882",
+                            "roles": [
+                              {
+                                "Fn::Select": [
+                                  1,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Fn::Select": [
+                                          5,
+                                          {
+                                            "Fn::Split": [
+                                              ":",
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B",
+                                                  "Arn"
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "CrossAccountZoneDelegationCustomResource": {
+                "id": "CrossAccountZoneDelegationCustomResource",
+                "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneName/CrossAccountZoneDelegationCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneName/CrossAccountZoneDelegationCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-route53.CrossAccountZoneDelegationRecord",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

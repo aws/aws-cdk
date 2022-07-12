@@ -1,5 +1,5 @@
 import * as path from 'path';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as core from '@aws-cdk/core';
 import * as constructs from 'constructs';
@@ -19,7 +19,7 @@ describe('CDK Include', () => {
   test('can ingest a template with all long-form CloudFormation functions and output it unchanged', () => {
     includeTestTemplate(stack, 'long-form-vpc.yaml');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('long-form-vpc.yaml'),
     );
   });
@@ -27,7 +27,7 @@ describe('CDK Include', () => {
   test('can ingest a template with year-month-date parsed as string instead of Date', () => {
     includeTestTemplate(stack, 'year-month-date-as-strings.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "AWSTemplateFormatVersion": "2010-09-09",
       "Resources": {
         "Role": {
@@ -54,7 +54,7 @@ describe('CDK Include', () => {
   test('can ingest a template with the short form Base64 function', () => {
     includeTestTemplate(stack, 'short-form-base64.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "Base64Bucket": {
           "Type": "AWS::S3::Bucket",
@@ -71,7 +71,7 @@ describe('CDK Include', () => {
   test('can ingest a template with the short form !Cidr function', () => {
     includeTestTemplate(stack, 'short-form-cidr.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "CidrVpc1": {
           "Type": "AWS::EC2::VPC",
@@ -104,7 +104,7 @@ describe('CDK Include', () => {
   test('can ingest a template with the short form !FindInMap function, in both hyphen and bracket notation', () => {
     includeTestTemplate(stack, 'short-form-find-in-map.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Mappings": {
         "RegionMap": {
           "region-1": {
@@ -145,7 +145,7 @@ describe('CDK Include', () => {
   test('can ingest a template with the short form !GetAtt function', () => {
     includeTestTemplate(stack, 'short-form-get-att.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "ELB": {
           "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
@@ -187,7 +187,7 @@ describe('CDK Include', () => {
   test('can ingest a template with short form Select, GetAZs, and Ref functions', () => {
     includeTestTemplate(stack, 'short-form-select.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "Subnet1": {
           "Type": "AWS::EC2::Subnet",
@@ -220,7 +220,7 @@ describe('CDK Include', () => {
   test('can ingest a template with the short form !ImportValue function', () => {
     includeTestTemplate(stack, 'short-form-import-value.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "Bucket1": {
           "Type": "AWS::S3::Bucket",
@@ -237,7 +237,7 @@ describe('CDK Include', () => {
   test('can ingest a template with the short form !Join function', () => {
     includeTestTemplate(stack, 'short-form-join.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "Bucket": {
           "Type": "AWS::S3::Bucket",
@@ -257,7 +257,7 @@ describe('CDK Include', () => {
   test('can ingest a template with the short form !Split function that uses both brackets and hyphens', () => {
     includeTestTemplate(stack, 'short-form-split.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "Bucket1": {
           "Type": "AWS::S3::Bucket",
@@ -287,7 +287,7 @@ describe('CDK Include', () => {
     // Note that this yaml template fails validation. It is unclear how to invoke !Transform.
     includeTestTemplate(stack, 'invalid/short-form-transform.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "Bucket": {
           "Type": "AWS::S3::Bucket",
@@ -310,7 +310,7 @@ describe('CDK Include', () => {
   test('can ingest a template with the short form conditionals', () => {
     includeTestTemplate(stack, 'short-form-conditionals.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Conditions": {
         "AlwaysTrueCond": {
           "Fn::And": [
@@ -348,7 +348,7 @@ describe('CDK Include', () => {
   test('can ingest a template with the short form Conditions', () => {
     includeTestTemplate(stack, 'short-form-conditions.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Conditions": {
         "AlwaysTrueCond": {
           "Fn::Not": [
@@ -393,7 +393,7 @@ describe('CDK Include', () => {
   test('can ingest a yaml with long-form functions and output it unchanged', () => {
     includeTestTemplate(stack, 'long-form-subnet.yaml');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('long-form-subnet.yaml'),
     );
   });
@@ -401,7 +401,7 @@ describe('CDK Include', () => {
   test('can ingest a YAML template with Fn::Sub in string form and output it unchanged', () => {
     includeTestTemplate(stack, 'short-form-fnsub-string.yaml');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('short-form-fnsub-string.yaml'),
     );
   });
@@ -409,7 +409,7 @@ describe('CDK Include', () => {
   test('can ingest a YAML template with Fn::Sub in map form and output it unchanged', () => {
     includeTestTemplate(stack, 'short-form-sub-map.yaml');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('short-form-sub-map.yaml'),
     );
   });

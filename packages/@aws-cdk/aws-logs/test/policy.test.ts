@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { LogGroup, ResourcePolicy } from '../lib';
@@ -16,7 +16,7 @@ describe('resource policy', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResource('AWS::Logs::ResourcePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
       PolicyName: 'LogGroupPolicy643B329C',
       PolicyDocument: JSON.stringify({
         Statement: [
@@ -45,8 +45,19 @@ describe('resource policy', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResource('AWS::Logs::ResourcePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
       PolicyName: 'ResourcePolicy',
     });
+  });
+
+  test('ResourcePolicy has a defaultChild', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const resourcePolicy = new ResourcePolicy(stack, 'ResourcePolicy');
+
+    // THEN
+    expect(resourcePolicy.node.defaultChild).toBeDefined();
   });
 });

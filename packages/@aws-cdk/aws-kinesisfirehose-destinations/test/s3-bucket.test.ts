@@ -87,7 +87,11 @@ describe('S3 destination', () => {
               's3:GetBucket*',
               's3:List*',
               's3:DeleteObject*',
-              's3:PutObject*',
+              's3:PutObject',
+              's3:PutObjectLegalHold',
+              's3:PutObjectRetention',
+              's3:PutObjectTagging',
+              's3:PutObjectVersionTagging',
               's3:Abort*',
             ],
             Effect: 'Allow',
@@ -119,7 +123,11 @@ describe('S3 destination', () => {
               's3:GetBucket*',
               's3:List*',
               's3:DeleteObject*',
-              's3:PutObject*',
+              's3:PutObject',
+              's3:PutObjectLegalHold',
+              's3:PutObjectRetention',
+              's3:PutObjectTagging',
+              's3:PutObjectVersionTagging',
               's3:Abort*',
             ],
             Effect: 'Allow',
@@ -232,7 +240,7 @@ describe('S3 destination', () => {
 
     beforeEach(() => {
       lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         code: lambda.Code.fromInline('foo'),
         handler: 'bar',
       });
@@ -333,7 +341,10 @@ describe('S3 destination', () => {
             {
               Action: 'lambda:InvokeFunction',
               Effect: 'Allow',
-              Resource: stack.resolve(lambdaFunction.functionArn),
+              Resource: [
+                stack.resolve(lambdaFunction.functionArn),
+                { 'Fn::Join': ['', [stack.resolve(lambdaFunction.functionArn), ':*']] },
+              ],
             },
           ]),
         },

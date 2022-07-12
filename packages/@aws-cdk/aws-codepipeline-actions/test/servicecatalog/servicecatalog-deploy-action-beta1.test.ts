@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Stack } from '@aws-cdk/core';
@@ -19,13 +19,13 @@ describe('ServiceCatalog Deploy Action', () => {
       productId: 'prod-xxxxxxxxx',
     }));
     // THEN
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      'Stages': [
-        { 'Name': 'Source' /* don't care about the rest */ },
-        {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      'Stages': Match.arrayWith([
+        Match.objectLike({ 'Name': 'Source' /* don't care about the rest */ }),
+        Match.objectLike({
           'Name': 'Deploy',
-          'Actions': [
-            {
+          'Actions': Match.arrayWith([
+            Match.objectLike({
               'ActionTypeId': {
                 'Category': 'Deploy',
                 'Owner': 'AWS',
@@ -45,10 +45,10 @@ describe('ServiceCatalog Deploy Action', () => {
                 },
               ],
               'Name': 'ServiceCatalogTest',
-            },
-          ],
-        },
-      ],
+            }),
+          ]),
+        }),
+      ]),
     });
 
 
@@ -64,13 +64,13 @@ describe('ServiceCatalog Deploy Action', () => {
       productId: 'prod-xxxxxxxxx',
     }));
     // THEN
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      'Stages': [
-        { 'Name': 'Source' /* don't care about the rest */ },
-        {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      'Stages': Match.arrayWith([
+        Match.objectLike({ 'Name': 'Source' /* don't care about the rest */ }),
+        Match.objectLike({
           'Name': 'Deploy',
-          'Actions': [
-            {
+          'Actions': Match.arrayWith([
+            Match.objectLike({
               'ActionTypeId': {
                 'Category': 'Deploy',
                 'Owner': 'AWS',
@@ -89,10 +89,10 @@ describe('ServiceCatalog Deploy Action', () => {
                 },
               ],
               'Name': 'ServiceCatalogTest',
-            },
-          ],
-        },
-      ],
+            }),
+          ]),
+        }),
+      ]),
     });
 
 

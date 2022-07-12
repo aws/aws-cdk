@@ -1,4 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
 
@@ -14,7 +15,7 @@ describe('lambda version', () => {
     new cdk.CfnOutput(stack, 'Name', { value: version.functionName });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Outputs: {
         ARN: {
           Value: 'arn:aws:lambda:region:account-id:function:function-name:version',
@@ -30,7 +31,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
@@ -43,7 +44,7 @@ describe('lambda version', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
       FunctionName: {
         Ref: 'Fn9270CBC0',
       },
@@ -62,7 +63,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
@@ -91,23 +92,23 @@ describe('lambda version', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
       FunctionName: 'function-name',
       Qualifier: 'version1',
       MaximumRetryAttempts: 1,
     });
-    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
       FunctionName: 'function-name',
       Qualifier: 'version2',
       MaximumRetryAttempts: 0,
     });
   });
 
-  test('addAlias can be used to add an alias that points to a version', () => {
+  testDeprecated('addAlias can be used to add an alias that points to a version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
@@ -117,13 +118,13 @@ describe('lambda version', () => {
     version.addAlias('foo');
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
       FunctionName: {
         Ref: 'Fn9270CBC0',
       },
       FunctionVersion: {
         'Fn::GetAtt': [
-          'FnCurrentVersion17A89ABBab5c765f3c55e4e61583b51b00a95742',
+          'FnCurrentVersion17A89ABB7cfc294c86ef030f28b22c2ab54f718a',
           'Version',
         ],
       },
@@ -135,14 +136,14 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
     const version = fn.currentVersion;
 
     // THEN
-    expect(stack.resolve(version.edgeArn)).toEqual({ Ref: 'FnCurrentVersion17A89ABB19ed45993ff69fd011ae9fd4ab6e2005' });
+    expect(stack.resolve(version.edgeArn)).toEqual({ Ref: 'FnCurrentVersion17A89ABB7cfc294c86ef030f28b22c2ab54f718a' });
   });
 
   test('edgeArn throws with $LATEST', () => {
@@ -159,7 +160,7 @@ describe('lambda version', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
@@ -167,7 +168,7 @@ describe('lambda version', () => {
 
     // WHEN
     new lambda.Function(stack, 'OtherFn', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
       environment: {
@@ -180,5 +181,25 @@ describe('lambda version', () => {
 
     // THEN
     expect(() => app.synth()).toThrow(/KEY1,KEY2/);
+  });
+
+  test('throws when adding FunctionUrl to a Version', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_14_X,
+    });
+    const version = new lambda.Version(stack, 'Version', {
+      lambda: fn,
+      maxEventAge: cdk.Duration.hours(1),
+      retryAttempts: 0,
+    });
+
+    // WHEN
+    expect(() => {
+      version.addFunctionUrl();
+    }).toThrow(/FunctionUrl cannot be used with a Version/);
   });
 });

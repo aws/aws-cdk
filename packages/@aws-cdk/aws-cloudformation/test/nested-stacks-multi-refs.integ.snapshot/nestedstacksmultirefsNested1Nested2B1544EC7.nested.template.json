@@ -1,0 +1,97 @@
+{
+ "Resources": {
+  "Nested3NestedStackNested3NestedStackResource4CFC9F55": {
+   "Type": "AWS::CloudFormation::Stack",
+   "Properties": {
+    "TemplateURL": {
+     "Fn::Join": [
+      "",
+      [
+       "https://s3.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/",
+       {
+        "Ref": "referencetonestedstacksmultirefsAssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3Bucket03F0C3B1Ref"
+       },
+       "/",
+       {
+        "Fn::Select": [
+         0,
+         {
+          "Fn::Split": [
+           "||",
+           {
+            "Ref": "referencetonestedstacksmultirefsAssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3VersionKey5F9CF809Ref"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "Fn::Select": [
+         1,
+         {
+          "Fn::Split": [
+           "||",
+           {
+            "Ref": "referencetonestedstacksmultirefsAssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3VersionKey5F9CF809Ref"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     ]
+    },
+    "Parameters": {
+     "referencetonestedstacksmultirefsLevel19FB2466DTopicName": {
+      "Ref": "referencetonestedstacksmultirefsLevel19FB2466DTopicName"
+     },
+     "referencetonestedstacksmultirefsNested1Nested2Level2ReferencesLevel1B9551936TopicName": {
+      "Fn::GetAtt": [
+       "Level2ReferencesLevel124228B1A",
+       "TopicName"
+      ]
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Level2ReferencesLevel124228B1A": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::Split": [
+        "-",
+        {
+         "Ref": "referencetonestedstacksmultirefsLevel19FB2466DTopicName"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "referencetonestedstacksmultirefsLevel19FB2466DTopicName": {
+   "Type": "String"
+  },
+  "referencetonestedstacksmultirefsAssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3Bucket03F0C3B1Ref": {
+   "Type": "String"
+  },
+  "referencetonestedstacksmultirefsAssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3VersionKey5F9CF809Ref": {
+   "Type": "String"
+  }
+ }
+}

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as elbv2 from '../../lib';
@@ -25,7 +25,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
           TargetGroupArn: { Ref: 'TargetGroup1E5480F51' },
@@ -45,7 +45,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
           ForwardConfig: {
@@ -81,7 +81,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
           ForwardConfig: {
@@ -113,7 +113,7 @@ describe('tests', () => {
       defaultAction: elbv2.ListenerAction.authenticateOidc({
         authorizationEndpoint: 'A',
         clientId: 'B',
-        clientSecret: cdk.SecretValue.plainText('C'),
+        clientSecret: cdk.SecretValue.unsafePlainText('C'),
         issuer: 'D',
         tokenEndpoint: 'E',
         userInfoEndpoint: 'F',
@@ -122,7 +122,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
           AuthenticateOidcConfig: {
@@ -161,7 +161,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
       Actions: [
         {
           TargetGroupArn: { Ref: 'TargetGroup2D571E5D7' },
@@ -190,7 +190,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
       Actions: [
         {
           TargetGroupArn: { Ref: 'TargetGroup2D571E5D7' },

@@ -1,6 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
-import { AnyPrincipal, Group, PolicyDocument, PolicyStatement } from '../lib';
+import { AnyPrincipal, Group, PolicyDocument, PolicyStatement, Effect } from '../lib';
 
 describe('IAM policy statement', () => {
 
@@ -214,5 +213,48 @@ describe('IAM policy statement', () => {
       .toThrow(/Cannot use an IAM Group as the 'Principal' or 'NotPrincipal' in an IAM Policy/);
     expect(() => policyStatement.addNotPrincipals(group))
       .toThrow(/Cannot use an IAM Group as the 'Principal' or 'NotPrincipal' in an IAM Policy/);
+  });
+
+  test('multiple identical entries render to a scalar (instead of a singleton list)', () => {
+    const stack = new Stack();
+    const policyStatement = new PolicyStatement({
+      actions: ['aws:Action'],
+    });
+
+    policyStatement.addResources('asdf');
+    policyStatement.addResources('asdf');
+    policyStatement.addResources('asdf');
+
+    expect(stack.resolve(policyStatement.toStatementJson())).toEqual({
+      Effect: 'Allow',
+      Action: 'aws:Action',
+      Resource: 'asdf',
+    });
+  });
+
+  test('a frozen policy statement cannot be modified any more', () => {
+    // GIVEN
+    const statement = new PolicyStatement({
+      actions: ['action:a'],
+      resources: ['*'],
+    });
+    statement.freeze();
+
+    // WHEN
+    const modifications = [
+      () => statement.sid = 'asdf',
+      () => statement.effect = Effect.DENY,
+      () => statement.addActions('abc:def'),
+      () => statement.addNotActions('abc:def'),
+      () => statement.addResources('*'),
+      () => statement.addNotResources('*'),
+      () => statement.addPrincipals(new AnyPrincipal()),
+      () => statement.addNotPrincipals(new AnyPrincipal()),
+      () => statement.addCondition('key', 'value'),
+    ];
+
+    for (const mod of modifications) {
+      expect(mod).toThrow(/can no longer be modified/);
+    }
   });
 });

@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as appmesh from '../lib';
 
@@ -80,7 +79,7 @@ describe('route', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
         Spec: {
           HttpRoute: {
             Action: {
@@ -111,11 +110,11 @@ describe('route', () => {
             },
           },
         },
-        MeshOwner: ABSENT,
+        MeshOwner: Match.absent(),
         RouteName: 'test-http-route',
       });
 
-      expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
         Spec: {
           Http2Route: {
             Action: {
@@ -149,7 +148,7 @@ describe('route', () => {
         RouteName: 'test-http2-route',
       });
 
-      expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
         Spec: {
           TcpRoute: {
             Action: {
@@ -176,7 +175,7 @@ describe('route', () => {
         RouteName: 'test-tcp-route',
       });
 
-      expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
         Spec: {
           GrpcRoute: {
             Action: {
@@ -209,8 +208,6 @@ describe('route', () => {
         },
         RouteName: 'test-grpc-route',
       });
-
-
     });
 
     test('should have expected features', () => {
@@ -247,7 +244,7 @@ describe('route', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
         Spec: {
           HttpRoute: {
             Action: {
@@ -311,7 +308,7 @@ describe('route', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
         Spec: {
           HttpRoute: {
             RetryPolicy: {
@@ -326,11 +323,9 @@ describe('route', () => {
           },
         },
       });
-
-
     });
 
-    test('http retry events are ABSENT when specified as an empty array', () => {
+    test('http retry events are Match.absent() when specified as an empty array', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -370,28 +365,26 @@ describe('route', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
         Spec: {
           HttpRoute: {
             RetryPolicy: {
-              HttpRetryEvents: ABSENT,
+              HttpRetryEvents: Match.absent(),
               TcpRetryEvents: ['connection-error'],
             },
           },
         },
       });
-      expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
         Spec: {
           HttpRoute: {
             RetryPolicy: {
               HttpRetryEvents: ['client-error'],
-              TcpRetryEvents: ABSENT,
+              TcpRetryEvents: Match.absent(),
             },
           },
         },
       });
-
-
     });
 
     test('errors when http retry policy has no events', () => {
@@ -420,8 +413,6 @@ describe('route', () => {
           }),
         });
       }).toThrow(/specify one value for at least/i);
-
-
     });
 
     test('should allow grpc retries', () => {
@@ -454,7 +445,7 @@ describe('route', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
         Spec: {
           GrpcRoute: {
             RetryPolicy: {
@@ -470,11 +461,9 @@ describe('route', () => {
           },
         },
       });
-
-
     });
 
-    test('grpc retry events are ABSENT when specified as an empty array', () => {
+    test('grpc retry events are Match.absent() when specified as an empty array', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -518,30 +507,28 @@ describe('route', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
         Spec: {
           GrpcRoute: {
             RetryPolicy: {
-              GrpcRetryEvents: ABSENT,
-              HttpRetryEvents: ABSENT,
+              GrpcRetryEvents: Match.absent(),
+              HttpRetryEvents: Match.absent(),
               TcpRetryEvents: ['connection-error'],
             },
           },
         },
       });
-      expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
         Spec: {
           GrpcRoute: {
             RetryPolicy: {
               GrpcRetryEvents: ['cancelled'],
-              HttpRetryEvents: ABSENT,
-              TcpRetryEvents: ABSENT,
+              HttpRetryEvents: Match.absent(),
+              TcpRetryEvents: Match.absent(),
             },
           },
         },
       });
-
-
     });
 
     test('errors when grpc retry policy has no events', () => {
@@ -571,8 +558,6 @@ describe('route', () => {
           }),
         });
       }).toThrow(/specify one value for at least/i);
-
-
     });
 
     describe('with shared service mesh', () => {
@@ -605,11 +590,9 @@ describe('route', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
           MeshOwner: meshEnv.account,
         });
-
-
       });
     });
   });
@@ -653,7 +636,7 @@ describe('route', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
       Spec: {
         Http2Route: {
           Match: {
@@ -724,8 +707,6 @@ describe('route', () => {
         },
       },
     });
-
-
   });
 
   test('should match routes based on method', () => {
@@ -756,7 +737,7 @@ describe('route', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
       Spec: {
         Http2Route: {
           Match: {
@@ -766,8 +747,6 @@ describe('route', () => {
         },
       },
     });
-
-
   });
 
   test('should match routes based on scheme', () => {
@@ -798,7 +777,7 @@ describe('route', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
       Spec: {
         Http2Route: {
           Match: {
@@ -808,8 +787,6 @@ describe('route', () => {
         },
       },
     });
-
-
   });
 
   test('should match routes based on metadata', () => {
@@ -852,7 +829,7 @@ describe('route', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
       Spec: {
         GrpcRoute: {
           Match: {
@@ -922,8 +899,6 @@ describe('route', () => {
         },
       },
     });
-
-
   });
 
   test('should match routes based on path', () => {
@@ -966,7 +941,7 @@ describe('route', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
       Spec: {
         HttpRoute: {
           Match: {
@@ -978,7 +953,7 @@ describe('route', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
       Spec: {
         Http2Route: {
           Match: {
@@ -989,8 +964,6 @@ describe('route', () => {
         },
       },
     });
-
-
   });
 
   test('should match routes based query parameter', () => {
@@ -1022,7 +995,7 @@ describe('route', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
       Spec: {
         HttpRoute: {
           Match: {
@@ -1038,8 +1011,6 @@ describe('route', () => {
         },
       },
     });
-
-
   });
 
   test('should match routes based method name', () => {
@@ -1073,7 +1044,7 @@ describe('route', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
       Spec: {
         GrpcRoute: {
           Match: {
@@ -1083,8 +1054,6 @@ describe('route', () => {
         },
       },
     });
-
-
   });
 
   test('should throw an error with invalid number of headers', () => {
@@ -1141,8 +1110,6 @@ describe('route', () => {
         }),
       });
     }).toThrow(/Number of headers provided for matching must be between 1 and 10, got: 11/);
-
-
   });
 
   test('should throw an error with invalid number of query parameters', () => {
@@ -1199,8 +1166,6 @@ describe('route', () => {
         }),
       });
     }).toThrow(/Number of query parameters provided for matching must be between 1 and 10, got: 11/);
-
-
   });
 
   test('should throw an error with invalid number of metadata', () => {
@@ -1260,8 +1225,6 @@ describe('route', () => {
         }),
       });
     }).toThrow(/Number of metadata provided for matching must be between 1 and 10, got: 11/);
-
-
   });
 
   test('should throw an error if no gRPC match type is defined', () => {
@@ -1292,8 +1255,6 @@ describe('route', () => {
         }),
       });
     }).toThrow(/At least one gRPC route match property must be provided/);
-
-
   });
 
   test('should throw an error if method name is specified without service name', () => {
@@ -1326,8 +1287,6 @@ describe('route', () => {
         }),
       });
     }).toThrow(/If you specify a method name, you must also specify a service name/);
-
-
   });
 
   test('should allow route priority', () => {
@@ -1376,32 +1335,30 @@ describe('route', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
       Spec: {
         Priority: 0,
         Http2Route: {},
       },
     });
-    expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
       Spec: {
         Priority: 10,
         HttpRoute: {},
       },
     });
-    expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
       Spec: {
         Priority: 20,
         GrpcRoute: {},
       },
     });
-    expect(stack).toHaveResourceLike('AWS::AppMesh::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
       Spec: {
         Priority: 30,
         TcpRoute: {},
       },
     });
-
-
   });
 
   test('Can import Routes using an ARN', () => {
@@ -1443,7 +1400,5 @@ describe('route', () => {
     // THEN
     expect(route.routeName).toEqual(routeName);
     expect(route.virtualRouter.mesh.meshName).toEqual(meshName);
-
-
   });
 });

@@ -5,10 +5,6 @@ import { IIntegration } from '../common';
 import { IWebSocketApi } from './api';
 import { IWebSocketRoute } from './route';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Represents an Integration for an WebSocket API.
  */
@@ -24,7 +20,11 @@ export enum WebSocketIntegrationType {
   /**
    * AWS Proxy Integration Type
    */
-  AWS_PROXY = 'AWS_PROXY'
+  AWS_PROXY = 'AWS_PROXY',
+  /**
+   * Mock Integration Type
+   */
+  MOCK = 'MOCK'
 }
 
 /**
@@ -81,7 +81,7 @@ export interface WebSocketRouteIntegrationBindOptions {
    * If the `WebSocketRouteIntegration` being bound creates additional constructs,
    * this will be used as their parent scope.
    */
-  readonly scope: CoreConstruct;
+  readonly scope: Construct;
 }
 
 /**

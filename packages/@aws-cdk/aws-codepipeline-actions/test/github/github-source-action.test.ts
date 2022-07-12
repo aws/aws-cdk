@@ -1,8 +1,7 @@
-import '@aws-cdk/assert-internal/jest';
-import { SynthUtils } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { SecretValue, Stack } from '@aws-cdk/core';
+import { App, SecretValue, Stack } from '@aws-cdk/core';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
@@ -18,7 +17,7 @@ describe('Github source action', () => {
         owner: 'aws',
         repo: 'aws-cdk',
         output: sourceOutput,
-        oauthToken: SecretValue.plainText('secret'),
+        oauthToken: SecretValue.unsafePlainText('secret'),
       });
       new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
@@ -42,7 +41,7 @@ describe('Github source action', () => {
         ],
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -78,7 +77,7 @@ describe('Github source action', () => {
                 owner: 'aws',
                 repo: 'aws-cdk',
                 output: sourceOutput,
-                oauthToken: SecretValue.plainText('secret'),
+                oauthToken: SecretValue.unsafePlainText('secret'),
                 variablesNamespace: 'MyNamespace',
               }),
             ],
@@ -96,7 +95,7 @@ describe('Github source action', () => {
         ],
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -116,14 +115,15 @@ describe('Github source action', () => {
     });
 
     test('fails if a variable from an action without a namespace set that is not part of a pipeline is referenced', () => {
-      const stack = new Stack();
+      const app = new App();
+      const stack = new Stack(app);
 
       const unusedSourceAction = new cpactions.GitHubSourceAction({
         actionName: 'Source2',
         owner: 'aws',
         repo: 'aws-cdk',
         output: new codepipeline.Artifact(),
-        oauthToken: SecretValue.plainText('secret'),
+        oauthToken: SecretValue.unsafePlainText('secret'),
       });
       const sourceOutput = new codepipeline.Artifact();
       new codepipeline.Pipeline(stack, 'Pipeline', {
@@ -135,7 +135,7 @@ describe('Github source action', () => {
               owner: 'aws',
               repo: 'aws-cdk',
               output: sourceOutput,
-              oauthToken: SecretValue.plainText('secret'),
+              oauthToken: SecretValue.unsafePlainText('secret'),
             })],
           },
           {
@@ -155,21 +155,22 @@ describe('Github source action', () => {
       });
 
       expect(() => {
-        SynthUtils.synthesize(stack);
+        App.of(stack)!.synth();
       }).toThrow(/Cannot reference variables of action 'Source2', as that action was never added to a pipeline/);
 
 
     });
 
     test('fails if a variable from an action with a namespace set that is not part of a pipeline is referenced', () => {
-      const stack = new Stack();
+      const app = new App();
+      const stack = new Stack(app);
 
       const unusedSourceAction = new cpactions.GitHubSourceAction({
         actionName: 'Source2',
         owner: 'aws',
         repo: 'aws-cdk',
         output: new codepipeline.Artifact(),
-        oauthToken: SecretValue.plainText('secret'),
+        oauthToken: SecretValue.unsafePlainText('secret'),
         variablesNamespace: 'MyNamespace',
       });
       const sourceOutput = new codepipeline.Artifact();
@@ -182,7 +183,7 @@ describe('Github source action', () => {
               owner: 'aws',
               repo: 'aws-cdk',
               output: sourceOutput,
-              oauthToken: SecretValue.plainText('secret'),
+              oauthToken: SecretValue.unsafePlainText('secret'),
             })],
           },
           {
@@ -202,7 +203,7 @@ describe('Github source action', () => {
       });
 
       expect(() => {
-        SynthUtils.synthesize(stack);
+        App.of(stack)!.synth();
       }).toThrow(/Cannot reference variables of action 'Source2', as that action was never added to a pipeline/);
 
 

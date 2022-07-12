@@ -1,15 +1,15 @@
-import { App, CfnMapping, CfnOutput, CfnResource, NestedStack, Stack } from '@aws-cdk/core';
+import { App, CfnCondition, CfnMapping, CfnOutput, CfnParameter, CfnResource, Fn, LegacyStackSynthesizer, NestedStack, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Capture, Match, Template } from '../lib';
 
 describe('Template', () => {
   test('fromString', () => {
     const template = Template.fromString(`{
-        "Resources": { 
-          "Foo": { 
+        "Resources": {
+          "Foo": {
             "Type": "Baz::Qux",
             "Properties": { "Fred": "Waldo" }
-          } 
+          }
         }
       }`);
 
@@ -79,11 +79,11 @@ describe('Template', () => {
   describe('fromString', () => {
     test('default', () => {
       const assertions = Template.fromString(`{
-        "Resources": { 
-          "Foo": { 
+        "Resources": {
+          "Foo": {
             "Type": "Baz::Qux",
             "Properties": { "Fred": "Waldo" }
-          } 
+          }
         }
       }`);
       assertions.resourceCountIs('Baz::Qux', 1);
@@ -126,7 +126,10 @@ describe('Template', () => {
 
   describe('templateMatches', () => {
     test('matches', () => {
-      const stack = new Stack();
+      const app = new App();
+      const stack = new Stack(app, 'Stack', {
+        synthesizer: new LegacyStackSynthesizer(),
+      });
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
         properties: { baz: 'qux' },
@@ -181,7 +184,7 @@ describe('Template', () => {
 
       expect(() => inspect.hasResource('Foo::Bar', {
         Properties: { baz: 'qux', fred: 'waldo' },
-      })).toThrow(/Missing key at \/Properties\/fred/);
+      })).toThrow(/Missing key.*at \/Properties\/fred/);
     });
 
     test('arrayWith', () => {
@@ -337,7 +340,7 @@ describe('Template', () => {
         .toThrow(/Expected waldo but received qux at \/Properties\/baz/);
 
       expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'qux', fred: 'waldo' }))
-        .toThrow(/Missing key at \/Properties\/fred/);
+        .toThrow(/Missing key.*at \/Properties\/fred/);
     });
 
     test('absent - with properties', () => {
@@ -367,7 +370,7 @@ describe('Template', () => {
       const inspect = Template.fromStack(stack);
 
       expect(() => inspect.hasResourceProperties('Foo::Bar', { bar: Match.absent(), baz: 'qux' }))
-        .toThrow(/Missing key at \/Properties\/baz/);
+        .toThrow(/Missing key.*at \/Properties\/baz/);
 
       inspect.hasResourceProperties('Foo::Bar', Match.absent());
     });
@@ -708,6 +711,157 @@ describe('Template', () => {
     });
   });
 
+  describe('findParameters', () => {
+    test('matching', () => {
+      const stack = new Stack();
+      new CfnParameter(stack, 'p1', {
+        type: 'String',
+        description: 'string parameter',
+      });
+      new CfnParameter(stack, 'p2', {
+        type: 'Number',
+        description: 'number parameter',
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findParameters('*', { Type: 'String' });
+      expect(result).toEqual({
+        p1: {
+          Description: 'string parameter',
+          Type: 'String',
+        },
+      });
+    });
+
+    test('not matching', () => {
+      const stack = new Stack();
+      new CfnParameter(stack, 'p1', {
+        type: 'String',
+        description: 'string parameter',
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findParameters('*', { Type: 'Number' });
+      expect(Object.keys(result).length).toEqual(0);
+    });
+
+    test('matching with specific parameter name', () => {
+      const stack = new Stack();
+      new CfnParameter(stack, 'p1', {
+        type: 'String',
+        description: 'string parameter',
+      });
+      new CfnParameter(stack, 'p2', {
+        type: 'Number',
+        description: 'number parameter',
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findParameters('p1', { Type: 'String' });
+      expect(result).toEqual({
+        p1: {
+          Description: 'string parameter',
+          Type: 'String',
+        },
+      });
+    });
+
+    test('not matching specific parameter name', () => {
+      const stack = new Stack();
+      new CfnParameter(stack, 'p1', {
+        type: 'String',
+        description: 'string parameter',
+      });
+      new CfnParameter(stack, 'p2', {
+        type: 'Number',
+        description: 'number parameter',
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findParameters('p3', { Type: 'String' });
+      expect(Object.keys(result).length).toEqual(0);
+    });
+  });
+
+  describe('hasParameter', () => {
+    test('matching', () => {
+      const stack = new Stack();
+      new CfnParameter(stack, 'p1', {
+        type: 'String',
+        description: 'string parameter',
+      });
+      new CfnParameter(stack, 'p2', {
+        type: 'Number',
+        description: 'number parameter',
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(() => inspect.findParameters('p3', { Type: 'String' })).not.toThrow();
+    });
+
+    test('not matching', (done) => {
+      const stack = new Stack();
+      new CfnParameter(stack, 'p1', {
+        type: 'String',
+        description: 'string parameter',
+      });
+      new CfnParameter(stack, 'p2', {
+        type: 'Number',
+        description: 'number parameter',
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.hasParameter('*', { Type: 'CommaDelimitedList' }),
+        [
+          // Third parameter is automatically included as part of DefaultSynthesizer
+          /3 parameters/,
+          /Expected CommaDelimitedList but received String/,
+        ],
+        done,
+      );
+      done();
+    });
+
+    test('matching specific parameter name', () => {
+      const stack = new Stack();
+      new CfnParameter(stack, 'p1', {
+        type: 'String',
+        description: 'string parameter',
+      });
+      new CfnParameter(stack, 'p2', {
+        type: 'Number',
+        description: 'number parameter',
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(() => inspect.findParameters('p1', { Type: 'String' })).not.toThrow();
+    });
+
+    test('not matching specific parameter name', (done) => {
+      const stack = new Stack();
+      new CfnParameter(stack, 'p1', {
+        type: 'String',
+        description: 'string parameter',
+      });
+      new CfnParameter(stack, 'p2', {
+        type: 'Number',
+        description: 'number parameter',
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.hasParameter('p2', { Type: 'CommaDelimitedList' }),
+        [
+          /1 parameter/,
+          /Expected CommaDelimitedList but received Number/,
+        ],
+        done,
+      );
+      done();
+    });
+  });
+
   describe('findMappings', () => {
     test('matching', () => {
       const stack = new Stack();
@@ -789,6 +943,169 @@ describe('Template', () => {
       const result = inspect.findMappings('Fred', { Baz: { Bar: 'Qux' } });
       expect(Object.keys(result).length).toEqual(0);
     });
+  });
+
+  describe('hasCondition', () => {
+    test('matching', () => {
+      const stack = new Stack();
+      new CfnCondition(stack, 'Foo', {
+        expression: Fn.conditionEquals('Bar', 'Baz'),
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(() => inspect.hasCondition('*', { 'Fn::Equals': ['Bar', 'Baz'] })).not.toThrow();
+    });
+
+    test('not matching', (done) => {
+      const stack = new Stack();
+      new CfnCondition(stack, 'Foo', {
+        expression: Fn.conditionEquals('Bar', 'Baz'),
+      });
+
+      new CfnCondition(stack, 'Qux', {
+        expression: Fn.conditionNot(Fn.conditionEquals('Quux', 'Quuz')),
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.hasCondition('*', {
+          'Fn::Equals': ['Baz', 'Bar'],
+        }),
+        [
+          /2 conditions/,
+          /Missing key/,
+        ],
+        done,
+      );
+      done();
+    });
+
+    test('matching specific outputName', () => {
+      const stack = new Stack();
+      new CfnCondition(stack, 'Foo', {
+        expression: Fn.conditionEquals('Bar', 'Baz'),
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(() => inspect.hasCondition('Foo', { 'Fn::Equals': ['Bar', 'Baz'] })).not.toThrow();
+    });
+
+    test('not matching specific outputName', (done) => {
+      const stack = new Stack();
+      new CfnCondition(stack, 'Foo', {
+        expression: Fn.conditionEquals('Baz', 'Bar'),
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.hasCondition('Foo', {
+          'Fn::Equals': ['Bar', 'Baz'],
+        }),
+        [
+          /1 conditions/,
+          /Expected Baz but received Bar/,
+        ],
+        done,
+      );
+      done();
+    });
+  });
+
+  describe('findConditions', () => {
+    test('matching', () => {
+      const stack = new Stack();
+      new CfnCondition(stack, 'Foo', {
+        expression: Fn.conditionEquals('Bar', 'Baz'),
+      });
+
+      new CfnCondition(stack, 'Qux', {
+        expression: Fn.conditionNot(Fn.conditionEquals('Quux', 'Quuz')),
+      });
+
+      const inspect = Template.fromStack(stack);
+      const firstCondition = inspect.findConditions('Foo');
+      expect(firstCondition).toEqual({
+        Foo: {
+          'Fn::Equals': [
+            'Bar',
+            'Baz',
+          ],
+        },
+      });
+
+      const secondCondition = inspect.findConditions('Qux');
+      expect(secondCondition).toEqual({
+        Qux: {
+          'Fn::Not': [
+            {
+              'Fn::Equals': [
+                'Quux',
+                'Quuz',
+              ],
+            },
+          ],
+        },
+      });
+    });
+
+    test('not matching', () => {
+      const stack = new Stack();
+      new CfnCondition(stack, 'Foo', {
+        expression: Fn.conditionEquals('Bar', 'Baz'),
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findMappings('Bar');
+      expect(Object.keys(result).length).toEqual(0);
+    });
+
+    test('matching with specific outputName', () => {
+      const stack = new Stack();
+      new CfnCondition(stack, 'Foo', {
+        expression: Fn.conditionEquals('Bar', 'Baz'),
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findConditions('Foo', { 'Fn::Equals': ['Bar', 'Baz'] });
+      expect(result).toEqual({
+        Foo: {
+          'Fn::Equals': [
+            'Bar',
+            'Baz',
+          ],
+        },
+      });
+    });
+
+    test('not matching specific output name', () => {
+      const stack = new Stack();
+      new CfnCondition(stack, 'Foo', {
+        expression: Fn.conditionEquals('Bar', 'Baz'),
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findConditions('Foo', { 'Fn::Equals': ['Bar', 'Qux'] });
+      expect(Object.keys(result).length).toEqual(0);
+    });
+  });
+
+  test('throws when given a template with cyclic dependencies', () => {
+    expect(() => {
+      Template.fromJSON({
+        Resources: {
+          Res1: {
+            Type: 'Foo',
+            Properties: {
+              Thing: { Ref: 'Res2' },
+            },
+          },
+          Res2: {
+            Type: 'Foo',
+            DependsOn: ['Res1'],
+          },
+        },
+      });
+    }).toThrow(/dependency cycle/);
   });
 });
 

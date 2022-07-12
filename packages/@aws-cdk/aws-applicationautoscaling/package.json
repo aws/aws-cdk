@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-applicationautoscaling",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::ApplicationAutoScaling",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -17,14 +18,14 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.ApplicationAutoScaling",
         "packageId": "Amazon.CDK.AWS.ApplicationAutoScaling",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-applicationautoscaling",
         "module": "aws_cdk.aws_applicationautoscaling",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -47,7 +48,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -79,20 +80,20 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert-internal": "0.0.0",
+    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.0",
-    "fast-check": "^2.20.0",
-    "jest": "^27.4.7"
+    "@types/jest": "^27.5.2",
+    "fast-check": "^2.25.0",
+    "jest": "^27.5.1"
   },
   "dependencies": {
     "@aws-cdk/aws-autoscaling-common": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -100,10 +101,10 @@
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "nyc": {
     "branches": 65,
@@ -126,6 +127,7 @@
       "docs-public-apis:@aws-cdk/aws-applicationautoscaling.StepScalingPolicyProps",
       "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.ECS_SERVICE_AVERAGE_CPU_UTILIZATION",
       "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.DYNAMODB_READ_CAPACITY_UTILIZATION",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.DYNAMODB_WRITE_CAPACITY_UTILIZATION",
       "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.DYANMODB_WRITE_CAPACITY_UTILIZATION",
       "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET",
       "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.RDS_READER_AVERAGE_CPU_UTILIZATION",

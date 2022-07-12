@@ -35,7 +35,7 @@ export class GraphNode<A> {
    */
   public get allDeps(): GraphNode<A>[] {
     const fromParent = this.parentGraph?.allDeps ?? [];
-    return [...this.dependencies, ...fromParent];
+    return Array.from(new Set([...this.dependencies, ...fromParent]));
   }
 
   public dependOn(...dependencies: Array<GraphNode<A> | undefined>) {

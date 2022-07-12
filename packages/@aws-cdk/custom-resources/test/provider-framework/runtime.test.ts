@@ -169,6 +169,23 @@ describe('PhysicalResourceId', () => {
     });
   });
 
+  test('UPDATE: can override the physical ID with the actual on isComplete', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({ PhysicalResourceId: 'TemporaryPhysicalId' });
+    mocks.isCompleteImplMock = async () => ({ IsComplete: true, PhysicalResourceId: 'NewPhysicalId' });
+
+    // WHEN
+    await simulateEvent({
+      RequestType: 'Update',
+      PhysicalResourceId: 'CurrentPhysicalId',
+    });
+
+    // THEN
+    expectCloudFormationSuccess({
+      PhysicalResourceId: 'NewPhysicalId',
+    });
+  });
+
   test('DELETE: cannot change the physical resource ID during a delete', async () => {
     // GIVEN
     mocks.onEventImplMock = async () => ({ PhysicalResourceId: 'NewPhysicalId' });

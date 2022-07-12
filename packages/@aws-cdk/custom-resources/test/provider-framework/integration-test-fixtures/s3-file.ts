@@ -7,10 +7,6 @@ import { Construct, Node } from 'constructs';
 import * as cr from '../../../lib';
 import * as api from './s3-file-handler/api';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 interface S3FileProps {
   /**
    * The bucket in which the file will be created.
@@ -37,7 +33,7 @@ interface S3FileProps {
   readonly public?: boolean;
 }
 
-export class S3File extends CoreConstruct {
+export class S3File extends Construct {
   public readonly objectKey: string;
   public readonly url: string;
   public readonly etag: string;
@@ -62,7 +58,7 @@ export class S3File extends CoreConstruct {
   }
 }
 
-class S3FileProvider extends CoreConstruct {
+class S3FileProvider extends Construct {
 
   /**
    * Returns the singleton provider.
@@ -82,7 +78,7 @@ class S3FileProvider extends CoreConstruct {
     this.provider = new cr.Provider(this, 's3file-provider', {
       onEventHandler: new lambda.Function(this, 's3file-on-event', {
         code: lambda.Code.fromAsset(path.join(__dirname, 's3-file-handler')),
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         handler: 'index.onEvent',
         initialPolicy: [
           new iam.PolicyStatement({

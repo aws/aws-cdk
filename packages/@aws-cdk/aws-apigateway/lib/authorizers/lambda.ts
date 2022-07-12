@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration, Lazy, Names, Stack } from '@aws-cdk/core';
+import { Arn, ArnFormat, Duration, Lazy, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnAuthorizer } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
@@ -105,7 +105,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
       this.role.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
         statements: [
           new iam.PolicyStatement({
-            resources: [this.handler.functionArn],
+            resources: this.handler.resourceArnsForGrantInvoke,
             actions: ['lambda:InvokeFunction'],
           }),
         ],
@@ -254,5 +254,6 @@ export class RequestAuthorizer extends LambdaAuthorizer {
  * constructs the authorizerURIArn.
  */
 function lambdaAuthorizerArn(handler: lambda.IFunction) {
-  return `arn:${Stack.of(handler).partition}:apigateway:${Stack.of(handler).region}:lambda:path/2015-03-31/functions/${handler.functionArn}/invocations`;
+  const { region, partition } = Arn.split( handler.functionArn, ArnFormat.COLON_RESOURCE_NAME);
+  return `arn:${partition}:apigateway:${region}:lambda:path/2015-03-31/functions/${handler.functionArn}/invocations`;
 }

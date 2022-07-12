@@ -89,6 +89,20 @@ You can also run just these tests by executing:
 yarn integ-cli-no-regression
 ```
 
+##### Warning
+
+Since the tests take a long time to run, we run them in parallel in order to minimize running time. Jest does not have
+good support for parallelism, the only thing that exists is `test.concurrent()` and it has a couple of limitations:
+
+- It's not possible to only run a subset of tests, all tests will execute (the reason for this is that it will start all
+  tests in parallel, but only `await` your selected subset specified with the `-t TESTNAME` option. However, all tests
+  are running and Node will not exit until they're all finished).
+- It's not possible to use `beforeEach()` and `afterEach()`.
+
+Because of the first limitation, concurrency is only enabled on the build server (via the `JEST_TEST_CONCURRENT`
+environment variable), not locally. Note: tests using `beforeEach()` will appear to work locally, but will fail on the
+build server! Don't use it!
+
 #### Regression
 
 Validate that previously tested functionality still works in light of recent changes to the CLI. This is done by fetching the functional tests of the previous published release, and running them against the new CLI code.
@@ -131,7 +145,7 @@ Its value can either be that of `CANDIDATE_VERSION` (for testing against the lat
 
 Following are the steps involved in running these tests:
 
-1. Run [`./bump-candidate.sh`](../../bump-candidate.sh) to differentiate between the local version and the published version. For example, if the version in `lerna.json` is `1.67.0`, this script will result in a version `1.67.0-rc.0`. This is needed so that we can launch a verdaccio instance serving local tarballs without worrying about conflicts with the public npm uplink. This will help us avoid version quirks that might happen during the *post-release-pre-merge-back* time window.
+1. Run [`./bump-candidate.sh`](../../scripts/bump-candidate.sh) to differentiate between the local version and the published version. For example, if the version in `lerna.json` is `1.67.0`, this script will result in a version `1.67.0-rc.0`. This is needed so that we can launch a verdaccio instance serving local tarballs without worrying about conflicts with the public npm uplink. This will help us avoid version quirks that might happen during the *post-release-pre-merge-back* time window.
 
 2. Run [`./align-version.sh`](../../scripts/align-version.sh) to configure the above version in all our packages.
 

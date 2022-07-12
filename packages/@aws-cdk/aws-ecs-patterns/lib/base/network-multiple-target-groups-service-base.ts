@@ -10,10 +10,6 @@ import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * The properties for the base NetworkMultipleTargetGroupsEc2Service or NetworkMultipleTargetGroupsFargateService service.
  */
@@ -102,6 +98,13 @@ export interface NetworkMultipleTargetGroupsServiceBaseProps {
    * @default - default portMapping registered as target group and attached to the first defined listener
    */
   readonly targetGroups?: NetworkTargetProps[];
+
+  /**
+   * Whether ECS Exec should be enabled
+   *
+   * @default - false
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
@@ -270,7 +273,7 @@ export interface NetworkTargetProps {
 /**
  * The base class for NetworkMultipleTargetGroupsEc2Service and NetworkMultipleTargetGroupsFargateService classes.
  */
-export abstract class NetworkMultipleTargetGroupsServiceBase extends CoreConstruct {
+export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    * @deprecated - Use `internalDesiredCount` instead.
@@ -374,7 +377,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends CoreConstru
   protected registerECSTargets(service: BaseService, container: ContainerDefinition, targets: NetworkTargetProps[]): NetworkTargetGroup {
     for (const targetProps of targets) {
       const targetGroup = this.findListener(targetProps.listener).addTargets(`ECSTargetGroup${container.containerName}${targetProps.containerPort}`, {
-        port: 80,
+        port: targetProps.containerPort ?? 80,
         targets: [
           service.loadBalancerTarget({
             containerName: container.containerName,

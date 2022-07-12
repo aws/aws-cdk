@@ -202,16 +202,16 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
     this.taskPolicies = this.createPolicyStatements(this._serviceRole, this._clusterRole, this._autoScalingRole);
 
-    if (this.props.releaseLabel !== undefined) {
+    if (this.props.releaseLabel !== undefined && !cdk.Token.isUnresolved(this.props.releaseLabel)) {
       this.validateReleaseLabel(this.props.releaseLabel);
     }
 
-    if (this.props.stepConcurrencyLevel !== undefined) {
+    if (this.props.stepConcurrencyLevel !== undefined && !cdk.Token.isUnresolved(this.props.stepConcurrencyLevel)) {
       if (this.props.stepConcurrencyLevel < 1 || this.props.stepConcurrencyLevel > 256) {
         throw new Error(`Step concurrency level must be in range [1, 256], but got ${this.props.stepConcurrencyLevel}.`);
       }
       if (this.props.releaseLabel && this.props.stepConcurrencyLevel !== 1) {
-        const [major, minor] = this.props.releaseLabel.substr(4).split('.');
+        const [major, minor] = this.props.releaseLabel.slice(4).split('.');
         if (Number(major) < 5 || (Number(major) === 5 && Number(minor) < 28)) {
           throw new Error(`Step concurrency is only supported in EMR release version 5.28.0 and above but got ${this.props.releaseLabel}.`);
         }
@@ -391,8 +391,8 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
    * @see https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-release-components.html
    */
   private validateReleaseLabel(releaseLabel: string): string {
-    const prefix = releaseLabel.substr(0, 4);
-    const versions = releaseLabel.substr(4).split('.');
+    const prefix = releaseLabel.slice(0, 4);
+    const versions = releaseLabel.slice(4).split('.');
     if (prefix !== 'emr-' || versions.length !== 3 || versions.some((e) => isNotANumber(e))) {
       throw new Error(`The release label must be in the format 'emr-x.x.x' but got ${releaseLabel}`);
     }

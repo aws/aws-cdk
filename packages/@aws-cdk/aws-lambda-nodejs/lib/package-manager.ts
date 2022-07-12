@@ -1,48 +1,54 @@
 import * as os from 'os';
 import * as path from 'path';
+import { LogLevel } from './types';
 
 interface PackageManagerProps {
   readonly lockFile: string;
   readonly installCommand: string[];
   readonly runCommand: string[];
-  readonly argsSeparator?: string
+  readonly argsSeparator?: string;
+}
+
+export enum LockFile {
+  NPM = 'package-lock.json',
+  YARN = 'yarn.lock',
+  PNPM = 'pnpm-lock.yaml',
 }
 
 /**
  * A node package manager
  */
 export class PackageManager {
-  public static NPM = new PackageManager({
-    lockFile: 'package-lock.json',
-    installCommand: ['npm', 'ci'],
-    runCommand: ['npx', '--no-install'],
-  });
-
-  public static YARN = new PackageManager({
-    lockFile: 'yarn.lock',
-    installCommand: ['yarn', 'install', '--no-immutable'],
-    runCommand: ['yarn', 'run'],
-  });
-
-  public static PNPM = new PackageManager({
-    lockFile: 'pnpm-lock.yaml',
-    installCommand: ['pnpm', 'install'],
-    runCommand: ['pnpm', 'exec'],
-    argsSeparator: '--',
-  });
-
-  public static fromLockFile(lockFilePath: string): PackageManager {
+  /**
+   * Use a lock file path to determine the package manager to use. Optionally, specify a log level to
+   * control its verbosity.
+   * @param lockFilePath Path of the lock file
+   * @param logLevel optional log level @default LogLevel.INFO
+   * @returns the right PackageManager for that lock file
+   */
+  public static fromLockFile(lockFilePath: string, logLevel?: LogLevel): PackageManager {
     const lockFile = path.basename(lockFilePath);
 
     switch (lockFile) {
-      case PackageManager.NPM.lockFile:
-        return PackageManager.NPM;
-      case PackageManager.YARN.lockFile:
-        return PackageManager.YARN;
-      case PackageManager.PNPM.lockFile:
-        return PackageManager.PNPM;
+      case LockFile.YARN:
+        return new PackageManager({
+          lockFile: LockFile.YARN,
+          installCommand: logLevel && logLevel !== LogLevel.INFO ? ['yarn', 'install', '--no-immutable', '--silent'] : ['yarn', 'install', '--no-immutable'],
+          runCommand: ['yarn', 'run'],
+        });
+      case LockFile.PNPM:
+        return new PackageManager({
+          lockFile: LockFile.PNPM,
+          installCommand: logLevel && logLevel !== LogLevel.INFO ? ['pnpm', 'install', '--reporter', 'silent'] : ['pnpm', 'install'],
+          runCommand: ['pnpm', 'exec'],
+          argsSeparator: '--',
+        });
       default:
-        return PackageManager.NPM;
+        return new PackageManager({
+          lockFile: LockFile.NPM,
+          installCommand: logLevel ? ['npm', 'ci', '--loglevel', logLevel] : ['npm', 'ci'],
+          runCommand: ['npx', '--no-install'],
+        });
     }
   }
 

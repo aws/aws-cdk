@@ -1,5 +1,0 @@
-*.js
-*.d.ts
-!deps.js
-test/fixture/.jsii
-cdk.schema.json

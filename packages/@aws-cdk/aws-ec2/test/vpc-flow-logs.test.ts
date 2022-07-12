@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -13,23 +13,21 @@ describe('vpc flow logs', () => {
       resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123455'),
     });
 
-    expect(stack).
-      toHaveResource('AWS::EC2::FlowLog', {
-        ResourceType: 'NetworkInterface',
-        TrafficType: 'ALL',
-        ResourceId: 'eni-123455',
-        DeliverLogsPermissionArn: {
-          'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
-        },
-        LogGroupName: {
-          Ref: 'FlowLogsLogGroup9853A85F',
-        },
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      ResourceType: 'NetworkInterface',
+      TrafficType: 'ALL',
+      ResourceId: 'eni-123455',
+      DeliverLogsPermissionArn: {
+        'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
       },
-      );
+      LogGroupName: {
+        Ref: 'FlowLogsLogGroup9853A85F',
+      },
+    });
 
-    expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
-    expect(stack).toCountResources('AWS::IAM::Role', 1);
-    expect(stack).not.toHaveResource('AWS::S3::Bucket');
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 0);
 
   });
   test('with cloudwatch logs as the destination, allows use of existing resources', () => {
@@ -48,13 +46,13 @@ describe('vpc flow logs', () => {
       ),
     });
 
-    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       RetentionInDays: 5,
     });
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       RoleName: 'TestName',
     });
-    expect(stack).not.toHaveResource('AWS::S3::Bucket');
+    Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 0);
 
   });
   test('with s3 as the destination, allows use of existing resources', () => {
@@ -69,13 +67,294 @@ describe('vpc flow logs', () => {
       ),
     });
 
-    expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
-    expect(stack).not.toHaveResource('AWS::IAM::Role');
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      DestinationOptions: Match.absent(),
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       BucketName: 'testbucket',
     });
 
   });
+
+  test('allows setting destination options', () => {
+    const stack = getTestStack();
+
+    new FlowLog(stack, 'FlowLogs', {
+      resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
+      destination: FlowLogDestination.toS3(undefined, undefined, {
+        hiveCompatiblePartitions: true,
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      ResourceType: 'NetworkInterface',
+      TrafficType: 'ALL',
+      ResourceId: 'eni-123456',
+      DestinationOptions: {
+        hiveCompatiblePartitions: true,
+        fileFormat: 'plain-text',
+        perHourPartition: false,
+      },
+      LogDestination: {
+        'Fn::GetAtt': [
+          'FlowLogsBucket87F67F60',
+          'Arn',
+        ],
+      },
+      LogDestinationType: 's3',
+    });
+  });
+
+  describe('s3 bucket policy - @aws-cdk/aws-s3:createDefaultLoggingPolicy feature flag', () => {
+    test('creates default S3 bucket policy with options', () => {
+      const stack = new Stack();
+      stack.node.setContext('@aws-cdk/aws-s3:createDefaultLoggingPolicy', true);
+      new FlowLog(stack, 'FlowLogs', {
+        resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
+        destination: FlowLogDestination.toS3(undefined, 'custom-prefix', {
+          hiveCompatiblePartitions: true,
+        }),
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  's3:x-amz-acl': 'bucket-owner-full-control',
+                  'aws:SourceAccount': {
+                    Ref: 'AWS::AccountId',
+                  },
+                },
+                ArnLike: {
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':logs:',
+                        {
+                          Ref: 'AWS::Region',
+                        },
+                        ':',
+                        {
+                          Ref: 'AWS::AccountId',
+                        },
+                        ':*',
+                      ],
+                    ],
+                  },
+                },
+              },
+              Principal: {
+                Service: 'delivery.logs.amazonaws.com',
+              },
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'FlowLogsBucket87F67F60',
+                        'Arn',
+                      ],
+                    },
+                    '/custom-prefix/AWSLogs/aws-account-id=',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: [
+                's3:GetBucketAcl',
+                's3:ListBucket',
+              ],
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': {
+                    Ref: 'AWS::AccountId',
+                  },
+                },
+                ArnLike: {
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':logs:',
+                        {
+                          Ref: 'AWS::Region',
+                        },
+                        ':',
+                        {
+                          Ref: 'AWS::AccountId',
+                        },
+                        ':*',
+                      ],
+                    ],
+                  },
+                },
+              },
+              Effect: 'Allow',
+              Principal: {
+                Service: 'delivery.logs.amazonaws.com',
+              },
+              Resource: {
+                'Fn::GetAtt': [
+                  'FlowLogsBucket87F67F60',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('creates default S3 bucket policy', () => {
+      const stack = new Stack();
+      stack.node.setContext('@aws-cdk/aws-s3:createDefaultLoggingPolicy', true);
+      new FlowLog(stack, 'FlowLogs', {
+        resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
+        destination: FlowLogDestination.toS3(),
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  's3:x-amz-acl': 'bucket-owner-full-control',
+                  'aws:SourceAccount': {
+                    Ref: 'AWS::AccountId',
+                  },
+                },
+                ArnLike: {
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':logs:',
+                        {
+                          Ref: 'AWS::Region',
+                        },
+                        ':',
+                        {
+                          Ref: 'AWS::AccountId',
+                        },
+                        ':*',
+                      ],
+                    ],
+                  },
+                },
+              },
+              Principal: {
+                Service: 'delivery.logs.amazonaws.com',
+              },
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'FlowLogsBucket87F67F60',
+                        'Arn',
+                      ],
+                    },
+                    '/AWSLogs/',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: [
+                's3:GetBucketAcl',
+                's3:ListBucket',
+              ],
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': {
+                    Ref: 'AWS::AccountId',
+                  },
+                },
+                ArnLike: {
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':logs:',
+                        {
+                          Ref: 'AWS::Region',
+                        },
+                        ':',
+                        {
+                          Ref: 'AWS::AccountId',
+                        },
+                        ':*',
+                      ],
+                    ],
+                  },
+                },
+              },
+              Effect: 'Allow',
+              Principal: {
+                Service: 'delivery.logs.amazonaws.com',
+              },
+              Resource: {
+                'Fn::GetAtt': [
+                  'FlowLogsBucket87F67F60',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('without future flag, does not create default bucket policy', () => {
+      const stack = new Stack();
+      new FlowLog(stack, 'FlowLogs', {
+        resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
+        destination: FlowLogDestination.toS3(),
+      });
+
+      Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 0);
+    });
+  });
+
   test('with s3 as the destination, allows use of key prefix', () => {
     const stack = getTestStack();
 
@@ -89,9 +368,9 @@ describe('vpc flow logs', () => {
       ),
     });
 
-    expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
-    expect(stack).not.toHaveResource('AWS::IAM::Role');
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       BucketName: 'testbucket',
     });
 
@@ -104,19 +383,17 @@ describe('vpc flow logs', () => {
       destination: FlowLogDestination.toS3(),
     });
 
-    expect(stack).
-      toHaveResource('AWS::EC2::FlowLog', {
-        ResourceType: 'NetworkInterface',
-        TrafficType: 'ALL',
-        ResourceId: 'eni-123456',
-        LogDestination: {
-          'Fn::GetAtt': ['FlowLogsBucket87F67F60', 'Arn'],
-        },
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      ResourceType: 'NetworkInterface',
+      TrafficType: 'ALL',
+      ResourceId: 'eni-123456',
+      LogDestination: {
+        'Fn::GetAtt': ['FlowLogsBucket87F67F60', 'Arn'],
       },
-      );
-    expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
-    expect(stack).not.toHaveResource('AWS::IAM::Role');
-    expect(stack).toCountResources('AWS::S3::Bucket', 1);
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
 
   });
   test('create with vpc', () => {
@@ -128,22 +405,20 @@ describe('vpc flow logs', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::EC2::VPC');
-    expect(stack).
-      toHaveResource('AWS::EC2::FlowLog', {
-        ResourceType: 'VPC',
-        TrafficType: 'ALL',
-        ResourceId: {
-          Ref: 'VPCB9E5F0B4',
-        },
-        DeliverLogsPermissionArn: {
-          'Fn::GetAtt': ['VPCflowLogsIAMRole9D21E1A6', 'Arn'],
-        },
-        LogGroupName: {
-          Ref: 'VPCflowLogsLogGroupE900F980',
-        },
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::VPC', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      ResourceType: 'VPC',
+      TrafficType: 'ALL',
+      ResourceId: {
+        Ref: 'VPCB9E5F0B4',
       },
-      );
+      DeliverLogsPermissionArn: {
+        'Fn::GetAtt': ['VPCflowLogsIAMRole9D21E1A6', 'Arn'],
+      },
+      LogGroupName: {
+        Ref: 'VPCflowLogsLogGroupE900F980',
+      },
+    });
 
   });
   test('add to vpc', () => {
@@ -152,23 +427,30 @@ describe('vpc flow logs', () => {
     const vpc = new Vpc(stack, 'VPC');
     vpc.addFlowLog('FlowLogs');
 
-    expect(stack).toHaveResource('AWS::EC2::VPC');
-    expect(stack).
-      toHaveResource('AWS::EC2::FlowLog', {
-        ResourceType: 'VPC',
-        TrafficType: 'ALL',
-        ResourceId: {
-          Ref: 'VPCB9E5F0B4',
-        },
-        DeliverLogsPermissionArn: {
-          'Fn::GetAtt': ['VPCFlowLogsIAMRole55343234', 'Arn'],
-        },
-        LogGroupName: {
-          Ref: 'VPCFlowLogsLogGroupF48E1B0A',
-        },
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::VPC', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      ResourceType: 'VPC',
+      TrafficType: 'ALL',
+      ResourceId: {
+        Ref: 'VPCB9E5F0B4',
       },
-      );
+      DeliverLogsPermissionArn: {
+        'Fn::GetAtt': ['VPCFlowLogsIAMRole55343234', 'Arn'],
+      },
+      LogGroupName: {
+        Ref: 'VPCFlowLogsLogGroupF48E1B0A',
+      },
+    });
+  });
+  test('flowlog has defaultchild', () => {
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
 
+    const flowlog = new FlowLog(stack, 'FlowLog', {
+      resourceType: FlowLogResourceType.fromVpc(vpc),
+    });
+
+    expect(flowlog.node.defaultChild).toBeDefined();
   });
 });
 

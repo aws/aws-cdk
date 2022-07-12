@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -21,7 +21,7 @@ describe('', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
         'Stages': [
           {},
           {
@@ -34,9 +34,7 @@ describe('', () => {
             ],
           },
         ],
-      });
-
-
+      }));
     });
 
     test('properly resolves any Tokens passed in userParameters', () => {
@@ -45,8 +43,7 @@ describe('', () => {
           key: Lazy.string({ produce: () => Aws.REGION }),
         },
       });
-
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
         'Stages': [
           {},
           {
@@ -70,9 +67,7 @@ describe('', () => {
             ],
           },
         ],
-      });
-
-
+      }));
     });
 
     test('properly resolves any stringified Tokens passed in userParameters', () => {
@@ -82,7 +77,7 @@ describe('', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
         'Stages': [
           {},
           {
@@ -95,9 +90,7 @@ describe('', () => {
             ],
           },
         ],
-      });
-
-
+      }));
     });
 
     test('properly assings userParametersString to UserParameters', () => {
@@ -105,7 +98,7 @@ describe('', () => {
         userParamsString: '**/*.template.json',
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
         'Stages': [
           {},
           {
@@ -118,7 +111,7 @@ describe('', () => {
             ],
           },
         ],
-      });
+      }));
     });
 
     test('throws if both userParameters and userParametersString are supplied', () => {
@@ -135,7 +128,7 @@ describe('', () => {
         lambdaInput: new codepipeline.Artifact(),
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.objectLike({
         'PolicyDocument': {
           'Statement': [
             {
@@ -164,9 +157,7 @@ describe('', () => {
             },
           ],
         },
-      });
-
-
+      }));
     });
 
     testFutureBehavior("assigns the Action's Role with write permissions to the Bucket if it has only outputs", s3GrantWriteCtx, App, (app) => {
@@ -175,8 +166,9 @@ describe('', () => {
         // no input to the Lambda Action - we want write permissions only in this case
       }, app);
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-        'PolicyDocument': {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyName: 'PipelineInvokeLambdaCodePipelineActionRoleDefaultPolicy103F34DA',
+        'PolicyDocument': Match.objectLike({
           'Statement': [
             {
               'Action': 'lambda:ListFunctions',
@@ -191,6 +183,10 @@ describe('', () => {
               'Action': [
                 's3:DeleteObject*',
                 's3:PutObject',
+                's3:PutObjectLegalHold',
+                's3:PutObjectRetention',
+                's3:PutObjectTagging',
+                's3:PutObjectVersionTagging',
                 's3:Abort*',
               ],
               'Effect': 'Allow',
@@ -200,14 +196,13 @@ describe('', () => {
                 'kms:Encrypt',
                 'kms:ReEncrypt*',
                 'kms:GenerateDataKey*',
+                'kms:Decrypt',
               ],
               'Effect': 'Allow',
             },
           ],
-        },
+        }),
       });
-
-
     });
 
     testFutureBehavior("assigns the Action's Role with read-write permissions to the Bucket if it has both inputs and outputs", s3GrantWriteCtx, App, (app) => {
@@ -216,8 +211,9 @@ describe('', () => {
         lambdaOutput: new codepipeline.Artifact(),
       }, app);
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-        'PolicyDocument': {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyName: 'PipelineInvokeLambdaCodePipelineActionRoleDefaultPolicy103F34DA',
+        'PolicyDocument': Match.objectLike({
           'Statement': [
             {
               'Action': 'lambda:ListFunctions',
@@ -247,6 +243,10 @@ describe('', () => {
               'Action': [
                 's3:DeleteObject*',
                 's3:PutObject',
+                's3:PutObjectLegalHold',
+                's3:PutObjectRetention',
+                's3:PutObjectTagging',
+                's3:PutObjectVersionTagging',
                 's3:Abort*',
               ],
               'Effect': 'Allow',
@@ -256,14 +256,13 @@ describe('', () => {
                 'kms:Encrypt',
                 'kms:ReEncrypt*',
                 'kms:GenerateDataKey*',
+                'kms:Decrypt',
               ],
               'Effect': 'Allow',
             },
           ],
-        },
+        }),
       });
-
-
     });
 
     test('exposes variables for other actions to consume', () => {
@@ -304,7 +303,7 @@ describe('', () => {
         ],
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
         'Stages': [
           {
             'Name': 'Source',
@@ -325,9 +324,7 @@ describe('', () => {
             ],
           },
         ],
-      });
-
-
+      }));
     });
   });
 });
@@ -350,7 +347,7 @@ function stackIncludingLambdaInvokeCodePipeline(props: HelperProps, app?: App) {
           new cpactions.GitHubSourceAction({
             actionName: 'GitHub',
             output: props.lambdaInput || new codepipeline.Artifact(),
-            oauthToken: SecretValue.plainText('secret'),
+            oauthToken: SecretValue.unsafePlainText('secret'),
             owner: 'awslabs',
             repo: 'aws-cdk',
           }),
@@ -364,7 +361,7 @@ function stackIncludingLambdaInvokeCodePipeline(props: HelperProps, app?: App) {
             lambda: new lambda.Function(stack, 'Lambda', {
               code: lambda.Code.fromCfnParameters(),
               handler: 'index.handler',
-              runtime: lambda.Runtime.NODEJS_10_X,
+              runtime: lambda.Runtime.NODEJS_14_X,
             }),
             userParameters: props.userParams,
             userParametersString: props.userParamsString,

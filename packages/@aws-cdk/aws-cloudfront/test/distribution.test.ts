@@ -1,11 +1,10 @@
-import { ABSENT, objectLike } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import { App, Duration, Stack } from '@aws-cdk/core';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '@aws-cdk/cx-api';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import {
   CfnDistribution,
   Distribution,
@@ -18,6 +17,7 @@ import {
   LambdaEdgeEventType,
   PriceClass,
   SecurityPolicyProtocol,
+  SSLMethod,
 } from '../lib';
 import { defaultOrigin, defaultOriginGroup } from './test-origin';
 
@@ -35,7 +35,7 @@ test('minimal example renders correctly', () => {
   const origin = defaultOrigin();
   new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
 
-  expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       DefaultCacheBehavior: {
         CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
@@ -57,7 +57,139 @@ test('minimal example renders correctly', () => {
   });
 });
 
-test('exhaustive example of props renders correctly', () => {
+test('exhaustive example of props renders correctly and SSL method sni-only', () => {
+  const origin = defaultOrigin();
+  const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+
+  new Distribution(stack, 'MyDist', {
+    defaultBehavior: { origin },
+    certificate,
+    comment: 'a test',
+    defaultRootObject: 'index.html',
+    domainNames: ['example.com'],
+    enabled: false,
+    enableIpv6: false,
+    enableLogging: true,
+    geoRestriction: GeoRestriction.denylist('US', 'GB'),
+    httpVersion: HttpVersion.HTTP1_1,
+    logFilePrefix: 'logs/',
+    logIncludesCookies: true,
+    sslSupportMethod: SSLMethod.SNI,
+    minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2019,
+    priceClass: PriceClass.PRICE_CLASS_100,
+    webAclId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      Aliases: ['example.com'],
+      DefaultCacheBehavior: {
+        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+        Compress: true,
+        TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+        ViewerProtocolPolicy: 'allow-all',
+      },
+      Comment: 'a test',
+      DefaultRootObject: 'index.html',
+      Enabled: false,
+      HttpVersion: 'http1.1',
+      IPV6Enabled: false,
+      Logging: {
+        Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
+        IncludeCookies: true,
+        Prefix: 'logs/',
+      },
+      Origins: [{
+        DomainName: 'www.example.com',
+        Id: 'StackMyDistOrigin1D6D5E535',
+        CustomOriginConfig: {
+          OriginProtocolPolicy: 'https-only',
+        },
+      }],
+      PriceClass: 'PriceClass_100',
+      Restrictions: {
+        GeoRestriction: {
+          Locations: ['US', 'GB'],
+          RestrictionType: 'blacklist',
+        },
+      },
+      ViewerCertificate: {
+        AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+        SslSupportMethod: 'sni-only',
+        MinimumProtocolVersion: 'TLSv1.2_2019',
+      },
+      WebACLId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+    },
+  });
+});
+
+test('exhaustive example of props renders correctly and SSL method vip', () => {
+  const origin = defaultOrigin();
+  const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+
+  new Distribution(stack, 'MyDist', {
+    defaultBehavior: { origin },
+    certificate,
+    comment: 'a test',
+    defaultRootObject: 'index.html',
+    domainNames: ['example.com'],
+    enabled: false,
+    enableIpv6: false,
+    enableLogging: true,
+    geoRestriction: GeoRestriction.denylist('US', 'GB'),
+    httpVersion: HttpVersion.HTTP1_1,
+    logFilePrefix: 'logs/',
+    logIncludesCookies: true,
+    sslSupportMethod: SSLMethod.VIP,
+    minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2019,
+    priceClass: PriceClass.PRICE_CLASS_100,
+    webAclId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      Aliases: ['example.com'],
+      DefaultCacheBehavior: {
+        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+        Compress: true,
+        TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+        ViewerProtocolPolicy: 'allow-all',
+      },
+      Comment: 'a test',
+      DefaultRootObject: 'index.html',
+      Enabled: false,
+      HttpVersion: 'http1.1',
+      IPV6Enabled: false,
+      Logging: {
+        Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
+        IncludeCookies: true,
+        Prefix: 'logs/',
+      },
+      Origins: [{
+        DomainName: 'www.example.com',
+        Id: 'StackMyDistOrigin1D6D5E535',
+        CustomOriginConfig: {
+          OriginProtocolPolicy: 'https-only',
+        },
+      }],
+      PriceClass: 'PriceClass_100',
+      Restrictions: {
+        GeoRestriction: {
+          Locations: ['US', 'GB'],
+          RestrictionType: 'blacklist',
+        },
+      },
+      ViewerCertificate: {
+        AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+        SslSupportMethod: 'vip',
+        MinimumProtocolVersion: 'TLSv1.2_2019',
+      },
+      WebACLId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+    },
+  });
+});
+
+test('exhaustive example of props renders correctly and SSL method default', () => {
   const origin = defaultOrigin();
   const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
 
@@ -79,7 +211,7 @@ test('exhaustive example of props renders correctly', () => {
     webAclId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
   });
 
-  expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       Aliases: ['example.com'],
       DefaultCacheBehavior: {
@@ -130,7 +262,7 @@ test('ensure comment prop is not greater than max lenght', () => {
 ellipsis so a user would know there was more to read and everything beyond this point should not show up`,
   });
 
-  expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       DefaultCacheBehavior: {
         CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
@@ -180,7 +312,7 @@ describe('multiple behaviors', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
           CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
@@ -219,7 +351,7 @@ describe('multiple behaviors', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
           CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
@@ -266,7 +398,7 @@ describe('multiple behaviors', () => {
     });
     dist.addBehavior('api/2*', origin);
 
-    expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
           CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
@@ -359,7 +491,7 @@ describe('certificates', () => {
           certificate,
         });
 
-        expect(customStack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+        Template.fromStack(customStack).hasResourceProperties('AWS::CloudFront::Distribution', {
           DistributionConfig: {
             Aliases: ['example.com', 'www.example.com'],
             ViewerCertificate: {
@@ -386,7 +518,7 @@ describe('certificates', () => {
           certificate,
         });
 
-        expect(customStack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+        Template.fromStack(customStack).hasResourceProperties('AWS::CloudFront::Distribution', {
           DistributionConfig: {
             Aliases: ['example.com', 'www.example.com'],
             ViewerCertificate: {
@@ -405,11 +537,12 @@ describe('certificates', () => {
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin: defaultOrigin() },
       domainNames: ['www.example.com'],
+      sslSupportMethod: SSLMethod.SNI,
       minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2016,
       certificate: certificate,
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         ViewerCertificate: {
           AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
@@ -457,7 +590,7 @@ describe('custom error responses', () => {
       }],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         CustomErrorResponses: [
           {
@@ -486,9 +619,9 @@ describe('logging', () => {
     const origin = defaultOrigin();
     new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
-        Logging: ABSENT,
+        Logging: Match.absent(),
       },
     });
   });
@@ -512,7 +645,7 @@ describe('logging', () => {
       enableLogging: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Logging: {
           Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
@@ -529,7 +662,7 @@ describe('logging', () => {
       logBucket: loggingBucket,
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Logging: {
           Bucket: { 'Fn::GetAtt': ['MyLoggingBucket4382CD04', 'RegionalDomainName'] },
@@ -547,7 +680,7 @@ describe('logging', () => {
       logIncludesCookies: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Logging: {
           Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
@@ -565,7 +698,7 @@ describe('with Lambda@Edge functions', () => {
 
   beforeEach(() => {
     lambdaFunction = new lambda.Function(stack, 'Function', {
-      runtime: lambda.Runtime.NODEJS,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('whatever'),
       handler: 'index.handler',
     });
@@ -587,7 +720,7 @@ describe('with Lambda@Edge functions', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
           LambdaFunctionAssociations: [
@@ -595,7 +728,7 @@ describe('with Lambda@Edge functions', () => {
               EventType: 'origin-request',
               IncludeBody: true,
               LambdaFunctionARN: {
-                Ref: 'FunctionCurrentVersion4E2B2261477a5ae8059bbaa7813f752292c0f65e',
+                Ref: 'FunctionCurrentVersion4E2B2261627f862ed5d048a0c695ee87fce6fb47',
               },
             },
           ],
@@ -617,7 +750,7 @@ describe('with Lambda@Edge functions', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -656,20 +789,20 @@ describe('with Lambda@Edge functions', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         CacheBehaviors: [
-          {
+          Match.objectLike({
             PathPattern: 'images/*',
             LambdaFunctionAssociations: [
               {
                 EventType: 'viewer-request',
                 LambdaFunctionARN: {
-                  Ref: 'FunctionCurrentVersion4E2B2261477a5ae8059bbaa7813f752292c0f65e',
+                  Ref: 'FunctionCurrentVersion4E2B2261627f862ed5d048a0c695ee87fce6fb47',
                 },
               },
             ],
-          },
+          }),
         ],
       },
     });
@@ -693,7 +826,7 @@ describe('with Lambda@Edge functions', () => {
 
   test('with removable env vars', () => {
     const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
-      runtime: lambda.Runtime.NODEJS,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('whateverwithenv'),
       handler: 'index.handler',
     });
@@ -711,8 +844,8 @@ describe('with Lambda@Edge functions', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
-      Environment: ABSENT,
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Environment: Match.absent(),
       Code: {
         ZipFile: 'whateverwithenv',
       },
@@ -721,7 +854,7 @@ describe('with Lambda@Edge functions', () => {
 
   test('with incompatible env vars', () => {
     const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('whateverwithenv'),
       handler: 'index.handler',
       environment: {
@@ -747,7 +880,7 @@ describe('with Lambda@Edge functions', () => {
   test('with singleton function', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: 'singleton-for-cloudfront',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('code'),
       handler: 'index.handler',
     });
@@ -764,14 +897,14 @@ describe('with Lambda@Edge functions', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
           LambdaFunctionAssociations: [
             {
               EventType: 'origin-request',
               LambdaFunctionARN: {
-                Ref: 'SingletonLambdasingletonforcloudfrontCurrentVersion0078406348a0962a52448a200cd0dbc0e22edb2a',
+                Ref: 'SingletonLambdasingletonforcloudfrontCurrentVersion0078406340d5752510648adb0d76f136b832c5bd',
               },
             },
           ],
@@ -798,7 +931,7 @@ describe('with CloudFront functions', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
           FunctionAssociations: [
@@ -826,7 +959,7 @@ test('price class is included if provided', () => {
     priceClass: PriceClass.PRICE_CLASS_200,
   });
 
-  expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       PriceClass: 'PriceClass_200',
     },
@@ -840,7 +973,7 @@ test('escape hatches are supported', () => {
   const cfnDist = dist.node.defaultChild as CfnDistribution;
   cfnDist.addPropertyOverride('DistributionConfig.DefaultCacheBehavior.ForwardedValues.Headers', ['*']);
 
-  expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       DefaultCacheBehavior: {
         ForwardedValues: {
@@ -859,9 +992,9 @@ describe('origin IDs', () => {
       defaultBehavior: { origin: defaultOrigin() },
     });
 
-    expect(nestedStack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(nestedStack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
-        Origins: [objectLike({
+        Origins: [Match.objectLike({
           Id: 'ngerThanTheOneHundredAndTwentyEightCharacterLimitAReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForgetOrigin1D38031F9',
         })],
       },
@@ -875,10 +1008,10 @@ describe('origin IDs', () => {
       defaultBehavior: { origin: defaultOriginGroup() },
     });
 
-    expect(nestedStack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(nestedStack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         OriginGroups: {
-          Items: [objectLike({
+          Items: [Match.objectLike({
             Id: 'hanTheOneHundredAndTwentyEightCharacterLimitAReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForgetOriginGroup1B5CE3FE6',
           })],
         },

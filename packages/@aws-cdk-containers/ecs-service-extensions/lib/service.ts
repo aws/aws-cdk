@@ -1,14 +1,10 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IEnvironment } from './environment';
 import { EnvironmentCapacityType, ServiceBuild } from './extensions/extension-interfaces';
 import { ServiceDescription } from './service-description';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * connectToProps will have all the extra parameters which are required for connecting services.
@@ -54,6 +50,8 @@ export interface ServiceProps {
 
   /**
    * The options for configuring the auto scaling target.
+   *
+   * @default none
    */
   readonly autoScaleTaskCount?: AutoScalingOptions;
 }
@@ -147,7 +145,7 @@ export class Service extends Construct {
    */
   private urls: Record<string, string> = {};
 
-  private readonly scope: cdk.Construct;
+  private readonly scope: Construct;
 
   constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
@@ -196,7 +194,6 @@ export class Service extends Construct {
       // Ensure that the task definition supports both EC2 and Fargate
       compatibility: ecs.Compatibility.EC2_AND_FARGATE,
     } as ecs.TaskDefinitionProps;
-
     for (const extensions in this.serviceDescription.extensions) {
       if (this.serviceDescription.extensions[extensions]) {
         taskDefProps = this.serviceDescription.extensions[extensions].modifyTaskDefinitionProps(taskDefProps);
@@ -221,9 +218,6 @@ export class Service extends Construct {
       }
     }
 
-    // Set desiredCount to `undefined` if auto scaling is configured for the service
-    const desiredCount = props.autoScaleTaskCount ? undefined : (props.desiredCount || 1);
-
     // Give each extension a chance to mutate the service props before
     // service creation
     let serviceProps = {
@@ -231,7 +225,7 @@ export class Service extends Construct {
       taskDefinition: this.taskDefinition,
       minHealthyPercent: 100,
       maxHealthyPercent: 200,
-      desiredCount,
+      desiredCount: props.desiredCount ?? 1,
     } as ServiceBuild;
 
     for (const extensions in this.serviceDescription.extensions) {
@@ -273,6 +267,14 @@ export class Service extends Construct {
       }
     }
 
+    // Set desiredCount to `undefined` if auto scaling is configured for the service
+    if (props.autoScaleTaskCount || this.autoScalingPoliciesEnabled) {
+      serviceProps = {
+        ...serviceProps,
+        desiredCount: undefined,
+      };
+    }
+
     // Now that the service props are determined we can create
     // the service
     if (this.capacityType === EnvironmentCapacityType.EC2) {
@@ -291,17 +293,17 @@ export class Service extends Construct {
       });
 
       if (props.autoScaleTaskCount.targetCpuUtilization) {
-        const targetUtilizationPercent = props.autoScaleTaskCount.targetCpuUtilization;
-        this.scalableTaskCount.scaleOnCpuUtilization(`${this.id}-target-cpu-utilization-${targetUtilizationPercent}`, {
-          targetUtilizationPercent,
+        const targetCpuUtilizationPercent = props.autoScaleTaskCount.targetCpuUtilization;
+        this.scalableTaskCount.scaleOnCpuUtilization(`${this.id}-target-cpu-utilization-${targetCpuUtilizationPercent}`, {
+          targetUtilizationPercent: targetCpuUtilizationPercent,
         });
         this.enableAutoScalingPolicy();
       }
 
       if (props.autoScaleTaskCount.targetMemoryUtilization) {
-        const targetUtilizationPercent = props.autoScaleTaskCount.targetMemoryUtilization;
-        this.scalableTaskCount.scaleOnMemoryUtilization(`${this.id}-target-memory-utilization-${targetUtilizationPercent}`, {
-          targetUtilizationPercent,
+        const targetMemoryUtilizationPercent = props.autoScaleTaskCount.targetMemoryUtilization;
+        this.scalableTaskCount.scaleOnMemoryUtilization(`${this.id}-target-memory-utilization-${targetMemoryUtilizationPercent}`, {
+          targetUtilizationPercent: targetMemoryUtilizationPercent,
         });
         this.enableAutoScalingPolicy();
       }

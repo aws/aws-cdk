@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import { expect as expectCDK, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { ISubnet, Port, SecurityGroup, Subnet, Vpc } from '@aws-cdk/aws-ec2';
 import { Key } from '@aws-cdk/aws-kms';
 import { Aws, Stack, Token } from '@aws-cdk/core';
@@ -35,15 +35,15 @@ describe('FSx for Lustre File System', () => {
       vpcSubnet,
     });
 
-    expectCDK(stack).to(haveResource('AWS::FSx::FileSystem'));
-    expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroup'));
+    Template.fromStack(stack).hasResource('AWS::FSx::FileSystem', {});
+    Template.fromStack(stack).hasResource('AWS::EC2::SecurityGroup', {});
     strictEqual(
       fileSystem.dnsName,
       `${fileSystem.fileSystemId}.fsx.${stack.region}.${Aws.URL_SUFFIX}`);
 
-    expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
+    Template.fromStack(stack).hasResource('AWS::FSx::FileSystem', {
       DeletionPolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition));
+    });
   });
 
   test('file system is created correctly when security group is provided', () => {
@@ -63,8 +63,8 @@ describe('FSx for Lustre File System', () => {
       vpcSubnet,
     });
 
-    expectCDK(stack).to(haveResource('AWS::FSx::FileSystem'));
-    expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroup'));
+    Template.fromStack(stack).hasResource('AWS::FSx::FileSystem', {});
+    Template.fromStack(stack).hasResource('AWS::EC2::SecurityGroup', {});
   });
 
   test('encrypted file system is created correctly with custom KMS', () => {
@@ -88,11 +88,11 @@ describe('FSx for Lustre File System', () => {
      * in generated CDK, hence hardcoding the MD5 hash here for assertion. Assumption is that the path of the Key wont
      * change in this UT. Checked the unique id by generating the cloud formation stack.
      */
-    expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
+    Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
       KmsKeyId: {
         Ref: 'customKeyFSDDB87C6D',
       },
-    }));
+    });
   });
 
   test('file system is created correctly when weekly maintenance time is provided', () => {
@@ -118,13 +118,13 @@ describe('FSx for Lustre File System', () => {
       vpcSubnet,
     });
 
-    expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
+    Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
       LustreConfiguration: {
         DeploymentType: 'SCRATCH_2',
         WeeklyMaintenanceStartTime: '7:12:34',
       },
-    }));
-    expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroup'));
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {});
   });
 
   describe('when validating props', () => {
@@ -145,13 +145,13 @@ describe('FSx for Lustre File System', () => {
           vpcSubnet,
         });
 
-        expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
+        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
           LustreConfiguration: {
             DeploymentType: LustreDeploymentType.SCRATCH_2,
             ExportPath: exportPath,
             ImportPath: importPath,
           },
-        }));
+        });
       });
 
       test('export and import paths are Tokens', () => {
@@ -172,13 +172,13 @@ describe('FSx for Lustre File System', () => {
           vpcSubnet,
         });
 
-        expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
+        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
           LustreConfiguration: {
             DeploymentType: LustreDeploymentType.SCRATCH_2,
             ExportPath: exportPathResolved,
             ImportPath: importPathResolved,
           },
-        }));
+        });
       });
 
       test('only export path is Token', () => {
@@ -299,12 +299,12 @@ describe('FSx for Lustre File System', () => {
           vpcSubnet,
         });
 
-        expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
+        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
           LustreConfiguration: {
             DeploymentType: LustreDeploymentType.SCRATCH_2,
             ImportedFileChunkSize: size,
           },
-        }));
+        });
       });
 
       test.each([
@@ -342,12 +342,12 @@ describe('FSx for Lustre File System', () => {
           vpcSubnet,
         });
 
-        expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
+        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
           LustreConfiguration: {
             DeploymentType: LustreDeploymentType.SCRATCH_2,
             ImportPath: importPath,
           },
-        }));
+        });
       });
 
       test('import path is Token', () => {
@@ -364,12 +364,12 @@ describe('FSx for Lustre File System', () => {
           vpcSubnet,
         });
 
-        expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
+        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
           LustreConfiguration: {
             DeploymentType: LustreDeploymentType.SCRATCH_2,
             ImportPath: importPathResolved,
           },
-        }));
+        });
       });
 
       test('invalid import path format', () => {
@@ -428,18 +428,24 @@ describe('FSx for Lustre File System', () => {
           vpcSubnet,
         });
 
-        expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
+        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
           LustreConfiguration: {
             DeploymentType: LustreDeploymentType.PERSISTENT_1,
             PerUnitStorageThroughput: throughput,
           },
-        }));
+        });
       });
 
-      test('invalid perUnitStorageThroughput', () => {
+      test.each([
+        1,
+        125,
+        250,
+        500,
+        1000,
+      ])('invalid perUnitStorageThroughput', (invalidValue: number) => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.PERSISTENT_1,
-          perUnitStorageThroughput: 1,
+          perUnitStorageThroughput: invalidValue,
         };
 
         expect(() => {
@@ -449,7 +455,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError('perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB');
+        }).toThrowError('perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB for PERSISTENT_1 deployment type, got: ' + invalidValue);
       });
 
       test('setting perUnitStorageThroughput on wrong deploymentType', () => {
@@ -465,7 +471,57 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError('perUnitStorageThroughput can only be set for the PERSISTENT_1 deployment type');
+        }).toThrowError('perUnitStorageThroughput can only be set for the PERSISTENT_1/PERSISTENT_2 deployment types');
+      });
+    });
+
+    describe('perUnitStorageThroughput_Persistent_2', () => {
+      test.each([
+        125,
+        250,
+        500,
+        1000,
+      ])('valid perUnitStorageThroughput of %d', (throughput: number) => {
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_2,
+          perUnitStorageThroughput: throughput,
+        };
+
+        new LustreFileSystem(stack, 'FsxFileSystem', {
+          lustreConfiguration,
+          storageCapacityGiB: storageCapacity,
+          vpc,
+          vpcSubnet,
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+          LustreConfiguration: {
+            DeploymentType: LustreDeploymentType.PERSISTENT_2,
+            PerUnitStorageThroughput: throughput,
+          },
+        });
+      });
+
+      test.each([
+        1,
+        50,
+        100,
+        200,
+        550,
+      ])('invalid perUnitStorageThroughput', (invalidValue: number) => {
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_2,
+          perUnitStorageThroughput: invalidValue,
+        };
+
+        expect(() => {
+          new LustreFileSystem(stack, 'FsxFileSystem', {
+            lustreConfiguration,
+            storageCapacityGiB: storageCapacity,
+            vpc,
+            vpcSubnet,
+          });
+        }).toThrowError('perUnitStorageThroughput must be 125, 250, 500 or 1000 MB/s/TiB for PERSISTENT_2 deployment type, got: ' + invalidValue);
       });
     });
 
@@ -477,6 +533,9 @@ describe('FSx for Lustre File System', () => {
         [1200, LustreDeploymentType.PERSISTENT_1],
         [2400, LustreDeploymentType.PERSISTENT_1],
         [4800, LustreDeploymentType.PERSISTENT_1],
+        [1200, LustreDeploymentType.PERSISTENT_2],
+        [2400, LustreDeploymentType.PERSISTENT_2],
+        [4800, LustreDeploymentType.PERSISTENT_2],
       ])('proper multiple for storage capacity of %d on %s', (value: number, deploymentType: LustreDeploymentType) => {
         lustreConfiguration = {
           deploymentType,
@@ -489,12 +548,12 @@ describe('FSx for Lustre File System', () => {
           vpcSubnet,
         });
 
-        expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
+        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
           LustreConfiguration: {
             DeploymentType: deploymentType,
           },
           StorageCapacity: value,
-        }));
+        });
       });
 
       test.each([
@@ -502,6 +561,8 @@ describe('FSx for Lustre File System', () => {
         [2401, LustreDeploymentType.SCRATCH_2],
         [1, LustreDeploymentType.PERSISTENT_1],
         [2401, LustreDeploymentType.PERSISTENT_1],
+        [1, LustreDeploymentType.PERSISTENT_2],
+        [2401, LustreDeploymentType.PERSISTENT_2],
       ])('invalid value of %d for storage capacity on %s', (invalidValue: number, deploymentType: LustreDeploymentType) => {
         lustreConfiguration = {
           deploymentType,
@@ -529,12 +590,12 @@ describe('FSx for Lustre File System', () => {
           vpcSubnet,
         });
 
-        expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
+        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
           LustreConfiguration: {
             DeploymentType: LustreDeploymentType.SCRATCH_1,
           },
           StorageCapacity: validValue,
-        }));
+        });
       });
 
       test.each([1, 3601])('invalid value of %d for storage capacity with SCRATCH_1', (invalidValue: number) => {
@@ -566,8 +627,8 @@ describe('FSx for Lustre File System', () => {
 
     fs.connections.allowToAnyIpv4(Port.tcp(443));
 
-    expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'sg-123456789',
-    }));
+    });
   });
 });

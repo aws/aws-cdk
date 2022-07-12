@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -14,7 +14,7 @@ describe('S3 source Action', () => {
 
       minimalPipeline(stack, undefined);
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
         'Stages': [
           {
             'Actions': [
@@ -26,9 +26,9 @@ describe('S3 source Action', () => {
           },
           {},
         ],
-      });
+      }));
 
-      expect(stack).not.toHaveResourceLike('AWS::Events::Rule');
+      Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 0);
 
 
     });
@@ -38,22 +38,22 @@ describe('S3 source Action', () => {
 
       minimalPipeline(stack, { trigger: cpactions.S3Trigger.EVENTS });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
         'Stages': [
           {
-            'Actions': [
-              {
+            'Actions': Match.arrayWith([
+              Match.objectLike({
                 'Configuration': {
                   'PollForSourceChanges': false,
                 },
-              },
-            ],
+              }),
+            ]),
           },
           {},
         ],
-      });
+      }));
 
-      expect(stack).toCountResources('AWS::Events::Rule', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 1);
 
 
     });
@@ -63,7 +63,7 @@ describe('S3 source Action', () => {
 
       minimalPipeline(stack, { trigger: cpactions.S3Trigger.POLL });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
         'Stages': [
           {
             'Actions': [
@@ -76,9 +76,9 @@ describe('S3 source Action', () => {
           },
           {},
         ],
-      });
+      }));
 
-      expect(stack).not.toHaveResourceLike('AWS::Events::Rule');
+      Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 0);
 
 
     });
@@ -88,7 +88,7 @@ describe('S3 source Action', () => {
 
       minimalPipeline(stack, { trigger: cpactions.S3Trigger.NONE });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
         'Stages': [
           {
             'Actions': [
@@ -101,11 +101,9 @@ describe('S3 source Action', () => {
           },
           {},
         ],
-      });
+      }));
 
-      expect(stack).not.toHaveResourceLike('AWS::Events::Rule');
-
-
+      Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 0);
     });
 
     test('does not allow passing an empty string for the bucketKey property', () => {
@@ -171,8 +169,6 @@ describe('S3 source Action', () => {
       expect(() => {
         sourceStage.addAction(duplicateBucketAndPath);
       }).toThrow(/S3 source action with path 'my\/other\/path' is already present in the pipeline for this source bucket/);
-
-
     });
 
     test('allows using a Token bucketKey with trigger = Events, multiple times', () => {
@@ -192,9 +188,9 @@ describe('S3 source Action', () => {
         output: new codepipeline.Artifact(),
       }));
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-        'Stages': [
-          {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
+        'Stages': Match.arrayWith([
+          Match.objectLike({
             'Actions': [
               {
                 'Configuration': {
@@ -207,11 +203,9 @@ describe('S3 source Action', () => {
                 },
               },
             ],
-          },
-        ],
-      });
-
-
+          }),
+        ]),
+      }));
     });
 
     test('exposes variables for other actions to consume', () => {
@@ -246,7 +240,7 @@ describe('S3 source Action', () => {
         ],
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
         'Stages': [
           {
             'Name': 'Source',
@@ -263,9 +257,7 @@ describe('S3 source Action', () => {
             ],
           },
         ],
-      });
-
-
+      }));
     });
   });
 });

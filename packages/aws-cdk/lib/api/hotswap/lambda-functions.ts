@@ -1,7 +1,13 @@
+import { Writable } from 'stream';
+import * as AWS from 'aws-sdk';
 import { flatMap } from '../../util';
 import { ISDK } from '../aws-auth';
-import { ChangeHotswapImpact, ChangeHotswapResult, establishResourcePhysicalName, HotswapOperation, HotswappableChangeCandidate } from './common';
-import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
+import { CfnEvaluationException, EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate } from './common';
+
+// namespace object imports won't work in the bundle for function exports
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const archiver = require('archiver');
 
 /**
  * Returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if the change cannot be short-circuited,
@@ -30,7 +36,7 @@ export async function isHotswappableLambdaFunctionChange(
     return lambdaCodeChange;
   }
 
-  const functionName = await establishResourcePhysicalName(logicalId, change.newValue.Properties?.FunctionName, evaluateCfnTemplate);
+  const functionName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, change.newValue.Properties?.FunctionName);
   if (!functionName) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
@@ -108,7 +114,7 @@ async function isLambdaFunctionCodeOnlyChange(
     switch (updatedPropName) {
       case 'Code':
         let foundCodeDifference = false;
-        let s3Bucket = '', s3Key = '';
+        let s3Bucket, s3Key, imageUri, functionCodeZip;
 
         for (const newPropName in updatedProp.newValue) {
           switch (newPropName) {
@@ -120,6 +126,22 @@ async function isLambdaFunctionCodeOnlyChange(
               foundCodeDifference = true;
               s3Key = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
               break;
+            case 'ImageUri':
+              foundCodeDifference = true;
+              imageUri = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
+              break;
+            case 'ZipFile':
+              foundCodeDifference = true;
+              // We must create a zip package containing a file with the inline code
+              const functionCode = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
+              const functionRuntime = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue.Properties?.Runtime);
+              if (!functionRuntime) {
+                return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+              }
+              // file extension must be chosen depending on the runtime
+              const codeFileExt = determineCodeFileExtFromRuntime(functionRuntime);
+              functionCodeZip = await zipString(`index.${codeFileExt}`, functionCode);
+              break;
             default:
               return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
           }
@@ -128,6 +150,8 @@ async function isLambdaFunctionCodeOnlyChange(
           code = {
             s3Bucket,
             s3Key,
+            imageUri,
+            functionCodeZip,
           };
         }
         break;
@@ -165,8 +189,10 @@ interface CfnDiffTagValue {
 }
 
 interface LambdaFunctionCode {
-  readonly s3Bucket: string;
-  readonly s3Key: string;
+  readonly s3Bucket?: string;
+  readonly s3Key?: string;
+  readonly imageUri?: string;
+  readonly functionCodeZip?: Buffer;
 }
 
 enum TagDeletion {
@@ -210,23 +236,18 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
     const operations: Promise<any>[] = [];
 
     if (resource.code !== undefined) {
-      const updateFunctionCodePromise = lambda.updateFunctionCode({
+      const updateFunctionCodeResponse = await lambda.updateFunctionCode({
         FunctionName: this.lambdaFunctionResource.physicalName,
         S3Bucket: resource.code.s3Bucket,
         S3Key: resource.code.s3Key,
+        ImageUri: resource.code.imageUri,
+        ZipFile: resource.code.functionCodeZip,
       }).promise();
+
+      await this.waitForLambdasCodeUpdateToFinish(updateFunctionCodeResponse, lambda);
 
       // only if the code changed is there any point in publishing a new Version
       if (this.lambdaFunctionResource.publishVersion) {
-        // we need to wait for the code update to be done before publishing a new Version
-        await updateFunctionCodePromise;
-        // if we don't wait for the Function to finish updating,
-        // we can get a "The operation cannot be performed at this time. An update is in progress for resource:"
-        // error when publishing a new Version
-        await lambda.waitFor('functionUpdated', {
-          FunctionName: this.lambdaFunctionResource.physicalName,
-        }).promise();
-
         const publishVersionPromise = lambda.publishVersion({
           FunctionName: this.lambdaFunctionResource.physicalName,
         }).promise();
@@ -245,8 +266,6 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
         } else {
           operations.push(publishVersionPromise);
         }
-      } else {
-        operations.push(updateFunctionCodePromise);
       }
     }
 
@@ -280,4 +299,103 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
     // run all of our updates in parallel
     return Promise.all(operations);
   }
+
+  /**
+   * After a Lambda Function is updated, it cannot be updated again until the
+   * `State=Active` and the `LastUpdateStatus=Successful`.
+   *
+   * Depending on the configuration of the Lambda Function this could happen relatively quickly
+   * or very slowly. For example, Zip based functions _not_ in a VPC can take ~1 second whereas VPC
+   * or Container functions can take ~25 seconds (and 'idle' VPC functions can take minutes).
+   */
+  private async waitForLambdasCodeUpdateToFinish(currentFunctionConfiguration: AWS.Lambda.FunctionConfiguration, lambda: AWS.Lambda): Promise<void> {
+    const functionIsInVpcOrUsesDockerForCode = currentFunctionConfiguration.VpcConfig?.VpcId ||
+        currentFunctionConfiguration.PackageType === 'Image';
+
+    // if the function is deployed in a VPC or if it is a container image function
+    // then the update will take much longer and we can wait longer between checks
+    // otherwise, the update will be quick, so a 1-second delay is fine
+    const delaySeconds = functionIsInVpcOrUsesDockerForCode ? 5 : 1;
+
+    // configure a custom waiter to wait for the function update to complete
+    (lambda as any).api.waiters.updateFunctionCodeToFinish = {
+      name: 'UpdateFunctionCodeToFinish',
+      operation: 'getFunction',
+      // equates to 1 minute for zip function not in a VPC and
+      // 5 minutes for container functions or function in a VPC
+      maxAttempts: 60,
+      delay: delaySeconds,
+      acceptors: [
+        {
+          matcher: 'path',
+          argument: "Configuration.LastUpdateStatus == 'Successful' && Configuration.State == 'Active'",
+          expected: true,
+          state: 'success',
+        },
+        {
+          matcher: 'path',
+          argument: 'Configuration.LastUpdateStatus',
+          expected: 'Failed',
+          state: 'failure',
+        },
+      ],
+    };
+
+    const updateFunctionCodeWaiter = new (AWS as any).ResourceWaiter(lambda, 'updateFunctionCodeToFinish');
+    await updateFunctionCodeWaiter.wait({
+      FunctionName: this.lambdaFunctionResource.physicalName,
+    }).promise();
+  }
+}
+
+/**
+ * Compress a string as a file, returning a promise for the zip buffer
+ * https://github.com/archiverjs/node-archiver/issues/342
+ */
+function zipString(fileName: string, rawString: string): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const buffers: Buffer[] = [];
+
+    const converter = new Writable();
+
+    converter._write = (chunk: Buffer, _: string, callback: () => void) => {
+      buffers.push(chunk);
+      process.nextTick(callback);
+    };
+
+    converter.on('finish', () => {
+      resolve(Buffer.concat(buffers));
+    });
+
+    const archive = archiver('zip');
+
+    archive.on('error', (err: any) => {
+      reject(err);
+    });
+
+    archive.pipe(converter);
+
+    archive.append(rawString, {
+      name: fileName,
+      date: new Date('1980-01-01T00:00:00.000Z'), // Add date to make resulting zip file deterministic
+    });
+
+    void archive.finalize();
+  });
+}
+
+/**
+ * Get file extension from Lambda runtime string.
+ * We use this extension to create a deployment package from Lambda inline code.
+ */
+function determineCodeFileExtFromRuntime(runtime: string): string {
+  if (runtime.startsWith('node')) {
+    return 'js';
+  }
+  if (runtime.startsWith('python')) {
+    return 'py';
+  }
+  // Currently inline code only supports Node.js and Python, ignoring other runtimes.
+  // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html#aws-properties-lambda-function-code-properties
+  throw new CfnEvaluationException(`runtime ${runtime} is unsupported, only node.js and python runtimes are currently supported.`);
 }

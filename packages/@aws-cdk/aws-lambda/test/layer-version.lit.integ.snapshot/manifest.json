@@ -1,0 +1,78 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-layer-version-1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-layer-version-1.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-layer-version-1": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34",
+              "id": "8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34",
+              "packaging": "zip",
+              "sourceHash": "8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34",
+              "s3BucketParameter": "AssetParameters8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34S3BucketB47CCF1E",
+              "s3KeyParameter": "AssetParameters8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34S3VersionKey80D7B84B",
+              "artifactHashParameter": "AssetParameters8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34ArtifactHash70E274C4"
+            }
+          }
+        ],
+        "/aws-cdk-layer-version-1/MyLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLayer38944FA5"
+          }
+        ],
+        "/aws-cdk-layer-version-1/MyLayer/remote-account-grant": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLayerremoteaccountgrant715E5D21"
+          }
+        ],
+        "/aws-cdk-layer-version-1/AssetParameters/8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34S3BucketB47CCF1E"
+          }
+        ],
+        "/aws-cdk-layer-version-1/AssetParameters/8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34S3VersionKey80D7B84B"
+          }
+        ],
+        "/aws-cdk-layer-version-1/AssetParameters/8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34ArtifactHash70E274C4"
+          }
+        ],
+        "/aws-cdk-layer-version-1/MyLayeredLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLayeredLambdaServiceRole1A7DC118"
+          }
+        ],
+        "/aws-cdk-layer-version-1/MyLayeredLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLayeredLambda9A3008D1"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-layer-version-1"
+    }
+  }
+}

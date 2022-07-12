@@ -1,12 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ArnFormat, ConcreteDependable, IDependable, IResource, RemovalPolicy, Resource, Size, Stack, Tags } from '@aws-cdk/core';
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports
-import { FeatureFlags } from '@aws-cdk/core';
+import { ArnFormat, FeatureFlags, IResource, RemovalPolicy, Resource, Size, Stack, Tags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
+import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 
@@ -324,7 +321,7 @@ export class FileSystem extends FileSystemBase {
 
   public readonly mountTargetsAvailable: IDependable;
 
-  private readonly _mountTargetsAvailable = new ConcreteDependable();
+  private readonly _mountTargetsAvailable = new DependencyGroup();
 
   /**
    * Constructor for creating a new EFS FileSystem.
@@ -341,15 +338,21 @@ export class FileSystem extends FileSystemBase {
     const encrypted = props.encrypted ?? (FeatureFlags.of(this).isEnabled(
       cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST) ? true : undefined);
 
+    // LifecyclePolicies is an array of lists containing a single policy
+    let lifecyclePolicies = [];
+
+    if (props.lifecyclePolicy) {
+      lifecyclePolicies.push({ transitionToIa: props.lifecyclePolicy });
+    }
+
+    if (props.outOfInfrequentAccessPolicy) {
+      lifecyclePolicies.push({ transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy });
+    }
+
     const filesystem = new CfnFileSystem(this, 'Resource', {
       encrypted: encrypted,
       kmsKeyId: props.kmsKey?.keyArn,
-      lifecyclePolicies: (
-        (props.lifecyclePolicy || props.outOfInfrequentAccessPolicy) ?
-          [{
-            transitionToIa: props.lifecyclePolicy,
-            transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy,
-          }] : undefined),
+      lifecyclePolicies: lifecyclePolicies.length > 0 ? lifecyclePolicies : undefined,
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),
@@ -447,6 +450,6 @@ class ImportedFileSystem extends FileSystemBase {
       defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
     });
 
-    this.mountTargetsAvailable = new ConcreteDependable();
+    this.mountTargetsAvailable = new DependencyGroup();
   }
 }

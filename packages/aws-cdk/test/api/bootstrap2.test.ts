@@ -172,8 +172,7 @@ describe('Bootstrapping v2', () => {
       parameters: {
         cloudFormationExecutionPolicies: ['arn:policy'],
       },
-    }))
-      .rejects.toThrow('Not downgrading existing bootstrap stack');
+    })).resolves.toEqual(expect.objectContaining({ noOp: true }));
   });
 
   test('bootstrap template has the right exports', async () => {

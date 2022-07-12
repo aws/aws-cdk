@@ -1,5 +1,6 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { OriginAccessIdentity } from '../lib';
 
 describe('Origin Access Identity', () => {
@@ -8,7 +9,7 @@ describe('Origin Access Identity', () => {
 
     new OriginAccessIdentity(stack, 'OAI');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       {
         Resources: {
           OAIE1EFC67F: {
@@ -31,7 +32,7 @@ describe('Origin Access Identity', () => {
       comment: 'test comment',
     });
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       {
         Resources: {
           OAIE1EFC67F: {
@@ -54,17 +55,25 @@ describe('Origin Access Identity', () => {
       comment: 'This is a really long comment. Auto-generated comments based on ids of origins might sometimes be this long or even longer and that will break',
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::CloudFrontOriginAccessIdentity', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::CloudFrontOriginAccessIdentity', {
       CloudFrontOriginAccessIdentityConfig: {
         Comment: 'This is a really long comment. Auto-generated comments based on ids of origins might sometimes be this long or even longer and t',
       },
     });
   });
 
-  test('Builds ARN of CloudFront user', () => {
+  testDeprecated('Builds ARN of CloudFront user for fromOriginAccessIdentityName', () => {
     const stack = new cdk.Stack();
 
     const oai = OriginAccessIdentity.fromOriginAccessIdentityName(stack, 'OAI', 'OAITest');
+
+    expect(oai.grantPrincipal.policyFragment.principalJson.AWS[0]).toMatch(/:iam::cloudfront:user\/CloudFront Origin Access Identity OAITest$/);
+  });
+
+  test('Builds ARN of CloudFront user for fromOriginAccessIdentityId', () => {
+    const stack = new cdk.Stack();
+
+    const oai = OriginAccessIdentity.fromOriginAccessIdentityId(stack, 'OAI', 'OAITest');
 
     expect(oai.grantPrincipal.policyFragment.principalJson.AWS[0]).toMatch(/:iam::cloudfront:user\/CloudFront Origin Access Identity OAITest$/);
   });

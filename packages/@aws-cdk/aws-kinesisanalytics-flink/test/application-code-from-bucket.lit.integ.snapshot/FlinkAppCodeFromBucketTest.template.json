@@ -1,0 +1,295 @@
+{
+ "Parameters": {
+  "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3BucketEBA17A67": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577\""
+  },
+  "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3VersionKey5922697E": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577\""
+  },
+  "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577ArtifactHash211A4F2F": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577\""
+  }
+ },
+ "Resources": {
+  "AppRole1AF9B530": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "kinesisanalytics.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AppRoleDefaultPolicy9CADBAA1": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "cloudwatch:PutMetricData",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Ref": "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3BucketEBA17A67"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Ref": "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3BucketEBA17A67"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "logs:DescribeLogGroups",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "logs:DescribeLogStreams",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "AppLogGroupC72EEC8C",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "logs:PutLogEvents",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:",
+          {
+           "Ref": "AppLogGroupC72EEC8C"
+          },
+          ":log-stream:",
+          {
+           "Ref": "AppLogStream3CAF66A7"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AppRoleDefaultPolicy9CADBAA1",
+    "Roles": [
+     {
+      "Ref": "AppRole1AF9B530"
+     }
+    ]
+   }
+  },
+  "AppF1B96344": {
+   "Type": "AWS::KinesisAnalyticsV2::Application",
+   "Properties": {
+    "RuntimeEnvironment": "FLINK-1_11",
+    "ServiceExecutionRole": {
+     "Fn::GetAtt": [
+      "AppRole1AF9B530",
+      "Arn"
+     ]
+    },
+    "ApplicationConfiguration": {
+     "ApplicationCodeConfiguration": {
+      "CodeContent": {
+       "S3ContentLocation": {
+        "BucketARN": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Ref": "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3BucketEBA17A67"
+           }
+          ]
+         ]
+        },
+        "FileKey": {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::Select": [
+             0,
+             {
+              "Fn::Split": [
+               "||",
+               {
+                "Ref": "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3VersionKey5922697E"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               "||",
+               {
+                "Ref": "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3VersionKey5922697E"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         ]
+        }
+       }
+      },
+      "CodeContentType": "ZIPFILE"
+     },
+     "ApplicationSnapshotConfiguration": {
+      "SnapshotsEnabled": true
+     }
+    }
+   },
+   "DependsOn": [
+    "AppRoleDefaultPolicy9CADBAA1",
+    "AppRole1AF9B530"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AppLogGroupC72EEC8C": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AppLogStream3CAF66A7": {
+   "Type": "AWS::Logs::LogStream",
+   "Properties": {
+    "LogGroupName": {
+     "Ref": "AppLogGroupC72EEC8C"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AppLoggingOption75BE995E": {
+   "Type": "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption",
+   "Properties": {
+    "ApplicationName": {
+     "Ref": "AppF1B96344"
+    },
+    "CloudWatchLoggingOption": {
+     "LogStreamARN": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":logs:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ":log-group:",
+        {
+         "Ref": "AppLogGroupC72EEC8C"
+        },
+        ":log-stream:",
+        {
+         "Ref": "AppLogStream3CAF66A7"
+        }
+       ]
+      ]
+     }
+    }
+   }
+  }
+ }
+}

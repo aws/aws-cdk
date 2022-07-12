@@ -4,23 +4,26 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, CfnCapabilities, Duration, Fn, Lazy, PhysicalName, Stack } from '@aws-cdk/core';
+import { Aws, CfnCapabilities, Duration, PhysicalName, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
 import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
 import { PipelineBase } from '../main';
 import { AssetSingletonRole } from '../private/asset-singleton-role';
+import { CachedFnSub } from '../private/cached-fnsub';
+import { preferredCliVersion } from '../private/cli-version';
 import { appOf, assemblyBuilderOf, embeddedAsmPath, obtainScope } from '../private/construct-internals';
 import { toPosixPath } from '../private/fs';
 import { actionName, stackVariableNamespace } from '../private/identifiers';
 import { enumerate, flatten, maybeSuffix, noUndefined } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
-import { CodeBuildFactory, mergeCodeBuildOptions } from './_codebuild-factory';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
 import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
+import { namespaceStepOutputs } from './private/outputs';
 
 
 /**
@@ -260,6 +263,13 @@ export interface CodeBuildOptions {
   readonly subnetSelection?: ec2.SubnetSelection;
 
   /**
+   * Caching strategy to use.
+   *
+   * @default - No cache
+   */
+  readonly cache?: cb.Cache;
+
+  /**
    * The number of minutes after which AWS CodeBuild stops the build if it's
    * not complete. For valid values, see the timeoutInMinutes field in the AWS
    * CodeBuild User Guide.
@@ -284,16 +294,12 @@ export class CodePipeline extends PipelineBase {
   private readonly selfMutation: boolean;
   private _myCxAsmRoot?: string;
   private readonly dockerCredentials: DockerCredential[];
+  private readonly cachedFnSub = new CachedFnSub();
 
   /**
    * Asset roles shared for publishing
    */
-  private readonly assetCodeBuildRoles: Record<string, iam.IRole> = {};
-
-  /**
-   * Per asset type, the target role ARNs that need to be assumed
-   */
-  private readonly assetPublishingRoles: Record<string, Set<string>> = {};
+  private readonly assetCodeBuildRoles: Map<AssetType, AssetSingletonRole> = new Map();
 
   /**
    * This is set to the very first artifact produced in the pipeline
@@ -303,6 +309,7 @@ export class CodePipeline extends PipelineBase {
   private _cloudAssemblyFileSet?: FileSet;
 
   private readonly singlePublisherPerAssetType: boolean;
+  private readonly cliVersion?: string;
 
   constructor(scope: Construct, id: string, private readonly props: CodePipelineProps) {
     super(scope, id, props);
@@ -310,6 +317,7 @@ export class CodePipeline extends PipelineBase {
     this.selfMutation = props.selfMutation ?? true;
     this.dockerCredentials = props.dockerCredentials ?? [];
     this.singlePublisherPerAssetType = !(props.publishAssetsInParallel ?? true);
+    this.cliVersion = props.cliVersion ?? preferredCliVersion();
   }
 
   /**
@@ -415,9 +423,14 @@ export class CodePipeline extends PipelineBase {
             const factory = this.actionFromNode(node);
 
             const nodeType = this.nodeTypeFromNode(node);
+            const name = actionName(node, sharedParent);
+
+            const variablesNamespace = node.data?.type === 'step'
+              ? namespaceStepOutputs(node.data.step, pipelineStage, name)
+              : undefined;
 
             const result = factory.produceAction(pipelineStage, {
-              actionName: actionName(node, sharedParent),
+              actionName: name,
               runOrder,
               artifacts: this.artifacts,
               scope: obtainScope(this.pipeline, stageName),
@@ -426,6 +439,7 @@ export class CodePipeline extends PipelineBase {
               // If this step happens to produce a CodeBuild job, set the default options
               codeBuildDefaults: nodeType ? this.codeBuildDefaultsFor(nodeType) : undefined,
               beforeSelfMutation,
+              variablesNamespace,
             });
 
             if (node.data?.type === 'self-update') {
@@ -603,7 +617,7 @@ export class CodePipeline extends PipelineBase {
   }
 
   private selfMutateAction(): ICodePipelineActionFactory {
-    const installSuffix = this.props.cliVersion ? `@${this.props.cliVersion}` : '';
+    const installSuffix = this.cliVersion ? `@${this.cliVersion}` : '';
 
     const pipelineStack = Stack.of(this.pipeline);
     const pipelineStackIdentifier = pipelineStack.node.path ?? pipelineStack.stackName;
@@ -649,7 +663,7 @@ export class CodePipeline extends PipelineBase {
   }
 
   private publishAssetsAction(node: AGraphNode, assets: StackAsset[]): ICodePipelineActionFactory {
-    const installSuffix = this.props.cliVersion ? `@${this.props.cliVersion}` : '';
+    const installSuffix = this.cliVersion ? `@${this.cliVersion}` : '';
 
     const commands = assets.map(asset => {
       const relativeAssetManifestPath = path.relative(this.myCxAsmRoot, asset.assetManifestPath);
@@ -661,14 +675,12 @@ export class CodePipeline extends PipelineBase {
       throw new Error('All assets in a single publishing step must be of the same type');
     }
 
-    const publishingRoles = this.assetPublishingRoles[assetType] = (this.assetPublishingRoles[assetType] ?? new Set());
-    for (const asset of assets) {
-      if (asset.assetPublishingRoleArn) {
-        publishingRoles.add(asset.assetPublishingRoleArn);
-      }
-    }
-
     const role = this.obtainAssetCodeBuildRole(assets[0].assetType);
+
+    for (const roleArn of assets.flatMap(a => a.assetPublishingRoleArn ? [a.assetPublishingRoleArn] : [])) {
+      // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
+      role.addAssumeRole(this.cachedFnSub.fnSub(roleArn));
+    };
 
     // The base commands that need to be run
     const script = new CodeBuildStep(node.id, {
@@ -765,10 +777,10 @@ export class CodePipeline extends PipelineBase {
     const id = arn;
 
     // https://github.com/aws/aws-cdk/issues/7255
-    let existingRole = Node.of(scope).tryFindChild(`ImmutableRole${id}`) as iam.IRole;
+    let existingRole = scope.node.tryFindChild(`ImmutableRole${id}`) as iam.IRole;
     if (existingRole) { return existingRole; }
     // For when #7255 is fixed.
-    existingRole = Node.of(scope).tryFindChild(id) as iam.IRole;
+    existingRole = scope.node.tryFindChild(id) as iam.IRole;
     if (existingRole) { return existingRole; }
 
     const arnToImport = cxapi.EnvironmentPlaceholders.replace(arn, {
@@ -807,9 +819,10 @@ export class CodePipeline extends PipelineBase {
    * Modeled after the CodePipeline role and 'CodePipelineActionRole' roles.
    * Generates one role per asset type to separate file and Docker/image-based permissions.
    */
-  private obtainAssetCodeBuildRole(assetType: AssetType): iam.IRole {
-    if (this.assetCodeBuildRoles[assetType]) {
-      return this.assetCodeBuildRoles[assetType];
+  private obtainAssetCodeBuildRole(assetType: AssetType): AssetSingletonRole {
+    const existing = this.assetCodeBuildRoles.get(assetType);
+    if (existing) {
+      return existing;
     }
 
     const stack = Stack.of(this);
@@ -823,22 +836,15 @@ export class CodePipeline extends PipelineBase {
       ),
     });
 
-    // Publishing role access
-    // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
-    // Lazy-evaluated so all asset publishing roles are included.
-    assetRole.addToPolicy(new iam.PolicyStatement({
-      actions: ['sts:AssumeRole'],
-      resources: Lazy.list({ produce: () => Array.from(this.assetPublishingRoles[assetType] ?? []).map(arn => Fn.sub(arn)) }),
-    }));
-
     // Grant pull access for any ECR registries and secrets that exist
     if (assetType === AssetType.DOCKER_IMAGE) {
       this.dockerCredentials.forEach(reg => reg.grantRead(assetRole, DockerCredentialUsage.ASSET_PUBLISHING));
     }
 
-    this.assetCodeBuildRoles[assetType] = assetRole;
+    this.assetCodeBuildRoles.set(assetType, assetRole);
     return assetRole;
   }
+
 }
 
 function dockerUsageFromCodeBuild(cbt: CodeBuildProjectType): DockerCredentialUsage | undefined {

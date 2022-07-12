@@ -91,7 +91,7 @@ describe('DatabaseCluster', () => {
         instances: 1,
         vpc,
         vpcSubnets: {
-          subnetType: ec2.SubnetType.PRIVATE,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
         },
         instanceType: InstanceType.R5_LARGE,
       });
@@ -117,6 +117,29 @@ describe('DatabaseCluster', () => {
       VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
     });
   });
+
+  test.each([
+    ['1.1.1.0', EngineVersion.V1_1_1_0],
+  ])('can create a cluster for engine version %s', (expected, version) => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      engineVersion: version,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
+      EngineVersion: expected,
+      DBSubnetGroupName: { Ref: 'DatabaseSubnets3C9252C9' },
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+    });
+  });
+
 
   test('can create a cluster with imported vpc and security group', () => {
     // GIVEN
@@ -523,6 +546,46 @@ describe('DatabaseCluster', () => {
     // THEN
     expect(() => { cluster.grantConnect(role); }).toThrow(/Cannot grant connect when IAM authentication is disabled/);
   });
+
+  test('autoMinorVersionUpgrade is enabled when configured', () => {
+
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Cluster', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      autoMinorVersionUpgrade: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
+      AutoMinorVersionUpgrade: true,
+    });
+
+  });
+
+  test('autoMinorVersionUpgrade is not enabled when not configured', () => {
+
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Cluster', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
+      AutoMinorVersionUpgrade: false,
+    });
+
+  });
+
 });
 
 function testStack() {

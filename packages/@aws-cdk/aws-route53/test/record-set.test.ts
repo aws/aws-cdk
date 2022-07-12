@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ResourcePart } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import { Duration, RemovalPolicy, Stack } from '@aws-cdk/core';
 import * as route53 from '../lib';
@@ -22,7 +21,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'www.myzone.',
       Type: 'CNAME',
       HostedZoneId: {
@@ -33,7 +32,6 @@ describe('record set', () => {
       ],
       TTL: '1800',
     });
-
   });
 
   test('with custom ttl', () => {
@@ -54,7 +52,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'aa.myzone.',
       Type: 'CNAME',
       HostedZoneId: {
@@ -65,7 +63,6 @@ describe('record set', () => {
       ],
       TTL: '6077',
     });
-
   });
 
   test('with ttl of 0', () => {
@@ -86,10 +83,9 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       TTL: '0',
     });
-
   });
 
   test('defaults to zone root', () => {
@@ -108,7 +104,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'myzone.',
       Type: 'A',
       HostedZoneId: {
@@ -118,7 +114,6 @@ describe('record set', () => {
         '1.2.3.4',
       ],
     });
-
   });
 
   test('A record with ip addresses', () => {
@@ -137,7 +132,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'www.myzone.',
       Type: 'A',
       HostedZoneId: {
@@ -149,7 +144,6 @@ describe('record set', () => {
       ],
       TTL: '1800',
     });
-
   });
 
   test('A record with alias', () => {
@@ -177,7 +171,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: '_foo.myzone.',
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
@@ -188,8 +182,6 @@ describe('record set', () => {
         DNSName: 'foo.example.com',
       },
     });
-
-
   });
 
   test('AAAA record with ip addresses', () => {
@@ -208,7 +200,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'www.myzone.',
       Type: 'AAAA',
       HostedZoneId: {
@@ -219,7 +211,6 @@ describe('record set', () => {
       ],
       TTL: '1800',
     });
-
   });
 
   test('AAAA record with alias on zone root', () => {
@@ -245,7 +236,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'myzone.',
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
@@ -256,8 +247,6 @@ describe('record set', () => {
         DNSName: 'foo.example.com',
       },
     });
-
-
   });
 
   test('CNAME record', () => {
@@ -276,7 +265,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'www.myzone.',
       Type: 'CNAME',
       HostedZoneId: {
@@ -287,7 +276,6 @@ describe('record set', () => {
       ],
       TTL: '1800',
     });
-
   });
 
   test('TXT record', () => {
@@ -306,7 +294,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'www.myzone.',
       Type: 'TXT',
       HostedZoneId: {
@@ -317,7 +305,6 @@ describe('record set', () => {
       ],
       TTL: '1800',
     });
-
   });
 
   test('TXT record with value longer than 255 chars', () => {
@@ -336,7 +323,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'www.myzone.',
       Type: 'TXT',
       HostedZoneId: {
@@ -347,7 +334,6 @@ describe('record set', () => {
       ],
       TTL: '1800',
     });
-
   });
 
   test('SRV record', () => {
@@ -371,7 +357,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'www.myzone.',
       Type: 'SRV',
       HostedZoneId: {
@@ -382,7 +368,6 @@ describe('record set', () => {
       ],
       TTL: '1800',
     });
-
   });
 
   test('CAA record', () => {
@@ -405,7 +390,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'www.myzone.',
       Type: 'CAA',
       HostedZoneId: {
@@ -416,7 +401,6 @@ describe('record set', () => {
       ],
       TTL: '1800',
     });
-
   });
 
   test('CAA Amazon record', () => {
@@ -433,7 +417,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'myzone.',
       Type: 'CAA',
       HostedZoneId: {
@@ -444,7 +428,6 @@ describe('record set', () => {
       ],
       TTL: '1800',
     });
-
   });
 
   test('CAA Amazon record with record name', () => {
@@ -462,7 +445,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'www.myzone.',
       Type: 'CAA',
       HostedZoneId: {
@@ -473,7 +456,6 @@ describe('record set', () => {
       ],
       TTL: '1800',
     });
-
   });
 
   test('MX record', () => {
@@ -495,7 +477,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'mail.myzone.',
       Type: 'MX',
       HostedZoneId: {
@@ -506,7 +488,6 @@ describe('record set', () => {
       ],
       TTL: '1800',
     });
-
   });
 
   test('NS record', () => {
@@ -525,7 +506,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'www.myzone.',
       Type: 'NS',
       HostedZoneId: {
@@ -537,7 +518,6 @@ describe('record set', () => {
       ],
       TTL: '1800',
     });
-
   });
 
   test('DS record', () => {
@@ -556,7 +536,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'www.myzone.',
       Type: 'DS',
       HostedZoneId: {
@@ -567,7 +547,6 @@ describe('record set', () => {
       ],
       TTL: '1800',
     });
-
   });
 
   test('Zone delegation record', () => {
@@ -586,7 +565,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'foo.myzone.',
       Type: 'NS',
       HostedZoneId: {
@@ -597,7 +576,6 @@ describe('record set', () => {
       ],
       TTL: '172800',
     });
-
   });
 
   test('Cross account zone delegation record with parentHostedZoneId', () => {
@@ -621,7 +599,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('Custom::CrossAccountZoneDelegation', {
+    Template.fromStack(stack).hasResourceProperties('Custom::CrossAccountZoneDelegation', {
       ServiceToken: {
         'Fn::GetAtt': [
           'CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265',
@@ -646,11 +624,10 @@ describe('record set', () => {
       },
       TTL: 60,
     });
-    expect(stack).toHaveResource('Custom::CrossAccountZoneDelegation', {
+    Template.fromStack(stack).hasResource('Custom::CrossAccountZoneDelegation', {
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition);
-
+    });
   });
 
   test('Cross account zone delegation record with parentHostedZoneName', () => {
@@ -673,7 +650,7 @@ describe('record set', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('Custom::CrossAccountZoneDelegation', {
+    Template.fromStack(stack).hasResourceProperties('Custom::CrossAccountZoneDelegation', {
       ServiceToken: {
         'Fn::GetAtt': [
           'CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265',
@@ -696,7 +673,6 @@ describe('record set', () => {
       },
       TTL: 60,
     });
-
   });
 
   test('Cross account zone delegation record throws when parent id and name both/nither are supplied', () => {
@@ -729,8 +705,6 @@ describe('record set', () => {
         ttl: Duration.seconds(60),
       });
     }).toThrow(/Only one of parentHostedZoneName and parentHostedZoneId is supported/);
-
-
   });
 
   test('Multiple cross account zone delegation records', () => {
@@ -763,33 +737,38 @@ describe('record set', () => {
 
     // THEN
     const childHostedZones = [
-      { name: 'sub.myzone.com', id: 'ChildHostedZone4B14AC71' },
-      { name: 'anothersub.myzone.com', id: 'ChildHostedZone2A37198F0' },
+      { name: 'sub.myzone.com', id: 'ChildHostedZone4B14AC71', dependsOn: 'DelegationcrossaccountzonedelegationhandlerrolePolicy1E157602' },
+      { name: 'anothersub.myzone.com', id: 'ChildHostedZone2A37198F0', dependsOn: 'Delegation2crossaccountzonedelegationhandlerrolePolicy713BEAC3' },
     ];
 
     for (var childHostedZone of childHostedZones) {
-      expect(stack).toHaveResource('Custom::CrossAccountZoneDelegation', {
-        ServiceToken: {
-          'Fn::GetAtt': [
-            'CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265',
-            'Arn',
-          ],
+      Template.fromStack(stack).hasResource('Custom::CrossAccountZoneDelegation', {
+        Properties: {
+          ServiceToken: {
+            'Fn::GetAtt': [
+              'CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265',
+              'Arn',
+            ],
+          },
+          AssumeRoleArn: {
+            'Fn::GetAtt': [
+              'ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E',
+              'Arn',
+            ],
+          },
+          ParentZoneName: 'myzone.com',
+          DelegatedZoneName: childHostedZone.name,
+          DelegatedZoneNameServers: {
+            'Fn::GetAtt': [
+              childHostedZone.id,
+              'NameServers',
+            ],
+          },
+          TTL: 60,
         },
-        AssumeRoleArn: {
-          'Fn::GetAtt': [
-            'ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E',
-            'Arn',
-          ],
-        },
-        ParentZoneName: 'myzone.com',
-        DelegatedZoneName: childHostedZone.name,
-        DelegatedZoneNameServers: {
-          'Fn::GetAtt': [
-            childHostedZone.id,
-            'NameServers',
-          ],
-        },
-        TTL: 60,
+        DependsOn: [
+          childHostedZone.dependsOn,
+        ],
       });
     }
   });
@@ -829,7 +808,7 @@ describe('record set', () => {
     ];
 
     for (var policyName of policyNames) {
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyName: policyName,
         PolicyDocument: {
           Version: '2012-10-17',
@@ -864,5 +843,64 @@ describe('record set', () => {
         ],
       });
     }
+  });
+
+  test('Delete existing record', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.ARecord(stack, 'A', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
+      deleteExisting: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::DeleteExistingRecordSet', {
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      RecordName: 'www.myzone.',
+      RecordType: 'A',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      Policies: [
+        {
+          PolicyName: 'Inline',
+          PolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Action: 'route53:GetChange',
+                Resource: '*',
+              },
+              {
+                Effect: 'Allow',
+                Action: [
+                  'route53:ChangeResourceRecordSets',
+                  'route53:ListResourceRecordSets',
+                ],
+                Resource: {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':route53:::hostedzone/',
+                    { Ref: 'HostedZoneDB99F866' },
+                  ]],
+                },
+              },
+            ],
+          },
+        },
+      ],
+    });
   });
 });

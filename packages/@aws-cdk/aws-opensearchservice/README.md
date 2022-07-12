@@ -97,12 +97,28 @@ const slr = new iam.CfnServiceLinkedRole(this, 'Service Linked Role', {
 
 ## Importing existing domains
 
+### Using a known domain endpoint
+
 To import an existing domain into your CDK application, use the `Domain.fromDomainEndpoint` factory method.
 This method accepts a domain endpoint of an already existing domain:
 
 ```ts
 const domainEndpoint = 'https://my-domain-jcjotrt6f7otem4sqcwbch3c4u.us-east-1.es.amazonaws.com';
 const domain = opensearch.Domain.fromDomainEndpoint(this, 'ImportedDomain', domainEndpoint);
+```
+
+### Using the output of another CloudFormation stack
+
+To import an existing domain with the help of an exported value from another CloudFormation stack,
+use the `Domain.fromDomainAttributes` factory method. This will accept tokens.
+
+```ts
+const domainArn = Fn.importValue(`another-cf-stack-export-domain-arn`);
+const domainEndpoint = Fn.importValue(`another-cf-stack-export-domain-endpoint`);
+const domain = Domain.fromDomainAttributes(this, 'ImportedDomain', {
+  domainArn,
+  domainEndpoint,
+});
 ```
 
 ## Permissions
@@ -235,6 +251,61 @@ const domain = new opensearch.Domain(this, 'Domain', {
 const masterUserPassword = domain.masterUserPassword;
 ```
 
+## Custom access policies
+
+If the domain requires custom access control it can be configured either as a
+constructor property, or later by means of a helper method.
+
+For simple permissions the `accessPolicies` constructor may be sufficient:
+
+```ts
+const domain = new opensearch.Domain(this, 'Domain', {
+  version: opensearch.EngineVersion.OPENSEARCH_1_0,
+  accessPolicies: [
+    new iam.PolicyStatement({
+      actions: ['es:*ESHttpPost', 'es:ESHttpPut*'],
+      effect: iam.Effect.ALLOW,
+      principals: [new iam.AccountPrincipal('123456789012')],
+      resources: ['*'],
+    }),
+  ]
+});
+```
+
+For more complex use-cases, for example, to set the domain up to receive data from a
+[cross-account Kinesis Firehose](https://aws.amazon.com/premiumsupport/knowledge-center/kinesis-firehose-cross-account-streaming/) the `addAccessPolicies` helper method
+allows for policies that include the explicit domain ARN.
+
+```ts
+const domain = new opensearch.Domain(this, 'Domain', {
+  version: opensearch.EngineVersion.OPENSEARCH_1_0,
+});
+domain.addAccessPolicies(
+  new iam.PolicyStatement({
+    actions: ['es:ESHttpPost', 'es:ESHttpPut'],
+    effect: iam.Effect.ALLOW,
+    principals: [new iam.AccountPrincipal('123456789012')],
+    resources: [domain.domainArn, `${domain.domainArn}/*`],
+  }),
+  new iam.PolicyStatement({
+    actions: ['es:ESHttpGet'],
+    effect: iam.Effect.ALLOW,
+    principals: [new iam.AccountPrincipal('123456789012')],
+    resources: [
+      `${domain.domainArn}/_all/_settings`,
+      `${domain.domainArn}/_cluster/stats`,
+      `${domain.domainArn}/index-name*/_mapping/type-name`,
+      `${domain.domainArn}/roletest*/_mapping/roletest`,
+      `${domain.domainArn}/_nodes`,
+      `${domain.domainArn}/_nodes/stats`,
+      `${domain.domainArn}/_nodes/*/stats`,
+      `${domain.domainArn}/_stats`,
+      `${domain.domainArn}/index-name*/_stats`,
+      `${domain.domainArn}/roletest*/_stat`,
+    ],
+  }),
+);
+```
 
 
 ## Audit logs

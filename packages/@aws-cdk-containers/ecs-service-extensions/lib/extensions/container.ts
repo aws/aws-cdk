@@ -1,10 +1,10 @@
 import * as ecs from '@aws-cdk/aws-ecs';
+import * as awslogs from '@aws-cdk/aws-logs';
+import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct, Node } from 'constructs';
 import { Service } from '../service';
 import { ServiceExtension } from './extension-interfaces';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Setting for the main application container of a service.
@@ -38,6 +38,13 @@ export interface ContainerExtensionProps {
   readonly environment?: {
     [key: string]: string,
   }
+
+  /**
+   * The log group into which application container logs should be routed.
+   *
+   * @default - A log group is automatically created for you if the `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` feature flag is set.
+   */
+  readonly logGroup?: awslogs.ILogGroup;
 }
 
 /**
@@ -52,6 +59,11 @@ export class Container extends ServiceExtension {
   public readonly trafficPort: number;
 
   /**
+   * The log group into which application container logs should be routed.
+   */
+  public logGroup?: awslogs.ILogGroup;
+
+  /**
    * The settings for the container.
    */
   private props: ContainerExtensionProps;
@@ -60,11 +72,12 @@ export class Container extends ServiceExtension {
     super('service-container');
     this.props = props;
     this.trafficPort = props.trafficPort;
+    this.logGroup = props.logGroup;
   }
 
-  // @ts-ignore - Ignore unused params that are required for abstract class extend
   public prehook(service: Service, scope: Construct) {
     this.parentService = service;
+    this.scope = scope;
   }
 
   // This hook sets the overall task resource requirements to the
@@ -93,6 +106,31 @@ export class Container extends ServiceExtension {
       containerProps = hookProvider.mutateContainerDefinition(containerProps);
     });
 
+    // If no observability extensions have been added to the service description then we can configure the `awslogs` log driver
+    if (!containerProps.logging) {
+      // Create a log group for the service if one is not provided by the user (only if feature flag is set)
+      if (!this.logGroup && Node.of(this.parentService).tryGetContext(cxapi.ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER)) {
+        this.logGroup = new awslogs.LogGroup(this.scope, `${this.parentService.id}-logs`, {
+          logGroupName: `${this.parentService.id}-logs`,
+          removalPolicy: cdk.RemovalPolicy.DESTROY,
+          retention: awslogs.RetentionDays.ONE_MONTH,
+        });
+      }
+
+      if (this.logGroup) {
+        containerProps = {
+          ...containerProps,
+          logging: new ecs.AwsLogDriver({
+            streamPrefix: this.parentService.id,
+            logGroup: this.logGroup,
+          }),
+        };
+      }
+    } else {
+      if (this.logGroup) {
+        throw Error(`Log configuration already specified. You cannot provide a log group for the application container of service '${this.parentService.id}' while also adding log configuration separately using service extensions.`);
+      }
+    }
     this.container = taskDefinition.addContainer('app', containerProps);
 
     // Create a port mapping for the container

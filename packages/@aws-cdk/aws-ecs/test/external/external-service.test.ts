@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
@@ -29,7 +29,7 @@ describe('external service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'ExternalTaskDef6CCBDB87',
         },
@@ -79,7 +79,7 @@ describe('external service', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       TaskDefinition: {
         Ref: 'ExternalTaskDef6CCBDB87',
       },
@@ -165,7 +165,7 @@ describe('external service', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       TaskDefinition: {
         Ref: 'ExternalTaskDef6CCBDB87',
       },
@@ -177,7 +177,7 @@ describe('external service', () => {
       ServiceName: 'bonjour',
     });
 
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
       GroupDescription: 'Example',
       GroupName: 'Bingo',
       SecurityGroupEgress: [
@@ -189,7 +189,7 @@ describe('external service', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
       GroupDescription: 'Example',
       GroupName: 'Rolly',
       SecurityGroupEgress: [

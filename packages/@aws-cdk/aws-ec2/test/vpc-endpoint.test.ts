@@ -1,9 +1,9 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ContextProvider, Fn, Stack } from '@aws-cdk/core';
 // eslint-disable-next-line max-len
-import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, InterfaceVpcEndpointService, SecurityGroup, SubnetType, Vpc } from '../lib';
+import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, InterfaceVpcEndpointService, SecurityGroup, SubnetFilter, SubnetType, Vpc } from '../lib';
 
 describe('vpc endpoint', () => {
   describe('gateway endpoint', () => {
@@ -21,7 +21,7 @@ describe('vpc endpoint', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: {
           'Fn::Join': [
             '',
@@ -71,7 +71,7 @@ describe('vpc endpoint', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: {
           'Fn::Join': [
             '',
@@ -123,7 +123,7 @@ describe('vpc endpoint', () => {
       }));
 
       // THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         PolicyDocument: {
           Statement: [
             {
@@ -185,7 +185,7 @@ describe('vpc endpoint', () => {
       // THEN
       vpc.addGatewayEndpoint('Gateway', { service: GatewayVpcEndpointAwsService.S3 });
 
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: { 'Fn::Join': ['', ['com.amazonaws.', { Ref: 'AWS::Region' }, '.s3']] },
         VpcId: 'id',
         RouteTableIds: ['rt1', 'rt2', 'rt3'],
@@ -222,7 +222,7 @@ describe('vpc endpoint', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: {
           'Fn::Join': [
             '',
@@ -258,7 +258,7 @@ describe('vpc endpoint', () => {
         VpcEndpointType: 'Interface',
       });
 
-      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Default/VpcNetwork/EcrDocker/SecurityGroup',
         VpcId: {
           Ref: 'VpcNetworkB258E83A',
@@ -267,6 +267,32 @@ describe('vpc endpoint', () => {
 
 
     });
+
+    describe('interface endpoint retains service name in shortName property', () => {
+      test('shortName property', () => {
+        expect(InterfaceVpcEndpointAwsService.ECS.shortName).toBe('ecs');
+        expect(InterfaceVpcEndpointAwsService.ECR_DOCKER.shortName).toBe('ecr.dkr');
+      });
+    });
+
+    describe('add interface endpoint to looked-up VPC', () => {
+      test('initial run', () => {
+        // GIVEN
+        const stack = new Stack(undefined, undefined, { env: { account: '1234', region: 'us-east-1' } });
+        const vpc = Vpc.fromLookup(stack, 'Vpc', {
+          vpcId: 'doesnt-matter',
+        });
+
+        // THEN: doesn't throw
+        vpc.addInterfaceEndpoint('SecretsManagerEndpoint', {
+          service: InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+          subnets: {
+            subnetFilters: [SubnetFilter.byIds(['1234'])],
+          },
+        });
+      });
+    });
+
 
     test('import/export', () => {
       // GIVEN
@@ -281,7 +307,7 @@ describe('vpc endpoint', () => {
       importedEndpoint.connections.allowDefaultPortFromAnyIpv4();
 
       // THEN
-      expect(stack2).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+      Template.fromStack(stack2).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
         GroupId: 'security-group-id',
       });
       expect(importedEndpoint.vpcEndpointId).toEqual('vpc-endpoint-id');
@@ -319,7 +345,7 @@ describe('vpc endpoint', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         SecurityGroupIds: ['existing-id'],
       });
 
@@ -337,7 +363,7 @@ describe('vpc endpoint', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         SecurityGroupIds: ['existing-id'],
       });
 
@@ -354,14 +380,14 @@ describe('vpc endpoint', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::EC2::SecurityGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
         SecurityGroupIngress: [
-          {
+          Match.objectLike({
             CidrIp: { 'Fn::GetAtt': ['VpcNetworkB258E83A', 'CidrBlock'] },
             FromPort: 443,
             IpProtocol: 'tcp',
             ToPort: 443,
-          },
+          }),
         ],
       });
 
@@ -378,7 +404,7 @@ describe('vpc endpoint', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
         PrivateDnsEnabled: false,
       });
@@ -400,7 +426,7 @@ describe('vpc endpoint', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-mktplacesvcwprdns',
         PrivateDnsEnabled: true,
       });
@@ -439,7 +465,7 @@ describe('vpc endpoint', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
         SubnetIds: [
           {
@@ -476,7 +502,7 @@ describe('vpc endpoint', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
         SubnetIds: [
           {
@@ -522,7 +548,7 @@ describe('vpc endpoint', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'com.amazonaws.us-east-1.execute-api',
         SubnetIds: [
           {
@@ -617,7 +643,7 @@ describe('vpc endpoint', () => {
       });
 
       //THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'cn.com.amazonaws.cn-north-1.ecr.api',
       });
 
@@ -634,7 +660,7 @@ describe('vpc endpoint', () => {
       });
 
       //THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'cn.com.amazonaws.cn-northwest-1.lambda',
       });
 
@@ -651,7 +677,7 @@ describe('vpc endpoint', () => {
       });
 
       //THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'com.amazonaws.cn-north-1.ecs',
       });
 
@@ -668,7 +694,7 @@ describe('vpc endpoint', () => {
       });
 
       //THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'com.amazonaws.cn-northwest-1.glue',
       });
 
@@ -685,7 +711,7 @@ describe('vpc endpoint', () => {
       });
 
       //THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'com.amazonaws.us-east-1.transcribe',
       });
 
@@ -702,7 +728,7 @@ describe('vpc endpoint', () => {
       });
 
       //THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'cn.com.amazonaws.cn-north-1.transcribe.cn',
       });
 
@@ -719,7 +745,7 @@ describe('vpc endpoint', () => {
       });
 
       //THEN
-      expect(stack).toHaveResource('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'cn.com.amazonaws.cn-northwest-1.transcribe.cn',
       });
 

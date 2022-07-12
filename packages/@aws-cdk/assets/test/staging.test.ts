@@ -3,7 +3,6 @@ import * as path from 'path';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import '@aws-cdk/assert-internal/jest';
 import { Staging } from '../lib';
 
 describeDeprecated('staging', () => {
@@ -36,7 +35,7 @@ describeDeprecated('staging', () => {
 
   test('files are copied to the output directory during synth', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
     const file = path.join(__dirname, 'fs', 'fixtures.tar.gz');

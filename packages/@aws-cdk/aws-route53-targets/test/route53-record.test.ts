@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { ARecord, PublicHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { Stack } from '@aws-cdk/core';
 import { Route53RecordTarget } from '../lib';
@@ -19,7 +19,7 @@ test('use another route 53 record as record target', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     AliasTarget: {
       DNSName: {
         Ref: 'HostedZoneRecordB6AB510D',

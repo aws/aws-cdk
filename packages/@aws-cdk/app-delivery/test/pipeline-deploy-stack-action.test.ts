@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { isSuperObject } from '@aws-cdk/assert-internal';
+import { Match, Matcher, Template } from '@aws-cdk/assertions';
 import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
@@ -135,56 +134,43 @@ describeDeprecated('pipeline deploy stack action', () => {
       capabilities: [cfn.CloudFormationCapabilities.ANONYMOUS_IAM, cfn.CloudFormationCapabilities.AUTO_EXPAND],
       adminPermissions: false,
     }));
-    expect(pipelineStack).toHaveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
-      Configuration: {
-        StackName: 'TestStack',
-        ActionMode: 'CHANGE_SET_REPLACE',
-        Capabilities: 'CAPABILITY_NAMED_IAM',
-      },
-    }));
-    expect(pipelineStack).toHaveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
-      Configuration: {
-        StackName: 'AnonymousIAM',
-        ActionMode: 'CHANGE_SET_REPLACE',
-        Capabilities: 'CAPABILITY_IAM',
-      },
-    }));
-    expect(pipelineStack).not.toHaveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
-      Configuration: {
-        StackName: 'NoCapStack',
-        ActionMode: 'CHANGE_SET_REPLACE',
-        Capabilities: 'CAPABILITY_NAMED_IAM',
-      },
-    }));
-    expect(pipelineStack).not.toHaveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
-      Configuration: {
-        StackName: 'NoCapStack',
-        ActionMode: 'CHANGE_SET_REPLACE',
-        Capabilities: 'CAPABILITY_IAM',
-      },
-    }));
-    expect(pipelineStack).toHaveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
-      Configuration: {
-        StackName: 'NoCapStack',
-        ActionMode: 'CHANGE_SET_REPLACE',
-      },
-    }));
-    expect(pipelineStack).toHaveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
-      Configuration: {
-        StackName: 'AutoExpand',
-        ActionMode: 'CHANGE_SET_REPLACE',
-        Capabilities: 'CAPABILITY_AUTO_EXPAND',
-      },
-    }));
-    expect(pipelineStack).toHaveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
-      Configuration: {
-        StackName: 'AnonymousIAMAndAutoExpand',
-        ActionMode: 'CHANGE_SET_REPLACE',
-        Capabilities: 'CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND',
-      },
-    }));
 
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', hasPipelineActionConfiguration({
+      StackName: 'TestStack',
+      ActionMode: 'CHANGE_SET_REPLACE',
+      Capabilities: 'CAPABILITY_NAMED_IAM',
+    }));
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', hasPipelineActionConfiguration({
+      StackName: 'AnonymousIAM',
+      ActionMode: 'CHANGE_SET_REPLACE',
+      Capabilities: 'CAPABILITY_IAM',
+    }));
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.not(hasPipelineActionConfiguration({
+      StackName: 'NoCapStack',
+      ActionMode: 'CHANGE_SET_REPLACE',
+      Capabilities: 'CAPABILITY_NAMED_IAM',
+    })));
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.not(hasPipelineActionConfiguration({
+      StackName: 'NoCapStack',
+      ActionMode: 'CHANGE_SET_REPLACE',
+      Capabilities: 'CAPABILITY_IAM',
+    })));
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', hasPipelineActionConfiguration({
+      StackName: 'NoCapStack',
+      ActionMode: 'CHANGE_SET_REPLACE',
+    }));
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', hasPipelineActionConfiguration({
+      StackName: 'AutoExpand',
+      ActionMode: 'CHANGE_SET_REPLACE',
+      Capabilities: 'CAPABILITY_AUTO_EXPAND',
+    }));
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', hasPipelineActionConfiguration({
+      StackName: 'AnonymousIAMAndAutoExpand',
+      ActionMode: 'CHANGE_SET_REPLACE',
+      Capabilities: 'CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND',
+    }));
   });
+
   test('users can use admin permissions', () => {
     const pipelineStack = getTestStack();
     const selfUpdatingStack = createSelfUpdatingStack(pipelineStack);
@@ -196,7 +182,7 @@ describeDeprecated('pipeline deploy stack action', () => {
       input: selfUpdatingStack.synthesizedApp,
       adminPermissions: true,
     }));
-    expect(pipelineStack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -251,15 +237,13 @@ describeDeprecated('pipeline deploy stack action', () => {
         ],
       },
     });
-    expect(pipelineStack).toHaveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
-      Configuration: {
-        StackName: 'TestStack',
-        ActionMode: 'CHANGE_SET_REPLACE',
-        Capabilities: 'CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND',
-      },
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', hasPipelineActionConfiguration({
+      StackName: 'TestStack',
+      ActionMode: 'CHANGE_SET_REPLACE',
+      Capabilities: 'CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND',
     }));
-
   });
+
   test('users can supply a role for deploy action', () => {
     const pipelineStack = getTestStack();
     const selfUpdatingStack = createSelfUpdatingStack(pipelineStack);
@@ -313,7 +297,7 @@ describeDeprecated('pipeline deploy stack action', () => {
     }));
 
     // THEN //
-    expect(pipelineStack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -391,7 +375,7 @@ describeDeprecated('pipeline deploy stack action', () => {
           const app = new cdk.App();
 
           const deployedStack = new cdk.Stack(app, 'DeployedStack');
-          for (let i = 0 ; i < assetCount ; i++) {
+          for (let i = 0; i < assetCount; i++) {
             deployedStack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, {});
           }
 
@@ -406,7 +390,6 @@ describeDeprecated('pipeline deploy stack action', () => {
         },
       ),
     );
-
   });
 
   test('allows overriding the ChangeSet and Execute action names', () => {
@@ -425,25 +408,21 @@ describeDeprecated('pipeline deploy stack action', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: [
-        {},
-        {},
-        {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([
+        Match.objectLike({
           Name: 'Deploy',
-          Actions: [
-            {
+          Actions: Match.arrayWith([
+            Match.objectLike({
               Name: 'Prepare',
-            },
-            {
+            }),
+            Match.objectLike({
               Name: 'Deploy',
-            },
-          ],
-        },
-      ],
+            }),
+          ]),
+        }),
+      ]),
     });
-
-
   });
 });
 
@@ -481,7 +460,7 @@ function createSelfUpdatingStack(pipelineStack: cdk.Stack): SelfUpdatingPipeline
   });
 
   // simple source
-  const bucket = s3.Bucket.fromBucketArn( pipeline, 'PatternBucket', 'arn:aws:s3:::totally-fake-bucket');
+  const bucket = s3.Bucket.fromBucketArn(pipeline, 'PatternBucket', 'arn:aws:s3:::totally-fake-bucket');
   const sourceOutput = new codepipeline.Artifact('SourceOutput');
   const sourceAction = new cpactions.S3SourceAction({
     actionName: 'S3Source',
@@ -509,15 +488,16 @@ function createSelfUpdatingStack(pipelineStack: cdk.Stack): SelfUpdatingPipeline
   return { synthesizedApp: buildOutput, pipeline };
 }
 
-function hasPipelineAction(expectedAction: any): (props: any) => boolean {
-  return (props: any) => {
-    for (const stage of props.Stages) {
-      for (const action of stage.Actions) {
-        if (isSuperObject(action, expectedAction, [], true)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  };
+function hasPipelineActionConfiguration(expectedActionConfiguration: any): Matcher {
+  return Match.objectLike({
+    Stages: Match.arrayWith([
+      Match.objectLike({
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Configuration: expectedActionConfiguration,
+          }),
+        ]),
+      }),
+    ]),
+  });
 }

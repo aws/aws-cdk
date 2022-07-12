@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as apigateway from '../lib';
 
@@ -20,7 +20,7 @@ describe('request validator', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::RequestValidator', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RequestValidator', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
       ValidateRequestBody: true,
       ValidateRequestParameters: false,
@@ -45,7 +45,7 @@ describe('request validator', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::RequestValidator', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RequestValidator', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
       Name: 'my-model',
       ValidateRequestBody: false,

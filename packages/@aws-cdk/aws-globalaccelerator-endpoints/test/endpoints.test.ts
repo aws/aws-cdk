@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as ga from '@aws-cdk/aws-globalaccelerator';
@@ -32,7 +32,7 @@ test('Application Load Balancer with all properties', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::GlobalAccelerator::EndpointGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::EndpointGroup', {
     EndpointConfigurations: [
       {
         EndpointId: { Ref: 'ALBAEE750D2' },
@@ -57,7 +57,7 @@ test('Get region from imported ALB', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::GlobalAccelerator::EndpointGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::EndpointGroup', {
     EndpointGroupRegion: 'us-west-2',
     EndpointConfigurations: [
       {
@@ -79,7 +79,7 @@ test('Network Load Balancer with all properties', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::GlobalAccelerator::EndpointGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::EndpointGroup', {
     EndpointConfigurations: [
       {
         EndpointId: { Ref: 'NLB55158F82' },
@@ -102,7 +102,7 @@ test('Get region from imported NLB', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::GlobalAccelerator::EndpointGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::EndpointGroup', {
     EndpointGroupRegion: 'us-west-2',
     EndpointConfigurations: [
       {
@@ -124,7 +124,7 @@ test('CFN EIP with all properties', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::GlobalAccelerator::EndpointGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::EndpointGroup', {
     EndpointConfigurations: [
       {
         EndpointId: { 'Fn::GetAtt': ['ElasticIpAddress', 'AllocationId'] },
@@ -151,7 +151,7 @@ test('EC2 Instance with all properties', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::GlobalAccelerator::EndpointGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::EndpointGroup', {
     EndpointConfigurations: [
       {
         EndpointId: { Ref: 'InstanceC1063A87' },

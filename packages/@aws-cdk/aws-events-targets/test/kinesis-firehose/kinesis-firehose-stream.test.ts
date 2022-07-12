@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import { Stack } from '@aws-cdk/core';
@@ -30,7 +30,7 @@ describe('KinesisFirehoseStream event target', () => {
       });
 
       test("adds the stream's ARN and role to the targets of the rule", () => {
-        expect(stack).to(haveResource('AWS::Events::Rule', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
           Targets: [
             {
               Arn: streamArn,
@@ -38,11 +38,11 @@ describe('KinesisFirehoseStream event target', () => {
               RoleArn: { 'Fn::GetAtt': ['MyStreamEventsRole5B6CC6AF', 'Arn'] },
             },
           ],
-        }));
+        });
       });
 
       test("creates a policy that has PutRecord and PutRecords permissions on the stream's ARN", () => {
-        expect(stack).to(haveResource('AWS::IAM::Policy', {
+        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
             Statement: [
               {
@@ -53,7 +53,7 @@ describe('KinesisFirehoseStream event target', () => {
             ],
             Version: '2012-10-17',
           },
-        }));
+        });
       });
     });
 
@@ -65,7 +65,7 @@ describe('KinesisFirehoseStream event target', () => {
       });
 
       test('sets the input', () => {
-        expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
           Targets: [
             {
               Arn: streamArn,
@@ -73,7 +73,7 @@ describe('KinesisFirehoseStream event target', () => {
               Input: '"fooBar"',
             },
           ],
-        }));
+        });
       });
     });
   });

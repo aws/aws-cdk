@@ -1,9 +1,10 @@
 /* eslint-disable max-len */
 
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as ssm from '../lib';
 
 test('creating a String SSM Parameter', () => {
@@ -19,7 +20,7 @@ test('creating a String SSM Parameter', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::SSM::Parameter', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SSM::Parameter', {
     AllowedPattern: '.*',
     Description: 'The value Foo',
     Name: 'FooParameter',
@@ -50,7 +51,7 @@ test('dataType can be specified', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::SSM::Parameter', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SSM::Parameter', {
     Value: 'myValue',
     DataType: 'aws:ec2:image',
   });
@@ -70,7 +71,7 @@ test('expect String SSM Parameter to have tier properly set', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::SSM::Parameter', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SSM::Parameter', {
     Tier: 'Advanced',
   });
 });
@@ -110,7 +111,7 @@ test('creating a StringList SSM Parameter', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::SSM::Parameter', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SSM::Parameter', {
     AllowedPattern: '(Foo|Bar)',
     Description: 'The values Foo and Bar',
     Name: 'FooParameter',
@@ -340,7 +341,7 @@ test('StringParameter.fromStringParameterName', () => {
   expect(stack.resolve(param.parameterName)).toEqual('MyParamName');
   expect(stack.resolve(param.parameterType)).toEqual('String');
   expect(stack.resolve(param.stringValue)).toEqual({ Ref: 'MyParamNameParameter' });
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     Parameters: {
       MyParamNameParameter: {
         Type: 'AWS::SSM::Parameter::Value<String>',
@@ -487,7 +488,7 @@ test('StringParameter.fromSecureStringParameterAttributes with encryption key cr
   param.grantRead(role);
 
   // THEN
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -547,7 +548,7 @@ test('StringParameter.fromSecureStringParameterAttributes with encryption key cr
   param.grantWrite(role);
 
   // THEN
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -628,7 +629,7 @@ test('StringListParameter.fromName', () => {
 
 test('fromLookup will use the SSM context provider to read value during synthesis', () => {
   // GIVEN
-  const app = new cdk.App();
+  const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
   const stack = new cdk.Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' } });
 
   // WHEN
@@ -658,7 +659,7 @@ describe('valueForStringParameter', () => {
     const value = ssm.StringParameter.valueForStringParameter(stack, 'my-param-name');
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Parameters: {
         SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
           Type: 'AWS::SSM::Parameter::Value<String>',
@@ -680,7 +681,7 @@ describe('valueForStringParameter', () => {
     ssm.StringParameter.valueForStringParameter(stack, 'my-param-name');
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Parameters: {
         SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
           Type: 'AWS::SSM::Parameter::Value<String>',

@@ -1,22 +1,18 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { SynthUtils } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sns from '@aws-cdk/aws-sns';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, CfnParameter, CfnResource, ContextProvider, LegacyStackSynthesizer, Names, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { NestedStack } from '../lib/nested-stack';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /* eslint-disable @aws-cdk/no-core-construct */
 /* eslint-disable max-len */
 
 describeDeprecated('NestedStack', () => {
-
   test('fails if defined as a root', () => {
     // THEN
     expect(() => new NestedStack(undefined as any, 'boom')).toThrow(/Nested stacks cannot be defined as a root construct/);
@@ -43,7 +39,7 @@ describeDeprecated('NestedStack', () => {
 
   test('nested stack is not synthesized as a stack artifact into the assembly', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const parentStack = new Stack(app, 'parent-stack');
     new NestedStack(parentStack, 'nested-stack');
 
@@ -77,7 +73,7 @@ describeDeprecated('NestedStack', () => {
 
   test('file asset metadata is associated with the parent stack', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const parent = new Stack(app, 'parent-stack');
     const nested = new NestedStack(parent, 'nested-stack');
     new CfnResource(nested, 'ResourceInNestedStack', { type: 'AWS::Resource::Nested' });
@@ -99,7 +95,7 @@ describeDeprecated('NestedStack', () => {
 
   test('aws::cloudformation::stack is synthesized in the parent scope', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const parent = new Stack(app, 'parent-stack');
 
     // WHEN
@@ -122,7 +118,7 @@ describeDeprecated('NestedStack', () => {
     });
 
     // the parent template includes the parameters and the nested stack resource which points to the s3 url
-    expect(parent).toMatchTemplate({
+    Template.fromStack(parent).templateMatches({
       Resources: {
         nestedstackNestedStacknestedstackNestedStackResource71CDD241: {
           Type: 'AWS::CloudFormation::Stack',
@@ -229,7 +225,7 @@ describeDeprecated('NestedStack', () => {
       }
     }
 
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const parent = new Stack(app, 'parent');
 
     new MyNestedStack(parent, 'nested');
@@ -276,7 +272,7 @@ describeDeprecated('NestedStack', () => {
     app.synth();
 
     // nested template should use a parameter to reference the resource from the parent stack
-    expect(nested).toMatchTemplate({
+    Template.fromStack(nested).templateMatches({
       Resources:
       {
         resource:
@@ -303,7 +299,7 @@ describeDeprecated('NestedStack', () => {
     });
 
     // parent template should pass in the value through the parameter
-    expect(parentStack).toHaveResource('AWS::CloudFormation::Stack', {
+    Template.fromStack(parentStack).hasResourceProperties('AWS::CloudFormation::Stack', {
       Parameters: {
         referencetoparentparentresourceD56EA8F7Ref: {
           Ref: 'parentresource',
@@ -347,7 +343,7 @@ describeDeprecated('NestedStack', () => {
     app.synth();
 
     // nested template should use a parameter to reference the resource from the parent stack
-    expect(nested).toMatchTemplate({
+    Template.fromStack(nested).templateMatches({
       Resources: {
         resource: { Type: 'AWS::Child::Resource' },
       },
@@ -357,7 +353,7 @@ describeDeprecated('NestedStack', () => {
     });
 
     // parent template should pass in the value through the parameter
-    expect(parentStack).toHaveResource('AWS::Parent::Resource', {
+    Template.fromStack(parentStack).hasResourceProperties('AWS::Parent::Resource', {
       RefToResourceInNestedStack: {
         'Fn::GetAtt': [
           'nestedNestedStacknestedNestedStackResource3DD143BF',
@@ -369,7 +365,7 @@ describeDeprecated('NestedStack', () => {
 
   test('nested stack references a resource from another non-nested stack (not the parent)', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack1 = new Stack(app, 'Stack1');
     const stack2 = new Stack(app, 'Stack2');
     const nestedUnderStack1 = new NestedStack(stack1, 'NestedUnderStack1');
@@ -387,7 +383,7 @@ describeDeprecated('NestedStack', () => {
     const assembly = app.synth();
 
     // producing stack should have an export
-    expect(stack2).toMatchTemplate({
+    Template.fromStack(stack2).templateMatches({
       Resources: {
         ResourceInStack2: { Type: 'MyResource' },
       },
@@ -400,7 +396,7 @@ describeDeprecated('NestedStack', () => {
     });
 
     // nested stack uses Fn::ImportValue like normal
-    expect(nestedUnderStack1).toMatchTemplate({
+    Template.fromStack(nestedUnderStack1).templateMatches({
       Resources: {
         ResourceInNestedStack1: {
           Type: 'Nested::Resource',
@@ -423,7 +419,7 @@ describeDeprecated('NestedStack', () => {
 
   test('nested stack within a nested stack references a resource in a sibling top-level stack', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const consumerTopLevel = new Stack(app, 'ConsumerTopLevel');
     const consumerNested1 = new NestedStack(consumerTopLevel, 'ConsumerNested1');
     const consumerNested2 = new NestedStack(consumerNested1, 'ConsumerNested2');
@@ -446,7 +442,7 @@ describeDeprecated('NestedStack', () => {
 
   test('another non-nested stack takes a reference on a resource within the nested stack (the parent exports)', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack1 = new Stack(app, 'Stack1');
     const stack2 = new Stack(app, 'Stack2');
     const nestedUnderStack1 = new NestedStack(stack1, 'NestedUnderStack1');
@@ -464,7 +460,7 @@ describeDeprecated('NestedStack', () => {
     const assembly = app.synth();
 
     // nested stack should output this value as if it was referenced by the parent (without the export)
-    expect(nestedUnderStack1).toMatchTemplate({
+    Template.fromStack(nestedUnderStack1).templateMatches({
       Resources: {
         ResourceInNestedStack: {
           Type: 'MyResource',
@@ -491,7 +487,7 @@ describeDeprecated('NestedStack', () => {
     });
 
     // consuming stack should use ImportValue to import the value from the parent stack
-    expect(stack2).toMatchTemplate({
+    Template.fromStack(stack2).templateMatches({
       Resources: {
         ResourceInStack2: {
           Type: 'JustResource',
@@ -532,7 +528,7 @@ describeDeprecated('NestedStack', () => {
     app.synth();
 
     // producing nested stack
-    expect(nested1).toMatchTemplate({
+    Template.fromStack(nested1).templateMatches({
       Resources: {
         Resource1: {
           Type: 'Resource1',
@@ -548,7 +544,7 @@ describeDeprecated('NestedStack', () => {
     });
 
     // consuming nested stack
-    expect(nested2).toMatchTemplate({
+    Template.fromStack(nested2).templateMatches({
       Resources: {
         Resource2: {
           Type: 'Resource2',
@@ -567,7 +563,7 @@ describeDeprecated('NestedStack', () => {
     });
 
     // parent
-    expect(parent).toHaveResource('AWS::CloudFormation::Stack', {
+    Template.fromStack(parent).hasResourceProperties('AWS::CloudFormation::Stack', {
       Parameters: {
         referencetoParentNested1NestedStackNested1NestedStackResource9C05342COutputsParentNested1Resource15F3F0657Ref: {
           'Fn::GetAtt': [
@@ -591,7 +587,7 @@ describeDeprecated('NestedStack', () => {
     });
 
     // THEN
-    expect(nested).toHaveResource('Nested::Resource', {
+    Template.fromStack(nested).hasResourceProperties('Nested::Resource', {
       MyStackId: { Ref: 'AWS::StackId' },
     });
   });
@@ -608,7 +604,7 @@ describeDeprecated('NestedStack', () => {
     });
 
     // THEN
-    expect(parent).toHaveResource('Parent::Resource', {
+    Template.fromStack(parent).hasResourceProperties('Parent::Resource', {
       NestedStackId: { Ref: 'NestedStackNestedStackNestedStackNestedStackResourceB70834FD' },
     });
   });
@@ -625,7 +621,7 @@ describeDeprecated('NestedStack', () => {
     });
 
     // THEN
-    expect(nested).toHaveResource('Nested::Resource', {
+    Template.fromStack(nested).hasResourceProperties('Nested::Resource', {
       MyStackName: { Ref: 'AWS::StackName' },
     });
   });
@@ -642,7 +638,7 @@ describeDeprecated('NestedStack', () => {
     });
 
     // THEN
-    expect(parent).toHaveResource('Parent::Resource', {
+    Template.fromStack(parent).hasResourceProperties('Parent::Resource', {
       NestedStackName: {
         'Fn::Select': [
           1,
@@ -675,7 +671,7 @@ describeDeprecated('NestedStack', () => {
 
   test('double-nested stack', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const parent = new Stack(app, 'stack');
 
     // WHEN
@@ -689,7 +685,7 @@ describeDeprecated('NestedStack', () => {
     const assembly = app.synth();
 
     // nested2 is a "leaf", so it's just the resource
-    expect(nested2).toMatchTemplate({
+    Template.fromStack(nested2).templateMatches({
       Resources: {
         Resource2: { Type: 'Resource::2' },
       },
@@ -701,8 +697,9 @@ describeDeprecated('NestedStack', () => {
     const hashSuffix = 'E28F0693';
 
     // nested1 wires the nested2 template through parameters, so we expect those
-    expect(nested1).toHaveResource('Resource::1');
-    const nested2Template = SynthUtils.toCloudFormation(nested1);
+    const nested1Template = Template.fromStack(nested1);
+    nested1Template.resourceCountIs('Resource::1', 1);
+    const nested2Template = nested1Template.toJSON();
     expect(nested2Template.Parameters).toEqual({
       referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketE8768F5CRef: { Type: 'String' },
       referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey49DD83A2Ref: { Type: 'String' },
@@ -710,7 +707,7 @@ describeDeprecated('NestedStack', () => {
 
     // parent stack should have two sets of parameters. one for the first nested stack and the second
     // for the second nested stack, passed in as parameters to the first
-    const template = SynthUtils.toCloudFormation(parent);
+    const template = Template.fromStack(parent).toJSON();
     expect(template.Parameters).toEqual({
       AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketDE3B88D6: { Type: 'String', Description: 'S3 bucket for asset "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
       AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey3A62EFEA: { Type: 'String', Description: 'S3 key for asset version "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
@@ -721,7 +718,7 @@ describeDeprecated('NestedStack', () => {
     });
 
     // proxy asset params to nested stack
-    expect(parent).toHaveResource('AWS::CloudFormation::Stack', {
+    Template.fromStack(parent).hasResourceProperties('AWS::CloudFormation::Stack', {
       Parameters: {
         referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketE8768F5CRef: { Ref: 'AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketDE3B88D6' },
         referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey49DD83A2Ref: { Ref: 'AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey3A62EFEA' },
@@ -761,7 +758,7 @@ describeDeprecated('NestedStack', () => {
 
   test('assets within nested stacks are proxied from the parent', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const parent = new Stack(app, 'ParentStack');
     const nested = new NestedStack(parent, 'NestedStack');
 
@@ -780,7 +777,7 @@ describeDeprecated('NestedStack', () => {
 
     // THEN
     const assembly = app.synth();
-    const template = SynthUtils.toCloudFormation(parent);
+    const template = Template.fromStack(parent).toJSON();
 
     // two sets of asset parameters: one for the nested stack itself and one as a proxy for the asset within the stack
     expect(template.Parameters).toEqual({
@@ -793,7 +790,7 @@ describeDeprecated('NestedStack', () => {
     });
 
     // asset proxy parameters are passed to the nested stack
-    expect(parent).toHaveResource('AWS::CloudFormation::Stack', {
+    Template.fromStack(parent).hasResourceProperties('AWS::CloudFormation::Stack', {
       Parameters: {
         referencetoParentStackAssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3Bucket82C55B96Ref: { Ref: 'AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3BucketC188F637' },
         referencetoParentStackAssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyA43C3CC6Ref: { Ref: 'AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyC7F4DBF2' },
@@ -806,7 +803,7 @@ describeDeprecated('NestedStack', () => {
 
   test('docker image assets are wired through the top-level stack', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const parent = new Stack(app, 'my-stack');
     const nested = new NestedStack(parent, 'nested-stack');
 
@@ -887,7 +884,7 @@ describeDeprecated('NestedStack', () => {
     });
 
     // THEN
-    expect(nested).toMatchTemplate({
+    Template.fromStack(nested).templateMatches({
       Resources: {
         resourceinnested: {
           Type: 'CONSUMED',
@@ -905,7 +902,7 @@ describeDeprecated('NestedStack', () => {
       },
     });
 
-    expect(parent).toHaveResource('CONSUMER', {
+    Template.fromStack(parent).hasResourceProperties('CONSUMER', {
       ConsumedAttribute: {
         'Fn::GetAtt': [
           'nestedNestedStacknestedNestedStackResource3DD143BF',
@@ -971,7 +968,7 @@ describeDeprecated('NestedStack', () => {
 
   test('references to a resource from a deeply nested stack', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const top = new Stack(app, 'stack');
     const topLevel = new CfnResource(top, 'toplevel', { type: 'TopLevel' });
     const nested1 = new NestedStack(top, 'nested1');
@@ -984,7 +981,7 @@ describeDeprecated('NestedStack', () => {
     });
 
     // THEN
-    expect(top).toHaveResource('AWS::CloudFormation::Stack', {
+    Template.fromStack(top).hasResourceProperties('AWS::CloudFormation::Stack', {
       Parameters: {
         referencetostackAssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3Bucket5DA5D2E7Ref: {
           Ref: 'AssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3BucketDD4D96B5',
@@ -998,7 +995,7 @@ describeDeprecated('NestedStack', () => {
       },
     });
 
-    expect(nested1).toHaveResource('AWS::CloudFormation::Stack', {
+    Template.fromStack(nested1).hasResourceProperties('AWS::CloudFormation::Stack', {
       Parameters: {
         referencetostacktoplevelBB16BF13Ref: {
           Ref: 'referencetostacktoplevelBB16BF13Ref',
@@ -1006,7 +1003,7 @@ describeDeprecated('NestedStack', () => {
       },
     });
 
-    expect(nested2).toMatchTemplate({
+    Template.fromStack(nested2).templateMatches({
       Resources: {
         refToTopLevel: {
           Type: 'BottomLevel',
@@ -1027,7 +1024,7 @@ describeDeprecated('NestedStack', () => {
 
   test('bottom nested stack consumes value from a top-level stack through a parameter in a middle nested stack', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const top = new Stack(app, 'Grandparent');
     const middle = new NestedStack(top, 'Parent');
     const bottom = new NestedStack(middle, 'Child');
@@ -1048,7 +1045,7 @@ describeDeprecated('NestedStack', () => {
     const paramName = 'referencetoGrandparentResourceInGrandparent010E997ARef';
 
     // child (bottom) references through a parameter.
-    expect(bottom).toMatchTemplate({
+    Template.fromStack(bottom).templateMatches({
       Resources: {
         ResourceInChild: {
           Type: 'ResourceInChild',
@@ -1063,14 +1060,14 @@ describeDeprecated('NestedStack', () => {
     });
 
     // the parent (middle) sets the value of this parameter to be a reference to another parameter
-    expect(middle).toHaveResource('AWS::CloudFormation::Stack', {
+    Template.fromStack(middle).hasResourceProperties('AWS::CloudFormation::Stack', {
       Parameters: {
         [paramName]: { Ref: paramName },
       },
     });
 
     // grandparent (top) assigns the actual value to the parameter
-    expect(top).toHaveResource('AWS::CloudFormation::Stack', {
+    Template.fromStack(top).hasResourceProperties('AWS::CloudFormation::Stack', {
       Parameters: {
         [paramName]: { Ref: 'ResourceInGrandparent' },
 
@@ -1084,5 +1081,4 @@ describeDeprecated('NestedStack', () => {
       },
     });
   });
-
 });

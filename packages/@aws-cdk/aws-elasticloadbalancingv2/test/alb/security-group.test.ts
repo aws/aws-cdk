@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
@@ -193,7 +193,7 @@ describe('tests', () => {
     fixture.listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
     // THEN
-    expect(fixture.stack).toHaveResource('AWS::EC2::SecurityGroup', {
+    Template.fromStack(fixture.stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
       SecurityGroupIngress: [
         {
           CidrIp: '0.0.0.0/0',
@@ -220,7 +220,7 @@ describe('tests', () => {
     listener2.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
     // THEN
-    expect(stack2).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+    Template.fromStack(stack2).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       CidrIp: '0.0.0.0/0',
       Description: 'Open to the world',
       IpProtocol: 'tcp',
@@ -243,7 +243,7 @@ function expectedImportedSGRules(stack: cdk.Stack) {
 }
 
 function expectSGRules(stack: cdk.Stack, lbGroup: any) {
-  expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
     GroupId: lbGroup,
     IpProtocol: 'tcp',
     Description: 'Load balancer to target',
@@ -251,7 +251,7 @@ function expectSGRules(stack: cdk.Stack, lbGroup: any) {
     FromPort: 8008,
     ToPort: 8008,
   });
-  expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
     IpProtocol: 'tcp',
     Description: 'Load balancer to target',
     FromPort: 8008,

@@ -1,8 +1,7 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
-
 import * as appmesh from '../lib';
 
 describe('mesh', () => {
@@ -16,17 +15,38 @@ describe('mesh', () => {
         new appmesh.Mesh(stack, 'mesh', { meshName: 'test-mesh' });
 
         // THEN
-        expect(stack).
-          toHaveResource('AWS::AppMesh::Mesh', {
+        Template.fromStack(stack).
+          hasResourceProperties('AWS::AppMesh::Mesh', {
             Spec: {
             },
           });
-
-
       });
     });
 
     describe('with spec applied', () => {
+      test('should take IP preference from props', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+          serviceDiscovery: {
+            ipPreference: appmesh.IpPreference.IPV4_ONLY,
+          },
+        });
+
+        // THEN
+        Template.fromStack(stack).
+          hasResourceProperties('AWS::AppMesh::Mesh', {
+            Spec: {
+              ServiceDiscovery: {
+                IpPreference: 'IPv4_ONLY',
+              },
+            },
+          });
+      });
+
       test('should take egress filter from props', () => {
         // GIVEN
         const stack = new cdk.Stack();
@@ -38,16 +58,14 @@ describe('mesh', () => {
         });
 
         // THEN
-        expect(stack).
-          toHaveResource('AWS::AppMesh::Mesh', {
+        Template.fromStack(stack).
+          hasResourceProperties('AWS::AppMesh::Mesh', {
             Spec: {
               EgressFilter: {
                 Type: 'ALLOW_ALL',
               },
             },
           });
-
-
       });
     });
   });
@@ -66,8 +84,8 @@ describe('mesh', () => {
         mesh.addVirtualRouter('router');
 
         // THEN
-        expect(stack).
-          toHaveResource('AWS::AppMesh::VirtualRouter', {
+        Template.fromStack(stack).
+          hasResourceProperties('AWS::AppMesh::VirtualRouter', {
             Spec: {
               Listeners: [
                 {
@@ -79,8 +97,6 @@ describe('mesh', () => {
               ],
             },
           });
-
-
       });
     });
   });
@@ -105,7 +121,7 @@ describe('mesh', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
       Spec: {
         ServiceDiscovery: {
           AWSCloudMap: {
@@ -115,8 +131,6 @@ describe('mesh', () => {
         },
       },
     });
-
-
   });
 
   test('VirtualService can use CloudMap service with instanceAttributes', () => {
@@ -142,7 +156,7 @@ describe('mesh', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
       Spec: {
         ServiceDiscovery: {
           AWSCloudMap: {
@@ -158,8 +172,6 @@ describe('mesh', () => {
         },
       },
     });
-
-
   });
 
   describe('When adding a VirtualNode to a mesh', () => {
@@ -178,8 +190,8 @@ describe('mesh', () => {
         });
 
         // THEN
-        expect(stack).
-          toHaveResource('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).
+          hasResourceProperties('AWS::AppMesh::VirtualNode', {
             MeshName: {
               'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
             },
@@ -192,8 +204,6 @@ describe('mesh', () => {
               },
             },
           });
-
-
       });
     });
     describe('with added listeners', () => {
@@ -214,8 +224,8 @@ describe('mesh', () => {
         });
 
         // THEN
-        expect(stack).
-          toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).
+          hasResourceProperties('AWS::AppMesh::VirtualNode', {
             MeshName: {
               'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
             },
@@ -230,8 +240,6 @@ describe('mesh', () => {
               ],
             },
           });
-
-
       });
     });
     describe('with added listeners with healthchecks', () => {
@@ -259,14 +267,14 @@ describe('mesh', () => {
         });
 
         // THEN
-        expect(stack).
-          toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).
+          hasResourceProperties('AWS::AppMesh::VirtualNode', {
             MeshName: {
               'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
             },
             Spec: {
               Listeners: [
-                {
+                Match.objectLike({
                   HealthCheck: {
                     HealthyThreshold: 3,
                     IntervalMillis: 5000,
@@ -276,12 +284,10 @@ describe('mesh', () => {
                     TimeoutMillis: 2000,
                     UnhealthyThreshold: 2,
                   },
-                },
+                }),
               ],
             },
           });
-
-
       });
     });
     describe('with backends', () => {
@@ -308,8 +314,8 @@ describe('mesh', () => {
         });
 
         // THEN
-        expect(stack).
-          toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).
+          hasResourceProperties('AWS::AppMesh::VirtualNode', {
             Spec: {
               Backends: [
                 {
@@ -320,8 +326,6 @@ describe('mesh', () => {
               ],
             },
           });
-
-
       });
     });
   });
@@ -336,13 +340,11 @@ describe('mesh', () => {
     });
 
     // THEN
-    expect(stack2).
-      toHaveResourceLike('AWS::AppMesh::VirtualService', {
+    Template.fromStack(stack2).
+      hasResourceProperties('AWS::AppMesh::VirtualService', {
         MeshName: 'abc',
         Spec: {},
         VirtualServiceName: 'test.domain.local',
       });
-
-
   });
 });

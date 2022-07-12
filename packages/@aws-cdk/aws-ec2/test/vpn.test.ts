@@ -1,5 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
-import { Duration, Stack, Token } from '@aws-cdk/core';
+import { Template } from '@aws-cdk/assertions';
+import { Duration, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { PublicSubnet, Vpc, VpnConnection } from '../lib';
 
 describe('vpn', () => {
@@ -18,13 +18,13 @@ describe('vpn', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::CustomerGateway', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::CustomerGateway', {
       BgpAsn: 65001,
       IpAddress: '192.0.2.1',
       Type: 'ipsec.1',
     });
 
-    expect(stack).toHaveResource('AWS::EC2::VPNConnection', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNConnection', {
       CustomerGatewayId: {
         Ref: 'VpcNetworkVpnConnectionCustomerGateway8B56D9AF',
       },
@@ -56,7 +56,7 @@ describe('vpn', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::VPNConnection', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNConnection', {
       CustomerGatewayId: {
         Ref: 'VpcNetworkstaticCustomerGatewayAF2651CC',
       },
@@ -67,14 +67,14 @@ describe('vpn', () => {
       StaticRoutesOnly: true,
     });
 
-    expect(stack).toHaveResource('AWS::EC2::VPNConnectionRoute', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNConnectionRoute', {
       DestinationCidrBlock: '192.168.10.0/24',
       VpnConnectionId: {
         Ref: 'VpcNetworkstaticE33EA98C',
       },
     });
 
-    expect(stack).toHaveResource('AWS::EC2::VPNConnectionRoute', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNConnectionRoute', {
       DestinationCidrBlock: '192.168.20.0/24',
       VpnConnectionId: {
         Ref: 'VpcNetworkstaticE33EA98C',
@@ -84,7 +84,7 @@ describe('vpn', () => {
 
   });
 
-  test('with tunnel options', () => {
+  test.each([false, true])('with tunnel options, using secret: %p', (secret) => {
     // GIVEN
     const stack = new Stack();
 
@@ -93,16 +93,21 @@ describe('vpn', () => {
         VpnConnection: {
           ip: '192.0.2.1',
           tunnelOptions: [
-            {
-              preSharedKey: 'secretkey1234',
-              tunnelInsideCidr: '169.254.10.0/30',
-            },
+            secret
+              ? {
+                preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
+                tunnelInsideCidr: '169.254.10.0/30',
+              }
+              : {
+                preSharedKey: 'secretkey1234',
+                tunnelInsideCidr: '169.254.10.0/30',
+              },
           ],
         },
       },
     });
 
-    expect(stack).toHaveResource('AWS::EC2::VPNConnection', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNConnection', {
       CustomerGatewayId: {
         Ref: 'VpcNetworkVpnConnectionCustomerGateway8B56D9AF',
       },
@@ -118,8 +123,6 @@ describe('vpn', () => {
         },
       ],
     });
-
-
   });
 
   test('fails when ip is invalid', () => {
@@ -316,7 +319,7 @@ describe('vpn', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::CustomerGateway', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::CustomerGateway', {
       Type: 'ipsec.1',
     });
 
@@ -336,7 +339,7 @@ describe('vpn', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::CustomerGateway', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::CustomerGateway', {
       IpAddress: '192.0.2.1',
     });
 

@@ -3,20 +3,18 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Annotations, App, CfnOutput, Fn, Lazy, PhysicalName, Stack, Stage } from '@aws-cdk/core';
+import { Annotations, App, CfnOutput, PhysicalName, Stack, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AssetType } from '../blueprint/asset-type';
 import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from '../docker-credentials';
 import { ApplicationSecurityCheck } from '../private/application-security-check';
 import { AssetSingletonRole } from '../private/asset-singleton-role';
+import { CachedFnSub } from '../private/cached-fnsub';
+import { preferredCliVersion } from '../private/cli-version';
 import { appOf, assemblyBuilderOf } from '../private/construct-internals';
 import { DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { AddStageOptions, AssetPublishingCommand, BaseStageOptions, CdkStage, StackOutput } from './stage';
 import { SimpleSynthAction } from './synths';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 const CODE_BUILD_LENGTH_LIMIT = 100;
 /**
@@ -211,7 +209,7 @@ export interface CdkPipelineProps {
  *
  * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
-export class CdkPipeline extends CoreConstruct {
+export class CdkPipeline extends Construct {
   private readonly _pipeline: codepipeline.Pipeline;
   private readonly _assets: AssetPublishing;
   private readonly _stages: CdkStage[] = [];
@@ -219,9 +217,11 @@ export class CdkPipeline extends CoreConstruct {
   private readonly _cloudAssemblyArtifact: codepipeline.Artifact;
   private readonly _dockerCredentials: DockerCredential[];
   private _applicationSecurityCheck?: ApplicationSecurityCheck;
+  private readonly cliVersion?: string;
 
   constructor(scope: Construct, id: string, props: CdkPipelineProps) {
     super(scope, id);
+    this.cliVersion = props.cdkCliVersion ?? preferredCliVersion();
 
     if (!App.isApp(this.node.root)) {
       throw new Error('CdkPipeline must be created under an App');
@@ -287,7 +287,7 @@ export class CdkPipeline extends CoreConstruct {
         actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
           cloudAssemblyInput: this._cloudAssemblyArtifact,
           pipelineStackHierarchicalId: pipelineStack.node.path,
-          cdkCliVersion: props.cdkCliVersion,
+          cdkCliVersion: this.cliVersion,
           projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
           privileged: props.supportDockerAssets,
           dockerCredentials: this._dockerCredentials,
@@ -298,7 +298,7 @@ export class CdkPipeline extends CoreConstruct {
 
     this._assets = new AssetPublishing(this, 'Assets', {
       cloudAssemblyInput: this._cloudAssemblyArtifact,
-      cdkCliVersion: props.cdkCliVersion,
+      cdkCliVersion: this.cliVersion,
       pipeline: this._pipeline,
       projectName: maybeSuffix(props.pipelineName, '-publish'),
       vpc: props.vpc,
@@ -308,6 +308,8 @@ export class CdkPipeline extends CoreConstruct {
       buildSpec: props.assetBuildSpec,
       dockerCredentials: this._dockerCredentials,
     });
+
+    this.node.addValidation({ validate: () => this.validatePipeline() });
   }
 
   /**
@@ -413,7 +415,7 @@ export class CdkPipeline extends CoreConstruct {
    * Our own convenience methods will never generate a pipeline that does that (although
    * this is a nice verification), but a user can also add the stacks by hand.
    */
-  protected validate(): string[] {
+  private validatePipeline(): string[] {
     const ret = new Array<string>();
 
     ret.push(...this.validateDeployOrder());
@@ -482,15 +484,15 @@ interface AssetPublishingProps {
 /**
  * Add appropriate publishing actions to the asset publishing stage
  */
-class AssetPublishing extends CoreConstruct {
+class AssetPublishing extends Construct {
   // CodePipelines has a hard limit of 50 actions per stage. See https://github.com/aws/aws-cdk/issues/9353
   private readonly MAX_PUBLISHERS_PER_STAGE = 50;
 
   private readonly publishers: Record<string, PublishAssetsAction> = {};
-  private readonly assetRoles: Record<string, iam.IRole> = {};
+  private readonly assetRoles: Map<AssetType, AssetSingletonRole> = new Map();
   private readonly assetAttachedPolicies: Record<string, iam.Policy> = {};
-  private readonly assetPublishingRoles: Record<string, Set<string>> = {};
   private readonly myCxAsmRoot: string;
+  private readonly cachedFnSub = new CachedFnSub();
 
   private readonly lastStageBeforePublishing?: codepipeline.IStage;
   private readonly stages: codepipeline.IStage[] = [];
@@ -532,11 +534,9 @@ class AssetPublishing extends CoreConstruct {
     }
 
     // Late-binding here (rather than in the constructor) to prevent creating the role in cases where no asset actions are created.
-    if (!this.assetRoles[command.assetType]) {
-      this.generateAssetRole(command.assetType);
-    }
-    this.assetPublishingRoles[command.assetType] = (this.assetPublishingRoles[command.assetType] ?? new Set()).add(command.assetPublishingRoleArn);
-
+    const assetRole = this.generateAssetRole(command.assetType);
+    // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
+    assetRole.addAssumeRole(this.cachedFnSub.fnSub(command.assetPublishingRoleArn));
     const publisherKey = this.props.singlePublisherPerType ? command.assetType.toString() : command.assetId;
 
     let action = this.publishers[publisherKey];
@@ -578,7 +578,7 @@ class AssetPublishing extends CoreConstruct {
         cloudAssemblyInput: this.props.cloudAssemblyInput,
         cdkCliVersion: this.props.cdkCliVersion,
         assetType: command.assetType,
-        role: this.assetRoles[command.assetType],
+        role: this.assetRoles.get(command.assetType),
         dependable: this.assetAttachedPolicies[command.assetType],
         vpc: this.props.vpc,
         subnetSelection: this.props.subnetSelection,
@@ -599,7 +599,10 @@ class AssetPublishing extends CoreConstruct {
    * Generates one role per asset type to separate file and Docker/image-based permissions.
    */
   private generateAssetRole(assetType: AssetType) {
-    if (this.assetRoles[assetType]) { return this.assetRoles[assetType]; }
+    const existing = this.assetRoles.get(assetType);
+    if (existing) {
+      return existing;
+    }
 
     const rolePrefix = assetType === AssetType.DOCKER_IMAGE ? 'Docker' : 'File';
     const assetRole = new AssetSingletonRole(this, `${rolePrefix}Role`, {
@@ -607,21 +610,13 @@ class AssetPublishing extends CoreConstruct {
       assumedBy: new iam.CompositePrincipal(new iam.ServicePrincipal('codebuild.amazonaws.com'), new iam.AccountPrincipal(Stack.of(this).account)),
     });
 
-    // Publishing role access
-    // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
-    // Lazy-evaluated so all asset publishing roles are included.
-    assetRole.addToPolicy(new iam.PolicyStatement({
-      actions: ['sts:AssumeRole'],
-      resources: Lazy.list({ produce: () => [...this.assetPublishingRoles[assetType]].map(arn => Fn.sub(arn)) }),
-    }));
-
     // Grant pull access for any ECR registries and secrets that exist
     if (assetType === AssetType.DOCKER_IMAGE) {
       this.dockerCredentials.forEach(reg => reg.grantRead(assetRole, DockerCredentialUsage.ASSET_PUBLISHING));
     }
 
-    this.assetRoles[assetType] = assetRole;
-    return this.assetRoles[assetType];
+    this.assetRoles.set(assetType, assetRole);
+    return assetRole;
   }
 }
 

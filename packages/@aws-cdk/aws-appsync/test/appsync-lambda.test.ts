@@ -22,7 +22,7 @@ describe('Lambda Data Source configuration', () => {
     func = new lambda.Function(stack, 'func', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'verify/iam-query')),
       handler: 'iam-query.handler',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
   });
 
@@ -65,6 +65,42 @@ describe('Lambda Data Source configuration', () => {
     });
   });
 
+  test('appsync sanitized datasource name from unsupported characters', () => {
+    const badCharacters = [...'!@#$%^&*()+-=[]{}\\|;:\'",<>?/'];
+
+    badCharacters.forEach((badCharacter) => {
+      // WHEN
+      const newStack = new cdk.Stack();
+      const graphqlapi = new appsync.GraphqlApi(newStack, 'baseApi', {
+        name: 'api',
+        schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+      });
+      const dummyFunction = new lambda.Function(newStack, 'func', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'verify/iam-query')),
+        handler: 'iam-query.handler',
+        runtime: lambda.Runtime.NODEJS_14_X,
+      });
+      graphqlapi.addLambdaDataSource(`data-${badCharacter}-source`, dummyFunction);
+
+      // THEN
+      Template.fromStack(newStack).hasResourceProperties('AWS::AppSync::DataSource', {
+        Type: 'AWS_LAMBDA',
+        Name: 'datasource',
+      });
+    });
+  });
+
+  test('appsync leaves underscore untouched in datasource name', () => {
+    // WHEN
+    api.addLambdaDataSource('data_source', func);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'AWS_LAMBDA',
+      Name: 'data_source',
+    });
+  });
+
   test('appsync errors when creating multiple lambda data sources with no configuration', () => {
     // THEN
     expect(() => {
@@ -96,7 +132,7 @@ describe('adding lambda data source from imported api', () => {
     func = new lambda.Function(stack, 'func', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'verify/iam-query')),
       handler: 'iam-query.handler',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
   });
 

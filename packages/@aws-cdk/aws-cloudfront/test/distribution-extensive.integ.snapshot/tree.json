@@ -1,0 +1,141 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "integ-distribution-extensive": {
+        "id": "integ-distribution-extensive",
+        "path": "integ-distribution-extensive",
+        "children": {
+          "MyDist": {
+            "id": "MyDist",
+            "path": "integ-distribution-extensive/MyDist",
+            "children": {
+              "Origin1": {
+                "id": "Origin1",
+                "path": "integ-distribution-extensive/MyDist/Origin1",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Construct",
+                  "version": "0.0.0"
+                }
+              },
+              "LoggingBucket": {
+                "id": "LoggingBucket",
+                "path": "integ-distribution-extensive/MyDist/LoggingBucket",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-distribution-extensive/MyDist/LoggingBucket/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {
+                        "bucketEncryption": {
+                          "serverSideEncryptionConfiguration": [
+                            {
+                              "serverSideEncryptionByDefault": {
+                                "sseAlgorithm": "AES256"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.Bucket",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-distribution-extensive/MyDist/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                  "aws:cdk:cloudformation:props": {
+                    "distributionConfig": {
+                      "enabled": true,
+                      "origins": [
+                        {
+                          "domainName": "www.example.com",
+                          "id": "integdistributionextensiveMyDistOrigin185F089B3",
+                          "customOriginConfig": {
+                            "originProtocolPolicy": "https-only"
+                          },
+                          "originShield": {
+                            "enabled": true,
+                            "originShieldRegion": "us-west-2"
+                          }
+                        }
+                      ],
+                      "defaultCacheBehavior": {
+                        "pathPattern": "*",
+                        "targetOriginId": "integdistributionextensiveMyDistOrigin185F089B3",
+                        "cachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+                        "compress": true,
+                        "viewerProtocolPolicy": "allow-all"
+                      },
+                      "comment": "a test",
+                      "defaultRootObject": "index.html",
+                      "httpVersion": "http2",
+                      "ipv6Enabled": true,
+                      "logging": {
+                        "bucket": {
+                          "Fn::GetAtt": [
+                            "MyDistLoggingBucket9B8976BC",
+                            "RegionalDomainName"
+                          ]
+                        },
+                        "includeCookies": true,
+                        "prefix": "logs/"
+                      },
+                      "priceClass": "PriceClass_100",
+                      "restrictions": {
+                        "geoRestriction": {
+                          "restrictionType": "whitelist",
+                          "locations": [
+                            "US",
+                            "GB"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CfnDistribution",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.Distribution",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

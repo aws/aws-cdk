@@ -19,7 +19,7 @@ export interface ModuleDefinition {
 
 export function createModuleDefinitionFromCfnNamespace(namespace: string): ModuleDefinition {
   const [moduleFamily, moduleBaseName] = (namespace === 'AWS::Serverless' ? 'AWS::SAM' : namespace).split('::');
-  const moduleName = `${moduleFamily}-${moduleBaseName.replace(/V\d+$/, '')}`.toLocaleLowerCase();
+  const moduleName = `${moduleFamily}-${moduleBaseName}`.toLocaleLowerCase();
 
   const lowcaseModuleName = moduleBaseName.toLocaleLowerCase();
   const packageName = `@aws-cdk/${moduleName}`;

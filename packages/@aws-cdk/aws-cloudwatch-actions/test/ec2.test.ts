@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
 import * as actions from '../lib';
@@ -22,13 +22,17 @@ test('can use instance reboot as alarm action', () => {
   alarm.addAlarmAction(new actions.Ec2Action(actions.Ec2InstanceAction.REBOOT));
 
   // THEN
-  expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
     AlarmActions: [
       {
         'Fn::Join': [
           '',
           [
-            'arn:aws:automate:',
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':automate:',
             {
               Ref: 'AWS::Region',
             },

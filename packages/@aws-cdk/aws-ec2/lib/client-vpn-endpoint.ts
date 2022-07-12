@@ -1,7 +1,7 @@
 import { ISamlProvider } from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
-import { CfnOutput, ConcreteDependable, IDependable, Resource, Token } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { CfnOutput, Resource, Token } from '@aws-cdk/core';
+import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { ClientVpnAuthorizationRule, ClientVpnAuthorizationRuleOptions } from './client-vpn-authorization-rule';
 import { IClientVpnConnectionHandler, IClientVpnEndpoint, TransportProtocol, VpnPort } from './client-vpn-endpoint-types';
 import { ClientVpnRoute, ClientVpnRouteOptions } from './client-vpn-route';
@@ -150,6 +150,37 @@ export interface ClientVpnEndpointOptions {
    * @default true
    */
   readonly authorizeAllUsersToVpcCidr?: boolean;
+
+  /**
+   * The maximum VPN session duration time.
+   *
+   * @default ClientVpnSessionTimeout.TWENTY_FOUR_HOURS
+   */
+  readonly sessionTimeout?: ClientVpnSessionTimeout;
+
+  /**
+   * Customizable text that will be displayed in a banner on AWS provided clients
+   * when a VPN session is established.
+   *
+   * UTF-8 encoded characters only. Maximum of 1400 characters.
+   *
+   * @default - no banner is presented to the client
+   */
+  readonly clientLoginBanner?: string;
+}
+
+/**
+ * Maximum VPN session duration time
+ */
+export enum ClientVpnSessionTimeout {
+  /** 8 hours */
+  EIGHT_HOURS = 8,
+  /** 10 hours */
+  TEN_HOURS = 10,
+  /** 12 hours */
+  TWELVE_HOURS = 12,
+  /** 24 hours */
+  TWENTY_FOUR_HOURS = 24,
 }
 
 /**
@@ -243,7 +274,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
     class Import extends Resource implements IClientVpnEndpoint {
       public readonly endpointId = attrs.endpointId;
       public readonly connections = new Connections({ securityGroups: attrs.securityGroups });
-      public readonly targetNetworksAssociated: IDependable = new ConcreteDependable();
+      public readonly targetNetworksAssociated: IDependable = new DependencyGroup();
     }
     return new Import(scope, id);
   }
@@ -257,7 +288,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
 
   public readonly targetNetworksAssociated: IDependable;
 
-  private readonly _targetNetworksAssociated = new ConcreteDependable();
+  private readonly _targetNetworksAssociated = new DependencyGroup();
 
   constructor(scope: Construct, id: string, props: ClientVpnEndpointProps) {
     super(scope, id);
@@ -282,6 +313,12 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       && !Token.isUnresolved(props.clientConnectionHandler.functionName)
       && !props.clientConnectionHandler.functionName.startsWith('AWSClientVPN-')) {
       throw new Error('The name of the Lambda function must begin with the `AWSClientVPN-` prefix');
+    }
+
+    if (props.clientLoginBanner
+      && !Token.isUnresolved(props.clientLoginBanner)
+      && props.clientLoginBanner.length > 1400) {
+      throw new Error(`The maximum length for the client login banner is 1400, got ${props.clientLoginBanner.length}`);
     }
 
     const logging = props.logging ?? true;
@@ -317,6 +354,13 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       transportProtocol: props.transportProtocol,
       vpcId: props.vpc.vpcId,
       vpnPort: props.port,
+      sessionTimeoutHours: props.sessionTimeout,
+      clientLoginBannerOptions: props.clientLoginBanner
+        ? {
+          enabled: true,
+          bannerText: props.clientLoginBanner,
+        }
+        : undefined,
     });
 
     this.endpointId = endpoint.ref;

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as apigateway from '../../lib';
@@ -19,7 +19,7 @@ describe('lambda', () => {
     api.root.addMethod('GET', integ);
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       Integration: {
         IntegrationHttpMethod: 'POST',
         Type: 'AWS_PROXY',
@@ -54,7 +54,7 @@ describe('lambda', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Handler', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
     });
@@ -66,7 +66,7 @@ describe('lambda', () => {
     api.root.addMethod('GET', integ);
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::Permission', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       SourceArn: {
         'Fn::Join': [
           '',
@@ -78,7 +78,7 @@ describe('lambda', () => {
       },
     });
 
-    expect(stack).not.toHaveResource('AWS::Lambda::Permission', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', Match.not({
       SourceArn: {
         'Fn::Join': [
           '',
@@ -95,14 +95,14 @@ describe('lambda', () => {
           ],
         ],
       },
-    });
+    }));
   });
 
   test('"allowTestInvoke" set to true allows calling the API from the test UI', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Handler', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
     });
@@ -114,7 +114,7 @@ describe('lambda', () => {
     api.root.addMethod('GET', integ);
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::Permission', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       SourceArn: {
         'Fn::Join': [
           '',
@@ -138,7 +138,7 @@ describe('lambda', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Handler', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
     });
@@ -150,7 +150,7 @@ describe('lambda', () => {
     api.root.addMethod('GET', integ);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       Integration: {
         Type: 'AWS',
       },
@@ -162,7 +162,7 @@ describe('lambda', () => {
     const api = new apigateway.RestApi(stack, 'test-api');
 
     const handler = new lambda.Function(stack, 'MyFunc', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('loo'),
     });
@@ -171,7 +171,7 @@ describe('lambda', () => {
 
     api.root.addMethod('ANY', target);
 
-    expect(stack).toHaveResource('AWS::Lambda::Permission', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       SourceArn: {
         'Fn::Join': [
           '',
@@ -190,7 +190,7 @@ describe('lambda', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Permission', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       SourceArn: {
         'Fn::Join': [
           '',
@@ -228,14 +228,14 @@ describe('lambda', () => {
     });
 
     const handler = new lambda.Function(stack, 'MyFunc', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('loo'),
     });
 
     api.root.addMethod('ANY', new apigateway.LambdaIntegration(handler));
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       RestApiId: 'imported-rest-api-id',
       ResourceId: 'imported-root-resource-id',
       HttpMethod: 'ANY',
@@ -249,7 +249,7 @@ describe('lambda', () => {
     const method = restapi.root.addMethod('ANY');
     const handler = new lambda.Function(stack, 'MyFunc', {
       functionName: 'ThisFunction',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('loo'),
     });
@@ -269,7 +269,7 @@ describe('lambda', () => {
     const restapi = new apigateway.RestApi(stack, 'RestApi');
     const method = restapi.root.addMethod('ANY');
     const handler = new lambda.Function(stack, 'MyFunc', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('loo'),
     });

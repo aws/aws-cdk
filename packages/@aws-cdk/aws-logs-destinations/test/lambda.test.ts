@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
@@ -14,7 +14,7 @@ beforeEach(() => {
   fn = new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
   });
   logGroup = new logs.LogGroup(stack, 'LogGroup');
 });
@@ -28,12 +28,12 @@ test('lambda can be used as metric subscription destination', () => {
   });
 
   // THEN: subscription target is Lambda
-  expect(stack).toHaveResource('AWS::Logs::SubscriptionFilter', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::SubscriptionFilter', {
     DestinationArn: { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
   });
 
   // THEN: Lambda has permissions to be invoked by CWL
-  expect(stack).toHaveResource('AWS::Lambda::Permission', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
     Action: 'lambda:InvokeFunction',
     FunctionName: { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
     Principal: 'logs.amazonaws.com',
@@ -55,14 +55,14 @@ test('can have multiple subscriptions use the same Lambda', () => {
   });
 
   // THEN: Lambda has permissions to be invoked by CWL from both Source Arns
-  expect(stack).toHaveResource('AWS::Lambda::Permission', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
     Action: 'lambda:InvokeFunction',
     FunctionName: { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
     SourceArn: { 'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'] },
     Principal: 'logs.amazonaws.com',
   });
 
-  expect(stack).toHaveResource('AWS::Lambda::Permission', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
     Action: 'lambda:InvokeFunction',
     FunctionName: { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
     SourceArn: { 'Fn::GetAtt': ['LG224A94C8F', 'Arn'] },
@@ -79,14 +79,14 @@ test('lambda permissions are not added when addPermissions is false', () => {
   });
 
   // THEN: subscription target is Lambda
-  expect(stack).toHaveResource('AWS::Logs::SubscriptionFilter', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::SubscriptionFilter', {
     DestinationArn: { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
   });
 
   // THEN: Lambda does not have permissions to be invoked by CWL
-  expect(stack).not.toHaveResource('AWS::Lambda::Permission', {
+  expect(Template.fromStack(stack).findResources('AWS::Lambda::Permission', {
     Action: 'lambda:InvokeFunction',
     FunctionName: { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
     Principal: 'logs.amazonaws.com',
-  });
+  })).toEqual({});
 });

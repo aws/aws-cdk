@@ -50,3 +50,22 @@ describe('with nested graphs', () => {
     ]);
   });
 });
+
+test('duplicate dependencies are ignored', () => {
+  mkGraph('G', G => {
+    const A = G.graph('A', [], GA => {
+      GA.node('aa');
+    });
+
+    // parent graph depnds on A also
+    const B = G.graph('B', [A], GB => {
+      // duplicate dependency on A
+      GB.graph('BB', [A], GBB => {
+        GBB.node('bbb');
+      });
+      GB.node('bb');
+    });
+
+    expect(nodeNames(B.tryGetChild('BB')!.allDeps)).toStrictEqual(['A']);
+  });
+});

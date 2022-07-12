@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-stepfunctions-tasks/test/eks/integ.call": {
+      "stacks": [
+        "aws-stepfunctions-tasks-eks-call-integ"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": false
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

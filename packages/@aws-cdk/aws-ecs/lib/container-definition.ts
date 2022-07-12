@@ -10,9 +10,23 @@ import { EnvironmentFile, EnvironmentFileConfig } from './environment-file';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+/**
+ * Specify the secret's version id or version stage
+ */
+export interface SecretVersionInfo {
+  /**
+   * version id of the secret
+   *
+   * @default - use default version id
+   */
+  readonly versionId?: string;
+  /**
+   * version stage of the secret
+   *
+   * @default - use default version stage
+   */
+  readonly versionStage?: string;
+}
 
 /**
  * A secret environment variable.
@@ -42,6 +56,25 @@ export abstract class Secret {
   public static fromSecretsManager(secret: secretsmanager.ISecret, field?: string): Secret {
     return {
       arn: field ? `${secret.secretArn}:${field}::` : secret.secretArn,
+      hasField: !!field,
+      grantRead: grantee => secret.grantRead(grantee),
+    };
+  }
+
+  /**
+   * Creates a environment variable value from a secret stored in AWS Secrets
+   * Manager.
+   *
+   * @param secret the secret stored in AWS Secrets Manager
+   * @param versionInfo the version information to reference the secret
+   * @param field the name of the field with the value that you want to set as
+   * the environment variable value. Only values in JSON format are supported.
+   * If you do not specify a JSON field, then the full content of the secret is
+   * used.
+   */
+  public static fromSecretsManagerVersion(secret: secretsmanager.ISecret, versionInfo: SecretVersionInfo, field?: string): Secret {
+    return {
+      arn: `${secret.secretArn}:${field ?? ''}:${versionInfo.versionStage ?? ''}:${versionInfo.versionId ?? ''}`,
       hasField: !!field,
       grantRead: grantee => secret.grantRead(grantee),
     };
@@ -333,7 +366,7 @@ export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
 /**
  * A container definition is used in a task definition to describe the containers that are launched as part of a task.
  */
-export class ContainerDefinition extends CoreConstruct {
+export class ContainerDefinition extends Construct {
   /**
    * The Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
    */
@@ -409,6 +442,11 @@ export class ContainerDefinition extends CoreConstruct {
   public readonly referencesSecretJsonField?: boolean;
 
   /**
+   * The name of the image referenced by this container.
+   */
+  public readonly imageName: string;
+
+  /**
    * The inference accelerators referenced by this container.
    */
   private readonly inferenceAcceleratorResources: string[] = [];
@@ -441,6 +479,8 @@ export class ContainerDefinition extends CoreConstruct {
     this.containerName = props.containerName ?? this.node.id;
 
     this.imageConfig = props.image.bind(this, this);
+    this.imageName = this.imageConfig.imageName;
+
     if (props.logging) {
       this.logDriverConfig = props.logging.bind(this, this);
     }
@@ -685,7 +725,7 @@ export class ContainerDefinition extends CoreConstruct {
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
       environment: this.environment && Object.keys(this.environment).length ? renderKV(this.environment, 'name', 'value') : undefined,
-      environmentFiles: this.environmentFiles && renderEnvironmentFiles(this.environmentFiles),
+      environmentFiles: this.environmentFiles && renderEnvironmentFiles(cdk.Stack.of(this).partition, this.environmentFiles),
       secrets: this.secrets,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
@@ -757,7 +797,7 @@ function renderKV(env: { [key: string]: string }, keyName: string, valueName: st
   return ret;
 }
 
-function renderEnvironmentFiles(environmentFiles: EnvironmentFileConfig[]): any[] {
+function renderEnvironmentFiles(partition: string, environmentFiles: EnvironmentFileConfig[]): any[] {
   const ret = [];
   for (const environmentFile of environmentFiles) {
     const s3Location = environmentFile.s3Location;
@@ -768,7 +808,7 @@ function renderEnvironmentFiles(environmentFiles: EnvironmentFileConfig[]): any[
 
     ret.push({
       type: environmentFile.fileType,
-      value: `arn:aws:s3:::${s3Location.bucketName}/${s3Location.objectKey}`,
+      value: `arn:${partition}:s3:::${s3Location.bucketName}/${s3Location.objectKey}`,
     });
   }
   return ret;

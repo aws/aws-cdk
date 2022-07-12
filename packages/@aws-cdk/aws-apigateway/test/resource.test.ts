@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import * as apigw from '../lib';
 
@@ -16,7 +16,7 @@ describe('resource', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
       'ParentId': {
         'Fn::GetAtt': [
           'apiC8550315',
@@ -29,7 +29,7 @@ describe('resource', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       'HttpMethod': 'ANY',
       'ResourceId': {
         'Ref': 'proxy3A1DA9C7',
@@ -60,9 +60,9 @@ describe('resource', () => {
     proxy.addMethod('GET');
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Resource');
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', { 'HttpMethod': 'GET' });
-    expect(stack).not.toHaveResource('AWS::ApiGateway::Method', { 'HttpMethod': 'ANY' });
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Resource', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', { 'HttpMethod': 'GET' });
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', Match.not({ 'HttpMethod': 'ANY' }));
 
 
   });
@@ -78,7 +78,7 @@ describe('resource', () => {
     const v2 = api.root.addResource('v2');
     v2.addProxy();
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'apiC8550315': {
           'Type': 'AWS::ApiGateway::RestApi',
@@ -154,7 +154,7 @@ describe('resource', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'DELETE',
       ResourceId: { Ref: 'apiproxy4EA44110' },
       Integration: {
@@ -164,7 +164,7 @@ describe('resource', () => {
       OperationName: 'DeleteMe',
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'DELETE',
       ResourceId: { 'Fn::GetAtt': ['apiC8550315', 'RootResourceId'] },
       Integration: {
@@ -251,7 +251,7 @@ describe('resource', () => {
     imported.addMethod('GET');
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       ResourceId: resourceId,
     });
