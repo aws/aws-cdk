@@ -3,9 +3,6 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as sns_subscriptions from '@aws-cdk/aws-sns-subscriptions';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { App, CfnParameter, NestedStack, Stack } from '@aws-cdk/core';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from 'constructs';
 
 /* eslint-disable @aws-cdk/no-core-construct */
@@ -15,6 +12,7 @@ interface MyNestedStackProps {
   readonly siblingTopic?: sns.Topic; // a topic defined in a sibling nested stack
   readonly topicCount: number;
   readonly topicNamePrefix: string;
+  readonly description?: string;
 }
 
 class MyNestedStack extends NestedStack {
@@ -25,6 +23,7 @@ class MyNestedStack extends NestedStack {
       parameters: {
         [topicNamePrefixLogicalId]: props.topicNamePrefix, // pass in a parameter to the nested stack
       },
+      description: props.description,
     });
 
     const topicNamePrefixParameter = new CfnParameter(this, 'TopicNamePrefix', { type: 'String' });
@@ -60,7 +59,7 @@ class MyTestStack extends Stack {
     const queue = new sqs.Queue(this, 'SubscriberQueue');
 
     new MyNestedStack(this, 'NestedStack1', { topicCount: 3, topicNamePrefix: 'Prefix1', subscriber: queue });
-    new MyNestedStack(this, 'NestedStack2', { topicCount: 2, topicNamePrefix: 'Prefix2' });
+    new MyNestedStack(this, 'NestedStack2', { topicCount: 2, topicNamePrefix: 'Prefix2', description: 'This is secound nested stack.' });
   }
 }
 

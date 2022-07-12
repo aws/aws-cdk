@@ -1,8 +1,5 @@
 import * as path from 'path';
 import { Duration, CfnResource, AssetStaging, Stack, FileAssetPackaging, Token, Lazy, Reference } from '@aws-cdk/core';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from 'constructs';
 
 let SDK_METADATA: any = undefined;
@@ -138,6 +135,24 @@ class SingletonFunction extends Construct {
   }
 
   /**
+   * Add an IAM policy statement to the inline policy of the
+   * lambdas function's role
+   *
+   * **Please note**: this is a direct IAM JSON policy blob, *not* a `iam.PolicyStatement`
+   * object like you will see in the rest of the CDK.
+   *
+   *
+   * singleton.addToRolePolicy({
+   *   Effect: 'Allow',
+   *   Action: 's3:GetObject',
+   *   Resources: '*',
+   * });
+   */
+  public addToRolePolicy(statement: any): void {
+    this.policies.push(statement);
+  }
+
+  /**
    * Create a policy statement from a specific api call
    */
   public addPolicyStatementFromSdkCall(service: string, api: string, resources?: string[]): void {
@@ -218,6 +233,26 @@ export class AssertionsProvider extends Construct {
    */
   public addPolicyStatementFromSdkCall(service: string, api: string, resources?: string[]): void {
     this.handler.addPolicyStatementFromSdkCall(service, api, resources);
+  }
+
+  /**
+   * Add an IAM policy statement to the inline policy of the
+   * lambdas function's role
+   *
+   * **Please note**: this is a direct IAM JSON policy blob, *not* a `iam.PolicyStatement`
+   * object like you will see in the rest of the CDK.
+   *
+   *
+   * @example
+   * declare const provider: AssertionsProvider;
+   * provider.addToRolePolicy({
+   *   Effect: 'Allow',
+   *   Action: 's3:GetObject',
+   *   Resources: '*',
+   * });
+   */
+  public addToRolePolicy(statement: any): void {
+    this.handler.addToRolePolicy(statement);
   }
 }
 

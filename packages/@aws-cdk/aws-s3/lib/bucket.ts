@@ -353,6 +353,23 @@ export interface IBucket extends IResource {
    * @param filters Filters (see onEvent)
    */
   addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void;
+
+
+  /**
+   * Enables event bridge notification, causing all events below to be sent to EventBridge:
+   *
+   * - Object Deleted (DeleteObject)
+   * - Object Deleted (Lifecycle expiration)
+   * - Object Restore Initiated
+   * - Object Restore Completed
+   * - Object Restore Expired
+   * - Object Storage Class Changed
+   * - Object Access Tier Changed
+   * - Object ACL Updated
+   * - Object Tags Added
+   * - Object Tags Deleted
+   */
+  enableEventBridgeNotification(): void;
 }
 
 /**
@@ -874,7 +891,21 @@ export abstract class BucketBase extends Resource implements IBucket {
     return this.addEventNotification(EventType.OBJECT_REMOVED, dest, ...filters);
   }
 
-  protected enableEventBridgeNotification() {
+  /**
+   * Enables event bridge notification, causing all events below to be sent to EventBridge:
+   *
+   * - Object Deleted (DeleteObject)
+   * - Object Deleted (Lifecycle expiration)
+   * - Object Restore Initiated
+   * - Object Restore Completed
+   * - Object Restore Expired
+   * - Object Storage Class Changed
+   * - Object Access Tier Changed
+   * - Object ACL Updated
+   * - Object Tags Added
+   * - Object Tags Deleted
+   */
+  public enableEventBridgeNotification() {
     this.withNotifications(notifications => notifications.enableEventBridgeNotification());
   }
 
@@ -2125,7 +2156,7 @@ export class Bucket extends BucketBase {
   private enableAutoDeleteObjects() {
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
     });
 

@@ -186,7 +186,7 @@ export enum SubnetType {
    *
    * @deprecated use `SubnetType.PRIVATE_ISOLATED`
    */
-  ISOLATED = 'Isolated',
+  ISOLATED = 'Deprecated_Isolated',
 
   /**
    * Subnet that routes to the internet (via a NAT gateway), but not vice versa.
@@ -222,7 +222,7 @@ export enum SubnetType {
    *
    * @deprecated use `PRIVATE_WITH_NAT`
    */
-  PRIVATE = 'Private',
+  PRIVATE = 'Deprecated_Private',
 
   /**
    * Subnet connected to the Internet
@@ -586,7 +586,9 @@ abstract class VpcBase extends Resource implements IVpc {
   private selectSubnetObjectsByType(subnetType: SubnetType) {
     const allSubnets = {
       [SubnetType.PRIVATE_ISOLATED]: this.isolatedSubnets,
+      [SubnetType.ISOLATED]: this.isolatedSubnets,
       [SubnetType.PRIVATE_WITH_NAT]: this.privateSubnets,
+      [SubnetType.PRIVATE]: this.privateSubnets,
       [SubnetType.PUBLIC]: this.publicSubnets,
     };
 
@@ -841,9 +843,20 @@ export interface VpcProps {
    * only 2 AZs, so to use more than 2 AZs, be sure to specify the account and
    * region on your stack.
    *
+   * Specify this option only if you do not specify `availabilityZones`.
+   *
    * @default 3
    */
   readonly maxAzs?: number;
+
+  /**
+   * Availability zones this VPC spans.
+   *
+   * Specify this option only if you do not specify `maxAzs`.
+   *
+   * @default - a subset of AZs of the stack
+   */
+  readonly availabilityZones?: string[];
 
   /**
    * The number of NAT Gateways/Instances to create.
@@ -1289,6 +1302,10 @@ export class Vpc extends VpcBase {
       throw new Error('To use DNS Hostnames, DNS Support must be enabled, however, it was explicitly disabled.');
     }
 
+    if (props.availabilityZones && props.maxAzs) {
+      throw new Error('Vpc supports \'availabilityZones\' or \'maxAzs\', but not both.');
+    }
+
     const cidrBlock = ifUndefined(props.cidr, Vpc.DEFAULT_CIDR_RANGE);
     if (Token.isUnresolved(cidrBlock)) {
       throw new Error('\'cidr\' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)');
@@ -1317,10 +1334,22 @@ export class Vpc extends VpcBase {
 
     Tags.of(this).add(NAME_TAG, props.vpcName || this.node.path);
 
-    this.availabilityZones = stack.availabilityZones;
+    if (props.availabilityZones) {
+      // If given AZs and stack AZs are both resolved, then validate their compatibility.
+      const resolvedStackAzs = stack.availabilityZones.filter(az => !Token.isUnresolved(az));
+      const areGivenAzsSubsetOfStack = resolvedStackAzs.length === 0 // stack AZs are tokenized, so we cannot validate it
+        || props.availabilityZones.every(
+          az => Token.isUnresolved(az) // given AZ is tokenized, such as in integ tests, so we cannot validate it
+            || resolvedStackAzs.includes(az));
+      if (!areGivenAzsSubsetOfStack) {
+        throw new Error(`Given VPC 'availabilityZones' ${props.availabilityZones} must be a subset of the stack's availability zones ${stack.availabilityZones}`);
+      }
+      this.availabilityZones = props.availabilityZones;
+    } else {
+      const maxAZs = props.maxAzs ?? 3;
+      this.availabilityZones = stack.availabilityZones.slice(0, maxAZs);
+    }
 
-    const maxAZs = props.maxAzs ?? 3;
-    this.availabilityZones = this.availabilityZones.slice(0, maxAZs);
 
     this.vpcId = this.resource.ref;
     this.vpcArn = Arn.format({
@@ -1503,11 +1532,13 @@ export class Vpc extends VpcBase {
           subnet = publicSubnet;
           break;
         case SubnetType.PRIVATE_WITH_NAT:
+        case SubnetType.PRIVATE:
           const privateSubnet = new PrivateSubnet(this, name, subnetProps);
           this.privateSubnets.push(privateSubnet);
           subnet = privateSubnet;
           break;
         case SubnetType.PRIVATE_ISOLATED:
+        case SubnetType.ISOLATED:
           const isolatedSubnet = new PrivateSubnet(this, name, subnetProps);
           this.isolatedSubnets.push(isolatedSubnet);
           subnet = isolatedSubnet;
@@ -1530,8 +1561,12 @@ const SUBNETNAME_TAG = 'aws-cdk:subnet-name';
 function subnetTypeTagValue(type: SubnetType) {
   switch (type) {
     case SubnetType.PUBLIC: return 'Public';
-    case SubnetType.PRIVATE_WITH_NAT: return 'Private';
-    case SubnetType.PRIVATE_ISOLATED: return 'Isolated';
+    case SubnetType.PRIVATE_WITH_NAT:
+    case SubnetType.PRIVATE:
+      return 'Private';
+    case SubnetType.PRIVATE_ISOLATED:
+    case SubnetType.ISOLATED:
+      return 'Isolated';
   }
 }
 

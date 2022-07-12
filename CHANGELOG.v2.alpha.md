@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.31.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.31.0-alpha.0...v2.31.1-alpha.0) (2022-07-08)
+
+## [2.31.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.30.0-alpha.0...v2.31.0-alpha.0) (2022-07-06)
+
+
+### Features
+
+* **batch:** add secrets props to job definition ([#20871](https://github.com/aws/aws-cdk/issues/20871)) ([9b1051f](https://github.com/aws/aws-cdk/commit/9b1051f86abdfa6448b14cdae8e1ef9acb1e6688)), closes [#19506](https://github.com/aws/aws-cdk/issues/19506) [#10976](https://github.com/aws/aws-cdk/issues/10976)
+
+## [2.30.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.29.1-alpha.0...v2.30.0-alpha.0) (2022-07-01)
+
+## [2.29.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.29.0-alpha.0...v2.29.1-alpha.0) (2022-06-24)
+
+## [2.29.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.28.1-alpha.0...v2.29.0-alpha.0) (2022-06-22)
+
+## [2.28.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.28.0-alpha.0...v2.28.1-alpha.0) (2022-06-15)
+
+## [2.28.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.27.0-alpha.0...v2.28.0-alpha.0) (2022-06-14)
+
+
+### Bug Fixes
+
+* **appsync:** Create Lambda permission when using Lambda Authorizer(#… ([#20641](https://github.com/aws/aws-cdk/issues/20641)) ([6176400](https://github.com/aws/aws-cdk/commit/61764009648a4602ffa403adda903442c48c45df)), closes [#20234](https://github.com/aws/aws-cdk/issues/20234)
+* **integ-runner:** don't allow new legacy tests ([#20614](https://github.com/aws/aws-cdk/issues/20614)) ([c946615](https://github.com/aws/aws-cdk/commit/c94661508e2a97b52e9284ba4093d9864d2d5f0b))
+
 ## [2.27.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.26.0-alpha.0...v2.27.0-alpha.0) (2022-06-02)
 
 
@@ -271,7 +296,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **lambda-python:** `assetHashType` and `assetHash` properties moved to new `bundling` property.
 * **lambda-python:** Runtime is now required for `LambdaPython`
-* **appsync:** The `CachingConfig#ttl` property is now required. 
+* **appsync:** The `CachingConfig#ttl` property is now required.
 
 [1]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-resolver-cachingconfig.html#cfn-appsync-resolver-cachingconfig-ttl
 
@@ -303,7 +328,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **glue:** the grantRead API previously included 'glue:BatchDeletePartition', and now it does not.
 
 
- 
+
 
 ### Features
 

@@ -19,13 +19,13 @@
           {
             "type": "aws:cdk:asset",
             "data": {
-              "path": "asset.6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2",
-              "id": "6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2",
+              "path": "asset.f942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68a",
+              "id": "f942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68a",
               "packaging": "zip",
-              "sourceHash": "6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2",
-              "s3BucketParameter": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2S3Bucket2EB34879",
-              "s3KeyParameter": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2S3VersionKey03A4DC8B",
-              "artifactHashParameter": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2ArtifactHash29DBC1FA"
+              "sourceHash": "f942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68a",
+              "s3BucketParameter": "AssetParametersf942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68aS3Bucket93FB8681",
+              "s3KeyParameter": "AssetParametersf942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68aS3VersionKey64A4A72E",
+              "artifactHashParameter": "AssetParametersf942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68aArtifactHashE7245343"
             }
           }
         ],
@@ -62,7 +62,7 @@
         "/MyStack/MyFunction/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunctionCurrentVersion197490AFd41a8aa4109c7b22dd39d6bef408da46"
+            "data": "MyFunctionCurrentVersion197490AF2cb2bc11080c1ef11d3b49c1f1603957"
           }
         ],
         "/MyStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider/Role": [
@@ -77,31 +77,22 @@
             "data": "AWSCDKTriggerCustomResourceProviderCustomResourceProviderHandler97BECD91"
           }
         ],
-        "/MyStack/AssetParameters/6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2/S3Bucket": [
+        "/MyStack/AssetParameters/f942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68a/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2S3Bucket2EB34879"
+            "data": "AssetParametersf942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68aS3Bucket93FB8681"
           }
         ],
-        "/MyStack/AssetParameters/6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2/S3VersionKey": [
+        "/MyStack/AssetParameters/f942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68a/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2S3VersionKey03A4DC8B"
+            "data": "AssetParametersf942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68aS3VersionKey64A4A72E"
           }
         ],
-        "/MyStack/AssetParameters/6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2/ArtifactHash": [
+        "/MyStack/AssetParameters/f942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68a/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2ArtifactHash29DBC1FA"
-          }
-        ],
-        "MyFunctionCurrentVersion197490AFd134f68e4774c24a4ca6cc78849e3dfd": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFunctionCurrentVersion197490AFd134f68e4774c24a4ca6cc78849e3dfd",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "AssetParametersf942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68aArtifactHashE7245343"
           }
         ]
       },

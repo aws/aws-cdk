@@ -193,7 +193,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     const resourceType = 'Custom::CrossRegionStringParameterReader';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: path.join(__dirname, 'edge-function'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       policyStatements: [{
         Effect: 'Allow',
         Resource: parameterArnPrefix,

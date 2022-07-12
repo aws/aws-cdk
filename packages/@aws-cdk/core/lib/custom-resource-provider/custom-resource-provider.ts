@@ -42,7 +42,7 @@ export interface CustomResourceProviderProps {
    * @example
    * const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
    *   codeDirectory: `${__dirname}/my-handler`,
-   *   runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+   *   runtime: CustomResourceProviderRuntime.NODEJS_14_X,
    *   policyStatements: [
    *     {
    *       Effect: 'Allow',
@@ -97,14 +97,19 @@ export enum CustomResourceProviderRuntime {
   /**
    * Node.js 12.x
    *
-   * @deprecated Use {@link NODEJS_12_X}
+   * @deprecated Use {@link NODEJS_14_X}
    */
-  NODEJS_12 = 'nodejs12.x',
+  NODEJS_12 = 'deprecated_nodejs12.x',
 
   /**
    * Node.js 14.x
    */
   NODEJS_14_X = 'nodejs14.x',
+
+  /**
+   * Node.js 16.x
+   */
+  NODEJS_16_X = 'nodejs16.x',
 }
 
 /**
@@ -250,7 +255,7 @@ export class CustomResourceProvider extends Construct {
         MemorySize: memory.toMebibytes(),
         Handler: `${ENTRYPOINT_FILENAME}.handler`,
         Role: role.getAtt('Arn'),
-        Runtime: props.runtime,
+        Runtime: customResourceProviderRuntimeToString(props.runtime),
         Environment: this.renderEnvironmentVariables(props.environment),
         Description: props.description ?? undefined,
       },
@@ -280,7 +285,7 @@ export class CustomResourceProvider extends Construct {
    * myProvider.addToRolePolicy({
    *   Effect: 'Allow',
    *   Action: 's3:GetObject',
-   *   Resources: '*',
+   *   Resource: '*',
    * });
    */
   public addToRolePolicy(statement: any): void {
@@ -322,5 +327,17 @@ export class CustomResourceProvider extends Construct {
     }
 
     return { Variables: variables };
+  }
+}
+
+function customResourceProviderRuntimeToString(x: CustomResourceProviderRuntime): string {
+  switch (x) {
+    case CustomResourceProviderRuntime.NODEJS_12:
+    case CustomResourceProviderRuntime.NODEJS_12_X:
+      return 'nodejs12.x';
+    case CustomResourceProviderRuntime.NODEJS_14_X:
+      return 'nodejs14.x';
+    case CustomResourceProviderRuntime.NODEJS_16_X:
+      return 'nodejs16.x';
   }
 }

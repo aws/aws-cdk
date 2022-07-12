@@ -307,6 +307,13 @@ exposed where they shouldn't be. If you try to use a `SecretValue` in a
 different location, an error about unsafe secret usage will be thrown at
 synthesis time.
 
+If you rotate the secret's value in Secrets Manager, you must also change at
+least one property on the resource where you are using the secret, to force
+CloudFormation to re-read the secret.
+
+`SecretValue.ssmSecure()` is only supported for a limited set of resources.
+[Click here for a list of supported resources and properties](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#template-parameters-dynamic-patterns-resources).
+
 ## ARN manipulation
 
 Sometimes you will need to put together or pick apart Amazon Resource Names
@@ -524,7 +531,7 @@ stack-unique identifier and returns the service token:
 ```ts
 const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
   description: "Lambda function created by the custom resource provider",
 });
 
@@ -619,7 +626,7 @@ export class Sum extends Construct {
     const resourceType = 'Custom::Sum';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/sum-handler`,
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
     });
 
     const resource = new CustomResource(this, 'Resource', {
@@ -649,7 +656,7 @@ built-in singleton method:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
 });
 
 const roleArn = provider.roleArn;
@@ -662,7 +669,7 @@ To add IAM policy statements to this role, use `addToRolePolicy()`:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
 });
 provider.addToRolePolicy({
   Effect: 'Allow',
@@ -1018,6 +1025,16 @@ const stack = new Stack(app, 'StackName', {
 ```
 
 By default, termination protection is disabled.
+
+### Description
+
+You can add a description of the stack in the same way as `StackProps`.
+
+```ts
+const stack = new Stack(app, 'StackName', {
+  description: 'This is a description.',
+});
+```
 
 ### CfnJson
 

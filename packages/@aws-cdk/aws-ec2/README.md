@@ -230,7 +230,9 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
   // The IP space will be divided over the configured subnets.
   cidr: '10.0.0.0/21',
 
-  // 'maxAzs' configures the maximum number of availability zones to use
+  // 'maxAzs' configures the maximum number of availability zones to use.
+  // If you want to specify the exact availability zones you want the VPC
+  // to use, use `availabilityZones` instead.
   maxAzs: 3,
 
   // 'subnetConfiguration' specifies the "subnet groups" to create.
@@ -960,6 +962,16 @@ new ec2.Instance(this, 'Instance4', {
     generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
   }),
 });
+
+// Graviton 3 Processor
+new ec2.Instance(this, 'Instance5', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  machineImage: new ec2.AmazonLinuxImage({
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+    cpuType: ec2.AmazonLinuxCpuType.ARM_64,
+  }),
+});
 ```
 
 ### Configuring Instances using CloudFormation Init (cfn-init)
@@ -1342,6 +1354,20 @@ new ec2.FlowLog(this, 'FlowLogWithKeyPrefix', {
   resourceType: ec2.FlowLogResourceType.fromVpc(vpc),
   destination: ec2.FlowLogDestination.toS3(bucket, 'prefix/')
 });
+```
+
+When the S3 destination is configured, AWS will automatically create an S3 bucket policy
+that allows the service to write logs to the bucket. This makes it impossible to later update
+that bucket policy. To have CDK create the bucket policy so that future updates can be made,
+the `@aws-cdk/aws-s3:createDefaultLoggingPolicy` [feature flag](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html) can be used. This can be set
+in the `cdk.json` file.
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-s3:createDefaultLoggingPolicy": true
+  }
+}
 ```
 
 ## User Data

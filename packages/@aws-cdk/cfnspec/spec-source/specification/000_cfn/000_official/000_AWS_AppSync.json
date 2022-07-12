@@ -1,5 +1,5 @@
 {
-  "$version": "75.0.0",
+  "$version": "79.0.0",
   "PropertyTypes": {
     "AWS::AppSync::DataSource.AuthorizationConfig": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-datasource-authorizationconfig.html",
@@ -270,13 +270,6 @@
         }
       }
     },
-    "AWS::AppSync::GraphQLApi.AdditionalAuthenticationProviders": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-additionalauthenticationproviders.html",
-      "ItemType": "AdditionalAuthenticationProvider",
-      "Required": false,
-      "Type": "List",
-      "UpdateType": "Mutable"
-    },
     "AWS::AppSync::GraphQLApi.CognitoUserPoolConfig": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-cognitouserpoolconfig.html",
       "Properties": {
@@ -374,13 +367,6 @@
           "UpdateType": "Mutable"
         }
       }
-    },
-    "AWS::AppSync::GraphQLApi.Tags": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-tags.html",
-      "ItemType": "Tag",
-      "Required": false,
-      "Type": "List",
-      "UpdateType": "Mutable"
     },
     "AWS::AppSync::GraphQLApi.UserPoolConfig": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-userpoolconfig.html",
@@ -791,8 +777,9 @@
       "Properties": {
         "AdditionalAuthenticationProviders": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-graphqlapi.html#cfn-appsync-graphqlapi-additionalauthenticationproviders",
+          "ItemType": "AdditionalAuthenticationProvider",
           "Required": false,
-          "Type": "AdditionalAuthenticationProviders",
+          "Type": "List",
           "UpdateType": "Mutable"
         },
         "AuthenticationType": {
@@ -827,8 +814,9 @@
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-graphqlapi.html#cfn-appsync-graphqlapi-tags",
+          "ItemType": "Tag",
           "Required": false,
-          "Type": "Tags",
+          "Type": "List",
           "UpdateType": "Mutable"
         },
         "UserPoolConfig": {
