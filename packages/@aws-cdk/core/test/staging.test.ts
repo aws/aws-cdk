@@ -21,6 +21,7 @@ enum DockerStubCommand {
 const FIXTURE_TEST1_DIR = path.join(__dirname, 'fs', 'fixtures', 'test1');
 const FIXTURE_TEST1_HASH = '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00';
 const FIXTURE_TARBALL = path.join(__dirname, 'fs', 'fixtures.tar.gz');
+const NOT_ARCHIVED_ZIP_TXT_HASH = '95c924c84f5d023be4edee540cb2cb401a49f115d01ed403b288f6cb412771df';
 
 const userInfo = os.userInfo();
 const USER_ARG = `-u ${userInfo.uid}:${userInfo.gid}`;
@@ -94,11 +95,15 @@ describe('staging', () => {
     const sourcePathTarGz = path.join(__dirname, 'archive', 'artifact.da.vinci.monalisa.tar.gz');
     const sourcePathTgz = path.join(__dirname, 'archive', 'artifact.tgz');
     const sourcePathTar = path.join(__dirname, 'archive', 'artifact.tar');
+    const sourcePathNotArchive = path.join(__dirname, 'archive', 'artifact.zip.txt');
+    const sourcePathDockerFile = path.join(__dirname, 'archive', 'DockerFile');
 
     // WHEN
     const stagingTarGz = new AssetStaging(stack, 's1', { sourcePath: sourcePathTarGz });
     const stagingTgz = new AssetStaging(stack, 's2', { sourcePath: sourcePathTgz });
     const stagingTar = new AssetStaging(stack, 's3', { sourcePath: sourcePathTar });
+    const stagingNotArchive = new AssetStaging(stack, 's4', { sourcePath: sourcePathNotArchive });
+    const stagingDockerFile = new AssetStaging(stack, 's5', { sourcePath: sourcePathDockerFile });
 
     expect(stagingTarGz.packaging).toEqual(FileAssetPackaging.FILE);
     expect(stagingTarGz.isArchive).toEqual(true);
@@ -106,6 +111,12 @@ describe('staging', () => {
     expect(stagingTgz.isArchive).toEqual(true);
     expect(stagingTar.packaging).toEqual(FileAssetPackaging.FILE);
     expect(stagingTar.isArchive).toEqual(true);
+    expect(stagingNotArchive.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(path.basename(stagingNotArchive.absoluteStagedPath)).toEqual(`asset.${NOT_ARCHIVED_ZIP_TXT_HASH}.txt`);
+    expect(path.basename(stagingNotArchive.relativeStagedPath(stack))).toEqual(`asset.${NOT_ARCHIVED_ZIP_TXT_HASH}.txt`);
+    expect(stagingNotArchive.isArchive).toEqual(false);
+    expect(stagingDockerFile.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(stagingDockerFile.isArchive).toEqual(false);
 
   });
 
