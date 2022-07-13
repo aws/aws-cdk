@@ -2,7 +2,6 @@
   "name": "@aws-cdk/integ-runner",
   "description": "CDK Integration Testing Tool",
   "version": "0.0.0",
-  "private": true,
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "bin": {
@@ -57,7 +56,7 @@
     "mock-fs": "^4.14.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "@types/node": "^10.17.60",
     "@types/workerpool": "^6.1.0",
     "@types/yargs": "^15.0.14",
@@ -72,7 +71,7 @@
     "aws-cdk": "0.0.0",
     "chalk": "^4",
     "fs-extra": "^9.1.0",
-    "workerpool": "^6.2.0",
+    "workerpool": "^6.2.1",
     "yargs": "^16.2.0"
   },
   "repository": {
@@ -86,7 +85,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "nozem": {
     "ostools": [
@@ -99,5 +98,6 @@
   "maturity": "experimental",
   "publishConfig": {
     "tag": "latest"
-  }
+  },
+  "private": true
 }

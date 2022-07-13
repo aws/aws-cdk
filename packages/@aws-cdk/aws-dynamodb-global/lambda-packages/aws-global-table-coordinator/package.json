@@ -39,6 +39,6 @@
     "eslint-plugin-standard": "^4.1.0",
     "jest": "^27.5.1",
     "lambda-tester": "^3.6.0",
-    "nock": "^13.2.4"
+    "nock": "^13.2.6"
   }
 }

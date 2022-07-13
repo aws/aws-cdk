@@ -1,5 +1,5 @@
 {
-  "$version": "68.0.0",
+  "$version": "79.0.0",
   "PropertyTypes": {
     "AWS::Config::ConfigRule.Scope": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-config-configrule-scope.html",
@@ -52,7 +52,7 @@
         "SourceIdentifier": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-config-configrule-source.html#cfn-config-configrule-source-sourceidentifier",
           "PrimitiveType": "String",
-          "Required": true,
+          "Required": false,
           "UpdateType": "Mutable"
         }
       }

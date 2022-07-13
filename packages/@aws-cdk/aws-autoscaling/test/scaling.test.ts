@@ -3,12 +3,8 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
-import * as constructs from 'constructs';
+import { Construct } from 'constructs';
 import * as autoscaling from '../lib';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 describe('scaling', () => {
   describe('target tracking policies', () => {
@@ -209,6 +205,7 @@ describe('scaling', () => {
         namespace: 'Henk',
         dimensionsMap: { Mustache: 'Bushy' },
       }),
+      estimatedInstanceWarmup: cdk.Duration.seconds(150),
       // Adjust the number of legs to be closer to 2
       scalingSteps: [
         { lower: 0, upper: 2, change: +1 },
@@ -245,6 +242,7 @@ describe('scaling', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
       MetricAggregationType: 'Average',
       PolicyType: 'StepScaling',
+      EstimatedInstanceWarmup: 150,
       StepAdjustments: [
         {
           MetricIntervalUpperBound: 0,
@@ -333,7 +331,7 @@ class ASGFixture extends Construct {
   public readonly vpc: ec2.Vpc;
   public readonly asg: autoscaling.AutoScalingGroup;
 
-  constructor(scope: constructs.Construct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
 
     this.vpc = new ec2.Vpc(this, 'VPC');

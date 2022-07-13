@@ -30,7 +30,6 @@ describe('custom resource', () => {
         },
       },
     });
-
   });
 
   test('resource type can be specified', () => {
@@ -56,7 +55,6 @@ describe('custom resource', () => {
         },
       },
     });
-
   });
 
   test('removal policy', () => {
@@ -82,7 +80,6 @@ describe('custom resource', () => {
         },
       },
     });
-
   });
 
   test('resource type must begin with "Custom::"', () => {
@@ -94,8 +91,6 @@ describe('custom resource', () => {
       resourceType: 'MyResourceType',
       serviceToken: 'FooBar',
     })).toThrow(/Custom resource type must begin with "Custom::"/);
-
-
   });
 
   test('properties can be pascal-cased', () => {
@@ -131,7 +126,6 @@ describe('custom resource', () => {
         },
       },
     });
-
   });
 
   test('pascal-casing of props is disabled by default', () => {
@@ -166,7 +160,5 @@ describe('custom resource', () => {
         },
       },
     });
-
   });
-
 });

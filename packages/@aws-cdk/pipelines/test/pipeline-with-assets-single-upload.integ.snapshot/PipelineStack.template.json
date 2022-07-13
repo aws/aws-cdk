@@ -112,7 +112,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824.zip"
+     "S3Key": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -123,7 +123,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -212,7 +212,7 @@
   "PipelineArtifactsBucketEncryptionKeyAlias94A07392": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": "alias/codepipeline-pipelinestackpipelinee95eedaa",
+    "AliasName": "alias/codepipeline-pipelinestack-pipeline-e95eedaa",
     "TargetKeyId": {
      "Fn::GetAtt": [
       "PipelineArtifactsBucketEncryptionKeyF5BF0670",
