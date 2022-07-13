@@ -339,9 +339,7 @@ describe('State Machine', () => {
       });
 
       test("the state machine's account is taken from the current stack", () => {
-        expect(mach.stateMachineArn).toBe(
-          'arn:aws:states:stack-region:111111111111:stateMachine:machine-name',
-        );
+        expect(mach.stateMachineArn.endsWith(':states:stack-region:111111111111:stateMachine:machine-name')).toBeTruthy();
       });
     });
   });
