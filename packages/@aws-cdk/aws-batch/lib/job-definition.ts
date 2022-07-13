@@ -49,7 +49,7 @@ export enum LogDriver {
   /**
    * Specifies the syslog logging driver.
    */
-  SYSLOG = 'syslog',
+  SYSLOG = 'syslog'
 }
 
 /**
@@ -64,7 +64,7 @@ export enum PlatformCapabilities {
   /**
    * Specifies Fargate environment.
    */
-  FARGATE = 'FARGATE',
+  FARGATE = 'FARGATE'
 }
 
 /**
@@ -225,7 +225,7 @@ export interface JobDefinitionContainer {
    *
    * @default - LATEST platform version will be used
    */
-  readonly platformVersion?: ecs.FargatePlatformVersion;
+  readonly platformVersion?: ecs.FargatePlatformVersion
 
   /**
    * The IAM role that AWS Batch can assume.
@@ -240,7 +240,7 @@ export interface JobDefinitionContainer {
    *
    * @default - false
    */
-  readonly assignPublicIp?: boolean;
+  readonly assignPublicIp?: boolean
 }
 
 /**
@@ -387,16 +387,9 @@ export class JobDefinition extends Resource implements IJobDefinition {
    * @param id
    * @param jobDefinitionArn
    */
-  public static fromJobDefinitionArn(
-    scope: Construct,
-    id: string,
-    jobDefinitionArn: string,
-  ): IJobDefinition {
+  public static fromJobDefinitionArn(scope: Construct, id: string, jobDefinitionArn: string): IJobDefinition {
     const stack = Stack.of(scope);
-    const jobDefName = stack.splitArn(
-      jobDefinitionArn,
-      ArnFormat.SLASH_RESOURCE_NAME,
-    ).resourceName!;
+    const jobDefName = stack.splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
     class Import extends Resource implements IJobDefinition {
       public readonly jobDefinitionArn = jobDefinitionArn;
@@ -414,11 +407,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
    * @param id
    * @param jobDefinitionName
    */
-  public static fromJobDefinitionName(
-    scope: Construct,
-    id: string,
-    jobDefinitionName: string,
-  ): IJobDefinition {
+  public static fromJobDefinitionName(scope: Construct, id: string, jobDefinitionName: string): IJobDefinition {
     const stack = Stack.of(scope);
     const jobDefArn = stack.formatArn({
       service: 'batch',
@@ -448,9 +437,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
 
     this.imageConfig = new JobDefinitionImageConfig(this, props.container);
 
-    const isFargate = !!props.platformCapabilities?.includes(
-      PlatformCapabilities.FARGATE,
-    );
+    const isFargate = !!props.platformCapabilities?.includes(PlatformCapabilities.FARGATE);
 
     const jobDef = new CfnJobDefinition(this, 'Resource', {
       jobDefinitionName: props.jobDefinitionName,
@@ -459,10 +446,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
       nodeProperties: props.nodeProps
         ? {
           mainNode: props.nodeProps.mainNode,
-          nodeRangeProperties: this.buildNodeRangeProps(
-            props.nodeProps,
-            isFargate,
-          ),
+          nodeRangeProperties: this.buildNodeRangeProps(props.nodeProps, isFargate),
           numNodes: props.nodeProps.count,
         }
         : undefined,
@@ -471,17 +455,13 @@ export class JobDefinition extends Resource implements IJobDefinition {
         attempts: props.retryAttempts || 1,
       },
       timeout: {
-        attemptDurationSeconds: props.timeout
-          ? props.timeout.toSeconds()
-          : undefined,
+        attemptDurationSeconds: props.timeout ? props.timeout.toSeconds() : undefined,
       },
-      platformCapabilities: props.platformCapabilities ?? [
-        PlatformCapabilities.EC2,
-      ],
+      platformCapabilities: props.platformCapabilities ?? [PlatformCapabilities.EC2],
     });
 
     // add read secrets permission to execution role
-    if (props.container.secrets && props.container.executionRole) {
+    if ( props.container.secrets && props.container.executionRole ) {
       const executionRole = props.container.executionRole;
       Object.values(props.container.secrets).forEach((secret) => {
         secret.grantRead(executionRole);
@@ -496,9 +476,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
     this.jobDefinitionName = this.getResourceNameAttribute(jobDef.ref);
   }
 
-  private deserializeEnvVariables(env?: {
-    [name: string]: string;
-  }): CfnJobDefinition.EnvironmentProperty[] {
+  private deserializeEnvVariables(env?: { [name: string]: string }): CfnJobDefinition.EnvironmentProperty[] {
     const vars = new Array<CfnJobDefinition.EnvironmentProperty>();
 
     if (env === undefined) {
@@ -520,35 +498,23 @@ export class JobDefinition extends Resource implements IJobDefinition {
       return;
     }
 
-    if (
-      props.platformCapabilities !== undefined &&
-      props.platformCapabilities.includes(PlatformCapabilities.FARGATE) &&
-      props.container.executionRole === undefined
-    ) {
+    if (props.platformCapabilities !== undefined && props.platformCapabilities.includes(PlatformCapabilities.FARGATE)
+      && props.container.executionRole === undefined) {
       throw new Error('Fargate job must have executionRole set');
     }
 
-    if (
-      props.platformCapabilities !== undefined &&
-      props.platformCapabilities.includes(PlatformCapabilities.FARGATE) &&
-      props.container.gpuCount !== undefined
-    ) {
+    if (props.platformCapabilities !== undefined && props.platformCapabilities.includes(PlatformCapabilities.FARGATE)
+      && props.container.gpuCount !== undefined) {
       throw new Error('Fargate job must not have gpuCount set');
     }
 
-    if (
-      (props.platformCapabilities === undefined ||
-        props.platformCapabilities.includes(PlatformCapabilities.EC2)) &&
-      props.container.assignPublicIp !== undefined
-    ) {
+    if ((props.platformCapabilities === undefined || props.platformCapabilities.includes(PlatformCapabilities.EC2))
+      && props.container.assignPublicIp !== undefined) {
       throw new Error('EC2 job must not have assignPublicIp set');
     }
   }
 
-  private buildJobContainer(
-    container: JobDefinitionContainer,
-    isFargate: boolean,
-  ): CfnJobDefinition.ContainerPropertiesProperty | undefined {
+  private buildJobContainer(container: JobDefinitionContainer, isFargate: boolean): CfnJobDefinition.ContainerPropertiesProperty | undefined {
     if (container === undefined) {
       return undefined;
     }
@@ -585,77 +551,51 @@ export class JobDefinition extends Resource implements IJobDefinition {
       image: this.imageConfig.imageName,
       instanceType: container.instanceType && container.instanceType.toString(),
       jobRoleArn: container.jobRole && container.jobRole.roleArn,
-      executionRoleArn:
-        container.executionRole && container.executionRole.roleArn,
+      executionRoleArn: container.executionRole && container.executionRole.roleArn,
       linuxParameters: container.linuxParams
         ? { devices: container.linuxParams.renderLinuxParameters().devices }
         : undefined,
-      logConfiguration: container.logConfiguration
-        ? {
-          logDriver: container.logConfiguration.logDriver,
-          options: container.logConfiguration.options,
-          secretOptions: container.logConfiguration.secretOptions
-            ? this.buildLogConfigurationSecretOptions(
-              container.logConfiguration.secretOptions,
-            )
-            : undefined,
-        }
-        : undefined,
+      logConfiguration: container.logConfiguration ? {
+        logDriver: container.logConfiguration.logDriver,
+        options: container.logConfiguration.options,
+        secretOptions: container.logConfiguration.secretOptions
+          ? this.buildLogConfigurationSecretOptions(container.logConfiguration.secretOptions)
+          : undefined,
+      } : undefined,
       mountPoints: container.mountPoints,
       privileged: container.privileged || false,
-      networkConfiguration: container.assignPublicIp
-        ? {
-          assignPublicIp: container.assignPublicIp ? 'ENABLED' : 'DISABLED',
-        }
-        : undefined,
+      networkConfiguration: container.assignPublicIp ? {
+        assignPublicIp: container.assignPublicIp ? 'ENABLED' : 'DISABLED',
+      } : undefined,
       readonlyRootFilesystem: container.readOnly || false,
       ulimits: container.ulimits,
       user: container.user,
       volumes: container.volumes,
-      fargatePlatformConfiguration: container.platformVersion
-        ? {
-          platformVersion: container.platformVersion,
-        }
-        : undefined,
+      fargatePlatformConfiguration: container.platformVersion ? {
+        platformVersion: container.platformVersion,
+      } : undefined,
       resourceRequirements: [
-        {
-          type: 'VCPU',
-          value: String(container.vcpus || (isFargate ? 0.25 : 1)),
-        },
-        {
-          type: 'MEMORY',
-          value: String(container.memoryLimitMiB || (isFargate ? 512 : 4)),
-        },
-      ].concat(
-        container.gpuCount
-          ? [{ type: 'GPU', value: String(container.gpuCount) }]
-          : [],
-      ),
+        { type: 'VCPU', value: String(container.vcpus || (isFargate ? 0.25 : 1)) },
+        { type: 'MEMORY', value: String(container.memoryLimitMiB || (isFargate ? 512 : 4)) },
+      ].concat(container.gpuCount ? [{ type: 'GPU', value: String(container.gpuCount) }] : []),
     };
   }
 
-  private buildNodeRangeProps(
-    multiNodeProps: IMultiNodeProps,
-    isFargate: boolean,
-  ): CfnJobDefinition.NodeRangePropertyProperty[] {
+  private buildNodeRangeProps(multiNodeProps: IMultiNodeProps, isFargate: boolean): CfnJobDefinition.NodeRangePropertyProperty[] {
     const rangeProps = new Array<CfnJobDefinition.NodeRangePropertyProperty>();
 
     for (const prop of multiNodeProps.rangeProps) {
       rangeProps.push({
         container: this.buildJobContainer(prop.container, isFargate),
-        targetNodes: `${prop.fromNodeIndex || 0}:${
-          prop.toNodeIndex || multiNodeProps.count
-        }`,
+        targetNodes: `${prop.fromNodeIndex || 0}:${prop.toNodeIndex || multiNodeProps.count}`,
       });
     }
 
     return rangeProps;
   }
 
-  private buildLogConfigurationSecretOptions(
-    secretOptions: ExposedSecret[],
-  ): CfnJobDefinition.SecretProperty[] {
-    return secretOptions.map((secretOption) => {
+  private buildLogConfigurationSecretOptions(secretOptions: ExposedSecret[]): CfnJobDefinition.SecretProperty[] {
+    return secretOptions.map(secretOption => {
       return {
         name: secretOption.optionName,
         valueFrom: secretOption.secretArn,
