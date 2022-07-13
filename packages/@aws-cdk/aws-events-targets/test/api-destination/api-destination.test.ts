@@ -70,7 +70,7 @@ describe('with basic auth connection', () => {
   test('with header parameter', () => {
     // WHEN
     rule.addTarget(new targets.ApiDestination(destination, {
-      headerParameters: { headerName: 'headerValue' }
+      headerParameters: { headerName: 'headerValue' },
     }));
 
     // THEN
@@ -81,7 +81,7 @@ describe('with basic auth connection', () => {
           Arn: { 'Fn::GetAtt': ['DestinationApiDestinationA879FAE5', 'Arn'] },
           Id: 'Target0',
           RoleArn: { 'Fn::GetAtt': ['DestinationEventsRole7DA63556', 'Arn'] },
-          HttpParameters: { HeaderParameters: { headerName: 'headerValue' } }
+          HttpParameters: { HeaderParameters: { headerName: 'headerValue' } },
         },
       ],
     });
@@ -90,7 +90,7 @@ describe('with basic auth connection', () => {
   test('with query parameter', () => {
     // WHEN
     rule.addTarget(new targets.ApiDestination(destination, {
-      queryStringParameters: { queryName: 'queryValue' }
+      queryStringParameters: { queryName: 'queryValue' },
     }));
 
     // THEN
@@ -101,7 +101,7 @@ describe('with basic auth connection', () => {
           Arn: { 'Fn::GetAtt': ['DestinationApiDestinationA879FAE5', 'Arn'] },
           Id: 'Target0',
           RoleArn: { 'Fn::GetAtt': ['DestinationEventsRole7DA63556', 'Arn'] },
-          HttpParameters: { QueryStringParameters: { queryName: 'queryValue' } }
+          HttpParameters: { QueryStringParameters: { queryName: 'queryValue' } },
         },
       ],
     });
@@ -110,7 +110,7 @@ describe('with basic auth connection', () => {
   test('with path parameter', () => {
     // WHEN
     rule.addTarget(new targets.ApiDestination(destination, {
-      pathParameterValues: ['pathValue']
+      pathParameterValues: ['pathValue'],
     }));
 
     // THEN
@@ -121,7 +121,7 @@ describe('with basic auth connection', () => {
           Arn: { 'Fn::GetAtt': ['DestinationApiDestinationA879FAE5', 'Arn'] },
           Id: 'Target0',
           RoleArn: { 'Fn::GetAtt': ['DestinationEventsRole7DA63556', 'Arn'] },
-          HttpParameters: { PathParameterValues: ['pathValue'] } 
+          HttpParameters: { PathParameterValues: ['pathValue'] },
         },
       ],
     });
