@@ -1404,6 +1404,25 @@ new tasks.StepFunctionsInvokeActivity(this, 'Submit Job', {
 });
 ```
 
+Use the [Parameters](https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-parameters) field to create a collection of key-value pairs that are passed as input. 
+The values of each can either be static values that you include in your state machine definition, or selected from either the input or the context object with a path. 
+
+```ts
+const submitJobActivity = new sfn.Activity(this, 'SubmitJob');
+
+new tasks.StepFunctionsInvokeActivity(this, 'Submit Job', {
+  activity: submitJobActivity,
+  parameters: {
+    comment: 'Selecting what I care about.',
+    MyDetails: {
+      size: sfn.JsonPath.stringAt('$.product.details.size'),
+      exists: sfn.JsonPath.stringAt('$.product.availability'),
+      StaticValue: 'foo'
+    },
+  },
+});
+```
+
 ## SQS
 
 Step Functions supports [Amazon SQS](https://docs.aws.amazon.com/step-functions/latest/dg/connect-sqs.html)

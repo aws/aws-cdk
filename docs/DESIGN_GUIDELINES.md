@@ -754,10 +754,10 @@ interface IFoo extends IConstruct {
 class Foo extends Construct implements IFoo {
   public bar() { }
 
-  /** @mutating */
+  @config
   public goo() { }
 
-  public mutateMe() { } // ERROR! missing "@mutating" or missing on IFoo
+  public mutateMe() { } // ERROR! missing "@config" or missing on IFoo
 }
 ```
 
