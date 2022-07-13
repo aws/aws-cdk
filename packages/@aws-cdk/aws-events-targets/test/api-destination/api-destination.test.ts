@@ -110,7 +110,7 @@ describe('with basic auth connection', () => {
   test('with path parameter', () => {
     // WHEN
     rule.addTarget(new targets.ApiDestination(destination, {
-      headerParameters: { pathParameterValues: ['pathValue'] }
+      pathParameterValues: ['pathValue']
     }));
 
     // THEN
