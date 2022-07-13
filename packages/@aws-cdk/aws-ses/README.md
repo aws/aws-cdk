@@ -127,6 +127,8 @@ Use the `DedicatedIpPool` construct to create a pool of dedicated IP addresses:
 new ses.DedicatedIpPool(this, 'Pool');
 ```
 
+The pool can then be used in a configuration set.
+
 ### Configuration sets
 
 Configuration sets are groups of rules that you can apply to your verified identities. A verified identity is
