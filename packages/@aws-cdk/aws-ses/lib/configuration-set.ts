@@ -46,7 +46,7 @@ export interface ConfigurationSetProps {
    * Whether to publish reputation metrics for the configuration set, such as
    * bounce and complaint rates, to Amazon CloudWatch
    *
-   * @default true
+   * @default false
    */
   readonly reputationMetrics?: boolean;
 

@@ -116,7 +116,7 @@ export abstract class Identity {
   public static publicHostedZone(hostedZone: IPublicHostedZone): Identity {
     return {
       value: hostedZone.zoneName,
-      hostedZone: hostedZone,
+      hostedZone,
     };
   }
 
@@ -238,9 +238,7 @@ class EasyDkim extends DkimIdentity {
     }
 
     return this.signingKeyLength
-      ? {
-        nextSigningKeyLength: this.signingKeyLength,
-      }
+      ? { nextSigningKeyLength: this.signingKeyLength }
       : undefined;
   }
 }
