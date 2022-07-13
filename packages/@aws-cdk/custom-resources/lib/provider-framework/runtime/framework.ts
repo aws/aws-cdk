@@ -29,7 +29,7 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
 
   cfnRequest.ResourceProperties = cfnRequest.ResourceProperties || { };
 
-  const onEventResult = await invokeUserFunction(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, sanitizedRequest) as OnEventResponse;
+  const onEventResult = await invokeUserFunction(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, sanitizedRequest, cfnRequest.ResponseURL) as OnEventResponse;
   log('onEvent returned:', onEventResult);
 
   // merge the request and the result from onEvent to form the complete resource event
@@ -61,7 +61,7 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
   const sanitizedRequest = { ...event, ResponseURL: '...' } as const;
   log('isComplete', sanitizedRequest);
 
-  const isCompleteResult = await invokeUserFunction(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, sanitizedRequest) as IsCompleteResponse;
+  const isCompleteResult = await invokeUserFunction(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, sanitizedRequest, event.ResponseURL) as IsCompleteResponse;
   log('user isComplete returned:', isCompleteResult);
 
   // if we are not complete, return false, and don't send a response back.
@@ -96,7 +96,7 @@ async function onTimeout(timeoutEvent: any) {
   });
 }
 
-async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnEnv: string, sanitizedPayload: A) {
+async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnEnv: string, sanitizedPayload: A, responseUrl: string) {
   const functionArn = getEnv(functionArnEnv);
   log(`executing user function ${functionArn} with payload`, sanitizedPayload);
 
@@ -106,8 +106,8 @@ async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnE
   const resp = await invokeFunction({
     FunctionName: functionArn,
 
-    // Strip 'ResponseURL' -- the downstream CR doesn't need it and can only log it by accident
-    Payload: JSON.stringify({ ...sanitizedPayload, ResponseURL: undefined }),
+    // Cannot strip 'ResponseURL' here as this would be a breaking change even though the downstream CR doesn't need it
+    Payload: JSON.stringify({ ...sanitizedPayload, ResponseURL: responseUrl }),
   });
 
   log('user function response:', resp, typeof(resp));
