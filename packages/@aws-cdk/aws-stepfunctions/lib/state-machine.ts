@@ -151,7 +151,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * Import a state machine via resource name
    */
   public static fromStateMachineName(scope: Construct, id: string, stateMachineName: string): IStateMachine {
-    const stateMachineArn = Stack.of(this).formatArn({
+    const stateMachineArn = Stack.of(scope).formatArn({
       service: 'states',
       resource: 'stateMachine',
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
