@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "AlarmWithLabelIntegrationTest": {
       "type": "aws:cloudformation:stack",

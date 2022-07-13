@@ -1,68 +1,60 @@
 {
-  "version": "17.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "assembly-PipelineStack-Beta": {
       "type": "cdk:cloud-assembly",
       "properties": {
         "directoryName": "assembly-PipelineStack-Beta",
         "displayName": "PipelineStack/Beta"
-      },
-      "metadata": {}
+      }
     },
     "assembly-PipelineStack-Prod1": {
       "type": "cdk:cloud-assembly",
       "properties": {
         "directoryName": "assembly-PipelineStack-Prod1",
         "displayName": "PipelineStack/Prod1"
-      },
-      "metadata": {}
+      }
     },
     "assembly-PipelineStack-Prod2": {
       "type": "cdk:cloud-assembly",
       "properties": {
         "directoryName": "assembly-PipelineStack-Prod2",
         "displayName": "PipelineStack/Prod2"
-      },
-      "metadata": {}
+      }
     },
     "assembly-PipelineStack-Prod3": {
       "type": "cdk:cloud-assembly",
       "properties": {
         "directoryName": "assembly-PipelineStack-Prod3",
         "displayName": "PipelineStack/Prod3"
-      },
-      "metadata": {}
+      }
     },
     "assembly-PipelineStack-Prod4": {
       "type": "cdk:cloud-assembly",
       "properties": {
         "directoryName": "assembly-PipelineStack-Prod4",
         "displayName": "PipelineStack/Prod4"
-      },
-      "metadata": {}
+      }
     },
     "assembly-PipelineStack-Prod5": {
       "type": "cdk:cloud-assembly",
       "properties": {
         "directoryName": "assembly-PipelineStack-Prod5",
         "displayName": "PipelineStack/Prod5"
-      },
-      "metadata": {}
+      }
     },
     "assembly-PipelineStack-Prod6": {
       "type": "cdk:cloud-assembly",
       "properties": {
         "directoryName": "assembly-PipelineStack-Prod6",
         "displayName": "PipelineStack/Prod6"
-      },
-      "metadata": {}
+      }
     },
     "Tree": {
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "PipelineStack.assets": {
       "type": "cdk:asset-manifest",
@@ -70,8 +62,7 @@
         "file": "PipelineStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      },
-      "metadata": {}
+      }
     },
     "PipelineStack": {
       "type": "aws:cloudformation:stack",
@@ -81,7 +72,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4a9b2931d513da8a3f176cd95e78ce1b58f684139c585a3499bacfa5b55339a4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7d2531c66d17cb894cbea6b47a7e239187e0d2af28927555c71267afdec36666.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -151,28 +142,16 @@
             "data": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Build/Synth/CodePipelineActionRole/Resource": [
+        "/PipelineStack/Pipeline/CodeBuildActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineBuildSynthCodePipelineActionRole4E7A6C97"
+            "data": "PipelineCodeBuildActionRole226DB0CB"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Build/Synth/CodePipelineActionRole/DefaultPolicy/Resource": [
+        "/PipelineStack/Pipeline/CodeBuildActionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineBuildSynthCodePipelineActionRoleDefaultPolicy92C90290"
-          }
-        ],
-        "/PipelineStack/Pipeline/Pipeline/UpdatePipeline/SelfMutate/CodePipelineActionRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF"
-          }
-        ],
-        "/PipelineStack/Pipeline/Pipeline/UpdatePipeline/SelfMutate/CodePipelineActionRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleDefaultPolicyE626265B"
+            "data": "PipelineCodeBuildActionRoleDefaultPolicy1D62A6FE"
           }
         ],
         "/PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Role/Resource": [

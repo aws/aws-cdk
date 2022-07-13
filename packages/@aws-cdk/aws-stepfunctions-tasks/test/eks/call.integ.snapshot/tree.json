@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-stepfunctions-tasks-eks-call-integ": {
@@ -867,14 +867,14 @@
                                     {
                                       "Action": [
                                         "eks:CreateCluster",
+                                        "eks:CreateFargateProfile",
+                                        "eks:DeleteCluster",
                                         "eks:DescribeCluster",
                                         "eks:DescribeUpdate",
-                                        "eks:DeleteCluster",
-                                        "eks:UpdateClusterVersion",
-                                        "eks:UpdateClusterConfig",
-                                        "eks:CreateFargateProfile",
                                         "eks:TagResource",
-                                        "eks:UntagResource"
+                                        "eks:UntagResource",
+                                        "eks:UpdateClusterConfig",
+                                        "eks:UpdateClusterVersion"
                                       ],
                                       "Effect": "Allow",
                                       "Resource": [
@@ -922,8 +922,8 @@
                                     },
                                     {
                                       "Action": [
-                                        "eks:DescribeFargateProfile",
-                                        "eks:DeleteFargateProfile"
+                                        "eks:DeleteFargateProfile",
+                                        "eks:DescribeFargateProfile"
                                       ],
                                       "Effect": "Allow",
                                       "Resource": {
@@ -949,26 +949,16 @@
                                     },
                                     {
                                       "Action": [
-                                        "iam:GetRole",
-                                        "iam:listAttachedRolePolicies"
-                                      ],
-                                      "Effect": "Allow",
-                                      "Resource": "*"
-                                    },
-                                    {
-                                      "Action": "iam:CreateServiceLinkedRole",
-                                      "Effect": "Allow",
-                                      "Resource": "*"
-                                    },
-                                    {
-                                      "Action": [
+                                        "ec2:DescribeDhcpOptions",
                                         "ec2:DescribeInstances",
                                         "ec2:DescribeNetworkInterfaces",
+                                        "ec2:DescribeRouteTables",
                                         "ec2:DescribeSecurityGroups",
                                         "ec2:DescribeSubnets",
-                                        "ec2:DescribeRouteTables",
-                                        "ec2:DescribeDhcpOptions",
-                                        "ec2:DescribeVpcs"
+                                        "ec2:DescribeVpcs",
+                                        "iam:CreateServiceLinkedRole",
+                                        "iam:GetRole",
+                                        "iam:listAttachedRolePolicies"
                                       ],
                                       "Effect": "Allow",
                                       "Resource": "*"
@@ -1021,8 +1011,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "KubectlReadyBarrier": {
@@ -1829,6 +1819,12 @@
                                           "Resource": [
                                             {
                                               "Fn::GetAtt": [
+                                                "IsCompleteHandler7073F4DA",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::GetAtt": [
                                                 "OnEventHandler42BEBAE0",
                                                 "Arn"
                                               ]
@@ -1839,24 +1835,12 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "OnEventHandler42BEBAE0",
+                                                      "IsCompleteHandler7073F4DA",
                                                       "Arn"
                                                     ]
                                                   },
                                                   ":*"
                                                 ]
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Action": "lambda:InvokeFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "IsCompleteHandler7073F4DA",
-                                                "Arn"
                                               ]
                                             },
                                             {
@@ -1865,7 +1849,7 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "IsCompleteHandler7073F4DA",
+                                                      "OnEventHandler42BEBAE0",
                                                       "Arn"
                                                     ]
                                                   },
@@ -2087,6 +2071,12 @@
                                           "Resource": [
                                             {
                                               "Fn::GetAtt": [
+                                                "IsCompleteHandler7073F4DA",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::GetAtt": [
                                                 "OnEventHandler42BEBAE0",
                                                 "Arn"
                                               ]
@@ -2097,24 +2087,12 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "OnEventHandler42BEBAE0",
+                                                      "IsCompleteHandler7073F4DA",
                                                       "Arn"
                                                     ]
                                                   },
                                                   ":*"
                                                 ]
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Action": "lambda:InvokeFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "IsCompleteHandler7073F4DA",
-                                                "Arn"
                                               ]
                                             },
                                             {
@@ -2123,7 +2101,7 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "IsCompleteHandler7073F4DA",
+                                                      "OnEventHandler42BEBAE0",
                                                       "Arn"
                                                     ]
                                                   },
@@ -2335,6 +2313,12 @@
                                           "Resource": [
                                             {
                                               "Fn::GetAtt": [
+                                                "IsCompleteHandler7073F4DA",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::GetAtt": [
                                                 "OnEventHandler42BEBAE0",
                                                 "Arn"
                                               ]
@@ -2345,24 +2329,12 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "OnEventHandler42BEBAE0",
+                                                      "IsCompleteHandler7073F4DA",
                                                       "Arn"
                                                     ]
                                                   },
                                                   ":*"
                                                 ]
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Action": "lambda:InvokeFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "IsCompleteHandler7073F4DA",
-                                                "Arn"
                                               ]
                                             },
                                             {
@@ -2371,7 +2343,7 @@
                                                 [
                                                   {
                                                     "Fn::GetAtt": [
-                                                      "IsCompleteHandler7073F4DA",
+                                                      "OnEventHandler42BEBAE0",
                                                       "Arn"
                                                     ]
                                                   },
@@ -2582,6 +2554,12 @@
                                               ]
                                             },
                                             {
+                                              "Fn::GetAtt": [
+                                                "ProviderframeworkonTimeout0B47CA38",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
                                               "Fn::Join": [
                                                 "",
                                                 [
@@ -2593,18 +2571,6 @@
                                                   },
                                                   ":*"
                                                 ]
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Action": "lambda:InvokeFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "ProviderframeworkonTimeout0B47CA38",
-                                                "Arn"
                                               ]
                                             },
                                             {
@@ -2661,8 +2627,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   }
                 },
@@ -2773,7 +2739,7 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParameters9cae0bbb64edb870a98c676b634594552643cfed9e4f4dd108529258925f0716S3Bucket653B179E"
+                            "Ref": "AssetParameters97339ad18d3c0bd1b322737b9e36ba41a2ba52511228d82388fbc76ccee5fe20S3BucketFD3C7FB5"
                           },
                           "/",
                           {
@@ -2783,7 +2749,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters9cae0bbb64edb870a98c676b634594552643cfed9e4f4dd108529258925f0716S3VersionKeyC270D7A9"
+                                    "Ref": "AssetParameters97339ad18d3c0bd1b322737b9e36ba41a2ba52511228d82388fbc76ccee5fe20S3VersionKeyF51D8287"
                                   }
                                 ]
                               }
@@ -2796,7 +2762,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters9cae0bbb64edb870a98c676b634594552643cfed9e4f4dd108529258925f0716S3VersionKeyC270D7A9"
+                                    "Ref": "AssetParameters97339ad18d3c0bd1b322737b9e36ba41a2ba52511228d82388fbc76ccee5fe20S3VersionKeyF51D8287"
                                   }
                                 ]
                               }
@@ -2840,8 +2806,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "AssetParameters": {
@@ -2878,8 +2844,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6": {
@@ -2912,8 +2878,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9": {
@@ -2946,17 +2912,17 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
-              "a70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8": {
-                "id": "a70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8",
-                "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/a70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8",
+              "07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963": {
+                "id": "07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963",
+                "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/a70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8/S3Bucket",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2964,7 +2930,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/a70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8/S3VersionKey",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2972,7 +2938,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/a70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8/ArtifactHash",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2980,17 +2946,17 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
-              "92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4": {
-                "id": "92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4",
-                "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4",
+              "01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476": {
+                "id": "01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476",
+                "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4/S3Bucket",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2998,7 +2964,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4/S3VersionKey",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3006,7 +2972,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4/ArtifactHash",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3014,17 +2980,17 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
-              "ea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03e": {
-                "id": "ea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03e",
-                "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/ea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03e",
+              "c6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffed": {
+                "id": "c6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffed",
+                "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/c6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffed",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/ea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03e/S3Bucket",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/c6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffed/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3032,7 +2998,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/ea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03e/S3VersionKey",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/c6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffed/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3040,7 +3006,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/ea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03e/ArtifactHash",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/c6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffed/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3048,17 +3014,17 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
-              "9cae0bbb64edb870a98c676b634594552643cfed9e4f4dd108529258925f0716": {
-                "id": "9cae0bbb64edb870a98c676b634594552643cfed9e4f4dd108529258925f0716",
-                "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/9cae0bbb64edb870a98c676b634594552643cfed9e4f4dd108529258925f0716",
+              "97339ad18d3c0bd1b322737b9e36ba41a2ba52511228d82388fbc76ccee5fe20": {
+                "id": "97339ad18d3c0bd1b322737b9e36ba41a2ba52511228d82388fbc76ccee5fe20",
+                "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/97339ad18d3c0bd1b322737b9e36ba41a2ba52511228d82388fbc76ccee5fe20",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/9cae0bbb64edb870a98c676b634594552643cfed9e4f4dd108529258925f0716/S3Bucket",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/97339ad18d3c0bd1b322737b9e36ba41a2ba52511228d82388fbc76ccee5fe20/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3066,7 +3032,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/9cae0bbb64edb870a98c676b634594552643cfed9e4f4dd108529258925f0716/S3VersionKey",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/97339ad18d3c0bd1b322737b9e36ba41a2ba52511228d82388fbc76ccee5fe20/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3074,7 +3040,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/9cae0bbb64edb870a98c676b634594552643cfed9e4f4dd108529258925f0716/ArtifactHash",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/97339ad18d3c0bd1b322737b9e36ba41a2ba52511228d82388fbc76ccee5fe20/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3082,17 +3048,17 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
-              "41132812c5e1c75d87704a2bbc12647a35d5008ae9c680d8673d0ef7d8a969da": {
-                "id": "41132812c5e1c75d87704a2bbc12647a35d5008ae9c680d8673d0ef7d8a969da",
-                "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/41132812c5e1c75d87704a2bbc12647a35d5008ae9c680d8673d0ef7d8a969da",
+              "199adc4b7f412895dd7c34968ef1a856e419314ece07064a82c763ee904213c2": {
+                "id": "199adc4b7f412895dd7c34968ef1a856e419314ece07064a82c763ee904213c2",
+                "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/199adc4b7f412895dd7c34968ef1a856e419314ece07064a82c763ee904213c2",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/41132812c5e1c75d87704a2bbc12647a35d5008ae9c680d8673d0ef7d8a969da/S3Bucket",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/199adc4b7f412895dd7c34968ef1a856e419314ece07064a82c763ee904213c2/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3100,7 +3066,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/41132812c5e1c75d87704a2bbc12647a35d5008ae9c680d8673d0ef7d8a969da/S3VersionKey",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/199adc4b7f412895dd7c34968ef1a856e419314ece07064a82c763ee904213c2/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3108,7 +3074,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/41132812c5e1c75d87704a2bbc12647a35d5008ae9c680d8673d0ef7d8a969da/ArtifactHash",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ/AssetParameters/199adc4b7f412895dd7c34968ef1a856e419314ece07064a82c763ee904213c2/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3116,14 +3082,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -3289,7 +3255,7 @@
                       "aws:cdk:cloudformation:props": {
                         "code": {
                           "s3Bucket": {
-                            "Ref": "referencetoawsstepfunctionstasksekscallintegAssetParametersa70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8S3BucketE7B0B7E5Ref"
+                            "Ref": "referencetoawsstepfunctionstasksekscallintegAssetParameters07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963S3Bucket4EDAF1AERef"
                           },
                           "s3Key": {
                             "Fn::Join": [
@@ -3302,7 +3268,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "referencetoawsstepfunctionstasksekscallintegAssetParametersa70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8S3VersionKeyCD195549Ref"
+                                          "Ref": "referencetoawsstepfunctionstasksekscallintegAssetParameters07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963S3VersionKey3080C8B0Ref"
                                         }
                                       ]
                                     }
@@ -3315,7 +3281,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "referencetoawsstepfunctionstasksekscallintegAssetParametersa70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8S3VersionKeyCD195549Ref"
+                                          "Ref": "referencetoawsstepfunctionstasksekscallintegAssetParameters07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963S3VersionKey3080C8B0Ref"
                                         }
                                       ]
                                     }
@@ -3410,7 +3376,7 @@
                       "aws:cdk:cloudformation:props": {
                         "content": {
                           "s3Bucket": {
-                            "Ref": "referencetoawsstepfunctionstasksekscallintegAssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3Bucket3DD8523BRef"
+                            "Ref": "referencetoawsstepfunctionstasksekscallintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3Bucket798773A3Ref"
                           },
                           "s3Key": {
                             "Fn::Join": [
@@ -3423,7 +3389,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "referencetoawsstepfunctionstasksekscallintegAssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3VersionKeyCF902114Ref"
+                                          "Ref": "referencetoawsstepfunctionstasksekscallintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey5190CF7DRef"
                                         }
                                       ]
                                     }
@@ -3436,7 +3402,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "referencetoawsstepfunctionstasksekscallintegAssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3VersionKeyCF902114Ref"
+                                          "Ref": "referencetoawsstepfunctionstasksekscallintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey5190CF7DRef"
                                         }
                                       ]
                                     }
@@ -3498,7 +3464,7 @@
                       "aws:cdk:cloudformation:props": {
                         "content": {
                           "s3Bucket": {
-                            "Ref": "referencetoawsstepfunctionstasksekscallintegAssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3Bucket91831D54Ref"
+                            "Ref": "referencetoawsstepfunctionstasksekscallintegAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3BucketD3D622F6Ref"
                           },
                           "s3Key": {
                             "Fn::Join": [
@@ -3511,7 +3477,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "referencetoawsstepfunctionstasksekscallintegAssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3VersionKeyAFE7B9F9Ref"
+                                          "Ref": "referencetoawsstepfunctionstasksekscallintegAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3VersionKey82ADFCEERef"
                                         }
                                       ]
                                     }
@@ -3524,7 +3490,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "referencetoawsstepfunctionstasksekscallintegAssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3VersionKeyAFE7B9F9Ref"
+                                          "Ref": "referencetoawsstepfunctionstasksekscallintegAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3VersionKey82ADFCEERef"
                                         }
                                       ]
                                     }
@@ -3825,17 +3791,17 @@
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awsstepfunctionstasksekscallintegAssetParametersa70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8S3BucketE7B0B7E5Ref": {
-                "id": "reference-to-awsstepfunctionstasksekscallintegAssetParametersa70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8S3BucketE7B0B7E5Ref",
-                "path": "aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegAssetParametersa70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8S3BucketE7B0B7E5Ref",
+              "reference-to-awsstepfunctionstasksekscallintegAssetParameters07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963S3Bucket4EDAF1AERef": {
+                "id": "reference-to-awsstepfunctionstasksekscallintegAssetParameters07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963S3Bucket4EDAF1AERef",
+                "path": "aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegAssetParameters07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963S3Bucket4EDAF1AERef",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnParameter",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awsstepfunctionstasksekscallintegAssetParametersa70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8S3VersionKeyCD195549Ref": {
-                "id": "reference-to-awsstepfunctionstasksekscallintegAssetParametersa70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8S3VersionKeyCD195549Ref",
-                "path": "aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegAssetParametersa70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8S3VersionKeyCD195549Ref",
+              "reference-to-awsstepfunctionstasksekscallintegAssetParameters07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963S3VersionKey3080C8B0Ref": {
+                "id": "reference-to-awsstepfunctionstasksekscallintegAssetParameters07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963S3VersionKey3080C8B0Ref",
+                "path": "aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegAssetParameters07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963S3VersionKey3080C8B0Ref",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnParameter",
                   "version": "0.0.0"
@@ -3865,33 +3831,33 @@
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awsstepfunctionstasksekscallintegAssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3Bucket3DD8523BRef": {
-                "id": "reference-to-awsstepfunctionstasksekscallintegAssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3Bucket3DD8523BRef",
-                "path": "aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegAssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3Bucket3DD8523BRef",
+              "reference-to-awsstepfunctionstasksekscallintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3Bucket798773A3Ref": {
+                "id": "reference-to-awsstepfunctionstasksekscallintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3Bucket798773A3Ref",
+                "path": "aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3Bucket798773A3Ref",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnParameter",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awsstepfunctionstasksekscallintegAssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3VersionKeyCF902114Ref": {
-                "id": "reference-to-awsstepfunctionstasksekscallintegAssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3VersionKeyCF902114Ref",
-                "path": "aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegAssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3VersionKeyCF902114Ref",
+              "reference-to-awsstepfunctionstasksekscallintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey5190CF7DRef": {
+                "id": "reference-to-awsstepfunctionstasksekscallintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey5190CF7DRef",
+                "path": "aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey5190CF7DRef",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnParameter",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awsstepfunctionstasksekscallintegAssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3Bucket91831D54Ref": {
-                "id": "reference-to-awsstepfunctionstasksekscallintegAssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3Bucket91831D54Ref",
-                "path": "aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegAssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3Bucket91831D54Ref",
+              "reference-to-awsstepfunctionstasksekscallintegAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3BucketD3D622F6Ref": {
+                "id": "reference-to-awsstepfunctionstasksekscallintegAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3BucketD3D622F6Ref",
+                "path": "aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3BucketD3D622F6Ref",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnParameter",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awsstepfunctionstasksekscallintegAssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3VersionKeyAFE7B9F9Ref": {
-                "id": "reference-to-awsstepfunctionstasksekscallintegAssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3VersionKeyAFE7B9F9Ref",
-                "path": "aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegAssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3VersionKeyAFE7B9F9Ref",
+              "reference-to-awsstepfunctionstasksekscallintegAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3VersionKey82ADFCEERef": {
+                "id": "reference-to-awsstepfunctionstasksekscallintegAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3VersionKey82ADFCEERef",
+                "path": "aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3VersionKey82ADFCEERef",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnParameter",
                   "version": "0.0.0"
@@ -3943,7 +3909,7 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParameters41132812c5e1c75d87704a2bbc12647a35d5008ae9c680d8673d0ef7d8a969daS3BucketDE4F3D14"
+                            "Ref": "AssetParameters199adc4b7f412895dd7c34968ef1a856e419314ece07064a82c763ee904213c2S3Bucket20813786"
                           },
                           "/",
                           {
@@ -3953,7 +3919,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters41132812c5e1c75d87704a2bbc12647a35d5008ae9c680d8673d0ef7d8a969daS3VersionKeyF150C34C"
+                                    "Ref": "AssetParameters199adc4b7f412895dd7c34968ef1a856e419314ece07064a82c763ee904213c2S3VersionKey5D142F87"
                                   }
                                 ]
                               }
@@ -3966,7 +3932,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters41132812c5e1c75d87704a2bbc12647a35d5008ae9c680d8673d0ef7d8a969daS3VersionKeyF150C34C"
+                                    "Ref": "AssetParameters199adc4b7f412895dd7c34968ef1a856e419314ece07064a82c763ee904213c2S3VersionKey5D142F87"
                                   }
                                 ]
                               }
@@ -3988,11 +3954,11 @@
                           "Arn"
                         ]
                       },
-                      "referencetoawsstepfunctionstasksekscallintegAssetParametersa70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8S3BucketE7B0B7E5Ref": {
-                        "Ref": "AssetParametersa70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8S3Bucket4CD5FFC3"
+                      "referencetoawsstepfunctionstasksekscallintegAssetParameters07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963S3Bucket4EDAF1AERef": {
+                        "Ref": "AssetParameters07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963S3Bucket9BDF5881"
                       },
-                      "referencetoawsstepfunctionstasksekscallintegAssetParametersa70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8S3VersionKeyCD195549Ref": {
-                        "Ref": "AssetParametersa70c48e7047fb793b2378668accb1dc2d92f2d7b1fff80c9c718f4964dc69cb8S3VersionKeyE06BA291"
+                      "referencetoawsstepfunctionstasksekscallintegAssetParameters07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963S3VersionKey3080C8B0Ref": {
+                        "Ref": "AssetParameters07a1c6a504be72dba3e9bc5b12cc2b5b0e83ea5c6ba10a4128da5c2180f3f963S3VersionKey63AC53A2"
                       },
                       "referencetoawsstepfunctionstasksekscallintegEksClusterDefaultVpcPrivateSubnet1Subnet3A6964EARef": {
                         "Ref": "EksClusterDefaultVpcPrivateSubnet1Subnet4D665A2F"
@@ -4006,17 +3972,17 @@
                           "ClusterSecurityGroupId"
                         ]
                       },
-                      "referencetoawsstepfunctionstasksekscallintegAssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3Bucket3DD8523BRef": {
-                        "Ref": "AssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3BucketC479E94B"
+                      "referencetoawsstepfunctionstasksekscallintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3Bucket798773A3Ref": {
+                        "Ref": "AssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3BucketC0D91AC4"
                       },
-                      "referencetoawsstepfunctionstasksekscallintegAssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3VersionKeyCF902114Ref": {
-                        "Ref": "AssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3VersionKeyEF78B2AD"
+                      "referencetoawsstepfunctionstasksekscallintegAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey5190CF7DRef": {
+                        "Ref": "AssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKey26CFD1B0"
                       },
-                      "referencetoawsstepfunctionstasksekscallintegAssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3Bucket91831D54Ref": {
-                        "Ref": "AssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3BucketD3288998"
+                      "referencetoawsstepfunctionstasksekscallintegAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3BucketD3D622F6Ref": {
+                        "Ref": "AssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3Bucket83B8778F"
                       },
-                      "referencetoawsstepfunctionstasksekscallintegAssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3VersionKeyAFE7B9F9Ref": {
-                        "Ref": "AssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3VersionKeyB00C0565"
+                      "referencetoawsstepfunctionstasksekscallintegAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3VersionKey82ADFCEERef": {
+                        "Ref": "AssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3VersionKeyADF6A055"
                       },
                       "referencetoawsstepfunctionstasksekscallintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3BucketBEDC1A1DRef": {
                         "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90"
@@ -4034,8 +4000,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "Role": {

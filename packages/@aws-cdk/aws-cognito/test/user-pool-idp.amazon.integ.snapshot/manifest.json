@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "integ-user-pool-idp-amazon": {
       "type": "aws:cloudformation:stack",

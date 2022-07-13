@@ -417,16 +417,14 @@
       {
        "Action": "sns:Publish",
        "Effect": "Allow",
-       "Resource": {
-        "Ref": "signupD2AAA171"
-       }
-      },
-      {
-       "Action": "sns:Publish",
-       "Effect": "Allow",
-       "Resource": {
-        "Ref": "delete1CCE71FF"
-       }
+       "Resource": [
+        {
+         "Ref": "delete1CCE71FF"
+        },
+        {
+         "Ref": "signupD2AAA171"
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -465,6 +463,18 @@
       ],
       "Essential": true,
       "Image": "nathanpeck/name",
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "PublisherlogsDF0C1067"
+        },
+        "awslogs-stream-prefix": "Publisher",
+        "awslogs-region": {
+         "Ref": "AWS::Region"
+        }
+       }
+      },
       "Memory": 512,
       "Name": "app",
       "PortMappings": [
@@ -483,6 +493,12 @@
      }
     ],
     "Cpu": "256",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "PublishertaskdefinitionExecutionRole5C00C542",
+      "Arn"
+     ]
+    },
     "Family": "awsecsintegPublishertaskdefinitionD50610D0",
     "Memory": "512",
     "NetworkMode": "awsvpc",
@@ -497,6 +513,61 @@
      ]
     }
    }
+  },
+  "PublishertaskdefinitionExecutionRole5C00C542": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "PublishertaskdefinitionExecutionRoleDefaultPolicy681FD8E6": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "PublisherlogsDF0C1067",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PublishertaskdefinitionExecutionRoleDefaultPolicy681FD8E6",
+    "Roles": [
+     {
+      "Ref": "PublishertaskdefinitionExecutionRole5C00C542"
+     }
+    ]
+   }
+  },
+  "PublisherlogsDF0C1067": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "Publisher-logs",
+    "RetentionInDays": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "PublisherserviceService9EB00F60": {
    "Type": "AWS::ECS::Service",
@@ -706,35 +777,27 @@
      "Statement": [
       {
        "Action": [
-        "sqs:ReceiveMessage",
         "sqs:ChangeMessageVisibility",
-        "sqs:GetQueueUrl",
         "sqs:DeleteMessage",
-        "sqs:GetQueueAttributes"
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "EventsQueueB96EB0D2",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": [
-        "sqs:ReceiveMessage",
-        "sqs:ChangeMessageVisibility",
-        "sqs:GetQueueUrl",
-        "sqs:DeleteMessage",
-        "sqs:GetQueueAttributes"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "signupqueue33AFF2E6",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "EventsQueueB96EB0D2",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "signupqueue33AFF2E6",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -767,6 +830,18 @@
       ],
       "Essential": true,
       "Image": "nathanpeck/name",
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "Workerlogs2994AC4D"
+        },
+        "awslogs-stream-prefix": "Worker",
+        "awslogs-region": {
+         "Ref": "AWS::Region"
+        }
+       }
+      },
       "Memory": 512,
       "Name": "app",
       "PortMappings": [
@@ -785,6 +860,12 @@
      }
     ],
     "Cpu": "256",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "WorkertaskdefinitionExecutionRole3C1A1848",
+      "Arn"
+     ]
+    },
     "Family": "awsecsintegWorkertaskdefinition32B60762",
     "Memory": "512",
     "NetworkMode": "awsvpc",
@@ -799,6 +880,61 @@
      ]
     }
    }
+  },
+  "WorkertaskdefinitionExecutionRole3C1A1848": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "WorkertaskdefinitionExecutionRoleDefaultPolicy6E199B19": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Workerlogs2994AC4D",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "WorkertaskdefinitionExecutionRoleDefaultPolicy6E199B19",
+    "Roles": [
+     {
+      "Ref": "WorkertaskdefinitionExecutionRole3C1A1848"
+     }
+    ]
+   }
+  },
+  "Workerlogs2994AC4D": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "Worker-logs",
+    "RetentionInDays": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "WorkerserviceService68C5A5C3": {
    "Type": "AWS::ECS::Service",

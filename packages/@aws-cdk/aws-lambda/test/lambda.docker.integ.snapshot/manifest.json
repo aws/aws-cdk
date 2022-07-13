@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "lambda-ecr-docker": {
       "type": "aws:cloudformation:stack",
@@ -21,11 +20,11 @@
             "type": "aws:cdk:asset",
             "data": {
               "repositoryName": "aws-cdk/assets",
-              "imageTag": "b7767e24de8d852617d9600e7a60395334454ca017d648f93b2d990aec7f50fd",
-              "id": "b7767e24de8d852617d9600e7a60395334454ca017d648f93b2d990aec7f50fd",
+              "imageTag": "768d7b6c1d41b85135f498fe0cca69fea410be3c3322c69cf08690aaad29a610",
+              "id": "768d7b6c1d41b85135f498fe0cca69fea410be3c3322c69cf08690aaad29a610",
               "packaging": "container-image",
-              "path": "asset.b7767e24de8d852617d9600e7a60395334454ca017d648f93b2d990aec7f50fd",
-              "sourceHash": "b7767e24de8d852617d9600e7a60395334454ca017d648f93b2d990aec7f50fd"
+              "path": "asset.768d7b6c1d41b85135f498fe0cca69fea410be3c3322c69cf08690aaad29a610",
+              "sourceHash": "768d7b6c1d41b85135f498fe0cca69fea410be3c3322c69cf08690aaad29a610"
             }
           }
         ],

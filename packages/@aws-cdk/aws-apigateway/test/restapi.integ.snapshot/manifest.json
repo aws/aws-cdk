@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "test-apigateway-restapi": {
       "type": "aws:cloudformation:stack",
@@ -160,10 +159,10 @@
             "data": "myapiUsagePlan56F9C4F2"
           }
         ],
-        "/test-apigateway-restapi/my-api/UsagePlan/UsagePlanKeyResource": [
+        "/test-apigateway-restapi/my-api/UsagePlan/UsagePlanKeyResource:testapigatewayrestapimyapiApiKeyC43601CB": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myapiUsagePlanUsagePlanKeyResource050D133F"
+            "data": "myapiUsagePlanUsagePlanKeyResourcetestapigatewayrestapimyapiApiKeyC43601CB600D112D"
           }
         ],
         "/test-apigateway-restapi/MyHandler/ServiceRole/Resource": [
@@ -176,6 +175,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyHandler6B74D312"
+          }
+        ],
+        "myapiUsagePlanUsagePlanKeyResource050D133F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiUsagePlanUsagePlanKeyResource050D133F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

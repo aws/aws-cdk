@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-stepfunctions-tasks-sqs-send-message-integ": {
       "type": "aws:cloudformation:stack",

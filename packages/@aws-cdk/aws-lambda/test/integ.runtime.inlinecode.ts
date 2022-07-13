@@ -22,13 +22,6 @@ const node12xfn = new Function(stack, 'NODEJS_12_X', {
 });
 new CfnOutput(stack, 'NODEJS_12_X-functionName', { value: node12xfn.functionName });
 
-const python36 = new Function(stack, 'PYTHON_3_6', {
-  code: new InlineCode('def handler(event, context):\n  return "success"'),
-  handler: 'index.handler',
-  runtime: Runtime.PYTHON_3_6,
-});
-new CfnOutput(stack, 'PYTHON_3_6-functionName', { value: python36.functionName });
-
 const python37 = new Function(stack, 'PYTHON_3_7', {
   code: new InlineCode('def handler(event, context):\n  return "success"'),
   handler: 'index.handler',
@@ -56,5 +49,12 @@ const node14xfn = new Function(stack, 'NODEJS_14_X', {
   runtime: Runtime.NODEJS_14_X,
 });
 new CfnOutput(stack, 'NODEJS_14_X-functionName', { value: node14xfn.functionName });
+
+const node16xfn = new Function(stack, 'NODEJS_16_X', {
+  code: new InlineCode('exports.handler = async function(event) { return "success" }'),
+  handler: 'index.handler',
+  runtime: Runtime.NODEJS_16_X,
+});
+new CfnOutput(stack, 'NODEJS_16_X-functionName', { value: node16xfn.functionName });
 
 app.synth();

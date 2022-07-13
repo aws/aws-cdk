@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-cdk-glue": {
@@ -379,6 +379,49 @@
                                           {
                                             "Ref": "AWS::AccountId"
                                           },
+                                          ":catalog"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":glue:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":database/",
+                                          {
+                                            "Ref": "MyDatabase1E2517DB"
+                                          }
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":glue:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
                                           ":table/",
                                           {
                                             "Ref": "MyDatabase1E2517DB"
@@ -406,55 +449,6 @@
                                           {
                                             "Ref": "AWS::AccountId"
                                           },
-                                          ":catalog"
-                                        ]
-                                      ]
-                                    },
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":glue:",
-                                          {
-                                            "Ref": "AWS::Region"
-                                          },
-                                          ":",
-                                          {
-                                            "Ref": "AWS::AccountId"
-                                          },
-                                          ":database/",
-                                          {
-                                            "Ref": "MyDatabase1E2517DB"
-                                          }
-                                        ]
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "Action": "glue:UpdateTable",
-                                  "Effect": "Allow",
-                                  "Resource": [
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":glue:",
-                                          {
-                                            "Ref": "AWS::Region"
-                                          },
-                                          ":",
-                                          {
-                                            "Ref": "AWS::AccountId"
-                                          },
                                           ":table/",
                                           {
                                             "Ref": "MyDatabase1E2517DB"
@@ -462,49 +456,6 @@
                                           "/",
                                           {
                                             "Ref": "JSONTable00348F1D"
-                                          }
-                                        ]
-                                      ]
-                                    },
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":glue:",
-                                          {
-                                            "Ref": "AWS::Region"
-                                          },
-                                          ":",
-                                          {
-                                            "Ref": "AWS::AccountId"
-                                          },
-                                          ":catalog"
-                                        ]
-                                      ]
-                                    },
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":glue:",
-                                          {
-                                            "Ref": "AWS::Region"
-                                          },
-                                          ":",
-                                          {
-                                            "Ref": "AWS::AccountId"
-                                          },
-                                          ":database/",
-                                          {
-                                            "Ref": "MyDatabase1E2517DB"
                                           }
                                         ]
                                       ]
@@ -573,7 +524,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981S3Bucket0C90C820"
+                        "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3BucketB21FB59F"
                       },
                       "s3Key": {
                         "Fn::Join": [
@@ -586,7 +537,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981S3VersionKey2007A749"
+                                      "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058"
                                     }
                                   ]
                                 }
@@ -599,7 +550,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981S3VersionKey2007A749"
+                                      "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058"
                                     }
                                   ]
                                 }
@@ -616,7 +567,7 @@
                       ]
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs12.x",
+                    "runtime": "nodejs14.x",
                     "timeout": 120
                   }
                 },
@@ -635,13 +586,13 @@
             "id": "AssetParameters",
             "path": "aws-cdk-glue/AssetParameters",
             "children": {
-              "dad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981": {
-                "id": "dad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981",
-                "path": "aws-cdk-glue/AssetParameters/dad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981",
+              "9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90": {
+                "id": "9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90",
+                "path": "aws-cdk-glue/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-cdk-glue/AssetParameters/dad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981/S3Bucket",
+                    "path": "aws-cdk-glue/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -649,7 +600,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-cdk-glue/AssetParameters/dad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981/S3VersionKey",
+                    "path": "aws-cdk-glue/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -657,7 +608,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-cdk-glue/AssetParameters/dad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981/ArtifactHash",
+                    "path": "aws-cdk-glue/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -665,14 +616,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "JSONTable": {

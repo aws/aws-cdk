@@ -491,7 +491,7 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
   securityGroups: [securityGroup],
-  taskSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+  taskSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
 });
 ```
 
@@ -733,3 +733,32 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   loadBalancerName: 'application-lb-name',
 });
 ```
+
+### ECS Exec
+
+You can use ECS Exec to run commands in or get a shell to a container running on an Amazon EC2 instance or on
+AWS Fargate. Enable ECS Exec, by setting `enableExecuteCommand` to `true`.
+
+ECS Exec is supported by all Services i.e. `ApplicationLoadBalanced(Fargate|Ec2)Service`, `ApplicationMultipleTargetGroups(Fargate|Ec2)Service`, `NetworkLoadBalanced(Fargate|Ec2)Service`, `NetworkMultipleTargetGroups(Fargate|Ec2)Service`, `QueueProcessing(Fargate|Ec2)Service`. It is not supported for `ScheduledTask`s.
+
+Read more about ECS Exec in the [ECS Developer Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html). 
+
+Example:
+
+```ts
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  enableExecuteCommand: true
+});
+```
+
+Please note, ECS Exec leverages AWS Systems Manager (SSM). So as a prerequisite for the exec command
+to work, you need to have the SSM plugin for the AWS CLI installed locally. For more information, see
+[Install Session Manager plugin for AWS CLI](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).

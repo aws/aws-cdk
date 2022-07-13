@@ -61,12 +61,12 @@
      "Statement": [
       {
        "Action": [
-        "s3:GetObject*",
-        "s3:GetBucket*",
-        "s3:List*",
+        "s3:Abort*",
         "s3:DeleteObject*",
-        "s3:PutObject*",
-        "s3:Abort*"
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject*"
        ],
        "Effect": "Allow",
        "Resource": "*"
@@ -130,7 +130,7 @@
      ]
     },
     "Handler": "index.onEvent",
-    "Runtime": "nodejs12.x"
+    "Runtime": "nodejs14.x"
    },
    "DependsOn": [
     "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRoleDefaultPolicy10D24725",
@@ -269,7 +269,7 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -443,8 +443,8 @@
      "Statement": [
       {
        "Action": [
-        "s3:GetObject*",
         "s3:GetBucket*",
+        "s3:GetObject*",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -558,6 +558,12 @@
        "Resource": [
         {
          "Fn::GetAtt": [
+          "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
           "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
           "Arn"
          ]
@@ -568,24 +574,12 @@
           [
            {
             "Fn::GetAtt": [
-             "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
+             "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
              "Arn"
             ]
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
-          "Arn"
          ]
         },
         {
@@ -594,7 +588,7 @@
           [
            {
             "Fn::GetAtt": [
-             "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+             "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
              "Arn"
             ]
            },
@@ -690,7 +684,7 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -740,6 +734,12 @@
        "Resource": [
         {
          "Fn::GetAtt": [
+          "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
           "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
           "Arn"
          ]
@@ -750,24 +750,12 @@
           [
            {
             "Fn::GetAtt": [
-             "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
+             "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
              "Arn"
             ]
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
-          "Arn"
          ]
         },
         {
@@ -776,7 +764,7 @@
           [
            {
             "Fn::GetAtt": [
-             "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+             "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
              "Arn"
             ]
            },
@@ -862,7 +850,7 @@
      }
     },
     "Handler": "framework.isComplete",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -912,6 +900,12 @@
        "Resource": [
         {
          "Fn::GetAtt": [
+          "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
           "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
           "Arn"
          ]
@@ -922,24 +916,12 @@
           [
            {
             "Fn::GetAtt": [
-             "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
+             "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
              "Arn"
             ]
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
-          "Arn"
          ]
         },
         {
@@ -948,7 +930,7 @@
           [
            {
             "Fn::GetAtt": [
-             "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+             "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
              "Arn"
             ]
            },
@@ -1034,7 +1016,7 @@
      }
     },
     "Handler": "framework.onTimeout",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -1083,6 +1065,12 @@
          ]
         },
         {
+         "Fn::GetAtt": [
+          "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutA1E1E5DC",
+          "Arn"
+         ]
+        },
+        {
          "Fn::Join": [
           "",
           [
@@ -1094,18 +1082,6 @@
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutA1E1E5DC",
-          "Arn"
          ]
         },
         {

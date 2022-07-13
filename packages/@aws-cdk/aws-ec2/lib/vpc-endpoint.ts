@@ -304,6 +304,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly SSM = new InterfaceVpcEndpointAwsService('ssm');
   public static readonly SSM_MESSAGES = new InterfaceVpcEndpointAwsService('ssmmessages');
   public static readonly STS = new InterfaceVpcEndpointAwsService('sts');
+  public static readonly TEXTRACT = new InterfaceVpcEndpointAwsService('textract');
+  public static readonly TEXTRACT_FIPS = new InterfaceVpcEndpointAwsService('textract-fips');
   public static readonly TRANSFER = new InterfaceVpcEndpointAwsService('transfer.server');
   public static readonly STORAGE_GATEWAY = new InterfaceVpcEndpointAwsService('storagegateway');
   public static readonly REKOGNITION = new InterfaceVpcEndpointAwsService('rekognition');
@@ -314,9 +316,14 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly XRAY = new InterfaceVpcEndpointAwsService('xray');
 
   /**
-   * The name of the service.
+   * The name of the service. e.g. com.amazonaws.us-east-1.ecs
    */
   public readonly name: string;
+
+  /**
+   * The short name of the service. e.g. ecs
+   */
+  public readonly shortName: string;
 
   /**
    * The port of the service.
@@ -346,6 +353,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
     });
 
     this.name = `${prefix || defaultEndpointPrefix}.${region}.${name}${defaultEndpointSuffix}`;
+    this.shortName = name;
     this.port = port || 443;
   }
 
@@ -612,8 +620,8 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
   private validateCanLookupSupportedAzs(subnets: ISubnet[], serviceName: string) {
 
     // Having any of these be true will cause the AZ lookup to fail at synthesis time
-    const agnosticAcct = Token.isUnresolved(this.stack.account);
-    const agnosticRegion = Token.isUnresolved(this.stack.region);
+    const agnosticAcct = Token.isUnresolved(this.env.account);
+    const agnosticRegion = Token.isUnresolved(this.env.region);
     const agnosticService = Token.isUnresolved(serviceName);
 
     // Having subnets with Token AZs can cause the endpoint to be created with no subnets, failing at deployment time

@@ -66,8 +66,8 @@
       },
       {
        "Action": [
-        "s3:GetObject*",
         "s3:GetBucket*",
+        "s3:GetObject*",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -148,12 +148,16 @@
      "Statement": [
       {
        "Action": [
-        "s3:GetObject*",
-        "s3:GetBucket*",
-        "s3:List*",
+        "s3:Abort*",
         "s3:DeleteObject*",
-        "s3:PutObject*",
-        "s3:Abort*"
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
        ],
        "Effect": "Allow",
        "Resource": [
@@ -182,49 +186,37 @@
       {
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":iam::",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":role/cdk-hnb659fds-deploy-role-",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          "-",
-          {
-           "Ref": "AWS::Region"
-          }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "PipelineCodeBuildActionRole226DB0CB",
+          "Arn"
          ]
-        ]
-       }
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":role/cdk-hnb659fds-deploy-role-",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           "-",
+           {
+            "Ref": "AWS::Region"
+           }
+          ]
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -302,7 +294,7 @@
         ],
         "RoleArn": {
          "Fn::GetAtt": [
-          "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
+          "PipelineCodeBuildActionRole226DB0CB",
           "Arn"
          ]
         },
@@ -334,7 +326,7 @@
         "Name": "SelfMutate",
         "RoleArn": {
          "Fn::GetAtt": [
-          "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF",
+          "PipelineCodeBuildActionRole226DB0CB",
           "Arn"
          ]
         },
@@ -1926,7 +1918,8 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
-           }
+           },
+           ":*"
           ]
          ]
         },
@@ -1949,8 +1942,7 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
-           },
-           ":*"
+           }
           ]
          ]
         }
@@ -1958,11 +1950,11 @@
       },
       {
        "Action": [
-        "codebuild:CreateReportGroup",
-        "codebuild:CreateReport",
-        "codebuild:UpdateReport",
+        "codebuild:BatchPutCodeCoverages",
         "codebuild:BatchPutTestCases",
-        "codebuild:BatchPutCodeCoverages"
+        "codebuild:CreateReport",
+        "codebuild:CreateReportGroup",
+        "codebuild:UpdateReport"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -1992,12 +1984,16 @@
       },
       {
        "Action": [
-        "s3:GetObject*",
-        "s3:GetBucket*",
-        "s3:List*",
+        "s3:Abort*",
         "s3:DeleteObject*",
-        "s3:PutObject*",
-        "s3:Abort*"
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
        ],
        "Effect": "Allow",
        "Resource": [
@@ -2064,13 +2060,18 @@
     "EncryptionKey": "alias/aws/s3"
    }
   },
-  "PipelineBuildSynthCodePipelineActionRole4E7A6C97": {
+  "PipelineCodeBuildActionRole226DB0CB": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
      "Statement": [
       {
        "Action": "sts:AssumeRole",
+       "Condition": {
+        "Bool": {
+         "aws:ViaAWSService": "codepipeline.amazonaws.com"
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "AWS": {
@@ -2096,7 +2097,7 @@
     }
    }
   },
-  "PipelineBuildSynthCodePipelineActionRoleDefaultPolicy92C90290": {
+  "PipelineCodeBuildActionRoleDefaultPolicy1D62A6FE": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -2108,82 +2109,28 @@
         "codebuild:StopBuild"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "PipelineBuildSynthCdkBuildProject6BEFA8E6",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "PipelineBuildSynthCodePipelineActionRoleDefaultPolicy92C90290",
-    "Roles": [
-     {
-      "Ref": "PipelineBuildSynthCodePipelineActionRole4E7A6C97"
-     }
-    ]
-   }
-  },
-  "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "PipelineBuildSynthCdkBuildProject6BEFA8E6",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "PipelineUpdatePipelineSelfMutationDAA41400",
+          "Arn"
          ]
         }
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleDefaultPolicyE626265B": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "codebuild:BatchGetBuilds",
-        "codebuild:StartBuild",
-        "codebuild:StopBuild"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "PipelineUpdatePipelineSelfMutationDAA41400",
-         "Arn"
-        ]
-       }
+       ]
       }
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleDefaultPolicyE626265B",
+    "PolicyName": "PipelineCodeBuildActionRoleDefaultPolicy1D62A6FE",
     "Roles": [
      {
-      "Ref": "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF"
+      "Ref": "PipelineCodeBuildActionRole226DB0CB"
      }
     ]
    }
@@ -2237,7 +2184,8 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
-           }
+           },
+           ":*"
           ]
          ]
         },
@@ -2260,8 +2208,7 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
-           },
-           ":*"
+           }
           ]
          ]
         }
@@ -2269,11 +2216,11 @@
       },
       {
        "Action": [
-        "codebuild:CreateReportGroup",
-        "codebuild:CreateReport",
-        "codebuild:UpdateReport",
+        "codebuild:BatchPutCodeCoverages",
         "codebuild:BatchPutTestCases",
-        "codebuild:BatchPutCodeCoverages"
+        "codebuild:CreateReport",
+        "codebuild:CreateReportGroup",
+        "codebuild:UpdateReport"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -2327,19 +2274,17 @@
        }
       },
       {
-       "Action": "cloudformation:DescribeStacks",
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": "s3:ListBucket",
+       "Action": [
+        "cloudformation:DescribeStacks",
+        "s3:ListBucket"
+       ],
        "Effect": "Allow",
        "Resource": "*"
       },
       {
        "Action": [
-        "s3:GetObject*",
         "s3:GetBucket*",
+        "s3:GetObject*",
         "s3:List*"
        ],
        "Effect": "Allow",

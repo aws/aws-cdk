@@ -740,11 +740,11 @@
      "Statement": [
       {
        "Action": [
-        "sqs:ReceiveMessage",
         "sqs:ChangeMessageVisibility",
-        "sqs:GetQueueUrl",
         "sqs:DeleteMessage",
-        "sqs:GetQueueAttributes"
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -797,7 +797,7 @@
          {
           "Ref": "AWS::URLSuffix"
          },
-         "/aws-cdk/assets:df8476644bbc9943ba146e5aba5b9ae7ab8804a49ff767c357606ffee5c4d9e4"
+         "/aws-cdk/assets:95cefedd43575452a70cdeeeceb0f1c5728fd58c9ff8e81e760c3dac33c46417"
         ]
        ]
       },
@@ -867,8 +867,8 @@
       {
        "Action": [
         "ecr:BatchCheckLayerAvailability",
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:BatchGetImage"
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -931,7 +931,6 @@
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
-    "DesiredCount": 1,
     "EnableECSManagedTags": false,
     "LaunchType": "FARGATE",
     "NetworkConfiguration": {

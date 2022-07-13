@@ -1,12 +1,11 @@
 {
-  "version": "17.0.0",
+  "version": "19.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "integ-apprunner": {
       "type": "aws:cloudformation:stack",
@@ -21,11 +20,11 @@
             "type": "aws:cdk:asset",
             "data": {
               "repositoryName": "aws-cdk/assets",
-              "imageTag": "e9db95c5eb5c683b56dbb8a1930ab8b028babb58b58058d72fa77071e38e66a4",
-              "id": "e9db95c5eb5c683b56dbb8a1930ab8b028babb58b58058d72fa77071e38e66a4",
+              "imageTag": "77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967",
+              "id": "77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967",
               "packaging": "container-image",
-              "path": "asset.e9db95c5eb5c683b56dbb8a1930ab8b028babb58b58058d72fa77071e38e66a4.assets",
-              "sourceHash": "e9db95c5eb5c683b56dbb8a1930ab8b028babb58b58058d72fa77071e38e66a4"
+              "path": "asset.77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967.assets",
+              "sourceHash": "77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967"
             }
           }
         ],

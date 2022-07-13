@@ -107,9 +107,7 @@ export interface NoticeDataSource {
 export class WebsiteNoticeDataSource implements NoticeDataSource {
   fetch(): Promise<Notice[]> {
     const timeout = 3000;
-
-    return new Promise((resolve) => {
-      setTimeout(() => resolve([]), timeout);
+    return new Promise((resolve, reject) => {
       try {
         const req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json',
           { timeout },
@@ -123,29 +121,39 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
               res.on('end', () => {
                 try {
                   const data = JSON.parse(rawData).notices as Notice[];
+                  if (!data) {
+                    throw new Error("'notices' key is missing");
+                  }
+                  debug('Notices refreshed');
                   resolve(data ?? []);
                 } catch (e) {
-                  debug(`Failed to parse notices: ${e}`);
-                  resolve([]);
+                  reject(new Error(`Failed to parse notices: ${e.message}`));
                 }
               });
               res.on('error', e => {
-                debug(`Failed to fetch notices: ${e}`);
-                resolve([]);
+                reject(new Error(`Failed to fetch notices: ${e.message}`));
               });
             } else {
-              debug(`Failed to fetch notices. Status code: ${res.statusCode}`);
-              resolve([]);
+              reject(new Error(`Failed to fetch notices. Status code: ${res.statusCode}`));
             }
           });
-        req.on('error', e => {
-          debug(`Error on request: ${e}`);
-          resolve([]);
+        req.on('error', reject);
+        req.on('timeout', () => {
+          // The 'timeout' event doesn't stop anything by itself, it just
+          // notifies that it has been long time since we saw bytes.
+          // In our case, we want to give up.
+          req.destroy(new Error('Request timed out'));
         });
-        req.on('timeout', _ => resolve([]));
+
+        // It's not like I don't *trust* the 'timeout' event... but I don't trust it.
+        // Add a backup timer that will destroy the request after all.
+        // (This is at least necessary to make the tests pass, but that's probably because of 'nock'.
+        // It's not clear whether users will hit this).
+        setTimeout(() => {
+          req.destroy(new Error('Request timed out. You should never see this message; if you do, please let us know at https://github.com/aws/aws-cdk/issues'));
+        }, timeout + 200);
       } catch (e) {
-        debug(`HTTPS 'get' call threw an error: ${e}`);
-        resolve([]);
+        reject(new Error(`HTTPS 'get' call threw an error: ${e.message}`));
       }
     });
   }
@@ -156,7 +164,8 @@ interface CachedNotices {
   notices: Notice[],
 }
 
-const TIME_TO_LIVE = 60 * 60 * 1000; // 1 hour
+const TIME_TO_LIVE_SUCCESS = 60 * 60 * 1000; // 1 hour
+const TIME_TO_LIVE_ERROR = 1 * 60 * 1000; // 1 minute
 
 export class CachedDataSource implements NoticeDataSource {
   constructor(
@@ -171,14 +180,27 @@ export class CachedDataSource implements NoticeDataSource {
     const expiration = cachedData.expiration ?? 0;
 
     if (Date.now() > expiration || this.skipCache) {
-      const freshData = {
-        expiration: Date.now() + TIME_TO_LIVE,
-        notices: await this.dataSource.fetch(),
-      };
+      const freshData = await this.fetchInner();
       await this.save(freshData);
       return freshData.notices;
     } else {
+      debug(`Reading cached notices from ${this.fileName}`);
       return data;
+    }
+  }
+
+  private async fetchInner(): Promise<CachedNotices> {
+    try {
+      return {
+        expiration: Date.now() + TIME_TO_LIVE_SUCCESS,
+        notices: await this.dataSource.fetch(),
+      };
+    } catch (e) {
+      debug(`Could not refresh notices: ${e}`);
+      return {
+        expiration: Date.now() + TIME_TO_LIVE_ERROR,
+        notices: [],
+      };
     }
   }
 

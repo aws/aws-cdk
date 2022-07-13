@@ -90,17 +90,17 @@
       {
        "Action": [
         "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
         "dynamodb:GetRecords",
         "dynamodb:GetShardIterator",
-        "dynamodb:Query",
-        "dynamodb:GetItem",
-        "dynamodb:Scan",
-        "dynamodb:ConditionCheckItem",
-        "dynamodb:BatchWriteItem",
         "dynamodb:PutItem",
-        "dynamodb:UpdateItem",
-        "dynamodb:DeleteItem",
-        "dynamodb:DescribeTable"
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
        ],
        "Effect": "Allow",
        "Resource": [
@@ -292,64 +292,62 @@
       {
        "Action": "appsync:GraphQL",
        "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":appsync:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":apis/",
-          {
-           "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-           ]
-          },
-          "/types/test/*"
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":appsync:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":apis/",
+           {
+            "Fn::GetAtt": [
+             "ApiF70053CD",
+             "ApiId"
+            ]
+           },
+           "/types/Mutation/fields/addTest"
+          ]
          ]
-        ]
-       }
-      },
-      {
-       "Action": "appsync:GraphQL",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":appsync:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":apis/",
-          {
-           "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-           ]
-          },
-          "/types/Mutation/fields/addTest"
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":appsync:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":apis/",
+           {
+            "Fn::GetAtt": [
+             "ApiF70053CD",
+             "ApiId"
+            ]
+           },
+           "/types/test/*"
+          ]
          ]
-        ]
-       }
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -420,7 +418,7 @@
      }
     },
     "Handler": "iam-query.handler",
-    "Runtime": "nodejs12.x"
+    "Runtime": "nodejs14.x"
    },
    "DependsOn": [
     "LambdaIAMDefaultPolicy96DEA124",
@@ -516,7 +514,7 @@
      }
     },
     "Handler": "iam-query.handler",
-    "Runtime": "nodejs12.x"
+    "Runtime": "nodejs14.x"
    },
    "DependsOn": [
     "testFailServiceRole9FF22F85"

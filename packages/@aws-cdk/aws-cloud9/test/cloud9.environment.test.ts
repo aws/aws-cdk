@@ -1,8 +1,9 @@
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as cloud9 from '../lib';
+import { ConnectionType } from '../lib';
 
 let stack: cdk.Stack;
 let vpc: ec2.IVpc;
@@ -24,7 +25,7 @@ test('create resource correctly with both vpc and subnetSelectio', () => {
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
     subnetSelection: {
-      subnetType: ec2.SubnetType.PRIVATE,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
     },
   });
   // THEN
@@ -54,7 +55,7 @@ test('throw error when subnetSelection not specified and the provided VPC has no
     maxAzs: 2,
     subnetConfiguration: [
       {
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
         name: 'IsolatedSubnet',
         cidrMask: 24,
       },
@@ -103,5 +104,22 @@ test('can use CodeCommit repositories', () => {
         },
       },
     ],
+  });
+});
+
+test.each([
+  [ConnectionType.CONNECT_SSH, 'CONNECT_SSH'],
+  [ConnectionType.CONNECT_SSM, 'CONNECT_SSM'],
+  [undefined, 'CONNECT_SSH'],
+])('has connection type property (%s)', (connectionType, expected) => {
+  new cloud9.Ec2Environment(stack, 'C9Env', {
+    vpc,
+    connectionType,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
+    InstanceType: Match.anyValue(),
+    ConnectionType: expected,
+    SubnetId: Match.anyValue(),
   });
 });

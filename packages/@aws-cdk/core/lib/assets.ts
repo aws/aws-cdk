@@ -212,6 +212,15 @@ export interface DockerImageAssetSource {
    * @default - no networking mode specified
    */
   readonly networkMode?: string;
+
+  /**
+   * Platform to build for. _Requires Docker Buildx_.
+   *
+   * Specify this property to build images on a specific platform.
+   *
+   * @default - no platform specified (the current machine architecture will be used)
+   */
+  readonly platform?: string;
 }
 
 /**
@@ -274,21 +283,14 @@ export interface FileAssetLocation {
   readonly s3ObjectUrl: string;
 
   /**
-   * The ARN of the KMS key used to encrypt the file asset bucket, if any
+   * The ARN of the KMS key used to encrypt the file asset bucket, if any.
    *
-   * If so, the consuming role should be given "kms:Decrypt" permissions in its
-   * identity policy.
+   * The CDK bootstrap stack comes with a key policy that does not require
+   * setting this property, so you only need to set this property if you
+   * have customized the bootstrap stack to require it.
    *
-   * It's the responsibility of they key's creator to make sure that all
-   * consumers that the key's key policy is configured such that the key can be used
-   * by all consumers that need it.
-   *
-   * The default bootstrap stack provisioned by the CDK CLI ensures this, and
-   * can be used as an example for how to configure the key properly.
-   *
-   * @default - Asset bucket is not encrypted
-   * @deprecated Since bootstrap bucket v4, the key policy properly allows use of the
-   * key via the bucket and no additional parameters have to be granted anymore.
+   * @default - Asset bucket is not encrypted, or decryption permissions are
+   * defined by a Key Policy.
    */
   readonly kmsKeyArn?: string;
 

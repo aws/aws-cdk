@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-stepfunctions-integ": {
       "type": "aws:cloudformation:stack",
@@ -21,11 +20,11 @@
             "type": "aws:cdk:asset",
             "data": {
               "repositoryName": "aws-cdk/assets",
-              "imageTag": "83bbeb367bcc1fa09f3c00f59110f8148dd3bbd860ba8fdca12399a9a284c2e0",
-              "id": "83bbeb367bcc1fa09f3c00f59110f8148dd3bbd860ba8fdca12399a9a284c2e0",
+              "imageTag": "8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b",
+              "id": "8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b",
               "packaging": "container-image",
-              "path": "asset.83bbeb367bcc1fa09f3c00f59110f8148dd3bbd860ba8fdca12399a9a284c2e0",
-              "sourceHash": "83bbeb367bcc1fa09f3c00f59110f8148dd3bbd860ba8fdca12399a9a284c2e0"
+              "path": "asset.8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b",
+              "sourceHash": "8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b"
             }
           }
         ],

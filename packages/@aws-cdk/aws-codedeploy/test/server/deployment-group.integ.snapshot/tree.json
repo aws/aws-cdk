@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-cdk-codedeploy-server-dg": {
@@ -762,8 +762,8 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "s3:GetObject*",
                                     "s3:GetBucket*",
+                                    "s3:GetObject*",
                                     "s3:List*"
                                   ],
                                   "Effect": "Allow",
@@ -779,7 +779,8 @@
                                           ":s3:::aws-codedeploy-",
                                           {
                                             "Ref": "AWS::Region"
-                                          }
+                                          },
+                                          "/latest/*"
                                         ]
                                       ]
                                     },
@@ -794,8 +795,7 @@
                                           ":s3:::aws-codedeploy-",
                                           {
                                             "Ref": "AWS::Region"
-                                          },
-                                          "/latest/*"
+                                          }
                                         ]
                                       ]
                                     }

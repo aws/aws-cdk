@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-stepfunctions-integ": {
@@ -1011,7 +1011,7 @@
                             {
                               "Ref": "AWS::URLSuffix"
                             },
-                            "/aws-cdk/assets:83bbeb367bcc1fa09f3c00f59110f8148dd3bbd860ba8fdca12399a9a284c2e0"
+                            "/aws-cdk/assets:8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b"
                           ]
                         ]
                       },
@@ -1148,9 +1148,9 @@
                                 },
                                 {
                                   "Action": [
-                                    "events:PutTargets",
+                                    "events:DescribeRule",
                                     "events:PutRule",
-                                    "events:DescribeRule"
+                                    "events:PutTargets"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {

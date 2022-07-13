@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-ecs-integ": {
@@ -947,7 +947,7 @@
                                   {
                                     "Ref": "AWS::URLSuffix"
                                   },
-                                  "/aws-cdk/assets:aba53d5f05c76afcd7e420dc8cd283ddc31657866bb4ba4ce221e13d8128d92c"
+                                  "/aws-cdk/assets:0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
                                 ]
                               ]
                             },
@@ -1100,8 +1100,8 @@
                                     {
                                       "Action": [
                                         "ecr:BatchCheckLayerAvailability",
-                                        "ecr:GetDownloadUrlForLayer",
-                                        "ecr:BatchGetImage"
+                                        "ecr:BatchGetImage",
+                                        "ecr:GetDownloadUrlForLayer"
                                       ],
                                       "Effect": "Allow",
                                       "Resource": {
@@ -1194,7 +1194,6 @@
                           "maximumPercent": 200,
                           "minimumHealthyPercent": 50
                         },
-                        "desiredCount": 1,
                         "enableEcsManagedTags": false,
                         "healthCheckGracePeriodSeconds": 60,
                         "launchType": "FARGATE",

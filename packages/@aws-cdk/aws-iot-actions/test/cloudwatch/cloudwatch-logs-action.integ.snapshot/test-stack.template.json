@@ -49,18 +49,9 @@
       {
        "Action": [
         "logs:CreateLogStream",
+        "logs:DescribeLogStreams",
         "logs:PutLogEvents"
        ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "MyLogGroup5C0DAD85",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": "logs:DescribeLogStreams",
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [

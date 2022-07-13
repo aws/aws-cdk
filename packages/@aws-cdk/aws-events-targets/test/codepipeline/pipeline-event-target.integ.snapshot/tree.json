@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "pipeline-events": {
@@ -57,23 +57,7 @@
                         "keyPolicy": {
                           "Statement": [
                             {
-                              "Action": [
-                                "kms:Create*",
-                                "kms:Describe*",
-                                "kms:Enable*",
-                                "kms:List*",
-                                "kms:Put*",
-                                "kms:Update*",
-                                "kms:Revoke*",
-                                "kms:Disable*",
-                                "kms:Get*",
-                                "kms:Delete*",
-                                "kms:ScheduleKeyDeletion",
-                                "kms:CancelKeyDeletion",
-                                "kms:GenerateDataKey",
-                                "kms:TagResource",
-                                "kms:UntagResource"
-                              ],
+                              "Action": "kms:*",
                               "Effect": "Allow",
                               "Principal": {
                                 "AWS": {
@@ -90,25 +74,6 @@
                                       },
                                       ":root"
                                     ]
-                                  ]
-                                }
-                              },
-                              "Resource": "*"
-                            },
-                            {
-                              "Action": [
-                                "kms:Decrypt",
-                                "kms:DescribeKey",
-                                "kms:Encrypt",
-                                "kms:ReEncrypt*",
-                                "kms:GenerateDataKey*"
-                              ],
-                              "Effect": "Allow",
-                              "Principal": {
-                                "AWS": {
-                                  "Fn::GetAtt": [
-                                    "pipelinePipeline22F2A91DRole58B7B05E",
-                                    "Arn"
                                   ]
                                 }
                               },
@@ -312,12 +277,16 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "s3:GetObject*",
-                                    "s3:GetBucket*",
-                                    "s3:List*",
+                                    "s3:Abort*",
                                     "s3:DeleteObject*",
-                                    "s3:PutObject*",
-                                    "s3:Abort*"
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*",
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": [
@@ -348,8 +317,8 @@
                                     "kms:Decrypt",
                                     "kms:DescribeKey",
                                     "kms:Encrypt",
-                                    "kms:ReEncrypt*",
-                                    "kms:GenerateDataKey*"
+                                    "kms:GenerateDataKey*",
+                                    "kms:ReEncrypt*"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {
@@ -362,22 +331,20 @@
                                 {
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "pipelinePipeline22F2A91DSourceCodeCommitCodePipelineActionRoleE54633E5",
-                                      "Arn"
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "pipelinePipeline22F2A91DBuildHelloCodePipelineActionRoleA9729116",
-                                      "Arn"
-                                    ]
-                                  }
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "pipelinePipeline22F2A91DBuildHelloCodePipelineActionRoleA9729116",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "pipelinePipeline22F2A91DSourceCodeCommitCodePipelineActionRoleE54633E5",
+                                        "Arn"
+                                      ]
+                                    }
+                                  ]
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -559,14 +526,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "Build": {
@@ -629,14 +596,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "EventsRole": {

@@ -26,9 +26,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
                   "aws:cdk:cloudformation:props": {
-                    "imageScanningConfiguration": {
-                      "scanOnPush": false
-                    },
                     "lifecyclePolicy": {
                       "lifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}}]}"
                     }

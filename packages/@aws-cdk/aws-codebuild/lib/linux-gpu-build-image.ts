@@ -1,16 +1,13 @@
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as core from '@aws-cdk/core';
 import { FactName } from '@aws-cdk/region-info';
+import { Construct } from 'constructs';
 import { BuildSpec } from './build-spec';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
 import {
   BuildEnvironment, BuildImageBindOptions, BuildImageConfig, ComputeType, IBindableBuildImage, IBuildImage,
   ImagePullPrincipalType, IProject,
 } from './project';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * A CodeBuild GPU image running Linux.

@@ -354,6 +354,7 @@
   "FileSystem8A8E25C0": {
    "Type": "AWS::EFS::FileSystem",
    "Properties": {
+    "Encrypted": true,
     "FileSystemTags": [
      {
       "Key": "Name",

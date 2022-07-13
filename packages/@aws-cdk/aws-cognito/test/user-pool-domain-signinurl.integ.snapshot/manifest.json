@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "integ-user-pool-domain-signinurl": {
       "type": "aws:cloudformation:stack",

@@ -145,6 +145,12 @@ secret.addRotationSchedule('RotationSchedule', { hostedRotation: myHostedRotatio
 dbConnections.allowDefaultPortFrom(myHostedRotation);
 ```
 
+Use the `excludeCharacters` option to customize the characters excluded from
+the generated password when it is rotated. By default, the rotation excludes
+the same characters as the ones excluded for the secret. If none are defined
+then the following set is used: ``% +~`#$&*()|[]{}:;<>?!'/@"\``.
+
+
 See also [Automating secret creation in AWS CloudFormation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/integrating_cloudformation.html).
 
 ## Rotating database credentials
@@ -198,7 +204,7 @@ new secretsmanager.SecretRotation(this, 'SecretRotation', {
 });
 ```
 
-See also [aws-rds](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-rds/README.md) where
+See also [aws-rds](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-rds/README.md) where
 credentials generation and rotation is integrated.
 
 ## Importing Secrets
@@ -246,3 +252,36 @@ Alternatively, use `addReplicaRegion()`:
 const secret = new secretsmanager.Secret(this, 'Secret');
 secret.addReplicaRegion('eu-west-1');
 ```
+
+## Creating JSON Secrets
+
+Sometimes it is necessary to create a secret in SecretsManager that contains a JSON object.
+For example:
+
+```json
+{
+  "username": "myUsername",
+  "database": "foo",
+  "password": "mypassword"
+}
+```
+
+In order to create this type of secret, use the `secretObjectValue` input prop.
+
+```ts
+const user = new iam.User(stack, 'User');
+const accessKey = new iam.AccessKey(stack, 'AccessKey', { user });
+declare const stack: Stack;
+
+new secretsmanager.Secret(stack, 'Secret', {
+  secretObjectValue: {
+    username: SecretValue.unsafePlainText(user.userName),
+    database: SecretValue.unsafePlainText('foo'),
+    password: accessKey.secretAccessKey,
+  },
+})
+```
+
+In this case both the `username` and `database` are not a `Secret` so `SecretValue.unsafePlainText` needs to be used.
+This means that they will be rendered as plain text in the template, but in this case neither of those
+are actual "secrets".

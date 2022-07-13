@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "cdk-integ-elasticsearch-advancedsecurity": {
       "type": "aws:cloudformation:stack",

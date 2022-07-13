@@ -12,23 +12,7 @@
     "KeyPolicy": {
      "Statement": [
       {
-       "Action": [
-        "kms:Create*",
-        "kms:Describe*",
-        "kms:Enable*",
-        "kms:List*",
-        "kms:Put*",
-        "kms:Update*",
-        "kms:Revoke*",
-        "kms:Disable*",
-        "kms:Get*",
-        "kms:Delete*",
-        "kms:ScheduleKeyDeletion",
-        "kms:CancelKeyDeletion",
-        "kms:GenerateDataKey",
-        "kms:TagResource",
-        "kms:UntagResource"
-       ],
+       "Action": "kms:*",
        "Effect": "Allow",
        "Principal": {
         "AWS": {
@@ -49,25 +33,6 @@
         }
        },
        "Resource": "*"
-      },
-      {
-       "Action": [
-        "kms:Decrypt",
-        "kms:DescribeKey",
-        "kms:Encrypt",
-        "kms:ReEncrypt*",
-        "kms:GenerateDataKey*"
-       ],
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "pipelinePipeline22F2A91DRole58B7B05E",
-          "Arn"
-         ]
-        }
-       },
-       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -79,7 +44,7 @@
   "pipelinePipeline22F2A91DArtifactsBucketEncryptionKeyAlias9530209A": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": "alias/codepipeline-pipelineeventspipelinepipeline22f2a91dfbb66895",
+    "AliasName": "alias/codepipeline-pipeline-events-pipelinepipeline22f2a91d-fbb66895",
     "TargetKeyId": {
      "Fn::GetAtt": [
       "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2",
@@ -189,12 +154,16 @@
      "Statement": [
       {
        "Action": [
-        "s3:GetObject*",
-        "s3:GetBucket*",
-        "s3:List*",
+        "s3:Abort*",
         "s3:DeleteObject*",
-        "s3:PutObject*",
-        "s3:Abort*"
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
        ],
        "Effect": "Allow",
        "Resource": [
@@ -225,8 +194,8 @@
         "kms:Decrypt",
         "kms:DescribeKey",
         "kms:Encrypt",
-        "kms:ReEncrypt*",
-        "kms:GenerateDataKey*"
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -239,22 +208,20 @@
       {
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "pipelinePipeline22F2A91DSourceCodeCommitCodePipelineActionRoleE54633E5",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "pipelinePipeline22F2A91DBuildHelloCodePipelineActionRoleA9729116",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "pipelinePipeline22F2A91DBuildHelloCodePipelineActionRoleA9729116",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "pipelinePipeline22F2A91DSourceCodeCommitCodePipelineActionRoleE54633E5",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"

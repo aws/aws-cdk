@@ -1,12 +1,11 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "integ-assets-docker": {
       "type": "aws:cloudformation:stack",
@@ -27,6 +26,18 @@
               "path": "asset.0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14",
               "sourceHash": "0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
             }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "repositoryName": "aws-cdk/assets",
+              "imageTag": "394b24fcdc153a83b1fc400bf2e812ee67e3a5ffafdf977d531cfe2187d95f38",
+              "id": "394b24fcdc153a83b1fc400bf2e812ee67e3a5ffafdf977d531cfe2187d95f38",
+              "packaging": "container-image",
+              "path": "asset.394b24fcdc153a83b1fc400bf2e812ee67e3a5ffafdf977d531cfe2187d95f38",
+              "sourceHash": "394b24fcdc153a83b1fc400bf2e812ee67e3a5ffafdf977d531cfe2187d95f38",
+              "platform": "linux/arm64"
+            }
           }
         ],
         "/integ-assets-docker/MyUser/Resource": [
@@ -45,6 +56,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ImageUri"
+          }
+        ],
+        "/integ-assets-docker/ImageUri2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImageUri2"
+          }
+        ],
+        "/integ-assets-docker/ImageUri3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImageUri3"
           }
         ]
       },

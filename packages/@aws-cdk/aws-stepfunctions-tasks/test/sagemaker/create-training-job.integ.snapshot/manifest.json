@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "integ-stepfunctions-sagemaker": {
       "type": "aws:cloudformation:stack",

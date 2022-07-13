@@ -471,6 +471,25 @@ test('keep merging even if it requires multiple passes', () => {
   ]);
 });
 
+test('lazily generated statements are merged correctly', () => {
+  assertMerged([
+    new LazyStatement((s) => {
+      s.addActions('service:A');
+      s.addResources('R1');
+    }),
+    new LazyStatement((s) => {
+      s.addActions('service:B');
+      s.addResources('R1');
+    }),
+  ], [
+    {
+      Effect: 'Allow',
+      Action: ['service:A', 'service:B'],
+      Resource: 'R1',
+    },
+  ]);
+});
+
 function assertNoMerge(statements: iam.PolicyStatement[]) {
   const app = new App();
   const stack = new Stack(app, 'Stack');
@@ -498,4 +517,18 @@ function assertMerged(statements: iam.PolicyStatement[], expected: any[]) {
  */
 function assertMergedC(doMerge: boolean, statements: iam.PolicyStatement[], expected: any[]) {
   return doMerge ? assertMerged(statements, expected) : assertNoMerge(statements);
+}
+
+/**
+ * A statement that fills itself only when freeze() is called.
+ */
+class LazyStatement extends iam.PolicyStatement {
+  constructor(private readonly modifyMe: (x: iam.PolicyStatement) => void) {
+    super();
+  }
+
+  public freeze() {
+    this.modifyMe(this);
+    return super.freeze();
+  }
 }

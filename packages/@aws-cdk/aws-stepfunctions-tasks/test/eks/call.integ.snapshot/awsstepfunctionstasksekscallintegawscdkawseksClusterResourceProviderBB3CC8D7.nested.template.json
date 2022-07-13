@@ -152,7 +152,7 @@
       "Ref": "NodeProxyAgentLayer924C1971"
      }
     ],
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 60
    },
    "DependsOn": [
@@ -268,7 +268,7 @@
       "Ref": "NodeProxyAgentLayer924C1971"
      }
     ],
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 60
    },
    "DependsOn": [
@@ -318,6 +318,12 @@
        "Resource": [
         {
          "Fn::GetAtt": [
+          "IsCompleteHandler7073F4DA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
           "OnEventHandler42BEBAE0",
           "Arn"
          ]
@@ -328,24 +334,12 @@
           [
            {
             "Fn::GetAtt": [
-             "OnEventHandler42BEBAE0",
+             "IsCompleteHandler7073F4DA",
              "Arn"
             ]
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "IsCompleteHandler7073F4DA",
-          "Arn"
          ]
         },
         {
@@ -354,7 +348,7 @@
           [
            {
             "Fn::GetAtt": [
-             "IsCompleteHandler7073F4DA",
+             "OnEventHandler42BEBAE0",
              "Arn"
             ]
            },
@@ -450,7 +444,7 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -500,6 +494,12 @@
        "Resource": [
         {
          "Fn::GetAtt": [
+          "IsCompleteHandler7073F4DA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
           "OnEventHandler42BEBAE0",
           "Arn"
          ]
@@ -510,24 +510,12 @@
           [
            {
             "Fn::GetAtt": [
-             "OnEventHandler42BEBAE0",
+             "IsCompleteHandler7073F4DA",
              "Arn"
             ]
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "IsCompleteHandler7073F4DA",
-          "Arn"
          ]
         },
         {
@@ -536,7 +524,7 @@
           [
            {
             "Fn::GetAtt": [
-             "IsCompleteHandler7073F4DA",
+             "OnEventHandler42BEBAE0",
              "Arn"
             ]
            },
@@ -622,7 +610,7 @@
      }
     },
     "Handler": "framework.isComplete",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -672,6 +660,12 @@
        "Resource": [
         {
          "Fn::GetAtt": [
+          "IsCompleteHandler7073F4DA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
           "OnEventHandler42BEBAE0",
           "Arn"
          ]
@@ -682,24 +676,12 @@
           [
            {
             "Fn::GetAtt": [
-             "OnEventHandler42BEBAE0",
+             "IsCompleteHandler7073F4DA",
              "Arn"
             ]
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "IsCompleteHandler7073F4DA",
-          "Arn"
          ]
         },
         {
@@ -708,7 +690,7 @@
           [
            {
             "Fn::GetAtt": [
-             "IsCompleteHandler7073F4DA",
+             "OnEventHandler42BEBAE0",
              "Arn"
             ]
            },
@@ -794,7 +776,7 @@
      }
     },
     "Handler": "framework.onTimeout",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -843,6 +825,12 @@
          ]
         },
         {
+         "Fn::GetAtt": [
+          "ProviderframeworkonTimeout0B47CA38",
+          "Arn"
+         ]
+        },
+        {
          "Fn::Join": [
           "",
           [
@@ -854,18 +842,6 @@
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "ProviderframeworkonTimeout0B47CA38",
-          "Arn"
          ]
         },
         {

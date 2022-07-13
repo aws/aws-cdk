@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "iot-republish-action-test-stack": {
       "type": "aws:cloudformation:stack",

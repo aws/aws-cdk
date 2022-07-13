@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-cdk-codepipeline-codecommit-codebuild": {
       "type": "aws:cloudformation:stack",

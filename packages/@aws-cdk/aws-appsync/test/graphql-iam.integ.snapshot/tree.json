@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-appsync-integ": {
@@ -165,17 +165,17 @@
                                     {
                                       "Action": [
                                         "dynamodb:BatchGetItem",
+                                        "dynamodb:BatchWriteItem",
+                                        "dynamodb:ConditionCheckItem",
+                                        "dynamodb:DeleteItem",
+                                        "dynamodb:DescribeTable",
+                                        "dynamodb:GetItem",
                                         "dynamodb:GetRecords",
                                         "dynamodb:GetShardIterator",
-                                        "dynamodb:Query",
-                                        "dynamodb:GetItem",
-                                        "dynamodb:Scan",
-                                        "dynamodb:ConditionCheckItem",
-                                        "dynamodb:BatchWriteItem",
                                         "dynamodb:PutItem",
-                                        "dynamodb:UpdateItem",
-                                        "dynamodb:DeleteItem",
-                                        "dynamodb:DescribeTable"
+                                        "dynamodb:Query",
+                                        "dynamodb:Scan",
+                                        "dynamodb:UpdateItem"
                                       ],
                                       "Effect": "Allow",
                                       "Resource": [
@@ -489,64 +489,62 @@
                             {
                               "Action": "appsync:GraphQL",
                               "Effect": "Allow",
-                              "Resource": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":appsync:",
-                                    {
-                                      "Ref": "AWS::Region"
-                                    },
-                                    ":",
-                                    {
-                                      "Ref": "AWS::AccountId"
-                                    },
-                                    ":apis/",
-                                    {
-                                      "Fn::GetAtt": [
-                                        "ApiF70053CD",
-                                        "ApiId"
-                                      ]
-                                    },
-                                    "/types/test/*"
+                              "Resource": [
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":appsync:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":apis/",
+                                      {
+                                        "Fn::GetAtt": [
+                                          "ApiF70053CD",
+                                          "ApiId"
+                                        ]
+                                      },
+                                      "/types/Mutation/fields/addTest"
+                                    ]
                                   ]
-                                ]
-                              }
-                            },
-                            {
-                              "Action": "appsync:GraphQL",
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":appsync:",
-                                    {
-                                      "Ref": "AWS::Region"
-                                    },
-                                    ":",
-                                    {
-                                      "Ref": "AWS::AccountId"
-                                    },
-                                    ":apis/",
-                                    {
-                                      "Fn::GetAtt": [
-                                        "ApiF70053CD",
-                                        "ApiId"
-                                      ]
-                                    },
-                                    "/types/Mutation/fields/addTest"
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":appsync:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":apis/",
+                                      {
+                                        "Fn::GetAtt": [
+                                          "ApiF70053CD",
+                                          "ApiId"
+                                        ]
+                                      },
+                                      "/types/test/*"
+                                    ]
                                   ]
-                                ]
-                              }
+                                }
+                              ]
                             }
                           ],
                           "Version": "2012-10-17"
@@ -667,7 +665,7 @@
                       }
                     },
                     "handler": "iam-query.handler",
-                    "runtime": "nodejs12.x"
+                    "runtime": "nodejs14.x"
                   }
                 },
                 "constructInfo": {
@@ -715,14 +713,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "testFail": {
@@ -865,7 +863,7 @@
                       }
                     },
                     "handler": "iam-query.handler",
-                    "runtime": "nodejs12.x"
+                    "runtime": "nodejs14.x"
                   }
                 },
                 "constructInfo": {

@@ -12,7 +12,6 @@ import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
-import { ISynthesisSession } from './construct-compat';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
 import { FeatureFlags } from './feature-flags';
@@ -20,10 +19,6 @@ import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/clo
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from './construct-compat';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
@@ -149,7 +144,7 @@ export interface StackProps {
 /**
  * A root construct which represents a single CloudFormation stack.
  */
-export class Stack extends CoreConstruct implements ITaggable {
+export class Stack extends Construct implements ITaggable {
   /**
    * Return whether the given object is a Stack.
    *
@@ -791,7 +786,8 @@ export class Stack extends CoreConstruct implements ITaggable {
       const numberOfResources = Object.keys(resources).length;
 
       if (numberOfResources > this.maxResources) {
-        throw new Error(`Number of resources in stack '${this.node.path}': ${numberOfResources} is greater than allowed maximum of ${this.maxResources}`);
+        const counts = Object.entries(count(Object.values(resources).map((r: any) => `${r?.Type}`))).map(([type, c]) => `${type} (${c})`).join(', ');
+        throw new Error(`Number of resources in stack '${this.node.path}': ${numberOfResources} is greater than allowed maximum of ${this.maxResources}: ${counts}`);
       } else if (numberOfResources >= (this.maxResources * 0.8)) {
         Annotations.of(this).addInfo(`Number of resources: ${numberOfResources} is approaching allowed maximum of ${this.maxResources}`);
       }
@@ -904,6 +900,14 @@ export class Stack extends CoreConstruct implements ITaggable {
     const resolvable = Tokenization.reverse(exportedValue);
     if (!resolvable || !Reference.isReference(resolvable)) {
       throw new Error('exportValue: either supply \'name\' or make sure to export a resource attribute (like \'bucket.bucketName\')');
+    }
+
+    // if exportValue is being called manually (which is pre onPrepare) then the logicalId
+    // could potentially be changed by a call to overrideLogicalId. This would cause our Export/Import
+    // to have an incorrect id. For a better user experience, lock the logicalId and throw an error
+    // if the user tries to override the id _after_ calling exportValue
+    if (CfnElement.isCfnElement(resolvable.target)) {
+      resolvable.target._lockLogicalId();
     }
 
     // "teleport" the value here, in case it comes from a nested stack. This will also
@@ -1164,10 +1168,10 @@ export class Stack extends CoreConstruct implements ITaggable {
   public get bundlingRequired() {
     const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
 
-    // bundlingStacks is of the form `Stage/Stack`, convert it to `Stage-Stack` before comparing to stack name
+    // bundlingStacks is of the form `Stage/Stack`
     return bundlingStacks.some(pattern => minimatch(
-      this.stackName,
-      pattern.replace('/', '-'),
+      this.node.path, // the same value used for pattern matching in aws-cdk CLI (displayName / hierarchicalId)
+      pattern,
     ));
   }
 }
@@ -1311,20 +1315,20 @@ export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConst
  */
 function makeStackName(components: string[]) {
   if (components.length === 1) { return components[0]; }
-  return makeUniqueId(components);
+  return makeUniqueResourceName(components, { maxLength: 128 });
 }
 
 function getCreateExportsScope(stack: Stack) {
   const exportsName = 'Exports';
-  let stackExports = stack.node.tryFindChild(exportsName) as CoreConstruct;
+  let stackExports = stack.node.tryFindChild(exportsName) as Construct;
   if (stackExports === undefined) {
-    stackExports = new CoreConstruct(stack, exportsName);
+    stackExports = new Construct(stack, exportsName);
   }
 
   return stackExports;
 }
 
-function generateExportName(stackExports: CoreConstruct, id: string) {
+function generateExportName(stackExports: Construct, id: string) {
   const stackRelativeExports = FeatureFlags.of(stackExports).isEnabled(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
   const stack = Stack.of(stackExports);
 
@@ -1345,6 +1349,7 @@ interface StackDependency {
   reasons: string[];
 }
 
+
 /**
  * Options for the `stack.exportValue()` method
  */
@@ -1357,6 +1362,18 @@ export interface ExportValueOptions {
   readonly name?: string;
 }
 
+function count(xs: string[]): Record<string, number> {
+  const ret: Record<string, number> = {};
+  for (const x of xs) {
+    if (x in ret) {
+      ret[x] += 1;
+    } else {
+      ret[x] = 1;
+    }
+  }
+  return ret;
+}
+
 // These imports have to be at the end to prevent circular imports
 import { CfnOutput } from './cfn-output';
 import { addDependency } from './deps';
@@ -1364,11 +1381,12 @@ import { FileSystem } from './fs';
 import { Names } from './names';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
-import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer } from './stack-synthesizers';
+import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacyStackSynthesizer } from './stack-synthesizers';
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
 import { referenceNestedStackValueInParent } from './private/refs';
 import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { deployTimeLookup } from './private/region-lookup';
+import { makeUniqueResourceName } from './private/unique-resource-name';
 
