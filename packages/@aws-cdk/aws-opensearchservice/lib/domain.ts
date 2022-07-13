@@ -883,7 +883,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
       metricName,
       dimensionsMap: {
         DomainName: this.domainName,
-        ClientId: this.stack.account,
+        ClientId: this.env.account,
       },
       ...props,
     }).attachTo(this);
@@ -1236,12 +1236,16 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     let subnets: ec2.ISubnet[] | undefined;
 
     if (props.vpc) {
-      subnets = selectSubnets(props.vpc, props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PRIVATE }]);
+      subnets = selectSubnets(props.vpc, props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }]);
       securityGroups = props.securityGroups ?? [new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
         description: `Security group for domain ${this.node.id}`,
       })];
-      this._connections = new ec2.Connections({ securityGroups });
+      if (props.enforceHttps) {
+        this._connections = new ec2.Connections({ securityGroups, defaultPort: ec2.Port.tcp(443) });
+      } else {
+        this._connections = new ec2.Connections({ securityGroups });
+      }
     }
 
     // If VPC options are supplied ensure that the number of subnets matches the number AZ

@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3ac400a129ca4ea923a9fa3b178b5d656733b3c112a1445f2912b9f853750916.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/92dfd7f53614f5d193ca8866654f5a5737e32808eb0230d8c91c250747a55aa9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -129,18 +129,6 @@
             "data": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
           }
         ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Build/Synth/CodePipelineActionRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineBuildSynthCodePipelineActionRole4E7A6C97"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Build/Synth/CodePipelineActionRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineBuildSynthCodePipelineActionRoleDefaultPolicy92C90290"
-          }
-        ],
         "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Produce/Produce/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -157,18 +145,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineMyWaveProduce884410D6"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Produce/CodePipelineActionRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineMyWaveProduceCodePipelineActionRoleE0DCE9D3"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Produce/CodePipelineActionRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineMyWaveProduceCodePipelineActionRoleDefaultPolicy34DCB79A"
           }
         ],
         "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Consume/Consume/Role/Resource": [
@@ -189,16 +165,22 @@
             "data": "PipelineMyWaveConsumeC5D5CCD7"
           }
         ],
-        "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Consume/CodePipelineActionRole/Resource": [
+        "/VariablePipelineStack/Pipeline/CodeBuildActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineMyWaveConsumeCodePipelineActionRole7FAA4EFA"
+            "data": "PipelineCodeBuildActionRole226DB0CB"
           }
         ],
-        "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Consume/CodePipelineActionRole/DefaultPolicy/Resource": [
+        "/VariablePipelineStack/Pipeline/CodeBuildActionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineMyWaveConsumeCodePipelineActionRoleDefaultPolicy3666898A"
+            "data": "PipelineCodeBuildActionRoleDefaultPolicy1D62A6FE"
+          }
+        ],
+        "/VariablePipelineStack/TestCacheBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestCacheBucketA6BDC126"
           }
         ],
         "/VariablePipelineStack/BootstrapVersion": [

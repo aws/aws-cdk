@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as core from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import * as inc from '../lib';
 
@@ -8,7 +9,7 @@ describe('CDK Include', () => {
   let stack: core.Stack;
 
   beforeEach(() => {
-    app = new core.App();
+    app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     stack = new core.Stack(app);
   });
 

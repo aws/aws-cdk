@@ -11,7 +11,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN
@@ -73,7 +73,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
     const alias = new lambda.Alias(stack, 'alias', {
       aliasName: 'my-alias',
@@ -138,7 +138,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN
@@ -168,7 +168,7 @@ describe('lambda api', () => {
     });
   });
 
-  test('fails if options.defaultIntegration is also set', () => {
+  test('when "proxy" is false, AWS_PROXY is still used', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -176,6 +176,33 @@ describe('lambda api', () => {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
       runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    const api = new apigw.LambdaRestApi(stack, 'lambda-rest-api', { handler, proxy: false });
+
+    const tasks = api.root.addResource('tasks');
+    tasks.addMethod('GET');
+    tasks.addMethod('POST');
+
+    // THEN
+    const template = Template.fromStack(stack);
+    // Ensure that all methods have "AWS_PROXY" integrations.
+    const methods = template.findResources('AWS::ApiGateway::Mathod');
+    const hasProxyIntegration = Match.objectLike({ Integration: Match.objectLike({ Type: 'AWS_PROXY' }) });
+    for (const method of Object.values(methods)) {
+      expect(hasProxyIntegration.test(method)).toBeTruthy();
+    }
+  });
+
+  test('fails if options.defaultIntegration is also set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const handler = new lambda.Function(stack, 'handler', {
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('boom'),
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     expect(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
@@ -196,7 +223,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN
@@ -252,7 +279,7 @@ describe('lambda api', () => {
       handler: new lambda.Function(stack, 'handler', {
         handler: 'index.handler',
         code: lambda.Code.fromInline('boom'),
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       }),
       restApiName: cdk.PhysicalName.GENERATE_IF_NEEDED,
     });
@@ -260,6 +287,62 @@ describe('lambda api', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
       Name: Match.absent(),
+    });
+  });
+
+  test('provided integrationOptions are applied', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const handler = new lambda.Function(stack, 'handler', {
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('boom'),
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    new apigw.LambdaRestApi(stack, 'lamda-rest-api', {
+      handler,
+      integrationOptions: {
+        timeout: cdk.Duration.seconds(1),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      Integration: {
+        TimeoutInMillis: 1000,
+        Type: 'AWS_PROXY',
+      },
+    });
+  });
+
+  test('setting integrationOptions.proxy to false retains {proxy+} path part', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const handler = new lambda.Function(stack, 'handler', {
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('boom'),
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    new apigw.LambdaRestApi(stack, 'lamda-rest-api', {
+      handler,
+      integrationOptions: {
+        proxy: false,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
+      PathPart: '{proxy+}',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      Integration: {
+        Type: 'AWS',
+      },
     });
   });
 });

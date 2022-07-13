@@ -175,6 +175,7 @@ export class CdkToolkit {
             force: true,
             roleArn: options.roleArn,
             fromDeploy: true,
+            ci: options.ci,
           });
         }
         continue;
@@ -370,7 +371,7 @@ export class CdkToolkit {
     }
 
     if (!process.stdout.isTTY && !options.resourceMappingFile) {
-      throw new Error('--resource-mapping-file is required when input is not a terminal');
+      throw new Error('--resource-mapping is required when input is not a terminal');
     }
 
     const stack = stacks.stackArtifacts[0];
@@ -460,6 +461,7 @@ export class CdkToolkit {
           stack,
           deployName: stack.stackName,
           roleArn: options.roleArn,
+          ci: options.ci,
         });
         success(`\n ✅  %s: ${action}ed`, chalk.blue(stack.displayName));
       } catch (e) {
@@ -980,6 +982,13 @@ export interface DestroyOptions {
    * Whether the destroy request came from a deploy.
    */
   fromDeploy?: boolean
+
+  /**
+   * Whether we are on a CI system
+   *
+   * @default false
+   */
+  readonly ci?: boolean;
 }
 
 /**

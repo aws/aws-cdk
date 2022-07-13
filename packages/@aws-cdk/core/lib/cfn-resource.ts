@@ -1,4 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { Annotations } from './annotations';
 import { CfnCondition } from './cfn-condition';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 /* eslint-disable import/order */
@@ -13,6 +14,7 @@ import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
 import { TagManager } from './tag-manager';
 import { Tokenization } from './token';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
+import { FeatureFlags } from './feature-flags';
 
 export interface CfnResourceProps {
   /**
@@ -108,7 +110,12 @@ export class CfnResource extends CfnRefElement {
    * to be replaced.
    *
    * The resource can be deleted (`RemovalPolicy.DESTROY`), or left in your AWS
-   * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
+   * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`). In some
+   * cases, a snapshot can be taken of the resource prior to deletion
+   * (`RemovalPolicy.SNAPSHOT`). A list of resources that support this policy
+   * can be found in the following link:
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html#aws-attribute-deletionpolicy-options
    */
   public applyRemovalPolicy(policy: RemovalPolicy | undefined, options: RemovalPolicyOptions = {}) {
     policy = policy || options.default || RemovalPolicy.RETAIN;
@@ -125,6 +132,27 @@ export class CfnResource extends CfnRefElement {
         break;
 
       case RemovalPolicy.SNAPSHOT:
+        // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
+        const snapshottableResourceTypes = [
+          'AWS::EC2::Volume',
+          'AWS::ElastiCache::CacheCluster',
+          'AWS::ElastiCache::ReplicationGroup',
+          'AWS::Neptune::DBCluster',
+          'AWS::RDS::DBCluster',
+          'AWS::RDS::DBInstance',
+          'AWS::Redshift::Cluster',
+        ];
+
+        // error if flag is set, warn if flag is not
+        const problematicSnapshotPolicy = !snapshottableResourceTypes.includes(this.cfnResourceType);
+        if (problematicSnapshotPolicy) {
+          if (FeatureFlags.of(this).isEnabled(cxapi.VALIDATE_SNAPSHOT_REMOVAL_POLICY) ) {
+            throw new Error(`${this.cfnResourceType} does not support snapshot removal policy`);
+          } else {
+            Annotations.of(this).addWarning(`${this.cfnResourceType} does not support snapshot removal policy. This policy will be ignored.`);
+          }
+        }
+
         deletionPolicy = CfnDeletionPolicy.SNAPSHOT;
         break;
 
@@ -497,6 +525,33 @@ export interface ICfnResourceOptions {
 }
 
 /**
+ * Object keys that deepMerge should not consider. Currently these include
+ * CloudFormation intrinsics
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
+ */
+
+const MERGE_EXCLUDE_KEYS: string[] = [
+  'Ref',
+  'Fn::Base64',
+  'Fn::Cidr',
+  'Fn::FindInMap',
+  'Fn::GetAtt',
+  'Fn::GetAZs',
+  'Fn::ImportValue',
+  'Fn::Join',
+  'Fn::Select',
+  'Fn::Split',
+  'Fn::Sub',
+  'Fn::Transform',
+  'Fn::And',
+  'Fn::Equals',
+  'Fn::If',
+  'Fn::Not',
+  'Fn::Or',
+];
+
+/**
  * Merges `source` into `target`, overriding any existing values.
  * `null`s will cause a value to be deleted.
  */
@@ -513,6 +568,32 @@ function deepMerge(target: any, ...sources: any[]) {
         // object so we can continue the recursion
         if (typeof(target[key]) !== 'object') {
           target[key] = {};
+
+          /**
+           * If we have something that looks like:
+           *
+           *   target: { Type: 'MyResourceType', Properties: { prop1: { Ref: 'Param' } } }
+           *   sources: [ { Properties: { prop1: [ 'Fn::Join': ['-', 'hello', 'world'] ] } } ]
+           *
+           * Eventually we will get to the point where we have
+           *
+           *   target: { prop1: { Ref: 'Param' } }
+           *   sources: [ { prop1: { 'Fn::Join': ['-', 'hello', 'world'] } } ]
+           *
+           * We need to recurse 1 more time, but if we do we will end up with
+           *   { prop1: { Ref: 'Param', 'Fn::Join': ['-', 'hello', 'world'] } }
+           * which is not what we want.
+           *
+           * Instead we check to see whether the `target` value (i.e. target.prop1)
+           * is an object that contains a key that we don't want to recurse on. If it does
+           * then we essentially drop it and end up with:
+           *
+           *   { prop1: { 'Fn::Join': ['-', 'hello', 'world'] } }
+           */
+        } else if (Object.keys(target[key]).length === 1) {
+          if (MERGE_EXCLUDE_KEYS.includes(Object.keys(target[key])[0])) {
+            target[key] = {};
+          }
         }
 
         deepMerge(target[key], value);

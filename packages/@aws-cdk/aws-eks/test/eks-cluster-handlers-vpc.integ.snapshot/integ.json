@@ -1,7 +1,7 @@
 {
   "version": "18.0.0",
   "testCases": {
-    "aws-eks/test/integ.eks-cluster-handlers-vpc": {
+    "integ.eks-cluster-handlers-vpc": {
       "stacks": [
         "aws-cdk-eks-handlers-in-vpc-test"
       ],
