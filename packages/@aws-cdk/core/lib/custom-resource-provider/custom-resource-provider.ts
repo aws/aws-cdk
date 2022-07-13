@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
@@ -11,6 +10,7 @@ import { Lazy } from '../lazy';
 import { Size } from '../size';
 import { Stack } from '../stack';
 import { Token } from '../token';
+import { FileSystem } from '../fs';
 
 const ENTRYPOINT_FILENAME = '__entrypoint__';
 const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, 'nodejs-entrypoint.js');
@@ -206,7 +206,7 @@ export class CustomResourceProvider extends Construct {
       throw new Error(`cannot find ${props.codeDirectory}/index.js`);
     }
 
-    const stagingDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-custom-resource'));
+    const stagingDirectory = FileSystem.mkdtemp('cdk-custom-resource');
     fs.copyFileSync(path.join(props.codeDirectory, 'index.js'), path.join(stagingDirectory, 'index.js'));
     fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(stagingDirectory, `${ENTRYPOINT_FILENAME}.js`));
 
