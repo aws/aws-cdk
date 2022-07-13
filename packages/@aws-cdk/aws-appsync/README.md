@@ -99,6 +99,7 @@ demoDS.createResolver({
 ```
 
 To enable DynamoDB read consistency with the `MappingTemplate`:
+
 ```ts
 MappingTemplate.dynamoDbScanTable(true);
 MappingTemplate.dynamoDbGetItem(keyName,id,true);
