@@ -105,13 +105,9 @@ async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnE
   // automatically by the JavaScript SDK.
   const resp = await invokeFunction({
     FunctionName: functionArn,
-<<<<<<< HEAD
-    Payload: JSON.stringify(sanitizedPayload),
-=======
 
     // Cannot strip 'ResponseURL' here as this would be a breaking change even though the downstream CR doesn't need it
     Payload: JSON.stringify({ ...sanitizedPayload, ResponseURL: responseUrl }),
->>>>>>> ddfca48bb4 (fix(custom-resources): Custom resource provider framework not passing `ResponseURL` to user function (#21117))
   });
 
   log('user function response:', resp, typeof(resp));
