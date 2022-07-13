@@ -87,6 +87,7 @@
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-databrew": "0.0.0",
     "@aws-cdk/aws-glue": "0.0.0",
+    "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",

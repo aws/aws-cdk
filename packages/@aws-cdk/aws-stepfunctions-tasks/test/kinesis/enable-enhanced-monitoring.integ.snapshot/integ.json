@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "KinesisEnableEnhancedMonitoring/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-tasks"
+      ],
+      "assertionStack": "KinesisEnableEnhancedMonitoringDefaultTestDeployAssert39FF493B"
+    }
+  }
+}
