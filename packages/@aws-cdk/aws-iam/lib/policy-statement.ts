@@ -3,7 +3,7 @@ import { IConstruct } from 'constructs';
 import { Group } from './group';
 import {
   AccountPrincipal, AccountRootPrincipal, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal,
-  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts,
+  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts, validateConditionObject,
 } from './principals';
 import { normalizeStatement } from './private/postprocess-policy-document';
 import { LITERAL_STRING_KEY, mergePrincipal, sum } from './util';
@@ -380,6 +380,8 @@ export class PolicyStatement {
    */
   public addCondition(key: string, value: Condition) {
     this.assertNotFrozen('addCondition');
+    validateConditionObject(value);
+
     const existingValue = this._condition[key];
     this._condition[key] = existingValue ? { ...existingValue, ...value } : value;
   }
@@ -670,19 +672,15 @@ export enum Effect {
  * Condition for when an IAM policy is in effect. Maps from the keys in a request's context to
  * a string value or array of string values. See the Conditions interface for more details.
  */
-export type Condition = any;
+export type Condition = unknown;
 
-// NOTE! We'd ideally like to type this as `Record<string, any>`, because the
-// API expects a map which can take either strings or lists of strings.
+// NOTE! We would have liked to have typed this as `Record<string, unknown>`, but in some places
+// of the code we are assuming we can pass a `CfnJson` object into where a `Condition` is expected,
+// and that wouldn't typecheck anymore.
 //
-// However, if we were to change this right now, the Java bindings for CDK would
-// emit a type of `Map<String, Object>`, but the most common types people would
-// instantiate would be an `ImmutableMap<String, String>` which would not be
-// assignable to `Map<String, Object>`. The types don't have a built-in notion
-// of co-contravariance, you have to indicate that on the type. So jsii would first
-// need to emit the type as `Map<String, ? extends Object>`.
-//
-// Feature request in https://github.com/aws/jsii/issues/1517
+// Needs to be `unknown` instead of `any` so that the type of `Conditions` is
+// `Record<string, unknown>`; if it had been `Record<string, any>`, TypeScript would have allowed
+// passing an array into `conditions` arguments (where it needs to be a map).
 
 /**
  * Conditions for when an IAM Policy is in effect, specified in the following structure:
