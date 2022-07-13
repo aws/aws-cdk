@@ -113,6 +113,13 @@ export interface JobDefinitionContainer {
   readonly environment?: { [key: string]: string };
 
   /**
+   * The environment variables from secrets manager or ssm parameter store
+   *
+   * @default none
+   */
+  readonly secrets?: { [key: string]: ecs.Secret };
+
+  /**
    * The image used to start a container.
    */
   readonly image: ecs.ContainerImage;
@@ -453,6 +460,14 @@ export class JobDefinition extends Resource implements IJobDefinition {
       platformCapabilities: props.platformCapabilities ?? [PlatformCapabilities.EC2],
     });
 
+    // add read secrets permission to execution role
+    if ( props.container.secrets && props.container.executionRole ) {
+      const executionRole = props.container.executionRole;
+      Object.values(props.container.secrets).forEach((secret) => {
+        secret.grantRead(executionRole);
+      });
+    }
+
     this.jobDefinitionArn = this.getResourceArnAttribute(jobDef.ref, {
       service: 'batch',
       resource: 'job-definition',
@@ -507,6 +522,14 @@ export class JobDefinition extends Resource implements IJobDefinition {
     return {
       command: container.command,
       environment: this.deserializeEnvVariables(container.environment),
+      secrets: container.secrets
+        ? Object.entries(container.secrets).map(([key, value]) => {
+          return {
+            name: key,
+            valueFrom: value.arn,
+          };
+        })
+        : undefined,
       image: this.imageConfig.imageName,
       instanceType: container.instanceType && container.instanceType.toString(),
       jobRoleArn: container.jobRole && container.jobRole.roleArn,
