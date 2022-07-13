@@ -821,8 +821,8 @@ stateMachine.grant(user, 'states:SendTaskSuccess');
 Any Step Functions state machine that has been created outside the stack can be imported
 into your CDK stack.
 
-State machines can be imported by their ARN via the `StateMachine.fromStateMachineArn()` or
-by their resource name via the `StateMachine.fromStateMachineName()` API
+State machines can be imported by their ARN via the `StateMachine.fromStateMachineArn()` API.
+In addition, the StateMachine can be imported via the `StateMachine.fromStateMachineName()` method, as long as they are in the same account/region as the current construct.
 
 ```ts
 const app = new App();
