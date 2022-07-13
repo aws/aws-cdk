@@ -29,7 +29,7 @@ export abstract class CustomResourceHandler<Request extends object, Response ext
 
   public async handle(): Promise<void> {
     try {
-      console.log(`Event: ${JSON.stringify(this.event)}`);
+      console.log(`Event: ${JSON.stringify({ ...this.event, ResponseURL: '...' })}`);
       const response = await this.processEvent(this.event.ResourceProperties as unknown as Request);
       console.log(`Event output : ${JSON.stringify(response)}`);
       await this.respond({

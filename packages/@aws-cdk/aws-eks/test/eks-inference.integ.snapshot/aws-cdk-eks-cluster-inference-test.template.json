@@ -1842,7 +1842,7 @@
     },
     "Release": "aws-load-balancer-controller",
     "Chart": "aws-load-balancer-controller",
-    "Version": "1.2.7",
+    "Version": "1.4.1",
     "Wait": true,
     "Timeout": "900s",
     "Values": {

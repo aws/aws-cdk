@@ -86,6 +86,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -149,7 +150,8 @@
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER",
-      "resource-attribute:@aws-cdk/aws-rds.DatabaseProxy.dbProxyVpcId"
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseProxy.dbProxyVpcId",
+      "resource-attribute:@aws-cdk/aws-rds.ParameterGroup.dbParameterGroupName"
     ]
   },
   "stability": "stable",
