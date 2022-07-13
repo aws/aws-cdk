@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Template, Match } from '@aws-cdk/assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, Stack, App, CfnResource } from '@aws-cdk/core';
 import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument } from '../lib';
@@ -50,6 +50,30 @@ describe('IAM role', () => {
         Statement: [
           {
             Action: 'iam:PassRole',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('a role can grant AssumeRole permissions', () => {
+    // GIVEN
+    const stack = new Stack();
+    const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('henk.amazonaws.com') });
+    const user = new User(stack, 'User');
+
+    // WHEN
+    role.grantAssumeRole(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Resource: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
           },
@@ -635,6 +659,87 @@ test('managed policy ARNs are deduplicated', () => {
       },
     ],
   });
+});
+
+describe('role with too large inline policy', () => {
+  const N = 100;
+
+  let app: App;
+  let stack: Stack;
+  let role: Role;
+  beforeEach(() => {
+    app = new App();
+    stack = new Stack(app, 'my-stack');
+    role = new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+
+    for (let i = 0; i < N; i++) {
+      role.addToPrincipalPolicy(new PolicyStatement({
+        actions: ['aws:DoAThing'],
+        resources: [`arn:aws:service:us-east-1:111122223333:someResource/SomeSpecificResource${i}`],
+      }));
+    }
+  });
+
+  test('excess gets split off into ManagedPolicies', () => {
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::ManagedPolicy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Resource: `arn:aws:service:us-east-1:111122223333:someResource/SomeSpecificResource${N - 1}`,
+          }),
+        ]),
+      },
+      Roles: [{ Ref: 'MyRoleF48FFE04' }],
+    });
+  });
+
+  test('Dependables track the final declaring construct', () => {
+    // WHEN
+    const result = role.addToPrincipalPolicy(new PolicyStatement({
+      actions: ['aws:DoAThing'],
+      resources: [`arn:aws:service:us-east-1:111122223333:someResource/SomeSpecificResource${N}`],
+    }));
+
+    const res = new CfnResource(stack, 'Depender', {
+      type: 'AWS::Some::Resource',
+    });
+
+    expect(result.policyDependable).toBeTruthy();
+    res.node.addDependency(result.policyDependable!);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResource('AWS::Some::Resource', {
+      DependsOn: [
+        'MyRoleOverflowPolicy13EF5596A',
+      ],
+    });
+  });
+});
+
+test('many copies of the same statement do not result in overflow policies', () => {
+  const N = 100;
+
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  const role = new Role(stack, 'MyRole', {
+    assumedBy: new ServicePrincipal('service.amazonaws.com'),
+  });
+
+  for (let i = 0; i < N; i++) {
+    role.addToPrincipalPolicy(new PolicyStatement({
+      actions: ['aws:DoAThing'],
+      resources: ['arn:aws:service:us-east-1:111122223333:someResource/SomeSpecificResource'],
+    }));
+  }
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.resourceCountIs('AWS::IAM::ManagedPolicy', 0);
 });
 
 test('cross-env role ARNs include path', () => {

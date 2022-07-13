@@ -1,7 +1,7 @@
 import * as ka from '@aws-cdk/aws-kinesisanalytics';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * The return type of {@link ApplicationCode.bind}. This represents

@@ -397,7 +397,7 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -563,7 +563,7 @@
      }
     },
     "Handler": "framework.isComplete",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -729,7 +729,7 @@
      }
     },
     "Handler": "framework.onTimeout",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [

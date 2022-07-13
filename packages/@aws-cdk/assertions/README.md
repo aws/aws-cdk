@@ -10,7 +10,7 @@
 <!--END STABILITY BANNER-->
 
 If you're migrating from the old `assert` library, the migration guide can be found in
-[our GitHub repository](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/assertions/MIGRATING.md).
+[our GitHub repository](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/assertions/MIGRATING.md).
 
 Functions for writing test asserting against CDK applications, with focus on CloudFormation templates.
 

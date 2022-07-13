@@ -5,6 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { Annotations, CfnOutput, Duration, IResource, Resource, Stack, Token, Tags } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
@@ -13,10 +14,6 @@ import { KubernetesResource } from './k8s-resource';
 import { KubectlLayer } from './kubectl-layer';
 import { spotInterruptHandler } from './spot-interrupt-handler';
 import { renderUserData } from './user-data';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;

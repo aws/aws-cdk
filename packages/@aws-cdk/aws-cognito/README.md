@@ -419,7 +419,7 @@ on the construct, as so -
 
 ```ts
 const authChallengeFn = new lambda.Function(this, 'authChallengeFn', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'path/to/asset')),
 });
@@ -433,7 +433,7 @@ const userpool = new cognito.UserPool(this, 'myuserpool', {
 });
 
 userpool.addTrigger(cognito.UserPoolOperation.USER_MIGRATION, new lambda.Function(this, 'userMigrationFn', {
-    runtime: lambda.Runtime.NODEJS_12_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'path/to/asset')),
 }));
@@ -503,6 +503,7 @@ The following third-party identity providers are currently supported in the CDK 
 - [Facebook Login](https://developers.facebook.com/docs/facebook-login/)
 - [Google Login](https://developers.google.com/identity/sign-in/web/sign-in)
 - [Sign In With Apple](https://developer.apple.com/sign-in-with-apple/get-started/)
+- [OpenID Connect](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-oidc-idp.html)
 
 The following code configures a user pool to federate with the third party provider, 'Login with Amazon'. The identity
 provider needs to be configured with a set of credentials that the Cognito backend can use to federate with the
