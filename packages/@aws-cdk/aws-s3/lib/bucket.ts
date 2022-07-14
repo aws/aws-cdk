@@ -1,21 +1,33 @@
-import { EOL } from 'os';
+import {EOL} from 'os';
 import * as path from 'path';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
-  Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Token,
-  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags, Tags, Duration,
+  CustomResource,
+  CustomResourceProvider,
+  CustomResourceProviderRuntime,
+  Duration,
+  FeatureFlags,
+  Fn,
+  IResource,
+  Lazy,
+  RemovalPolicy,
+  Resource,
+  ResourceProps,
+  Stack,
+  Tags,
+  Token,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
-import { BucketPolicy } from './bucket-policy';
-import { IBucketNotificationDestination } from './destination';
-import { BucketNotifications } from './notifications-resource';
+import {Construct} from 'constructs';
+import {BucketPolicy} from './bucket-policy';
+import {IBucketNotificationDestination} from './destination';
+import {BucketNotifications} from './notifications-resource';
 import * as perms from './perms';
-import { LifecycleRule } from './rule';
-import { CfnBucket } from './s3.generated';
-import { parseBucketArn, parseBucketName } from './util';
+import {LifecycleRule} from './rule';
+import {CfnBucket} from './s3.generated';
+import {parseBucketArn, parseBucketName} from './util';
 
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
@@ -1553,10 +1565,13 @@ export interface Tag {
  *
  * @example
  *
- *    new s3.Bucket(this, 'Bucket', {
- *      bucketName: 'my-bucket-name',
- *      // ...
- *    })
+ * new Bucket(scope, 'Bucket', {
+ *   blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+ *   encryption: BucketEncryption.S3_MANAGED,
+ *   enforceSSL: true,
+ *   versioned: true,
+ *   removalPolicy: RemovalPolicy.RETAIN,
+ * });
  *
  */
 export class Bucket extends BucketBase {
