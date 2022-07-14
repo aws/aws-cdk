@@ -305,3 +305,12 @@ const vpc = new ec2.Vpc(this, 'VPC', {
 ```
 
 Note that if there is already an existing, public accessible Cluster, which VPC configuration is changed to use *DNS hostnames* and *DNS resolution*, connections still use the elastic IP address until the cluster is resized.
+
+### Elastic IP vs. Cluster node public IP
+
+The elastic IP address is an external IP address for accessing the cluster outside of a VPC. It's not related to the cluster node public IP addresses and private IP addresses that are accessible via the `clusterEndpoint` property. The public and private cluster node IP addresses appear regardless of whether the cluster is publicly accessible or not. They are used only in certain circumstances to configure ingress rules on the remote host. These circumstances occur when you load data from an Amazon EC2 instance or other remote host using a Secure Shell (SSH) connection.
+
+### Attach Elastic IP after Cluster creation
+
+In some cases, you might want to associate the cluster with an elastic IP address or change an elastic IP address that is associated with the cluster. To attach an elastic IP address after the cluster is created, first update the cluster so that it is not publicly accessible, then make it both publicly accessible and add an Elastic IP address in the same operation.
+
