@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-stepfunctions-tasks/test/athena/integ.get-query-execution": {
+    "integ.get-query-execution": {
       "stacks": [
         "aws-stepfunctions-tasks-athena-get-query-execution-integ"
       ],

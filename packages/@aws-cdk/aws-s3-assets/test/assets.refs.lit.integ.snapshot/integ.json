@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-s3-assets/test/integ.assets.refs.lit": {
+    "integ.assets.refs.lit": {
       "stacks": [
         "aws-cdk-asset-refs"
       ],

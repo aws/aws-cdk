@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-logs/test/integ.expose-metric": {
+    "integ.expose-metric": {
       "stacks": [
         "aws-cdk-expose-metric-integ"
       ],

@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-codepipeline-actions/test/integ.pipeline-jenkins": {
+    "integ.pipeline-jenkins": {
       "stacks": [
         "aws-cdk-codepipeline-jenkins"
       ],

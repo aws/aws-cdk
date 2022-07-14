@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-s3objectlambda/test/integ.s3objectlambda": {
+    "integ.s3objectlambda": {
       "stacks": [
         "aws-s3-object-lambda"
       ],

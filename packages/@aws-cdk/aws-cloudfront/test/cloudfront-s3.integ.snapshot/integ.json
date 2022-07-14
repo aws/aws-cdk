@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-cloudfront/test/integ.cloudfront-s3": {
+    "integ.cloudfront-s3": {
       "stacks": [
         "integ-cloudfront-s3"
       ],

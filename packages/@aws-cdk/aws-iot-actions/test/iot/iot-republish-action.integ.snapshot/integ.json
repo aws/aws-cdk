@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-iot-actions/test/iot/integ.iot-republish-action": {
+    "integ.iot-republish-action": {
       "stacks": [
         "iot-republish-action-test-stack"
       ],

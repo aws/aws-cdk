@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-logs/test/integ.save-logs-insights-query-definition": {
+    "integ.save-logs-insights-query-definition": {
       "stacks": [
         "aws-cdk-logs-querydefinition-integ"
       ],

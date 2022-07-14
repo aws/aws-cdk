@@ -1,7 +1,7 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "@aws-cdk/aws-lambda/test/integ.assets.lit": {
+    "integ.assets.lit": {
       "stacks": [
         "lambda-test-assets"
       ],

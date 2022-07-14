@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-secretsmanager/test/integ.replica": {
+    "integ.replica": {
       "stacks": [
         "cdk-integ-secrets-replica"
       ],

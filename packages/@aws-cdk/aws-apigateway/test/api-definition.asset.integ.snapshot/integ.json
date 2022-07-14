@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-apigateway/test/integ.api-definition.asset": {
+    "integ.api-definition.asset": {
       "stacks": [
         "integtest-restapi-fromdefinition-asset"
       ],
