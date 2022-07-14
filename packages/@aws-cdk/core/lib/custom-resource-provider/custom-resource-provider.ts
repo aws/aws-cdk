@@ -2,15 +2,16 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import * as fse from 'fs-extra';
 import { AssetStaging } from '../asset-staging';
 import { FileAssetPackaging } from '../assets';
 import { CfnResource } from '../cfn-resource';
 import { Duration } from '../duration';
+import { FileSystem } from '../fs';
 import { Lazy } from '../lazy';
 import { Size } from '../size';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { FileSystem } from '../fs';
 
 const ENTRYPOINT_FILENAME = '__entrypoint__';
 const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, 'nodejs-entrypoint.js');
@@ -207,7 +208,7 @@ export class CustomResourceProvider extends Construct {
     }
 
     const stagingDirectory = FileSystem.mkdtemp('cdk-custom-resource');
-    fs.copyFileSync(path.join(props.codeDirectory, 'index.js'), path.join(stagingDirectory, 'index.js'));
+    fse.copySync(props.codeDirectory, stagingDirectory);
     fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(stagingDirectory, `${ENTRYPOINT_FILENAME}.js`));
 
     const staging = new AssetStaging(this, 'Staging', {
