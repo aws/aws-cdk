@@ -1,7 +1,7 @@
 {
   "version": "18.0.0",
   "testCases": {
-    "aws-apigateway/test/integ.stepfunctions-api": {
+    "integ.stepfunctions-api": {
       "stacks": [
         "StepFunctionsRestApiDeploymentStack"
       ],
