@@ -1,10 +1,13 @@
 export const BUCKET_READ_ACTIONS = [
+  's3:HeadObject',
+  's3:HeadBucket',
   's3:GetObject*',
   's3:GetBucket*',
   's3:List*',
 ];
 
 export const BUCKET_READ_METADATA_ACTIONS = [
+  's3:HeadBucket',
   's3:GetBucket*',
   's3:List*',
 ];
