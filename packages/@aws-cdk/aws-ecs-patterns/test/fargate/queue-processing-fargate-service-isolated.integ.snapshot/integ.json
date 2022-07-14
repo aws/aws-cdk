@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-ecs-patterns/test/fargate/integ.queue-processing-fargate-service-isolated": {
+    "integ.queue-processing-fargate-service-isolated": {
       "stacks": [
         "aws-ecs-patterns-queue-isolated"
       ],
