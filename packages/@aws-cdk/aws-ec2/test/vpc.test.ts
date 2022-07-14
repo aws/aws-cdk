@@ -30,6 +30,73 @@ import {
 
 describe('vpc', () => {
   describe('When creating a VPC', () => {
+
+    test('SubnetType.PRIVATE is equivalent to SubnetType.PRIVATE_WITH_NAT', () => {
+
+      const stack1 = getTestStack();
+      const stack2 = getTestStack();
+      new Vpc(stack1, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PRIVATE,
+            name: 'subnet',
+          },
+          {
+            subnetType: SubnetType.PUBLIC,
+            name: 'public',
+          },
+        ],
+      });
+
+      new Vpc(stack2, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            name: 'subnet',
+          },
+          {
+            subnetType: SubnetType.PUBLIC,
+            name: 'public',
+          },
+        ],
+      });
+
+      const t1 = Template.fromStack(stack1);
+      const t2 = Template.fromStack(stack2);
+
+      expect(t1.toJSON()).toEqual(t2.toJSON());
+
+    });
+
+    test('SubnetType.ISOLATED is equivalent to SubnetType.PRIVATE_ISOLATED', () => {
+
+      const stack1 = getTestStack();
+      const stack2 = getTestStack();
+      new Vpc(stack1, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.ISOLATED,
+            name: 'subnet',
+          },
+        ],
+      });
+
+      new Vpc(stack2, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PRIVATE_ISOLATED,
+            name: 'subnet',
+          },
+        ],
+      });
+
+      const t1 = Template.fromStack(stack1);
+      const t2 = Template.fromStack(stack2);
+
+      expect(t1.toJSON()).toEqual(t2.toJSON());
+
+    });
+
     describe('with the default CIDR range', () => {
 
       test('vpc.vpcId returns a token to the VPC ID', () => {
