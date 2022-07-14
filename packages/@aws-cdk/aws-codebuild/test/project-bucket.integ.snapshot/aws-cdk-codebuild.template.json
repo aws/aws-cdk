@@ -29,8 +29,8 @@
      "Statement": [
       {
        "Action": [
-        "s3:GetObject*",
         "s3:GetBucket*",
+        "s3:GetObject*",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -84,7 +84,8 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "MyProject39F7B0AE"
-           }
+           },
+           ":*"
           ]
          ]
         },
@@ -107,8 +108,7 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "MyProject39F7B0AE"
-           },
-           ":*"
+           }
           ]
          ]
         }

@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-cdk-elb-integ": {
       "type": "aws:cloudformation:stack",

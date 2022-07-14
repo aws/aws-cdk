@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-cdk-lambda-pce-1": {
@@ -179,7 +179,7 @@
                     },
                     "functionVersion": {
                       "Fn::GetAtt": [
-                        "MyLambdaAliasPCECurrentVersion072335D3ecf1e1993812a43e1ad83ad23009e893",
+                        "MyLambdaAliasPCECurrentVersion072335D3224448d87cb592b450e76b3259c1d874",
                         "Version"
                       ]
                     },
@@ -392,7 +392,7 @@
                     },
                     "functionVersion": {
                       "Fn::GetAtt": [
-                        "MyLambdaVersionPCECurrentVersion27FC3932176d028ba8f6b4c3340c828b8d6c8815",
+                        "MyLambdaVersionPCECurrentVersion27FC3932d779c9115684f8f405cbd7282b1508f5",
                         "Version"
                       ]
                     },

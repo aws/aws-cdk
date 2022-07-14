@@ -105,12 +105,12 @@
      "Statement": [
       {
        "Action": [
+        "es:ESHttpDelete",
         "es:ESHttpGet",
         "es:ESHttpHead",
-        "es:ESHttpDelete",
+        "es:ESHttpPatch",
         "es:ESHttpPost",
-        "es:ESHttpPut",
-        "es:ESHttpPatch"
+        "es:ESHttpPut"
        ],
        "Effect": "Allow",
        "Resource": [

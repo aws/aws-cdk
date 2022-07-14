@@ -30,8 +30,8 @@
       {
        "Action": [
         "ecr:BatchCheckLayerAvailability",
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:BatchGetImage"
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -97,14 +97,19 @@
          {
           "Ref": "AWS::URLSuffix"
          },
-         "/aws-cdk/assets:e9db95c5eb5c683b56dbb8a1930ab8b028babb58b58058d72fa77071e38e66a4"
+         "/aws-cdk/assets:77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967"
         ]
        ]
       },
       "ImageRepositoryType": "ECR"
      }
     },
-    "InstanceConfiguration": {}
+    "InstanceConfiguration": {},
+    "NetworkConfiguration": {
+     "EgressConfiguration": {
+      "EgressType": "DEFAULT"
+     }
+    }
    }
   },
   "Service2AccessRole759CA73D": {
@@ -137,8 +142,8 @@
       {
        "Action": [
         "ecr:BatchCheckLayerAvailability",
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:BatchGetImage"
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -204,14 +209,19 @@
          {
           "Ref": "AWS::URLSuffix"
          },
-         "/aws-cdk/assets:e9db95c5eb5c683b56dbb8a1930ab8b028babb58b58058d72fa77071e38e66a4"
+         "/aws-cdk/assets:77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967"
         ]
        ]
       },
       "ImageRepositoryType": "ECR"
      }
     },
-    "InstanceConfiguration": {}
+    "InstanceConfiguration": {},
+    "NetworkConfiguration": {
+     "EgressConfiguration": {
+      "EgressType": "DEFAULT"
+     }
+    }
    }
   }
  },

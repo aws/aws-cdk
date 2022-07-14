@@ -1,6 +1,62 @@
+import { format } from 'util';
+import { ResourceImpact } from '@aws-cdk/cloudformation-diff';
 import * as chalk from 'chalk';
 import * as logger from '../logger';
-import { IntegTestConfig } from '../runner/integ-tests';
+import { IntegTestInfo } from '../runner/integration-tests';
+
+/**
+ * The aggregate results from running assertions on a test case
+ */
+export type AssertionResults = { [id: string]: AssertionResult };
+
+/**
+ * The result of an individual assertion
+ */
+export interface AssertionResult {
+  /**
+   * The assertion message. If the assertion failed, this will
+   * include the reason.
+   */
+  readonly message: string;
+
+  /**
+   * Whether the assertion succeeded or failed
+   */
+  readonly status: 'success' | 'fail';
+}
+
+/**
+ * Config for an integration test
+ */
+export interface IntegTestWorkerConfig extends IntegTestInfo {
+  /**
+   * A list of any destructive changes
+   *
+   * @default []
+   */
+  readonly destructiveChanges?: DestructiveChange[];
+}
+
+/**
+ * Information on any destructive changes
+ */
+export interface DestructiveChange {
+  /**
+   * The logicalId of the resource with a destructive change
+   */
+  readonly logicalId: string;
+
+  /**
+   * The name of the stack that contains the destructive change
+   */
+  readonly stackName: string;
+
+  /**
+   * The impact of the destructive change
+   */
+  readonly impact: ResourceImpact;
+}
+
 
 /**
  * Represents integration tests metrics for a given worker
@@ -33,6 +89,22 @@ export interface IntegRunnerMetrics {
   readonly profile?: string;
 }
 
+export interface SnapshotVerificationOptions {
+  /**
+   * Retain failed snapshot comparisons
+   *
+   * @default false
+   */
+  readonly retain?: boolean;
+
+  /**
+   * Verbose mode
+   *
+   * @default false
+   */
+  readonly verbose?: boolean;
+}
+
 /**
  * Integration test results
  */
@@ -40,7 +112,7 @@ export interface IntegBatchResponse {
   /**
    * List of failed tests
    */
-  readonly failedTests: IntegTestConfig[];
+  readonly failedTests: IntegTestInfo[];
 
   /**
    * List of Integration test metrics. Each entry in the
@@ -57,7 +129,7 @@ export interface IntegTestOptions {
    * A list of integration tests to run
    * in this batch
    */
-  readonly tests: IntegTestConfig[];
+  readonly tests: IntegTestWorkerConfig[];
 
   /**
    * Whether or not to destroy the stacks at the
@@ -82,6 +154,13 @@ export interface IntegTestOptions {
    * @default false
    */
   readonly verbose?: boolean;
+
+  /**
+   * If this is set to true then the stack update workflow will be disabled
+   *
+   * @default true
+   */
+  readonly updateWorkflow?: boolean;
 }
 
 /**
@@ -100,10 +179,20 @@ export enum DiagnosticReason {
   TEST_FAILED = 'TEST_FAILED',
 
   /**
+   * There was an error running the integration test
+   */
+  TEST_ERROR = 'TEST_ERROR',
+
+  /**
    * The snapshot test failed because the actual
    * snapshot was different than the expected snapshot
    */
   SNAPSHOT_FAILED = 'SNAPSHOT_FAILED',
+
+  /**
+   * The snapshot test failed because there was an error executing it
+   */
+  SNAPSHOT_ERROR = 'SNAPSHOT_ERROR',
 
   /**
    * The snapshot test succeeded
@@ -114,6 +203,11 @@ export enum DiagnosticReason {
    * The integration test succeeded
    */
   TEST_SUCCESS = 'TEST_SUCCESS',
+
+  /**
+   * The assertion failed
+   */
+  ASSERTION_FAILED = 'ASSERTION_FAILED',
 }
 
 /**
@@ -140,6 +234,11 @@ export interface Diagnostic {
    * The reason for the diagnostic
    */
   readonly reason: DiagnosticReason;
+
+  /**
+   * Additional messages to print
+   */
+  readonly additionalMessages?: string[];
 }
 
 export function printSummary(total: number, failed: number): void {
@@ -151,30 +250,54 @@ export function printSummary(total: number, failed: number): void {
 }
 
 /**
+ * Format the assertion results so that the results can be
+ * printed
+ */
+export function formatAssertionResults(results: AssertionResults): string {
+  return Object.entries(results)
+    .map(([id, result]) => format('%s\n%s', id, result.message))
+    .join('\n');
+}
+
+/**
  * Print out the results from tests
  */
 export function printResults(diagnostic: Diagnostic): void {
   switch (diagnostic.reason) {
     case DiagnosticReason.SNAPSHOT_SUCCESS:
-      logger.success('  %s No Change! %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));
+      logger.success('  UNCHANGED  %s %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));
       break;
     case DiagnosticReason.TEST_SUCCESS:
-      logger.success('  %s Test Succeeded! %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));
+      logger.success('  SUCCESS    %s %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));
       break;
     case DiagnosticReason.NO_SNAPSHOT:
-      logger.error('  %s - No Snapshot! %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));
+      logger.error('  NEW        %s %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));
       break;
     case DiagnosticReason.SNAPSHOT_FAILED:
-      logger.error('  %s - Snapshot changed! %s\n%s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+      logger.error('  CHANGED    %s %s\n      %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+      break;
+    case DiagnosticReason.SNAPSHOT_ERROR:
+    case DiagnosticReason.TEST_ERROR:
+      logger.error('  ERROR      %s %s\n      %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
       break;
     case DiagnosticReason.TEST_FAILED:
-      logger.error('  %s - Failed! %s\n%s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+      logger.error('  FAILED     %s %s\n      %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+      break;
+    case DiagnosticReason.ASSERTION_FAILED:
+      logger.error('  ASSERT     %s %s\n      %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+      break;
+  }
+  for (const addl of diagnostic.additionalMessages ?? []) {
+    logger.print(`      ${addl}`);
   }
 }
 
-/**
- * Flatten a list of lists into a list of elements
- */
-export function flatten<T>(xs: T[][]): T[] {
-  return Array.prototype.concat.apply([], xs);
+export function printLaggards(testNames: Set<string>) {
+  const parts = [
+    '  ',
+    `Waiting for ${testNames.size} more`,
+    testNames.size < 10 ? ['(', Array.from(testNames).join(', '), ')'].join('') : '',
+  ];
+
+  logger.print(chalk.grey(parts.filter(x => x).join(' ')));
 }

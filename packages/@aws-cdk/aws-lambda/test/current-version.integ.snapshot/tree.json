@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "lambda-test-current-version": {
@@ -189,7 +189,7 @@
                             },
                             "qualifier": {
                               "Fn::GetAtt": [
-                                "MyLambdaCurrentVersionE7A382CC721de083c6b4b6360a9c534b79eb610e",
+                                "MyLambdaCurrentVersionE7A382CC1c5f33e29b34a521d6a59697cc440454",
                                 "Version"
                               ]
                             },
@@ -222,7 +222,7 @@
                             },
                             "functionVersion": {
                               "Fn::GetAtt": [
-                                "MyLambdaCurrentVersionE7A382CC721de083c6b4b6360a9c534b79eb610e",
+                                "MyLambdaCurrentVersionE7A382CC1c5f33e29b34a521d6a59697cc440454",
                                 "Version"
                               ]
                             },
@@ -294,14 +294,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           }
         },

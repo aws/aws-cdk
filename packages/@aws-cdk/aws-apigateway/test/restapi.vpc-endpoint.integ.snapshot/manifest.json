@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "test-apigateway-vpcendpoint": {
       "type": "aws:cloudformation:stack",

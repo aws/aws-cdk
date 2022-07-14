@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-cdk-kms-1": {
       "type": "aws:cloudformation:stack",

@@ -1,20 +1,18 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "assembly-PipelineStack-PreProd": {
       "type": "cdk:cloud-assembly",
       "properties": {
         "directoryName": "assembly-PipelineStack-PreProd",
         "displayName": "PipelineStack/PreProd"
-      },
-      "metadata": {}
+      }
     },
     "Tree": {
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "PipelineStack.assets": {
       "type": "cdk:asset-manifest",
@@ -22,8 +20,7 @@
         "file": "PipelineStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      },
-      "metadata": {}
+      }
     },
     "PipelineStack": {
       "type": "aws:cloudformation:stack",
@@ -33,7 +30,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3b7553032fb8b714d165c1cdb57e81d7ae9add95291d546d64b0785f981e2c64.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2cc04f6563340ecf5529214a606172fd8d1bd84655b0cc832f52ef53cf131d23.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

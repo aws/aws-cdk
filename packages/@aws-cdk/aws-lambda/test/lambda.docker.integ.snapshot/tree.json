@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "lambda-ecr-docker": {
@@ -117,7 +117,7 @@
                             {
                               "Ref": "AWS::URLSuffix"
                             },
-                            "/aws-cdk/assets:b7767e24de8d852617d9600e7a60395334454ca017d648f93b2d990aec7f50fd"
+                            "/aws-cdk/assets:768d7b6c1d41b85135f498fe0cca69fea410be3c3322c69cf08690aaad29a610"
                           ]
                         ]
                       }

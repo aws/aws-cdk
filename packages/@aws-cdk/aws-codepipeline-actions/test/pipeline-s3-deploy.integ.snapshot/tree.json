@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-cdk-codepipeline-s3-deploy": {
@@ -49,6 +49,28 @@
               "Resource": {
                 "id": "Resource",
                 "path": "aws-cdk-codepipeline-s3-deploy/DeployBucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
+          "OtherDeployBucket": {
+            "id": "OtherDeployBucket",
+            "path": "aws-cdk-codepipeline-s3-deploy/OtherDeployBucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codepipeline-s3-deploy/OtherDeployBucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {}
@@ -111,12 +133,16 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "s3:GetObject*",
-                                    "s3:GetBucket*",
-                                    "s3:List*",
+                                    "s3:Abort*",
                                     "s3:DeleteObject*",
-                                    "s3:PutObject*",
-                                    "s3:Abort*"
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*",
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": [
@@ -145,22 +171,26 @@
                                 {
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "PipelineSourceCodePipelineActionRoleC6F9E7F5",
-                                      "Arn"
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "PipelineDeployDeployActionCodePipelineActionRole1C288A60",
-                                      "Arn"
-                                    ]
-                                  }
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "PipelineDeployDeployActionCodePipelineActionRole1C288A60",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "PipelineDisabledDisabledDeployActionCodePipelineActionRole9CEF3915",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "PipelineSourceCodePipelineActionRoleC6F9E7F5",
+                                        "Arn"
+                                      ]
+                                    }
+                                  ]
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -268,6 +298,38 @@
                             }
                           }
                         ]
+                      },
+                      {
+                        "name": "Disabled",
+                        "actions": [
+                          {
+                            "name": "DisabledDeployAction",
+                            "inputArtifacts": [
+                              {
+                                "name": "SourceArtifact"
+                              }
+                            ],
+                            "actionTypeId": {
+                              "category": "Deploy",
+                              "version": "1",
+                              "owner": "AWS",
+                              "provider": "S3"
+                            },
+                            "configuration": {
+                              "BucketName": {
+                                "Ref": "OtherDeployBucket7B0CCE57"
+                              },
+                              "Extract": "true"
+                            },
+                            "runOrder": 1,
+                            "roleArn": {
+                              "Fn::GetAtt": [
+                                "PipelineDisabledDisabledDeployActionCodePipelineActionRole9CEF3915",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        ]
                       }
                     ],
                     "artifactStore": {
@@ -275,7 +337,13 @@
                       "location": {
                         "Ref": "PipelineBucketB967BD35"
                       }
-                    }
+                    },
+                    "disableInboundStageTransitions": [
+                      {
+                        "reason": "Transition disabled",
+                        "stageName": "Disabled"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -349,8 +417,8 @@
                                       "Statement": [
                                         {
                                           "Action": [
-                                            "s3:GetObject*",
                                             "s3:GetBucket*",
+                                            "s3:GetObject*",
                                             "s3:List*"
                                           ],
                                           "Effect": "Allow",
@@ -379,9 +447,13 @@
                                         },
                                         {
                                           "Action": [
+                                            "s3:Abort*",
                                             "s3:DeleteObject*",
-                                            "s3:PutObject*",
-                                            "s3:Abort*"
+                                            "s3:PutObject",
+                                            "s3:PutObjectLegalHold",
+                                            "s3:PutObjectRetention",
+                                            "s3:PutObjectTagging",
+                                            "s3:PutObjectVersionTagging"
                                           ],
                                           "Effect": "Allow",
                                           "Resource": [
@@ -437,14 +509,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "Deploy": {
@@ -513,9 +585,13 @@
                                       "Statement": [
                                         {
                                           "Action": [
+                                            "s3:Abort*",
                                             "s3:DeleteObject*",
-                                            "s3:PutObject*",
-                                            "s3:Abort*"
+                                            "s3:PutObject",
+                                            "s3:PutObjectLegalHold",
+                                            "s3:PutObjectRetention",
+                                            "s3:PutObjectTagging",
+                                            "s3:PutObjectVersionTagging"
                                           ],
                                           "Effect": "Allow",
                                           "Resource": [
@@ -564,8 +640,8 @@
                                         },
                                         {
                                           "Action": [
-                                            "s3:GetObject*",
                                             "s3:GetBucket*",
+                                            "s3:GetObject*",
                                             "s3:List*"
                                           ],
                                           "Effect": "Allow",
@@ -622,14 +698,182 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
+                }
+              },
+              "Disabled": {
+                "id": "Disabled",
+                "path": "aws-cdk-codepipeline-s3-deploy/Pipeline/Disabled",
+                "children": {
+                  "DisabledDeployAction": {
+                    "id": "DisabledDeployAction",
+                    "path": "aws-cdk-codepipeline-s3-deploy/Pipeline/Disabled/DisabledDeployAction",
+                    "children": {
+                      "CodePipelineActionRole": {
+                        "id": "CodePipelineActionRole",
+                        "path": "aws-cdk-codepipeline-s3-deploy/Pipeline/Disabled/DisabledDeployAction/CodePipelineActionRole",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-cdk-codepipeline-s3-deploy/Pipeline/Disabled/DisabledDeployAction/CodePipelineActionRole/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                              "aws:cdk:cloudformation:props": {
+                                "assumeRolePolicyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "AWS": {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":iam::",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":root"
+                                            ]
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.CfnRole",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "DefaultPolicy": {
+                            "id": "DefaultPolicy",
+                            "path": "aws-cdk-codepipeline-s3-deploy/Pipeline/Disabled/DisabledDeployAction/CodePipelineActionRole/DefaultPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "aws-cdk-codepipeline-s3-deploy/Pipeline/Disabled/DisabledDeployAction/CodePipelineActionRole/DefaultPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": [
+                                            "s3:Abort*",
+                                            "s3:DeleteObject*",
+                                            "s3:PutObject",
+                                            "s3:PutObjectLegalHold",
+                                            "s3:PutObjectRetention",
+                                            "s3:PutObjectTagging",
+                                            "s3:PutObjectVersionTagging"
+                                          ],
+                                          "Effect": "Allow",
+                                          "Resource": [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "OtherDeployBucket7B0CCE57",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "OtherDeployBucket7B0CCE57",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  "/*"
+                                                ]
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "Action": [
+                                            "s3:GetBucket*",
+                                            "s3:GetObject*",
+                                            "s3:List*"
+                                          ],
+                                          "Effect": "Allow",
+                                          "Resource": [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "PipelineBucketB967BD35",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "PipelineBucketB967BD35",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  "/*"
+                                                ]
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "PipelineDisabledDisabledDeployActionCodePipelineActionRoleDefaultPolicyB1AF629C",
+                                    "roles": [
+                                      {
+                                        "Ref": "PipelineDisabledDisabledDeployActionCodePipelineActionRole9CEF3915"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.Policy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.Role",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },

@@ -2,6 +2,7 @@ import { Annotations, Template, Match } from '@aws-cdk/assertions';
 import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import {
   CfnLaunchTemplate,
   Instance,
@@ -34,7 +35,7 @@ describe('RequireImdsv2Aspect', () => {
       // @ts-ignore
       aspect.warn(node, errmsg);
     });
-    const construct = new cdk.Construct(stack, 'Construct');
+    const construct = new Construct(stack, 'Construct');
 
     // WHEN
     aspect.visit(construct);
@@ -178,7 +179,9 @@ describe('RequireImdsv2Aspect', () => {
       // GIVEN
       const launchTemplate = new LaunchTemplate(stack, 'LaunchTemplate');
       const cfnLaunchTemplate = launchTemplate.node.tryFindChild('Resource') as CfnLaunchTemplate;
-      cfnLaunchTemplate.launchTemplateData = fakeToken();
+      cfnLaunchTemplate.launchTemplateData = cdk.Token.asAny({
+        kernelId: 'asfd',
+      } as CfnLaunchTemplate.LaunchTemplateDataProperty);
       const aspect = new LaunchTemplateRequireImdsv2Aspect();
 
       // WHEN
@@ -193,7 +196,9 @@ describe('RequireImdsv2Aspect', () => {
       const launchTemplate = new LaunchTemplate(stack, 'LaunchTemplate');
       const cfnLaunchTemplate = launchTemplate.node.tryFindChild('Resource') as CfnLaunchTemplate;
       cfnLaunchTemplate.launchTemplateData = {
-        metadataOptions: fakeToken(),
+        metadataOptions: cdk.Token.asAny({
+          httpEndpoint: 'http://bla',
+        } as CfnLaunchTemplate.MetadataOptionsProperty),
       } as CfnLaunchTemplate.LaunchTemplateDataProperty;
       const aspect = new LaunchTemplateRequireImdsv2Aspect();
 
@@ -223,11 +228,3 @@ describe('RequireImdsv2Aspect', () => {
     });
   });
 });
-
-function fakeToken(): cdk.IResolvable {
-  return {
-    creationStack: [],
-    resolve: (_c) => {},
-    toString: () => '',
-  };
-}

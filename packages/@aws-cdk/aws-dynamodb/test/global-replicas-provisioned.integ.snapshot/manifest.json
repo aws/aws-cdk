@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-cdk-dynamodb-global-replicas-provisioned": {
       "type": "aws:cloudformation:stack",
@@ -45,12 +44,12 @@
             "type": "aws:cdk:asset",
             "data": {
               "path": "awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderEA32CB30.nested.template.json",
-              "id": "759bf9c49118635107ef4399f5cfd61d428b22f9f674464abb28ae4067ab39ea",
+              "id": "fa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996",
               "packaging": "file",
-              "sourceHash": "759bf9c49118635107ef4399f5cfd61d428b22f9f674464abb28ae4067ab39ea",
-              "s3BucketParameter": "AssetParameters759bf9c49118635107ef4399f5cfd61d428b22f9f674464abb28ae4067ab39eaS3BucketF27557BA",
-              "s3KeyParameter": "AssetParameters759bf9c49118635107ef4399f5cfd61d428b22f9f674464abb28ae4067ab39eaS3VersionKey8FAAB916",
-              "artifactHashParameter": "AssetParameters759bf9c49118635107ef4399f5cfd61d428b22f9f674464abb28ae4067ab39eaArtifactHash7158BB8F"
+              "sourceHash": "fa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996",
+              "s3BucketParameter": "AssetParametersfa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996S3BucketF48850CA",
+              "s3KeyParameter": "AssetParametersfa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996S3VersionKey238E55C8",
+              "artifactHashParameter": "AssetParametersfa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996ArtifactHash6B3A99BE"
             }
           }
         ],
@@ -300,22 +299,22 @@
             "data": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9ArtifactHash26B5BCAA"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/AssetParameters/759bf9c49118635107ef4399f5cfd61d428b22f9f674464abb28ae4067ab39ea/S3Bucket": [
+        "/aws-cdk-dynamodb-global-replicas-provisioned/AssetParameters/fa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters759bf9c49118635107ef4399f5cfd61d428b22f9f674464abb28ae4067ab39eaS3BucketF27557BA"
+            "data": "AssetParametersfa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996S3BucketF48850CA"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/AssetParameters/759bf9c49118635107ef4399f5cfd61d428b22f9f674464abb28ae4067ab39ea/S3VersionKey": [
+        "/aws-cdk-dynamodb-global-replicas-provisioned/AssetParameters/fa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters759bf9c49118635107ef4399f5cfd61d428b22f9f674464abb28ae4067ab39eaS3VersionKey8FAAB916"
+            "data": "AssetParametersfa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996S3VersionKey238E55C8"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/AssetParameters/759bf9c49118635107ef4399f5cfd61d428b22f9f674464abb28ae4067ab39ea/ArtifactHash": [
+        "/aws-cdk-dynamodb-global-replicas-provisioned/AssetParameters/fa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters759bf9c49118635107ef4399f5cfd61d428b22f9f674464abb28ae4067ab39eaArtifactHash7158BB8F"
+            "data": "AssetParametersfa728fbd1797ec54948af8639031405ae9e9706b7ca18642938bf901ea9e4996ArtifactHash6B3A99BE"
           }
         ]
       },

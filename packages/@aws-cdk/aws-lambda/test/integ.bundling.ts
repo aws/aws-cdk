@@ -1,6 +1,7 @@
 /// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
-import { App, CfnOutput, Stack, StackProps } from '@aws-cdk/core';
+import { App, Stack, StackProps } from '@aws-cdk/core';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
 
@@ -12,6 +13,7 @@ import * as lambda from '../lib';
  * The last command should show '200'
  */
 class TestStack extends Stack {
+  public readonly functionName: string;
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
@@ -19,7 +21,7 @@ class TestStack extends Stack {
     const fn = new lambda.Function(this, 'Function', {
       code: lambda.Code.fromAsset(assetPath, {
         bundling: {
-          image: lambda.Runtime.PYTHON_3_6.bundlingImage,
+          image: lambda.Runtime.PYTHON_3_9.bundlingImage,
           command: [
             'bash', '-c', [
               'cp -au . /asset-output',
@@ -29,16 +31,26 @@ class TestStack extends Stack {
           ],
         },
       }),
-      runtime: lambda.Runtime.PYTHON_3_6,
+      runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.handler',
     });
 
-    new CfnOutput(this, 'FunctionArn', {
-      value: fn.functionArn,
-    });
+    this.functionName = fn.functionName;
   }
 }
 
 const app = new App();
-new TestStack(app, 'cdk-integ-lambda-bundling');
+const stack = new TestStack(app, 'cdk-integ-lambda-bundling');
+
+const integ = new IntegTest(app, 'Bundling', {
+  testCases: [stack],
+  stackUpdateWorkflow: false,
+});
+
+const invoke = integ.assertions.invokeFunction({
+  functionName: stack.functionName,
+});
+invoke.expect(ExpectedResult.objectLike({
+  Payload: '200',
+}));
 app.synth();

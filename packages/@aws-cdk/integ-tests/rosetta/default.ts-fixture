@@ -1,12 +1,28 @@
 import * as lambda from '@aws-cdk/aws-lambda';
-import { IntegTestCase } from '@aws-cdk/integ-tests';
+import {
+  IntegTestCase,
+  IntegTest,
+  IntegTestCaseStack,
+  AwsApiCall,
+  EqualsAssertion,
+  ActualResult,
+  ExpectedResult,
+  InvocationType,
+  AssertionType,
+  LambdaInvokeFunction,
+  Match,
+  AssertionsProvider,
+} from '@aws-cdk/integ-tests';
+import { Construct } from 'constructs';
 import {
   App,
-  Construct,
   Stack,
   StackProps,
+  CustomResource,
 } from '@aws-cdk/core';
 import * as path from 'path';
+import * as sqs from '@aws-cdk/aws-sqs';
+import { IStateMachine } from '@aws-cdk/aws-stepfunctions';
 import { RequireApproval } from '@aws-cdk/cloud-assembly-schema';
 
 /// here

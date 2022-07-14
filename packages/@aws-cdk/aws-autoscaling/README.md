@@ -46,6 +46,41 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+Alternatively you can create an `AutoScalingGroup` from a `LaunchTemplate`:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const launchTemplate: ec2.LaunchTemplate;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  launchTemplate: launchTemplate
+});
+```
+
+To launch a mixture of Spot and on-demand instances, and/or with multiple instance types, you can create an `AutoScalingGroup` from a MixedInstancesPolicy:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const launchTemplate1: ec2.LaunchTemplate;
+declare const launchTemplate2: ec2.LaunchTemplate;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  mixedInstancesPolicy: {
+    instancesDistribution: {
+      onDemandPercentageAboveBaseCapacity: 50, // Mix Spot and On-Demand instances
+    },
+    launchTemplate: launchTemplate1,
+    launchTemplateOverrides: [ // Mix multiple instance types
+      { instanceType: new ec2.InstanceType('t3.micro') },
+      { instanceType: new ec2.InstanceType('t3a.micro') },
+      { instanceType: new ec2.InstanceType('t4g.micro'), launchTemplate: launchTemplate2 },
+    ],
+  }
+});
+```
+
 ## Machine Images (AMIs)
 
 AMIs control the OS that gets launched when you start your EC2 instance. The EC2

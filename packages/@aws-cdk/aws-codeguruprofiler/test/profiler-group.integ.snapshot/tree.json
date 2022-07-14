@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "ProfilerGroupIntegrationTest": {
@@ -195,8 +195,8 @@
                           "Statement": [
                             {
                               "Action": [
-                                "codeguru-profiler:GetProfile",
-                                "codeguru-profiler:DescribeProfilingGroup"
+                                "codeguru-profiler:DescribeProfilingGroup",
+                                "codeguru-profiler:GetProfile"
                               ],
                               "Effect": "Allow",
                               "Resource": {

@@ -25,8 +25,8 @@
       {
        "Action": [
         "ecr:BatchCheckLayerAvailability",
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:BatchGetImage"
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -82,7 +82,8 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "MyProject39F7B0AE"
-           }
+           },
+           ":*"
           ]
          ]
         },
@@ -105,8 +106,7 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "MyProject39F7B0AE"
-           },
-           ":*"
+           }
           ]
          ]
         }
@@ -146,7 +146,7 @@
         {
          "Ref": "AWS::URLSuffix"
         },
-        "/aws-cdk/assets:b79a9515455fd043f9f3b7d7136690d584616aaf59ad882a5ccae24e6f91d81d"
+        "/aws-cdk/assets:73ee9c3cafd103104e2a42ee76961a90a2410d0dcad42110343c5fd85ad6db78"
        ]
       ]
      },

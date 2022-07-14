@@ -85,7 +85,7 @@
     "HandlerServiceRoleFCDC14AE"
    ]
   },
-  "HandlerCurrentVersion93FB80BF9a6cf166b667631aba3958d26c7ca1bb": {
+  "HandlerCurrentVersion93FB80BFf2e6129c63154d1f37c0092df295ab51": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -101,7 +101,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "HandlerCurrentVersion93FB80BF9a6cf166b667631aba3958d26c7ca1bb",
+      "HandlerCurrentVersion93FB80BFf2e6129c63154d1f37c0092df295ab51",
       "Version"
      ]
     },
@@ -480,6 +480,12 @@
        "Resource": [
         {
          "Fn::GetAtt": [
+          "PostHookF2E49B30",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
           "PreHook8B53F672",
           "Arn"
          ]
@@ -490,24 +496,12 @@
           [
            {
             "Fn::GetAtt": [
-             "PreHook8B53F672",
+             "PostHookF2E49B30",
              "Arn"
             ]
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "PostHookF2E49B30",
-          "Arn"
          ]
         },
         {
@@ -516,7 +510,7 @@
           [
            {
             "Fn::GetAtt": [
-             "PostHookF2E49B30",
+             "PreHook8B53F672",
              "Arn"
             ]
            },

@@ -5,11 +5,12 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
 import {
-  CfnResource, ConstructNode,
+  CfnResource,
   CustomResource, CustomResourceProvider, CustomResourceProviderRuntime,
   Lazy, Resource, Stack, Stage, Token,
 } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+
+import { Construct, Node } from 'constructs';
 
 /**
  * Properties for creating a Lambda@Edge function
@@ -43,7 +44,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public readonly functionArn: string;
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly isBoundToVpc = false;
-  public readonly permissionsNode: ConstructNode;
+  public readonly permissionsNode: Node;
   public readonly role?: iam.IRole;
   public readonly version: string;
   public readonly architecture: lambda.Architecture;
@@ -55,7 +56,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     super(scope, id);
 
     // Create a simple Function if we're already in us-east-1; otherwise create a cross-region stack.
-    const regionIsUsEast1 = !Token.isUnresolved(this.stack.region) && this.stack.region === 'us-east-1';
+    const regionIsUsEast1 = !Token.isUnresolved(this.env.region) && this.env.region === 'us-east-1';
     const { edgeFunction, edgeArn } = regionIsUsEast1
       ? this.createInRegionFunction(props)
       : this.createCrossRegionFunction(id, props);
@@ -192,7 +193,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     const resourceType = 'Custom::CrossRegionStringParameterReader';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: path.join(__dirname, 'edge-function'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       policyStatements: [{
         Effect: 'Allow',
         Resource: parameterArnPrefix,

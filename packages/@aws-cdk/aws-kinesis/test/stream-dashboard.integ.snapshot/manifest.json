@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "integ-kinesis-stream-dashboard": {
       "type": "aws:cloudformation:stack",

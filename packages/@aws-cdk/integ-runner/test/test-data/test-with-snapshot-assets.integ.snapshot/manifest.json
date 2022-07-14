@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,6 +7,14 @@
         "file": "tree.json"
       },
       "metadata": {}
+    },
+    "test-stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "test-stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
     },
     "test-stack": {
       "type": "aws:cloudformation:stack",

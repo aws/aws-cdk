@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "integ-distribution-lambda": {
@@ -36,14 +36,10 @@
                               "Action": "sts:AssumeRole",
                               "Effect": "Allow",
                               "Principal": {
-                                "Service": "lambda.amazonaws.com"
-                              }
-                            },
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "edgelambda.amazonaws.com"
+                                "Service": [
+                                  "edgelambda.amazonaws.com",
+                                  "lambda.amazonaws.com"
+                                ]
                               }
                             }
                           ],
@@ -140,8 +136,8 @@
                 "id": "Origin1",
                 "path": "integ-distribution-lambda/Dist/Origin1",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "Resource": {
@@ -170,7 +166,7 @@
                         "lambdaFunctionAssociations": [
                           {
                             "lambdaFunctionArn": {
-                              "Ref": "LambdaCurrentVersionDF706F6A8cedba3e8e1b3bbf7614644bfafda118"
+                              "Ref": "LambdaCurrentVersionDF706F6A1ee13d0fa54e9f5621e8c7b616fc53fc"
                             },
                             "eventType": "origin-request"
                           }

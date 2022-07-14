@@ -64,8 +64,8 @@
       },
       {
        "Action": [
-        "s3:GetObject*",
         "s3:GetBucket*",
+        "s3:GetObject*",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -159,12 +159,16 @@
      "Statement": [
       {
        "Action": [
-        "s3:GetObject*",
-        "s3:GetBucket*",
-        "s3:List*",
+        "s3:Abort*",
         "s3:DeleteObject*",
-        "s3:PutObject*",
-        "s3:Abort*"
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
        ],
        "Effect": "Allow",
        "Resource": [
@@ -193,22 +197,20 @@
       {
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "MyPipelineSourceS3CodePipelineActionRole9F003087",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "ActionRole60B0EDF7",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ActionRole60B0EDF7",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "MyPipelineSourceS3CodePipelineActionRole9F003087",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -352,8 +354,8 @@
      "Statement": [
       {
        "Action": [
-        "s3:GetObject*",
         "s3:GetBucket*",
+        "s3:GetObject*",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -382,9 +384,13 @@
       },
       {
        "Action": [
+        "s3:Abort*",
         "s3:DeleteObject*",
-        "s3:PutObject*",
-        "s3:Abort*"
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
        ],
        "Effect": "Allow",
        "Resource": [
@@ -445,8 +451,8 @@
      "Statement": [
       {
        "Action": [
-        "s3:GetObject*",
         "s3:GetBucket*",
+        "s3:GetObject*",
         "s3:List*"
        ],
        "Effect": "Allow",

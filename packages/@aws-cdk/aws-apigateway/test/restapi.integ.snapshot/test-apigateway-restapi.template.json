@@ -606,7 +606,7 @@
     "UsagePlanName": "Basic"
    }
   },
-  "myapiUsagePlanUsagePlanKeyResource050D133F": {
+  "myapiUsagePlanUsagePlanKeyResourcetestapigatewayrestapimyapiApiKeyC43601CB600D112D": {
    "Type": "AWS::ApiGateway::UsagePlanKey",
    "Properties": {
     "KeyId": {

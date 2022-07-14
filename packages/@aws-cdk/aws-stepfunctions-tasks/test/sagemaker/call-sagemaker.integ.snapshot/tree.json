@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-stepfunctions-integ-sagemaker": {
@@ -29,23 +29,7 @@
                     "keyPolicy": {
                       "Statement": [
                         {
-                          "Action": [
-                            "kms:Create*",
-                            "kms:Describe*",
-                            "kms:Enable*",
-                            "kms:List*",
-                            "kms:Put*",
-                            "kms:Update*",
-                            "kms:Revoke*",
-                            "kms:Disable*",
-                            "kms:Get*",
-                            "kms:Delete*",
-                            "kms:ScheduleKeyDeletion",
-                            "kms:CancelKeyDeletion",
-                            "kms:GenerateDataKey",
-                            "kms:TagResource",
-                            "kms:UntagResource"
-                          ],
+                          "Action": "kms:*",
                           "Effect": "Allow",
                           "Principal": {
                             "AWS": {
@@ -62,40 +46,6 @@
                                   },
                                   ":root"
                                 ]
-                              ]
-                            }
-                          },
-                          "Resource": "*"
-                        },
-                        {
-                          "Action": [
-                            "kms:Decrypt",
-                            "kms:DescribeKey"
-                          ],
-                          "Effect": "Allow",
-                          "Principal": {
-                            "AWS": {
-                              "Fn::GetAtt": [
-                                "TrainTaskSagemakerRoleD5A6F967",
-                                "Arn"
-                              ]
-                            }
-                          },
-                          "Resource": "*"
-                        },
-                        {
-                          "Action": [
-                            "kms:Encrypt",
-                            "kms:ReEncrypt*",
-                            "kms:GenerateDataKey*",
-                            "kms:Decrypt"
-                          ],
-                          "Effect": "Allow",
-                          "Principal": {
-                            "AWS": {
-                              "Fn::GetAtt": [
-                                "TrainTaskSagemakerRoleD5A6F967",
-                                "Arn"
                               ]
                             }
                           },
@@ -189,11 +139,11 @@
                                 {
                                   "Action": [
                                     "cloudwatch:PutMetricData",
-                                    "logs:CreateLogStream",
-                                    "logs:PutLogEvents",
+                                    "ecr:GetAuthorizationToken",
                                     "logs:CreateLogGroup",
+                                    "logs:CreateLogStream",
                                     "logs:DescribeLogStreams",
-                                    "ecr:GetAuthorizationToken"
+                                    "logs:PutLogEvents"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": "*"
@@ -224,8 +174,8 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "s3:GetObject*",
                                     "s3:GetBucket*",
+                                    "s3:GetObject*",
                                     "s3:List*"
                                   ],
                                   "Effect": "Allow",
@@ -255,7 +205,10 @@
                                 {
                                   "Action": [
                                     "kms:Decrypt",
-                                    "kms:DescribeKey"
+                                    "kms:DescribeKey",
+                                    "kms:Encrypt",
+                                    "kms:GenerateDataKey*",
+                                    "kms:ReEncrypt*"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {
@@ -267,9 +220,13 @@
                                 },
                                 {
                                   "Action": [
+                                    "s3:Abort*",
                                     "s3:DeleteObject*",
-                                    "s3:PutObject*",
-                                    "s3:Abort*"
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": [
@@ -294,21 +251,6 @@
                                       ]
                                     }
                                   ]
-                                },
-                                {
-                                  "Action": [
-                                    "kms:Encrypt",
-                                    "kms:ReEncrypt*",
-                                    "kms:GenerateDataKey*",
-                                    "kms:Decrypt"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "EncryptionKey1B843E66",
-                                      "Arn"
-                                    ]
-                                  }
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -378,11 +320,11 @@
                                 {
                                   "Action": [
                                     "cloudwatch:PutMetricData",
-                                    "logs:CreateLogStream",
+                                    "ecr:GetAuthorizationToken",
                                     "logs:CreateLogGroup",
-                                    "logs:PutLogEvents",
+                                    "logs:CreateLogStream",
                                     "logs:DescribeLogStreams",
-                                    "ecr:GetAuthorizationToken"
+                                    "logs:PutLogEvents"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": "*"
@@ -414,14 +356,8 @@
                                 {
                                   "Action": [
                                     "ecr:BatchCheckLayerAvailability",
+                                    "ecr:BatchGetImage",
                                     "ecr:GetDownloadUrlForLayer",
-                                    "ecr:BatchGetImage"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": "*"
-                                },
-                                {
-                                  "Action": [
                                     "s3:GetObject",
                                     "s3:ListBucket"
                                   ],
@@ -588,12 +524,20 @@
                                     }
                                   },
                                   "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "TrainTaskSagemakerRoleD5A6F967",
-                                      "Arn"
-                                    ]
-                                  }
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "CreateModelSagemakerRoleC2E07FC0",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "TrainTaskSagemakerRoleD5A6F967",
+                                        "Arn"
+                                      ]
+                                    }
+                                  ]
                                 },
                                 {
                                   "Action": "sagemaker:CreateModel",
@@ -616,21 +560,6 @@
                                         },
                                         ":model/*"
                                       ]
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": "iam:PassRole",
-                                  "Condition": {
-                                    "StringEquals": {
-                                      "iam:PassedToService": "sagemaker.amazonaws.com"
-                                    }
-                                  },
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "CreateModelSagemakerRoleC2E07FC0",
-                                      "Arn"
                                     ]
                                   }
                                 },
@@ -659,29 +588,12 @@
                                   }
                                 },
                                 {
-                                  "Action": "sagemaker:createEndpoint",
+                                  "Action": [
+                                    "sagemaker:createEndpoint",
+                                    "sagemaker:updateEndpoint"
+                                  ],
                                   "Effect": "Allow",
                                   "Resource": [
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":sagemaker:",
-                                          {
-                                            "Ref": "AWS::Region"
-                                          },
-                                          ":",
-                                          {
-                                            "Ref": "AWS::AccountId"
-                                          },
-                                          ":endpoint/*"
-                                        ]
-                                      ]
-                                    },
                                     {
                                       "Fn::Join": [
                                         "",
@@ -701,32 +613,6 @@
                                           ":endpoint-config/*"
                                         ]
                                       ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "Action": "sagemaker:updateEndpoint",
-                                  "Effect": "Allow",
-                                  "Resource": [
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":sagemaker:",
-                                          {
-                                            "Ref": "AWS::Region"
-                                          },
-                                          ":",
-                                          {
-                                            "Ref": "AWS::AccountId"
-                                          },
-                                          ":endpoint/*"
-                                        ]
-                                      ]
                                     },
                                     {
                                       "Fn::Join": [
@@ -744,7 +630,7 @@
                                           {
                                             "Ref": "AWS::AccountId"
                                           },
-                                          ":endpoint-config/*"
+                                          ":endpoint/*"
                                         ]
                                       ]
                                     }

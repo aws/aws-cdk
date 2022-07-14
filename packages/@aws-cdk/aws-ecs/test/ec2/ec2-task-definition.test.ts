@@ -5,7 +5,7 @@ import { Repository } from '@aws-cdk/aws-ecr';
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
+import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecs from '../../lib';
@@ -227,7 +227,8 @@ describe('ec2 task definition', () => {
 
     test('all container definition options defined', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+      const stack = new cdk.Stack(app);
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
       const secret = new secretsmanager.Secret(stack, 'Secret');
@@ -451,9 +452,6 @@ describe('ec2 task definition', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
-        ImageScanningConfiguration: {
-          ScanOnPush: false,
-        },
         LifecyclePolicy: {
           // eslint-disable-next-line max-len
           LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
@@ -674,11 +672,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
-        ImageScanningConfiguration: {
-          ScanOnPush: false,
-        },
-      });
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {});
     });
 
     test('warns when setting containers from ECR repository using fromRegistry method', () => {
@@ -715,7 +709,17 @@ describe('ec2 task definition', () => {
       Annotations.fromStack(stack).hasWarning('/Default/Ec2TaskDef/web', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
     });
 
-    testFutureBehavior('correctly sets containers from asset using default props', { [cxapi.DOCKER_IGNORE_SUPPORT]: true }, cdk.App, (app) => {
+    class MyApp extends cdk.App {
+      constructor() {
+        super({
+          context: {
+            [cxapi.DOCKER_IGNORE_SUPPORT]: true,
+          },
+        });
+      }
+    }
+
+    testLegacyBehavior('correctly sets containers from asset using default props', MyApp, (app) => {
       // GIVEN
       const stack = new cdk.Stack(app, 'Stack');
 

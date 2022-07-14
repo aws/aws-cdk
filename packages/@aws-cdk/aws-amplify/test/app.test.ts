@@ -417,11 +417,28 @@ test('with custom headers', () => {
           'custom-header-name-1': 'custom-header-value-2',
         },
       },
+      {
+        pattern: '/with-tokens/*',
+        headers: {
+          'x-custom': `${'hello'.repeat(10)}${Stack.of(stack).urlSuffix} `,
+        },
+      },
     ],
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
-    CustomHeaders: 'customHeaders:\n  - pattern: "*.json"\n    headers:\n      - key: custom-header-name-1\n        value: custom-header-value-1\n      - key: custom-header-name-2\n        value: custom-header-value-2\n  - pattern: /path/*\n    headers:\n      - key: custom-header-name-1\n        value: custom-header-value-2\n',
+    CustomHeaders: {
+      'Fn::Join': [
+        '',
+        [
+          'customHeaders:\n  - pattern: "*.json"\n    headers:\n      - key: "custom-header-name-1"\n        value: "custom-header-value-1"\n      - key: "custom-header-name-2"\n        value: "custom-header-value-2"\n  - pattern: "/path/*"\n    headers:\n      - key: "custom-header-name-1"\n        value: "custom-header-value-2"\n  - pattern: "/with-tokens/*"\n    headers:\n      - key: "x-custom"\n        value: "hellohellohellohellohellohellohellohellohellohello',
+          {
+            Ref: 'AWS::URLSuffix',
+          },
+          ' "\n',
+        ],
+      ],
+    },
   });
 });

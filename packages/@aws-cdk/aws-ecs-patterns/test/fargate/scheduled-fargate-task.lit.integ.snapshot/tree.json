@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-fargate-integ": {
@@ -530,7 +530,7 @@
                                   {
                                     "Ref": "AWS::URLSuffix"
                                   },
-                                  "/aws-cdk/assets:aba53d5f05c76afcd7e420dc8cd283ddc31657866bb4ba4ce221e13d8128d92c"
+                                  "/aws-cdk/assets:0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
                                 ]
                               ]
                             },
@@ -683,8 +683,8 @@
                                     {
                                       "Action": [
                                         "ecr:BatchCheckLayerAvailability",
-                                        "ecr:GetDownloadUrlForLayer",
-                                        "ecr:BatchGetImage"
+                                        "ecr:BatchGetImage",
+                                        "ecr:GetDownloadUrlForLayer"
                                       ],
                                       "Effect": "Allow",
                                       "Resource": {
@@ -815,22 +815,20 @@
                                     {
                                       "Action": "iam:PassRole",
                                       "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "ScheduledFargateTaskScheduledTaskDefExecutionRoleD37356D5",
-                                          "Arn"
-                                        ]
-                                      }
-                                    },
-                                    {
-                                      "Action": "iam:PassRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "ScheduledFargateTaskScheduledTaskDefTaskRoleD0FF16AD",
-                                          "Arn"
-                                        ]
-                                      }
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "ScheduledFargateTaskScheduledTaskDefExecutionRoleD37356D5",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "ScheduledFargateTaskScheduledTaskDefTaskRoleD0FF16AD",
+                                            "Arn"
+                                          ]
+                                        }
+                                      ]
                                     }
                                   ],
                                   "Version": "2012-10-17"

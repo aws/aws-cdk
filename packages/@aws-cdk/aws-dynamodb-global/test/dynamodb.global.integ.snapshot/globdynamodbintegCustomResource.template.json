@@ -38,14 +38,14 @@
      "Statement": [
       {
        "Action": [
-        "iam:CreateServiceLinkedRole",
         "application-autoscaling:DeleteScalingPolicy",
         "application-autoscaling:DeregisterScalableTarget",
         "dynamodb:CreateGlobalTable",
-        "dynamodb:DescribeLimits",
         "dynamodb:DeleteTable",
         "dynamodb:DescribeGlobalTable",
-        "dynamodb:UpdateGlobalTable"
+        "dynamodb:DescribeLimits",
+        "dynamodb:UpdateGlobalTable",
+        "iam:CreateServiceLinkedRole"
        ],
        "Effect": "Allow",
        "Resource": "*"
@@ -110,7 +110,7 @@
     },
     "Description": "Lambda to make DynamoDB a global table",
     "Handler": "index.handler",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 300
    },
    "DependsOn": [

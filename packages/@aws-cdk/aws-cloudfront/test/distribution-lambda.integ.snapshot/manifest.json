@@ -1,12 +1,11 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "integ-distribution-lambda": {
       "type": "aws:cloudformation:stack",
@@ -31,13 +30,22 @@
         "/integ-distribution-lambda/Lambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaCurrentVersionDF706F6A8cedba3e8e1b3bbf7614644bfafda118"
+            "data": "LambdaCurrentVersionDF706F6A1ee13d0fa54e9f5621e8c7b616fc53fc"
           }
         ],
         "/integ-distribution-lambda/Dist/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DistB3B78991"
+          }
+        ],
+        "LambdaCurrentVersionDF706F6A8cedba3e8e1b3bbf7614644bfafda118": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaCurrentVersionDF706F6A8cedba3e8e1b3bbf7614644bfafda118",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

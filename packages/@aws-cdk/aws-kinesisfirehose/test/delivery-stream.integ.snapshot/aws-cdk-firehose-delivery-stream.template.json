@@ -29,12 +29,16 @@
      "Statement": [
       {
        "Action": [
-        "s3:GetObject*",
-        "s3:GetBucket*",
-        "s3:List*",
+        "s3:Abort*",
         "s3:DeleteObject*",
-        "s3:PutObject*",
-        "s3:Abort*"
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
        ],
        "Effect": "Allow",
        "Resource": [
@@ -77,23 +81,7 @@
     "KeyPolicy": {
      "Statement": [
       {
-       "Action": [
-        "kms:Create*",
-        "kms:Describe*",
-        "kms:Enable*",
-        "kms:List*",
-        "kms:Put*",
-        "kms:Update*",
-        "kms:Revoke*",
-        "kms:Disable*",
-        "kms:Get*",
-        "kms:Delete*",
-        "kms:ScheduleKeyDeletion",
-        "kms:CancelKeyDeletion",
-        "kms:GenerateDataKey",
-        "kms:TagResource",
-        "kms:UntagResource"
-       ],
+       "Action": "kms:*",
        "Effect": "Allow",
        "Principal": {
         "AWS": {
@@ -110,24 +98,6 @@
            },
            ":root"
           ]
-         ]
-        }
-       },
-       "Resource": "*"
-      },
-      {
-       "Action": [
-        "kms:Decrypt",
-        "kms:Encrypt",
-        "kms:ReEncrypt*",
-        "kms:GenerateDataKey*"
-       ],
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "DeliveryStreamServiceRole964EEBCC",
-          "Arn"
          ]
         }
        },
@@ -166,8 +136,8 @@
        "Action": [
         "kms:Decrypt",
         "kms:Encrypt",
-        "kms:ReEncrypt*",
-        "kms:GenerateDataKey*"
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
        ],
        "Effect": "Allow",
        "Resource": {

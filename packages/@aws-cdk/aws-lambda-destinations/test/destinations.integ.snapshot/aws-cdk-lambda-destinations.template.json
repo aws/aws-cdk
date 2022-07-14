@@ -53,9 +53,9 @@
       },
       {
        "Action": [
-        "sqs:SendMessage",
         "sqs:GetQueueAttributes",
-        "sqs:GetQueueUrl"
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -80,7 +80,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "exports.handler = async (event) => {\n        if (event === 'OK') return 'success';\n        throw new Error('failure');\n      };"
+     "ZipFile": "exports.handler = async (event) => {\n        if (event.status === 'OK') return 'success';\n        throw new Error('failure');\n      };"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -281,7 +281,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "exports.handler = async (event) => {\n        if (event === 'OK') return 'success';\n        throw new Error('failure');\n      };"
+     "ZipFile": "exports.handler = async (event) => {\n        if (event.status === 'OK') return 'success';\n        throw new Error('failure');\n      };"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -389,6 +389,24 @@
     },
     "MaximumEventAgeInSeconds": 7200,
     "MaximumRetryAttempts": 0
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefSnsSqsC4810B27404A5AFF": {
+   "Value": {
+    "Ref": "SnsSqsC4810B27"
+   },
+   "Export": {
+    "Name": "aws-cdk-lambda-destinations:ExportsOutputRefSnsSqsC4810B27404A5AFF"
+   }
+  },
+  "ExportsOutputRefQueue4A7E3555425E8BD3": {
+   "Value": {
+    "Ref": "Queue4A7E3555"
+   },
+   "Export": {
+    "Name": "aws-cdk-lambda-destinations:ExportsOutputRefQueue4A7E3555425E8BD3"
    }
   }
  }
