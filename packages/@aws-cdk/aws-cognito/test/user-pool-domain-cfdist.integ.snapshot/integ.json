@@ -1,0 +1,14 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "integ.user-pool-domain-cfdist": {
+      "stacks": [
+        "integ-user-pool-domain-cfdist"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

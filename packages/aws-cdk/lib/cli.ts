@@ -10,6 +10,7 @@ import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments
 import { StackSelector } from '../lib/api/cxapp/cloud-assembly';
 import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
 import { execProgram } from '../lib/api/cxapp/exec';
+import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
 import { StackActivityProgress } from '../lib/api/util/cloudformation/stack-activity-monitor';
 import { CdkToolkit } from '../lib/cdk-toolkit';
@@ -18,9 +19,8 @@ import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, print, setLogLevel } from '../lib/logging';
+import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
 import { displayNotices, refreshNotices } from '../lib/notices';
-import { PluginHost } from '../lib/plugin';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 
@@ -56,6 +56,7 @@ async function parseCommandLineArguments() {
     .env('CDK')
     .usage('Usage: cdk -a <cdk-app> COMMAND')
     .option('app', { type: 'string', alias: 'a', desc: 'REQUIRED: command-line for executing your app or a cloud assembly directory (e.g. "node bin/my-app.js")', requiresArg: true })
+    .option('build', { type: 'string', desc: 'Command-line for a pre-synth build' })
     .option('context', { type: 'array', alias: 'c', desc: 'Add contextual string parameter (KEY=VALUE)', nargs: 1, requiresArg: true })
     .option('plugin', { type: 'array', alias: 'p', desc: 'Name or path of a node package that extend the CDK features. Can be specified multiple times', nargs: 1 })
     .option('trace', { type: 'boolean', desc: 'Print trace for stack warnings' })
@@ -78,6 +79,7 @@ async function parseCommandLineArguments() {
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
     .option('notices', { type: 'boolean', desc: 'Show relevant notices' })
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
+    .option('ci', { type: 'boolean', desc: 'Force CI detection. If CI=true then logs will be sent to stdout instead of stderr', default: process.env.CI !== undefined })
     .command(['list [STACKS..]', 'ls [STACKS..]'], 'Lists all stacks in the app', (yargs: Argv) => yargs
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' }),
     )
@@ -107,7 +109,6 @@ async function parseCommandLineArguments() {
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times', default: [] })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' })
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'What security-sensitive changes need manual approval' })
-      .option('ci', { type: 'boolean', desc: 'Force CI detection', default: process.env.CI !== undefined })
       .option('notification-arns', { type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true })
       // @deprecated(v2) -- tags are part of the Cloud Assembly and tags specified here will be overwritten on the next deployment
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly (deprecated)', nargs: 1, requiresArg: true })
@@ -145,6 +146,35 @@ async function parseCommandLineArguments() {
         desc: 'Show CloudWatch log events from all resources in the selected Stacks in the terminal. ' +
           "'true' by default, use --no-logs to turn off. " +
           "Only in effect if specified alongside the '--watch' option",
+      }),
+    )
+    .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) => yargs
+      .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
+      .option('change-set-name', { type: 'string', desc: 'Name of the CloudFormation change set to create' })
+      .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack to create', requiresArg: true })
+      .option('rollback', {
+        type: 'boolean',
+        desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. " +
+          'Note: do **not** disable this flag for deployments with resource replacements, as that will always fail',
+      })
+      .option('force', {
+        alias: 'f',
+        type: 'boolean',
+        desc: 'Do not abort if the template diff includes updates or deletes. This is probably safe but we\'re not sure, let us know how it goes.',
+      })
+      .option('record-resource-mapping', {
+        type: 'string',
+        alias: 'r',
+        requiresArg: true,
+        desc: 'If specified, CDK will generate a mapping of existing physical resources to CDK resources to be imported as. The mapping ' +
+          'will be written in the given file path. No actual import operation will be performed',
+      })
+      .option('resource-mapping', {
+        type: 'string',
+        alias: 'm',
+        requiresArg: true,
+        desc: 'If specified, CDK will use the given file to map physical resources to CDK resources for import, instead of interactively ' +
+          'asking the user. Can be run from scripts',
       }),
     )
     .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", (yargs: Argv) => yargs
@@ -197,7 +227,7 @@ async function parseCommandLineArguments() {
       .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
       .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false })
       .option('security-only', { type: 'boolean', desc: 'Only diff for broadened security changes', default: false })
-      .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff', default: false }))
+      .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff' }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command(['acknowledge [ID]', 'ack [ID]'], 'Acknowledge a notice so that it does not show up anymore')
     .command('notices', 'Returns a list of relevant notices')
@@ -208,6 +238,7 @@ async function parseCommandLineArguments() {
     )
     .command('context', 'Manage cached context values', (yargs: Argv) => yargs
       .option('reset', { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true })
+      .option('force', { alias: 'f', desc: 'Ignore missing key error', type: 'boolean', default: false })
       .option('clear', { desc: 'Clear all context', type: 'boolean' }))
     .command(['docs', 'doc'], 'Opens the reference documentation in a browser', (yargs: Argv) => yargs
       .option('browser', {
@@ -239,6 +270,10 @@ async function initCommandLine() {
   if (argv.verbose) {
     setLogLevel(argv.verbose);
   }
+
+  if (argv.ci) {
+    setCI(true);
+  }
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
@@ -252,8 +287,7 @@ async function initCommandLine() {
 
   if (shouldDisplayNotices()) {
     void refreshNotices()
-      .then(_ => debug('Notices refreshed'))
-      .catch(e => debug(`Notices refresh failed: ${e}`));
+      .catch(e => debug(`Could not refresh notices: ${e}`));
   }
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
@@ -342,8 +376,8 @@ async function initCommandLine() {
       throw new Error('You must either specify a list of Stacks or the `--all` argument');
     }
 
-    args.STACKS = args.STACKS || [];
-    args.ENVIRONMENTS = args.ENVIRONMENTS || [];
+    args.STACKS = args.STACKS ?? (args.STACK ? [args.STACK] : []);
+    args.ENVIRONMENTS = args.ENVIRONMENTS ?? [];
 
     const selector: StackSelector = {
       allTopLevel: args.all,
@@ -383,7 +417,8 @@ async function initCommandLine() {
           strict: args.strict,
           contextLines: args.contextLines,
           securityOnly: args.securityOnly,
-          fail: args.fail || !enableDiffNoFail,
+          fail: args.fail != null ? args.fail : !enableDiffNoFail,
+          stream: args.ci ? process.stdout : undefined,
         });
 
       case 'bootstrap':
@@ -445,6 +480,20 @@ async function initCommandLine() {
           traceLogs: args.logs,
         });
 
+      case 'import':
+        return cli.import({
+          selector,
+          toolkitStackName,
+          roleArn: args.roleArn,
+          execute: args.execute,
+          changeSetName: args.changeSetName,
+          progress: configuration.settings.get(['progress']),
+          rollback: configuration.settings.get(['rollback']),
+          recordResourceMapping: args['record-resource-mapping'],
+          resourceMappingFile: args['resource-mapping'],
+          force: args.force,
+        });
+
       case 'watch':
         return cli.watch({
           selector,
@@ -471,6 +520,7 @@ async function initCommandLine() {
           exclusively: args.exclusively,
           force: args.force,
           roleArn: args.roleArn,
+          ci: args.ci,
         });
 
       case 'synthesize':

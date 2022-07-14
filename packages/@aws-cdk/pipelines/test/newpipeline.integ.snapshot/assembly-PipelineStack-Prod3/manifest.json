@@ -1,0 +1,120 @@
+{
+  "version": "19.0.0",
+  "artifacts": {
+    "PipelineStackProd3Stack1795F3D43.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "PipelineStackProd3Stack1795F3D43.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "PipelineStackProd3Stack1795F3D43": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "PipelineStackProd3Stack1795F3D43.template.json",
+        "validateOnSynth": true,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e8c78794529aa32b354a78b7b979165b0cadd9d113a37f537d083f946c0e7bff.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "PipelineStackProd3Stack1795F3D43.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        },
+        "stackName": "Prod3-Stack1"
+      },
+      "dependencies": [
+        "PipelineStackProd3Stack1795F3D43.assets"
+      ],
+      "metadata": {
+        "/PipelineStack/Prod3/Stack1/Queue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Queue4A7E3555"
+          }
+        ],
+        "/PipelineStack/Prod3/Stack1/Exports/Output{\"Fn::GetAtt\":[\"Queue4A7E3555\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttQueue4A7E3555Arn15A7202E"
+          }
+        ],
+        "/PipelineStack/Prod3/Stack1/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/PipelineStack/Prod3/Stack1/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "PipelineStack/Prod3/Stack1"
+    },
+    "PipelineStackProd3Stack2DFBBA0B2.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "PipelineStackProd3Stack2DFBBA0B2.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "PipelineStackProd3Stack2DFBBA0B2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "PipelineStackProd3Stack2DFBBA0B2.template.json",
+        "validateOnSynth": true,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9fee5ad34559e603d3fc184456935445ea09549b147d2cbc2acd8cf6b916dd99.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "PipelineStackProd3Stack2DFBBA0B2.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        },
+        "stackName": "Prod3-Stack2"
+      },
+      "dependencies": [
+        "PipelineStackProd3Stack1795F3D43",
+        "PipelineStackProd3Stack2DFBBA0B2.assets"
+      ],
+      "metadata": {
+        "/PipelineStack/Prod3/Stack2/OtherQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OtherQueue60B686DC"
+          }
+        ],
+        "/PipelineStack/Prod3/Stack2/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/PipelineStack/Prod3/Stack2/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "PipelineStack/Prod3/Stack2"
+    }
+  }
+}

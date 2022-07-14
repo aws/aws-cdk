@@ -83,6 +83,7 @@ export async function unitTestFiles(): Promise<File[]> {
 }
 
 export async function hasIntegTests(): Promise<boolean> {
+  if (currentPackageJson().name === '@aws-cdk/integ-runner') return false;
   const files = await listFiles('test', f => f.filename.startsWith('integ.') && f.filename.endsWith('.js'));
   return files.length > 0;
 }

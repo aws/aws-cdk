@@ -1,3 +1,1391 @@
+# CloudFormation Resource Specification v79.0.0
+
+## New Resource Types
+
+* AWS::RedshiftServerless::Workgroup
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::IoT::CACertificate CertificateMode (__added__)
+* AWS::IoT::CACertificate CACertificatePem.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Logs::MetricFilter FilterName (__added__)
+* AWS::Logs::MetricFilter FilterPattern.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-cwl-metricfilter-filterpattern
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-logs-metricfilter-filterpattern
+* AWS::Logs::MetricFilter LogGroupName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-cwl-metricfilter-loggroupname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-logs-metricfilter-loggroupname
+* AWS::Logs::MetricFilter MetricTransformations.DuplicatesAllowed (__deleted__)
+* AWS::Logs::MetricFilter MetricTransformations.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-cwl-metricfilter-metrictransformations
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-logs-metricfilter-metrictransformations
+* AWS::StepFunctions::StateMachine DefinitionSubstitutions.PrimitiveItemType (__changed__)
+  * Old: String
+  * New: Json
+
+## Property Type Changes
+
+* AWS::Logs::MetricFilter.Dimension (__added__)
+* AWS::CloudFormation::StackSet.DeploymentTargets AccountFilterType (__added__)
+* AWS::Logs::MetricFilter.MetricTransformation Dimensions (__added__)
+* AWS::Logs::MetricFilter.MetricTransformation Unit (__added__)
+* AWS::Logs::MetricFilter.MetricTransformation DefaultValue.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-defaultvalue
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-defaultvalue
+* AWS::Logs::MetricFilter.MetricTransformation MetricName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-metricname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-metricname
+* AWS::Logs::MetricFilter.MetricTransformation MetricNamespace.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-metricnamespace
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-metricnamespace
+* AWS::Logs::MetricFilter.MetricTransformation MetricValue.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-metricvalue
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-metricvalue
+* AWS::SSMIncidents::ResponsePlan.IncidentTemplate IncidentTags (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+
+# CloudFormation Resource Specification v78.1.0
+
+## New Resource Types
+
+* AWS::CloudTrail::EventDataStore
+* AWS::DataSync::LocationFSxONTAP
+* AWS::IoT::CACertificate
+* AWS::LakeFormation::DataCellsFilter
+* AWS::LakeFormation::PrincipalPermissions
+* AWS::LakeFormation::Tag
+* AWS::LakeFormation::TagAssociation
+* AWS::RedshiftServerless::Namespace
+* AWS::Route53::CidrCollection
+* AWS::SES::DedicatedIpPool
+* AWS::SES::EmailIdentity
+
+## Attribute Changes
+
+* AWS::ApiGatewayV2::VpcLink VpcLinkId (__added__)
+* AWS::EC2::CapacityReservation Id (__added__)
+* AWS::EC2::CustomerGateway Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-customer-gateway.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-customergateway.html
+* AWS::EC2::CustomerGateway CustomerGatewayId (__added__)
+* AWS::EC2::VPNGateway Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gateway.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html
+* AWS::EC2::VPNGateway VPNGatewayId (__added__)
+* AWS::GlobalAccelerator::Accelerator Ipv4Addresses (__added__)
+* AWS::RDS::DBClusterParameterGroup DBClusterParameterGroupName (__deleted__)
+* AWS::RDS::DBSubnetGroup Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnet-group.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnetgroup.html
+
+## Property Changes
+
+* AWS::ApiGatewayV2::VpcLink SecurityGroupIds.DuplicatesAllowed (__added__)
+* AWS::ApiGatewayV2::VpcLink SubnetIds.DuplicatesAllowed (__added__)
+* AWS::ApiGatewayV2::VpcLink Tags.PrimitiveType (__deleted__)
+* AWS::ApiGatewayV2::VpcLink Tags.PrimitiveItemType (__added__)
+* AWS::ApiGatewayV2::VpcLink Tags.Type (__added__)
+* AWS::AppFlow::ConnectorProfile ConnectorLabel (__added__)
+* AWS::AppStream::DirectoryConfig OrganizationalUnitDistinguishedNames.DuplicatesAllowed (__added__)
+* AWS::AppStream::Stack StreamingExperienceSettings (__added__)
+* AWS::AppSync::GraphQLApi AdditionalAuthenticationProviders.ItemType (__added__)
+* AWS::AppSync::GraphQLApi AdditionalAuthenticationProviders.Type (__changed__)
+  * Old: AdditionalAuthenticationProviders
+  * New: List
+* AWS::AppSync::GraphQLApi Tags.ItemType (__added__)
+* AWS::AppSync::GraphQLApi Tags.Type (__changed__)
+  * Old: Tags
+  * New: List
+* AWS::ApplicationInsights::Application GroupingType (__added__)
+* AWS::DataSync::LocationEFS AccessPointArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::DataSync::LocationEFS FileSystemAccessRoleArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::DataSync::LocationEFS InTransitEncryption.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::CapacityReservation TagSpecifications.DuplicatesAllowed (__added__)
+* AWS::EC2::CustomerGateway BgpAsn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-customer-gateway.html#cfn-ec2-customergateway-bgpasn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-customergateway.html#cfn-ec2-customergateway-bgpasn
+* AWS::EC2::CustomerGateway IpAddress.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-customer-gateway.html#cfn-ec2-customergateway-ipaddress
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-customergateway.html#cfn-ec2-customergateway-ipaddress
+* AWS::EC2::CustomerGateway Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-customer-gateway.html#cfn-ec2-customergateway-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-customergateway.html#cfn-ec2-customergateway-tags
+* AWS::EC2::CustomerGateway Type.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-customer-gateway.html#cfn-ec2-customergateway-type
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-customergateway.html#cfn-ec2-customergateway-type
+* AWS::EC2::EIP NetworkBorderGroup (__added__)
+* AWS::EC2::LaunchTemplate LaunchTemplateData.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::VPNGateway AmazonSideAsn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gateway.html#cfn-ec2-vpngateway-amazonsideasn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html#cfn-ec2-vpngateway-amazonsideasn
+* AWS::EC2::VPNGateway AmazonSideAsn.PrimitiveType (__changed__)
+  * Old: Long
+  * New: Integer
+* AWS::EC2::VPNGateway Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gateway.html#cfn-ec2-vpngateway-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html#cfn-ec2-vpngateway-tags
+* AWS::EC2::VPNGateway Type.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gateway.html#cfn-ec2-vpngateway-type
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html#cfn-ec2-vpngateway-type
+* AWS::EMR::Cluster AutoTerminationPolicy (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerCertificate Certificates.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Elasticsearch::Domain AdvancedSecurityOptions.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::KinesisAnalyticsV2::Application ApplicationMaintenanceConfiguration (__added__)
+* AWS::KinesisAnalyticsV2::Application RunConfiguration (__added__)
+* AWS::KinesisAnalyticsV2::Application Tags.DuplicatesAllowed (__added__)
+* AWS::Lambda::Url InvokeMode (__added__)
+* AWS::QuickSight::DataSet DataSetUsageConfiguration (__added__)
+* AWS::RDS::DBClusterParameterGroup Tags.DuplicatesAllowed (__added__)
+* AWS::RDS::DBSubnetGroup DBSubnetGroupDescription.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnet-group.html#cfn-rds-dbsubnetgroup-dbsubnetgroupdescription
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnetgroup.html#cfn-rds-dbsubnetgroup-dbsubnetgroupdescription
+* AWS::RDS::DBSubnetGroup DBSubnetGroupName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnet-group.html#cfn-rds-dbsubnetgroup-dbsubnetgroupname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnetgroup.html#cfn-rds-dbsubnetgroup-dbsubnetgroupname
+* AWS::RDS::DBSubnetGroup SubnetIds.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnet-group.html#cfn-rds-dbsubnetgroup-subnetids
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnetgroup.html#cfn-rds-dbsubnetgroup-subnetids
+* AWS::RDS::DBSubnetGroup SubnetIds.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::RDS::DBSubnetGroup Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnet-group.html#cfn-rds-dbsubnetgroup-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbsubnetgroup.html#cfn-rds-dbsubnetgroup-tags
+* AWS::RefactorSpaces::Route DefaultRoute (__added__)
+* AWS::RefactorSpaces::Route UriPathRoute.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Route53::RecordSet CidrRoutingConfig (__added__)
+
+## Property Type Changes
+
+* AWS::AppSync::GraphQLApi.AdditionalAuthenticationProviders (__removed__)
+* AWS::AppSync::GraphQLApi.Tags (__removed__)
+* AWS::AppFlow::ConnectorProfile.ApiKeyCredentials (__added__)
+* AWS::AppFlow::ConnectorProfile.BasicAuthCredentials (__added__)
+* AWS::AppFlow::ConnectorProfile.CredentialsMap (__added__)
+* AWS::AppFlow::ConnectorProfile.CustomAuthCredentials (__added__)
+* AWS::AppFlow::ConnectorProfile.CustomConnectorProfileCredentials (__added__)
+* AWS::AppFlow::ConnectorProfile.CustomConnectorProfileProperties (__added__)
+* AWS::AppFlow::ConnectorProfile.OAuth2Credentials (__added__)
+* AWS::AppFlow::ConnectorProfile.OAuth2Properties (__added__)
+* AWS::AppFlow::ConnectorProfile.ProfileProperties (__added__)
+* AWS::AppFlow::ConnectorProfile.TokenUrlCustomProperties (__added__)
+* AWS::AppFlow::Flow.CustomConnectorDestinationProperties (__added__)
+* AWS::AppFlow::Flow.CustomConnectorSourceProperties (__added__)
+* AWS::AppFlow::Flow.CustomProperties (__added__)
+* AWS::AppStream::Stack.StreamingExperienceSettings (__added__)
+* AWS::EMR::Cluster.AutoTerminationPolicy (__added__)
+* AWS::KinesisAnalyticsV2::Application.ApplicationMaintenanceConfiguration (__added__)
+* AWS::KinesisAnalyticsV2::Application.ApplicationRestoreConfiguration (__added__)
+* AWS::KinesisAnalyticsV2::Application.FlinkRunConfiguration (__added__)
+* AWS::KinesisAnalyticsV2::Application.RunConfiguration (__added__)
+* AWS::KinesisAnalyticsV2::Application.VpcConfiguration (__added__)
+* AWS::QuickSight::DataSet.DataSetUsageConfiguration (__added__)
+* AWS::RefactorSpaces::Route.DefaultRouteInput (__added__)
+* AWS::Route53::RecordSet.CidrRoutingConfig (__added__)
+* AWS::Route53::RecordSetGroup.CidrRoutingConfig (__added__)
+* AWS::AppFlow::ConnectorProfile.ConnectorProfileCredentials CustomConnector (__added__)
+* AWS::AppFlow::ConnectorProfile.ConnectorProfileProperties CustomConnector (__added__)
+* AWS::AppFlow::ConnectorProfile.SAPODataConnectorProfileCredentials BasicAuthCredentials.PrimitiveType (__deleted__)
+* AWS::AppFlow::ConnectorProfile.SAPODataConnectorProfileCredentials BasicAuthCredentials.Type (__added__)
+* AWS::AppFlow::Flow.ConnectorOperator CustomConnector (__added__)
+* AWS::AppFlow::Flow.DestinationConnectorProperties CustomConnector (__added__)
+* AWS::AppFlow::Flow.DestinationFlowConfig ApiVersion (__added__)
+* AWS::AppFlow::Flow.S3OutputFormatConfig PreserveSourceDataTyping (__added__)
+* AWS::AppFlow::Flow.ScheduledTriggerProperties FlowErrorDeactivationThreshold (__added__)
+* AWS::AppFlow::Flow.SourceConnectorProperties CustomConnector (__added__)
+* AWS::AppFlow::Flow.SourceFlowConfig ApiVersion (__added__)
+* AWS::Config::ConfigRule.Source SourceIdentifier.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::CapacityReservation.TagSpecification ResourceType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::CapacityReservation.TagSpecification Tags.DuplicatesAllowed (__added__)
+* AWS::EC2::CapacityReservation.TagSpecification Tags.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::Instance.NetworkInterface AssociateCarrierIpAddress (__added__)
+* AWS::EMR::Cluster.JobFlowInstancesConfig TaskInstanceFleets (__added__)
+* AWS::EMR::Cluster.JobFlowInstancesConfig TaskInstanceGroups (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.AuthenticateOidcConfig UseExistingClientSecret (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.AuthenticateOidcConfig ClientSecret.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ElasticLoadBalancingV2::ListenerRule.AuthenticateOidcConfig ClientSecret.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Elasticsearch::Domain.AdvancedSecurityOptionsInput AnonymousAuthEnabled (__added__)
+* AWS::KinesisAnalyticsV2::Application.ApplicationConfiguration VpcConfigurations (__added__)
+* AWS::KinesisAnalyticsV2::Application.EnvironmentProperties PropertyGroups.DuplicatesAllowed (__added__)
+* AWS::KinesisAnalyticsV2::Application.InputSchema RecordColumns.DuplicatesAllowed (__added__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.PrimitiveType (__deleted__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.PrimitiveItemType (__added__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.Type (__added__)
+* AWS::KinesisAnalyticsV2::Application.S3ContentBaseLocation BasePath.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisAnalyticsV2::Application.S3ContentLocation BucketARN.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::KinesisAnalyticsV2::Application.S3ContentLocation FileKey.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::KinesisAnalyticsV2::Application.SqlApplicationConfiguration Inputs.DuplicatesAllowed (__added__)
+* AWS::QuickSight::DataSet.LogicalTableSource DataSetArn (__added__)
+* AWS::RefactorSpaces::Route.UriPathRouteInput ActivationState.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Route53::RecordSetGroup.RecordSet CidrRoutingConfig (__added__)
+* AWS::S3::MultiRegionAccessPoint.Region AccountId (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+
+# CloudFormation Resource Specification v76.0.0
+
+## New Resource Types
+
+* AWS::Connect::TaskTemplate
+
+## Attribute Changes
+
+* AWS::RDS::DBClusterParameterGroup DBClusterParameterGroupName (__added__)
+* AWS::RDS::DBParameterGroup Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html
+* AWS::RDS::DBParameterGroup DBParameterGroupName (__added__)
+
+## Property Changes
+
+* AWS::DataSync::LocationEFS AccessPointArn (__added__)
+* AWS::DataSync::LocationEFS FileSystemAccessRoleArn (__added__)
+* AWS::DataSync::LocationEFS InTransitEncryption (__added__)
+* AWS::KinesisAnalyticsV2::Application Tags.DuplicatesAllowed (__deleted__)
+* AWS::RDS::DBClusterParameterGroup Tags.DuplicatesAllowed (__deleted__)
+* AWS::RDS::DBParameterGroup Description.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-description
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-description
+* AWS::RDS::DBParameterGroup Description.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::RDS::DBParameterGroup Family.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-family
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-family
+* AWS::RDS::DBParameterGroup Family.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::RDS::DBParameterGroup Parameters.DuplicatesAllowed (__deleted__)
+* AWS::RDS::DBParameterGroup Parameters.PrimitiveItemType (__deleted__)
+* AWS::RDS::DBParameterGroup Parameters.Type (__deleted__)
+* AWS::RDS::DBParameterGroup Parameters.PrimitiveType (__added__)
+* AWS::RDS::DBParameterGroup Parameters.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-parameters
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-parameters
+* AWS::RDS::DBParameterGroup Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-tags
+* AWS::RDS::EventSubscription SubscriptionName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SES::ConfigurationSet DeliveryOptions (__added__)
+* AWS::SES::ConfigurationSet ReputationOptions (__added__)
+* AWS::SES::ConfigurationSet SendingOptions (__added__)
+* AWS::SES::ConfigurationSet SuppressionOptions (__added__)
+* AWS::SES::ConfigurationSet TrackingOptions (__added__)
+
+## Property Type Changes
+
+* AWS::SES::ConfigurationSet.DeliveryOptions (__added__)
+* AWS::SES::ConfigurationSet.ReputationOptions (__added__)
+* AWS::SES::ConfigurationSet.SendingOptions (__added__)
+* AWS::SES::ConfigurationSet.SuppressionOptions (__added__)
+* AWS::SES::ConfigurationSet.TrackingOptions (__added__)
+* AWS::SES::ConfigurationSetEventDestination.SnsDestination (__added__)
+* AWS::Cognito::UserPool.UsernameConfiguration CaseSensitive.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTEvents::AlarmModel.IotSiteWise PropertyValue.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisAnalyticsV2::Application.EnvironmentProperties PropertyGroups.DuplicatesAllowed (__deleted__)
+* AWS::KinesisAnalyticsV2::Application.InputSchema RecordColumns.DuplicatesAllowed (__deleted__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.PrimitiveItemType (__deleted__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.Type (__deleted__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.PrimitiveType (__added__)
+* AWS::KinesisAnalyticsV2::Application.S3ContentBaseLocation BasePath.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::KinesisAnalyticsV2::Application.S3ContentLocation BucketARN.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisAnalyticsV2::Application.S3ContentLocation FileKey.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisAnalyticsV2::Application.SqlApplicationConfiguration Inputs.DuplicatesAllowed (__deleted__)
+* AWS::SES::ConfigurationSetEventDestination.EventDestination SnsDestination (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+
+# CloudFormation Resource Specification v75.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::EC2::NatGateway NatGatewayId (__added__)
+
+## Property Changes
+
+* AWS::KinesisAnalyticsV2::Application Tags.DuplicatesAllowed (__added__)
+* AWS::RDS::EventSubscription SubscriptionName (__added__)
+* AWS::RDS::EventSubscription Tags (__added__)
+* AWS::RDS::EventSubscription SourceIds.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::RDS::EventSubscription SourceType.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::ResilienceHub::App AppAssessmentSchedule (__added__)
+
+## Property Type Changes
+
+* AWS::ImageBuilder::DistributionConfiguration.FastLaunchConfiguration (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.FastLaunchLaunchTemplateSpecification (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.FastLaunchSnapshotConfiguration (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.Distribution FastLaunchConfigurations (__added__)
+* AWS::KinesisAnalyticsV2::Application.EnvironmentProperties PropertyGroups.DuplicatesAllowed (__added__)
+* AWS::KinesisAnalyticsV2::Application.InputSchema RecordColumns.DuplicatesAllowed (__added__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.PrimitiveType (__deleted__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.PrimitiveItemType (__added__)
+* AWS::KinesisAnalyticsV2::Application.PropertyGroup PropertyMap.Type (__added__)
+* AWS::KinesisAnalyticsV2::Application.S3ContentBaseLocation BasePath.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisAnalyticsV2::Application.S3ContentLocation BucketARN.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::KinesisAnalyticsV2::Application.S3ContentLocation FileKey.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::KinesisAnalyticsV2::Application.SqlApplicationConfiguration Inputs.DuplicatesAllowed (__added__)
+* AWS::ResilienceHub::App.ResourceMapping TerraformSourceName (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+
+# CloudFormation Resource Specification v73.1.0
+
+## New Resource Types
+
+* AWS::EMRServerless::Application
+* AWS::IoTWireless::NetworkAnalyzerConfiguration
+
+## Attribute Changes
+
+* AWS::EC2::PlacementGroup GroupName (__added__)
+* AWS::EC2::VPCPeeringConnection Id (__added__)
+
+## Property Changes
+
+* AWS::Cognito::UserPool UserAttributeUpdateSettings (__added__)
+* AWS::Cognito::UserPoolClient EnablePropagateAdditionalUserContextData (__added__)
+* AWS::EC2::TransitGatewayAttachment Options (__added__)
+* AWS::EC2::TransitGatewayAttachment SubnetIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGatewayAttachment Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::IoTSiteWise::Asset AssetDescription (__added__)
+* AWS::Lightsail::LoadBalancer TlsPolicyName (__added__)
+* AWS::Lightsail::LoadBalancerTlsCertificate HttpsRedirectionEnabled (__added__)
+* AWS::NetworkManager::CoreNetwork PolicyDocument.PrimitiveType (__changed__)
+  * Old: String
+  * New: Json
+* AWS::Pinpoint::Campaign CustomDeliveryConfiguration (__added__)
+* AWS::Pinpoint::Campaign TemplateConfiguration (__added__)
+* AWS::Pinpoint::Campaign MessageConfiguration.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Property Type Changes
+
+* AWS::Cognito::UserPool.UserAttributeUpdateSettings (__added__)
+* AWS::Pinpoint::Campaign.CampaignCustomMessage (__added__)
+* AWS::Pinpoint::Campaign.CustomDeliveryConfiguration (__added__)
+* AWS::Pinpoint::Campaign.Template (__added__)
+* AWS::Pinpoint::Campaign.TemplateConfiguration (__added__)
+* AWS::SSMIncidents::ResponsePlan.DynamicSsmParameter (__added__)
+* AWS::SSMIncidents::ResponsePlan.DynamicSsmParameterValue (__added__)
+* AWS::AppMesh::Mesh.MeshServiceDiscovery IpPreference (__added__)
+* AWS::AppMesh::Mesh.MeshSpec ServiceDiscovery (__added__)
+* AWS::AppMesh::VirtualNode.AwsCloudMapServiceDiscovery IpPreference (__added__)
+* AWS::AppMesh::VirtualNode.DnsServiceDiscovery IpPreference (__added__)
+* AWS::DataSync::Task.Options ObjectTags (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData DisableApiStop (__added__)
+* AWS::Pinpoint::Campaign.MessageConfiguration CustomMessage (__added__)
+* AWS::Pinpoint::Campaign.WriteTreatmentResource CustomDeliveryConfiguration (__added__)
+* AWS::Pinpoint::Campaign.WriteTreatmentResource TemplateConfiguration (__added__)
+* AWS::SSMIncidents::ResponsePlan.SsmAutomation DynamicParameters (__added__)
+* AWS::Transfer::Server.ProtocolDetails SetStatOption (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Serverless::Api.Auth AddDefaultAuthorizerToCorsPreflight (__added__)
+
+# CloudFormation Resource Specification v72.0.0
+
+## New Resource Types
+
+* AWS::IoT::RoleAlias
+* AWS::NetworkManager::ConnectAttachment
+* AWS::NetworkManager::ConnectPeer
+* AWS::NetworkManager::CoreNetwork
+* AWS::NetworkManager::SiteToSiteVpnAttachment
+* AWS::NetworkManager::VpcAttachment
+
+## Attribute Changes
+
+* AWS::MediaTailor::PlaybackConfiguration DashConfiguration.ManifestEndpointPrefix (__added__)
+* AWS::MediaTailor::PlaybackConfiguration HlsConfiguration.ManifestEndpointPrefix (__added__)
+* AWS::MediaTailor::PlaybackConfiguration PlaybackConfigurationArn (__added__)
+* AWS::MediaTailor::PlaybackConfiguration PlaybackEndpointPrefix (__added__)
+* AWS::MediaTailor::PlaybackConfiguration SessionInitializationEndpointPrefix (__added__)
+
+## Property Changes
+
+* AWS::AutoScaling::AutoScalingGroup DefaultInstanceWarmup (__added__)
+* AWS::MediaTailor::PlaybackConfiguration SessionInitializationEndpointPrefix (__deleted__)
+* AWS::MediaTailor::PlaybackConfiguration DashConfiguration.Type (__changed__)
+  * Old: DashConfigurationForPut
+  * New: DashConfiguration
+* AWS::Redshift::Cluster IamRoles.DuplicatesAllowed (__deleted__)
+
+## Property Type Changes
+
+* AWS::MediaTailor::PlaybackConfiguration.DashConfigurationForPut (__removed__)
+* AWS::MediaTailor::PlaybackConfiguration.DashConfiguration (__added__)
+* AWS::MediaTailor::PlaybackConfiguration.HlsConfiguration (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+
+# CloudFormation Resource Specification v69.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::EC2::TrafficMirrorTarget GatewayLoadBalancerEndpointId (__added__)
+* AWS::Synthetics::Canary DeleteLambdaResourcesOnCanaryDeletion (__added__)
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v69.0.0
+
+## New Resource Types
+
+* AWS::EC2::KeyPair
+* AWS::VoiceID::Domain
+
+## Attribute Changes
+
+* AWS::CloudWatch::Alarm Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html
+* AWS::EC2::TransitGatewayAttachment Id (__added__)
+* AWS::EC2::VPC VpcId (__added__)
+* AWS::EC2::VPC CidrBlockAssociations.DuplicatesAllowed (__added__)
+* AWS::EC2::VPC Ipv6CidrBlocks.DuplicatesAllowed (__added__)
+
+## Property Changes
+
+* AWS::CloudFormation::HookTypeConfig TypeArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::CloudWatch::Alarm ActionsEnabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-actionsenabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-actionsenabled
+* AWS::CloudWatch::Alarm AlarmActions.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-alarmactions
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-alarmactions
+* AWS::CloudWatch::Alarm AlarmDescription.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-alarmdescription
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-alarmdescription
+* AWS::CloudWatch::Alarm AlarmName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-alarmname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-alarmname
+* AWS::CloudWatch::Alarm ComparisonOperator.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-comparisonoperator
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-comparisonoperator
+* AWS::CloudWatch::Alarm DatapointsToAlarm.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-datapointstoalarm
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarm-datapointstoalarm
+* AWS::CloudWatch::Alarm Dimensions.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-dimensions
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-dimension
+* AWS::CloudWatch::Alarm EvaluateLowSampleCountPercentile.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-evaluatelowsamplecountpercentile
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-evaluatelowsamplecountpercentile
+* AWS::CloudWatch::Alarm EvaluationPeriods.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-evaluationperiods
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-evaluationperiods
+* AWS::CloudWatch::Alarm ExtendedStatistic.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-extendedstatistic
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-extendedstatistic
+* AWS::CloudWatch::Alarm InsufficientDataActions.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-insufficientdataactions
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-insufficientdataactions
+* AWS::CloudWatch::Alarm MetricName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-metricname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-metricname
+* AWS::CloudWatch::Alarm Metrics.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-metrics
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarm-metrics
+* AWS::CloudWatch::Alarm Namespace.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-namespace
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-namespace
+* AWS::CloudWatch::Alarm OKActions.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-okactions
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-okactions
+* AWS::CloudWatch::Alarm Period.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-period
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-period
+* AWS::CloudWatch::Alarm Statistic.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-statistic
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-statistic
+* AWS::CloudWatch::Alarm Threshold.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-threshold
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-threshold
+* AWS::CloudWatch::Alarm ThresholdMetricId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-thresholdmetricid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-dynamic-threshold
+* AWS::CloudWatch::Alarm TreatMissingData.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-treatmissingdata
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-treatmissingdata
+* AWS::CloudWatch::Alarm Unit.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-unit
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-unit
+* AWS::EC2::TransitGatewayAttachment SubnetIds.DuplicatesAllowed (__added__)
+* AWS::EC2::TransitGatewayAttachment Tags.DuplicatesAllowed (__added__)
+* AWS::EC2::VPC CidrBlock.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html#cfn-aws-ec2-vpc-cidrblock
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html#cfn-ec2-vpc-cidrblock
+* AWS::EC2::VPC CidrBlock.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::VPC EnableDnsHostnames.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html#cfn-aws-ec2-vpc-EnableDnsHostnames
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html#cfn-ec2-vpc-enablednshostnames
+* AWS::EC2::VPC EnableDnsSupport.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html#cfn-aws-ec2-vpc-EnableDnsSupport
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html#cfn-ec2-vpc-enablednssupport
+* AWS::EC2::VPC InstanceTenancy.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html#cfn-aws-ec2-vpc-instancetenancy
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html#cfn-ec2-vpc-instancetenancy
+* AWS::EC2::VPC Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html#cfn-aws-ec2-vpc-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html#cfn-ec2-vpc-tags
+* AWS::IAM::InstanceProfile Roles.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::SQS::Queue SqsManagedSseEnabled (__added__)
+* AWS::SSM::Association ScheduleOffset (__added__)
+
+## Property Type Changes
+
+* AWS::EC2::NetworkInsightsAnalysis.TransitGatewayRouteTableRoute (__added__)
+* AWS::WAFv2::RuleGroup.Body (__added__)
+* AWS::WAFv2::RuleGroup.CookieMatchPattern (__added__)
+* AWS::WAFv2::RuleGroup.Cookies (__added__)
+* AWS::WAFv2::RuleGroup.HeaderMatchPattern (__added__)
+* AWS::WAFv2::RuleGroup.Headers (__added__)
+* AWS::WAFv2::WebACL.Body (__added__)
+* AWS::WAFv2::WebACL.CookieMatchPattern (__added__)
+* AWS::WAFv2::WebACL.Cookies (__added__)
+* AWS::WAFv2::WebACL.HeaderMatchPattern (__added__)
+* AWS::WAFv2::WebACL.Headers (__added__)
+* AWS::CloudWatch::Alarm.Dimension Name.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudwatch-alarm-dimension.html#cfn-cloudwatch-alarm-dimension-name
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html#cfn-cloudwatch-alarm-dimension-name
+* AWS::CloudWatch::Alarm.Dimension Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudwatch-alarm-dimension.html#cfn-cloudwatch-alarm-dimension-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html#cfn-cloudwatch-alarm-dimension-value
+* AWS::EC2::NetworkInsightsAnalysis.Explanation TransitGateway (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.Explanation TransitGatewayAttachment (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.Explanation TransitGatewayRouteTable (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.Explanation TransitGatewayRouteTableRoute (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.PathComponent TransitGateway (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.PathComponent TransitGatewayRouteTableRoute (__added__)
+* AWS::MediaPackage::PackagingConfiguration.DashManifest ScteMarkersSource (__added__)
+* AWS::SecretsManager::RotationSchedule.HostedRotationLambda ExcludeCharacters (__added__)
+* AWS::WAFv2::RuleGroup.FieldToMatch Cookies (__added__)
+* AWS::WAFv2::RuleGroup.FieldToMatch Headers (__added__)
+* AWS::WAFv2::RuleGroup.FieldToMatch Body.PrimitiveType (__deleted__)
+* AWS::WAFv2::RuleGroup.FieldToMatch Body.Type (__added__)
+* AWS::WAFv2::RuleGroup.JsonBody OversizeHandling (__added__)
+* AWS::WAFv2::WebACL.FieldToMatch Cookies (__added__)
+* AWS::WAFv2::WebACL.FieldToMatch Headers (__added__)
+* AWS::WAFv2::WebACL.FieldToMatch Body.PrimitiveType (__deleted__)
+* AWS::WAFv2::WebACL.FieldToMatch Body.Type (__added__)
+* AWS::WAFv2::WebACL.JsonBody OversizeHandling (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Function Policies.ItemTypes (__deleted__)
+* AWS::Serverless::Function Policies.PrimitiveItemTypes (__deleted__)
+* AWS::Serverless::Function Policies.InclusiveItemTypes (__added__)
+* AWS::Serverless::Function Policies.InclusivePrimitiveItemTypes (__added__)
+* AWS::Serverless::StateMachine Policies.ItemTypes (__deleted__)
+* AWS::Serverless::StateMachine Policies.PrimitiveItemTypes (__deleted__)
+* AWS::Serverless::StateMachine Policies.InclusiveItemTypes (__added__)
+* AWS::Serverless::StateMachine Policies.InclusivePrimitiveItemTypes (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Function.RequestModel (__added__)
+* AWS::Serverless::Function.RequestParameter (__added__)
+* AWS::Serverless::Function.ApiEvent RequestModel (__added__)
+* AWS::Serverless::Function.ApiEvent RequestParameters (__added__)
+* AWS::Serverless::Function.IAMPolicyDocument Version (__added__)
+* AWS::Serverless::Function.IAMPolicyDocument Statement.PrimitiveType (__deleted__)
+* AWS::Serverless::Function.IAMPolicyDocument Statement.ItemType (__added__)
+* AWS::Serverless::Function.IAMPolicyDocument Statement.Type (__added__)
+* AWS::Serverless::StateMachine.IAMPolicyDocument Version (__added__)
+* AWS::Serverless::StateMachine.IAMPolicyDocument Statement.PrimitiveType (__deleted__)
+* AWS::Serverless::StateMachine.IAMPolicyDocument Statement.ItemType (__added__)
+* AWS::Serverless::StateMachine.IAMPolicyDocument Statement.Type (__added__)
+
+# CloudFormation Resource Specification v68.0.0
+
+## New Resource Types
+
+* AWS::Connect::PhoneNumber
+* AWS::IoTTwinMaker::ComponentType
+* AWS::IoTTwinMaker::Entity
+* AWS::IoTTwinMaker::Scene
+* AWS::IoTTwinMaker::Workspace
+
+## Attribute Changes
+
+* AWS::CloudWatch::Alarm Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html
+
+## Property Changes
+
+* AWS::Batch::ComputeEnvironment ReplaceComputeEnvironment (__added__)
+* AWS::Batch::ComputeEnvironment UpdatePolicy (__added__)
+* AWS::BillingConductor::BillingGroup Tags (__added__)
+* AWS::BillingConductor::CustomLineItem Tags (__added__)
+* AWS::BillingConductor::PricingPlan Tags (__added__)
+* AWS::BillingConductor::PricingRule Tags (__added__)
+* AWS::CloudWatch::Alarm ActionsEnabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-actionsenabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-actionsenabled
+* AWS::CloudWatch::Alarm AlarmActions.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-alarmactions
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-alarmactions
+* AWS::CloudWatch::Alarm AlarmDescription.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-alarmdescription
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-alarmdescription
+* AWS::CloudWatch::Alarm AlarmName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-alarmname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-alarmname
+* AWS::CloudWatch::Alarm ComparisonOperator.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-comparisonoperator
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-comparisonoperator
+* AWS::CloudWatch::Alarm DatapointsToAlarm.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarm-datapointstoalarm
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-datapointstoalarm
+* AWS::CloudWatch::Alarm Dimensions.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-dimension
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-dimensions
+* AWS::CloudWatch::Alarm EvaluateLowSampleCountPercentile.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-evaluatelowsamplecountpercentile
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-evaluatelowsamplecountpercentile
+* AWS::CloudWatch::Alarm EvaluationPeriods.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-evaluationperiods
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-evaluationperiods
+* AWS::CloudWatch::Alarm ExtendedStatistic.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-extendedstatistic
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-extendedstatistic
+* AWS::CloudWatch::Alarm InsufficientDataActions.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-insufficientdataactions
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-insufficientdataactions
+* AWS::CloudWatch::Alarm MetricName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-metricname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-metricname
+* AWS::CloudWatch::Alarm Metrics.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarm-metrics
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-metrics
+* AWS::CloudWatch::Alarm Namespace.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-namespace
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-namespace
+* AWS::CloudWatch::Alarm OKActions.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-okactions
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-okactions
+* AWS::CloudWatch::Alarm Period.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-period
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-period
+* AWS::CloudWatch::Alarm Statistic.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-statistic
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-statistic
+* AWS::CloudWatch::Alarm Threshold.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-threshold
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-threshold
+* AWS::CloudWatch::Alarm ThresholdMetricId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-dynamic-threshold
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-thresholdmetricid
+* AWS::CloudWatch::Alarm TreatMissingData.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-treatmissingdata
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-treatmissingdata
+* AWS::CloudWatch::Alarm Unit.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-unit
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-unit
+* AWS::Evidently::Experiment RunningStatus (__added__)
+* AWS::Evidently::Launch ExecutionStatus (__added__)
+* AWS::MSK::Configuration Name.Required (__changed__)
+  * Old: false
+  * New: true
+
+## Property Type Changes
+
+* AWS::Batch::ComputeEnvironment.UpdatePolicy (__added__)
+* AWS::Evidently::Experiment.RunningStatusObject (__added__)
+* AWS::Evidently::Launch.ExecutionStatusObject (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.AmiDistributionConfiguration (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.ContainerDistributionConfiguration (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources UpdateToLatestImageVersion (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources AllocationStrategy.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources BidPercentage.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2Configuration.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2KeyPair.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources ImageId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceRole.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceTypes.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources LaunchTemplate.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources PlacementGroup.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Type.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.Ec2ConfigurationObject ImageIdOverride.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.Ec2ConfigurationObject ImageType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification LaunchTemplateId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification LaunchTemplateName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification Version.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::CloudWatch::Alarm.Dimension Name.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html#cfn-cloudwatch-alarm-dimension-name
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudwatch-alarm-dimension.html#cfn-cloudwatch-alarm-dimension-name
+* AWS::CloudWatch::Alarm.Dimension Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html#cfn-cloudwatch-alarm-dimension-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudwatch-alarm-dimension.html#cfn-cloudwatch-alarm-dimension-value
+* AWS::GuardDuty::Filter.Condition Equals (__added__)
+* AWS::GuardDuty::Filter.Condition GreaterThan (__added__)
+* AWS::GuardDuty::Filter.Condition GreaterThanOrEqual (__added__)
+* AWS::GuardDuty::Filter.Condition Gt (__added__)
+* AWS::GuardDuty::Filter.Condition LessThan (__added__)
+* AWS::GuardDuty::Filter.Condition LessThanOrEqual (__added__)
+* AWS::GuardDuty::Filter.Condition NotEquals (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.Distribution AmiDistributionConfiguration.PrimitiveType (__deleted__)
+* AWS::ImageBuilder::DistributionConfiguration.Distribution AmiDistributionConfiguration.Type (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.Distribution ContainerDistributionConfiguration.PrimitiveType (__deleted__)
+* AWS::ImageBuilder::DistributionConfiguration.Distribution ContainerDistributionConfiguration.Type (__added__)
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api Domain (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Api.DomainConfiguration (__added__)
+* AWS::Serverless::Api.MutualTlsAuthentication (__added__)
+* AWS::Serverless::Api.Route53Configuration (__added__)
+* AWS::Serverless::Function.ParameterNameSAMPT (__added__)
+* AWS::Serverless::Function.SecretArnSAMPT (__added__)
+* AWS::Serverless::Function.SAMPolicyTemplate AWSSecretsManagerGetSecretValuePolicy (__added__)
+* AWS::Serverless::Function.SAMPolicyTemplate DynamoDBWritePolicy (__added__)
+* AWS::Serverless::Function.SAMPolicyTemplate S3WritePolicy (__added__)
+* AWS::Serverless::Function.SAMPolicyTemplate SSMParameterReadPolicy (__added__)
+
+# CloudFormation Resource Specification v66.1.0
+
+## New Resource Types
+
+* AWS::AppRunner::ObservabilityConfiguration
+
+## Attribute Changes
+
+* AWS::Athena::WorkGroup WorkGroupConfigurationUpdates.EngineVersion.EffectiveEngineVersion (__deleted__)
+
+## Property Changes
+
+* AWS::AppRunner::Service ObservabilityConfiguration (__added__)
+* AWS::AppStream::Fleet SessionScriptS3Location (__added__)
+* AWS::Athena::WorkGroup WorkGroupConfigurationUpdates (__deleted__)
+* AWS::Batch::ComputeEnvironment ReplaceComputeEnvironment (__deleted__)
+* AWS::Batch::ComputeEnvironment UpdatePolicy (__deleted__)
+* AWS::CE::AnomalyMonitor ResourceTags (__added__)
+* AWS::CE::AnomalySubscription ResourceTags (__added__)
+* AWS::CloudWatch::MetricStream StatisticsConfigurations (__added__)
+* AWS::EC2::TrafficMirrorTarget GatewayLoadBalancerEndpointId (__deleted__)
+* AWS::SSM::Document UpdateMethod (__added__)
+* AWS::SSM::Document Attachments.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document Content.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document DocumentFormat.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document Requires.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document TargetType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document VersionName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::Athena::WorkGroup.ResultConfigurationUpdates (__removed__)
+* AWS::Athena::WorkGroup.WorkGroupConfigurationUpdates (__removed__)
+* AWS::Batch::ComputeEnvironment.UpdatePolicy (__removed__)
+* AWS::AppRunner::Service.ServiceObservabilityConfiguration (__added__)
+* AWS::AppStream::Fleet.S3Location (__added__)
+* AWS::CE::AnomalyMonitor.ResourceTag (__added__)
+* AWS::CE::AnomalySubscription.ResourceTag (__added__)
+* AWS::CloudWatch::MetricStream.MetricStreamStatisticsConfiguration (__added__)
+* AWS::CloudWatch::MetricStream.MetricStreamStatisticsMetric (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.AmiDistributionConfiguration (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.ContainerDistributionConfiguration (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.LaunchPermissionConfiguration (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.TargetContainerRepository (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources UpdateToLatestImageVersion (__deleted__)
+* AWS::Batch::ComputeEnvironment.ComputeResources AllocationStrategy.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources BidPercentage.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2Configuration.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2KeyPair.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources ImageId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceRole.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceTypes.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources LaunchTemplate.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources PlacementGroup.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Tags.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Type.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.Ec2ConfigurationObject ImageIdOverride.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.Ec2ConfigurationObject ImageType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification LaunchTemplateId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification LaunchTemplateName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification Version.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ImageBuilder::DistributionConfiguration.Distribution AmiDistributionConfiguration.PrimitiveType (__deleted__)
+* AWS::ImageBuilder::DistributionConfiguration.Distribution AmiDistributionConfiguration.Type (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.Distribution ContainerDistributionConfiguration.PrimitiveType (__deleted__)
+* AWS::ImageBuilder::DistributionConfiguration.Distribution ContainerDistributionConfiguration.Type (__added__)
+* AWS::SSM::Document.AttachmentsSource Key.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document.AttachmentsSource Name.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document.AttachmentsSource Values.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document.DocumentRequires Name.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Document.DocumentRequires Version.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
+# CloudFormation Resource Specification v66.0.0
+
+## New Resource Types
+
+* AWS::DataSync::LocationFSxOpenZFS
+* AWS::Events::Endpoint
+* AWS::Lambda::Url
+* AWS::MediaTailor::PlaybackConfiguration
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Batch::ComputeEnvironment ReplaceComputeEnvironment (__added__)
+* AWS::Batch::ComputeEnvironment UpdatePolicy (__added__)
+* AWS::EC2::TrafficMirrorTarget GatewayLoadBalancerEndpointId (__added__)
+* AWS::Lambda::Permission FunctionUrlAuthType (__added__)
+
+## Property Type Changes
+
+* AWS::Batch::ComputeEnvironment.UpdatePolicy (__added__)
+* AWS::EC2::LaunchTemplate.MaintenanceOptions (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources UpdateToLatestImageVersion (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources AllocationStrategy.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources BidPercentage.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2Configuration.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2KeyPair.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources ImageId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceRole.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceTypes.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources LaunchTemplate.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources PlacementGroup.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Type.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.Ec2ConfigurationObject ImageIdOverride.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.Ec2ConfigurationObject ImageType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification LaunchTemplateId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification LaunchTemplateName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification Version.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DMS::Endpoint.DocDbSettings DocsToInvestigate (__added__)
+* AWS::DMS::Endpoint.DocDbSettings ExtractDocId (__added__)
+* AWS::DMS::Endpoint.DocDbSettings NestingLevel (__added__)
+* AWS::DMS::Endpoint.IbmDb2Settings CurrentLsn (__added__)
+* AWS::DMS::Endpoint.IbmDb2Settings MaxKBytesPerRead (__added__)
+* AWS::DMS::Endpoint.IbmDb2Settings SetDataCaptureChanges (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings BcpPacketSize (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings ControlTablesFileGroup (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings QuerySingleAlwaysOnNode (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings ReadBackupOnly (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings SafeguardPolicy (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings UseBcpFullLoad (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings UseThirdPartyBackupDevice (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings AcceptAnyDate (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings AfterConnectScript (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings BucketFolder (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings BucketName (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings CaseSensitiveNames (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings CompUpdate (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings ConnectionTimeout (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings DateFormat (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings EmptyAsNull (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings EncryptionMode (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings ExplicitIds (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings FileTransferUploadStreams (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings LoadTimeout (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings MaxFileSize (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings RemoveQuotes (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings ReplaceChars (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings ReplaceInvalidChars (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings ServerSideEncryptionKmsKeyId (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings ServiceAccessRoleArn (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings TimeFormat (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings TrimBlanks (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings TruncateColumns (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings WriteBufferSize (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData MaintenanceOptions (__added__)
+
+
+# CloudFormation Resource Specification v65.0.0
+
+## New Resource Types
+
+
+## Removed Resource Types
+
+* AWS::Events::Endpoint
+
+## Attribute Changes
+
+* AWS::SQS::QueuePolicy Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queuepolicy.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html
+* AWS::SQS::QueuePolicy Id (__deleted__)
+* AWS::SageMaker::Domain SecurityGroupIdForDomainBoundary (__added__)
+
+## Property Changes
+
+* AWS::ECS::Service PlacementConstraints.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service PlacementStrategies.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SQS::QueuePolicy PolicyDocument.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queuepolicy.html#cfn-sqs-queuepolicy-policydocument
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html#cfn-sqs-queuepolicy-policydoc
+* AWS::SQS::QueuePolicy Queues.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queuepolicy.html#cfn-sqs-queuepolicy-queues
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html#cfn-sqs-queuepolicy-queues
+* AWS::SageMaker::Domain AppSecurityGroupManagement (__added__)
+* AWS::SageMaker::Domain DomainSettings (__added__)
+
+## Property Type Changes
+
+* AWS::SageMaker::Domain.DomainSettings (__added__)
+* AWS::SageMaker::Domain.RStudioServerProAppSettings (__added__)
+* AWS::SageMaker::Domain.RStudioServerProDomainSettings (__added__)
+* AWS::SageMaker::UserProfile.RStudioServerProAppSettings (__added__)
+* AWS::DMS::Endpoint.KafkaSettings IncludePartitionValue (__added__)
+* AWS::DMS::Endpoint.KafkaSettings MessageFormat (__added__)
+* AWS::DMS::Endpoint.KafkaSettings MessageMaxBytes (__added__)
+* AWS::DMS::Endpoint.KinesisSettings IncludePartitionValue (__added__)
+* AWS::DMS::Endpoint.MySqlSettings AfterConnectScript (__added__)
+* AWS::DMS::Endpoint.MySqlSettings CleanSourceMetadataOnMismatch (__added__)
+* AWS::DMS::Endpoint.MySqlSettings EventsPollInterval (__added__)
+* AWS::DMS::Endpoint.MySqlSettings MaxFileSize (__added__)
+* AWS::DMS::Endpoint.MySqlSettings ParallelLoadThreads (__added__)
+* AWS::DMS::Endpoint.MySqlSettings ServerTimezone (__added__)
+* AWS::DMS::Endpoint.MySqlSettings TargetDbType (__added__)
+* AWS::ECS::Service.PlacementConstraint Expression.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.PlacementConstraint Type.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.PlacementStrategy Field.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.PlacementStrategy Type.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SageMaker::Domain.UserSettings RStudioServerProAppSettings (__added__)
+* AWS::SageMaker::UserProfile.UserSettings RStudioServerProAppSettings (__added__)
+
+
+# CloudFormation Resource Specification v63.0.0
+
+## New Resource Types
+
+* AWS::Events::Endpoint
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::EKS::Cluster.Provider (__added__)
+* AWS::DMS::Endpoint.OracleSettings AccessAlternateDirectly (__added__)
+* AWS::DMS::Endpoint.OracleSettings AddSupplementalLogging (__added__)
+* AWS::DMS::Endpoint.OracleSettings AdditionalArchivedLogDestId (__added__)
+* AWS::DMS::Endpoint.OracleSettings AllowSelectNestedTables (__added__)
+* AWS::DMS::Endpoint.OracleSettings ArchivedLogDestId (__added__)
+* AWS::DMS::Endpoint.OracleSettings ArchivedLogsOnly (__added__)
+* AWS::DMS::Endpoint.OracleSettings AsmPassword (__added__)
+* AWS::DMS::Endpoint.OracleSettings AsmServer (__added__)
+* AWS::DMS::Endpoint.OracleSettings AsmUser (__added__)
+* AWS::DMS::Endpoint.OracleSettings CharLengthSemantics (__added__)
+* AWS::DMS::Endpoint.OracleSettings DirectPathNoLog (__added__)
+* AWS::DMS::Endpoint.OracleSettings DirectPathParallelLoad (__added__)
+* AWS::DMS::Endpoint.OracleSettings EnableHomogenousTablespace (__added__)
+* AWS::DMS::Endpoint.OracleSettings ExtraArchivedLogDestIds (__added__)
+* AWS::DMS::Endpoint.OracleSettings FailTasksOnLobTruncation (__added__)
+* AWS::DMS::Endpoint.OracleSettings NumberDatatypeScale (__added__)
+* AWS::DMS::Endpoint.OracleSettings OraclePathPrefix (__added__)
+* AWS::DMS::Endpoint.OracleSettings ParallelAsmReadThreads (__added__)
+* AWS::DMS::Endpoint.OracleSettings ReadAheadBlocks (__added__)
+* AWS::DMS::Endpoint.OracleSettings ReadTableSpaceName (__added__)
+* AWS::DMS::Endpoint.OracleSettings ReplacePathPrefix (__added__)
+* AWS::DMS::Endpoint.OracleSettings RetryInterval (__added__)
+* AWS::DMS::Endpoint.OracleSettings SecurityDbEncryption (__added__)
+* AWS::DMS::Endpoint.OracleSettings SecurityDbEncryptionName (__added__)
+* AWS::DMS::Endpoint.OracleSettings SpatialDataOptionToGeoJsonFunctionName (__added__)
+* AWS::DMS::Endpoint.OracleSettings StandbyDelayTime (__added__)
+* AWS::DMS::Endpoint.OracleSettings UseAlternateFolderForOnline (__added__)
+* AWS::DMS::Endpoint.OracleSettings UseBFile (__added__)
+* AWS::DMS::Endpoint.OracleSettings UseDirectPathFullLoad (__added__)
+* AWS::DMS::Endpoint.OracleSettings UseLogminerReader (__added__)
+* AWS::DMS::Endpoint.OracleSettings UsePathPrefix (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings AfterConnectScript (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings CaptureDdls (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings DdlArtifactsSchema (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings ExecuteTimeout (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings FailTasksOnLobTruncation (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings HeartbeatEnable (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings HeartbeatFrequency (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings HeartbeatSchema (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings MaxFileSize (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings PluginName (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings SlotName (__added__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.PrimitiveType (__deleted__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.Type (__added__)
+* AWS::FSx::FileSystem.OntapConfiguration ThroughputCapacity.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
+# CloudFormation Resource Specification v62.0.0
+
+## New Resource Types
+
+* AWS::FSx::Snapshot
+* AWS::FSx::StorageVirtualMachine
+* AWS::FSx::Volume
+* AWS::IoTEvents::AlarmModel
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::DocDB::DBInstance EnablePerformanceInsights (__added__)
+* AWS::Lambda::Function EphemeralStorage (__added__)
+* AWS::Lambda::Permission PrincipalOrgID (__added__)
+* AWS::Lex::Bot TestBotAliasSettings (__added__)
+
+## Property Type Changes
+
+* AWS::DevOpsGuru::ResourceCollection.TagCollection (__added__)
+* AWS::EC2::LaunchTemplate.Ipv4PrefixSpecification (__added__)
+* AWS::EC2::LaunchTemplate.Ipv6PrefixSpecification (__added__)
+* AWS::Lambda::Function.EphemeralStorage (__added__)
+* AWS::Lex::Bot.AdvancedRecognitionSetting (__added__)
+* AWS::Lex::Bot.AudioLogDestination (__added__)
+* AWS::Lex::Bot.AudioLogSetting (__added__)
+* AWS::Lex::Bot.BotAliasLocaleSettings (__added__)
+* AWS::Lex::Bot.BotAliasLocaleSettingsItem (__added__)
+* AWS::Lex::Bot.CloudWatchLogGroupLogDestination (__added__)
+* AWS::Lex::Bot.CodeHookSpecification (__added__)
+* AWS::Lex::Bot.ConversationLogSettings (__added__)
+* AWS::Lex::Bot.CustomVocabulary (__added__)
+* AWS::Lex::Bot.CustomVocabularyItem (__added__)
+* AWS::Lex::Bot.LambdaCodeHook (__added__)
+* AWS::Lex::Bot.S3BucketLogDestination (__added__)
+* AWS::Lex::Bot.TestBotAliasSettings (__added__)
+* AWS::Lex::Bot.TextLogDestination (__added__)
+* AWS::Lex::Bot.TextLogSetting (__added__)
+* AWS::MediaPackage::OriginEndpoint.EncryptionContractConfiguration (__added__)
+* AWS::DevOpsGuru::ResourceCollection.ResourceCollectionFilter Tags (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv4PrefixCount (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv4Prefixes (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv6PrefixCount (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv6Prefixes (__added__)
+* AWS::Lex::Bot.BotLocale CustomVocabulary (__added__)
+* AWS::Lex::Bot.SlotValueSelectionSetting AdvancedRecognitionSetting (__added__)
+* AWS::MediaPackage::OriginEndpoint.SpekeKeyProvider EncryptionContractConfiguration (__added__)
+
+
+# CloudFormation Resource Specification v61.0.0
+
+## New Resource Types
+
+* AWS::BillingConductor::BillingGroup
+* AWS::BillingConductor::CustomLineItem
+* AWS::BillingConductor::PricingPlan
+* AWS::BillingConductor::PricingRule
+
+## Attribute Changes
+
+* AWS::DMS::ReplicationInstance ReplicationInstancePrivateIpAddresses.PrimitiveItemType (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePrivateIpAddresses.Type (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePrivateIpAddresses.PrimitiveType (__added__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePublicIpAddresses.PrimitiveItemType (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePublicIpAddresses.Type (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePublicIpAddresses.PrimitiveType (__added__)
+* AWS::EC2::Subnet Id (__deleted__)
+* AWS::EC2::Subnet SubnetId (__added__)
+
+## Property Changes
+
+* AWS::CodeDeploy::DeploymentGroup OutdatedInstancesStrategy (__added__)
+* AWS::CodeDeploy::DeploymentGroup Tags (__added__)
+* AWS::DMS::Endpoint Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DMS::ReplicationSubnetGroup Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::Subnet AvailabilityZoneId (__added__)
+* AWS::EC2::Subnet EnableDns64 (__added__)
+* AWS::EC2::Subnet Ipv6Native (__added__)
+* AWS::EC2::Subnet PrivateDnsNameOptionsOnLaunch (__added__)
+* AWS::EC2::Subnet CidrBlock.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Inspector::AssessmentTemplate RulesPackageArns.DuplicatesAllowed (__added__)
+* AWS::Inspector::AssessmentTemplate UserAttributesForFindings.DuplicatesAllowed (__added__)
+* AWS::Inspector::ResourceGroup ResourceGroupTags.DuplicatesAllowed (__added__)
+
+## Property Type Changes
+
+* AWS::ACMPCA::Certificate.CustomAttribute (__added__)
+* AWS::ACMPCA::Certificate.CustomExtension (__added__)
+* AWS::ACMPCA::CertificateAuthority.CustomAttribute (__added__)
+* AWS::CodeDeploy::DeploymentGroup.TargetGroupPairInfo (__added__)
+* AWS::CodeDeploy::DeploymentGroup.TrafficRoute (__added__)
+* AWS::ACMPCA::Certificate.Extensions CustomExtensions (__added__)
+* AWS::ACMPCA::Certificate.Subject CustomAttributes (__added__)
+* AWS::ACMPCA::CertificateAuthority.Subject CustomAttributes (__added__)
+* AWS::CodeDeploy::DeploymentGroup.LoadBalancerInfo TargetGroupPairInfoList (__added__)
+* AWS::FSx::FileSystem.OpenZFSConfiguration Options (__added__)
+* AWS::FSx::FileSystem.RootVolumeConfiguration RecordSizeKiB (__added__)
+
+
 # CloudFormation Resource Specification v60.0.0
 
 ## New Resource Types

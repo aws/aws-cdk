@@ -29,7 +29,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.4.1"
+    "@types/jest": "^27.5.2"
   },
   "dependencies": {
     "aws-cdk-migration": "0.0.0",
@@ -42,7 +42,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "ubergen": {
     "exclude": true

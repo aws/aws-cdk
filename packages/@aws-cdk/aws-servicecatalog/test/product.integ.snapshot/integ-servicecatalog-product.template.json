@@ -1,0 +1,370 @@
+{
+ "Resources": {
+  "TestProduct7606930B": {
+   "Type": "AWS::ServiceCatalog::CloudFormationProduct",
+   "Properties": {
+    "Name": "testProduct",
+    "Owner": "testOwner",
+    "ProvisioningArtifactParameters": [
+     {
+      "DisableTemplateValidation": true,
+      "Info": {
+       "LoadTemplateFromURL": "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
+      }
+     },
+     {
+      "DisableTemplateValidation": false,
+      "Info": {
+       "LoadTemplateFromURL": {
+        "Fn::Join": [
+         "",
+         [
+          "https://s3.",
+          {
+           "Ref": "AWS::Region"
+          },
+          ".",
+          {
+           "Ref": "AWS::URLSuffix"
+          },
+          "/",
+          {
+           "Ref": "AssetParametersb59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09eS3BucketCF629374"
+          },
+          "/",
+          {
+           "Fn::Select": [
+            0,
+            {
+             "Fn::Split": [
+              "||",
+              {
+               "Ref": "AssetParametersb59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09eS3VersionKeyC94BC7EE"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "Fn::Select": [
+            1,
+            {
+             "Fn::Split": [
+              "||",
+              {
+               "Ref": "AssetParametersb59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09eS3VersionKeyC94BC7EE"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        ]
+       }
+      }
+     },
+     {
+      "DisableTemplateValidation": false,
+      "Info": {
+       "LoadTemplateFromURL": {
+        "Fn::Join": [
+         "",
+         [
+          "https://s3.",
+          {
+           "Ref": "AWS::Region"
+          },
+          ".",
+          {
+           "Ref": "AWS::URLSuffix"
+          },
+          "/",
+          {
+           "Ref": "AssetParameters6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5S3Bucket85C3FF42"
+          },
+          "/",
+          {
+           "Fn::Select": [
+            0,
+            {
+             "Fn::Split": [
+              "||",
+              {
+               "Ref": "AssetParameters6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5S3VersionKey34A02667"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "Fn::Select": [
+            1,
+            {
+             "Fn::Split": [
+              "||",
+              {
+               "Ref": "AssetParameters6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5S3VersionKey34A02667"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        ]
+       }
+      }
+     },
+     {
+      "DisableTemplateValidation": false,
+      "Info": {
+       "LoadTemplateFromURL": {
+        "Fn::Join": [
+         "",
+         [
+          "https://s3.",
+          {
+           "Ref": "AWS::Region"
+          },
+          ".",
+          {
+           "Ref": "AWS::URLSuffix"
+          },
+          "/",
+          {
+           "Ref": "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fS3BucketB4751C98"
+          },
+          "/",
+          {
+           "Fn::Select": [
+            0,
+            {
+             "Fn::Split": [
+              "||",
+              {
+               "Ref": "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fS3VersionKeyEB38C6F9"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "Fn::Select": [
+            1,
+            {
+             "Fn::Split": [
+              "||",
+              {
+               "Ref": "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fS3VersionKeyEB38C6F9"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        ]
+       }
+      }
+     },
+     {
+      "DisableTemplateValidation": false,
+      "Info": {
+       "LoadTemplateFromURL": {
+        "Fn::Join": [
+         "",
+         [
+          "https://s3.",
+          {
+           "Ref": "AWS::Region"
+          },
+          ".",
+          {
+           "Ref": "AWS::URLSuffix"
+          },
+          "/",
+          {
+           "Ref": "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fS3BucketB4751C98"
+          },
+          "/",
+          {
+           "Fn::Select": [
+            0,
+            {
+             "Fn::Split": [
+              "||",
+              {
+               "Ref": "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fS3VersionKeyEB38C6F9"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "Fn::Select": [
+            1,
+            {
+             "Fn::Split": [
+              "||",
+              {
+               "Ref": "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fS3VersionKeyEB38C6F9"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        ]
+       }
+      }
+     },
+     {
+      "DisableTemplateValidation": false,
+      "Info": {
+       "LoadTemplateFromURL": {
+        "Fn::Join": [
+         "",
+         [
+          "https://s3.",
+          {
+           "Ref": "AWS::Region"
+          },
+          ".",
+          {
+           "Ref": "AWS::URLSuffix"
+          },
+          "/",
+          {
+           "Ref": "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fS3BucketB4751C98"
+          },
+          "/",
+          {
+           "Fn::Select": [
+            0,
+            {
+             "Fn::Split": [
+              "||",
+              {
+               "Ref": "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fS3VersionKeyEB38C6F9"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "Fn::Select": [
+            1,
+            {
+             "Fn::Split": [
+              "||",
+              {
+               "Ref": "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fS3VersionKeyEB38C6F9"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        ]
+       }
+      },
+      "Name": "v1"
+     }
+    ]
+   }
+  },
+  "TestProductTagOptionAssociation0d813eebb333DA3E2F21": {
+   "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+   "Properties": {
+    "ResourceId": {
+     "Ref": "TestProduct7606930B"
+    },
+    "TagOptionId": {
+     "Ref": "TagOptions5f31c54ba705F110F743"
+    }
+   }
+  },
+  "TestProductTagOptionAssociation5d93a5c977b4B664DD87": {
+   "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+   "Properties": {
+    "ResourceId": {
+     "Ref": "TestProduct7606930B"
+    },
+    "TagOptionId": {
+     "Ref": "TagOptions8d263919cebb6764AC10"
+    }
+   }
+  },
+  "TestProductTagOptionAssociationcfaf40b186a3E5FDECDC": {
+   "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+   "Properties": {
+    "ResourceId": {
+     "Ref": "TestProduct7606930B"
+    },
+    "TagOptionId": {
+     "Ref": "TagOptionsa260cbbd99c416C40F73"
+    }
+   }
+  },
+  "TagOptions5f31c54ba705F110F743": {
+   "Type": "AWS::ServiceCatalog::TagOption",
+   "Properties": {
+    "Key": "key1",
+    "Value": "value1",
+    "Active": true
+   }
+  },
+  "TagOptions8d263919cebb6764AC10": {
+   "Type": "AWS::ServiceCatalog::TagOption",
+   "Properties": {
+    "Key": "key1",
+    "Value": "value2",
+    "Active": true
+   }
+  },
+  "TagOptionsa260cbbd99c416C40F73": {
+   "Type": "AWS::ServiceCatalog::TagOption",
+   "Properties": {
+    "Key": "key2",
+    "Value": "value1",
+    "Active": true
+   }
+  }
+ },
+ "Parameters": {
+  "AssetParametersb59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09eS3BucketCF629374": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"b59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09e\""
+  },
+  "AssetParametersb59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09eS3VersionKeyC94BC7EE": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"b59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09e\""
+  },
+  "AssetParametersb59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09eArtifactHashB9EF04B2": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"b59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09e\""
+  },
+  "AssetParameters6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5S3Bucket85C3FF42": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5\""
+  },
+  "AssetParameters6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5S3VersionKey34A02667": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5\""
+  },
+  "AssetParameters6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5ArtifactHashDC26AFAC": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5\""
+  },
+  "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fS3BucketB4751C98": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f\""
+  },
+  "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fS3VersionKeyEB38C6F9": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f\""
+  },
+  "AssetParametersdd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1fArtifactHash5C1F9228": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f\""
+  }
+ }
+}

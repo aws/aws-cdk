@@ -34,7 +34,7 @@ const lambdaFun = new lambda.Function(stack, 'LambdaFun', {
     };
   `),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
 });
 const lambdaStage = pipeline.addStage({ stageName: 'Lambda' });
 lambdaStage.addAction(new cpactions.LambdaInvokeAction({

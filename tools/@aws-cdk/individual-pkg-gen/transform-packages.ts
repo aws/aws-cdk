@@ -27,7 +27,7 @@ const FEATURE_CFN_STABILITY_LINE = /CFN Resources\s+\| !\[Stable]\(https:\/\/img
  */
 const REQUIRED_TOOLS = new Set([
   '@aws-cdk/cdk-build-tools',
-  '@aws-cdk/cdk-integ-tools',
+  '@aws-cdk/integ-runner',
   '@aws-cdk/cfn2ts',
   '@aws-cdk/eslint-plugin',
   '@aws-cdk/pkglint',

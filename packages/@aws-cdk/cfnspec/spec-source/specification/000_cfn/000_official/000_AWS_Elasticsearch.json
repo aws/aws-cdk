@@ -1,9 +1,15 @@
 {
-  "$version": "60.0.0",
+  "$version": "79.0.0",
   "PropertyTypes": {
     "AWS::Elasticsearch::Domain.AdvancedSecurityOptionsInput": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticsearch-domain-advancedsecurityoptionsinput.html",
       "Properties": {
+        "AnonymousAuthEnabled": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticsearch-domain-advancedsecurityoptionsinput.html#cfn-elasticsearch-domain-advancedsecurityoptionsinput-anonymousauthenabled",
+          "PrimitiveType": "Boolean",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
         "Enabled": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticsearch-domain-advancedsecurityoptionsinput.html#cfn-elasticsearch-domain-advancedsecurityoptionsinput-enabled",
           "PrimitiveType": "Boolean",
@@ -344,7 +350,7 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticsearch-domain.html#cfn-elasticsearch-domain-advancedsecurityoptions",
           "Required": false,
           "Type": "AdvancedSecurityOptionsInput",
-          "UpdateType": "Immutable"
+          "UpdateType": "Conditional"
         },
         "CognitoOptions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticsearch-domain.html#cfn-elasticsearch-domain-cognitooptions",

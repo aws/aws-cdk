@@ -511,9 +511,9 @@
           "Statement": [
             {
               "Action": [
-                "sqs:SendMessage",
                 "sqs:GetQueueAttributes",
-                "sqs:GetQueueUrl"
+                "sqs:GetQueueUrl",
+                "sqs:SendMessage"
               ],
               "Condition": {
                 "ArnEquals": {
@@ -538,9 +538,9 @@
             },
             {
               "Action": [
-                "sqs:SendMessage",
                 "sqs:GetQueueAttributes",
-                "sqs:GetQueueUrl"
+                "sqs:GetQueueUrl",
+                "sqs:SendMessage"
               ],
               "Condition": {
                 "ArnEquals": {
@@ -740,11 +740,11 @@
             },
             {
               "Action": [
-                "sqs:ReceiveMessage",
                 "sqs:ChangeMessageVisibility",
-                "sqs:GetQueueUrl",
                 "sqs:DeleteMessage",
-                "sqs:GetQueueAttributes"
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+                "sqs:ReceiveMessage"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -757,17 +757,17 @@
             {
               "Action": [
                 "dynamodb:BatchGetItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+                "dynamodb:GetItem",
                 "dynamodb:GetRecords",
                 "dynamodb:GetShardIterator",
-                "dynamodb:Query",
-                "dynamodb:GetItem",
-                "dynamodb:Scan",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:BatchWriteItem",
                 "dynamodb:PutItem",
-                "dynamodb:UpdateItem",
-                "dynamodb:DeleteItem",
-                "dynamodb:DescribeTable"
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:UpdateItem"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -1051,12 +1051,28 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "nameserviceTaskRecordManagerCleanupResourceProviderHandler08068F99",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "nameserviceTaskRecordManagerCleanupResourceProviderHandler08068F99",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "nameserviceTaskRecordManagerCleanupResourceProviderHandler08068F99",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -1074,7 +1090,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
+            "Ref": "AssetParameters5b47c8e4cbbce7e4a8085f1aa83ed9c4691b7f65927ba092d6620bbba925f391S3BucketB4102E9A"
           },
           "S3Key": {
             "Fn::Join": [
@@ -1087,7 +1103,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                          "Ref": "AssetParameters5b47c8e4cbbce7e4a8085f1aa83ed9c4691b7f65927ba092d6620bbba925f391S3VersionKeyC1EC3ED6"
                         }
                       ]
                     }
@@ -1100,7 +1116,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                          "Ref": "AssetParameters5b47c8e4cbbce7e4a8085f1aa83ed9c4691b7f65927ba092d6620bbba925f391S3VersionKeyC1EC3ED6"
                         }
                       ]
                     }
@@ -1128,7 +1144,7 @@
           }
         },
         "Handler": "framework.onEvent",
-        "Runtime": "nodejs12.x",
+        "Runtime": "nodejs14.x",
         "Timeout": 900
       },
       "DependsOn": [
@@ -1317,7 +1333,7 @@
           ]
         },
         "Handler": "index.handler",
-        "Runtime": "nodejs12.x",
+        "Runtime": "nodejs14.x",
         "Timeout": 120
       },
       "DependsOn": [
@@ -1338,17 +1354,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"8f06a3db22794ebc7ff89b4745fd706afd46e17816fe46da72e5125cabae725d\""
     },
-    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1": {
+    "AssetParameters5b47c8e4cbbce7e4a8085f1aa83ed9c4691b7f65927ba092d6620bbba925f391S3BucketB4102E9A": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+      "Description": "S3 bucket for asset \"5b47c8e4cbbce7e4a8085f1aa83ed9c4691b7f65927ba092d6620bbba925f391\""
     },
-    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F": {
+    "AssetParameters5b47c8e4cbbce7e4a8085f1aa83ed9c4691b7f65927ba092d6620bbba925f391S3VersionKeyC1EC3ED6": {
       "Type": "String",
-      "Description": "S3 key for asset version \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+      "Description": "S3 key for asset version \"5b47c8e4cbbce7e4a8085f1aa83ed9c4691b7f65927ba092d6620bbba925f391\""
     },
-    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1ArtifactHashA521A16F": {
+    "AssetParameters5b47c8e4cbbce7e4a8085f1aa83ed9c4691b7f65927ba092d6620bbba925f391ArtifactHashA391D940": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+      "Description": "Artifact hash for asset \"5b47c8e4cbbce7e4a8085f1aa83ed9c4691b7f65927ba092d6620bbba925f391\""
     },
     "AssetParameters3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87S3Bucket36F31A16": {
       "Type": "String",

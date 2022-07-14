@@ -1,0 +1,3112 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
+        }
+      },
+      "PipelineStack": {
+        "id": "PipelineStack",
+        "path": "PipelineStack",
+        "children": {
+          "Vpc": {
+            "id": "Vpc",
+            "path": "PipelineStack/Vpc",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "PipelineStack/Vpc/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
+                  "aws:cdk:cloudformation:props": {
+                    "cidrBlock": "10.0.0.0/16",
+                    "enableDnsHostnames": true,
+                    "enableDnsSupport": true,
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "PipelineStack/Vpc"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPC",
+                  "version": "0.0.0"
+                }
+              },
+              "PublicSubnet1": {
+                "id": "PublicSubnet1",
+                "path": "PipelineStack/Vpc/PublicSubnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "PipelineStack/Vpc/PublicSubnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.0.0/18",
+                        "mapPublicIpOnLaunch": true,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "PipelineStack/Vpc/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "PipelineStack/Vpc/PublicSubnet1/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "PipelineStack/Vpc/PublicSubnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "PipelineStack/Vpc/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "PipelineStack/Vpc/PublicSubnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "PipelineStack/Vpc/PublicSubnet1/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "gatewayId": {
+                          "Ref": "VpcIGWD7BA715C"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "EIP": {
+                    "id": "EIP",
+                    "path": "PipelineStack/Vpc/PublicSubnet1/EIP",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "vpc",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "PipelineStack/Vpc/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "NATGateway": {
+                    "id": "NATGateway",
+                    "path": "PipelineStack/Vpc/PublicSubnet1/NATGateway",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+                        },
+                        "allocationId": {
+                          "Fn::GetAtt": [
+                            "VpcPublicSubnet1EIPD7E02669",
+                            "AllocationId"
+                          ]
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "PipelineStack/Vpc/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "PublicSubnet2": {
+                "id": "PublicSubnet2",
+                "path": "PipelineStack/Vpc/PublicSubnet2",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "PipelineStack/Vpc/PublicSubnet2/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.64.0/18",
+                        "mapPublicIpOnLaunch": true,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "PipelineStack/Vpc/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "PipelineStack/Vpc/PublicSubnet2/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "PipelineStack/Vpc/PublicSubnet2/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "PipelineStack/Vpc/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "PipelineStack/Vpc/PublicSubnet2/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet2Subnet691E08A3"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "PipelineStack/Vpc/PublicSubnet2/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "gatewayId": {
+                          "Ref": "VpcIGWD7BA715C"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "EIP": {
+                    "id": "EIP",
+                    "path": "PipelineStack/Vpc/PublicSubnet2/EIP",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "vpc",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "PipelineStack/Vpc/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "NATGateway": {
+                    "id": "NATGateway",
+                    "path": "PipelineStack/Vpc/PublicSubnet2/NATGateway",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet2Subnet691E08A3"
+                        },
+                        "allocationId": {
+                          "Fn::GetAtt": [
+                            "VpcPublicSubnet2EIP3C605A87",
+                            "AllocationId"
+                          ]
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "PipelineStack/Vpc/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "PrivateSubnet1": {
+                "id": "PrivateSubnet1",
+                "path": "PipelineStack/Vpc/PrivateSubnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "PipelineStack/Vpc/PrivateSubnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.128.0/18",
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "PipelineStack/Vpc/PrivateSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "PipelineStack/Vpc/PrivateSubnet1/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "PipelineStack/Vpc/PrivateSubnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "PipelineStack/Vpc/PrivateSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "PipelineStack/Vpc/PrivateSubnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "PipelineStack/Vpc/PrivateSubnet1/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "PrivateSubnet2": {
+                "id": "PrivateSubnet2",
+                "path": "PipelineStack/Vpc/PrivateSubnet2",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "PipelineStack/Vpc/PrivateSubnet2/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.192.0/18",
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "PipelineStack/Vpc/PrivateSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "PipelineStack/Vpc/PrivateSubnet2/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "PipelineStack/Vpc/PrivateSubnet2/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "PipelineStack/Vpc/PrivateSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "PipelineStack/Vpc/PrivateSubnet2/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "PipelineStack/Vpc/PrivateSubnet2/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Ref": "VpcPublicSubnet2NATGateway9182C01D"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "IGW": {
+                "id": "IGW",
+                "path": "PipelineStack/Vpc/IGW",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
+                  "aws:cdk:cloudformation:props": {
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "PipelineStack/Vpc"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.CfnInternetGateway",
+                  "version": "0.0.0"
+                }
+              },
+              "VPCGW": {
+                "id": "VPCGW",
+                "path": "PipelineStack/Vpc/VPCGW",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
+                  "aws:cdk:cloudformation:props": {
+                    "vpcId": {
+                      "Ref": "Vpc8378EB38"
+                    },
+                    "internetGatewayId": {
+                      "Ref": "VpcIGWD7BA715C"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPCGatewayAttachment",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ec2.Vpc",
+              "version": "0.0.0"
+            }
+          },
+          "Pipeline": {
+            "id": "Pipeline",
+            "path": "PipelineStack/Pipeline",
+            "children": {
+              "Pipeline": {
+                "id": "Pipeline",
+                "path": "PipelineStack/Pipeline/Pipeline",
+                "children": {
+                  "ArtifactsBucket": {
+                    "id": "ArtifactsBucket",
+                    "path": "PipelineStack/Pipeline/Pipeline/ArtifactsBucket",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "PipelineStack/Pipeline/Pipeline/ArtifactsBucket/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                          "aws:cdk:cloudformation:props": {
+                            "bucketEncryption": {
+                              "serverSideEncryptionConfiguration": [
+                                {
+                                  "serverSideEncryptionByDefault": {
+                                    "sseAlgorithm": "aws:kms"
+                                  }
+                                }
+                              ]
+                            },
+                            "publicAccessBlockConfiguration": {
+                              "blockPublicAcls": true,
+                              "blockPublicPolicy": true,
+                              "ignorePublicAcls": true,
+                              "restrictPublicBuckets": true
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Policy": {
+                        "id": "Policy",
+                        "path": "PipelineStack/Pipeline/Pipeline/ArtifactsBucket/Policy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "PipelineStack/Pipeline/Pipeline/ArtifactsBucket/Policy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                              "aws:cdk:cloudformation:props": {
+                                "bucket": {
+                                  "Ref": "PipelineArtifactsBucketAEA9A052"
+                                },
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "s3:*",
+                                      "Condition": {
+                                        "Bool": {
+                                          "aws:SecureTransport": "false"
+                                        }
+                                      },
+                                      "Effect": "Deny",
+                                      "Principal": {
+                                        "AWS": "*"
+                                      },
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "PipelineArtifactsBucketAEA9A052",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "PipelineArtifactsBucketAEA9A052",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              "/*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "Action": [
+                                        "s3:GetBucket*",
+                                        "s3:GetObject*",
+                                        "s3:List*"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "AWS": {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":iam::",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":role/cdk-hnb659fds-deploy-role-",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              "-",
+                                              {
+                                                "Ref": "AWS::Region"
+                                              }
+                                            ]
+                                          ]
+                                        }
+                                      },
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "PipelineArtifactsBucketAEA9A052",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "PipelineArtifactsBucketAEA9A052",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              "/*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-s3.BucketPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.Bucket",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Role": {
+                    "id": "Role",
+                    "path": "PipelineStack/Pipeline/Pipeline/Role",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "PipelineStack/Pipeline/Pipeline/Role/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "codepipeline.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "PipelineStack/Pipeline/Pipeline/Role/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "PipelineStack/Pipeline/Pipeline/Role/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "s3:Abort*",
+                                        "s3:DeleteObject*",
+                                        "s3:GetBucket*",
+                                        "s3:GetObject*",
+                                        "s3:List*",
+                                        "s3:PutObject",
+                                        "s3:PutObjectLegalHold",
+                                        "s3:PutObjectRetention",
+                                        "s3:PutObjectTagging",
+                                        "s3:PutObjectVersionTagging"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "PipelineArtifactsBucketAEA9A052",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "PipelineArtifactsBucketAEA9A052",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              "/*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "PipelineCodeBuildActionRole226DB0CB",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":iam::",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":role/cdk-hnb659fds-deploy-role-",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              "-",
+                                              {
+                                                "Ref": "AWS::Region"
+                                              }
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "PipelineRoleDefaultPolicy7BDC1ABB",
+                                "roles": [
+                                  {
+                                    "Ref": "PipelineRoleB27FAA37"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "PipelineStack/Pipeline/Pipeline/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::CodePipeline::Pipeline",
+                      "aws:cdk:cloudformation:props": {
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "PipelineRoleB27FAA37",
+                            "Arn"
+                          ]
+                        },
+                        "stages": [
+                          {
+                            "name": "Source",
+                            "actions": [
+                              {
+                                "name": "aws_aws-cdk",
+                                "outputArtifacts": [
+                                  {
+                                    "name": "aws_aws_cdk_Source"
+                                  }
+                                ],
+                                "actionTypeId": {
+                                  "category": "Source",
+                                  "version": "1",
+                                  "owner": "ThirdParty",
+                                  "provider": "GitHub"
+                                },
+                                "configuration": {
+                                  "Owner": "aws",
+                                  "Repo": "aws-cdk",
+                                  "Branch": "v2-main",
+                                  "OAuthToken": "{{resolve:secretsmanager:github-token:SecretString:::}}",
+                                  "PollForSourceChanges": false
+                                },
+                                "runOrder": 1
+                              }
+                            ]
+                          },
+                          {
+                            "name": "Build",
+                            "actions": [
+                              {
+                                "name": "Synth",
+                                "inputArtifacts": [
+                                  {
+                                    "name": "aws_aws_cdk_Source"
+                                  }
+                                ],
+                                "outputArtifacts": [
+                                  {
+                                    "name": "Synth_Output"
+                                  }
+                                ],
+                                "actionTypeId": {
+                                  "category": "Build",
+                                  "version": "1",
+                                  "owner": "AWS",
+                                  "provider": "CodeBuild"
+                                },
+                                "configuration": {
+                                  "ProjectName": {
+                                    "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
+                                  },
+                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"00ebacfb32b1bde8d3638577308e7b7144dfa3b0a58a83bc6ff38a3b1f26951c\"}]"
+                                },
+                                "runOrder": 1,
+                                "roleArn": {
+                                  "Fn::GetAtt": [
+                                    "PipelineCodeBuildActionRole226DB0CB",
+                                    "Arn"
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "name": "UpdatePipeline",
+                            "actions": [
+                              {
+                                "name": "SelfMutate",
+                                "inputArtifacts": [
+                                  {
+                                    "name": "Synth_Output"
+                                  }
+                                ],
+                                "actionTypeId": {
+                                  "category": "Build",
+                                  "version": "1",
+                                  "owner": "AWS",
+                                  "provider": "CodeBuild"
+                                },
+                                "configuration": {
+                                  "ProjectName": {
+                                    "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
+                                  },
+                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"c0779bd925c3a7f19be75a4973c668d10d00ce3552b882c7d2ba3fa3cee6d976\"}]"
+                                },
+                                "runOrder": 1,
+                                "roleArn": {
+                                  "Fn::GetAtt": [
+                                    "PipelineCodeBuildActionRole226DB0CB",
+                                    "Arn"
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "name": "Assets",
+                            "actions": [
+                              {
+                                "name": "FileAsset1",
+                                "inputArtifacts": [
+                                  {
+                                    "name": "Synth_Output"
+                                  }
+                                ],
+                                "actionTypeId": {
+                                  "category": "Build",
+                                  "version": "1",
+                                  "owner": "AWS",
+                                  "provider": "CodeBuild"
+                                },
+                                "configuration": {
+                                  "ProjectName": {
+                                    "Ref": "PipelineAssetsFileAsset185A67CB4"
+                                  }
+                                },
+                                "runOrder": 1,
+                                "roleArn": {
+                                  "Fn::GetAtt": [
+                                    "PipelineCodeBuildActionRole226DB0CB",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              {
+                                "name": "FileAsset2",
+                                "inputArtifacts": [
+                                  {
+                                    "name": "Synth_Output"
+                                  }
+                                ],
+                                "actionTypeId": {
+                                  "category": "Build",
+                                  "version": "1",
+                                  "owner": "AWS",
+                                  "provider": "CodeBuild"
+                                },
+                                "configuration": {
+                                  "ProjectName": {
+                                    "Ref": "PipelineAssetsFileAsset24D2D639B"
+                                  }
+                                },
+                                "runOrder": 1,
+                                "roleArn": {
+                                  "Fn::GetAtt": [
+                                    "PipelineCodeBuildActionRole226DB0CB",
+                                    "Arn"
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "name": "Beta",
+                            "actions": [
+                              {
+                                "name": "Prepare",
+                                "inputArtifacts": [
+                                  {
+                                    "name": "Synth_Output"
+                                  }
+                                ],
+                                "actionTypeId": {
+                                  "category": "Deploy",
+                                  "version": "1",
+                                  "owner": "AWS",
+                                  "provider": "CloudFormation"
+                                },
+                                "configuration": {
+                                  "StackName": "Beta-Stack1",
+                                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
+                                  "RoleArn": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":iam::",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":role/cdk-hnb659fds-cfn-exec-role-",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        "-",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        }
+                                      ]
+                                    ]
+                                  },
+                                  "ActionMode": "CHANGE_SET_REPLACE",
+                                  "ChangeSetName": "PipelineChange",
+                                  "TemplatePath": "Synth_Output::assembly-PipelineStack-Beta/PipelineStackBetaStack1E6541489.template.json"
+                                },
+                                "runOrder": 1,
+                                "roleArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":iam::",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":role/cdk-hnb659fds-deploy-role-",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      "-",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      }
+                                    ]
+                                  ]
+                                }
+                              },
+                              {
+                                "name": "Deploy",
+                                "actionTypeId": {
+                                  "category": "Deploy",
+                                  "version": "1",
+                                  "owner": "AWS",
+                                  "provider": "CloudFormation"
+                                },
+                                "configuration": {
+                                  "StackName": "Beta-Stack1",
+                                  "ActionMode": "CHANGE_SET_EXECUTE",
+                                  "ChangeSetName": "PipelineChange"
+                                },
+                                "runOrder": 2,
+                                "roleArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":iam::",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":role/cdk-hnb659fds-deploy-role-",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      "-",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      }
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        ],
+                        "artifactStore": {
+                          "type": "S3",
+                          "location": {
+                            "Ref": "PipelineArtifactsBucketAEA9A052"
+                          }
+                        },
+                        "restartExecutionOnUpdate": true
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-codepipeline.CfnPipeline",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Source": {
+                    "id": "Source",
+                    "path": "PipelineStack/Pipeline/Pipeline/Source",
+                    "children": {
+                      "aws_aws-cdk": {
+                        "id": "aws_aws-cdk",
+                        "path": "PipelineStack/Pipeline/Pipeline/Source/aws_aws-cdk",
+                        "children": {
+                          "WebhookResource": {
+                            "id": "WebhookResource",
+                            "path": "PipelineStack/Pipeline/Pipeline/Source/aws_aws-cdk/WebhookResource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::CodePipeline::Webhook",
+                              "aws:cdk:cloudformation:props": {
+                                "authentication": "GITHUB_HMAC",
+                                "authenticationConfiguration": {
+                                  "secretToken": "{{resolve:secretsmanager:github-token:SecretString:::}}"
+                                },
+                                "filters": [
+                                  {
+                                    "jsonPath": "$.ref",
+                                    "matchEquals": "refs/heads/{Branch}"
+                                  }
+                                ],
+                                "targetAction": "aws_aws-cdk",
+                                "targetPipeline": {
+                                  "Ref": "Pipeline9850B417"
+                                },
+                                "targetPipelineVersion": 1,
+                                "registerWithThirdParty": true
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-codepipeline.CfnWebhook",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.9"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
+                    }
+                  },
+                  "Build": {
+                    "id": "Build",
+                    "path": "PipelineStack/Pipeline/Pipeline/Build",
+                    "children": {
+                      "Synth": {
+                        "id": "Synth",
+                        "path": "PipelineStack/Pipeline/Pipeline/Build/Synth",
+                        "children": {
+                          "CdkBuildProject": {
+                            "id": "CdkBuildProject",
+                            "path": "PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject",
+                            "children": {
+                              "Role": {
+                                "id": "Role",
+                                "path": "PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role",
+                                "children": {
+                                  "Resource": {
+                                    "id": "Resource",
+                                    "path": "PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/Resource",
+                                    "attributes": {
+                                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                                      "aws:cdk:cloudformation:props": {
+                                        "assumeRolePolicyDocument": {
+                                          "Statement": [
+                                            {
+                                              "Action": "sts:AssumeRole",
+                                              "Effect": "Allow",
+                                              "Principal": {
+                                                "Service": "codebuild.amazonaws.com"
+                                              }
+                                            }
+                                          ],
+                                          "Version": "2012-10-17"
+                                        }
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                                      "version": "0.0.0"
+                                    }
+                                  },
+                                  "DefaultPolicy": {
+                                    "id": "DefaultPolicy",
+                                    "path": "PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/DefaultPolicy",
+                                    "children": {
+                                      "Resource": {
+                                        "id": "Resource",
+                                        "path": "PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/DefaultPolicy/Resource",
+                                        "attributes": {
+                                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                          "aws:cdk:cloudformation:props": {
+                                            "policyDocument": {
+                                              "Statement": [
+                                                {
+                                                  "Action": "ec2:CreateNetworkInterfacePermission",
+                                                  "Condition": {
+                                                    "StringEquals": {
+                                                      "ec2:Subnet": [
+                                                        {
+                                                          "Fn::Join": [
+                                                            "",
+                                                            [
+                                                              "arn:",
+                                                              {
+                                                                "Ref": "AWS::Partition"
+                                                              },
+                                                              ":ec2:",
+                                                              {
+                                                                "Ref": "AWS::Region"
+                                                              },
+                                                              ":",
+                                                              {
+                                                                "Ref": "AWS::AccountId"
+                                                              },
+                                                              ":subnet/",
+                                                              {
+                                                                "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                                                              }
+                                                            ]
+                                                          ]
+                                                        },
+                                                        {
+                                                          "Fn::Join": [
+                                                            "",
+                                                            [
+                                                              "arn:",
+                                                              {
+                                                                "Ref": "AWS::Partition"
+                                                              },
+                                                              ":ec2:",
+                                                              {
+                                                                "Ref": "AWS::Region"
+                                                              },
+                                                              ":",
+                                                              {
+                                                                "Ref": "AWS::AccountId"
+                                                              },
+                                                              ":subnet/",
+                                                              {
+                                                                "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                                                              }
+                                                            ]
+                                                          ]
+                                                        }
+                                                      ],
+                                                      "ec2:AuthorizedService": "codebuild.amazonaws.com"
+                                                    }
+                                                  },
+                                                  "Effect": "Allow",
+                                                  "Resource": {
+                                                    "Fn::Join": [
+                                                      "",
+                                                      [
+                                                        "arn:",
+                                                        {
+                                                          "Ref": "AWS::Partition"
+                                                        },
+                                                        ":ec2:",
+                                                        {
+                                                          "Ref": "AWS::Region"
+                                                        },
+                                                        ":",
+                                                        {
+                                                          "Ref": "AWS::AccountId"
+                                                        },
+                                                        ":network-interface/*"
+                                                      ]
+                                                    ]
+                                                  }
+                                                },
+                                                {
+                                                  "Action": [
+                                                    "logs:CreateLogGroup",
+                                                    "logs:CreateLogStream",
+                                                    "logs:PutLogEvents"
+                                                  ],
+                                                  "Effect": "Allow",
+                                                  "Resource": [
+                                                    {
+                                                      "Fn::Join": [
+                                                        "",
+                                                        [
+                                                          "arn:",
+                                                          {
+                                                            "Ref": "AWS::Partition"
+                                                          },
+                                                          ":logs:",
+                                                          {
+                                                            "Ref": "AWS::Region"
+                                                          },
+                                                          ":",
+                                                          {
+                                                            "Ref": "AWS::AccountId"
+                                                          },
+                                                          ":log-group:/aws/codebuild/",
+                                                          {
+                                                            "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
+                                                          },
+                                                          ":*"
+                                                        ]
+                                                      ]
+                                                    },
+                                                    {
+                                                      "Fn::Join": [
+                                                        "",
+                                                        [
+                                                          "arn:",
+                                                          {
+                                                            "Ref": "AWS::Partition"
+                                                          },
+                                                          ":logs:",
+                                                          {
+                                                            "Ref": "AWS::Region"
+                                                          },
+                                                          ":",
+                                                          {
+                                                            "Ref": "AWS::AccountId"
+                                                          },
+                                                          ":log-group:/aws/codebuild/",
+                                                          {
+                                                            "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
+                                                          }
+                                                        ]
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "Action": [
+                                                    "codebuild:BatchPutCodeCoverages",
+                                                    "codebuild:BatchPutTestCases",
+                                                    "codebuild:CreateReport",
+                                                    "codebuild:CreateReportGroup",
+                                                    "codebuild:UpdateReport"
+                                                  ],
+                                                  "Effect": "Allow",
+                                                  "Resource": {
+                                                    "Fn::Join": [
+                                                      "",
+                                                      [
+                                                        "arn:",
+                                                        {
+                                                          "Ref": "AWS::Partition"
+                                                        },
+                                                        ":codebuild:",
+                                                        {
+                                                          "Ref": "AWS::Region"
+                                                        },
+                                                        ":",
+                                                        {
+                                                          "Ref": "AWS::AccountId"
+                                                        },
+                                                        ":report-group/",
+                                                        {
+                                                          "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
+                                                        },
+                                                        "-*"
+                                                      ]
+                                                    ]
+                                                  }
+                                                },
+                                                {
+                                                  "Action": [
+                                                    "s3:Abort*",
+                                                    "s3:DeleteObject*",
+                                                    "s3:GetBucket*",
+                                                    "s3:GetObject*",
+                                                    "s3:List*",
+                                                    "s3:PutObject",
+                                                    "s3:PutObjectLegalHold",
+                                                    "s3:PutObjectRetention",
+                                                    "s3:PutObjectTagging",
+                                                    "s3:PutObjectVersionTagging"
+                                                  ],
+                                                  "Effect": "Allow",
+                                                  "Resource": [
+                                                    {
+                                                      "Fn::GetAtt": [
+                                                        "PipelineArtifactsBucketAEA9A052",
+                                                        "Arn"
+                                                      ]
+                                                    },
+                                                    {
+                                                      "Fn::Join": [
+                                                        "",
+                                                        [
+                                                          {
+                                                            "Fn::GetAtt": [
+                                                              "PipelineArtifactsBucketAEA9A052",
+                                                              "Arn"
+                                                            ]
+                                                          },
+                                                          "/*"
+                                                        ]
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ],
+                                              "Version": "2012-10-17"
+                                            },
+                                            "policyName": "PipelineBuildSynthCdkBuildProjectRoleDefaultPolicyFB6C941C",
+                                            "roles": [
+                                              {
+                                                "Ref": "PipelineBuildSynthCdkBuildProjectRole231EEA2A"
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "constructInfo": {
+                                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                          "version": "0.0.0"
+                                        }
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "@aws-cdk/aws-iam.Policy",
+                                      "version": "0.0.0"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-iam.Role",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "SecurityGroup": {
+                                "id": "SecurityGroup",
+                                "path": "PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/SecurityGroup",
+                                "children": {
+                                  "Resource": {
+                                    "id": "Resource",
+                                    "path": "PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/SecurityGroup/Resource",
+                                    "attributes": {
+                                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                                      "aws:cdk:cloudformation:props": {
+                                        "groupDescription": "Automatic generated security group for CodeBuild PipelineStackPipelineBuildSynthCdkBuildProject225CEB2C",
+                                        "securityGroupEgress": [
+                                          {
+                                            "cidrIp": "0.0.0.0/0",
+                                            "description": "Allow all outbound traffic by default",
+                                            "ipProtocol": "-1"
+                                          }
+                                        ],
+                                        "vpcId": {
+                                          "Ref": "Vpc8378EB38"
+                                        }
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                                      "version": "0.0.0"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::CodeBuild::Project",
+                                  "aws:cdk:cloudformation:props": {
+                                    "artifacts": {
+                                      "type": "CODEPIPELINE"
+                                    },
+                                    "environment": {
+                                      "type": "LINUX_CONTAINER",
+                                      "image": "aws/codebuild/standard:5.0",
+                                      "imagePullCredentialsType": "CODEBUILD",
+                                      "privilegedMode": false,
+                                      "computeType": "BUILD_GENERAL1_SMALL"
+                                    },
+                                    "serviceRole": {
+                                      "Fn::GetAtt": [
+                                        "PipelineBuildSynthCdkBuildProjectRole231EEA2A",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "source": {
+                                      "type": "CODEPIPELINE",
+                                      "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"npm ci\",\n        \"npm run build\",\n        \"npx cdk synth\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"base-directory\": \"cdk.out\",\n    \"files\": \"**/*\"\n  }\n}"
+                                    },
+                                    "cache": {
+                                      "type": "NO_CACHE"
+                                    },
+                                    "description": "Pipeline step PipelineStack/Pipeline/Build/Synth",
+                                    "encryptionKey": "alias/aws/s3",
+                                    "vpcConfig": {
+                                      "vpcId": {
+                                        "Ref": "Vpc8378EB38"
+                                      },
+                                      "subnets": [
+                                        {
+                                          "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                                        },
+                                        {
+                                          "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                                        }
+                                      ],
+                                      "securityGroupIds": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "PipelineBuildSynthCdkBuildProjectSecurityGroup84F92459",
+                                            "GroupId"
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-codebuild.CfnProject",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "PolicyDocument": {
+                                "id": "PolicyDocument",
+                                "path": "PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/PolicyDocument",
+                                "children": {
+                                  "Resource": {
+                                    "id": "Resource",
+                                    "path": "PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/PolicyDocument/Resource",
+                                    "attributes": {
+                                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                      "aws:cdk:cloudformation:props": {
+                                        "policyDocument": {
+                                          "Statement": [
+                                            {
+                                              "Action": [
+                                                "ec2:CreateNetworkInterface",
+                                                "ec2:DeleteNetworkInterface",
+                                                "ec2:DescribeDhcpOptions",
+                                                "ec2:DescribeNetworkInterfaces",
+                                                "ec2:DescribeSecurityGroups",
+                                                "ec2:DescribeSubnets",
+                                                "ec2:DescribeVpcs"
+                                              ],
+                                              "Effect": "Allow",
+                                              "Resource": "*"
+                                            }
+                                          ],
+                                          "Version": "2012-10-17"
+                                        },
+                                        "policyName": "PipelineBuildSynthCdkBuildProjectPolicyDocument4D16371A",
+                                        "roles": [
+                                          {
+                                            "Ref": "PipelineBuildSynthCdkBuildProjectRole231EEA2A"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                      "version": "0.0.0"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-iam.Policy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-codebuild.PipelineProject",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.9"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
+                    }
+                  },
+                  "UpdatePipeline": {
+                    "id": "UpdatePipeline",
+                    "path": "PipelineStack/Pipeline/Pipeline/UpdatePipeline",
+                    "children": {
+                      "SelfMutate": {
+                        "id": "SelfMutate",
+                        "path": "PipelineStack/Pipeline/Pipeline/UpdatePipeline/SelfMutate",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.9"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
+                    }
+                  },
+                  "Assets": {
+                    "id": "Assets",
+                    "path": "PipelineStack/Pipeline/Pipeline/Assets",
+                    "children": {
+                      "FileAsset1": {
+                        "id": "FileAsset1",
+                        "path": "PipelineStack/Pipeline/Pipeline/Assets/FileAsset1",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.9"
+                        }
+                      },
+                      "FileAsset2": {
+                        "id": "FileAsset2",
+                        "path": "PipelineStack/Pipeline/Pipeline/Assets/FileAsset2",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.9"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
+                    }
+                  },
+                  "Beta": {
+                    "id": "Beta",
+                    "path": "PipelineStack/Pipeline/Pipeline/Beta",
+                    "children": {
+                      "Prepare": {
+                        "id": "Prepare",
+                        "path": "PipelineStack/Pipeline/Pipeline/Beta/Prepare",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.9"
+                        }
+                      },
+                      "Deploy": {
+                        "id": "Deploy",
+                        "path": "PipelineStack/Pipeline/Pipeline/Beta/Deploy",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.9"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
+                    }
+                  },
+                  "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": {
+                    "id": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+                    "path": "PipelineStack/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ImmutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": {
+                    "id": "ImmutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+                    "path": "PipelineStack/Pipeline/Pipeline/ImmutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+                    "children": {
+                      "8389e75f-0810-4838-bf64-d6f85a95cf83": {
+                        "id": "8389e75f-0810-4838-bf64-d6f85a95cf83",
+                        "path": "PipelineStack/Pipeline/Pipeline/ImmutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}/8389e75f-0810-4838-bf64-d6f85a95cf83",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.9"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": {
+                    "id": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+                    "path": "PipelineStack/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ImmutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": {
+                    "id": "ImmutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+                    "path": "PipelineStack/Pipeline/Pipeline/ImmutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-codepipeline.Pipeline",
+                  "version": "0.0.0"
+                }
+              },
+              "CodeBuildActionRole": {
+                "id": "CodeBuildActionRole",
+                "path": "PipelineStack/Pipeline/CodeBuildActionRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "PipelineStack/Pipeline/CodeBuildActionRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Condition": {
+                                "Bool": {
+                                  "aws:ViaAWSService": "codepipeline.amazonaws.com"
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":iam::",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":root"
+                                    ]
+                                  ]
+                                }
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "PipelineStack/Pipeline/CodeBuildActionRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "PipelineStack/Pipeline/CodeBuildActionRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "codebuild:BatchGetBuilds",
+                                    "codebuild:StartBuild",
+                                    "codebuild:StopBuild"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "PipelineAssetsFileAsset185A67CB4",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "PipelineAssetsFileAsset24D2D639B",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "PipelineBuildSynthCdkBuildProject6BEFA8E6",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "PipelineUpdatePipelineSelfMutationDAA41400",
+                                        "Arn"
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "PipelineCodeBuildActionRoleDefaultPolicy1D62A6FE",
+                            "roles": [
+                              {
+                                "Ref": "PipelineCodeBuildActionRole226DB0CB"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "UpdatePipeline": {
+                "id": "UpdatePipeline",
+                "path": "PipelineStack/Pipeline/UpdatePipeline",
+                "children": {
+                  "SelfMutation": {
+                    "id": "SelfMutation",
+                    "path": "PipelineStack/Pipeline/UpdatePipeline/SelfMutation",
+                    "children": {
+                      "Role": {
+                        "id": "Role",
+                        "path": "PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Role",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Role/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                              "aws:cdk:cloudformation:props": {
+                                "assumeRolePolicyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "Service": "codebuild.amazonaws.com"
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.CfnRole",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "DefaultPolicy": {
+                            "id": "DefaultPolicy",
+                            "path": "PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Role/DefaultPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Role/DefaultPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "ec2:CreateNetworkInterfacePermission",
+                                          "Condition": {
+                                            "StringEquals": {
+                                              "ec2:Subnet": [
+                                                {
+                                                  "Fn::Join": [
+                                                    "",
+                                                    [
+                                                      "arn:",
+                                                      {
+                                                        "Ref": "AWS::Partition"
+                                                      },
+                                                      ":ec2:",
+                                                      {
+                                                        "Ref": "AWS::Region"
+                                                      },
+                                                      ":",
+                                                      {
+                                                        "Ref": "AWS::AccountId"
+                                                      },
+                                                      ":subnet/",
+                                                      {
+                                                        "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                                                      }
+                                                    ]
+                                                  ]
+                                                },
+                                                {
+                                                  "Fn::Join": [
+                                                    "",
+                                                    [
+                                                      "arn:",
+                                                      {
+                                                        "Ref": "AWS::Partition"
+                                                      },
+                                                      ":ec2:",
+                                                      {
+                                                        "Ref": "AWS::Region"
+                                                      },
+                                                      ":",
+                                                      {
+                                                        "Ref": "AWS::AccountId"
+                                                      },
+                                                      ":subnet/",
+                                                      {
+                                                        "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                                                      }
+                                                    ]
+                                                  ]
+                                                }
+                                              ],
+                                              "ec2:AuthorizedService": "codebuild.amazonaws.com"
+                                            }
+                                          },
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::Join": [
+                                              "",
+                                              [
+                                                "arn:",
+                                                {
+                                                  "Ref": "AWS::Partition"
+                                                },
+                                                ":ec2:",
+                                                {
+                                                  "Ref": "AWS::Region"
+                                                },
+                                                ":",
+                                                {
+                                                  "Ref": "AWS::AccountId"
+                                                },
+                                                ":network-interface/*"
+                                              ]
+                                            ]
+                                          }
+                                        },
+                                        {
+                                          "Action": [
+                                            "logs:CreateLogGroup",
+                                            "logs:CreateLogStream",
+                                            "logs:PutLogEvents"
+                                          ],
+                                          "Effect": "Allow",
+                                          "Resource": [
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  "arn:",
+                                                  {
+                                                    "Ref": "AWS::Partition"
+                                                  },
+                                                  ":logs:",
+                                                  {
+                                                    "Ref": "AWS::Region"
+                                                  },
+                                                  ":",
+                                                  {
+                                                    "Ref": "AWS::AccountId"
+                                                  },
+                                                  ":log-group:/aws/codebuild/",
+                                                  {
+                                                    "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
+                                                  },
+                                                  ":*"
+                                                ]
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  "arn:",
+                                                  {
+                                                    "Ref": "AWS::Partition"
+                                                  },
+                                                  ":logs:",
+                                                  {
+                                                    "Ref": "AWS::Region"
+                                                  },
+                                                  ":",
+                                                  {
+                                                    "Ref": "AWS::AccountId"
+                                                  },
+                                                  ":log-group:/aws/codebuild/",
+                                                  {
+                                                    "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
+                                                  }
+                                                ]
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "Action": [
+                                            "codebuild:BatchPutCodeCoverages",
+                                            "codebuild:BatchPutTestCases",
+                                            "codebuild:CreateReport",
+                                            "codebuild:CreateReportGroup",
+                                            "codebuild:UpdateReport"
+                                          ],
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::Join": [
+                                              "",
+                                              [
+                                                "arn:",
+                                                {
+                                                  "Ref": "AWS::Partition"
+                                                },
+                                                ":codebuild:",
+                                                {
+                                                  "Ref": "AWS::Region"
+                                                },
+                                                ":",
+                                                {
+                                                  "Ref": "AWS::AccountId"
+                                                },
+                                                ":report-group/",
+                                                {
+                                                  "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
+                                                },
+                                                "-*"
+                                              ]
+                                            ]
+                                          }
+                                        },
+                                        {
+                                          "Action": "sts:AssumeRole",
+                                          "Condition": {
+                                            "ForAnyValue:StringEquals": {
+                                              "iam:ResourceTag/aws-cdk:bootstrap-role": [
+                                                "image-publishing",
+                                                "file-publishing",
+                                                "deploy"
+                                              ]
+                                            }
+                                          },
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::Join": [
+                                              "",
+                                              [
+                                                "arn:*:iam::",
+                                                {
+                                                  "Ref": "AWS::AccountId"
+                                                },
+                                                ":role/*"
+                                              ]
+                                            ]
+                                          }
+                                        },
+                                        {
+                                          "Action": [
+                                            "cloudformation:DescribeStacks",
+                                            "s3:ListBucket"
+                                          ],
+                                          "Effect": "Allow",
+                                          "Resource": "*"
+                                        },
+                                        {
+                                          "Action": [
+                                            "s3:GetBucket*",
+                                            "s3:GetObject*",
+                                            "s3:List*"
+                                          ],
+                                          "Effect": "Allow",
+                                          "Resource": [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "PipelineArtifactsBucketAEA9A052",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "PipelineArtifactsBucketAEA9A052",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  "/*"
+                                                ]
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "PipelineUpdatePipelineSelfMutationRoleDefaultPolicyA225DA4E",
+                                    "roles": [
+                                      {
+                                        "Ref": "PipelineUpdatePipelineSelfMutationRole57E559E8"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.Policy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.Role",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "SecurityGroup": {
+                        "id": "SecurityGroup",
+                        "path": "PipelineStack/Pipeline/UpdatePipeline/SelfMutation/SecurityGroup",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "PipelineStack/Pipeline/UpdatePipeline/SelfMutation/SecurityGroup/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                              "aws:cdk:cloudformation:props": {
+                                "groupDescription": "Automatic generated security group for CodeBuild PipelineStackPipelineUpdatePipelineSelfMutationE51045FC",
+                                "securityGroupEgress": [
+                                  {
+                                    "cidrIp": "0.0.0.0/0",
+                                    "description": "Allow all outbound traffic by default",
+                                    "ipProtocol": "-1"
+                                  }
+                                ],
+                                "vpcId": {
+                                  "Ref": "Vpc8378EB38"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CodeBuild::Project",
+                          "aws:cdk:cloudformation:props": {
+                            "artifacts": {
+                              "type": "CODEPIPELINE"
+                            },
+                            "environment": {
+                              "type": "LINUX_CONTAINER",
+                              "image": "aws/codebuild/standard:5.0",
+                              "imagePullCredentialsType": "CODEBUILD",
+                              "privilegedMode": false,
+                              "computeType": "BUILD_GENERAL1_SMALL"
+                            },
+                            "serviceRole": {
+                              "Fn::GetAtt": [
+                                "PipelineUpdatePipelineSelfMutationRole57E559E8",
+                                "Arn"
+                              ]
+                            },
+                            "source": {
+                              "type": "CODEPIPELINE",
+                              "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g aws-cdk@1\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk -a . deploy PipelineStack --require-approval=never --verbose\"\n      ]\n    }\n  }\n}"
+                            },
+                            "cache": {
+                              "type": "NO_CACHE"
+                            },
+                            "description": "Pipeline step PipelineStack/Pipeline/UpdatePipeline/SelfMutate",
+                            "encryptionKey": "alias/aws/s3",
+                            "vpcConfig": {
+                              "vpcId": {
+                                "Ref": "Vpc8378EB38"
+                              },
+                              "subnets": [
+                                {
+                                  "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                                },
+                                {
+                                  "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                                }
+                              ],
+                              "securityGroupIds": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "PipelineUpdatePipelineSelfMutationSecurityGroup94164EDC",
+                                    "GroupId"
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-codebuild.CfnProject",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "PolicyDocument": {
+                        "id": "PolicyDocument",
+                        "path": "PipelineStack/Pipeline/UpdatePipeline/SelfMutation/PolicyDocument",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "PipelineStack/Pipeline/UpdatePipeline/SelfMutation/PolicyDocument/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "ec2:CreateNetworkInterface",
+                                        "ec2:DeleteNetworkInterface",
+                                        "ec2:DescribeDhcpOptions",
+                                        "ec2:DescribeNetworkInterfaces",
+                                        "ec2:DescribeSecurityGroups",
+                                        "ec2:DescribeSubnets",
+                                        "ec2:DescribeVpcs"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "PipelineUpdatePipelineSelfMutationPolicyDocumentD327DC74",
+                                "roles": [
+                                  {
+                                    "Ref": "PipelineUpdatePipelineSelfMutationRole57E559E8"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-codebuild.PipelineProject",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
+                }
+              },
+              "Assets": {
+                "id": "Assets",
+                "path": "PipelineStack/Pipeline/Assets",
+                "children": {
+                  "FileRole": {
+                    "id": "FileRole",
+                    "path": "PipelineStack/Pipeline/Assets/FileRole",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "PipelineStack/Pipeline/Assets/FileRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "AWS": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":iam::",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":root"
+                                        ]
+                                      ]
+                                    },
+                                    "Service": "codebuild.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "PipelineStack/Pipeline/Assets/FileRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "PipelineStack/Pipeline/Assets/FileRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "logs:CreateLogGroup",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":logs:",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            },
+                                            ":",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            ":log-group:/aws/codebuild/*"
+                                          ]
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "Action": [
+                                        "codebuild:BatchPutCodeCoverages",
+                                        "codebuild:BatchPutTestCases",
+                                        "codebuild:CreateReport",
+                                        "codebuild:CreateReportGroup",
+                                        "codebuild:UpdateReport"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":codebuild:",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            },
+                                            ":",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            ":report-group/*"
+                                          ]
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "Action": [
+                                        "codebuild:BatchGetBuilds",
+                                        "codebuild:StartBuild",
+                                        "codebuild:StopBuild"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    },
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::Sub": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+                                      }
+                                    },
+                                    {
+                                      "Action": "ec2:CreateNetworkInterfacePermission",
+                                      "Condition": {
+                                        "StringEquals": {
+                                          "ec2:Subnet": [
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  "arn:",
+                                                  {
+                                                    "Ref": "AWS::Partition"
+                                                  },
+                                                  ":ec2:",
+                                                  {
+                                                    "Ref": "AWS::Region"
+                                                  },
+                                                  ":",
+                                                  {
+                                                    "Ref": "AWS::AccountId"
+                                                  },
+                                                  ":subnet/",
+                                                  {
+                                                    "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                                                  }
+                                                ]
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  "arn:",
+                                                  {
+                                                    "Ref": "AWS::Partition"
+                                                  },
+                                                  ":ec2:",
+                                                  {
+                                                    "Ref": "AWS::Region"
+                                                  },
+                                                  ":",
+                                                  {
+                                                    "Ref": "AWS::AccountId"
+                                                  },
+                                                  ":subnet/",
+                                                  {
+                                                    "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                                                  }
+                                                ]
+                                              ]
+                                            }
+                                          ],
+                                          "ec2:AuthorizedService": "codebuild.amazonaws.com"
+                                        }
+                                      },
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":ec2:",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            },
+                                            ":",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            ":network-interface/*"
+                                          ]
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "Action": [
+                                        "s3:GetBucket*",
+                                        "s3:GetObject*",
+                                        "s3:List*"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "PipelineArtifactsBucketAEA9A052",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "PipelineArtifactsBucketAEA9A052",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              "/*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "PipelineAssetsFileRoleDefaultPolicy14DB8755",
+                                "roles": [
+                                  {
+                                    "Ref": "PipelineAssetsFileRole59943A77"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "FileAsset1": {
+                    "id": "FileAsset1",
+                    "path": "PipelineStack/Pipeline/Assets/FileAsset1",
+                    "children": {
+                      "SecurityGroup": {
+                        "id": "SecurityGroup",
+                        "path": "PipelineStack/Pipeline/Assets/FileAsset1/SecurityGroup",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "PipelineStack/Pipeline/Assets/FileAsset1/SecurityGroup/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                              "aws:cdk:cloudformation:props": {
+                                "groupDescription": "Automatic generated security group for CodeBuild PipelineStackPipelineAssetsFileAsset10191BEFB",
+                                "securityGroupEgress": [
+                                  {
+                                    "cidrIp": "0.0.0.0/0",
+                                    "description": "Allow all outbound traffic by default",
+                                    "ipProtocol": "-1"
+                                  }
+                                ],
+                                "vpcId": {
+                                  "Ref": "Vpc8378EB38"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "PipelineStack/Pipeline/Assets/FileAsset1/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CodeBuild::Project",
+                          "aws:cdk:cloudformation:props": {
+                            "artifacts": {
+                              "type": "CODEPIPELINE"
+                            },
+                            "environment": {
+                              "type": "LINUX_CONTAINER",
+                              "image": "aws/codebuild/standard:5.0",
+                              "imagePullCredentialsType": "CODEBUILD",
+                              "privilegedMode": false,
+                              "computeType": "BUILD_GENERAL1_SMALL"
+                            },
+                            "serviceRole": {
+                              "Fn::GetAtt": [
+                                "PipelineAssetsFileRole59943A77",
+                                "Arn"
+                              ]
+                            },
+                            "source": {
+                              "type": "CODEPIPELINE",
+                              "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g cdk-assets@1\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk-assets --path \\\"assembly-PipelineStack-Beta/PipelineStackBetaStack1E6541489.assets.json\\\" --verbose publish \\\"8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5:current_account-current_region\\\"\"\n      ]\n    }\n  }\n}"
+                            },
+                            "cache": {
+                              "type": "NO_CACHE"
+                            },
+                            "description": "Pipeline step PipelineStack/Pipeline/Assets/FileAsset1",
+                            "encryptionKey": "alias/aws/s3",
+                            "vpcConfig": {
+                              "vpcId": {
+                                "Ref": "Vpc8378EB38"
+                              },
+                              "subnets": [
+                                {
+                                  "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                                },
+                                {
+                                  "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                                }
+                              ],
+                              "securityGroupIds": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "PipelineAssetsFileAsset1SecurityGroupF04F1AD4",
+                                    "GroupId"
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-codebuild.CfnProject",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "PolicyDocument": {
+                        "id": "PolicyDocument",
+                        "path": "PipelineStack/Pipeline/Assets/FileAsset1/PolicyDocument",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "PipelineStack/Pipeline/Assets/FileAsset1/PolicyDocument/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "ec2:CreateNetworkInterface",
+                                        "ec2:DeleteNetworkInterface",
+                                        "ec2:DescribeDhcpOptions",
+                                        "ec2:DescribeNetworkInterfaces",
+                                        "ec2:DescribeSecurityGroups",
+                                        "ec2:DescribeSubnets",
+                                        "ec2:DescribeVpcs"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "PipelineAssetsFileAsset1PolicyDocument4681543E",
+                                "roles": [
+                                  {
+                                    "Ref": "PipelineAssetsFileRole59943A77"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-codebuild.PipelineProject",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "FileAsset2": {
+                    "id": "FileAsset2",
+                    "path": "PipelineStack/Pipeline/Assets/FileAsset2",
+                    "children": {
+                      "SecurityGroup": {
+                        "id": "SecurityGroup",
+                        "path": "PipelineStack/Pipeline/Assets/FileAsset2/SecurityGroup",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "PipelineStack/Pipeline/Assets/FileAsset2/SecurityGroup/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                              "aws:cdk:cloudformation:props": {
+                                "groupDescription": "Automatic generated security group for CodeBuild PipelineStackPipelineAssetsFileAsset24DB856A2",
+                                "securityGroupEgress": [
+                                  {
+                                    "cidrIp": "0.0.0.0/0",
+                                    "description": "Allow all outbound traffic by default",
+                                    "ipProtocol": "-1"
+                                  }
+                                ],
+                                "vpcId": {
+                                  "Ref": "Vpc8378EB38"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "PipelineStack/Pipeline/Assets/FileAsset2/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CodeBuild::Project",
+                          "aws:cdk:cloudformation:props": {
+                            "artifacts": {
+                              "type": "CODEPIPELINE"
+                            },
+                            "environment": {
+                              "type": "LINUX_CONTAINER",
+                              "image": "aws/codebuild/standard:5.0",
+                              "imagePullCredentialsType": "CODEBUILD",
+                              "privilegedMode": false,
+                              "computeType": "BUILD_GENERAL1_SMALL"
+                            },
+                            "serviceRole": {
+                              "Fn::GetAtt": [
+                                "PipelineAssetsFileRole59943A77",
+                                "Arn"
+                              ]
+                            },
+                            "source": {
+                              "type": "CODEPIPELINE",
+                              "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g cdk-assets@1\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk-assets --path \\\"assembly-PipelineStack-Beta/PipelineStackBetaStack1E6541489.assets.json\\\" --verbose publish \\\"ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e:current_account-current_region\\\"\"\n      ]\n    }\n  }\n}"
+                            },
+                            "cache": {
+                              "type": "NO_CACHE"
+                            },
+                            "description": "Pipeline step PipelineStack/Pipeline/Assets/FileAsset2",
+                            "encryptionKey": "alias/aws/s3",
+                            "vpcConfig": {
+                              "vpcId": {
+                                "Ref": "Vpc8378EB38"
+                              },
+                              "subnets": [
+                                {
+                                  "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                                },
+                                {
+                                  "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                                }
+                              ],
+                              "securityGroupIds": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "PipelineAssetsFileAsset2SecurityGroupA400C1A5",
+                                    "GroupId"
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-codebuild.CfnProject",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-codebuild.PipelineProject",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/pipelines.CodePipeline",
+              "version": "0.0.0"
+            }
+          },
+          "Beta": {
+            "id": "Beta",
+            "path": "PipelineStack/Beta",
+            "children": {
+              "Stack1": {
+                "id": "Stack1",
+                "path": "PipelineStack/Beta/Stack1",
+                "children": {
+                  "Asset": {
+                    "id": "Asset",
+                    "path": "PipelineStack/Beta/Stack1/Asset",
+                    "children": {
+                      "Stage": {
+                        "id": "Stage",
+                        "path": "PipelineStack/Beta/Stack1/Asset/Stage",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssetBucket": {
+                        "id": "AssetBucket",
+                        "path": "PipelineStack/Beta/Stack1/Asset/AssetBucket",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-s3.BucketBase",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Asset2": {
+                    "id": "Asset2",
+                    "path": "PipelineStack/Beta/Stack1/Asset2",
+                    "children": {
+                      "Stage": {
+                        "id": "Stage",
+                        "path": "PipelineStack/Beta/Stack1/Asset2/Stage",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssetBucket": {
+                        "id": "AssetBucket",
+                        "path": "PipelineStack/Beta/Stack1/Asset2/AssetBucket",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-s3.BucketBase",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "OtherQueue": {
+                    "id": "OtherQueue",
+                    "path": "PipelineStack/Beta/Stack1/OtherQueue",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "PipelineStack/Beta/Stack1/OtherQueue/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                          "aws:cdk:cloudformation:props": {}
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-sqs.CfnQueue",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sqs.Queue",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "PipelineStack/Beta/Stack1/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "PipelineStack/Beta/Stack1/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Stage",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

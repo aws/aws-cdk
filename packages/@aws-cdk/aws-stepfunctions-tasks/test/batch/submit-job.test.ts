@@ -169,6 +169,33 @@ test('supports tokens', () => {
   });
 });
 
+test('container overrides are tokens', () => {
+  // WHEN
+  const task = new BatchSubmitJob(stack, 'Task', {
+    jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
+    jobName: 'JobName',
+    jobQueueArn: batchJobQueue.jobQueueArn,
+    containerOverrides: {
+      memory: cdk.Size.mebibytes(sfn.JsonPath.numberAt('$.asdf')),
+    },
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':states:::batch:submitJob.sync']] },
+    End: true,
+    Parameters: {
+      JobDefinition: { Ref: 'JobDefinition24FFE3ED' },
+      JobName: 'JobName',
+      JobQueue: { Ref: 'JobQueueEE3AD499' },
+      ContainerOverrides: {
+        ResourceRequirements: [{ 'Type': 'MEMORY', 'Value.$': '$.asdf' }],
+      },
+    },
+  });
+});
+
 test('supports passing task input into payload', () => {
   // WHEN
   const task = new BatchSubmitJob(stack, 'Task', {

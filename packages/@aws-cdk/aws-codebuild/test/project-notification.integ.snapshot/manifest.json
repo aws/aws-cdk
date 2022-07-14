@@ -1,0 +1,58 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codebuild-project-vpc": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codebuild-project-vpc.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-codebuild-project-vpc/MyProject/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectRole9BBE5233"
+          }
+        ],
+        "/aws-cdk-codebuild-project-vpc/MyProject/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectRoleDefaultPolicyB19B7C29"
+          }
+        ],
+        "/aws-cdk-codebuild-project-vpc/MyProject/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProject39F7B0AE"
+          }
+        ],
+        "/aws-cdk-codebuild-project-vpc/MyProject/NotifyOnBuildSucceeded/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectNotifyOnBuildSucceeded225C467F"
+          }
+        ],
+        "/aws-cdk-codebuild-project-vpc/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434"
+          }
+        ],
+        "/aws-cdk-codebuild-project-vpc/MyTopic/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopicPolicy12A5EC17"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codebuild-project-vpc"
+    }
+  }
+}

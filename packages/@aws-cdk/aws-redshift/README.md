@@ -60,24 +60,6 @@ The endpoint to access your database cluster will be available as the `.clusterE
 cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
 
-## Rotating credentials
-
-When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
-
-```ts fixture=cluster
-cluster.addRotationSingleUser(); // Will rotate automatically after 30 days
-```
-
-The multi user rotation scheme is also available:
-
-```ts fixture=cluster
-import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-
-cluster.addRotationMultiUser('MyUser', {
-  secret: secretsmanager.Secret.fromSecretNameV2(this, 'Imported Secret', 'my-secret'),
-});
-```
-
 ## Database Resources
 
 This module allows for the creation of non-CloudFormation database resources such as users
@@ -172,7 +154,7 @@ The table can be configured to have distStyle attribute and a distKey column:
 ```ts fixture=cluster
 new Table(this, 'Table', {
   tableColumns: [
-    { name: 'col1', dataType: 'varchar(4)', distKey: true }, 
+    { name: 'col1', dataType: 'varchar(4)', distKey: true },
     { name: 'col2', dataType: 'float' },
   ],
   cluster: cluster,
@@ -186,7 +168,7 @@ The table can also be configured to have sortStyle attribute and sortKey columns
 ```ts fixture=cluster
 new Table(this, 'Table', {
   tableColumns: [
-    { name: 'col1', dataType: 'varchar(4)', sortKey: true }, 
+    { name: 'col1', dataType: 'varchar(4)', sortKey: true },
     { name: 'col2', dataType: 'float', sortKey: true },
   ],
   cluster: cluster,
@@ -248,7 +230,7 @@ const tableName = 'mytable'
 
 const user = User.fromUserAttributes(this, 'User', {
   username: username,
-  password: SecretValue.plainText('NOT_FOR_PRODUCTION'),
+  password: SecretValue.unsafePlainText('NOT_FOR_PRODUCTION'),
   cluster: cluster,
   databaseName: databaseName,
 });
@@ -273,3 +255,24 @@ call to `grant` but the user does not have the specified permission.
 
 Note that this does not occur when duplicate privileges are granted within the same
 application, as such privileges are de-duplicated before any SQL query is submitted.
+
+## Rotating credentials
+
+When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
+
+```ts fixture=cluster
+cluster.addRotationSingleUser(); // Will rotate automatically after 30 days
+```
+
+The multi user rotation scheme is also available:
+
+```ts fixture=cluster
+
+const user = new User(this, 'User', {
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+cluster.addRotationMultiUser('MultiUserRotation', {
+  secret: user.secret,
+});
+```

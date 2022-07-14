@@ -815,7 +815,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
       props.comment && props.comment.length > 128
-        ? `${props.comment.substr(0, 128 - 3)}...`
+        ? `${props.comment.slice(0, 128 - 3)}...`
         : props.comment;
 
     let distributionConfig: CfnDistribution.DistributionConfigProperty = {
@@ -1107,7 +1107,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         }));
 
         s3OriginConfig = {
-          originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentity.originAccessIdentityName}`,
+          originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentity.originAccessIdentityId}`,
         };
       } else {
         s3OriginConfig = {};

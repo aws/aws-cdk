@@ -3,10 +3,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Node, IConstruct } from 'constructs';
 import { FileAssetSource, FileAssetPackaging } from '../assets';
-import { ConstructNode, IConstruct, ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { Token } from '../token';
+import { ISynthesisSession } from './types';
 
 /**
  * Shared logic of writing stack artifact to the Cloud Assembly
@@ -84,9 +85,9 @@ function collectStackMetadata(stack: Stack) {
       return;
     }
 
-    if (node.node.metadataEntry.length > 0) {
+    if (node.node.metadata.length > 0) {
       // Make the path absolute
-      output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadataEntry.map(md => stack.resolve(md) as cxschema.MetadataEntry);
+      output[Node.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxschema.MetadataEntry);
     }
 
     for (const child of node.node.children) {
@@ -95,7 +96,7 @@ function collectStackMetadata(stack: Stack) {
   }
 
   function findParentStack(node: IConstruct): Stack | undefined {
-    if (node instanceof Stack && node.nestedStackParent === undefined) {
+    if (Stack.isStack(node) && node.nestedStackParent === undefined) {
       return node;
     }
 

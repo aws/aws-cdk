@@ -1,5 +1,5 @@
 {
-  "$version": "60.0.0",
+  "$version": "79.0.0",
   "PropertyTypes": {
     "AWS::ECS::CapacityProvider.AutoScalingGroupProvider": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-capacityprovider-autoscalinggroupprovider.html",
@@ -337,13 +337,13 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-placementconstraint.html#cfn-ecs-service-placementconstraint-expression",
           "PrimitiveType": "String",
           "Required": false,
-          "UpdateType": "Immutable"
+          "UpdateType": "Mutable"
         },
         "Type": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-placementconstraint.html#cfn-ecs-service-placementconstraint-type",
           "PrimitiveType": "String",
           "Required": true,
-          "UpdateType": "Immutable"
+          "UpdateType": "Mutable"
         }
       }
     },
@@ -354,13 +354,13 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-placementstrategy.html#cfn-ecs-service-placementstrategy-field",
           "PrimitiveType": "String",
           "Required": false,
-          "UpdateType": "Immutable"
+          "UpdateType": "Mutable"
         },
         "Type": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-placementstrategy.html#cfn-ecs-service-placementstrategy-type",
           "PrimitiveType": "String",
           "Required": true,
-          "UpdateType": "Immutable"
+          "UpdateType": "Mutable"
         }
       }
     },
@@ -1603,14 +1603,14 @@
           "ItemType": "PlacementConstraint",
           "Required": false,
           "Type": "List",
-          "UpdateType": "Immutable"
+          "UpdateType": "Mutable"
         },
         "PlacementStrategies": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html#cfn-ecs-service-placementstrategies",
           "ItemType": "PlacementStrategy",
           "Required": false,
           "Type": "List",
-          "UpdateType": "Immutable"
+          "UpdateType": "Mutable"
         },
         "PlatformVersion": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html#cfn-ecs-service-platformversion",

@@ -1,0 +1,294 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-integ-lambda-nodejs": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-lambda-nodejs.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-integ-lambda-nodejs": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.be9e8d35f169108648824e0d6ca3f0fef9cff31f25be87e928a8b2f337d2aa8e",
+              "id": "be9e8d35f169108648824e0d6ca3f0fef9cff31f25be87e928a8b2f337d2aa8e",
+              "packaging": "zip",
+              "sourceHash": "be9e8d35f169108648824e0d6ca3f0fef9cff31f25be87e928a8b2f337d2aa8e",
+              "s3BucketParameter": "AssetParametersbe9e8d35f169108648824e0d6ca3f0fef9cff31f25be87e928a8b2f337d2aa8eS3Bucket72C21CDF",
+              "s3KeyParameter": "AssetParametersbe9e8d35f169108648824e0d6ca3f0fef9cff31f25be87e928a8b2f337d2aa8eS3VersionKey4E794F44",
+              "artifactHashParameter": "AssetParametersbe9e8d35f169108648824e0d6ca3f0fef9cff31f25be87e928a8b2f337d2aa8eArtifactHash23622082"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.d22b6fa18bfa45ff5b705ee6ce63c64fd45b29b019e2eef37d9f2fce07465244",
+              "id": "d22b6fa18bfa45ff5b705ee6ce63c64fd45b29b019e2eef37d9f2fce07465244",
+              "packaging": "zip",
+              "sourceHash": "d22b6fa18bfa45ff5b705ee6ce63c64fd45b29b019e2eef37d9f2fce07465244",
+              "s3BucketParameter": "AssetParametersd22b6fa18bfa45ff5b705ee6ce63c64fd45b29b019e2eef37d9f2fce07465244S3Bucket9F8A1F56",
+              "s3KeyParameter": "AssetParametersd22b6fa18bfa45ff5b705ee6ce63c64fd45b29b019e2eef37d9f2fce07465244S3VersionKeyE4C97074",
+              "artifactHashParameter": "AssetParametersd22b6fa18bfa45ff5b705ee6ce63c64fd45b29b019e2eef37d9f2fce07465244ArtifactHash1C4D397F"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.adc4e66a6895c2e3d4239cc1ccc920834a1c721c5c4869189439b51137c5716a",
+              "id": "adc4e66a6895c2e3d4239cc1ccc920834a1c721c5c4869189439b51137c5716a",
+              "packaging": "zip",
+              "sourceHash": "adc4e66a6895c2e3d4239cc1ccc920834a1c721c5c4869189439b51137c5716a",
+              "s3BucketParameter": "AssetParametersadc4e66a6895c2e3d4239cc1ccc920834a1c721c5c4869189439b51137c5716aS3BucketAAABBF47",
+              "s3KeyParameter": "AssetParametersadc4e66a6895c2e3d4239cc1ccc920834a1c721c5c4869189439b51137c5716aS3VersionKeyB4C3F635",
+              "artifactHashParameter": "AssetParametersadc4e66a6895c2e3d4239cc1ccc920834a1c721c5c4869189439b51137c5716aArtifactHashC836B9E8"
+            }
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/ts-handler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tshandlerServiceRole8876B8E7"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/ts-handler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tshandler4E1C6929"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/AssetParameters/be9e8d35f169108648824e0d6ca3f0fef9cff31f25be87e928a8b2f337d2aa8e/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersbe9e8d35f169108648824e0d6ca3f0fef9cff31f25be87e928a8b2f337d2aa8eS3Bucket72C21CDF"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/AssetParameters/be9e8d35f169108648824e0d6ca3f0fef9cff31f25be87e928a8b2f337d2aa8e/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersbe9e8d35f169108648824e0d6ca3f0fef9cff31f25be87e928a8b2f337d2aa8eS3VersionKey4E794F44"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/AssetParameters/be9e8d35f169108648824e0d6ca3f0fef9cff31f25be87e928a8b2f337d2aa8e/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersbe9e8d35f169108648824e0d6ca3f0fef9cff31f25be87e928a8b2f337d2aa8eArtifactHash23622082"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/AssetParameters/d22b6fa18bfa45ff5b705ee6ce63c64fd45b29b019e2eef37d9f2fce07465244/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersd22b6fa18bfa45ff5b705ee6ce63c64fd45b29b019e2eef37d9f2fce07465244S3Bucket9F8A1F56"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/AssetParameters/d22b6fa18bfa45ff5b705ee6ce63c64fd45b29b019e2eef37d9f2fce07465244/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersd22b6fa18bfa45ff5b705ee6ce63c64fd45b29b019e2eef37d9f2fce07465244S3VersionKeyE4C97074"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/AssetParameters/d22b6fa18bfa45ff5b705ee6ce63c64fd45b29b019e2eef37d9f2fce07465244/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersd22b6fa18bfa45ff5b705ee6ce63c64fd45b29b019e2eef37d9f2fce07465244ArtifactHash1C4D397F"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/AssetParameters/adc4e66a6895c2e3d4239cc1ccc920834a1c721c5c4869189439b51137c5716a/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersadc4e66a6895c2e3d4239cc1ccc920834a1c721c5c4869189439b51137c5716aS3BucketAAABBF47"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/AssetParameters/adc4e66a6895c2e3d4239cc1ccc920834a1c721c5c4869189439b51137c5716a/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersadc4e66a6895c2e3d4239cc1ccc920834a1c721c5c4869189439b51137c5716aS3VersionKeyB4C3F635"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/AssetParameters/adc4e66a6895c2e3d4239cc1ccc920834a1c721c5c4869189439b51137c5716a/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersadc4e66a6895c2e3d4239cc1ccc920834a1c721c5c4869189439b51137c5716aArtifactHashC836B9E8"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/js-handler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "jshandlerServiceRole781AF366"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/js-handler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "jshandlerD8909241"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2EIP3C605A87"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2NATGateway9182C01D"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/ts-handler-vpc/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tshandlervpcServiceRoleF6D326A3"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/ts-handler-vpc/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tshandlervpcSecurityGroup587CC215"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/ts-handler-vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tshandlervpcA502E26A"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-lambda-nodejs"
+    }
+  }
+}

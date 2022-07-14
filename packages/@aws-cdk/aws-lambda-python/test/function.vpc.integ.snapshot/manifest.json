@@ -1,0 +1,144 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-integ-lambda-python-vpc": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-lambda-python-vpc.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-integ-lambda-python-vpc": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994",
+              "id": "74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994",
+              "packaging": "zip",
+              "sourceHash": "74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994",
+              "s3BucketParameter": "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994S3Bucket4B2FECC5",
+              "s3KeyParameter": "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994S3VersionKey38A78B56",
+              "artifactHashParameter": "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994ArtifactHashF95C5182"
+            }
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpc9455A260"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcingressSubnet1Subnet82F0259C"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcingressSubnet1RouteTableD6322DD5"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcingressSubnet1RouteTableAssociation12FE9C06"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcingressSubnet1DefaultRoute6FCDFDDF"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcingressSubnet2Subnet56945106"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcingressSubnet2RouteTable2112B53A"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcingressSubnet2RouteTableAssociation08B3BE06"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcingressSubnet2DefaultRouteBF3C1EC8"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcIGW24C0BBAE"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcVPCGWD483DB64"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_handler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerServiceRole77891068"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_handler/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerSecurityGroupF566A239"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_handler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerD202FA8E"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/AssetParameters/74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994S3Bucket4B2FECC5"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/AssetParameters/74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994S3VersionKey38A78B56"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/AssetParameters/74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994ArtifactHashF95C5182"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/FunctionArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FunctionArn"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-lambda-python-vpc"
+    }
+  }
+}

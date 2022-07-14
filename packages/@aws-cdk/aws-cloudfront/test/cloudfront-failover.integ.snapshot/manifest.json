@@ -1,0 +1,46 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-cloudfront-failover": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-cloudfront-failover.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-cloudfront-failover/bucket1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "bucket1D4C77784"
+          }
+        ],
+        "/integ-cloudfront-failover/bucket2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "bucket231DE1803"
+          }
+        ],
+        "/integ-cloudfront-failover/Distribution/CFDistribution": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DistributionCFDistribution882A7313"
+          }
+        ],
+        "/integ-cloudfront-failover/DistributionDomainName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DistributionDomainName"
+          }
+        ]
+      },
+      "displayName": "integ-cloudfront-failover"
+    }
+  }
+}

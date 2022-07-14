@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-stepfunctions-tasks/test/lambda/integ.run-lambda": {
+      "stacks": [
+        "aws-stepfunctions-tasks-run-lambda-integ"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

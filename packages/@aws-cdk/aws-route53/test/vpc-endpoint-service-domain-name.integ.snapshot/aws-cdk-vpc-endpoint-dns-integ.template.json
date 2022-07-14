@@ -1,0 +1,873 @@
+{
+ "Resources": {
+  "VPCB9E5F0B4": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-endpoint-dns-integ/VPC"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1SubnetB4246D30": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-endpoint-dns-integ/VPC/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1RouteTableFEE4B781": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-endpoint-dns-integ/VPC/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    }
+   }
+  },
+  "VPCPublicSubnet1DefaultRoute91CEF279": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    }
+   },
+   "DependsOn": [
+    "VPCVPCGW99B986DC"
+   ]
+  },
+  "VPCPublicSubnet1EIP6AD938E8": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-endpoint-dns-integ/VPC/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1NATGatewayE0556630": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VPCPublicSubnet1EIP6AD938E8",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-endpoint-dns-integ/VPC/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet2Subnet74179F39": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-endpoint-dns-integ/VPC/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet2RouteTable6F1A15F1": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-endpoint-dns-integ/VPC/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet2RouteTableAssociation5A808732": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
+    }
+   }
+  },
+  "VPCPublicSubnet2DefaultRouteB7481BBA": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    }
+   },
+   "DependsOn": [
+    "VPCVPCGW99B986DC"
+   ]
+  },
+  "VPCPublicSubnet2EIP4947BC00": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-endpoint-dns-integ/VPC/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet2NATGateway3C070193": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VPCPublicSubnet2EIP4947BC00",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-endpoint-dns-integ/VPC/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet1Subnet8BCA10E0": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-endpoint-dns-integ/VPC/PrivateSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet1RouteTableBE8A6027": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-endpoint-dns-integ/VPC/PrivateSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet1RouteTableAssociation347902D1": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    "SubnetId": {
+     "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+    }
+   }
+  },
+  "VPCPrivateSubnet1DefaultRouteAE1D6490": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+    }
+   }
+  },
+  "VPCPrivateSubnet2SubnetCFCDAA7A": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-endpoint-dns-integ/VPC/PrivateSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet2RouteTable0A19E10E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-endpoint-dns-integ/VPC/PrivateSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+    },
+    "SubnetId": {
+     "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+    }
+   }
+  },
+  "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VPCPublicSubnet2NATGateway3C070193"
+    }
+   }
+  },
+  "VPCIGWB7E252D3": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-endpoint-dns-integ/VPC"
+     }
+    ]
+   }
+  },
+  "VPCVPCGW99B986DC": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "InternetGatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    }
+   }
+  },
+  "mylb": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "Type": "network",
+    "Name": "mylb",
+    "Scheme": "internal",
+    "Subnets": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     }
+    ]
+   }
+  },
+  "VPCES3AE7D565": {
+   "Type": "AWS::EC2::VPCEndpointService",
+   "Properties": {
+    "AcceptanceRequired": true,
+    "NetworkLoadBalancerArns": [
+     {
+      "Ref": "mylb"
+     }
+    ]
+   }
+  },
+  "PHZ45BE903D": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "aws-cdk.dev."
+   }
+  },
+  "EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ec2:ModifyVpcEndpointServiceConfiguration",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         ":",
+         [
+          "arn",
+          {
+           "Ref": "AWS::Partition"
+          },
+          "ec2",
+          {
+           "Ref": "AWS::Region"
+          },
+          {
+           "Ref": "AWS::AccountId"
+          },
+          {
+           "Fn::Join": [
+            "/",
+            [
+             "vpc-endpoint-service",
+             {
+              "Ref": "VPCES3AE7D565"
+             }
+            ]
+           ]
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VPCES3AE7D565"
+   ]
+  },
+  "EndpointDomainEnableDnsDACBF5A6": {
+   "Type": "Custom::AWS",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "Arn"
+     ]
+    },
+    "Create": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"EC2\",\"action\":\"modifyVpcEndpointServiceConfiguration\",\"parameters\":{\"ServiceId\":\"",
+       {
+        "Ref": "VPCES3AE7D565"
+       },
+       "\",\"PrivateDnsName\":\"my-stuff.aws-cdk.dev\"},\"physicalResourceId\":{\"id\":\"awscdkvpcendpointdnsintegVPCES2D7BC258\"}}"
+      ]
+     ]
+    },
+    "Update": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"EC2\",\"action\":\"modifyVpcEndpointServiceConfiguration\",\"parameters\":{\"ServiceId\":\"",
+       {
+        "Ref": "VPCES3AE7D565"
+       },
+       "\",\"PrivateDnsName\":\"my-stuff.aws-cdk.dev\"},\"physicalResourceId\":{\"id\":\"awscdkvpcendpointdnsintegVPCES2D7BC258\"}}"
+      ]
+     ]
+    },
+    "Delete": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"EC2\",\"action\":\"modifyVpcEndpointServiceConfiguration\",\"parameters\":{\"ServiceId\":\"",
+       {
+        "Ref": "VPCES3AE7D565"
+       },
+       "\",\"RemovePrivateDnsName\":true}}"
+      ]
+     ]
+    },
+    "InstallLatestAwsSdk": true
+   },
+   "DependsOn": [
+    "EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB",
+    "VPCES3AE7D565"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EndpointDomainGetNamesCustomResourcePolicy141775B1": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ec2:DescribeVpcEndpointServiceConfigurations",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EndpointDomainGetNamesCustomResourcePolicy141775B1",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB",
+    "EndpointDomainEnableDnsDACBF5A6",
+    "VPCES3AE7D565"
+   ]
+  },
+  "EndpointDomainGetNames9E697ED2": {
+   "Type": "Custom::AWS",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "Arn"
+     ]
+    },
+    "Create": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"EC2\",\"action\":\"describeVpcEndpointServiceConfigurations\",\"parameters\":{\"ServiceIds\":[\"",
+       {
+        "Ref": "VPCES3AE7D565"
+       },
+       "\"]},\"physicalResourceId\":{\"id\":\"0b26ca4969ad06c279e229b1b55b9bc2\"}}"
+      ]
+     ]
+    },
+    "Update": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"EC2\",\"action\":\"describeVpcEndpointServiceConfigurations\",\"parameters\":{\"ServiceIds\":[\"",
+       {
+        "Ref": "VPCES3AE7D565"
+       },
+       "\"]},\"physicalResourceId\":{\"id\":\"0b26ca4969ad06c279e229b1b55b9bc2\"}}"
+      ]
+     ]
+    },
+    "InstallLatestAwsSdk": true
+   },
+   "DependsOn": [
+    "EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB",
+    "EndpointDomainEnableDnsDACBF5A6",
+    "EndpointDomainGetNamesCustomResourcePolicy141775B1",
+    "VPCES3AE7D565"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EndpointDomainDnsVerificationRecord66623BDA": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Fn::GetAtt": [
+         "EndpointDomainGetNames9E697ED2",
+         "ServiceConfigurations.0.PrivateDnsNameConfiguration.Name"
+        ]
+       },
+       ".aws-cdk.dev."
+      ]
+     ]
+    },
+    "Type": "TXT",
+    "HostedZoneId": {
+     "Ref": "PHZ45BE903D"
+    },
+    "ResourceRecords": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::GetAtt": [
+          "EndpointDomainGetNames9E697ED2",
+          "ServiceConfigurations.0.PrivateDnsNameConfiguration.Value"
+         ]
+        },
+        "\""
+       ]
+      ]
+     }
+    ],
+    "TTL": "1800"
+   },
+   "DependsOn": [
+    "VPCES3AE7D565"
+   ]
+  },
+  "EndpointDomainStartVerificationCustomResourcePolicyD2BAC9A6": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ec2:StartVpcEndpointServicePrivateDnsVerification",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         ":",
+         [
+          "arn",
+          {
+           "Ref": "AWS::Partition"
+          },
+          "ec2",
+          {
+           "Ref": "AWS::Region"
+          },
+          {
+           "Ref": "AWS::AccountId"
+          },
+          {
+           "Fn::Join": [
+            "/",
+            [
+             "vpc-endpoint-service",
+             {
+              "Ref": "VPCES3AE7D565"
+             }
+            ]
+           ]
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EndpointDomainStartVerificationCustomResourcePolicyD2BAC9A6",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "EndpointDomainDnsVerificationRecord66623BDA",
+    "VPCES3AE7D565"
+   ]
+  },
+  "EndpointDomainStartVerification05E2F7A3": {
+   "Type": "Custom::AWS",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "Arn"
+     ]
+    },
+    "Create": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"EC2\",\"action\":\"startVpcEndpointServicePrivateDnsVerification\",\"parameters\":{\"ServiceId\":\"",
+       {
+        "Ref": "VPCES3AE7D565"
+       },
+       "\"},\"physicalResourceId\":{\"id\":\"",
+       {
+        "Fn::Join": [
+         ":",
+         [
+          {
+           "Fn::GetAtt": [
+            "EndpointDomainGetNames9E697ED2",
+            "ServiceConfigurations.0.PrivateDnsNameConfiguration.Name"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "EndpointDomainGetNames9E697ED2",
+            "ServiceConfigurations.0.PrivateDnsNameConfiguration.Value"
+           ]
+          }
+         ]
+        ]
+       },
+       "\"}}"
+      ]
+     ]
+    },
+    "Update": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"EC2\",\"action\":\"startVpcEndpointServicePrivateDnsVerification\",\"parameters\":{\"ServiceId\":\"",
+       {
+        "Ref": "VPCES3AE7D565"
+       },
+       "\"},\"physicalResourceId\":{\"id\":\"",
+       {
+        "Fn::Join": [
+         ":",
+         [
+          {
+           "Fn::GetAtt": [
+            "EndpointDomainGetNames9E697ED2",
+            "ServiceConfigurations.0.PrivateDnsNameConfiguration.Name"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "EndpointDomainGetNames9E697ED2",
+            "ServiceConfigurations.0.PrivateDnsNameConfiguration.Value"
+           ]
+          }
+         ]
+        ]
+       },
+       "\"}}"
+      ]
+     ]
+    },
+    "InstallLatestAwsSdk": true
+   },
+   "DependsOn": [
+    "EndpointDomainDnsVerificationRecord66623BDA",
+    "EndpointDomainStartVerificationCustomResourcePolicyD2BAC9A6",
+    "VPCES3AE7D565"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3BucketB21FB59F"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x",
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+   ]
+  }
+ },
+ "Parameters": {
+  "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3BucketB21FB59F": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90\""
+  },
+  "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90\""
+  },
+  "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90ArtifactHashC00C7285": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90\""
+  }
+ }
+}
