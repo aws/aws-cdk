@@ -162,7 +162,7 @@ export interface RecordSetOptions {
    * @default false
    */
   readonly removeDomainNamePeriodEnd?: boolean;
-  
+
   /**
    * Whether to delete the same record set in the hosted zone if it already exists.
    *
