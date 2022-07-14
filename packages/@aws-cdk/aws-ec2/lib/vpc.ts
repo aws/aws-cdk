@@ -1345,7 +1345,7 @@ export class Vpc extends VpcBase {
     this.createSubnets();
 
     const allowOutbound = this.subnetConfiguration.filter(
-      subnet => (subnet.subnetType !== SubnetType.PRIVATE_ISOLATED)).length > 0;
+      subnet => (subnet.subnetType !== SubnetType.PRIVATE_ISOLATED && subnet.subnetType !== SubnetType.ISOLATED)).length > 0;
 
     // Create an Internet Gateway and attach it if necessary
     if (allowOutbound) {
@@ -2182,7 +2182,8 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
  * They seem pointless but I see no reason to prevent it.
  */
 function determineNatGatewayCount(requestedCount: number | undefined, subnetConfig: SubnetConfiguration[], azCount: number) {
-  const hasPrivateSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PRIVATE_WITH_NAT && !c.reserved);
+  const hasPrivateSubnets = subnetConfig.some(c => (c.subnetType === SubnetType.PRIVATE_WITH_NAT
+    || c.subnetType === SubnetType.PRIVATE) && !c.reserved);
   const hasPublicSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PUBLIC);
 
   const count = requestedCount !== undefined ? Math.min(requestedCount, azCount) : (hasPrivateSubnets ? azCount : 0);
