@@ -419,6 +419,19 @@ const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
 });
 ```
 
+To grant a principal permission to run your `TaskDefinition`, you can use the `TaskDefinition.grantRun()` method:
+```ts
+declare const role: iam.IGrantable;
+const taskDef = new ecs.TaskDefinition(stack, 'TaskDef', {
+  cpu: '512',
+  memoryMiB: '512',
+  compatibility: ecs.Compatibility.EC2_AND_FARGATE,
+});
+
+// Gives role required permissions to run taskDef
+taskDef.grantRun(role);
+```
+
 ### Images
 
 Images supply the software that runs inside the container. Images can be
