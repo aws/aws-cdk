@@ -1,0 +1,162 @@
+{
+ "Resources": {
+  "AwsApiCallBatchdescribeJobDefinitions": {
+   "Type": "Custom::DeployAssert@SdkCallBatchdescribeJobDefinitions",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Batch",
+    "api": "describeJobDefinitions",
+    "parameters": {
+     "jobDefinitionName": "aws-batch-test"
+    },
+    "flattenResponse": "true",
+    "salt": "1657836599834"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallBatchdescribeJobDefinitionsAssertEqualsBatchdescribeJobDefinitions39706B7C": {
+   "Type": "Custom::DeployAssert@AssertEquals",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "actual": {
+     "Fn::GetAtt": [
+      "AwsApiCallBatchdescribeJobDefinitions",
+      "apiCallResponse.jobDefinitions.0.containerProperties.environment"
+     ]
+    },
+    "expected": "{\"$ArrayWith\":[{\"name\":\"AWS_REGION\",\"value\":\"\"}]}",
+    "salt": "1657836599835"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "batch:DescribeJobDefinitions"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs14.x",
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParametersec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3S3Bucket5F1832C4"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParametersec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3S3VersionKeyA04E23E6"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParametersec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3S3VersionKeyA04E23E6"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAssertEqualsBatchdescribeJobDefinitions": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallBatchdescribeJobDefinitionsAssertEqualsBatchdescribeJobDefinitions39706B7C",
+     "data"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "AssetParametersec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3S3Bucket5F1832C4": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3\""
+  },
+  "AssetParametersec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3S3VersionKeyA04E23E6": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3\""
+  },
+  "AssetParametersec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3ArtifactHash000AF521": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3\""
+  }
+ }
+}

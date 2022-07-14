@@ -1,0 +1,324 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.33"
+        }
+      },
+      "SampleStack-aws-batch-default-env-variables": {
+        "id": "SampleStack-aws-batch-default-env-variables",
+        "path": "SampleStack-aws-batch-default-env-variables",
+        "children": {
+          "batch": {
+            "id": "batch",
+            "path": "SampleStack-aws-batch-default-env-variables/batch",
+            "children": {
+              "Resource-Batch-Task-Definition-Role": {
+                "id": "Resource-Batch-Task-Definition-Role",
+                "path": "SampleStack-aws-batch-default-env-variables/batch/Resource-Batch-Task-Definition-Role",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.LazyRole",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource-Batch-Job-Container-Definition": {
+                "id": "Resource-Batch-Job-Container-Definition",
+                "path": "SampleStack-aws-batch-default-env-variables/batch/Resource-Batch-Job-Container-Definition",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecs.ContainerDefinition",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "SampleStack-aws-batch-default-env-variables/batch/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Batch::JobDefinition",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "container",
+                    "containerProperties": {
+                      "environment": [
+                        {
+                          "name": "AWS_REGION",
+                          "value": {
+                            "Ref": "AWS::Region"
+                          }
+                        },
+                        {
+                          "name": "AWS_ACCOUNT",
+                          "value": {
+                            "Ref": "AWS::AccountId"
+                          }
+                        }
+                      ],
+                      "image": "docker/whalesay",
+                      "privileged": false,
+                      "readonlyRootFilesystem": false,
+                      "resourceRequirements": [
+                        {
+                          "type": "VCPU",
+                          "value": "1"
+                        },
+                        {
+                          "type": "MEMORY",
+                          "value": "4"
+                        }
+                      ]
+                    },
+                    "jobDefinitionName": "aws-batch-test",
+                    "platformCapabilities": [
+                      "EC2"
+                    ],
+                    "retryStrategy": {
+                      "attempts": 1
+                    },
+                    "timeout": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-batch.CfnJobDefinition",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-batch.JobDefinition",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "IntegTest-aws-batch-default-env-variables": {
+        "id": "IntegTest-aws-batch-default-env-variables",
+        "path": "IntegTest-aws-batch-default-env-variables",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "IntegTest-aws-batch-default-env-variables/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.33"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallBatchdescribeJobDefinitions": {
+                    "id": "AwsApiCallBatchdescribeJobDefinitions",
+                    "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.33"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertEqualsBatchdescribeJobDefinitions": {
+                        "id": "AssertEqualsBatchdescribeJobDefinitions",
+                        "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions/AssertEqualsBatchdescribeJobDefinitions",
+                        "children": {
+                          "AssertionProvider": {
+                            "id": "AssertionProvider",
+                            "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions/AssertEqualsBatchdescribeJobDefinitions/AssertionProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions/AssertEqualsBatchdescribeJobDefinitions/AssertionProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.33"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Default": {
+                            "id": "Default",
+                            "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions/AssertEqualsBatchdescribeJobDefinitions/Default",
+                            "children": {
+                              "Default": {
+                                "id": "Default",
+                                "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions/AssertEqualsBatchdescribeJobDefinitions/Default/Default",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CustomResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "AssertionResults": {
+                            "id": "AssertionResults",
+                            "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions/AssertEqualsBatchdescribeJobDefinitions/AssertionResults",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnOutput",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.EqualsAssertion",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.33"
+                    }
+                  },
+                  "AssetParameters": {
+                    "id": "AssetParameters",
+                    "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/AssetParameters",
+                    "children": {
+                      "ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3": {
+                        "id": "ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3",
+                        "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/AssetParameters/ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3",
+                        "children": {
+                          "S3Bucket": {
+                            "id": "S3Bucket",
+                            "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/AssetParameters/ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3/S3Bucket",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnParameter",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "S3VersionKey": {
+                            "id": "S3VersionKey",
+                            "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/AssetParameters/ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3/S3VersionKey",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnParameter",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "ArtifactHash": {
+                            "id": "ArtifactHash",
+                            "path": "IntegTest-aws-batch-default-env-variables/DefaultTest/DeployAssert/AssetParameters/ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3/ArtifactHash",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnParameter",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.33"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.33"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

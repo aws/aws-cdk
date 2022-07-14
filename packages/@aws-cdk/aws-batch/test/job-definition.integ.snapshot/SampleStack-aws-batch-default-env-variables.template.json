@@ -1,0 +1,47 @@
+{
+ "Resources": {
+  "batchC9C7DC44": {
+   "Type": "AWS::Batch::JobDefinition",
+   "Properties": {
+    "Type": "container",
+    "ContainerProperties": {
+     "Environment": [
+      {
+       "Name": "AWS_REGION",
+       "Value": {
+        "Ref": "AWS::Region"
+       }
+      },
+      {
+       "Name": "AWS_ACCOUNT",
+       "Value": {
+        "Ref": "AWS::AccountId"
+       }
+      }
+     ],
+     "Image": "docker/whalesay",
+     "Privileged": false,
+     "ReadonlyRootFilesystem": false,
+     "ResourceRequirements": [
+      {
+       "Type": "VCPU",
+       "Value": "1"
+      },
+      {
+       "Type": "MEMORY",
+       "Value": "4"
+      }
+     ]
+    },
+    "JobDefinitionName": "aws-batch-test",
+    "PlatformCapabilities": [
+     "EC2"
+    ],
+    "RetryStrategy": {
+     "Attempts": 1
+    },
+    "Timeout": {}
+   }
+  }
+ }
+}

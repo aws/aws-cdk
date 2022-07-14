@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "IntegTest-aws-batch-default-env-variables/DefaultTest": {
+      "stacks": [
+        "SampleStack-aws-batch-default-env-variables"
+      ],
+      "assertionStack": "IntegTestawsbatchdefaultenvvariablesDefaultTestDeployAssert58502566"
+    }
+  }
+}
