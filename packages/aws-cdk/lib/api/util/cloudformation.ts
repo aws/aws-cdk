@@ -27,10 +27,12 @@ export type ResourcesToImport = CloudFormation.ResourcesToImport;
  * repeated calls to CloudFormation).
  */
 export class CloudFormationStack {
-  public static async lookup(cfn: CloudFormation, stackName: string): Promise<CloudFormationStack> {
+  public static async lookup(
+    cfn: CloudFormation, stackName: string, retrieveProcessedTemplate: boolean = false,
+  ): Promise<CloudFormationStack> {
     try {
       const response = await cfn.describeStacks({ StackName: stackName }).promise();
-      return new CloudFormationStack(cfn, stackName, response.Stacks && response.Stacks[0]);
+      return new CloudFormationStack(cfn, stackName, response.Stacks && response.Stacks[0], retrieveProcessedTemplate);
     } catch (e) {
       if (e.code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`) {
         return new CloudFormationStack(cfn, stackName, undefined);
@@ -57,7 +59,10 @@ export class CloudFormationStack {
 
   private _template: any;
 
-  protected constructor(private readonly cfn: CloudFormation, public readonly stackName: string, private readonly stack?: CloudFormation.Stack) {
+  protected constructor(
+    private readonly cfn: CloudFormation, public readonly stackName: string, private readonly stack?: CloudFormation.Stack,
+    private readonly retrieveProcessedTemplate: boolean = false,
+  ) {
   }
 
   /**
@@ -72,7 +77,10 @@ export class CloudFormationStack {
     }
 
     if (this._template === undefined) {
-      const response = await this.cfn.getTemplate({ StackName: this.stackName, TemplateStage: 'Original' }).promise();
+      const response = await this.cfn.getTemplate({
+        StackName: this.stackName,
+        TemplateStage: this.retrieveProcessedTemplate ? 'Processed' : 'Original',
+      }).promise();
       this._template = (response.TemplateBody && deserializeStructure(response.TemplateBody)) || {};
     }
     return this._template;
