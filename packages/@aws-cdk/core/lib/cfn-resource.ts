@@ -431,12 +431,25 @@ export class CfnResource extends CfnRefElement {
   }
 
   /**
+   * Deprecated
+   * @deprecated use `updatedProperties`
+   *
    * Return properties modified after initiation
    *
    * Resources that expose mutable properties should override this function to
    * collect and return the properties object for this resource.
    */
   protected get updatedProperites(): { [key: string]: any } {
+    return this._cfnProperties;
+  }
+
+  /**
+   * Return properties modified after initiation
+   *
+   * Resources that expose mutable properties should override this function to
+   * collect and return the properties object for this resource.
+   */
+  protected get updatedProperties(): { [key: string]: any } {
     return this._cfnProperties;
   }
 
