@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-lambda/test/integ.layer-version.lit": {
+    "integ.layer-version.lit": {
       "stacks": [
         "aws-cdk-layer-version-1"
       ],
