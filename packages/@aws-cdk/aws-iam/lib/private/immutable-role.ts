@@ -39,6 +39,7 @@ export class ImmutableRole extends Resource implements IRole {
     Dependable.implement(this, {
       dependencyRoots: [role],
     });
+    this.node.defaultChild = role.node.defaultChild;
   }
 
   public attachInlinePolicy(_policy: Policy): void {
