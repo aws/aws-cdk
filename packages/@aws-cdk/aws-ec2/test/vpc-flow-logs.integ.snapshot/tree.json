@@ -853,6 +853,212 @@
                   "fqn": "@aws-cdk/aws-ec2.FlowLog",
                   "version": "0.0.0"
                 }
+              },
+              "FlowLogsS3WithDestinationOptions": {
+                "id": "FlowLogsS3WithDestinationOptions",
+                "path": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions",
+                "children": {
+                  "Bucket": {
+                    "id": "Bucket",
+                    "path": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions/Bucket",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions/Bucket/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                          "aws:cdk:cloudformation:props": {
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "FlowLogsFeatureFlag/VPC"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Policy": {
+                        "id": "Policy",
+                        "path": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions/Bucket/Policy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions/Bucket/Policy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                              "aws:cdk:cloudformation:props": {
+                                "bucket": {
+                                  "Ref": "VPCFlowLogsS3WithDestinationOptionsBucket1B7AC456"
+                                },
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "s3:PutObject",
+                                      "Condition": {
+                                        "StringEquals": {
+                                          "s3:x-amz-acl": "bucket-owner-full-control",
+                                          "aws:SourceAccount": {
+                                            "Ref": "AWS::AccountId"
+                                          }
+                                        },
+                                        "ArnLike": {
+                                          "aws:SourceArn": {
+                                            "Fn::Join": [
+                                              "",
+                                              [
+                                                "arn:",
+                                                {
+                                                  "Ref": "AWS::Partition"
+                                                },
+                                                ":logs:",
+                                                {
+                                                  "Ref": "AWS::Region"
+                                                },
+                                                ":",
+                                                {
+                                                  "Ref": "AWS::AccountId"
+                                                },
+                                                ":*"
+                                              ]
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "Service": "delivery.logs.amazonaws.com"
+                                      },
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "VPCFlowLogsS3WithDestinationOptionsBucket1B7AC456",
+                                                "Arn"
+                                              ]
+                                            },
+                                            "/AWSLogs/aws-account-id=",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            "/*"
+                                          ]
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "Action": [
+                                        "s3:GetBucketAcl",
+                                        "s3:ListBucket"
+                                      ],
+                                      "Condition": {
+                                        "StringEquals": {
+                                          "aws:SourceAccount": {
+                                            "Ref": "AWS::AccountId"
+                                          }
+                                        },
+                                        "ArnLike": {
+                                          "aws:SourceArn": {
+                                            "Fn::Join": [
+                                              "",
+                                              [
+                                                "arn:",
+                                                {
+                                                  "Ref": "AWS::Partition"
+                                                },
+                                                ":logs:",
+                                                {
+                                                  "Ref": "AWS::Region"
+                                                },
+                                                ":",
+                                                {
+                                                  "Ref": "AWS::AccountId"
+                                                },
+                                                ":*"
+                                              ]
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "Service": "delivery.logs.amazonaws.com"
+                                      },
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "VPCFlowLogsS3WithDestinationOptionsBucket1B7AC456",
+                                          "Arn"
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-s3.BucketPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.Bucket",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "FlowLog": {
+                    "id": "FlowLog",
+                    "path": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions/FlowLog",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::FlowLog",
+                      "aws:cdk:cloudformation:props": {
+                        "resourceId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
+                        "resourceType": "VPC",
+                        "trafficType": "ALL",
+                        "destinationOptions": {
+                          "fileFormat": "plain-text",
+                          "perHourPartition": false,
+                          "hiveCompatiblePartitions": true
+                        },
+                        "logDestination": {
+                          "Fn::GetAtt": [
+                            "VPCFlowLogsS3WithDestinationOptionsBucket1B7AC456",
+                            "Arn"
+                          ]
+                        },
+                        "logDestinationType": "s3",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "FlowLogsFeatureFlag/VPC"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnFlowLog",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.FlowLog",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -2401,13 +2607,13 @@
             "id": "AssetParameters",
             "path": "FlowLogsTestStack/AssetParameters",
             "children": {
-              "17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb": {
-                "id": "17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb",
-                "path": "FlowLogsTestStack/AssetParameters/17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb",
+              "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26": {
+                "id": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26",
+                "path": "FlowLogsTestStack/AssetParameters/60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "FlowLogsTestStack/AssetParameters/17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb/S3Bucket",
+                    "path": "FlowLogsTestStack/AssetParameters/60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2415,7 +2621,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "FlowLogsTestStack/AssetParameters/17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb/S3VersionKey",
+                    "path": "FlowLogsTestStack/AssetParameters/60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2423,7 +2629,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "FlowLogsTestStack/AssetParameters/17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb/ArtifactHash",
+                    "path": "FlowLogsTestStack/AssetParameters/60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2605,13 +2811,13 @@
                     "id": "AssetParameters",
                     "path": "FlowLogs/DefaultTest/DeployAssert/AssetParameters",
                     "children": {
-                      "41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736": {
-                        "id": "41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736",
-                        "path": "FlowLogs/DefaultTest/DeployAssert/AssetParameters/41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736",
+                      "ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3": {
+                        "id": "ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3",
+                        "path": "FlowLogs/DefaultTest/DeployAssert/AssetParameters/ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3",
                         "children": {
                           "S3Bucket": {
                             "id": "S3Bucket",
-                            "path": "FlowLogs/DefaultTest/DeployAssert/AssetParameters/41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736/S3Bucket",
+                            "path": "FlowLogs/DefaultTest/DeployAssert/AssetParameters/ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3/S3Bucket",
                             "constructInfo": {
                               "fqn": "@aws-cdk/core.CfnParameter",
                               "version": "0.0.0"
@@ -2619,7 +2825,7 @@
                           },
                           "S3VersionKey": {
                             "id": "S3VersionKey",
-                            "path": "FlowLogs/DefaultTest/DeployAssert/AssetParameters/41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736/S3VersionKey",
+                            "path": "FlowLogs/DefaultTest/DeployAssert/AssetParameters/ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3/S3VersionKey",
                             "constructInfo": {
                               "fqn": "@aws-cdk/core.CfnParameter",
                               "version": "0.0.0"
@@ -2627,7 +2833,7 @@
                           },
                           "ArtifactHash": {
                             "id": "ArtifactHash",
-                            "path": "FlowLogs/DefaultTest/DeployAssert/AssetParameters/41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736/ArtifactHash",
+                            "path": "FlowLogs/DefaultTest/DeployAssert/AssetParameters/ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3/ArtifactHash",
                             "constructInfo": {
                               "fqn": "@aws-cdk/core.CfnParameter",
                               "version": "0.0.0"

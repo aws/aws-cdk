@@ -1,0 +1,154 @@
+{
+ "Resources": {
+  "HostedZoneDB99F866": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "cdk.dev."
+   }
+  },
+  "HostedZoneDkimDnsToken2A07BC1AD": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Fn::GetAtt": [
+         "EmailIdentity7187767D",
+         "DkimDNSTokenName2"
+        ]
+       },
+       ".cdk.dev."
+      ]
+     ]
+    },
+    "Type": "CNAME",
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "ResourceRecords": [
+     {
+      "Fn::GetAtt": [
+       "EmailIdentity7187767D",
+       "DkimDNSTokenValue2"
+      ]
+     }
+    ],
+    "TTL": "1800"
+   }
+  },
+  "HostedZoneDkimDnsToken34DA6A373": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Fn::GetAtt": [
+         "EmailIdentity7187767D",
+         "DkimDNSTokenName3"
+        ]
+       },
+       ".cdk.dev."
+      ]
+     ]
+    },
+    "Type": "CNAME",
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "ResourceRecords": [
+     {
+      "Fn::GetAtt": [
+       "EmailIdentity7187767D",
+       "DkimDNSTokenValue3"
+      ]
+     }
+    ],
+    "TTL": "1800"
+   }
+  },
+  "EmailIdentityDkimDnsToken15F8EC787": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Fn::GetAtt": [
+         "EmailIdentity7187767D",
+         "DkimDNSTokenName1"
+        ]
+       },
+       ".cdk.dev."
+      ]
+     ]
+    },
+    "Type": "CNAME",
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "ResourceRecords": [
+     {
+      "Fn::GetAtt": [
+       "EmailIdentity7187767D",
+       "DkimDNSTokenValue1"
+      ]
+     }
+    ],
+    "TTL": "1800"
+   }
+  },
+  "EmailIdentity7187767D": {
+   "Type": "AWS::SES::EmailIdentity",
+   "Properties": {
+    "EmailIdentity": "cdk.dev",
+    "MailFromAttributes": {
+     "MailFromDomain": "mail.cdk.dev"
+    }
+   }
+  },
+  "EmailIdentityMailFromMxRecordCEAAECD0": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "mail.cdk.dev.",
+    "Type": "MX",
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "ResourceRecords": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "10 feedback-smtp.",
+        {
+         "Ref": "AWS::Region"
+        },
+        ".amazonses.com"
+       ]
+      ]
+     }
+    ],
+    "TTL": "1800"
+   }
+  },
+  "EmailIdentityMailFromTxtRecordE6B5E5D0": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "mail.cdk.dev.",
+    "Type": "TXT",
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "ResourceRecords": [
+     "\"v=spf1 include:amazonses.com ~all\""
+    ],
+    "TTL": "1800"
+   }
+  }
+ }
+}
